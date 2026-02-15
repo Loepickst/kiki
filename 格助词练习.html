@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日语格助词全能助手</title>
+    <style>
+        :root {
+            --primary: #5e60ce; 
+            --primary-light: #f0f4ff;
+            --accent: #48bfe3;
+            --bg: #f4f6f9; /* 背景色稍微加深一点，突出卡片 */
+            --text: #2b2d42;
+            --border: #e9ecef;
+            --success: #2ecc71;
+            --error: #ff6b6b;
+            --card-shadow: 0 8px 24px rgba(149, 157, 165, 0.1); /* 更柔和的阴影 */
+        }
+
+        /* --- 核心布局 --- */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 600px; /* 限制最大宽度，防止在大屏上太宽 */
+            margin: 0 auto;   /* 居中 */
+            background-color: #fff; /* 模拟 APP 背景 */
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        /* --- 1. 导航栏 (更像原生APP) --- */
+        .nav-bar {
+            background: #fff;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 10px 0;
+            border: none;
+            border-radius: 20px; /* 胶囊形状 */
+            background: transparent;
+            color: #868e96;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* --- 2. 滚动区域 --- */
+        .content-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 20px;
+            background-color: #f8f9fa; /* 内容区灰色背景 */
+        }
+
+        .tab-view {
+            display: none;
+        }
+        .tab-view.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* --- 3. 卡片通用样式 --- */
+        .quiz-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.02);
+            transition: transform 0.2s;
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- 4. 练习界面美化 (重点修复区域) --- */
+        
+        /* 题目文字：解决溢出问题 */
+        .big-sentence {
+            font-size: 1.6rem; /* 稍微调小一点 */
+            margin: 30px 0 40px 0;
+            text-align: center;
+            line-height: 1.6; /* 增加行高 */
+            font-weight: 500;
+            word-wrap: break-word; /* 允许长单词换行 */
+            overflow-wrap: break-word;
+            padding: 0 10px; /* 防止贴边 */
+        }
+
+        /* 输入框美化 */
+        input[type="text"] {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.4rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            text-align: center;
+            box-sizing: border-box;
+            outline: none;
+            background: #fff;
+            transition: all 0.3s;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(94, 96, 206, 0.1);
+        }
+        input::placeholder {
+            color: #ccc;
+            font-weight: normal;
+            font-size: 1rem;
+        }
+
+        /* 按钮美化 */
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #5e60ce, #6c5ce7);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(94, 96, 206, 0.3);
+            transition: transform 0.1s;
+        }
+        .btn-submit:active { transform: scale(0.98); }
+
+        /* 选项按钮网格 */
+        .choice-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .choice-btn {
+            background: #fff;
+            border: 2px solid #f1f3f5;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            font-weight: bold;
+            color: #555;
+            transition: all 0.2s;
+        }
+        .choice-btn:active { background-color: #f8f9fa; transform: scale(0.98); }
+        .choice-btn.correct { background: #e3f9e5; border-color: #2ecc71; color: #219653; }
+        .choice-btn.wrong { background: #ffebeb; border-color: #ff6b6b; color: #c92a2a; }
+
+        /* 设置面板的小按钮 */
+        .particle-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .p-checkbox { display: none; }
+        .p-label {
+            border: 1px solid #dee2e6;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #fff;
+            color: #666;
+        }
+        .p-checkbox:checked + .p-label {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 2px 6px rgba(94, 96, 206, 0.2);
+        }
+
+        /* 模式选择卡片 */
+        .mode-group { display: flex; gap: 12px; margin-top: 10px; }
+        .mode-card {
+            flex: 1;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #888;
+        }
+        .mode-card:hover { background: #fcfcfc; }
+        .mode-card:has(input:checked) {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* 动画 */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* 退出按钮 */
+        .exit-btn {
+            display: flex; align-items: center; 
+            color: #888; font-size: 0.9rem; 
+            cursor: pointer; padding: 5px; 
+            border-radius: 5px;
+        }
+        .exit-btn:hover { background-color: #f1f1f1; }
+        /* --- 详情折叠页样式 --- */
+details > summary {
+    list-style: none; /* 去掉默认的小三角 */
+    cursor: pointer;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+/* 隐藏 Webkit 浏览器的默认三角 */
+details > summary::-webkit-details-marker {
+    display: none;
+}
+
+/* 自定义旋转箭头 */
+.arrow-icon {
+    font-size: 0.8rem;
+    color: #ccc;
+    transition: transform 0.3s;
+}
+
+details[open] .arrow-icon {
+    transform: rotate(180deg);
+}
+
+.particle-summary:active {
+    background-color: #fafafa;
+}
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="nav-bar">
+        <button class="nav-btn active" onclick="switchTab('rules')">📜 核心辨析</button>
+        <button class="nav-btn" onclick="switchTab('study')">📚 助词看板</button>
+        <button class="nav-btn" onclick="switchTab('practice')">⚔️ 填空特训</button>
+    </div>
+
+    <div class="content-scroll-area">
+        
+       <div id="tab-rules" class="tab-view active">
+    
+    <div style="display: flex; align-items: center; margin: 10px 0 20px 0; color: #888; font-weight: bold; font-size: 0.85rem;">
+        <span style="width: 20px; height: 2px; background: #e0e0e0; margin-right: 10px;"></span>
+        📖 第一章：底层逻辑
+        <span style="flex: 1; height: 2px; background: #e0e0e0; margin-left: 10px;"></span>
+    </div>
+
+    <div class="rule-card">
+        <div class="rule-header" style="background: linear-gradient(135deg, #5e60ce, #6930c3);">
+            <span><span style="background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-right:6px;">STEP 1</span>什么是“格”？</span>
+        </div>
+        <div class="rule-body">
+            <p>不要被语法术语吓到。简单来说，<b>“格”就是名词的“身份牌”</b>。</p>
+            <p>日语中单词（如“苹果”、“我”）本身没有身份，必须粘上一个<b>格助词</b>，才能获得参与句子的“入场券”。</p>
+            
+            <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-top:15px; border-left:4px solid var(--primary);">
+                <strong>💡 导演与演员的比喻：</strong><br>
+                如果动词是<b>“导演”</b>，名词是<b>“演员”</b>，<br>
+                那么<b>格助词</b>就是贴在演员背后的<b>“名牌”</b>。<br>
+                <br>
+                <div style="font-size:0.9rem; color:#555; margin-top:5px;">
+                • 贴上 <b style="background:#eee; padding:0 4px; color:var(--primary)">が</b> ⮕ 你是主角（动作发出者）<br>
+                • 贴上 <b style="background:#eee; padding:0 4px; color:#e74c3c">を</b> ⮕ 你是配角（动作承受者）
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="rule-card">
+        <div class="rule-header" style="background: linear-gradient(135deg, #48bfe3, #4ea8de);">
+            <span><span style="background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-right:6px;">STEP 2</span>无视语序的超能力</span>
+        </div>
+        <div class="rule-body">
+            <p style="margin-bottom:15px;">中文靠<b>“位置”</b>决定意思，日语靠<b>“助词”</b>。只要助词贴对了，顺序打乱也没关系！</p>
+
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <div style="background:#fff5f5; padding:12px; border-radius:8px; border:1px solid #ffcccc;">
+                    <div style="font-weight:bold; color:#e74c3c; font-size:0.85rem; margin-bottom:5px;">🇨🇳 中文（位置决定命运）：</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <span><b style="text-decoration:underline;">我</b> 吃饭</span>
+                        <span style="font-size:0.75rem; color:#999;">我是主语 ✅</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>饭 吃 <b style="text-decoration:underline;">我</b></span>
+                        <span style="font-size:0.75rem; color:#999;">我是食物 😱</span>
+                    </div>
+                </div>
+
+                <div style="background:#f0f7ff; padding:12px; border-radius:8px; border:1px solid #ccd9ff;">
+                    <div style="font-weight:bold; color:var(--primary); font-size:0.85rem; margin-bottom:5px;">🇯🇵 日语（助词决定命运）：</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <span><b style="color:var(--primary)">私が</b> 飯を 食べる</span>
+                        <span style="font-size:0.75rem; color:#999;">我吃饭 ✅</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>飯を <b style="color:var(--primary)">私が</b> 食べる</span>
+                        <span style="font-size:0.75rem; color:#999;">还是我吃饭 ✅</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: flex; align-items: center; margin: 30px 0 20px 0; color: #888; font-weight: bold; font-size: 0.85rem;">
+        <span style="width: 20px; height: 2px; background: #e0e0e0; margin-right: 10px;"></span>
+        👥 第二章：家族成员
+        <span style="flex: 1; height: 2px; background: #e0e0e0; margin-left: 10px;"></span>
+    </div>
+
+    <div class="rule-card">
+        <div class="rule-header" style="background: linear-gradient(135deg, #6c5ce7, #a29bfe);">
+            <span><span style="background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-right:6px;">STEP 3</span>9 位核心成员</span>
+        </div>
+        <div class="rule-body">
+            <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">
+                真正的格助词只有这 9 个。根据它们在句子中的“统治力”，我们可以分为三个梯队：
+            </p>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                
+                <div onclick="scrollToDetail('detail-ga')" style="cursor:pointer; background:#fff; padding:10px; border-radius:10px; text-align:center; border:2px solid #5e60ce; box-shadow:0 2px 5px rgba(94,96,206,0.1);">
+                    <div style="font-size:1.5rem;">👑</div>
+                    <strong style="color:var(--primary); font-size:1.2rem;">が</strong>
+                    <div style="font-size:0.7rem; color:#666;">主角</div>
+                </div>
+                
+                <div onclick="scrollToDetail('detail-o')" style="cursor:pointer; background:#fff; padding:10px; border-radius:10px; text-align:center; border:2px solid #e74c3c; box-shadow:0 2px 5px rgba(231,76,60,0.1);">
+                    <div style="font-size:1.5rem;">🎯</div>
+                    <strong style="color:#e74c3c; font-size:1.2rem;">を</strong>
+                    <div style="font-size:0.7rem; color:#666;">对象</div>
+                </div>
+
+                <div onclick="scrollToDetail('detail-ni')" style="cursor:pointer; background:#f9f0ff; padding:10px; border-radius:10px; text-align:center; border:1px solid #e9d5ff;">
+                    <div style="font-size:1.5rem;">📍</div>
+                    <strong style="color:#9b59b6; font-size:1.2rem;">に</strong>
+                    <div style="font-size:0.7rem; color:#666;">定位</div>
+                </div>
+
+                <div onclick="scrollToDetail('detail-de')" style="cursor:pointer; background:#f0fff4; padding:10px; border-radius:10px; text-align:center; border:1px solid #d1fae5;">
+                    <strong style="color:#10b981; font-size:1.2rem;">で</strong>
+                    <div style="font-size:0.7rem; color:#666; margin-top:5px;">舞台</div>
+                </div>
+
+                <div onclick="scrollToDetail('detail-to')" style="cursor:pointer; background:#fffbe6; padding:10px; border-radius:10px; text-align:center; border:1px solid #fef3c7;">
+                    <strong style="color:#f59e0b; font-size:1.2rem;">と</strong>
+                    <div style="font-size:0.7rem; color:#666; margin-top:5px;">伙伴</div>
+                </div>
+
+                <div onclick="scrollToDetail('detail-he')" style="cursor:pointer; background:#eff6ff; padding:10px; border-radius:10px; text-align:center; border:1px solid #bfdbfe;">
+                    <strong style="color:#3b82f6; font-size:1.2rem;">へ</strong>
+                    <div style="font-size:0.7rem; color:#666; margin-top:5px;">方向</div>
+                </div>
+
+                <div onclick="scrollToDetail('detail-kara')" style="cursor:pointer; background:#f8f9fa; padding:10px; border-radius:10px; text-align:center; border:1px solid #e9ecef;">
+                    <strong style="color:#666; font-size:1rem;">から</strong>
+                    <div style="font-size:0.7rem; color:#888; margin-top:5px;">起点</div>
+                </div>
+
+                <div onclick="scrollToDetail('detail-made')" style="cursor:pointer; background:#f8f9fa; padding:10px; border-radius:10px; text-align:center; border:1px solid #e9ecef;">
+                    <strong style="color:#666; font-size:1rem;">まで</strong>
+                    <div style="font-size:0.7rem; color:#888; margin-top:5px;">终点</div>
+                </div>
+
+                <div onclick="scrollToDetail('detail-yori')" style="cursor:pointer; background:#f8f9fa; padding:10px; border-radius:10px; text-align:center; border:1px solid #e9ecef;">
+                    <strong style="color:#666; font-size:1rem;">より</strong>
+                    <div style="font-size:0.7rem; color:#888; margin-top:5px;">比较</div>
+                </div>
+
+            </div>
+
+            </div>
+            
+            <p style="font-size:0.8rem; color:#999; margin-top:20px; text-align:center; padding-top:10px; border-top:1px dashed #eee;">
+                注：「は」和「も」是<b>副助词</b>，不在此列。
+            </p>
+            <div style="display: flex; align-items: center; margin: 30px 0 20px 0; color: #888; font-weight: bold; font-size: 0.85rem;">
+        <span style="width: 20px; height: 2px; background: #e0e0e0; margin-right: 10px;"></span>
+        🔍 第三章：逐个击破 (点击展开)
+        <span style="flex: 1; height: 2px; background: #e0e0e0; margin-left: 10px;"></span>
+    </div>
+
+    <div class="rule-card" id="detail-ga">
+        <details>
+            <summary style="display:flex; align-items:center; cursor:pointer; list-style:none; padding:10px;">
+                <span style="font-size:1.5rem; margin-right:10px;">👑</span>
+                <div style="flex:1;">
+                    <strong style="color:var(--primary); font-size:1.1rem;">が (Ga)</strong>
+                    <span style="font-size:0.8rem; color:#999; margin-left:5px;">动作的主角</span>
+                </div>
+                <span style="color:#ccc;">▼</span>
+            </summary>
+            <div style="padding:15px; border-top:1px solid #eee;">
+                <div class="usage-section"><span class="section-tag" style="background:var(--primary);">核心</span> 动作发出者：<br>猫<b>が</b>いる。(猫在)</div>
+                <div class="usage-section"><span class="section-tag" style="background:var(--accent);">特殊</span> 能力/好恶对象：<br>猫<b>が</b>好き。(喜欢猫)</div>
+            </div>
+        </details>
+    </div>
+
+    <div class="rule-card" id="detail-o">
+        <details>
+            <summary style="display:flex; align-items:center; cursor:pointer; list-style:none; padding:10px;">
+                <span style="font-size:1.5rem; margin-right:10px;">🎯</span>
+                <div style="flex:1;">
+                    <strong style="color:#e74c3c; font-size:1.1rem;">を (O)</strong>
+                    <span style="font-size:0.8rem; color:#999; margin-left:5px;">动作的对象</span>
+                </div>
+                <span style="color:#ccc;">▼</span>
+            </summary>
+            <div style="padding:15px; border-top:1px solid #eee;">
+                <div class="usage-section"><span class="section-tag" style="background:#e74c3c;">核心</span> 他动词宾语：<br>ご飯<b>を</b>食べる。(吃饭)</div>
+                <div class="usage-section"><span class="section-tag" style="background:#ff9f43;">进阶</span> 经过/离开场所：<br>空<b>を</b>飛ぶ。(飞过天空) / 家<b>を</b>出る。(离家)</div>
+            </div>
+        </details>
+    </div>
+
+    <div class="rule-card" id="detail-ni">
+        <details>
+            <summary style="display:flex; align-items:center; cursor:pointer; list-style:none; padding:10px;">
+                <span style="font-size:1.5rem; margin-right:10px;">📍</span>
+                <div style="flex:1;">
+                    <strong style="color:#9b59b6; font-size:1.1rem;">に (Ni)</strong>
+                    <span style="font-size:0.8rem; color:#999; margin-left:5px;">精准定位</span>
+                </div>
+                <span style="color:#ccc;">▼</span>
+            </summary>
+            <div style="padding:15px; border-top:1px solid #eee;">
+                <div class="usage-section"><span class="section-tag" style="background:#9b59b6;">用法1</span> 存在的地点 (静态)：<br>東京<b>に</b>住む。(住东京)</div>
+                <div class="usage-section"><span class="section-tag" style="background:#9b59b6;">用法2</span> 具体时间点：<br>6時<b>に</b>起きる。(6点起)</div>
+                <div class="usage-section"><span class="section-tag" style="background:#9b59b6;">用法3</span> 动作归着点/对象：<br>先生<b>に</b>会う。(见老师)</div>
+            </div>
+        </details>
+    </div>
+
+    <div class="rule-card" id="detail-de">
+        <details>
+            <summary style="display:flex; align-items:center; cursor:pointer; list-style:none; padding:10px;">
+                <span style="font-size:1.5rem; margin-right:10px;">🏟️</span>
+                <div style="flex:1;">
+                    <strong style="color:#10b981; font-size:1.1rem;">で (De)</strong>
+                    <span style="font-size:0.8rem; color:#999; margin-left:5px;">舞台与工具</span>
+                </div>
+                <span style="color:#ccc;">▼</span>
+            </summary>
+            <div style="padding:15px; border-top:1px solid #eee;">
+                <div class="usage-section"><span class="section-tag" style="background:#10b981;">用法1</span> 动作发生地 (动态)：<br>カフェ<b>で</b>飲む。(在咖啡厅喝)</div>
+                <div class="usage-section"><span class="section-tag" style="background:#10b981;">用法2</span> 手段/工具/原材料：<br>バス<b>で</b>行く。(坐巴士去) / 日本語<b>で</b>話す。(用日语说)</div>
+            </div>
+        </details>
+    </div>
+
+    <div class="rule-card" id="detail-to">
+        <details>
+            <summary style="display:flex; align-items:center; cursor:pointer; list-style:none; padding:10px;">
+                <span style="font-size:1.5rem; margin-right:10px;">🤝</span>
+                <div style="flex:1;">
+                    <strong style="color:#f59e0b; font-size:1.1rem;">と (To)</strong>
+                    <span style="font-size:0.8rem; color:#999; margin-left:5px;">紧密连接</span>
+                </div>
+                <span style="color:#ccc;">▼</span>
+            </summary>
+            <div style="padding:15px; border-top:1px solid #eee;">
+                <div class="usage-section"><span class="section-tag" style="background:#f59e0b;">用法1</span> 完全列举/和：<br>私<b>と</b>あなた。(我和你)</div>
+                <div class="usage-section"><span class="section-tag" style="background:#f59e0b;">用法2</span> 共同动作对象：<br>友達<b>と</b>結婚する。(和朋友结婚)</div>
+            </div>
+        </details>
+    </div>
+
+    <div class="rule-card" id="detail-he">
+        <details>
+            <summary style="display:flex; align-items:center; cursor:pointer; list-style:none; padding:10px;">
+                <span style="font-size:1.5rem; margin-right:10px;">🚀</span>
+                <div style="flex:1;">
+                    <strong style="color:#3b82f6; font-size:1.1rem;">へ (E)</strong>
+                    <span style="font-size:0.8rem; color:#999; margin-left:5px;">朝向</span>
+                </div>
+                <span style="color:#ccc;">▼</span>
+            </summary>
+            <div style="padding:15px; border-top:1px solid #eee;">
+                <div class="usage-section"><span class="section-tag" style="background:#3b82f6;">核心</span> 移动的方向：<br>日本<b>へ</b>行きます。(去日本/朝日本去)</div>
+                <p style="font-size:0.8rem; color:#888; margin-top:5px;">*注：很多时候可与「に」互换，但「へ」更强调方向感。</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="rule-card" id="detail-kara">
+        <details>
+            <summary style="padding:10px; cursor:pointer;"><strong>▶️ から (Kara)</strong> <span style="font-size:0.8rem; color:#999;">起点/原因</span></summary>
+            <div style="padding:15px; border-top:1px solid #eee;">
+                学校<b>から</b>帰る。(从学校回) / 1時<b>から</b>。(从1点开始)
+            </div>
+        </details>
+    </div>
+
+    <div class="rule-card" id="detail-made">
+        <details>
+            <summary style="padding:10px; cursor:pointer;"><strong>⏹️ まで (Made)</strong> <span style="font-size:0.8rem; color:#999;">终点/期限</span></summary>
+            <div style="padding:15px; border-top:1px solid #eee;">
+                東京<b>まで</b>行く。(去到东京) / 5時<b>まで</b>。(直到5点)
+            </div>
+        </details>
+    </div>
+
+    <div class="rule-card" id="detail-yori">
+        <details>
+            <summary style="padding:10px; cursor:pointer;"><strong>⚖️ より (Yori)</strong> <span style="font-size:0.8rem; color:#999;">比较基准</span></summary>
+            <div style="padding:15px; border-top:1px solid #eee;">
+                花<b>より</b>団子。(比起花，更喜欢团子/舍华求实)
+            </div>
+        </details>
+    </div>
+        </div>
+    </div>
+
+    <div style="height: 40px;"></div>
+
+</div>
+
+
+        </div>
+
+        <div id="tab-study" class="tab-view">
+            <div id="particleBoard"></div>
+        </div>
+
+        <div id="tab-practice" class="tab-view">
+            
+            <div id="practice-setup" class="quiz-card">
+                <h3 style="margin-top:0; color:var(--primary); border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:20px;">🛠️ 练习配置</h3>
+                
+                <div style="margin-bottom: 25px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                        <strong style="color:#444;">① 选择格助词</strong>
+                        <span style="color:var(--primary); cursor:pointer; font-size:0.9rem;" onclick="toggleAllParticles()">🔄 全选/反选</span>
+                    </div>
+                    <div id="particle-selector" class="particle-selector"></div>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <strong style="color:#444;">② 选择题型</strong>
+                    <div class="mode-group">
+                        <label class="mode-card">
+                            <input type="radio" name="quizMode" value="choice" checked hidden> 
+                            <div style="font-size:1.5rem; margin-bottom:5px;">👆</div>
+                            选择题
+                        </label>
+                        <label class="mode-card">
+                            <input type="radio" name="quizMode" value="input" hidden> 
+                            <div style="font-size:1.5rem; margin-bottom:5px;">⌨️</div>
+                            填空题
+                        </label>
+                    </div>
+                </div>
+
+                <button class="btn-submit" onclick="initQuiz()">🚀 开始特训</button>
+            </div>
+
+            <div id="practice-active" class="quiz-card hidden">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <div class="exit-btn" onclick="finishGame()">
+                        <span style="font-size:1.2rem; margin-right:4px;">✕</span> 结束
+                    </div>
+                    <div style="background:var(--primary-light); color:var(--primary); padding:4px 12px; border-radius:12px; font-size:0.9rem; font-weight:bold;">
+                        连对: <span id="streakVal">0</span>
+                    </div>
+                </div>
+
+                <div class="big-sentence" id="qDisplay">准备中...</div>
+                
+                <div id="interaction-area"></div>
+                
+                <div id="feedback-area" style="min-height:30px; margin-top:20px; text-align:center; font-weight:bold; font-size:1.1rem;"></div>
+
+                <button id="next-btn" class="btn-submit hidden" onclick="nextQuestion()">下一题 →</button>
+            </div>
+
+            <div id="result-card" class="quiz-card hidden" style="text-align:center; padding:40px 20px;">
+                <div style="font-size:3rem; margin-bottom:10px;">🎉</div>
+                <h2 style="color:var(--text); margin:0 0 5px 0;">练习完成</h2>
+                <p style="color:#888; margin:0;">最高连对记录</p>
+                <div id="final-score" style="font-size:5rem; font-weight:bold; color:var(--primary); line-height:1.2; margin: 10px 0;">0</div>
+                <div style="background:#f8f9fa; padding:15px; border-radius:10px; margin: 20px 0;">
+                    <div id="final-comment" style="color:#555; font-weight:bold;"></div>
+                </div>
+                <button class="btn-submit" onclick="backToSetup()">⚙️ 调整设置 / 再来一局</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== 1. 数据 ====================
+    const particles = ["が", "を", "に", "で", "と", "から", "まで", "へ", "より"];
+    const quizBank = [
+        { s: "庭__猫がいます。", a: "に" },
+        { s: "庭__遊んでいます。", a: "で" },
+        { s: "パン__食べます。", a: "を" },
+        { s: "家__出ます。", a: ["を", "から"] },
+        { s: "学校__行きます。", a: ["に", "へ"] },
+        { s: "日本__来ました。", a: ["へ", "に"] },
+        { s: "9時__5時まで働きます。", a: "から" },
+        { s: "9時から5時__働きます。", a: "まで" },
+        { s: "先生__会います。", a: "に" },
+        { s: "バス__帰ります。", a: "で" },
+        { s: "友達__映画を見ます。", a: "と" },
+        { s: "これ__それ__ください。", a: "と" },
+        { s: "雨__降っています。", a: "が" },
+        { s: "私__学生です。", a: "は" },
+        { s: "東京__大阪より大きいです。", a: "は" },
+        { s: "東京は大阪__大きいです。", a: "より" },
+        { s: "ナイフ__パンを切ります。", a: "で" },
+        { s: "誕生日__プレゼントをもらいました。", a: "に" }
+    ];
+
+    // ==================== 2. 状态 ====================
+    let currentMode = 'choice'; 
+    let activeParticles = [];
+    let currentPool = [];
+    let currentQuestion = null;
+    let streak = 0;
+    let maxStreak = 0;
+
+    // ==================== 3. 界面切换 ====================
+    function switchView(viewName) {
+        document.getElementById('practice-setup').classList.add('hidden');
+        document.getElementById('practice-active').classList.add('hidden');
+        document.getElementById('result-card').classList.add('hidden');
+        
+        const target = document.getElementById(viewName);
+        if(target) target.classList.remove('hidden');
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.add('active');
+        
+        const btnIndex = tabId === 'rules' ? 0 : tabId === 'study' ? 1 : 2;
+        document.querySelectorAll('.nav-btn')[btnIndex].classList.add('active');
+    }
+
+    // ==================== 4. 逻辑 ====================
+    function initPractice() {
+        const container = document.getElementById('particle-selector');
+        container.innerHTML = '';
+        particles.forEach(p => {
+            container.innerHTML += `
+                <input type="checkbox" id="p_${p}" value="${p}" class="p-checkbox" checked>
+                <label for="p_${p}" class="p-label">${p}</label>
+            `;
+        });
+        
+        // 渲染看板（简单版）
+        const board = document.getElementById('particleBoard');
+        board.innerHTML = particles.map(p => `
+            <div class="quiz-card" style="margin-bottom:10px; padding:15px;">
+                <strong style="color:var(--primary); font-size:1.2rem;">${p}</strong>
+            </div>
+        `).join('');
+    }
+
+    function toggleAllParticles() {
+        const checkboxes = document.querySelectorAll('.p-checkbox');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        checkboxes.forEach(cb => cb.checked = !allChecked);
+    }
+
+    function getCorrectAnswers(q) {
+        return Array.isArray(q.a) ? q.a : [q.a];
+    }
+
+    function initQuiz() {
+        const checked = document.querySelectorAll('.p-checkbox:checked');
+        activeParticles = Array.from(checked).map(cb => cb.value);
+        if (activeParticles.length === 0) return alert("请至少选一个助词！");
+
+        const modeRadio = document.querySelector('input[name="quizMode"]:checked');
+        currentMode = modeRadio ? modeRadio.value : 'choice';
+
+        currentPool = quizBank.filter(q => {
+            const answers = getCorrectAnswers(q);
+            return answers.some(ans => activeParticles.includes(ans));
+        });
+
+        if (currentPool.length === 0) return alert("没有匹配的题目！");
+
+        currentPool.sort(() => Math.random() - 0.5);
+        streak = 0; maxStreak = 0;
+        updateStreak();
+        
+        switchView('practice-active');
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.classList.add('hidden');
+        nextBtn.classList.remove('active-state');
+        document.getElementById('feedback-area').innerText = '';
+
+        if (currentPool.length === 0) return finishGame();
+
+        currentQuestion = currentPool.pop();
+        // 修复：题目展示优化，使用 border-bottom 而不是下划线
+        const displayHtml = currentQuestion.s.replace(/__/, 
+            '<span style="color:var(--primary); border-bottom:3px solid var(--accent); padding:0 8px; margin:0 4px; display:inline-block;">?</span>'
+        );
+        document.getElementById('qDisplay').innerHTML = displayHtml;
+
+        const area = document.getElementById('interaction-area');
+        area.innerHTML = '';
+
+        if (currentMode === 'choice') renderChoice(area);
+        else renderInput(area);
+    }
+
+    function renderChoice(container) {
+        const grid = document.createElement('div');
+        grid.className = 'choice-grid';
+        
+        const correctAnswers = getCorrectAnswers(currentQuestion);
+        let options = [correctAnswers[0]];
+        const others = particles.filter(p => !correctAnswers.includes(p)).sort(() => Math.random() - 0.5).slice(0, 3);
+        options = [...options, ...others].sort(() => Math.random() - 0.5);
+
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(opt, btn);
+            grid.appendChild(btn);
+        });
+        container.appendChild(grid);
+    }
+
+    function renderInput(container) {
+        container.innerHTML = `
+            <input type="text" id="quizInput" placeholder="输入假名" autocomplete="off">
+            <button id="inner-submit" class="btn-submit" onclick="handleInput()">提交</button>
+        `;
+        // 延时聚焦，防止键盘弹起卡顿
+        setTimeout(() => document.getElementById('quizInput').focus(), 150);
+        // 绑定回车
+        document.getElementById('quizInput').onkeydown = (e) => { 
+            if(e.key === 'Enter') handleInput(); 
+        };
+    }
+
+    function handleInput() {
+        const val = document.getElementById('quizInput').value.trim();
+        if(val) checkAnswer(val, document.getElementById('quizInput'));
+    }
+
+    function checkAnswer(ans, el) {
+        if(document.getElementById('next-btn').classList.contains('active-state')) return;
+
+        const correctAnswers = getCorrectAnswers(currentQuestion);
+        const isCorrect = correctAnswers.includes(ans);
+        const feedback = document.getElementById('feedback-area');
+
+        if(currentMode === 'input') {
+            el.disabled = true;
+            document.getElementById('inner-submit').style.display = 'none';
+        } else {
+            document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+        }
+
+        if(isCorrect) {
+            streak++;
+            if(streak > maxStreak) maxStreak = streak;
+            feedback.innerHTML = "<span style='color:var(--success)'>🎉 正解！</span>";
+            if(currentMode === 'choice') el.classList.add('correct');
+            else { el.style.borderColor = 'var(--success)'; el.style.background = '#e3f9e5'; }
+        } else {
+            streak = 0;
+            feedback.innerHTML = `<span style='color:var(--error)'>❌ 正解：${correctAnswers.join(' / ')}</span>`;
+            if(currentMode === 'choice') {
+                el.classList.add('wrong');
+                document.querySelectorAll('.choice-btn').forEach(b => {
+                    if(correctAnswers.includes(b.innerText)) b.classList.add('correct');
+                });
+            } else {
+                el.style.borderColor = 'var(--error)'; el.style.background = '#ffebeb';
+            }
+        }
+
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.classList.remove('hidden');
+        nextBtn.classList.add('active-state');
+        nextBtn.focus();
+        updateStreak();
+    }
+
+    function finishGame() {
+        switchView('result-card');
+        document.getElementById('final-score').innerText = maxStreak;
+        
+        let comment = "";
+        if (maxStreak >= 50) comment = "👑 神乎其技！";
+        else if (maxStreak >= 30) comment = "😎 格助词大师！";
+        else if (maxStreak >= 20) comment = "🔥 语感超棒！";
+        else if (maxStreak >= 10) comment = "👍 干得漂亮！";
+        else if (maxStreak >= 5) comment = "🙂 不错的开始！";
+        else comment = "🌱 万事开头难，加油！";
+        
+        document.getElementById('final-comment').innerText = comment;
+    }
+
+    function backToSetup() {
+        switchView('practice-setup');
+        streak = 0;
+    }
+
+    function updateStreak() {
+        document.getElementById('streakVal').innerText = streak;
+    }
+    // ==================== 页面交互工具 ====================
+    
+    // 跳转并自动展开详情
+    function scrollToDetail(id) {
+        const element = document.getElementById(id);
+        if (element) {
+            // 1. 如果是折叠状态，强制展开
+            const details = element.querySelector('details');
+            if (details) details.open = true;
+            
+            // 2. 平滑滚动到屏幕中间
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // 3. 给个视觉反馈（闪一下）
+            element.style.transition = "transform 0.3s";
+            element.style.transform = "scale(1.03)";
+            setTimeout(() => element.style.transform = "scale(1)", 300);
+        }
+    }
+    initPractice();
+</script>
+</body>
+</html>
