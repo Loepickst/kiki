@@ -367,15 +367,15 @@
 <body>
 
     <nav class="navbar">
-        <div id="navLeftBtn" class="nav-btn" onclick="navigateTo('bookshelf')">
-            📚 语法书架
+        <div style="display:flex; gap:10px; align-items:center;">
+            <a id="navHomeBtn" href="index.html" class="nav-btn">🏠 主页</a>
+            <div id="navLeftBtn" class="nav-btn" style="display:none;"></div>
         </div>
-        <div id="navFavBtn" class="nav-btn" style="margin-left: auto;" onclick="navigateTo('favorites')">
-            ⭐ 收藏夹
+        <div style="display:flex; gap:10px; margin-left: auto; align-items:center;">
+            <div id="navBookshelfBtn" class="nav-btn" onclick="navigateTo('bookshelf')">📚 语法书架</div>
+            <div id="navFavBtn" class="nav-btn" onclick="navigateTo('favorites')">⭐ 收藏夹</div>
+            <div id="navBackBtn" class="nav-btn" style="display:none;" onclick="navigateTo('search')">↩ 返回搜索</div>
         </div>
-     <div id="navBackBtn" class="nav-btn" style="display:none; margin-left: auto;" onclick="navigateTo('search')">
-                ↩ 返回搜索
-            </div>
     </nav>
 
     <div id="searchView" class="view-section" style="display:block;">
@@ -3403,55 +3403,63 @@
             document.querySelectorAll('.view-section').forEach(el => el.style.display = 'none');
             window.scrollTo(0, 0);
 
+            // 辅助：重置所有导航按钮状态
+            const hideAllNav = () => {
+                ['navHomeBtn', 'navBookshelfBtn', 'navFavBtn', 'navLeftBtn', 'navBackBtn'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) el.style.display = 'none';
+                });
+            };
+            hideAllNav();
+
             // 显示目标视图
             switch(viewName) {
                 case 'search':
                     document.getElementById('searchView').style.display = 'block';
-                    document.getElementById('navLeftBtn').innerText = '📚 语法书架';
-                    document.getElementById('navLeftBtn').onclick = () => navigateTo('bookshelf');
-                    document.getElementById('navLeftBtn').style.display = 'inline-flex';
                     
-                    // 按钮状态：显示收藏夹，隐藏返回
+                    // 按钮状态：主页(左)、书架(右)、收藏(右)
+                    document.getElementById('navHomeBtn').style.display = 'inline-flex';
+                    document.getElementById('navBookshelfBtn').style.display = 'inline-flex';
                     document.getElementById('navFavBtn').style.display = 'inline-flex';
-                    document.getElementById('navBackBtn').style.display = 'none';
+                    
                     renderGrammarList(); // 重新渲染搜索页
                     break;
                 case 'favorites': // 新增收藏夹视图
                     renderFavorites();
                     document.getElementById('favoritesView').style.display = 'block';
-                    document.getElementById('navLeftBtn').style.display = 'none';
                     
-                    document.getElementById('navFavBtn').style.display = 'none';
+                    // 按钮状态：返回搜索(右)
                     document.getElementById('navBackBtn').style.display = 'inline-flex';
                     break;
                 case 'bookshelf':
                     document.getElementById('bookshelfView').style.display = 'block';
-                    document.getElementById('navLeftBtn').style.display = 'none'; // 在书架页隐藏左侧按钮
                     
-                    // 按钮状态：隐藏收藏夹，显示返回
-                    document.getElementById('navFavBtn').style.display = 'none';
+                    // 按钮状态：返回搜索(右)
                     document.getElementById('navBackBtn').style.display = 'inline-flex';
                     break;
                 case 'bookDetail':
                     currentBookName = params.bookName;
                     renderBookDetail(currentBookName);
                     document.getElementById('bookDetailView').style.display = 'block';
-                    document.getElementById('navLeftBtn').innerText = '⬅ 返回书架';
-                    document.getElementById('navLeftBtn').onclick = () => navigateTo('bookshelf');
-                    document.getElementById('navLeftBtn').style.display = 'inline-flex';
                     
-                    // 保持书架视图的按钮状态 (或者也可以显示返回搜索)
-                    document.getElementById('navFavBtn').style.display = 'none';
+                    // 按钮状态：返回书架(左)、返回搜索(右)
+                    const leftBtn = document.getElementById('navLeftBtn');
+                    leftBtn.innerText = '⬅ 返回书架';
+                    leftBtn.onclick = () => navigateTo('bookshelf');
+                    leftBtn.style.display = 'inline-flex';
+                    
                     document.getElementById('navBackBtn').style.display = 'inline-flex';
                     break;
                 case 'lessonDetail': // 新增视图
                     renderLessonDetail(params.lessonName);
                     document.getElementById('lessonDetailView').style.display = 'block';
-                    document.getElementById('navLeftBtn').innerText = '⬅ 返回目录';
-                    document.getElementById('navLeftBtn').onclick = () => navigateTo('bookDetail', {bookName: currentBookName});
-                    document.getElementById('navLeftBtn').style.display = 'inline-flex';
                     
-                    document.getElementById('navFavBtn').style.display = 'none';
+                    // 按钮状态：返回目录(左)、返回搜索(右)
+                    const leftBtn2 = document.getElementById('navLeftBtn');
+                    leftBtn2.innerText = '⬅ 返回目录';
+                    leftBtn2.onclick = () => navigateTo('bookDetail', {bookName: currentBookName});
+                    leftBtn2.style.display = 'inline-flex';
+                    
                     document.getElementById('navBackBtn').style.display = 'inline-flex';
                     break;
             }
@@ -3601,8 +3609,7 @@
                                     normalize(item.meaning).includes(searchText) || 
                                     (item.romaji && normalize(item.romaji.toLowerCase()).includes(searchText)) || 
                                     (item.kana && normalize(item.kana).includes(searchText)) ||
-                                    (item.tags && normalize(item.tags).includes(searchText)) ||
-                                    (item.desc && normalize(item.desc).includes(searchText));
+                                    (item.tags && normalize(item.tags).includes(searchText));
                 return matchBook && matchLevel && matchSearch;
             });
 
@@ -3868,6 +3875,8 @@
                 </div>
             `).join('');
             
+            document.getElementById('navHomeBtn').style.display = 'none';
+            document.getElementById('navBookshelfBtn').style.display = 'none';
             document.getElementById('navLeftBtn').style.display = 'none';
             document.getElementById('navFavBtn').style.display = 'none';
             document.getElementById('navBackBtn').style.display = 'none';
