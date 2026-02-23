@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>単語暗記 - 能力考核心词汇</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500&display=swap');
+
+        :root {
+            /* --- 统一使用阅读模版的配色 --- */
+            --bg-color: #fdfaf5;       /* 米色背景 */
+            --paper-color: #ffffff;    /* 卡片/纸张背景 */
+            --text-color: #2c2c2c;     /* 深灰文字 */
+            --accent-color: #b33e3e;   /* 茜色点缀 */
+            --sub-color: #787878;      /* 辅助文字颜色 */
+            --shadow: rgba(0,0,0,0.05); /* 柔和阴影 */
+            
+            /* 词性颜色标记 */
+            --noun-color: #4fc3f7;     /* 名词 - 蓝 */
+            --verb-color: #e57373;     /* 动词 - 红 */
+            --adj-color: #fff176;      /* 形容词 - 黄 */
+            --adv-color: #81c784;      /* 副词 - 绿 */
+            --ono-color: #ba68c8;      /* 拟声拟态 - 紫 */
+            
+            /* 级别颜色 */
+            --n1-color: #e57373;
+            --n2-color: #ff8a65;
+        }
+
+        body {
+            font-family: "Hiragino Sans", "Meiryo", "Microsoft YaHei", -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏 */
+        header {
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background-color: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            position: sticky; 
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        .back-btn:hover {
+            opacity: 1;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        /* 内容容器 */
+        .vocab-container {
+            width: 95%;
+            max-width: 800px;
+            padding: 30px 0;
+            display: flex;
+            flex-direction: column;
+            /* align-items: center;  Removed to allow children to stretch */
+        }
+
+        .view-section {
+            width: 100%; /* Ensure view sections take full width */
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--sub-color);
+            font-weight: normal;
+        }
+
+        /* ================= 参照单词测试页面的排版 ================= */
+        
+
+        /* [目录] 分类列表 (List) */
+        .lesson-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            /* max-width: 500px; Removed for full width */
+            margin: 0 auto;
+        }
+
+        .lesson-item {
+            background: var(--paper-color); 
+            padding: 20px; 
+            border-radius: 12px;
+            cursor: pointer; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+            transition: 0.2s; 
+            border-left: 4px solid transparent;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .lesson-item:hover { 
+            border-left-color: var(--accent-color); 
+            transform: translateX(5px); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* Preparation/Construction Style */
+        .lesson-item.prep {
+            background: transparent;
+            border: 1px dashed #ddd;
+            box-shadow: none;
+            cursor: default;
+            border-left: 1px dashed #ddd; /* Ensure consistent border width/style */
+        }
+        .lesson-item.prep:hover {
+            transform: none;
+            box-shadow: none;
+            border-left-color: #ddd;
+        }
+        .lesson-item.prep .lesson-icon {
+            background: #eee !important;
+            color: #aaa !important;
+        }
+        .lesson-item.prep h3 { color: #999; }
+        .lesson-item.prep p { color: #aaa; }
+        
+        .construction-icon {
+            font-size: 24px;
+            opacity: 0.5;
+        }
+
+        .lesson-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .lesson-icon {
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0,0,0,0.03);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .lesson-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lesson-text h3 { margin: 0 0 4px; font-size: 16px; font-weight: bold; }
+        .lesson-text p { margin: 0; font-size: 12px; color: var(--sub-color); }
+
+        .lesson-tag {
+            background: #f5f5f5; 
+            color: #888; 
+            padding: 4px 10px; 
+            border-radius: 20px; 
+            font-size: 12px; 
+            font-weight: bold;
+        }
+
+        .hidden { display: none; }
+        .back-link { cursor: pointer; color: var(--sub-color); margin-right: 15px; font-size: 1.2rem; text-decoration: none; display: inline-block; vertical-align: middle; }
+        .back-link:hover { color: var(--text-color); }
+        
+        /* 动画 */
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 30px;
+            font-size: 12px;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="back-btn">← Home</a>
+        <h1>単語暗記</h1>
+    </header>
+
+    <div class="vocab-container">
+        
+        <!-- Level Selection View -->
+        <div id="level-view" class="view-section fade-in">
+            <div class="section-title" style="width: 100%; margin: 0 auto 20px;">レベルを選択 (选择级别)</div>
+            <div class="lesson-list">
+                
+                <div class="lesson-item" onclick="selectLevel('N1')">
+                    <div class="lesson-content">
+                        <div class="lesson-icon" style="color: var(--n1-color); background: rgba(229, 115, 115, 0.1);">N1</div>
+                        <div class="lesson-text">
+                            <h3>上級</h3>
+                            <p>高難度・抽象的語彙</p>
+                        </div>
+                    </div>
+                    <span class="lesson-tag">Go</span>
+                </div>
+
+                <div class="lesson-item" onclick="selectLevel('N2')">
+                    <div class="lesson-content">
+                        <div class="lesson-icon" style="color: var(--n2-color); background: rgba(255, 138, 101, 0.1);">N2</div>
+                        <div class="lesson-text">
+                            <h3>中上級</h3>
+                            <p>日常・ビジネス語彙</p>
+                        </div>
+                    </div>
+                    <span class="lesson-tag">Go</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Category Selection View -->
+        <div id="category-view" class="view-section hidden">
+            <div class="section-title" style="width: 100%; margin: 0 auto 20px;">
+                <span class="back-link" onclick="showLevelView()">←</span>
+                <span id="selected-level-display"></span>の単語
+            </div>
+            
+            <div class="lesson-list">
+                <!-- 名词 (Preparation) -->
+                <div class="lesson-item prep">
+                    <div class="lesson-content">
+                        <div class="lesson-icon">📦</div>
+                        <div class="lesson-text">
+                            <h3>名詞 (準備中)</h3>
+                            <p>重要名词・复合词</p>
+                        </div>
+                    </div>
+                    <div class="construction-icon">🚧</div>
+                </div>
+
+                <!-- 动词 (Active) -->
+                <div class="lesson-item" onclick="goToWordList('verb')">
+                    <div class="lesson-content">
+                        <div class="lesson-icon" style="color: var(--verb-color);">🏃</div>
+                        <div class="lesson-text">
+                            <h3>動詞</h3>
+                            <p>自动词・他动词</p>
+                        </div>
+                    </div>
+                    <span class="lesson-tag">Go</span>
+                </div>
+
+                <!-- 形容词 (Preparation) -->
+                <div class="lesson-item prep">
+                    <div class="lesson-content">
+                        <div class="lesson-icon">✨</div>
+                        <div class="lesson-text">
+                            <h3>形容詞 (準備中)</h3>
+                            <p>イ形・ナ形</p>
+                        </div>
+                    </div>
+                    <div class="construction-icon">🚧</div>
+                </div>
+
+                <!-- 副词 (Preparation) -->
+                <div class="lesson-item prep">
+                    <div class="lesson-content">
+                        <div class="lesson-icon">〰️</div>
+                        <div class="lesson-text">
+                            <h3>副詞 (準備中)</h3>
+                            <p>程度・状态・呼应</p>
+                        </div>
+                    </div>
+                    <div class="construction-icon">🚧</div>
+                </div>
+
+                <!-- 拟声拟态词 (Preparation) -->
+                <div class="lesson-item prep">
+                    <div class="lesson-content">
+                        <div class="lesson-icon">🔊</div>
+                        <div class="lesson-text">
+                            <h3>擬音・擬態語 (準備中)</h3>
+                            <p>拟声词・拟态词</p>
+                        </div>
+                    </div>
+                    <div class="construction-icon">🚧</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentLevel = '';
+
+        function selectLevel(level) {
+            currentLevel = level;
+            document.getElementById('level-view').classList.add('hidden');
+            const catView = document.getElementById('category-view');
+            catView.classList.remove('hidden');
+            catView.classList.add('fade-in');
+            document.getElementById('selected-level-display').textContent = level;
+        }
+
+        function showLevelView() {
+            document.getElementById('category-view').classList.add('hidden');
+            const lvlView = document.getElementById('level-view');
+            lvlView.classList.remove('hidden');
+            lvlView.classList.add('fade-in');
+        }
+
+        function goToWordList(type) {
+            if (currentLevel === 'N1' && type === 'verb') {
+                // Point to the new file name to fix GitHub 404 issue
+                window.location.href = 'words/verbs_n1.html';
+            } else {
+                // TODO: Navigate to the actual word list page with query params
+                alert('工事中: ' + currentLevel + ' - ' + type + ' 单词表即将上线');
+            }
+        }
+
+        // Check for query params on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const level = urlParams.get('level');
+            if (level) {
+                selectLevel(level);
+            }
+        });
+    </script>
+
+    <footer>
+        © kiki's Japanese Corner
+    </footer>
+
+</body>
+</html>
