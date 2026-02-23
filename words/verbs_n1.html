@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N1 動詞 - 単語暗記</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --sub-color: #787878;
+            --accent-color: #b33e3e;
+            --n1-color: #e57373;
+            --study-theme: var(--n1-color); /* N1 Theme */
+            --shadow: rgba(0,0,0,0.08);
+        }
+
+        body {
+            font-family: "Hiragino Sans", "Meiryo", "Microsoft YaHei", -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            width: 100%;
+            padding: 15px 20px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Changed for switch */
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: bold;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+        .back-btn:hover { opacity: 1; }
+
+        h1 { 
+            margin: 0; 
+            font-size: 18px; 
+            font-weight: 700; 
+            color: var(--study-theme);
+            position: absolute; 
+            left: 50%; 
+            transform: translateX(-50%); 
+        }
+
+        /* Mode Switch */
+        .mode-switch { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; color: var(--sub-color); }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--study-theme); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Self-Check Mode Effects */
+        .hide-target { transition: all 0.3s ease; border-radius: 4px; }
+        
+        body.test-mode .hide-target {
+            filter: blur(6px);
+            opacity: 0.3;
+            background-color: #eee;
+            color: transparent; /* Help hide text better */
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        body.test-mode .hide-target.revealed {
+            filter: blur(0);
+            opacity: 1;
+            background-color: transparent;
+            color: inherit;
+        }
+
+        /* Hide Furigana in Test Mode */
+        body.test-mode rt { opacity: 0; transition: opacity 0.3s; }
+
+        /* Container */
+        .container {
+            width: 95%;
+            max-width: 600px;
+            padding: 20px 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Space between cards */
+        }
+
+        /* --- Day Selection View --- */
+        .days-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 10px;
+        }
+
+        /* Active Day Card (Figure 1 Style) */
+        .day-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .day-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+        }
+
+        .day-card:active { transform: scale(0.99); }
+
+        .day-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .day-icon {
+            width: 44px; height: 44px;
+            background: #f5f5f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .day-text-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .day-title {
+            font-size: 17px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .day-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .last-studied-badge {
+            font-size: 10px;
+            color: #fff;
+            background-color: var(--accent-color);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .day-subtitle {
+            font-size: 13px;
+            color: var(--sub-color);
+        }
+
+        .go-badge {
+            background: #f0f0f0;
+            color: #888;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+
+        /* Preparation/Empty Card (Figure 2 Style) */
+        .day-card.prep {
+            background: transparent;
+            border: 1px dashed #ddd;
+            box-shadow: none;
+            cursor: default;
+        }
+        .day-card.prep:hover { transform: none; }
+
+        .day-card.prep .day-icon {
+            background: #eee;
+            color: #aaa;
+        }
+        
+        .day-card.prep .day-title { color: #999; }
+        .day-card.prep .day-subtitle { color: #aaa; }
+        
+        .construction-icon {
+            font-size: 24px;
+            opacity: 0.5;
+        }
+
+        /* --- Word List View --- */
+        .flashcard-container {
+            position: relative;
+            background: #ffffff;
+            border-radius: 12px; /* Slightly smaller radius for list */
+            box-shadow: 0 4px 15px var(--shadow);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            width: 100%;
+            overflow: hidden; /* Ensure content stays inside */
+        }
+
+        /* Top Face (Summary View) */
+        .card-top-face {
+            padding: 20px 25px; /* Compact padding */
+            cursor: pointer;
+            border-bottom: 1px solid transparent; /* Hidden by default */
+            transition: background 0.2s, border-color 0.3s;
+            display: flex;
+            flex-direction: row; /* Horizontal layout for list */
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-top-face:active { background: #f9f9f9; }
+
+        .word-info-group {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .main-word-display {
+            font-size: 24px; /* Smaller for list */
+            font-weight: bold;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        /* Expanded State */
+        .flashcard-container.is-expanded .card-top-face {
+            background: #fcfcfc;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .flashcard-container.is-expanded .tap-hint { display: none; }
+
+        /* Ruby & Tone */
+        ruby { ruby-position: over; }
+        rt { font-size: 0.5em; color: var(--study-theme); font-weight: normal; transform: translateY(-2px); }
+
+        .tone-number {
+            font-size: 14px;
+            color: var(--study-theme);
+            border: 1px solid var(--study-theme);
+            border-radius: 4px;
+            padding: 0 4px;
+            font-weight: bold;
+            margin-left: 5px;
+            opacity: 1; /* Always visible in list */
+        }
+
+        /* POS Tag */
+        .pos-tag {
+            font-size: 12px;
+            background: #ffebee;
+            color: var(--study-theme);
+            padding: 1px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+            font-weight: bold;
+            opacity: 1; /* Always visible in list */
+        }
+
+        /* Star Button */
+        .star-btn {
+            background: transparent; border: none; padding: 5px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .star-icon {
+            width: 24px; height: 24px;
+            stroke: #e0e0e0; stroke-width: 2; fill: none;
+            transition: all 0.3s;
+        }
+        .dog-btn {
+            font-size: 28px;
+            cursor: pointer;
+            opacity: 0.3;
+            filter: grayscale(100%);
+            transition: all 0.3s;
+            background: transparent;
+            border: none;
+            padding: 0;
+            line-height: 1;
+        }
+        .dog-btn.active {
+            opacity: 1;
+            filter: none;
+            transform: scale(1.1);
+        }
+        .dog-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .list-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .tap-hint { font-size: 12px; color: #bbb; margin-left: auto; white-space: nowrap; display: none; }
+
+        /* Word List Directory Style */
+        .word-list-item {
+            background: #fff;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.03);
+            transition: all 0.2s;
+        }
+        .word-list-item:hover { transform: translateX(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .list-word-text { font-size: 18px; font-weight: bold; color: var(--text-color); }
+        .list-arrow { color: #ccc; font-size: 20px; }
+
+        /* Full Screen Flashcard Style */
+        .flashcard-main {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .fc-header { border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .fc-word-group { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+        .fc-word { font-size: 32px; font-weight: bold; color: var(--text-color); margin: 0; line-height: 1.2; }
+        .fc-meta { display: flex; gap: 8px; align-items: center; }
+        .fc-section-title { font-size: 12px; color: var(--sub-color); font-weight: bold; margin-bottom: 6px; letter-spacing: 0.05em; }
+        .fc-meaning { font-size: 20px; font-weight: bold; line-height: 1.6; color: #222; }
+        .fc-nuance { font-size: 15px; color: #555; background: #f9f9f9; padding: 12px; border-radius: 8px; line-height: 1.7; border-left: 3px solid var(--accent-color); }
+        
+        .nav-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+        .nav-btn { background: #fff; border: 1px solid #ddd; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; color: #666; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+        .nav-btn:hover { background: #f5f5f5; color: #333; }
+        .nav-btn.primary { background: var(--study-theme); color: #fff; border-color: var(--study-theme); }
+        .nav-btn.primary:hover { opacity: 0.9; }
+        .nav-btn.disabled { opacity: 0.3; pointer-events: none; }
+        
+        /* Example Styles override for Flashcard */
+        .fc-content .example-list { border-top: none; padding-top: 0; margin-top: 5px; }
+
+
+        /* Examples */
+        .example-list { margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
+        .example-item { margin-bottom: 12px; }
+        .ex-jp { font-size: 15px; color: #333; font-weight: 500; margin-bottom: 2px; line-height: 2; }
+        .ex-cn { font-size: 13px; color: #777; }
+        .ex-jp ruby { font-size: inherit; }
+        .ex-jp rt { font-size: 0.6em; user-select: none; }
+        .ex-highlight { font-weight: bold; color: var(--text-color); }
+
+        .hidden { display: none !important; }
+
+        /* Mobile Responsive Adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px 0;
+            }
+            
+            .flashcard-main {
+                padding: 20px;
+                border-radius: 12px;
+            }
+            
+            .fc-word {
+                font-size: 24px !important; /* Override inline style */
+            }
+            
+            .fc-meaning {
+                font-size: 17px;
+            }
+            
+            .fc-nuance {
+                font-size: 13px;
+                padding: 10px;
+            }
+            
+            .ex-jp {
+                font-size: 14px;
+            }
+            
+            /* Example Translation */
+            .def-ex .hide-target {
+                font-size: 12px !important;
+            }
+
+            /* Example Label */
+            .def-ex span:first-child {
+                font-size: 12px !important;
+            }
+            
+            .day-card {
+                padding: 15px;
+            }
+            
+            .day-title {
+                font-size: 15px;
+            }
+            
+            .list-word-text {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a id="back-btn" class="back-btn">← 戻る</a>
+        <h1 id="page-title">N1 動詞</h1>
+        <div class="mode-switch">
+            <label for="testModeToggle">自检</label>
+            <label class="switch">
+                <input type="checkbox" id="testModeToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- View 1: Day Selection List -->
+        <div id="days-view" class="days-grid">
+            <!-- Injected by JS -->
+        </div>
+
+        <!-- View 2: Word List (Directory) -->
+        <div id="word-list-view" class="hidden">
+            <div id="word-list-container" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+
+        <!-- View 3: Word Detail (Flashcard) -->
+        <div id="word-detail-view" class="hidden">
+            <!-- Injected by JS -->
+        </div>
+    </div>
+
+    <script>
+        // --- Data ---
+
+        /*
+         * 📖 单词添加指南 (How to add words):
+         * 1. 复制下面的模板 (Copy the template below).
+         * 2. 粘贴到对应的 DAY 数组中 (Paste into the DAY array).
+         * 3. 填写内容 (Fill in the content).
+         *
+         * 📝 模板 (Template):
+         * {
+         *     "word": "漢字",
+         *     "word_html": "<ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>", // 必须包含 ruby 注音
+         *     "tone": "0",   // 声调数字
+         *     "pos": "自五", // 词性
+         *     "mean": "意思1；意思2",
+         *     "nuance": "1. 详细解释1。\n2. 详细解释2。", // 使用 \n 换行
+         *     "examples": [
+         *         { "jp": "例<span class='ex-highlight'>単語</span>。", "cn": "例句翻译。" }
+         *     ]
+         * },
+         */
+
+        // Day 1 Words (User provided)
+        const DAY1_WORDS = [
+            {
+        "word": "潤う",
+        "word_html": "<ruby>潤<rt>うるお</rt></ruby>う",
+        "tone": "3",
+        "pos": "自五",
+        "mean": "湿润、滋润；受惠、受益",
+        "nuance": "1. 含有适度的水分，不干燥。\n2. 得到恩惠或利益。",
+        "examples": [
+            { "jp": "<ruby>久<rt>ひさ</rt></ruby>しぶりの<ruby>雨<rt>あめ</rt></ruby>で<ruby>田<rt>た</rt></ruby><ruby>畑<rt>はた</rt></ruby>が<span class='ex-highlight'><ruby>潤<rt>うるお</rt></ruby>った</span>。", "cn": "久违的雨水滋润了田地。" },
+            { "jp": "<ruby>観<rt>かん</rt></ruby><ruby>光<rt>こう</rt></ruby><ruby>客<rt>きゃく</rt></ruby>の<ruby>増<rt>ぞう</rt></ruby><ruby>加<rt>か</rt></ruby>で<ruby>町<rt>まち</rt></ruby>が<span class='ex-highlight'><ruby>潤<rt>うるお</rt></ruby>う</span>。", "cn": "因为游客增加，城镇富裕起来。" }
+        ]
+    },
+    {
+        "word": "儲かる",
+        "word_html": "<ruby>儲<rt>もう</rt></ruby>かる",
+        "tone": "3",
+        "pos": "自五",
+        "mean": "赚钱、盈利；赚到、得利",
+        "nuance": "1. 产生利润，生意兴隆。\n2. 得到意想不到的好处或省事。",
+        "examples": [
+            { "jp": "<ruby>最<rt>さい</rt></ruby><ruby>近<rt>きん</rt></ruby>、この<ruby>商<rt>しょう</rt></ruby><ruby>売<rt>ばい</rt></ruby>は<span class='ex-highlight'><ruby>儲<rt>もう</rt></ruby>かる</span>らしい。", "cn": "最近，这生意似乎很赚钱。" },
+            { "jp": "<ruby>奢<rt>おご</rt></ruby>ってもらって<span class='ex-highlight'><ruby>儲<rt>もう</rt></ruby>かった</span>。", "cn": "被人请客，赚到了。" }
+        ]
+    },
+    {
+        "word": "備える",
+        "word_html": "<ruby>備<rt>そな</rt></ruby>える",
+        "tone": "3",
+        "pos": "他一",
+        "mean": "防备、准备；设置、配备；具备、具有",
+        "nuance": "1. 为了预防万一的情况。\n2. 安装必要的设施、装置。\n3. 生来具有或修得的能力。",
+        "examples": [
+            { "jp": "<ruby>地<rt>じ</rt></ruby><ruby>震<rt>しん</rt></ruby>に<span class='ex-highlight'><ruby>備<rt>そな</rt></ruby>えて</span>、<ruby>水<rt>みず</rt></ruby>と<ruby>食<rt>しょく</rt></ruby><ruby>料<rt>りょう</rt></ruby>を<ruby>確<rt>かく</rt></ruby><ruby>保<rt>ほ</rt></ruby>する。", "cn": "为了防备地震，确保水和食物。" },
+            { "jp": "このホテルは<ruby>全<rt>ぜん</rt></ruby><ruby>室<rt>しつ</rt></ruby>にWi-Fiを<span class='ex-highlight'><ruby>備<rt>そな</rt></ruby>えている</span>。", "cn": "这家酒店所有房间都配备了Wi-Fi。" },
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>指<rt>し</rt></ruby><ruby>導<rt>どう</rt></ruby><ruby>者<rt>しゃ</rt></ruby>としての<ruby>資<rt>し</rt></ruby><ruby>質<rt>しつ</rt></ruby>を<ruby>十<rt>じゅう</rt></ruby><ruby>分<rt>ぶん</rt></ruby>に<span class='ex-highlight'><ruby>備<rt>そな</rt></ruby>えている</span>。", "cn": "他充分具备作为领导者的素质。" }
+        ]
+    },
+    {
+        "word": "蓄える",
+        "word_html": "<ruby>蓄<rt>たくわ</rt></ruby>える",
+        "tone": "4",
+        "pos": "他一",
+        "mean": "储备、积蓄；积累、蕴蓄",
+        "nuance": "1. 为了将来积攒金钱、物资。\n2. 充实知识、实力、经验。",
+        "examples": [
+            { "jp": "<ruby>万<rt>まん</rt></ruby><ruby>一<rt>いち</rt></ruby>に<ruby>備<rt>そな</rt></ruby>えて<ruby>食<rt>しょく</rt></ruby><ruby>料<rt>りょう</rt></ruby>を<span class='ex-highlight'><ruby>蓄<rt>たくわ</rt></ruby>える</span>。", "cn": "为了防备万一而储备食物。" },
+            { "jp": "<ruby>本<rt>ほん</rt></ruby>を<ruby>読<rt>よ</rt></ruby>んで<ruby>知<rt>ち</rt></ruby><ruby>識<rt>しき</rt></ruby>を<span class='ex-highlight'><ruby>蓄<rt>たくわ</rt></ruby>える</span>。", "cn": "读书积累知识。" }
+        ]
+    },
+    {
+        "word": "溜まる",
+        "word_html": "<ruby>溜<rt>た</rt></ruby>まる",
+        "tone": "0",
+        "pos": "自五",
+        "mean": "积存、滞留；积攒、堆积",
+        "nuance": "1. 液体、灰尘等停留不动。\n2. 不知不觉中事物聚集增多。",
+        "examples": [
+            { "jp": "<ruby>道<rt>どう</rt></ruby><ruby>路<rt>ろ</rt></ruby>のくぼみに<ruby>雨<rt>あま</rt></ruby><ruby>水<rt>みず</rt></ruby>が<span class='ex-highlight'><ruby>溜<rt>た</rt></ruby>まる</span>。", "cn": "路面的坑洼里积存了雨水。" },
+            { "jp": "<ruby>家<rt>や</rt></ruby><ruby>賃<rt>ちん</rt></ruby>が<span class='ex-highlight'><ruby>溜<rt>た</rt></ruby>まって</span>しまった。", "cn": "拖欠了房租。" }
+        ]
+    },
+            {
+        "word": "凭れる",
+        "word_html": "<ruby>凭<rt>もた</rt></ruby>れる",
+        "tone": "2",
+        "pos": "自一",
+        "mean": "靠、倚靠；(胃)不消化、积食；依赖、仰仗",
+        "nuance": "1. 将身体重量托付给物体。\n2. (胃)不消化、积食。\n3. 依靠他人的力量。",
+        "examples": [
+            { "jp": "<ruby>疲<rt>つか</rt></ruby>れて<span class='ex-highlight'><ruby>壁<rt>かべ</rt></ruby>に<ruby>凭<rt>もた</rt></ruby>れる</span>。", "cn": "累得靠在墙上。" },
+            { "jp": "<ruby>油<rt>あぶら</rt></ruby>っぽい<ruby>料<rt>りょう</rt></ruby><ruby>理<rt>り</rt></ruby>で<span class='ex-highlight'><ruby>胃<rt>い</rt></ruby>が<ruby>凭<rt>もた</rt></ruby>れる</span>。", "cn": "因为油腻的菜，胃不舒服。" },
+            { "jp": "いつまでも<span class='ex-highlight'><ruby>親<rt>おや</rt></ruby>に<ruby>凭<rt>もた</rt></ruby>れて</span>はいけない。", "cn": "不能总是依赖父母。" }
+        ]
+    },
+    {
+        "word": "賄う",
+        "word_html": "<ruby>賄<rt>まかな</rt></ruby>う",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "支付、供给；供饭、提供膳食",
+        "nuance": "1. 提供维持所需的费用、物资。\n2. 准备饭菜。",
+        "examples": [
+            { "jp": "アルバイトで<span class='ex-highlight'><ruby>学<rt>がく</rt></ruby><ruby>費<rt>ひ</rt></ruby>を<ruby>賄<rt>まかな</rt></ruby>う</span>。", "cn": "靠打工支付学费。" },
+            { "jp": "<ruby>寮<rt>りょう</rt></ruby>では<ruby>朝<rt>あさ</rt></ruby><ruby>夕<rt>ゆう</rt></ruby>の<span class='ex-highlight'><ruby>食<rt>しょく</rt></ruby><ruby>事<rt>じ</rt></ruby>を<ruby>賄<rt>まかな</rt></ruby>って</span>くれる。", "cn": "宿舍提供早晚两餐。" }
+        ]
+    },
+    {
+        "word": "商う",
+        "word_html": "<ruby>商<rt>あきな</rt></ruby>う",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "做生意",
+        "nuance": "1. 从事商业活动。",
+        "examples": [
+            { "jp": "<span class='ex-highlight'><ruby>雑<rt>ざっ</rt></ruby><ruby>貨<rt>か</rt></ruby>を<ruby>商<rt>あきな</rt></ruby>って</span><ruby>生<rt>せい</rt></ruby><ruby>計<rt>けい</rt></ruby>を<ruby>立<rt>た</rt></ruby>てる。", "cn": "靠贩卖杂货维持生计。" }
+        ]
+    },
+    {
+        "word": "崩す",
+        "word_html": "<ruby>崩<rt>くず</rt></ruby>す",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "拆毁、弄乱；放松、弄坏；换零钱",
+        "nuance": "1. 破坏堆积物或原有形状。\n2. 使姿势、身体状况、书写格式等变样。\n3. 将大额货币换成小额。",
+        "examples": [
+            { "jp": "<ruby>工<rt>こう</rt></ruby><ruby>事<rt>じ</rt></ruby>のために<span class='ex-highlight'><ruby>山<rt>やま</rt></ruby>を<ruby>崩<rt>くず</rt></ruby>す</span>。", "cn": "为了施工把山铲平。" },
+            { "jp": "<ruby>働<rt>はたら</rt></ruby>きすぎで<span class='ex-highlight'><ruby>体<rt>たい</rt></ruby><ruby>調<rt>ちょう</rt></ruby>を<ruby>崩<rt>くず</rt></ruby>す</span>。", "cn": "因为工作过度搞垮了身体。" },
+            { "jp": "<ruby>一<rt>いち</rt></ruby><ruby>万<rt>まん</rt></ruby><ruby>円<rt>えん</rt></ruby><ruby>札<rt>さつ</rt></ruby>を<span class='ex-highlight'><ruby>千<rt>せん</rt></ruby><ruby>円<rt>えん</rt></ruby><ruby>札<rt>さつ</rt></ruby>に<ruby>崩<rt>くず</rt></ruby>す</span>。", "cn": "把一万日元换成千元钞票。" }
+        ]
+    },
+    {
+        "word": "倒す",
+        "word_html": "<ruby>倒<rt>たお</rt></ruby>す",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "推倒、弄倒；打败、推翻",
+        "nuance": "1. 使竖立的物体侧下。\n2. 战胜对手或推翻政权。",
+        "examples": [
+            { "jp": "<ruby>風<rt>かぜ</rt></ruby>が<ruby>強<rt>つよ</rt></ruby>くて<span class='ex-highlight'><ruby>自<rt>じ</rt></ruby><ruby>転<rt>てん</rt></ruby><ruby>車<rt>しゃ</rt></ruby>を<ruby>倒<rt>たお</rt></ruby>して</span>しまった。", "cn": "风太大，把自行车弄倒了。" },
+            { "jp": "<ruby>決<rt>けっ</rt></ruby><ruby>勝<rt>しょう</rt></ruby><ruby>戦<rt>せん</rt></ruby>で<span class='ex-highlight'>ライバルを<ruby>倒<rt>たお</rt></ruby>す</span>。", "cn": "在决赛中打败竞争对手。" }
+        ]
+    },
+            {
+        "word": "壊す",
+        "word_html": "<ruby>壊<rt>こわ</rt></ruby>す",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "弄坏、破坏；损害身体；破坏(气氛)",
+        "nuance": "1. 使物体破损或建筑物倒塌。\n2. 因某种原因导致健康受损。\n3. 搞砸原本和谐的氛围。",
+        "examples": [
+            { "jp": "<ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>がおもちゃを<span class='ex-highlight'><ruby>壊<rt>こわ</rt></ruby>して</span>しまった。", "cn": "孩子把玩具弄坏了。" },
+            { "jp": "お<ruby>酒<rt>さけ</rt></ruby>の<ruby>飲<rt>の</rt></ruby>み<ruby>過<rt>す</rt></ruby>ぎで<ruby>体<rt>からだ</rt></ruby>を<span class='ex-highlight'><ruby>壊<rt>こわ</rt></ruby>す</span>。", "cn": "因为饮酒过量把身体搞垮了。" },
+            { "jp": "つまらない<ruby>冗<rt>じょう</rt></ruby><ruby>談<rt>だん</rt></ruby>で<ruby>場<rt>ば</rt></ruby>の<ruby>雰<rt>ふん</rt></ruby><ruby>囲<rt>い</rt></ruby><ruby>気<rt>き</rt></ruby>を<span class='ex-highlight'><ruby>壊<rt>こわ</rt></ruby>す</span>。", "cn": "因为无聊的玩笑破坏了现场的气氛。" }
+        ]
+    },
+    {
+        "word": "費やす",
+        "word_html": "<ruby>費<rt>つい</rt></ruby>やす",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "花费、耗费",
+        "nuance": "1. 为了某种目的使用时间、金钱、精力。",
+        "examples": [
+            { "jp": "<ruby>研<rt>けん</rt></ruby><ruby>究<rt>きゅう</rt></ruby>に<ruby>長<rt>なが</rt></ruby>い<ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>を<span class='ex-highlight'><ruby>費<rt>つい</rt></ruby>やす</span>。", "cn": "在研究上花费了很长时间。" }
+        ]
+    },
+    {
+        "word": "潰す",
+        "word_html": "<ruby>潰<rt>つぶ</rt></ruby>す",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "压碎、弄碎；消磨(时间)；使...破产/毁灭",
+        "nuance": "1. 施加压力使形状破坏。\n2. 为了度过空闲时间做某事。\n3. 使组织解散、人才埋没。",
+        "examples": [
+            { "jp": "<ruby>空<rt>あ</rt></ruby>き<ruby>缶<rt>かん</rt></ruby>を<ruby>足<rt>あし</rt></ruby>で<ruby>踏<rt>ふ</rt></ruby>んで<span class='ex-highlight'><ruby>潰<rt>つぶ</rt></ruby>す</span>。", "cn": "用脚把空罐子踩扁。" },
+            { "jp": "カフェで<ruby>暇<rt>ひま</rt></ruby>を<span class='ex-highlight'><ruby>潰<rt>つぶ</rt></ruby>す</span>。", "cn": "因为饮酒过量把身体搞垮了。" },
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>才<rt>さい</rt></ruby><ruby>能<rt>のう</rt></ruby>を<span class='ex-highlight'><ruby>潰<rt>つぶ</rt></ruby>されて</span>しまった。", "cn": "他的才能被埋没了。" }
+        ]
+    },
+    {
+        "word": "携わる",
+        "word_html": "<ruby>携<rt>たずさ</rt></ruby>わる",
+        "tone": "4",
+        "pos": "自五",
+        "mean": "从事、参与",
+        "nuance": "1. 作为职业或工作涉及某事。",
+        "examples": [
+            { "jp": "<ruby>長<rt>なが</rt></ruby><ruby>年<rt>ねん</rt></ruby>、<ruby>教<rt>きょう</rt></ruby><ruby>育<rt>いく</rt></ruby>に<span class='ex-highlight'><ruby>携<rt>たずさ</rt></ruby>わっている</span>。", "cn": "常年从事教育工作。" }
+        ]
+    },
+    {
+        "word": "砕ける",
+        "word_html": "<ruby>砕<rt>くだ</rt></ruby>ける",
+        "tone": "3",
+        "pos": "自一",
+        "mean": "破碎、粉碎；挫败；平易近人、不拘礼节",
+        "nuance": "1. 变成细小的碎片。\n2. 势头、希望被破坏。\n3. 态度或语言非正式、通俗。",
+        "examples": [
+            { "jp": "コップが<ruby>床<rt>ゆか</rt></ruby>に<ruby>落<rt>お</rt></ruby>ちて<span class='ex-highlight'><ruby>砕<rt>くだ</rt></ruby>けた</span>。", "cn": "杯子掉在地上摔碎了。" },
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>の<ruby>夢<rt>ゆめ</rt></ruby>は<ruby>厳<rt>きび</rt></ruby>しい<ruby>現<rt>げん</rt></ruby><ruby>実<rt>じつ</rt></ruby>の<ruby>前<rt>まえ</rt></ruby>に<span class='ex-highlight'><ruby>砕<rt>くだ</rt></ruby>けた</span>。", "cn": "他的梦想在残酷的现实面前破灭了。" },
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>は<span class='ex-highlight'><ruby>砕<rt>くだ</rt></ruby>けた</span><ruby>口<rt>く</rt></ruby><ruby>調<rt>ちょう</rt></ruby>で<ruby>話<rt>はな</rt></ruby>す。", "cn": "他用随和的口吻说话。" }
+        ]
+    },
+            {
+        "word": "拘る",
+        "word_html": "<ruby>拘<rt>こだわ</rt></ruby>る",
+        "tone": "3",
+        "pos": "自五",
+        "mean": "特别讲究、拘泥",
+        "nuance": "1. 在意细节，追求完美或过于执着。",
+        "examples": [
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>食<rt>しょく</rt></ruby><ruby>材<rt>ざい</rt></ruby>に<ruby>徹<rt>てっ</rt></ruby><ruby>底<rt>てい</rt></ruby><ruby>的<rt>てき</rt></ruby>に<span class='ex-highlight'><ruby>拘<rt>こだわ</rt></ruby>って</span><ruby>料<rt>りょう</rt></ruby><ruby>理<rt>り</rt></ruby>を<ruby>作<rt>つく</rt></ruby>る。", "cn": "他做菜非常讲究食材。" }
+        ]
+    },
+    {
+        "word": "背く",
+        "word_html": "<ruby>背<rt>そむ</rt></ruby>く",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "背过脸去；违背、违反；背叛、背离",
+        "nuance": "1. 把脸转过去不看。\n2. 不遵从命令、规则或期待。\n3. 辜负信任，脱离。",
+        "examples": [
+            { "jp": "<ruby>太<rt>たい</rt></ruby><ruby>陽<rt>よう</rt></ruby>に<span class='ex-highlight'><ruby>背<rt>そむ</rt></ruby>いて</span><ruby>立<rt>た</rt></ruby>つ。", "cn": "背对太阳站着。" },
+            { "jp": "<ruby>親<rt>おや</rt></ruby>の<ruby>期<rt>き</rt></ruby><ruby>待<rt>たい</rt></ruby>に<span class='ex-highlight'><ruby>背<rt>そむ</rt></ruby>いて</span><ruby>家<rt>いえ</rt></ruby>を<ruby>出<rt>で</rt></ruby>た。", "cn": "违背父母的期待离家出走了。" },
+            { "jp": "<ruby>上<rt>じょう</rt></ruby><ruby>司<rt>し</rt></ruby>の<ruby>命<rt>めい</rt></ruby><ruby>令<rt>れい</rt></ruby>に<span class='ex-highlight'><ruby>背<rt>そむ</rt></ruby>く</span>。", "cn": "违抗上司的命令。" }
+        ]
+    },
+    {
+        "word": "有り触れる",
+        "word_html": "<ruby>有<rt>あ</rt></ruby>り<ruby>触<rt>ふ</rt></ruby>れる",
+        "tone": "4",
+        "pos": "自一",
+        "mean": "常见的、不稀奇",
+        "nuance": "1. 到处都有，平凡无奇。",
+        "examples": [
+            { "jp": "それは<span class='ex-highlight'>ありふれた</span>ラブストーリーだ。", "cn": "那是老套的爱情故事。" }
+        ]
+    },
+    {
+        "word": "従う",
+        "word_html": "<ruby>従<rt>したが</rt></ruby>う",
+        "tone": "0",
+        "pos": "自五",
+        "mean": "服从、听从；伴随、跟随；跟随",
+        "nuance": "1. 遵守规则、命令或指示。\n2. 跟在后面，或随着某事态发生。\n3. 跟随某人进行行动。",
+        "examples": [
+            { "jp": "<ruby>郷<rt>ごう</rt></ruby>に<ruby>入<rt>い</rt></ruby>っては<ruby>郷<rt>ごう</rt></ruby>に<span class='ex-highlight'><ruby>従<rt>したが</rt></ruby>え</span>。", "cn": "入乡随俗。" },
+            { "jp": "<ruby>年<rt>とし</rt></ruby>をとるに<span class='ex-highlight'><ruby>従<rt>したが</rt></ruby>って</span>、<ruby>体<rt>たい</rt></ruby><ruby>力<rt>りょく</rt></ruby>が<ruby>落<rt>お</rt></ruby>ちる。", "cn": "随着年龄增长，体力下降。" },
+            { "jp": "<ruby>案<rt>あん</rt></ruby><ruby>内<rt>ない</rt></ruby><ruby>人<rt>にん</rt></ruby>に<span class='ex-highlight'><ruby>従<rt>したが</rt></ruby>って</span><ruby>見<rt>けん</rt></ruby><ruby>学<rt>がく</rt></ruby>する。", "cn": "跟随向导参观。" }
+        ]
+    },
+    {
+        "word": "唆る",
+        "word_html": "<ruby>唆<rt>そそ</rt></ruby>る",
+        "tone": "0",
+        "pos": "他五",
+        "mean": "引起、勾起",
+        "nuance": "1. 刺激食欲、兴趣、好奇心等。",
+        "examples": [
+            { "jp": "カレーの<ruby>香<rt>かお</rt></ruby>りが<ruby>食<rt>しょく</rt></ruby><ruby>欲<rt>よく</rt></ruby>を<span class='ex-highlight'><ruby>唆<rt>そそ</rt></ruby>る</span>。", "cn": "咖喱的香气勾起了食欲。" }
+        ]
+    }
+        ];
+
+        // Day 2 Words (Add new words here)
+        const DAY2_WORDS = [
+            // 示例 (Example):
+            /*
+            {
+                "word": "例",
+                "word_html": "<ruby>例<rt>れい</rt></ruby>",
+                "tone": "1",
+                "pos": "名",
+                "mean": "例子",
+                "nuance": "说明...",
+                "examples": []
+            },
+            */
+        ];
+
+        // Combine all words
+        const ALL_DEFINED_WORDS = [...DAY1_WORDS, ...DAY2_WORDS];
+
+        // Generate full list for 15 days * 20 words = 300 words
+        const FULL_WORD_LIST = [];
+        for (let i = 0; i < 300; i++) {
+            // Use ALL_DEFINED_WORDS data
+            if (i < ALL_DEFINED_WORDS.length) {
+                const base = ALL_DEFINED_WORDS[i];
+                FULL_WORD_LIST.push({
+                    ...base,
+                    id: i // unique id
+                });
+            } else {
+                // Placeholder for future days
+                FULL_WORD_LIST.push({
+                    id: i,
+                    word: "（準備中）",
+                    word_html: "<span style='color:#ccc;'>（準備中）</span>",
+                    tone: "",
+                    pos: "",
+                    mean: "データ準備中...",
+                    nuance: "",
+                    examples: []
+                });
+            }
+        }
+
+        const WORDS_PER_DAY = 20;
+        const TOTAL_DAYS = 15;
+
+        // --- State ---
+        let currentView = 'days'; // 'days', 'list', 'detail'
+        let currentDay = 1;
+        let currentDailyWords = [];
+        let currentWordIndex = 0;
+
+        // --- Logic ---
+
+        // 1. Render Days Grid
+        function renderDays() {
+            const container = document.getElementById('days-view');
+            container.innerHTML = '';
+
+            // Get last studied day (Safe access)
+            let lastDay = 0;
+            try {
+                lastDay = parseInt(localStorage.getItem('n1_verbs_last_day')) || 0;
+            } catch (e) {
+                console.warn('LocalStorage access denied', e);
+            }
+
+            // Render active days
+            for (let i = 1; i <= TOTAL_DAYS; i++) {
+                const dayCard = document.createElement('div');
+                dayCard.className = 'day-card';
+                
+                let badgeHtml = '';
+                if (i === lastDay) {
+                    badgeHtml = `<span class="last-studied-badge">前回</span>`;
+                }
+                
+                dayCard.innerHTML = `
+                    <div class="day-info">
+                        <div class="day-icon">📅</div>
+                        <div class="day-text-group">
+                            <div class="day-title-row">
+                                <div class="day-title">${i}日目</div>
+                                ${badgeHtml}
+                            </div>
+                            <div class="day-subtitle">${WORDS_PER_DAY}語 • 収録済み</div>
+                        </div>
+                    </div>
+                    <div class="go-badge">Go</div>
+                `;
+                dayCard.onclick = () => selectDay(i);
+                container.appendChild(dayCard);
+            }
+
+            // Render a "Preparation" card (Figure 2 Style)
+            const prepCard = document.createElement('div');
+            prepCard.className = 'day-card prep';
+            prepCard.innerHTML = `
+                <div class="day-info">
+                    <div class="day-text-group">
+                        <div style="margin-bottom:6px;">
+                            <span style="background:#cfd8dc; color:#fff; font-size:11px; padding:2px 6px; border-radius:4px;">追加予定</span>
+                        </div>
+                        <div class="day-title">16日目以降 (準備中)</div>
+                        <div class="day-subtitle" style="margin-top:4px;">現在、データの作成と確認を行っています。</div>
+                    </div>
+                </div>
+                <div class="construction-icon">🚧</div>
+            `;
+            container.appendChild(prepCard);
+        }
+
+        // 2. Select Day & Render Directory List
+        function selectDay(day) {
+            // Save last studied day (Safe access)
+            try {
+                localStorage.setItem('n1_verbs_last_day', day);
+            } catch (e) {
+                console.warn('LocalStorage access denied', e);
+            }
+
+            currentDay = day;
+            currentView = 'list';
+            
+            // Calculate slice
+            const start = (day - 1) * WORDS_PER_DAY;
+            const end = start + WORDS_PER_DAY;
+            currentDailyWords = FULL_WORD_LIST.slice(start, end);
+
+            renderWordList(currentDailyWords);
+            updateUI();
+        }
+
+        // 3. Render Word List (Directory Style)
+        function renderWordList(words) {
+            const container = document.getElementById('word-list-container');
+            container.innerHTML = '';
+
+            words.forEach((wordData, index) => {
+                const item = document.createElement('div');
+                item.className = 'word-list-item';
+                
+                const wordId = wordData.word;
+                const isStarred = localStorage.getItem(`n1_verbs_star_${wordId}`) === 'true';
+                const activeClass = isStarred ? 'active' : '';
+
+                item.innerHTML = `
+                    <div class="list-word-text">${wordData.word_html || wordData.word}</div>
+                    <div class="list-actions">
+                        <div class="dog-btn ${activeClass}" data-word="${wordId}">🐶</div>
+                        <div class="list-arrow">›</div>
+                    </div>
+                `;
+                
+                item.onclick = (e) => {
+                    const btn = e.target.closest('.dog-btn');
+                    if (btn) {
+                        e.stopPropagation();
+                        toggleDog(btn, wordId);
+                        return;
+                    }
+                    openWordDetail(index);
+                };
+                container.appendChild(item);
+            });
+            
+            window.scrollTo(0, 0);
+        }
+
+        function toggleDog(btn, wordId) {
+            const key = `n1_verbs_star_${wordId}`;
+            const isActive = localStorage.getItem(key) === 'true';
+            
+            if (isActive) {
+                localStorage.removeItem(key);
+                btn.classList.remove('active');
+            } else {
+                localStorage.setItem(key, 'true');
+                btn.classList.add('active');
+            }
+        }
+
+        // 4. Open Word Detail (Flashcard)
+        function openWordDetail(index) {
+            currentWordIndex = index;
+            currentView = 'detail';
+            renderDetailCard();
+            updateUI();
+        }
+
+        // 5. Render Detail Card
+        function renderDetailCard() {
+            const container = document.getElementById('word-detail-view');
+            const wordData = currentDailyWords[currentWordIndex];
+            
+            if (!wordData) return;
+
+            // Tone and POS
+            const toneHtml = wordData.tone ? `<span class="tone-number">${wordData.tone}</span>` : '';
+            const posHtml = wordData.pos ? `<span class="pos-tag">${wordData.pos}</span>` : '';
+
+            // Parse Meanings and Nuances
+            // Split by Chinese/English semicolon or just use the whole string if no separator found
+            let meanings = wordData.mean ? wordData.mean.split(/[；;]/).map(s => s.trim()).filter(s => s) : [];
+            
+            let nuances = [];
+            if (wordData.nuance) {
+                // Remove numbering like "1. ", "2. "
+                nuances = wordData.nuance.split('\n')
+                    .map(line => line.trim().replace(/^\d+\.\s*/, ''))
+                    .filter(line => line !== '');
+            }
+            
+            // Examples
+            let examples = wordData.examples || [];
+
+            // Determine the number of definition blocks
+            // Use the maximum length to ensure we show all available info
+            const count = Math.max(meanings.length, nuances.length, examples.length);
+            
+            const numbers = ['❶', '❷', '❸', '❹', '❺', '❻', '❼', '❽', '❾', '❿'];
+            
+            let definitionsHtml = '';
+            
+            for (let i = 0; i < count; i++) {
+                const num = numbers[i] || (i + 1) + '.';
+                
+                // Logic to handle mismatch in array lengths
+                let meanText = meanings[i] || '';
+                if (meanings.length === 1 && count > 1 && i > 0) {
+                    meanText = ''; // Don't repeat summary if it's the only one
+                }
+                
+                const nuanceText = nuances[i] || '';
+                const ex = examples[i];
+                
+                // Add separator style for all except the last item
+                const isLastItem = i === count - 1;
+                const groupStyle = isLastItem ? 'margin-bottom: 0;' : 'margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed #eee;';
+
+                definitionsHtml += `<div class="def-group" style="${groupStyle}">`;
+                
+                // Header: Number + Meaning + (Nuance)
+                // Only show header if there is meaning or nuance
+                if (meanText || nuanceText) {
+                    definitionsHtml += `<div class="def-header" style="margin-bottom: 8px; line-height: 1.6;">
+                        <span style="color: var(--study-theme); font-weight: bold; font-size: 1.2em; margin-right: 8px;">${num}</span>
+                        ${meanText ? `<span class="hide-target" style="font-weight: bold; color: #333; font-size: 1.1em;">${meanText}</span>` : ''}
+                        ${nuanceText ? `<span class="hide-target" style="color: #666; margin-left: 8px; font-weight: normal;">（${nuanceText}）</span>` : ''}
+                    </div>`;
+                }
+                
+                // Example
+                if (ex) {
+                    definitionsHtml += `<div class="def-ex" style="margin-top: 8px; display: flex; align-items: baseline;">
+                        <span style="color: #888; font-size: 0.9em; margin-right: 8px; user-select: none; flex-shrink: 0;">例句：</span>
+                        <div style="flex: 1;">
+                            <div class="ex-jp" style="font-weight: 500; color: #333; margin-bottom: 4px;">${ex.jp}</div>
+                            <div class="hide-target" style="color: #888; font-size: 0.9em;">（${ex.cn}）</div>
+                        </div>
+                    </div>`;
+                }
+                
+                definitionsHtml += `</div>`;
+            }
+
+            // Navigation State
+            const isFirst = currentWordIndex === 0;
+            const isLast = currentWordIndex === currentDailyWords.length - 1;
+
+            const wordId = wordData.word;
+            const isStarred = localStorage.getItem(`n1_verbs_star_${wordId}`) === 'true';
+            const activeClass = isStarred ? 'active' : '';
+
+            container.innerHTML = `
+                <div class="flashcard-main" style="padding: 20px 20px 40px; gap: 0;">
+                    <div class="fc-header" style="margin-bottom: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div class="fc-word-group" style="display: flex; align-items: baseline; gap: 10px;">
+                            <div class="fc-word" style="font-size: 2.2em; font-weight: bold; color: var(--text-color);">${wordData.word_html || wordData.word}</div>
+                            <div class="fc-meta" style="display: flex; align-items: center;">
+                                ${toneHtml}
+                                ${posHtml}
+                            </div>
+                        </div>
+                        <div class="dog-btn ${activeClass}" onclick="toggleDog(this, '${wordId}')">🐶</div>
+                    </div>
+
+                    <div class="fc-section-title" style="margin-top: 10px; margin-bottom: 5px; text-align: left; width: 100%;">解説・例文</div>
+
+                    <div class="fc-content" style="padding-top: 5px;">
+                        ${definitionsHtml}
+                    </div>
+                </div>
+
+                <div class="nav-controls">
+                    <button class="nav-btn ${isFirst ? 'disabled' : ''}" onclick="navigateWord(-1)">
+                        <span>←</span> 前へ
+                    </button>
+                    <div style="font-size:14px; color:#999;">${currentWordIndex + 1} / ${currentDailyWords.length}</div>
+                    <button class="nav-btn primary ${isLast ? 'disabled' : ''}" onclick="navigateWord(1)">
+                        次へ <span>→</span>
+                    </button>
+                </div>
+            `;
+            
+            window.scrollTo(0, 0);
+        }
+
+        function navigateWord(direction) {
+            const newIndex = currentWordIndex + direction;
+            if (newIndex >= 0 && newIndex < currentDailyWords.length) {
+                currentWordIndex = newIndex;
+                renderDetailCard();
+            }
+        }
+
+        // 6. UI Update (View Switching)
+        function updateUI() {
+            const daysView = document.getElementById('days-view');
+            const wordListView = document.getElementById('word-list-view');
+            const wordDetailView = document.getElementById('word-detail-view');
+            const title = document.getElementById('page-title');
+            const backBtn = document.getElementById('back-btn');
+            const modeSwitch = document.querySelector('.mode-switch');
+
+            // Reset all
+            daysView.classList.add('hidden');
+            wordListView.classList.add('hidden');
+            wordDetailView.classList.add('hidden');
+            
+            // Show mode switch in list and detail views, hide in days view
+            if (modeSwitch) {
+                modeSwitch.style.display = currentView === 'days' ? 'none' : 'flex';
+            }
+
+            if (currentView === 'days') {
+                daysView.classList.remove('hidden');
+                title.textContent = 'N1 動詞 (15日間)';
+                backBtn.onclick = () => window.location.href = '../vocabulary.html?level=N1';
+                backBtn.innerHTML = '← 戻る';
+            } else if (currentView === 'list') {
+                wordListView.classList.remove('hidden');
+                title.textContent = `${currentDay}日目`;
+                // Refresh list to show updated dog status
+                if (currentDailyWords.length > 0) {
+                    renderWordList(currentDailyWords);
+                }
+                
+                backBtn.onclick = () => {
+                    currentView = 'days';
+                    updateUI();
+                };
+                backBtn.innerHTML = '← 日数選択';
+            } else if (currentView === 'detail') {
+                wordDetailView.classList.remove('hidden');
+                title.textContent = '単語詳細';
+                backBtn.onclick = () => {
+                    currentView = 'list';
+                    updateUI();
+                };
+                backBtn.innerHTML = '← リスト';
+            }
+        }
+
+        // Initialize
+        renderDays();
+        updateUI();
+
+        // --- Self-Check Mode Logic ---
+        const toggleSwitch = document.getElementById('testModeToggle');
+        
+        toggleSwitch.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.add('test-mode');
+                // Reset all revealed targets when mode is enabled
+                document.querySelectorAll('.hide-target').forEach(el => el.classList.remove('revealed'));
+            } else {
+                document.body.classList.remove('test-mode');
+            }
+        });
+
+        // Event delegation for dynamically created hide-targets
+        document.addEventListener('click', function(e) {
+            if (document.body.classList.contains('test-mode')) {
+                const target = e.target.closest('.hide-target');
+                if (target) {
+                    target.classList.toggle('revealed');
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
