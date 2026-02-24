@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日运势抽奖</title>
+    <style>
+        :root {
+            --bg-color: #fdfaf5;
+            --text-color: #2c2c2c;
+            --accent-color: #b33e3e;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        body {
+            font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Meiryo", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header (Same style as listen_index.html) */
+        header {
+            width: 100%;
+            padding: 15px 20px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Centered title */
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: bold;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+        .back-btn:hover { opacity: 1; }
+
+        h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+        }
+
+        .omikuji-box {
+            width: 200px;
+            height: 300px;
+            background-color: #d32f2f; /* Red container */
+            border-radius: 10px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(211, 47, 47, 0.3);
+            transition: transform 0.2s;
+            margin-bottom: 30px;
+        }
+
+        .omikuji-box:active {
+            transform: scale(0.98);
+        }
+
+        .omikuji-box::before {
+            content: "おみくじ";
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: 10px;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 20px 10px;
+        }
+
+        .omikuji-box.shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        .result-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            max-width: 300px;
+            width: 100%;
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-title {
+            font-size: 36px;
+            color: var(--accent-color);
+            margin: 0 0 10px 0;
+            font-weight: bold;
+        }
+
+        .result-desc {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .count-info {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #888;
+            background: rgba(0,0,0,0.03);
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        button.action-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(179, 62, 62, 0.3);
+        }
+
+        button.action-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="back-btn">← Home</a>
+        <h1>每日运势 (おみくじ)</h1>
+    </header>
+
+    <div class="container">
+        <div class="omikuji-box" id="omikujiBox"></div>
+
+        <div class="result-card" id="resultCard">
+            <div class="result-title" id="resultTitle">大吉</div>
+            <div class="result-desc" id="resultDesc">今天的学习效率会非常高！适合攻克难点语法。</div>
+        </div>
+
+        <div class="count-info">
+            今日剩余次数：<span id="remainCount">3</span> / 3
+        </div>
+        
+        <button class="action-btn" id="drawBtn">抽签 (Start)</button>
+    </div>
+
+    <script>
+        const MAX_DAILY_COUNT = 3;
+        const omikujiBox = document.getElementById('omikujiBox');
+        const resultCard = document.getElementById('resultCard');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultDesc = document.getElementById('resultDesc');
+        const drawBtn = document.getElementById('drawBtn');
+        const remainCountSpan = document.getElementById('remainCount');
+
+        // Results data with weights (Total: 100)
+        const fortunes = [
+            { title: "大吉", desc: "运气爆棚！今天的记忆力提升200%，快去背单词吧！", weight: 4 },
+            { title: "中吉", desc: "状态不错哦。适合做听力练习，会有意外的收获。", weight: 12 },
+            { title: "小吉", desc: "平稳的一天。积少成多，每天进步一点点。", weight: 22 },
+            { title: "吉", desc: "适合复习旧知识。温故而知新。", weight: 33 },
+            { title: "末吉", desc: "稍微有点懈怠？喝杯咖啡提提神，继续加油！", weight: 25 },
+            { title: "凶", desc: "虽然有点不顺，但只要坚持学习，就能转运哦！", weight: 4 }
+        ];
+
+        // Weighted random selection
+        function drawFortune() {
+            const totalWeight = fortunes.reduce((sum, item) => sum + item.weight, 0);
+            let random = Math.random() * totalWeight;
+            
+            for (const fortune of fortunes) {
+                if (random < fortune.weight) {
+                    return fortune;
+                }
+                random -= fortune.weight;
+            }
+            return fortunes[0]; // Fallback
+        }
+
+        // Check and update storage
+        function getDailyState() {
+            const today = new Date().toLocaleDateString();
+            const stored = localStorage.getItem('lotteryState');
+            
+            if (stored) {
+                const state = JSON.parse(stored);
+                if (state.date === today) {
+                    return state;
+                }
+            }
+            // Reset for new day
+            return { date: today, count: 0 };
+        }
+
+        function saveDailyState(count) {
+            const today = new Date().toLocaleDateString();
+            localStorage.setItem('lotteryState', JSON.stringify({ date: today, count: count }));
+        }
+
+        // Init UI
+        let currentState = getDailyState();
+        let remain = MAX_DAILY_COUNT - currentState.count;
+        remainCountSpan.textContent = remain;
+        if (remain <= 0) {
+            drawBtn.disabled = true;
+            drawBtn.textContent = "明日再来";
+            drawBtn.style.backgroundColor = "#ccc";
+        }
+
+        drawBtn.addEventListener('click', () => {
+            if (remain <= 0) return;
+
+            // Animation
+            omikujiBox.classList.add('shake');
+            drawBtn.disabled = true;
+            resultCard.style.display = 'none';
+
+            setTimeout(() => {
+                omikujiBox.classList.remove('shake');
+                
+                // Logic
+                const randomFortune = drawFortune();
+                resultTitle.textContent = randomFortune.title;
+                resultDesc.textContent = randomFortune.desc;
+                
+                // Update State
+                currentState.count++;
+                saveDailyState(currentState.count);
+                remain = MAX_DAILY_COUNT - currentState.count;
+                remainCountSpan.textContent = remain;
+
+                // Show Result
+                resultCard.style.display = 'block';
+
+                if (remain > 0) {
+                    drawBtn.disabled = false;
+                } else {
+                    drawBtn.textContent = "明日再来";
+                    drawBtn.style.backgroundColor = "#ccc";
+                }
+
+            }, 1000); // 1s delay for shake animation
+        });
+
+        // Click box to trigger button (if enabled)
+        omikujiBox.addEventListener('click', () => {
+            if (!drawBtn.disabled) {
+                drawBtn.click();
+            }
+        });
+
+    </script>
+</body>
+</html>
