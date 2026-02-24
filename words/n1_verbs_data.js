@@ -358,6 +358,342 @@ const DAY2_WORDS = [
         "examples": []
     },
     */
+   {
+        "word": "馴染む",
+        "word_html": "<ruby>馴<rt>な</rt></ruby><ruby>染<rt>じ</rt></ruby>む",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "适应、习惯；融合、协调",
+        "nuance": "1. 变得与其融洽，不再生疏。\n2. 颜色、氛围、穿搭等配合得当。",
+        "examples": [
+            { "jp": "新しい<ruby>職場<rt>しょくば</rt></ruby>にすっかり<span class='ex-highlight'><ruby>馴染<rt>なじ</rt></ruby>んだ</span>。", "cn": "完全适应了新职场。" },
+            { "jp": "<ruby>履<rt>は</rt></ruby>き<ruby>慣<rt>な</rt></ruby>れて<ruby>靴<rt>くつ</rt></ruby>が<ruby>足<rt>あし</rt></ruby>に<span class='ex-highlight'><ruby>馴染<rt>なじ</rt></ruby>む</span>。", "cn": "穿惯了，鞋子变得合脚了。" }
+        ],
+        "practice": {
+            "sentence": "転校して一ヶ月が経ち、ようやくクラスの雰囲気に<span class='blank-space'></span>きた。",
+            "answer": "馴染んで",
+            "options": ["馴染んで", "絡んで", "歪んで", "緩んで"]
+        }
+    },
+    {
+        "word": "甘える",
+        "word_html": "<ruby>甘<rt>あま</rt></ruby>える",
+        "tone": "0",
+        "pos": "自一",
+        "mean": "撒娇；利用、承蒙",
+        "nuance": "1. 像孩子一样依赖对方。\n2. 顺从对方的好意。",
+        "examples": [
+            { "jp": "<ruby>子供<rt>こども</rt></ruby>が<ruby>母親<rt>ははおや</rt></ruby>に<span class='ex-highlight'><ruby>甘<rt>あま</rt></ruby>える</span>。", "cn": "孩子向母亲撒娇。" },
+            { "jp": "お<ruby>言葉<rt>ことば</rt></ruby>に<span class='ex-highlight'><ruby>甘<rt>あま</rt></ruby>えて</span>、いただきます。", "cn": "那我就承蒙您的好意，不客气地收下了。" }
+        ],
+        "practice": {
+            "sentence": "彼女は末っ子で、いつも親に<span class='blank-space'></span>いる。",
+            "answer": "甘えて",
+            "options": ["甘えて", "構えて", "鍛えて", "控えて"]
+        }
+    },
+    {
+        "word": "懐く",
+        "word_html": "<ruby>懐<rt>なつ</rt></ruby>く",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "亲近、依恋",
+        "nuance": "1. 通常指动物或小孩对人产生好感并跟随。",
+        "examples": [
+            { "jp": "<ruby>野良犬<rt>のらいぬ</rt></ruby>が<ruby>私<rt>わたし</rt></ruby>に<span class='ex-highlight'><ruby>懐<rt>なつ</rt></ruby>いた</span>。", "cn": "流浪狗跟我亲近起来了。" }
+        ],
+        "practice": {
+            "sentence": "この猫は人見知りが激しいが、私にはすぐに<span class='blank-space'></span>。",
+            "answer": "懐いた",
+            "options": ["懐いた", "頷いた", "囁いた", "嘆いた"]
+        }
+    },
+    {
+        "word": "可愛がる",
+        "word_html": "<ruby>可<rt>か</rt></ruby><ruby>愛<rt>わい</rt></ruby>がる",
+        "tone": "4",
+        "pos": "他五",
+        "mean": "疼爱、宠爱；偏爱、提拔",
+        "nuance": "1. 对晚辈、弱小者给予怜爱。\n2. 上司对下属的特别关照。",
+        "examples": [
+            { "jp": "<ruby>祖父母<rt>そふぼ</rt></ruby>は<ruby>孫<rt>まご</rt></ruby>をとても<span class='ex-highlight'><ruby>可愛<rt>かわい</rt></ruby>がる</span>。", "cn": "祖父母非常疼爱孙子。" },
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>部長<rt>ぶちょう</rt></ruby>に<span class='ex-highlight'><ruby>可愛<rt>かわい</rt></ruby>がられている</span>。", "cn": "他很受部长赏识。" }
+        ],
+        "practice": {
+            "sentence": "彼は新人時代から部長に<span class='blank-space'></span>いた。",
+            "answer": "可愛がられて",
+            "options": ["可愛がられて", "重宝がられて", "面白がられて", "嫌がられて"]
+        }
+    },
+    {
+        "word": "賑わう",
+        "word_html": "<ruby>賑<rt>にぎ</rt></ruby>わう",
+        "tone": "3",
+        "pos": "自五",
+        "mean": "热闹、繁华；兴旺",
+        "nuance": "1. 人多拥挤，气氛热烈。\n2. 生意好，繁盛。",
+        "examples": [
+            { "jp": "<ruby>祭<rt>まつ</rt></ruby>りで<ruby>町<rt>まち</rt></ruby>が<span class='ex-highlight'><ruby>賑<rt>にぎ</rt></ruby>わっている</span>。", "cn": "因为庆典，街道很热闹。" },
+            { "jp": "<ruby>商店街<rt>しょうてんがい</rt></ruby>は<ruby>買<rt>か</rt></ruby>い<ruby>物客<rt>ものきゃく</rt></ruby>で<span class='ex-highlight'><ruby>賑<rt>にぎ</rt></ruby>わう</span>。", "cn": "商店街因为购物的客人而显得繁华。" }
+        ],
+        "practice": {
+            "sentence": "休日になると、この公園は家族連れで<span class='blank-space'></span>。",
+            "answer": "賑わう",
+            "options": ["賑わう", "味わう", "構う", "養う"]
+        }
+    },
+    {
+        "word": "栄える",
+        "word_html": "<ruby>栄<rt>さか</rt></ruby>える",
+        "tone": "3",
+        "pos": "自一",
+        "mean": "繁荣、兴盛",
+        "nuance": "1. 国家、文化、家族等处于鼎盛状态。",
+        "examples": [
+            { "jp": "この<ruby>港<rt>みなと</rt></ruby><ruby>町<rt>まち</rt></ruby>は<span class='ex-highlight'><ruby>貿<rt>ぼう</rt></ruby><ruby>易<rt>えき</rt></ruby>で<ruby>栄<rt>さか</rt></ruby>えて</span>いる。", "cn": "这个港口城市因贸易而繁荣。" }
+        ],
+        "practice": {
+            "sentence": "かつてこの国は貿易によって<span class='blank-space'></span>いた。",
+            "answer": "栄えて",
+            "options": ["栄えて", "冴えて", "映えて", "称えて"]
+        }
+    },
+    {
+        "word": "興る",
+        "word_html": "<ruby>興<rt>おこ</rt></ruby>る",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "兴起、兴盛；发生、创立",
+        "nuance": "1. 国家、产业等繁荣昌盛。\n2. 新事物开始出现。",
+        "examples": [
+            { "jp": "<ruby>独<rt>どく</rt></ruby><ruby>裁<rt>さい</rt></ruby><ruby>政<rt>せい</rt></ruby><ruby>権<rt>けん</rt></ruby>が<ruby>倒<rt>たお</rt></ruby>れ、<ruby>新<rt>あたら</rt></ruby>しい<ruby>国<rt>くに</rt></ruby>が<span class='ex-highlight'><ruby>興<rt>おこ</rt></ruby>った</span>。", "cn": "独裁政权倒台，新的国家兴起了。" },
+            { "jp": "この<ruby>地<rt>ち</rt></ruby>で<ruby>新<rt>あたら</rt></ruby>しい<ruby>文<rt>ぶん</rt></ruby><ruby>化<rt>か</rt></ruby>が<span class='ex-highlight'><ruby>興<rt>おこ</rt></ruby>る</span>。", "cn": "新的文化将在这片土地上兴起。" }
+        ],
+        "practice": {
+            "sentence": "明治時代になって、新しい産業が次々と<span class='blank-space'></span>。",
+            "answer": "興った",
+            "options": ["興った", "募った", "浸った", "凝った"]
+        }
+    },
+    {
+        "word": "寂れる",
+        "word_html": "<ruby>寂<rt>さび</rt></ruby>れる",
+        "tone": "3",
+        "pos": "自一",
+        "mean": "荒凉、衰败；衰落、萧条",
+        "nuance": "1. 人气减少而变得冷清、荒凉。\n2. 传统、习俗等逐渐消失。",
+        "examples": [
+            { "jp": "<ruby>人<rt>ひと</rt></ruby><ruby>通<rt>どお</rt></ruby>りのない<span class='ex-highlight'><ruby>寂<rt>さび</rt></ruby>れた</span><ruby>商<rt>しょう</rt></ruby><ruby>店<rt>てん</rt></ruby><ruby>街<rt>がい</rt></ruby>。", "cn": "没有人来往的冷清的商业街。" },
+            { "jp": "<ruby>昔<rt>むかし</rt></ruby>の<ruby>祭<rt>まつ</rt></ruby>りも<ruby>参<rt>さん</rt></ruby><ruby>加<rt>か</rt></ruby><ruby>者<rt>しゃ</rt></ruby>が<ruby>減<rt>へ</rt></ruby>って<span class='ex-highlight'><ruby>寂<rt>さび</rt></ruby>れて</span>しまった。", "cn": "过去的祭典也由于参与者的减少而衰落了。" }
+        ],
+        "practice": {
+            "sentence": "若者が都市へ流出し、この村はすっかり<span class='blank-space'></span>しまった。",
+            "answer": "寂れて",
+            "options": ["寂れて", "廃れて", "呆れて", "戯れて"]
+        }
+    },
+    {
+        "word": "練る",
+        "word_html": "<ruby>練<rt>ね</rt></ruby>る",
+        "tone": "1",
+        "pos": "他五",
+        "mean": "推敲、以此充实；揉、捏、以此锻炼",
+        "nuance": "1. 精心策划、完善想法或计策。\n2. 揉面团，或引申为锻炼身心。",
+        "examples": [
+            { "jp": "<ruby>作<rt>さく</rt></ruby><ruby>戦<rt>せん</rt></ruby>をじっくり<span class='ex-highlight'><ruby>練<rt>ね</rt></ruby>る</span>。", "cn": "仔细推敲作战计划。" },
+            { "jp": "<ruby>筋<rt>きん</rt></ruby><ruby>肉<rt>にく</rt></ruby>を<span class='ex-highlight'><ruby>練<rt>ね</rt></ruby>る</span>ために<ruby>毎<rt>まい</rt></ruby><ruby>日<rt>にち</rt></ruby><ruby>運<rt>うん</rt></ruby><ruby>動<rt>どう</rt></ruby>している。", "cn": "为了锻炼肌肉每天都运动。" }
+        ],
+        "practice": {
+            "sentence": "彼は失敗しないように、綿密に計画を<span class='blank-space'></span>。",
+            "answer": "練った",
+            "options": ["練った", "掘った", "盛った", "釣った"]
+        }
+    },
+    {
+        "word": "培う",
+        "word_html": "<ruby>培<rt>つちか</rt></ruby>う",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "培育；培养、以此充实",
+        "nuance": "1. 本义指培育植物，现多用于抽象意义。\n2. 常指抽象的能力、性质、力量。",
+        "examples": [
+            { "jp": "<ruby>長<rt>なが</rt></ruby>い<ruby>年<rt>ねん</rt></ruby><ruby>月<rt>げつ</rt></ruby>をかけて<ruby>友<rt>ゆう</rt></ruby><ruby>情<rt>じょう</rt></ruby>を<span class='ex-highlight'><ruby>培<rt>つちか</rt></ruby>う</span>。", "cn": "花费漫长的岁月培养友情。" },
+            { "jp": "<ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>たちのコミュニケーション<ruby>能<rt>のう</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<span class='ex-highlight'><ruby>培<rt>つちか</rt></ruby>う</span>。", "cn": "培养孩子们的沟通能力。" }
+        ],
+        "practice": {
+            "sentence": "留学経験を通して、国際的な視野を<span class='blank-space'></span>。",
+            "answer": "培った",
+            "options": ["培った", "賄った", "繕った", "葬った"]
+        }
+    },
+    {
+        "word": "築く",
+        "word_html": "<ruby>築<rt>きず</rt></ruby>く",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "修筑、建造；建立、构筑",
+        "nuance": "1. 修建城堡、堤坝等大型建筑物。\n2. 确立地位、关系、财富等抽象基础。",
+        "examples": [
+            { "jp": "<ruby>祖<rt>そ</rt></ruby><ruby>父<rt>ふ</rt></ruby>は<ruby>若<rt>わか</rt></ruby>い<ruby>頃<rt>ころ</rt></ruby>、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>手<rt>て</rt></ruby>で<ruby>家<rt>いえ</rt></ruby>を<span class='ex-highlight'><ruby>築<rt>きず</rt></ruby>いた</span>。", "cn": "祖父年轻时亲手建造了自己的房子。" },
+            { "jp": "<ruby>二<rt>ふた</rt></ruby><ruby>人<rt>り</rt></ruby>の<ruby>間<rt>あいだ</rt></ruby>に<ruby>信<rt>しん</rt></ruby><ruby>頼<rt>らい</rt></ruby><ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby>を<span class='ex-highlight'><ruby>築<rt>きず</rt></ruby>く</span>。", "cn": "在两人之间建立信赖关系。" }
+        ],
+        "practice": {
+            "sentence": "彼は一代で巨万の富を<span class='blank-space'></span>。",
+            "answer": "築いた",
+            "options": ["築いた", "拓いた", "弾いた", "描いた"]
+        }
+    },
+    {
+        "word": "磨く",
+        "word_html": "<ruby>磨<rt>みが</rt></ruby>く",
+        "tone": "0",
+        "pos": "他五",
+        "mean": "擦、刷；磨练、钻研",
+        "nuance": "1. 弄干净、擦亮。\n2. 努力提高学问、技艺、修养。",
+        "examples": [
+            { "jp": "<ruby>食<rt>しょく</rt></ruby><ruby>後<rt>ご</rt></ruby>に<ruby>歯<rt>は</rt></ruby>を<span class='ex-highlight'><ruby>磨<rt>みが</rt></ruby>く</span>。", "cn": "饭后刷牙。" },
+            { "jp": "<ruby>海<rt>かい</rt></ruby><ruby>外<rt>がい</rt></ruby>で<ruby>料<rt>りょう</rt></ruby><ruby>理<rt>り</rt></ruby>の<ruby>腕<rt>うで</rt></ruby>を<span class='ex-highlight'><ruby>磨<rt>みが</rt></ruby>く</span>。", "cn": "在海外磨练烹饪手艺。" }
+        ],
+        "practice": {
+            "sentence": "プロとして通用するように、さらに技術を<span class='blank-space'></span>必要がある。",
+            "answer": "磨く",
+            "options": ["磨く", "砕く", "裁く", "嘆く"]
+        }
+    },
+    {
+        "word": "養う",
+        "word_html": "<ruby>養<rt>やしな</rt></ruby>う",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "扶养、供养；培养、养成",
+        "nuance": "1. 提供衣食住等生活物资。\n2. 积蓄力量、能力、习惯。",
+        "examples": [
+            { "jp": "<ruby>働<rt>はたら</rt></ruby>き<ruby>盛<rt>ざか</rt></ruby>りの<ruby>父<rt>ちち</rt></ruby>が<ruby>家<rt>か</rt></ruby><ruby>族<rt>ぞく</rt></ruby>を<span class='ex-highlight'><ruby>養<rt>やしな</rt></ruby>う</span>。", "cn": "正值壮年的父亲供养家人。" },
+            { "jp": "<ruby>読<rt>どく</rt></ruby><ruby>書<rt>しょ</rt></ruby>で<ruby>知<rt>ち</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<span class='ex-highlight'><ruby>養<rt>やしな</rt></ruby>う</span>。", "cn": "通过读书培养智力。" }
+        ],
+        "practice": {
+            "sentence": "彼は病気療養中で、田舎で英気を<span class='blank-space'></span>いる。",
+            "answer": "養って",
+            "options": ["養って", "伴って", "繕って", "慕って"]
+        }
+    },
+    {
+        "word": "育む",
+        "word_html": "<ruby>育<rt>はぐく</rt></ruby>む",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "抚育、养育；培育、孕育",
+        "nuance": "1. 精心保护并养大孩子或动物。\n2. 培养抽象的事物，如爱、文化、梦想。",
+        "examples": [
+            { "jp": "<ruby>親<rt>おや</rt></ruby><ruby>鳥<rt>どり</rt></ruby>が<ruby>雛<rt>ひな</rt></ruby>を<span class='ex-highlight'><ruby>育<rt>はぐく</rt></ruby>む</span>。", "cn": "母鸟哺育着小鸟。" },
+            { "jp": "<ruby>二<rt>ふた</rt></ruby><ruby>人<rt>り</rt></ruby>は<ruby>静<rt>しず</rt></ruby>かに<ruby>愛<rt>あい</rt></ruby>を<span class='ex-highlight'><ruby>育<rt>はぐく</rt></ruby>んできた</span>。", "cn": "两人静静地培育了爱情。" }
+        ],
+        "practice": {
+            "sentence": "豊かな自然が、彼らの感性を<span class='blank-space'></span>。",
+            "answer": "育んだ",
+            "options": ["育んだ", "絡んだ", "歪んだ", "励んだ"]
+        }
+    },
+    {
+        "word": "削る",
+        "word_html": "<ruby>削<rt>けず</rt></ruby>る",
+        "tone": "0",
+        "pos": "他五",
+        "mean": "削、刮；削减",
+        "nuance": "1. 用刀具切削物体表面。\n2. 减少数量、时间、预算。",
+        "examples": [
+            { "jp": "ナイフで<ruby>鉛<rt>えん</rt></ruby><ruby>筆<rt>ぴつ</rt></ruby>を<span class='ex-highlight'><ruby>削<rt>けず</rt></ruby>る</span>。", "cn": "用小刀削铅笔。" },
+            { "jp": "<ruby>睡<rt>すい</rt></ruby><ruby>眠<rt>みん</rt></ruby><ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>を<span class='ex-highlight'><ruby>削<rt>けず</rt></ruby>って</span><ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>する。", "cn": "削减睡眠时间来学习。" }
+        ],
+        "practice": {
+            "sentence": "予算を<span class='blank-space'></span>ために、無駄な経費を見直した。",
+            "answer": "削る",
+            "options": ["削る", "探る", "粘る", "潜る"]
+        }
+    },
+    {
+        "word": "狭める",
+        "word_html": "<ruby>狭<rt>せば</rt></ruby>める",
+        "tone": "3",
+        "pos": "他一",
+        "mean": "弄窄、缩小；缩小",
+        "nuance": "1. 使物理空间变窄。\n2. 限定范围。",
+        "examples": [
+            { "jp": "<ruby>工<rt>こう</rt></ruby><ruby>事<rt>じ</rt></ruby>のため<ruby>道<rt>みち</rt></ruby><ruby>幅<rt>はば</rt></ruby>を<span class='ex-highlight'><ruby>狭<rt>せば</rt></ruby>める</span>。", "cn": "因为施工缩小了路宽。" },
+            { "jp": "<ruby>睡<rt>すい</rt></ruby><ruby>眠<rt>みん</rt></ruby><ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>を<ruby>削<rt>けず</rt></ruby>って<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>する。", "cn": "削减睡眠时间来学习。" }
+        ],
+        "practice": {
+            "sentence": "捜査の範囲を<span class='blank-space'></span>、犯人を特定した。",
+            "answer": "狭めて",
+            "options": ["狭めて", "歪めて", "緩めて", "痛めて"]
+        }
+    },
+    {
+        "word": "集る",
+        "word_html": "<ruby>集<rt>たか</rt></ruby>る",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "聚集、群集；敲诈、勒索",
+        "nuance": "1. 虫子等在食物或脏东西上聚集。\n2. 威胁人给钱，或厚着脸皮让人请客。",
+        "examples": [
+            { "jp": "<ruby>砂<rt>さ</rt></ruby><ruby>糖<rt>とう</rt></ruby>にアリが<span class='ex-highlight'>たかる</span>。", "cn": "蚂蚁聚集在糖上。" },
+            { "jp": "<ruby>不<rt>ふ</rt></ruby><ruby>良<rt>りょう</rt></ruby>グループに<span class='ex-highlight'>たかられる</span>。", "cn": "被不良团伙敲诈勒索。" }
+        ],
+        "practice": {
+            "sentence": "落ちていた飴に、すぐに蟻が<span class='blank-space'></span>きた。",
+            "answer": "集って",
+            "options": ["集って", "潜って", "焦って", "巡って"]
+        }
+    },
+    {
+        "word": "集う",
+        "word_html": "<ruby>集<rt>つど</rt></ruby>う",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "聚会、聚集",
+        "nuance": "1. 人们为了特定目的聚集在一起。",
+        "examples": [
+            { "jp": "<ruby>記<rt>き</rt></ruby><ruby>念<rt>ねん</rt></ruby><ruby>式<rt>しき</rt></ruby><ruby>典<rt>てん</rt></ruby>に<ruby>多<rt>おお</rt></ruby>くの<ruby>人<rt>ひと</rt></ruby><ruby>々<rt>びと</rt></ruby>が<span class='ex-highlight'><ruby>集<rt>つど</rt></ruby>う</span>。", "cn": "许多人聚集在纪念典礼上。" }
+        ],
+        "practice": {
+            "sentence": "そのイベントには、全国から愛好家が<span class='blank-space'></span>。",
+            "answer": "集った",
+            "options": ["集った", "祝った", "補った", "慕った"]
+        }
+    },
+    {
+        "word": "募る",
+        "word_html": "<ruby>募<rt>つの</rt></ruby>る",
+        "tone": "2",
+        "pos": "自五/他五",
+        "mean": "招募、募集；越来越厉害、激化",
+        "nuance": "1. 广泛征求人员、资金等。\n2. 感情、寒冷等程度加剧。",
+        "examples": [
+            { "jp": "<ruby>参<rt>さん</rt></ruby><ruby>加<rt>か</rt></ruby><ruby>者<rt>しゃ</rt></ruby>を<span class='ex-highlight'><ruby>募<rt>つの</rt></ruby>る</span>。", "cn": "招募参加者。" },
+            { "jp": "<ruby>故<rt>こ</rt></ruby><ruby>郷<rt>きょう</rt></ruby>への<ruby>思<rt>おも</rt></ruby>いが<span class='ex-highlight'><ruby>募<rt>つの</rt></ruby>る</span>。", "cn": "对故乡的思念越来越强烈。" }
+        ],
+        "practice": {
+            "sentence": "留学したいという思いは、日増しに<span class='blank-space'></span>ばかりだ。",
+            "answer": "募る",
+            "options": ["募る", "茂る", "悟る", "粘る"]
+        }
+    },
+    {
+        "word": "群がる",
+        "word_html": "<ruby>群<rt>むら</rt></ruby>がる",
+        "tone": "3",
+        "pos": "自五",
+        "mean": "聚集、群集",
+        "nuance": "1. 许多昆虫、动物或人聚集在一起（常指乱哄哄地挤在一起）。",
+        "examples": [
+            { "jp": "<ruby>駅<rt>えき</rt></ruby><ruby>前<rt>まえ</rt></ruby>に<ruby>人<rt>ひと</rt></ruby>が<span class='ex-highlight'><ruby>群<rt>むら</rt></ruby>がって</span>いた。", "cn": "车站前聚满了人。" }
+        ],
+        "practice": {
+            "sentence": "アイドルが登場すると、ファンが一斉に<span class='blank-space'></span>。",
+            "answer": "群がった",
+            "options": ["群がった", "転がった", "繋がった", "広がった"]
+        }
+    },
 ];
 
 // Combine all words
