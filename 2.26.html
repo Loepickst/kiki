@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #b33e3e; 
+            --sub-color: #787878;
+            --popup-bg: #333333;
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 100px 15px 120px; /* Increased bottom padding for audio player */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 顶部控制栏 */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; border-bottom: 1px solid; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        .toggle-btn:hover { background: var(--accent-color); color: white; }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        /* 主容器 */
+        .container {
+            max-width: 720px; width: 100%;
+            background: var(--paper-color); padding: 50px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .header-title { text-align: center; margin-bottom: 50px; }
+
+        /* Audio Player - Fixed Bottom */
+        .audio-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px 25px 20px; /* Extra bottom padding for iPhone Home bar */
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+
+        .audio-player {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 600px; /* Wider on desktop */
+        }
+
+        .play-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-right: 12px;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+            padding: 0;
+        }
+
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+
+        .progress-container {
+            flex-grow: 1;
+            height: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
+            margin-right: 12px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #d1d1d1;
+            width: 0%;
+            border-radius: 2px;
+        }
+
+        .time-display {
+            font-size: 0.7rem;
+            color: #999;
+            font-family: var(--chinese-font);
+            min-width: 70px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.8; 
+            text-align: justify; margin: 0;
+        }
+
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        /* 译文（黑体中文） */
+        .translation {
+            display: none; margin-top: 20px; font-size: 0.95rem;
+            color: #5a626b; line-height: 1.8; padding: 18px 20px;
+            background-color: #f7f8f9; font-family: var(--chinese-font);
+            border-left: 3px solid #eee; text-align: justify;
+        }
+        .translation::before { content: "訳"; display: block; font-size: 0.7rem; color: #ccc; margin-bottom: 5px; font-weight: bold; }
+
+        /* 重点词汇样式 */
+        .vocab-word {
+            color: var(--accent-color);
+            border-bottom: 2px solid #f2d0d0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* 动态气泡容器 */
+        #smart-tooltip {
+            position: absolute; z-index: 2000;
+            background: var(--popup-bg); color: white;
+            padding: 12px 16px; border-radius: 8px;
+            font-size: 0.85rem; font-family: var(--chinese-font);
+            line-height: 1.6; max-width: 280px; min-width: 140px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none; opacity: 0; pointer-events: none;
+        }
+        #smart-tooltip::after {
+            content: ""; position: absolute; top: 100%;
+            border: 8px solid transparent; border-top-color: var(--popup-bg);
+        }
+
+        .footer { margin-top: 50px; color: #ccc; font-size: 0.8rem; letter-spacing: 3px; }
+
+
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <!-- 左侧返回按钮 -->
+    <a href="read.html" class="toggle-btn" style="text-decoration: none; margin-right: 15px;">← 戻る</a>
+    
+    <!-- 日期显示（可加 flex-grow 让它占据中间位置，或者保持原样） -->
+    <div id="today-date" style="flex-grow: 1; text-align: center; border-bottom: none;">2月26日 木曜日</div>
+    
+    <button id="trans-btn" class="toggle-btn" onclick="toggleTranslation()">译文</button>
+</div>
+
+<div class="container">
+    <div class="header-title">
+    <h2 style="font-weight: 500; letter-spacing: 0.1em; margin-bottom: 5px;">花見と普通</h2>
+    <span style="color: #bbb; font-size: 0.8rem;">赏樱与普通</span>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>今<rt>こ</rt></ruby><ruby>年<rt>とし</rt></ruby>も<ruby>花<rt>はな</rt></ruby><ruby>見<rt>み</rt></ruby>に<ruby>行<rt>い</rt></ruby>った。<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>の<span class="vocab-word" data-info="合間（あいま）：空闲时间，间歇。"><ruby>合<rt>あい</rt></ruby><ruby>間<rt>ま</rt></ruby></span>に<ruby>近<rt>きん</rt></ruby><ruby>所<rt>じょ</rt></ruby>が<ruby>三<rt>さん</rt></ruby><span class="vocab-word" data-info="箇所（かしょ）：处，地方（量词）。"><ruby>箇<rt>か</rt></ruby><ruby>所<rt>しょ</rt></ruby></span>と、<ruby>休<rt>やす</rt></ruby>みの<ruby>日<rt>ひ</rt></ruby>に<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>の<ruby>地<rt>じ</rt></ruby><ruby>元<rt>もと</rt></ruby>が<ruby>一<rt>いっ</rt></ruby><span class="vocab-word" data-info="箇所（かしょ）：处，地方（量词）。"><ruby>箇<rt>か</rt></ruby><ruby>所<rt>しょ</rt></ruby></span>で、どこも<ruby>地<rt>じ</rt></ruby><ruby>元<rt>もと</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>が<ruby>来<rt>く</rt></ruby>るような<ruby>所<rt>ところ</rt></ruby>だ。<ruby>毎<rt>まい</rt></ruby><ruby>年<rt>とし</rt></ruby><ruby>行<rt>い</rt></ruby>くようになった<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>の<ruby>地<rt>じ</rt></ruby><ruby>元<rt>もと</rt></ruby>がすごくいい<ruby>場<rt>ば</rt></ruby><ruby>所<rt>しょ</rt></ruby>で、ある<ruby>時<rt>とき</rt></ruby>から、<ruby>焦<rt>あせ</rt></ruby>って<ruby>休<rt>やす</rt></ruby>みを<span class="vocab-word" data-info="費やして（ついやして）：（原型：費やす，て形）花费，耗费。"><ruby>費<rt>つい</rt></ruby>やして</span><span class="vocab-word" data-info="足を伸ばして（あしをのばして）：（原型：足を伸ばす，て形）走远一点，顺便去更远的地方。"><ruby>足<rt>あし</rt></ruby>を<ruby>伸<rt>の</rt></ruby>ばして</span><ruby>有<rt>ゆう</rt></ruby><ruby>名<rt>めい</rt></ruby>な<ruby>場<rt>ば</rt></ruby><ruby>所<rt>しょ</rt></ruby>に<ruby>桜<rt>さくら</rt></ruby>を<ruby>見<rt>み</rt></ruby>に<ruby>行<rt>い</rt></ruby>くということもやらなくなった。いいものをたくさん<ruby>見<rt>み</rt></ruby>てきたという<ruby>自<rt>じ</rt></ruby><ruby>信<rt>しん</rt></ruby>がついてきたのだと<ruby>思<rt>おも</rt></ruby>う。
+    </p>
+    <div class="translation">
+        今年也去赏了樱花。工作间隙去了附近的三个地方，休息日去了朋友老家的一处，都是些当地人常去的地方。后来每年都会去的朋友老家是个非常好的地方，从某个时候起，我不再急吼吼地耗费休息日、大老远跑去著名景点看樱花了。我想，大概是因为我已经看过了许多美好的事物，从而产生了一份底气吧。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>花<rt>はな</rt></ruby><ruby>見<rt>み</rt></ruby>には、<ruby>二<rt>に</rt></ruby><ruby>十<rt>じゅう</rt></ruby><ruby>代<rt>だい</rt></ruby>の<ruby>後<rt>こう</rt></ruby><ruby>半<rt>はん</rt></ruby>から<ruby>行<rt>い</rt></ruby>き<ruby>始<rt>はじ</rt></ruby>めた。ある<ruby>芸<rt>げい</rt></ruby><ruby>能<rt>のう</rt></ruby><ruby>人<rt>じん</rt></ruby>の<ruby>方<rt>かた</rt></ruby>が「<ruby>毎<rt>まい</rt></ruby><ruby>日<rt>にち</rt></ruby><ruby>花<rt>はな</rt></ruby><ruby>見<rt>み</rt></ruby>に<ruby>行<rt>い</rt></ruby>っている」と<ruby>言<rt>い</rt></ruby>っていたのに<ruby>影<rt>えい</rt></ruby><ruby>響<rt>きょう</rt></ruby>されて、<ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby>の<ruby>近<rt>ちか</rt></ruby>くにある<ruby>川<rt>かわ</rt></ruby><ruby>沿<rt>ぞ</rt></ruby>いの<ruby>名<rt>めい</rt></ruby><ruby>所<rt>しょ</rt></ruby>に<ruby>通<rt>かよ</rt></ruby>い<ruby>始<rt>はじ</rt></ruby>めた。<ruby>私<rt>わたし</rt></ruby>は「<ruby>映<rt>えい</rt></ruby><ruby>画<rt>が</rt></ruby>を<ruby>観<rt>み</rt></ruby>に<ruby>行<rt>い</rt></ruby>きたい」という<ruby>理<rt>り</rt></ruby><ruby>由<rt>ゆう</rt></ruby>で、<ruby>職<rt>しょく</rt></ruby><ruby>場<rt>ば</rt></ruby>で<ruby>開<rt>かい</rt></ruby><ruby>催<rt>さい</rt></ruby>された<ruby>金<rt>きん</rt></ruby><ruby>曜<rt>よう</rt></ruby>の<ruby>夜<rt>よる</rt></ruby>の<ruby>花<rt>はな</rt></ruby><ruby>見<rt>み</rt></ruby>をしながらのバーベキューを<ruby>欠<rt>けっ</rt></ruby><ruby>席<rt>せき</rt></ruby>する<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>だったのだが、<ruby>明<rt>あか</rt></ruby>るいうちに<ruby>桜<rt>さくら</rt></ruby>の<ruby>木<rt>き</rt></ruby>を<span class="vocab-word" data-info="うろうろ：徘徊，转悠，漫无目的地走动。">うろうろ</span><ruby>見<rt>み</rt></ruby>て<ruby>回<rt>まわ</rt></ruby>ることには<ruby>向<rt>む</rt></ruby>いていた。<ruby>一<rt>ひと</rt></ruby><ruby>人<rt>り</rt></ruby>で、または<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>と<span class="vocab-word" data-info="ぶらぶらして：（原型：ぶらぶらする，て形）闲逛，溜达。">ぶらぶらして</span><ruby>花<rt>はな</rt></ruby><ruby>見<rt>み</rt></ruby>をしながら、<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>を<span class="vocab-word" data-info="満喫して（まんきつして）：（原型：満喫する，て形）充分享受，饱尝。"><ruby>満<rt>まん</rt></ruby><ruby>喫<rt>きつ</rt></ruby>して</span>いるなあと<ruby>思<rt>おも</rt></ruby>う。<ruby>二<rt>に</rt></ruby><ruby>十<rt>じゅう</rt></ruby><ruby>代<rt>だい</rt></ruby>の<span class="vocab-word" data-info="中盤（ちゅうばん）：中盘，中段。"><ruby>中<rt>ちゅう</rt></ruby><ruby>盤<rt>ばん</rt></ruby></span>ぐらいまではなかった<ruby>感<rt>かん</rt></ruby><ruby>覚<rt>かく</rt></ruby>だ。<span class="vocab-word" data-info="風呂（ふろ）：洗澡，浴池。"><ruby>風<rt>ふ</rt></ruby><ruby>呂<rt>ろ</rt></ruby></span>に<ruby>入<rt>はい</rt></ruby>ると<ruby>楽<rt>らく</rt></ruby>になる、とか、お<ruby>茶<rt>ちゃ</rt></ruby>を<ruby>飲<rt>の</rt></ruby>むと<ruby>落<rt>お</rt></ruby>ち<ruby>着<rt>つ</rt></ruby>く、など、<ruby>年<rt>とし</rt></ruby>を<ruby>取<rt>と</rt></ruby>ってよかったと<ruby>思<rt>おも</rt></ruby>うことはわりとあるのだが、<ruby>花<rt>はな</rt></ruby><ruby>見<rt>み</rt></ruby>が<ruby>楽<rt>たの</rt></ruby>しめるようになることもそのうちの<ruby>一<rt>ひと</rt></ruby>つだ。
+    </p>
+    <div class="translation">
+        我大概是从二十多岁后半段开始去赏樱的。受某位艺人说“我每天都去赏樱”的影响，我开始常去公司附近一条河畔的名胜。我本来是那种会以“想去看电影”为由，缺席职场在周五晚上举办的“边赏樱边烤肉”活动的人，但我倒挺适合在天还亮着的时候，围着樱花树转悠观赏。一个人，或者和朋友溜达着赏樱时，我会感慨自己正在充分享受着生而为人的乐趣。这是我到二十五岁左右都不曾有过的感觉。洗个澡会觉得舒坦，喝杯茶会觉得平静，像这样让我觉得“上了年纪也挺好”的事情其实还挺多的，而能够享受赏樱的乐趣也是其中之一。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        すごく<ruby>若<rt>わか</rt></ruby>かった<ruby>頃<rt>ころ</rt></ruby>は、「<ruby>使<rt>し</rt></ruby><ruby>命<rt>めい</rt></ruby>を<ruby>受<rt>う</rt></ruby>けた<ruby>唯<rt>ゆい</rt></ruby><ruby>一<rt>いつ</rt></ruby>の<ruby>個<rt>こ</rt></ruby><ruby>性<rt>せい</rt></ruby>を<ruby>持<rt>も</rt></ruby>つ<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>」のような<ruby>妄<rt>もう</rt></ruby><ruby>想<rt>そう</rt></ruby>に<span class="vocab-word" data-info="囚われて（とらわれて）：（原型：囚われる，被动态て形）被束缚，被局限。"><ruby>囚<rt>とら</rt></ruby>われて</span>いた。そんな<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>は、<ruby>普<rt>ふ</rt></ruby><ruby>通<rt>つう</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>のように<ruby>花<rt>はな</rt></ruby><ruby>見<rt>み</rt></ruby>なんて<ruby>楽<rt>たの</rt></ruby>しむわけがないし、この<span class="vocab-word" data-info="高尚（こうしょう）：高尚，高雅。"><ruby>高<rt>こう</rt></ruby><ruby>尚<rt>しょう</rt></ruby></span>な<ruby>悩<rt>なや</rt></ruby>みに<span class="vocab-word" data-info="風呂（ふろ）：洗澡，浴池。"><ruby>風<rt>ふ</rt></ruby><ruby>呂<rt>ろ</rt></ruby></span>など<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby>がないし、お<ruby>茶<rt>ちゃ</rt></ruby>もくだらない。<ruby>特<rt>とく</rt></ruby><ruby>別<rt>べつ</rt></ruby>な<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>は、そのうち<ruby>何<rt>なに</rt></ruby>かに<ruby>召<rt>め</rt></ruby>し<ruby>上<rt>あ</rt></ruby>げてもらえる。
+    </p>
+    <div class="translation">
+        在很年轻的时候，我曾被诸如“我是带着使命的、拥有唯一独特个性的自己”这样的妄想所困。那时的我觉得，这样的自己怎么可能像普通人一样去享受赏樱呢；对于我这高尚的烦恼，洗澡毫无意义，喝茶更是无聊。特别的自己，迟早会被某种力量发掘召唤的。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>当<rt>とう</rt></ruby><ruby>然<rt>ぜん</rt></ruby>そんなイベントは<ruby>起<rt>お</rt></ruby>こらず、わたしは<ruby>就<rt>しゅう</rt></ruby><ruby>職<rt>しょく</rt></ruby>し、<span class="vocab-word" data-info="パワハラ：职场霸凌（Power harassment的缩写）。">パワハラ</span>を<ruby>体<rt>たい</rt></ruby><ruby>験<rt>けん</rt></ruby>し、「<ruby>召<rt>め</rt></ruby>し<ruby>上<rt>あ</rt></ruby>げられない」ことを<ruby>思<rt>おも</rt></ruby>い<ruby>知<rt>し</rt></ruby>った<ruby>後<rt>あと</rt></ruby>、<ruby>再<rt>さい</rt></ruby><ruby>就<rt>しゅう</rt></ruby><ruby>職<rt>しょく</rt></ruby>して、からがら<ruby>作<rt>さっ</rt></ruby><ruby>家<rt>か</rt></ruby>になった。それから<ruby>花<rt>はな</rt></ruby><ruby>見<rt>み</rt></ruby>を<ruby>楽<rt>たの</rt></ruby>しみ、<span class="vocab-word" data-info="風呂（ふろ）：洗澡，浴池。"><ruby>風<rt>ふ</rt></ruby><ruby>呂<rt>ろ</rt></ruby></span>に<ruby>入<rt>はい</rt></ruby>って<ruby>回<rt>かい</rt></ruby><ruby>復<rt>ふく</rt></ruby>し、お<ruby>茶<rt>ちゃ</rt></ruby>で<ruby>落<rt>お</rt></ruby>ち<ruby>着<rt>つ</rt></ruby>く<ruby>普<rt>ふ</rt></ruby><ruby>通<rt>つう</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>になった。
+    </p>
+    <div class="translation">
+        当然，那种奇迹并没有发生。我步入社会，体验了职场霸凌，在深切地认识到自己“并不会被发掘”之后，我重新找了工作，最后跌跌撞撞地成了一名作家。从那以后，我变成了一个能享受赏樱、靠洗澡来恢复精力、用喝茶来平复心情的普通人。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>花<rt>はな</rt></ruby><ruby>見<rt>み</rt></ruby>をしていると、<ruby>妄<rt>もう</rt></ruby><ruby>想<rt>そう</rt></ruby>なんかなくても<ruby>生<rt>い</rt></ruby>きていけると<ruby>思<rt>おも</rt></ruby>う。<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>妄<rt>もう</rt></ruby><ruby>想<rt>そう</rt></ruby>などより<ruby>優<rt>すぐ</rt></ruby>れた<ruby>自<rt>し</rt></ruby><ruby>然<rt>ぜん</rt></ruby>の<span class="vocab-word" data-info="摂理（せつり）：规律，法则，天理。"><ruby>摂<rt>せつ</rt></ruby><ruby>理<rt>り</rt></ruby></span>に<ruby>圧<rt>あっ</rt></ruby><ruby>倒<rt>とう</rt></ruby>されながら、これに<ruby>感<rt>かん</rt></ruby><ruby>心<rt>しん</rt></ruby>できるようになってよかったと<ruby>感<rt>かん</rt></ruby>じ<ruby>入<rt>い</rt></ruby>る。<ruby>召<rt>め</rt></ruby>し<ruby>上<rt>あ</rt></ruby>げられなくても<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>は<ruby>自<rt>じ</rt></ruby><ruby>力<rt>りき</rt></ruby>でまた<ruby>桜<rt>さくら</rt></ruby>を<ruby>見<rt>み</rt></ruby>る。
+    </p>
+    <div class="translation">
+        看着樱花，我觉得人就算没有那些妄想也是能活下去的。在被比自己的妄想卓越得多的自然法则所折服的同时，我深深感慨，自己能学会欣赏这些真是太好了。就算没有被谁发掘召唤，我也会凭着自己的力量，再次去看樱花。
+    </div>
+</div>
+</div>
+
+<div id="smart-tooltip"></div>
+
+<!-- Fixed Bottom Audio Player -->
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container" onclick="seek(event)">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="time-display">
+            <span id="current-time">00:00</span> / <span id="duration">00:00</span>
+        </div>
+        <audio id="audio-element" src="../audio_read/2.26.mp3"></audio>
+    </div>
+</div>
+
+<div class="footer">Ichigo Ichie - 一期一会</div>
+
+<script>
+    // 1. (已移除) 实时日期逻辑 -> 改为在 HTML 中手动输入
+
+    // 2. 译文切换
+    function toggleTranslation() {
+        const btn = document.getElementById('trans-btn');
+        const isActive = btn.classList.toggle('active');
+        
+        document.querySelectorAll('.translation').forEach(el => {
+            el.style.display = isActive ? 'block' : 'none';
+        });
+    }
+
+    // 3. 智能自适应气泡逻辑
+    const tooltip = document.getElementById('smart-tooltip');
+    let activeWord = null;
+
+    // --- Audio Player Logic ---
+    const audio = document.getElementById('audio-element');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+            playBtn.classList.add('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        } else {
+            audio.pause();
+            playBtn.classList.remove('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        }
+    }
+
+    audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = percent + '%';
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        }
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener('ended', () => {
+        playBtn.classList.remove('playing');
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        progressBar.style.width = '0%';
+        currentTimeEl.textContent = "00:00";
+    });
+
+    function seek(e) {
+        if (!audio.duration) return;
+        const rect = progressContainer.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const width = rect.width;
+        audio.currentTime = (clickX / width) * audio.duration;
+    }
+
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return "00:00";
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    // --------------------------
+
+    document.querySelectorAll('.vocab-word').forEach(word => {
+        word.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (activeWord === this) { hideTooltip(); return; }
+
+            activeWord = this;
+            tooltip.innerText = this.getAttribute('data-info');
+            tooltip.style.display = 'block';
+
+            const rect = this.getBoundingClientRect();
+            const tipRect = tooltip.getBoundingClientRect();
+            const screenWidth = window.innerWidth;
+            
+            // 计算初始位置
+            let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
+            let top = rect.top + window.scrollY - tipRect.height - 12;
+
+            // 溢出检测与修正
+            const margin = 15;
+            let arrowOffset = '50%';
+
+            if (left < margin) {
+                left = margin;
+                arrowOffset = (rect.left + rect.width/2 - margin) + 'px';
+            } else if (left + tipRect.width > screenWidth - margin) {
+                left = screenWidth - tipRect.width - margin;
+                arrowOffset = (rect.left + rect.width/2 - left) + 'px';
+            }
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.style.opacity = '1';
+
+            // 动态修正箭头位置
+            const styleTag = document.getElementById('dynamic-arrow') || document.createElement('style');
+            styleTag.id = 'dynamic-arrow';
+            styleTag.innerHTML = `#smart-tooltip::after { left: ${arrowOffset} !important; transform: translateX(-50%); }`;
+            document.head.appendChild(styleTag);
+        });
+    });
+
+    function hideTooltip() {
+        tooltip.style.opacity = '0';
+        setTimeout(() => { tooltip.style.display = 'none'; }, 200);
+        activeWord = null;
+    }
+
+    document.addEventListener('click', hideTooltip);
+    window.addEventListener('resize', hideTooltip);
+
+
+</script>
+
+</body>
+</html>
