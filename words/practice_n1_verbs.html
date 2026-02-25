@@ -225,6 +225,31 @@
             vertical-align: bottom;
         }
 
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(50, 50, 50, 0.95);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, -10px);
+        }
     </style>
 </head>
 <body>
@@ -376,6 +401,25 @@
             isAnswering = true;
         }
 
+        function showToast(msg) {
+            let toast = document.getElementById('toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast';
+                toast.className = 'toast';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = `<span>🐶</span> ${msg}`;
+            toast.classList.add('show');
+            
+            // Clear previous timeout if exists
+            if (toast.timeoutId) clearTimeout(toast.timeoutId);
+            
+            toast.timeoutId = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
         function checkAnswer(btn, selected) {
             if (!isAnswering) return;
             isAnswering = false;
@@ -392,6 +436,16 @@
                 }
                 if (b.innerText === selected && !isCorrect) {
                     b.classList.add('wrong'); // Show error
+                    
+                    // --- Auto-add to Difficult Words ---
+                    const wordId = q.word.word; // Base form
+                    const key = 'n1_verbs_star_' + wordId;
+                    
+                    if (localStorage.getItem(key) !== 'true') {
+                        localStorage.setItem(key, 'true');
+                        showToast(`「${wordId}」を難詞に追加しました`);
+                    }
+                    // -----------------------------------
                 }
             });
 
@@ -399,7 +453,7 @@
                 score++;
                 setTimeout(nextQuestion, 800); // Faster transition for correct
             } else {
-                setTimeout(nextQuestion, 1500); // Slower for incorrect to see right answer
+                setTimeout(nextQuestion, 2000); // Slower for incorrect (gave more time to read toast)
             }
         }
 
