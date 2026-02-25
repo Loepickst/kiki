@@ -538,9 +538,63 @@
         // --- Logic ---
 
         // 1. Render Days Grid
+        function getStarredCount() {
+            let count = 0;
+            if (typeof FULL_WORD_LIST !== 'undefined') {
+                 FULL_WORD_LIST.forEach(word => {
+                    if (localStorage.getItem(`n1_verbs_star_${word.word}`) === 'true') {
+                        count++;
+                    }
+                 });
+            }
+            return count;
+        }
+
+        function selectStarredWords() {
+            // Get all starred words
+            const starredWords = FULL_WORD_LIST.filter(word => 
+                localStorage.getItem(`n1_verbs_star_${word.word}`) === 'true'
+            );
+            
+            if (starredWords.length === 0) {
+                alert('まだ「🐶」の単語はありません。\n(还没有标记为难词的单词)');
+                return;
+            }
+
+            currentDay = -1; // Special ID for starred
+            currentView = 'list';
+            currentDailyWords = starredWords;
+            
+            // Render list
+            renderWordList(currentDailyWords);
+            updateUI();
+        }
+
         function renderDays() {
             const container = document.getElementById('days-view');
             container.innerHTML = '';
+
+            // --- Add Review Card ---
+            const starredCount = getStarredCount();
+            const reviewCard = document.createElement('div');
+            reviewCard.className = 'day-card';
+            // Add a distinctive style
+            reviewCard.style.borderLeft = '4px solid #ff9800'; 
+            reviewCard.style.marginBottom = '20px'; // Separation from day list
+
+            reviewCard.innerHTML = `
+                <div class="day-info">
+                    <div class="day-icon" style="background: #fff3e0; color: #ff9800;">🐶</div>
+                    <div class="day-text-group">
+                        <div class="day-title" style="color: #e65100;">难词回顾</div>
+                        <div class="day-subtitle">${starredCount}語 • 重点復習</div>
+                    </div>
+                </div>
+                <div class="go-badge" style="background: #ff9800; color: white;">我要验牌</div>
+            `;
+            reviewCard.onclick = () => selectStarredWords();
+            container.appendChild(reviewCard);
+            // -----------------------
 
             // Get last studied day (Safe access)
             let lastDay = 0;
@@ -829,7 +883,13 @@
                 backBtn.innerHTML = '← 戻る';
             } else if (currentView === 'list') {
                 wordListView.classList.remove('hidden');
-                title.textContent = `${currentDay}日目`;
+                
+                if (currentDay === -1) {
+                    title.textContent = '难词回顾';
+                } else {
+                    title.textContent = `${currentDay}日目`;
+                }
+
                 // Refresh list to show updated dog status
                 if (currentDailyWords.length > 0) {
                     renderWordList(currentDailyWords);
@@ -837,6 +897,8 @@
                 
                 backBtn.onclick = () => {
                     currentView = 'days';
+                    // Re-render days to update count
+                    renderDays();
                     updateUI();
                 };
                 backBtn.innerHTML = '← 日数選択';
