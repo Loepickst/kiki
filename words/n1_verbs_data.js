@@ -1380,8 +1380,1372 @@ const DAY4_WORDS = [
         }
     }
 ];
+const DAY5_WORDS = [
+{
+        "word": "逸れる",
+        "word_html": "<ruby>逸<rt>そ</rt></ruby>れる",
+        "tone": "2",
+        "pos": "自一",
+        "mean": "偏离、岔开；(话题)跑偏",
+        "nuance": "1. 脱离原本的路线或方向。\n2. 脱离主题。",
+        "examples": [
+            { "jp": "<ruby>台<rt>たい</rt></ruby><ruby>風<rt>ふう</rt></ruby>がコースを<span class='ex-highlight'><ruby>逸<rt>そ</rt></ruby>れた</span>。", "cn": "台风偏离了路径。" },
+            { "jp": "<ruby>話<rt>はなし</rt></ruby>が<ruby>本<rt>ほん</rt></ruby><ruby>題<rt>だい</rt></ruby>から<span class='ex-highlight'><ruby>逸<rt>そ</rt></ruby>れて</span>しまった。", "cn": "话题偏离了主题。" }
+        ],
+        "practice": {
+            "sentence": "話が横道に<span class='blank-space'></span>。",
+            "answer": "逸れた",
+            "options": ["逸れた", "ずれた", "外れた", "歪んだ"]
+        }
+    },
+    {
+        "word": "ずれる",
+        "word_html": "ずれる",
+        "tone": "2",
+        "pos": "自一",
+        "mean": "错位、移位；有分歧、不合拍",
+        "nuance": "1. 原本吻合的位置发生了滑动或偏差。\n2. 意见、时机、感觉等不一致。",
+        "examples": [
+            { "jp": "<ruby>眼<rt>め</rt></ruby><ruby>鏡<rt>がね</rt></ruby>が<span class='ex-highlight'>ずれる</span>。", "cn": "眼镜滑下来了。" },
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>とは<ruby>話<rt>はなし</rt></ruby>の<ruby>焦<rt>しょう</rt></ruby><ruby>点<rt>てん</rt></ruby>が<span class='ex-highlight'>ずれている</span>。", "cn": "和他聊天不在一个频道。" }
+        ],
+        "practice": {
+            "sentence": "彼の感覚は一般人と少し<span class='blank-space'></span>。",
+            "answer": "ずれている",
+            "options": ["ずれている", "外れている", "隔てている", "遮っている"]
+        }
+    },
+    {
+        "word": "外れる",
+        "word_html": "<ruby>外<rt>はず</rt></ruby>れる",
+        "tone": "0",
+        "pos": "自一",
+        "mean": "脱落、掉下；不中、落空；被排除",
+        "nuance": "1. 安装好的东西松开或分家。\n2. 未击中目标，或预测失败。\n3. 从名单、职位中被拿掉。",
+        "examples": [
+            { "jp": "シャツのボタンが<span class='ex-highlight'><ruby>外<rt>はず</rt></ruby>れた</span>。", "cn": "衬衫扣子开了。" },
+            { "jp": "<ruby>宝<rt>たから</rt></ruby>くじが<span class='ex-highlight'><ruby>外<rt>はず</rt></ruby>れる</span>。", "cn": "彩票没中奖。" },
+            { "jp": "<ruby>代<rt>だい</rt></ruby><ruby>表<rt>ひょう</rt></ruby>メンバーから<span class='ex-highlight'><ruby>外<rt>はず</rt></ruby>れる</span>。", "cn": "落选代表队成员。" }
+        ],
+        "practice": {
+            "sentence": "期待が<span class='blank-space'></span>、がっかりした。",
+            "answer": "外れて",
+            "options": ["外れて", "逸れて", "ずれて", "転がって"]
+        }
+    },
+    {
+        "word": "偏る",
+        "word_html": "<ruby>偏<rt>かたよ</rt></ruby>る",
+        "tone": "3",
+        "pos": "自五",
+        "mean": "偏向、不平衡",
+        "nuance": "1. 集中在一方，失去整体平衡。",
+        "examples": [
+            { "jp": "<span class='ex-highlight'><ruby>偏<rt>かたよ</rt></ruby>った</span><ruby>考<rt>かんが</rt></ruby>えを<ruby>持<rt>も</rt></ruby>つ。", "cn": "持有偏激的想法。" }
+        ],
+        "practice": {
+            "sentence": "彼の意見は一方に<span class='blank-space'></span>いる。",
+            "answer": "偏って",
+            "options": ["偏って", "歪んで", "隔てて", "舞って"]
+        }
+    },
+    {
+        "word": "歪める",
+        "word_html": "<ruby>歪<rt>ゆが</rt></ruby>める",
+        "tone": "3",
+        "pos": "他一",
+        "mean": "弄歪、扭曲；歪曲；扭曲",
+        "nuance": "1. 使物体形状弯曲变形。\n2. 故意改变事实或解释。\n3. 使人的性格或想法变得不正常。",
+        "examples": [
+            { "jp": "<ruby>熱<rt>ねつ</rt></ruby>でプラスチックを<span class='ex-highlight'><ruby>歪<rt>ゆが</rt></ruby>める</span>。", "cn": "受热使塑料变形。" },
+            { "jp": "<ruby>事<rt>じ</rt></ruby><ruby>実<rt>じつ</rt></ruby>を<span class='ex-highlight'><ruby>歪<rt>ゆが</rt></ruby>めて</span><ruby>伝<rt>つた</rt></ruby>える。", "cn": "歪曲事实进行传达。" },
+            { "jp": "<ruby>家<rt>か</rt></ruby><ruby>庭<rt>てい</rt></ruby><ruby>環<rt>かん</rt></ruby><ruby>境<rt>きょう</rt></ruby>が<ruby>彼<rt>かれ</rt></ruby>の<ruby>性<rt>せい</rt></ruby><ruby>格<rt>かく</rt></ruby>を<span class='ex-highlight'><ruby>歪<rt>ゆが</rt></ruby>めて</span>しまった。", "cn": "家庭环境使他的性格变得扭曲了。" }
+        ],
+        "practice": {
+            "sentence": "真実を<span class='blank-space'></span>報道してはいけない。",
+            "answer": "歪めて",
+            "options": ["歪めて", "隔てて", "遮って", "外して"]
+        }
+    },
+    {
+        "word": "歪む",
+        "word_html": "<ruby>歪<rt>ひず</rt></ruby>む",
+        "tone": "0",
+        "pos": "自五",
+        "mean": "翘曲、走样；(关系)产生裂痕/紧张",
+        "nuance": "1. 因受力不均导致形状改变。\n2. 抽象的压力导致不正常。",
+        "examples": [
+            { "jp": "<ruby>地<rt>じ</rt></ruby><ruby>震<rt>しん</rt></ruby>で<ruby>建<rt>たて</rt></ruby><ruby>物<rt>もの</rt></ruby>の<ruby>柱<rt>はしら</rt></ruby>が<span class='ex-highlight'><ruby>歪<rt>ひず</rt></ruby>んだ</span>。", "cn": "因为地震，建筑的柱子发生了变形。" },
+            { "jp": "<ruby>無<rt>む</rt></ruby><ruby>理<rt>り</rt></ruby>がたたって<ruby>夫<rt>ふう</rt></ruby><ruby>婦<rt>ふ</rt></ruby><ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby>が<span class='ex-highlight'>ひずむ</span>。", "cn": "因长期勉强维持，夫妻关系出现了裂痕。" }
+        ],
+        "practice": {
+            "sentence": "高熱でプラスチックが<span class='blank-space'></span>。",
+            "answer": "歪んだ",
+            "options": ["歪んだ", "偏った", "ずれた", "逸れた"]
+        }
+    },
+    {
+        "word": "隔てる",
+        "word_html": "<ruby>隔<rt>へだ</rt></ruby>てる",
+        "tone": "3",
+        "pos": "他一",
+        "mean": "隔开、相隔；疏远",
+        "nuance": "1. 设置屏障或距离，使两者分开，可用于时间。\n2. 产生心理上的距离。",
+        "examples": [
+            { "jp": "<ruby>川<rt>かわ</rt></ruby>が<ruby>二<rt>ふた</rt></ruby>つの<ruby>国<rt>くに</rt></ruby>を<span class='ex-highlight'><ruby>隔<rt>へだ</rt></ruby>てている</span>。", "cn": "河流隔开了两个国家。" },
+            { "jp": "<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>と<span class='ex-highlight'><ruby>隔<rt>へだ</rt></ruby>て</span>のない<ruby>会<rt>かい</rt></ruby><ruby>話<rt>わ</rt></ruby>をする。", "cn": "和朋友进行亲密无间的交谈。" }
+        ],
+        "practice": {
+            "sentence": "20年の時を<span class='blank-space'></span>再会した。",
+            "answer": "隔てて",
+            "options": ["隔てて", "遮って", "離れて", "逃れて"]
+        }
+    },
+    {
+        "word": "遮る",
+        "word_html": "<ruby>遮<rt>さえぎ</rt></ruby>る",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "遮挡、阻挡；打断",
+        "nuance": "1. 挡住光线、风、视线等。\n2. 打断别人的谈话或行动。",
+        "examples": [
+            { "jp": "カーテンで<ruby>日<rt>にっ</rt></ruby><ruby>光<rt>こう</rt></ruby>を<span class='ex-highlight'><ruby>遮<rt>さえぎ</rt></ruby>る</span>。", "cn": "用窗帘遮挡阳光。" },
+            { "jp": "<ruby>人<rt>ひと</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>を<span class='ex-highlight'><ruby>遮<rt>さえぎ</rt></ruby>らないで</span>ください。", "cn": "请不要打断别人的话。" }
+        ],
+        "practice": {
+            "sentence": "雲が太陽を<span class='blank-space'></span>、急に暗くなった。",
+            "answer": "遮り",
+            "options": ["遮り", "隔て", "歪め", "外し"]
+        }
+    },
+    {
+        "word": "舞う",
+        "word_html": "<ruby>舞<rt>ま</rt></ruby>う",
+        "tone": "1",
+        "pos": "自五",
+        "mean": "飞舞、飘舞；跳舞",
+        "nuance": "1. 花瓣、雪花、灰尘等在空中盘旋。\n2. 多指日本传统舞蹈，动作轻盈盘旋。",
+        "examples": [
+            { "jp": "<ruby>桜<rt>さくら</rt></ruby>の<ruby>花<rt>はな</rt></ruby>びらが<ruby>風<rt>かぜ</rt></ruby>に<span class='ex-highlight'><ruby>舞<rt>ま</rt></ruby>う</span>。", "cn": "樱花花瓣随风飘舞。" },
+            { "jp": "<ruby>舞<rt>ぶ</rt></ruby><ruby>台<rt>たい</rt></ruby>で<ruby>優<rt>ゆう</rt></ruby><ruby>雅<rt>が</rt></ruby>に<span class='ex-highlight'><ruby>舞<rt>ま</rt></ruby>う</span>。", "cn": "在舞台上优雅地起舞。" }
+        ],
+        "practice": {
+            "sentence": "ほこりが空中に<span class='blank-space'></span>。",
+            "answer": "舞う",
+            "options": ["舞う", "転がる", "逸れる", "偏る"]
+        }
+    },
+    {
+        "word": "転がる",
+        "word_html": "<ruby>転<rt>ころ</rt></ruby>がる",
+        "tone": "0",
+        "pos": "自五",
+        "mean": "滚动；躺卧；到处都是、不稀奇",
+        "nuance": "1. 球状物或圆柱体旋转移动。\n2. 人随意地躺下。\n3. 多比喻随处可见平凡的事物。",
+        "examples": [
+            { "jp": "ボールが<ruby>坂<rt>さか</rt></ruby>を<span class='ex-highlight'><ruby>転<rt>ころ</rt></ruby>がって</span><ruby>落<rt>お</rt></ruby>ちた。", "cn": "球顺着坡滚下去了。" },
+            { "jp": "<ruby>草<rt>そう</rt></ruby><ruby>原<rt>げん</rt></ruby>に<span class='ex-highlight'><ruby>転<rt>ころ</rt></ruby>がって</span><ruby>空<rt>そら</rt></ruby>を<ruby>見<rt>み</rt></ruby>る。", "cn": "躺在草地上看天。" },
+            { "jp": "<ruby>部<rt>へ</rt></ruby><ruby>屋<rt>や</rt></ruby>には<ruby>本<rt>ほん</rt></ruby>が<span class='ex-highlight'><ruby>転<rt>ころ</rt></ruby>がっている</span>。", "cn": "房间里到处都是书。" }
+        ],
+        "practice": {
+            "sentence": "道端に石が<span class='blank-space'></span>。",
+            "answer": "転がっている",
+            "options": ["転がっている", "舞っている", "歪んでいる", "隔てている"]
+        }
+    },
+    {
+        "word": "掲げる",
+        "word_html": "<ruby>掲<rt>かか</rt></ruby>げる",
+        "tone": "0",
+        "pos": "他一",
+        "mean": "悬挂、高举；提出、标榜；刊登",
+        "nuance": "1. 把旗帜、招牌等挂在高处。\n2. 提出主义、方针、口号并公之于众。\n3. 在报纸刊物上发表。",
+        "examples": [
+            { "jp": "<ruby>旗<rt>はた</rt></ruby>を<span class='ex-highlight'><ruby>掲<rt>かか</rt></ruby>げて</span><ruby>行<rt>こう</rt></ruby><ruby>進<rt>しん</rt></ruby>する。", "cn": "举起旗帜进行游行。" },
+            { "jp": "<ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby>のビジョンを<span class='ex-highlight'><ruby>掲<rt>かか</rt></ruby>げる</span>。", "cn": "提出公司的愿景。" },
+            { "jp": "<ruby>記<rt>き</rt></ruby><ruby>事<rt>じ</rt></ruby>を<ruby>新<rt>しん</rt></ruby><ruby>聞<rt>ぶん</rt></ruby>に<span class='ex-highlight'><ruby>掲<rt>かか</rt></ruby>げる</span>。", "cn": "在报纸上刊登文章。" }
+        ],
+        "practice": {
+            "sentence": "理念を<span class='blank-space'></span>会社を設立した。",
+            "answer": "掲げて",
+            "options": ["掲げて", "捲って", "絞って", "挟んで"]
+        }
+    },
+    {
+        "word": "捲る",
+        "word_html": "<ruby>捲<rt>めく</rt></ruby>る",
+        "tone": "0",
+        "pos": "他五",
+        "mean": "翻、翻开",
+        "nuance": "1. 翻书页、掀起覆盖物。",
+        "examples": [
+            { "jp": "<ruby>本<rt>ほん</rt></ruby>のページを<ruby>一<rt>いち</rt></ruby><ruby>枚<rt>まい</rt></ruby><ruby>一<rt>いち</rt></ruby><ruby>枚<rt>まい</rt></ruby><span class='ex-highlight'><ruby>捲<rt>めく</rt></ruby>る</span>。", "cn": "一页一页地翻书。" }
+        ],
+        "practice": {
+            "sentence": "カレンダーを<span class='blank-space'></span>。",
+            "answer": "捲る",
+            "options": ["捲る", "絞る", "掬う", "掲げる"]
+        }
+    },
+    {
+        "word": "絞る",
+        "word_html": "<ruby>絞<rt>しぼ</rt></ruby>る",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "拧、挤；绞(尽脑汁)、挤出(声音)；缩小(范围)",
+        "nuance": "1. 用力挤压出液体。\n2. 竭尽全力。\n3. 集中焦点，减少候补。",
+        "examples": [
+            { "jp": "<ruby>雑<rt>ぞう</rt></ruby><ruby>巾<rt>きん</rt></ruby>を<span class='ex-highlight'><ruby>絞<rt>しぼ</rt></ruby>る</span>。", "cn": "拧抹布。" },
+            { "jp": "<ruby>声<rt>こえ</rt></ruby>を<span class='ex-highlight'><ruby>絞<rt>しぼ</rt></ruby>って</span><ruby>救<rt>すく</rt></ruby>いを<ruby>求<rt>もと</rt></ruby>める。", "cn": "拼命呼救。" },
+            { "jp": "<ruby>候<rt>こう</rt></ruby><ruby>補<rt>ほ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>を3<ruby>人<rt>にん</rt></ruby>に<span class='ex-highlight'><ruby>絞<rt>しぼ</rt></ruby>る</span>。", "cn": "把候选人缩小到3人。" }
+        ],
+        "practice": {
+            "sentence": "知恵を<span class='blank-space'></span>解決策を考えた。",
+            "answer": "絞って",
+            "options": ["絞って", "捲って", "挟んで", "弾いて"]
+        }
+    },
+    {
+        "word": "掬う",
+        "word_html": "<ruby>掬<rt>すく</rt></ruby>う",
+        "tone": "0",
+        "pos": "他五",
+        "mean": "捞、舀",
+        "nuance": "1. 用手或勺子从液体/散沙中取物。",
+        "examples": [
+            { "jp": "<ruby>川<rt>かわ</rt></ruby>の<ruby>水<rt>みず</rt></ruby>を<ruby>手<rt>て</rt></ruby>に<span class='ex-highlight'><ruby>掬<rt>すく</rt></ruby>って</span><ruby>飲<rt>の</rt></ruby>む。", "cn": "用手捧起河水喝。" }
+        ],
+        "practice": {
+            "sentence": "スープをスプーンで<span class='blank-space'></span>。",
+            "answer": "掬う",
+            "options": ["掬う", "弾く", "絞る", "被る"]
+        }
+    },
+    {
+        "word": "挟む",
+        "word_html": "<ruby>挟<rt>はさ</rt></ruby>む",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "夹、隔；插(嘴)、打断；怀有、心存",
+        "nuance": "1. 物体位于两者之间。\n2. 介入谈话或事务、活动。\n3. 心中怀有疑问或某种感觉。",
+        "examples": [
+            { "jp": "パンにハムを<span class='ex-highlight'><ruby>挟<rt>はさ</rt></ruby>む</span>。", "cn": "面包里夹火腿。" },
+            { "jp": "<ruby>試<rt>し</rt></ruby><ruby>合<rt>あい</rt></ruby>に<ruby>休<rt>きゅう</rt></ruby><ruby>憩<rt>けい</rt></ruby>を<span class='ex-highlight'><ruby>挟<rt>はさ</rt></ruby>む</span>。", "cn": "比赛中途休息。" },
+            { "jp": "<ruby>不<rt>ふ</rt></ruby><ruby>満<rt>まん</rt></ruby>を<span class='ex-highlight'><ruby>挟<rt>はさ</rt></ruby>んだ</span><ruby>口<rt>く</rt></ruby><ruby>調<rt>ちょう</rt></ruby>で<ruby>答<rt>こた</rt></ruby>えた。", "cn": "用带着不满的语气回答。" }
+        ],
+        "practice": {
+            "sentence": "本にしおりを<span class='blank-space'></span>。",
+            "answer": "挟む",
+            "options": ["挟む", "遮る", "隔てる", "偏る"]
+        }
+    },
+    {
+        "word": "窶れる",
+        "word_html": "<ruby>窶<rt>やつ</rt></ruby>れる",
+        "tone": "3",
+        "pos": "自一",
+        "mean": "消瘦、憔悴",
+        "nuance": "1. 因病、劳累或烦恼而变得瘦弱难看。",
+        "examples": [
+            { "jp": "<ruby>長<rt>なが</rt></ruby>い<ruby>看<rt>かん</rt></ruby><ruby>病<rt>びょう</rt></ruby>で<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>は<span class='ex-highlight'>やつれて</span>しまった。", "cn": "长时间的护理让她变得憔悴。" }
+        ],
+        "practice": {
+            "sentence": "苦労が続いて、すっかり<span class='blank-space'></span>しまった。",
+            "answer": "やつれて",
+            "options": ["やつれて", "かぶって", "はずんで", "かさんで"]
+        }
+    },
+    {
+        "word": "被る",
+        "word_html": "<ruby>被<rt>かぶ</rt></ruby>る",
+        "tone": "2",
+        "pos": "自五/他五",
+        "mean": "戴、盖；蒙受、承担；重叠、雷同",
+        "nuance": "1. 戴帽子、盖被子。\n2. 承受液体、灰尘、罪名等。\n3. 与他人的服装或想法等发生重合。",
+        "examples": [
+            { "jp": "<ruby>帽<rt>ぼう</rt></ruby><ruby>子<rt>し</rt></ruby>を<span class='ex-highlight'><ruby>被<rt>かぶ</rt></ruby>る</span>。", "cn": "戴帽子。" },
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>全<rt>すべ</rt></ruby>ての<ruby>罪<rt>つみ</rt></ruby>を<span class='ex-highlight'><ruby>被<rt>かぶ</rt></ruby>った</span>。", "cn": "他承担了所有罪行。" },
+            { "jp": "<ruby>職<rt>しょく</rt></ruby><ruby>場<rt>ば</rt></ruby>で<ruby>服<rt>ふく</rt></ruby><ruby>装<rt>そう</rt></ruby>が<span class='ex-highlight'>かぶって</span>しまった。", "cn": "在职场上与别人撞衫了。" }
+        ],
+        "practice": {
+            "sentence": "損害を<span class='blank-space'></span>。",
+            "answer": "被る",
+            "options": ["被る", "掲げる", "逸れる", "歪む"]
+        }
+    },
+    {
+        "word": "嵩む",
+        "word_html": "<ruby>嵩<rt>かさ</rt></ruby>む",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "增多、涨",
+        "nuance": "1. 体积增大，或数量/金额变大。",
+        "examples": [
+            { "jp": "<ruby>荷<rt>に</rt></ruby><ruby>物<rt>もつ</rt></ruby>が<span class='ex-highlight'><ruby>嵩<rt>かさ</rt></ruby>んで</span><ruby>持<rt>も</rt></ruby>ちきれない。", "cn": "行李太多拿不了。" }
+        ],
+        "practice": {
+            "sentence": "借金が<span class='blank-space'></span>、返済が苦しい。",
+            "answer": "嵩んで",
+            "options": ["嵩んで", "弾んで", "歪んで", "転がって"]
+        }
+    },
+    {
+        "word": "弾む",
+        "word_html": "<ruby>弾<rt>はず</rt></ruby>む",
+        "tone": "0",
+        "pos": "自五",
+        "mean": "反弹、蹦；高涨、活跃",
+        "nuance": "1. 球等物体触地弹起。\n2. 呼吸急促、心情兴奋、对话热烈。",
+        "examples": [
+            { "jp": "ボールがよく<span class='ex-highlight'><ruby>弾<rt>はず</rt></ruby>む</span>。", "cn": "球弹得很高。" },
+            { "jp": "<ruby>旧<rt>きゅう</rt></ruby><ruby>友<rt>ゆう</rt></ruby>との<ruby>話<rt>はなし</rt></ruby>が<span class='ex-highlight'><ruby>弾<rt>はず</rt></ruby>んだ</span>。", "cn": "和老朋友聊得很投机。" }
+        ],
+        "practice": {
+            "sentence": "期待に胸が<span class='blank-space'></span>。",
+            "answer": "弾む",
+            "options": ["弾む", "弾く", "舞う", "転がる"]
+        }
+    },
+    {
+        "word": "弾く",
+        "word_html": "<ruby>弾<rt>はじ</rt></ruby>く",
+        "tone": "0",
+        "pos": "他五",
+        "mean": "弹、拨；排斥、不沾",
+        "nuance": "1. 用手指拨动或弹击。\n2. 表面光滑使水或油无法附着。",
+        "examples": [
+            { "jp": "<ruby>指<rt>ゆび</rt></ruby>でコインを<span class='ex-highlight'><ruby>弾<rt>はじ</rt></ruby>く</span>。", "cn": "用手指弹硬币。" },
+            { "jp": "この<ruby>布<rt>ぬの</rt></ruby>は<ruby>水<rt>みず</rt></ruby>を<span class='ex-highlight'><ruby>弾<rt>はじ</rt></ruby>く</span><ruby>加<rt>か</rt></ruby><ruby>工<rt>こう</rt></ruby>がされている。", "cn": "这块布料做了防水处理。" }
+        ],
+        "practice": {
+            "sentence": "油は水を<span class='blank-space'></span>。",
+            "answer": "弾く",
+            "options": ["弾く", "弾む", "絞る", "掬う"]
+        }
+    }    
+];
+const DAY6_WORDS = [
+{
+        "word": "譲る",
+        "word_html": "<ruby>譲<rt>ゆず</rt></ruby>る",
+        "tone": "0",
+        "pos": "他五",
+        "mean": "让给、转让；让步、妥协",
+        "nuance": "1. 把东西、权利或座位给别人。\n2. 坚持己见但暂且退让。",
+        "examples": [
+            { "jp": "お<ruby>年<rt>とし</rt></ruby><ruby>寄<rt>よ</rt></ruby>りに<ruby>席<rt>せき</rt></ruby>を<span class='ex-highlight'><ruby>譲<rt>ゆず</rt></ruby>る</span>。", "cn": "给老人让座。" },
+            { "jp": "<ruby>予<rt>よ</rt></ruby><ruby>算<rt>さん</rt></ruby>については<ruby>一<rt>いっ</rt></ruby><ruby>歩<rt>ぽ</rt></ruby>も<span class='ex-highlight'><ruby>譲<rt>ゆず</rt></ruby>れない</span>。", "cn": "关于预算一步也不能退让。" }
+        ],
+        "practice": {
+            "sentence": "後輩に道を<span class='blank-space'></span>。",
+            "answer": "譲る",
+            "options": ["譲る", "探る", "響く", "聳える"]
+        }
+    },
+    {
+        "word": "探る",
+        "word_html": "<ruby>探<rt>さぐ</rt></ruby>る",
+        "tone": "0",
+        "pos": "他五",
+        "mean": "摸索、掏；试探、探听",
+        "nuance": "1. 在看不见的情况下用手寻找。\n2. 暗中调查情况或对方的心思。",
+        "examples": [
+            { "jp": "<ruby>暗<rt>くら</rt></ruby><ruby>闇<rt>やみ</rt></ruby>の<ruby>中<rt>なか</rt></ruby>で<ruby>壁<rt>かべ</rt></ruby>を<span class='ex-highlight'><ruby>探<rt>さぐ</rt></ruby>り</span>ながら<ruby>進<rt>すす</rt></ruby>む。", "cn": "在黑暗中摸着墙前进。" },
+            { "jp": "<ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>の<ruby>腹<rt>はら</rt></ruby>を<span class='ex-highlight'><ruby>探<rt>さぐ</rt></ruby>る</span>。", "cn": "试探对方的心思。" }
+        ],
+        "practice": {
+            "sentence": "原因を<span class='blank-space'></span>。",
+            "answer": "探る",
+            "options": ["探る", "譲る", "響く", "敵う"]
+        }
+    },
+    {
+        "word": "響く",
+        "word_html": "<ruby>響<rt>ひび</rt></ruby>く",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "回响、回荡；打动(人心)；产生(坏)影响",
+        "nuance": "1. 声音反响，震动传开。\n2. 深深地感触到内心。\n3. 后果显现出来。",
+        "examples": [
+            { "jp": "<ruby>鐘<rt>かね</rt></ruby>の<ruby>音<rt>おと</rt></ruby>が<span class='ex-highlight'><ruby>響<rt>ひび</rt></ruby>く</span>。", "cn": "钟声回荡。" },
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>の<ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>が<ruby>胸<rt>むね</rt></ruby>に<span class='ex-highlight'><ruby>響<rt>ひび</rt></ruby>いた</span>。", "cn": "他的话深深打动了我的心。" },
+            { "jp": "<ruby>睡<rt>すい</rt></ruby><ruby>眠<rt>みん</rt></ruby><ruby>不<rt>ふ</rt></ruby><ruby>足<rt>そく</rt></ruby>が<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>に<span class='ex-highlight'><ruby>響<rt>ひび</rt></ruby>く</span>。", "cn": "睡眠不足影响了工作。" }
+        ],
+        "practice": {
+            "sentence": "彼の言葉が心に<span class='blank-space'></span>。",
+            "answer": "響いた",
+            "options": ["響いた", "聳えた", "敵った", "譲った"]
+        }
+    },
+    {
+        "word": "聳える",
+        "word_html": "<ruby>聳<rt>そび</rt></ruby>える",
+        "tone": "3",
+        "pos": "自一",
+        "mean": "耸立、屹立",
+        "nuance": "1. 山或建筑物高高地立着。",
+        "examples": [
+            { "jp": "<ruby>目<rt>め</rt></ruby>の<ruby>前<rt>まえ</rt></ruby>に<ruby>高<rt>こう</rt></ruby><ruby>層<rt>そう</rt></ruby>ビルが<span class='ex-highlight'><ruby>聳<rt>そび</rt></ruby>えている</span>。", "cn": "眼前耸立着高层建筑。" }
+        ],
+        "practice": {
+            "sentence": "富士山が雲の上に<span class='blank-space'></span>。",
+            "answer": "聳えている",
+            "options": ["聳えている", "響いている", "探っている", "敵っている"]
+        }
+    },
+    {
+        "word": "敵う",
+        "word_html": "<ruby>敵<rt>かな</rt></ruby>う",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "敌得过、比得上；受得了、忍受",
+        "nuance": "1. 能力相当，常用于否定形。\n2. 常接在「〜ては」后面，用否定形表示“受不了”。",
+        "examples": [
+            { "jp": "<ruby>将<rt>しょう</rt></ruby><ruby>棋<rt>ぎ</rt></ruby>では<ruby>彼<rt>かれ</rt></ruby>に<span class='ex-highlight'><ruby>敵<rt>かな</rt></ruby>わない</span>。", "cn": "下象棋我敌不过他。" },
+            { "jp": "<ruby>今<rt>きょう</rt></ruby><ruby>日<rt>ひ</rt></ruby>は<ruby>暑<rt>あつ</rt></ruby>くて<span class='ex-highlight'><ruby>敵<rt>かな</rt></ruby>わない</span>。", "cn": "今天热得让人受不了。" }
+        ],
+        "practice": {
+            "sentence": "口喧嘩では彼女に<span class='blank-space'></span>。",
+            "answer": "敵わない",
+            "options": ["敵わない", "譲らない", "探らない", "響かない"]
+        }
+    },
+    {
+        "word": "適う",
+        "word_html": "<ruby>適<rt>かな</rt></ruby>う",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "符合、适合",
+        "nuance": "1. 符合条件、道理或目的。",
+        "examples": [
+            { "jp": "<ruby>目<rt>もく</rt></ruby><ruby>的<rt>てき</rt></ruby>に<span class='ex-highlight'><ruby>適<rt>かな</rt></ruby>う</span><ruby>人<rt>じん</rt></ruby><ruby>材<rt>ざい</rt></ruby>を<ruby>探<rt>さが</rt></ruby>す。", "cn": "寻找符合目的的人才。" }
+        ],
+        "practice": {
+            "sentence": "条件に<span class='blank-space'></span>物件を探す。",
+            "answer": "適う",
+            "options": ["適う", "済ます", "遂げる", "施す"]
+        }
+    },
+    {
+        "word": "済ます",
+        "word_html": "<ruby>済<rt>す</rt></ruby>ます",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "弄完、办完；凑合、将就；还清",
+        "nuance": "1. 使事情结束。\n2. 用代用品解决，不追求完美。\n3. 偿还债务。",
+        "examples": [
+            { "jp": "<ruby>宿<rt>しゅく</rt></ruby><ruby>題<rt>だい</rt></ruby>を<span class='ex-highlight'><ruby>済<rt>す</rt></ruby>ませて</span>から<ruby>遊<rt>あそ</rt></ruby>ぶ。", "cn": "做完作业后再玩。" },
+            { "jp": "<ruby>昼<rt>ちゅう</rt></ruby><ruby>食<rt>しょく</rt></ruby>をコンビニで<span class='ex-highlight'><ruby>済<rt>す</rt></ruby>ます</span>。", "cn": "在便利店解决午饭。" },
+            { "jp": "<ruby>借<rt>しゃっ</rt></ruby><ruby>金<rt>きん</rt></ruby>を<span class='ex-highlight'><ruby>済<rt>す</rt></ruby>ます</span>。", "cn": "还清欠款。" }
+        ],
+        "practice": {
+            "sentence": "夕食はピザで<span class='blank-space'></span>。",
+            "answer": "済ませた",
+            "options": ["済ませた", "遂げた", "施した", "果たした"]
+        }
+    },
+    {
+        "word": "遂げる",
+        "word_html": "<ruby>遂<rt>と</rt></ruby>げる",
+        "tone": "2",
+        "pos": "他一",
+        "mean": "完成、实现",
+        "nuance": "1. 最终达成目的或使命。",
+        "examples": [
+            { "jp": "ついに<ruby>目<rt>もく</rt></ruby><ruby>的<rt>てき</rt></ruby>を<span class='ex-highlight'><ruby>遂<rt>と</rt></ruby>げた</span>。", "cn": "终于达成了目的。" }
+        ],
+        "practice": {
+            "sentence": "彼は悲劇的な最期を<span class='blank-space'></span>。",
+            "answer": "遂げた",
+            "options": ["遂げた", "済ませた", "施した", "果たした"]
+        }
+    },
+    {
+        "word": "施す",
+        "word_html": "<ruby>施<rt>ほどこ</rt></ruby>す",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "施舍；施加、装饰；施行、进行",
+        "nuance": "1. 给予恩惠或财物。\n2. 做细致的加工或装饰。\n3. 进行手术、治疗、教育或采取对策。",
+        "examples": [
+            { "jp": "<ruby>物<rt>もの</rt></ruby><ruby>乞<rt>ご</rt></ruby>いをする<ruby>人<rt>ひと</rt></ruby>に<ruby>恩<rt>おん</rt></ruby><ruby>恵<rt>けい</rt></ruby>を<span class='ex-highlight'><ruby>施<rt>ほどこ</rt></ruby>す</span>。", "cn": "施恩与乞讨的人。" },
+            { "jp": "<ruby>写<rt>しゃ</rt></ruby><ruby>真<rt>しん</rt></ruby>に<ruby>彩<rt>さい</rt></ruby><ruby>色<rt>しょく</rt></ruby>を<span class='ex-highlight'><ruby>施<rt>ほどこ</rt></ruby>す</span>。", "cn": "给照片上色。" },
+            { "jp": "<ruby>患<rt>かん</rt></ruby><ruby>者<rt>じゃ</rt></ruby>に<ruby>緊<rt>きん</rt></ruby><ruby>急<rt>きゅう</rt></ruby><ruby>手<rt>しゅ</rt></ruby><ruby>術<rt>じゅつ</rt></ruby>を<span class='ex-highlight'><ruby>施<rt>ほどこ</rt></ruby>す</span>。", "cn": "对患者施行紧急手术。" }
+        ],
+        "practice": {
+            "sentence": "壁に装飾を<span class='blank-space'></span>。",
+            "answer": "施す",
+            "options": ["施す", "果たす", "凌ぐ", "勝る"]
+        }
+    },
+    {
+        "word": "果たす",
+        "word_html": "<ruby>果<rt>は</rt></ruby>たす",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "完成、实现；起到、发挥",
+        "nuance": "1. 履行义务、责任、承诺。\n2. 发挥某种作用或功能。",
+        "examples": [
+            { "jp": "<ruby>親<rt>おや</rt></ruby>としての<ruby>責<rt>せき</rt></ruby><ruby>任<rt>にん</rt></ruby>を<span class='ex-highlight'><ruby>果<rt>は</rt></ruby>たす</span>。", "cn": "尽到作为父母的责任。" },
+            { "jp": "<ruby>重<rt>じゅう</rt></ruby><ruby>要<rt>よう</rt></ruby>な<ruby>役<rt>やく</rt></ruby><ruby>割<rt>わり</rt></ruby>を<span class='ex-highlight'><ruby>果<rt>は</rt></ruby>たす</span>。", "cn": "发挥重要的作用。" }
+        ],
+        "practice": {
+            "sentence": "約束を<span class='blank-space'></span>。",
+            "answer": "果たす",
+            "options": ["果たす", "施す", "凌ぐ", "劣る"]
+        }
+    },
+    {
+        "word": "凌ぐ",
+        "word_html": "<ruby>凌<rt>しの</rt></ruby>ぐ",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "忍耐、以此度过；超越、胜过",
+        "nuance": "1. 勉强应付过难关、饥饿、恶劣天气。\n2. 在程度或能力上超过前者。",
+        "examples": [
+            { "jp": "<ruby>雨<rt>あめ</rt></ruby>を<span class='ex-highlight'><ruby>凌<rt>しの</rt></ruby>ぐ</span>ために<ruby>木<rt>き</rt></ruby>の<ruby>下<rt>した</rt></ruby>に<ruby>避<rt>ひ</rt></ruby><ruby>難<rt>なん</rt></ruby>した。", "cn": "为了避雨躲到树下。" },
+            { "jp": "<ruby>前<rt>ぜん</rt></ruby><ruby>作<rt>さく</rt></ruby>を<span class='ex-highlight'><ruby>凌<rt>しの</rt></ruby>ぐ</span>ヒット<ruby>作<rt>さく</rt></ruby>。", "cn": "超越前作的热门作品。" }
+        ],
+        "practice": {
+            "sentence": "空腹を水で<span class='blank-space'></span>。",
+            "answer": "凌ぐ",
+            "options": ["凌ぐ", "勝る", "劣る", "補う"]
+        }
+    },
+    {
+        "word": "勝る",
+        "word_html": "<ruby>勝<rt>まさ</rt></ruby>る",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "胜过、优越",
+        "nuance": "1. 在力量、价值、品质上高于比较对象。",
+        "examples": [
+            { "jp": "<ruby>健<rt>けん</rt></ruby><ruby>康<rt>こう</rt></ruby>に<span class='ex-highlight'><ruby>勝<rt>まさ</rt></ruby>る</span><ruby>宝<rt>たから</rt></ruby>はない。", "cn": "没有比健康更宝贵的财富了。" }
+        ],
+        "practice": {
+            "sentence": "実力では彼に<span class='blank-space'></span>。",
+            "answer": "勝る",
+            "options": ["勝る", "劣る", "補う", "忍ぶ"]
+        }
+    },
+    {
+        "word": "劣る",
+        "word_html": "<ruby>劣<rt>おと</rt></ruby>る",
+        "tone": "0",
+        "pos": "自五",
+        "mean": "劣、逊色",
+        "nuance": "1. 价值、能力、质量等低于比较对象。",
+        "examples": [
+            { "jp": "<ruby>性<rt>せい</rt></ruby><ruby>能<rt>のう</rt></ruby>では<ruby>他<rt>た</rt></ruby><ruby>社<rt>しゃ</rt></ruby><ruby>製<rt>せい</rt></ruby><ruby>品<rt>ひん</rt></ruby>に<span class='ex-highlight'><ruby>劣<rt>おと</rt></ruby>る</span>。", "cn": "在性能上逊色于其他公司的产品。" }
+        ],
+        "practice": {
+            "sentence": "技量で相手より<span class='blank-space'></span>。",
+            "answer": "劣る",
+            "options": ["劣る", "勝る", "忍ぶ", "堪える"]
+        }
+    },
+    {
+        "word": "補う",
+        "word_html": "<ruby>補<rt>おぎな</rt></ruby>う",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "弥补、补充；赔偿",
+        "nuance": "1. 补足不足的部分。\n2. 补偿损失。",
+        "examples": [
+            { "jp": "<ruby>栄<rt>えい</rt></ruby><ruby>養<rt>よう</rt></ruby><ruby>剤<rt>ざい</rt></ruby>でビタミンを<span class='ex-highlight'><ruby>補<rt>おぎな</rt></ruby>う</span>。", "cn": "用营养补充剂补充维生素。" },
+            { "jp": "<ruby>損<rt>そん</rt></ruby><ruby>害<rt>がい</rt></ruby>を<ruby>金<rt>きん</rt></ruby><ruby>銭<rt>せん</rt></ruby>で<span class='ex-highlight'><ruby>補<rt>おぎな</rt></ruby>う</span>。", "cn": "用金钱来填补损失。" }
+        ],
+        "practice": {
+            "sentence": "欠員をアルバイトで<span class='blank-space'></span>。",
+            "answer": "補う",
+            "options": ["補う", "忍ぶ", "堪える", "鈍る"]
+        }
+    },
+    {
+        "word": "忍ぶ",
+        "word_html": "<ruby>忍<rt>しの</rt></ruby>ぶ",
+        "tone": "0",
+        "pos": "自五/他五",
+        "mean": "忍耐；隐蔽、躲藏",
+        "nuance": "1. 忍受屈辱或痛苦。\n2. 避开他人的耳目，悄悄行动。",
+        "examples": [
+            { "jp": "<ruby>涙<rt>なみだ</rt></ruby>を<span class='ex-highlight'><ruby>忍<rt>しの</rt></ruby>んで</span><ruby>別<rt>わか</rt></ruby>れを<ruby>告<rt>つ</rt></ruby>げた。", "cn": "忍住眼泪告别了。" },
+            { "jp": "<ruby>人<rt>ひと</rt></ruby><ruby>目<rt>め</rt></ruby>を<span class='ex-highlight'><ruby>忍<rt>しの</rt></ruby>んで</span><ruby>会<rt>あ</rt></ruby>う。", "cn": "偷偷地见面。" }
+        ],
+        "practice": {
+            "sentence": "恥を<span class='blank-space'></span>お願いする。",
+            "answer": "忍んで",
+            "options": ["忍んで", "堪えて", "鈍って", "尖って"]
+        }
+    },
+    {
+        "word": "堪える",
+        "word_html": "<ruby>堪<rt>こら</rt></ruby>える",
+        "tone": "3",
+        "pos": "他一",
+        "mean": "忍住、控制",
+        "nuance": "1. 压抑内部涌上来的感情或生理反应，如眼泪、笑、痛。",
+        "examples": [
+            { "jp": "<ruby>笑<rt>わら</rt></ruby>いたい<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちを<ruby>必<rt>ひっ</rt></ruby><ruby>死<rt>し</rt></ruby>に<span class='ex-highlight'><ruby>堪<rt>こら</rt></ruby>えた</span>。", "cn": "拼命忍住想笑的心情。" }
+        ],
+        "practice": {
+            "sentence": "痛みを<span class='blank-space'></span>。",
+            "answer": "堪える",
+            "options": ["堪える", "忍ぶ", "鈍る", "尖る"]
+        }
+    },
+    {
+        "word": "鈍る",
+        "word_html": "<ruby>鈍<rt>にぶ</rt></ruby>る",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "变钝；迟钝、退步；变弱",
+        "nuance": "1. 刀具等不锋利。\n2. 技能、动作、头脑等变得不灵敏。\n3. 势头或决心减弱。",
+        "examples": [
+            { "jp": "ナイフの<ruby>切<rt>き</rt></ruby>れ<ruby>味<rt>あじ</rt></ruby>が<span class='ex-highlight'><ruby>鈍<rt>にぶ</rt></ruby>る</span>。", "cn": "刀变得不快了。" },
+            { "jp": "<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby><ruby>不<rt>ぶ</rt></ruby><ruby>足<rt>そく</rt></ruby>で<ruby>腕<rt>うで</rt></ruby>が<span class='ex-highlight'><ruby>鈍<rt>にぶ</rt></ruby>る</span>。", "cn": "因为缺乏练习，手艺退步。" },
+            { "jp": "<ruby>試<rt>し</rt></ruby><ruby>合<rt>あい</rt></ruby>で<ruby>負<rt>ま</rt></ruby>けて<ruby>意<rt>い</rt></ruby><ruby>欲<rt>よく</rt></ruby>が<span class='ex-highlight'><ruby>鈍<rt>にぶ</rt></ruby>った</span>。", "cn": "因为比赛失败，干劲减弱了。" }
+        ],
+        "practice": {
+            "sentence": "寒さで動きが<span class='blank-space'></span>。",
+            "answer": "鈍る",
+            "options": ["鈍る", "尖る", "冴える", "企む"]
+        }
+    },
+    {
+        "word": "尖る",
+        "word_html": "<ruby>尖<rt>とが</rt></ruby>る",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "尖、锐利；敏感、紧绷",
+        "nuance": "1. 顶端细长锐利。\n2. 神经或感觉变得敏锐。",
+        "examples": [
+            { "jp": "<ruby>怒<rt>おこ</rt></ruby>った<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>の<ruby>目<rt>め</rt></ruby>が<span class='ex-highlight'><ruby>尖<rt>とが</rt></ruby>っていた</span>。", "cn": "生气的她眼神很锐利。" },
+            { "jp": "<ruby>神<rt>しん</rt></ruby><ruby>経<rt>けい</rt></ruby>が<span class='ex-highlight'><ruby>尖<rt>とが</rt></ruby>っている</span>。", "cn": "神经紧绷。" }
+        ],
+        "practice": {
+            "sentence": "鉛筆の先が<span class='blank-space'></span>。",
+            "answer": "尖っている",
+            "options": ["尖っている", "鈍っている", "冴えている", "企んでいる"]
+        }
+    },
+    {
+        "word": "冴える",
+        "word_html": "<ruby>冴<rt>さ</rt></ruby>える",
+        "tone": "2",
+        "pos": "自一",
+        "mean": "清澈、鲜明；清醒、敏锐；精湛、出色",
+        "nuance": "1. 光、色、声音等非常清晰，寒冷刺骨。\n2. 头脑清楚，感觉灵敏。\n3. 技术高超，表现精彩。",
+        "examples": [
+            { "jp": "<ruby>冬<rt>ふゆ</rt></ruby>の<ruby>夜<rt>よ</rt></ruby><ruby>空<rt>ぞら</rt></ruby>に<ruby>月<rt>つき</rt></ruby>が<span class='ex-highlight'><ruby>冴<rt>さ</rt></ruby>えている</span>。", "cn": "冬天的夜空中月亮分外清朗。" },
+            { "jp": "<ruby>今<rt>きょう</rt></ruby><ruby>日<rt>ひ</rt></ruby>は<ruby>頭<rt>あたま</rt></ruby>が<span class='ex-highlight'><ruby>冴<rt>さ</rt></ruby>えている</span>。", "cn": "今天头脑很清醒。" },
+            { "jp": "<ruby>職<rt>しょく</rt></ruby><ruby>人<rt>にん</rt></ruby>の<ruby>技<rt>わざ</rt></ruby>が<span class='ex-highlight'><ruby>冴<rt>さ</rt></ruby>える</span>。", "cn": "工匠的技艺精湛。" }
+        ],
+        "practice": {
+            "sentence": "目が<span class='blank-space'></span>眠れない。",
+            "answer": "冴えて",
+            "options": ["冴えて", "鈍って", "尖って", "企んで"]
+        }
+    },
+    {
+        "word": "企む",
+        "word_html": "<ruby>企<rt>たくら</rt></ruby>む",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "策划、图谋",
+        "nuance": "1. 暗中计划坏事或恶作剧。",
+        "examples": [
+            { "jp": "<ruby>何<rt>なに</rt></ruby>か<ruby>悪<rt>あく</rt></ruby><ruby>事<rt>じ</rt></ruby>を<span class='ex-highlight'><ruby>企<rt>たくら</rt></ruby>んで</span>いるに<ruby>違<rt>ちが</rt></ruby>いない。", "cn": "肯定在策划什么坏事。" }
+        ],
+        "practice": {
+            "sentence": "復讐を<span class='blank-space'></span>。",
+            "answer": "企む",
+            "options": ["企む", "冴える", "尖る", "鈍る"]
+        }
+    }
+];
+const DAY7_WORDS = [
+    {
+        "word": "挙げる",
+        "word_html": "<ruby>挙<rt>あ</rt></ruby>げる",
+        "tone": "0",
+        "pos": "他一",
+        "mean": "举起；列举；举行、取得",
+        "nuance": "1. 物理动作：举手、举旗。\n2. 举出例子、名字。\n3. 举行婚礼、取得成果、竭尽全力。",
+        "examples": [
+            { "jp": "<ruby>賛<rt>さん</rt></ruby><ruby>成<rt>せい</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>は<span class='ex-highlight'><ruby>手<rt>て</rt></ruby>を<ruby>挙<rt>あ</rt></ruby>げて</span>ください。", "cn": "赞成的人请举手。" },
+            { "jp": "<ruby>具<rt>ぐ</rt></ruby><ruby>体<rt>たい</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>例<rt>れい</rt></ruby>を<span class='ex-highlight'><ruby>挙<rt>あ</rt></ruby>げる</span>。", "cn": "列举具体的例子。" },
+            { "jp": "<ruby>結<rt>けっ</rt></ruby><ruby>婚<rt>こん</rt></ruby><ruby>式<rt>しき</rt></ruby>を<span class='ex-highlight'><ruby>挙<rt>あ</rt></ruby>げる</span>。", "cn": "举行婚礼。" }
+        ],
+        "practice": {
+            "sentence": "彼は会議の中で、自説を裏付けるための具体的なデータをいくつも<span class='blank-space'></span>説明した。",
+            "answer": "挙げて",
+            "options": ["挙げて", "設けて", "催して", "目論んで"]
+        }
+    },
+    {
+        "word": "目論む",
+        "word_html": "<ruby>目<rt>もく</rt></ruby><ruby>論<rt>ろ</rt></ruby>む",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "计划、策划",
+        "nuance": "在此构思未来的计划。",
+        "examples": [
+            { "jp": "<ruby>新<rt>あたら</rt></ruby>しい<ruby>事<rt>じ</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>を<span class='ex-highlight'><ruby>目<rt>もく</rt></ruby><ruby>論<rt>ろ</rt></ruby>む</span>。", "cn": "策划新的事业。" }
+        ],
+        "practice": {
+            "sentence": "その企業は新技術を導入することで、業界シェアの拡大を<span class='blank-space'></span>ている。",
+            "answer": "目論んで",
+            "options": ["目論んで", "挙げて", "逆らって", "覆して"]
+        }
+    },
+    {
+        "word": "催す",
+        "word_html": "<ruby>催<rt>もよお</rt></ruby>す",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "举办、举行；感觉要...",
+        "nuance": "1. 召集人开会、搞活动。\n2. 感到困倦、便意、尿意等生理现象。",
+        "examples": [
+            { "jp": "<ruby>歓<rt>かん</rt></ruby><ruby>迎<rt>げい</rt></ruby><ruby>会<rt>かい</rt></ruby>を<span class='ex-highlight'><ruby>催<rt>もよお</rt></ruby>す</span>。", "cn": "举办欢迎会。" },
+            { "jp": "<ruby>食<rt>しょく</rt></ruby><ruby>後<rt>ご</rt></ruby>に<span class='ex-highlight'><ruby>眠<rt>ねむ</rt></ruby><ruby>気<rt>け</rt></ruby>を<ruby>催<rt>もよお</rt></ruby>す</span>。", "cn": "饭后感到困倦。" }
+        ],
+        "practice": {
+            "sentence": "来月、定年退職される田中部長のために、ホテルで盛大な送別会を<span class='blank-space'></span>ことになった。",
+            "answer": "催す",
+            "options": ["催す", "弄る", "弱る", "霞む"]
+        }
+    },
+    {
+        "word": "設ける",
+        "word_html": "<ruby>設<rt>もう</rt></ruby>ける",
+        "tone": "3",
+        "pos": "他一",
+        "mean": "设立、制定；预备、创造",
+        "nuance": "1. 设置规则、机关、委员会。\n2. 特意留出时间、机会、空隙。",
+        "examples": [
+            { "jp": "<ruby>厳<rt>きび</rt></ruby>しい<ruby>規<rt>き</rt></ruby><ruby>則<rt>そく</rt></ruby>を<span class='ex-highlight'><ruby>設<rt>もう</rt></ruby>ける</span>。", "cn": "制定严格的规则。" },
+            { "jp": "<ruby>話<rt>はな</rt></ruby>し<ruby>合<rt>あ</rt></ruby>いの<ruby>席<rt>せき</rt></ruby>を<span class='ex-highlight'><ruby>設<rt>もう</rt></ruby>ける</span>。", "cn": "专门安排面谈的机会。" }
+        ],
+        "practice": {
+            "sentence": "トラブルを未然に防ぐため、会社は従業員に対して厳格なセキュリティガイドラインを<span class='blank-space'></span>。",
+            "answer": "設けた",
+            "options": ["設けた", "挙げた", "目論んだ", "逆らった"]
+        }
+    },
+    {
+        "word": "逆らう",
+        "word_html": "<ruby>逆<rt>さか</rt></ruby>らう",
+        "tone": "3",
+        "pos": "自五",
+        "mean": "逆、违背；违抗、反抗",
+        "nuance": "1. 逆着水流、风向等物理方向。\n2. 不服从命令、教导或大势。",
+        "examples": [
+            { "jp": "<ruby>風<rt>かぜ</rt></ruby>に<span class='ex-highlight'><ruby>逆<rt>さか</rt></ruby>らって</span><ruby>走<rt>はし</rt></ruby>る。", "cn": "逆风奔跑。" },
+            { "jp": "<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>の<ruby>流<rt>なが</rt></ruby>れに<span class='ex-highlight'><ruby>逆<rt>さか</rt></ruby>らう</span>。", "cn": "逆时代潮流而动。" }
+        ],
+        "practice": {
+            "sentence": "時代の流れに<span class='blank-space'></span>、彼はあくまでも伝統的な手法にこだわり続けている。",
+            "answer": "逆らって",
+            "options": ["逆らって", "覆して", "弱って", "薄まって"]
+        }
+    },
+    {
+        "word": "覆す",
+        "word_html": "<ruby>覆<rt>くつがえ</rt></ruby>す",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "打翻；推翻、颠覆",
+        "nuance": "1. 把东西弄翻。\n2. 彻底改变定论、判决或常识。",
+        "examples": [
+            { "jp": "<ruby>荒<rt>あら</rt></ruby><ruby>波<rt>なみ</rt></ruby>が<ruby>船<rt>ふね</rt></ruby>を<span class='ex-highlight'><ruby>覆<rt>くつがえ</rt></ruby>した</span>。", "cn": "狂浪掀翻了船。" },
+            { "jp": "<ruby>常<rt>じょう</rt></ruby><ruby>識<rt>しき</rt></ruby>を<span class='ex-highlight'><ruby>覆<rt>くつがえ</rt></ruby>す</span><ruby>大<rt>だい</rt></ruby><ruby>発<rt>はっ</rt></ruby><ruby>見<rt>けん</rt></ruby>。", "cn": "颠覆常识的大发现。" }
+        ],
+        "practice": {
+            "sentence": "彼は圧倒的な実力を見せつけ、事前の予想を<span class='blank-space'></span>勝利を手にした。",
+            "answer": "覆して",
+            "options": ["覆して", "逆らって", "設けて", "催して"]
+        }
+    },
+    {
+        "word": "弱る",
+        "word_html": "<ruby>弱<rt>よわ</rt></ruby>る",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "衰弱、虚弱；为难、困扰",
+        "nuance": "1. 身体或力量变弱。\n2. 遇到难题不知如何是好。",
+        "examples": [
+            { "jp": "<ruby>病<rt>びょう</rt></ruby><ruby>気<rt>き</rt></ruby>で<ruby>体<rt>からだ</rt></ruby>が<span class='ex-highlight'><ruby>弱<rt>よわ</rt></ruby>る</span>。", "cn": "因病身体衰弱。" },
+            { "jp": "<ruby>返<rt>へん</rt></ruby><ruby>事<rt>じ</rt></ruby>に<span class='ex-highlight'><ruby>弱<rt>よわ</rt></ruby>る</span>。", "cn": "不知该怎么回复而感到为难。" }
+        ],
+        "practice": {
+            "sentence": "長引く不況の影響で、多くの中小企業の経営体力が急速に<span class='blank-space'></span>きている。",
+            "answer": "弱って",
+            "options": ["弱って", "薄まって", "霞んで", "ぼやけて"]
+        }
+    },
+    {
+        "word": "薄まる",
+        "word_html": "<ruby>薄<rt>うす</rt></ruby>まる",
+        "tone": "3",
+        "pos": "自五",
+        "mean": "变淡、稀释；淡薄",
+        "nuance": "1. 液体浓度降低。\n2. 兴趣、记忆、存在感等减弱。",
+        "examples": [
+            { "jp": "<ruby>氷<rt>こおり</rt></ruby>が<ruby>溶<rt>と</rt></ruby>けてジュースが<span class='ex-highlight'><ruby>薄<rt>うす</rt></ruby>まる</span>。", "cn": "冰化了，果汁变淡了。" },
+            { "jp": "<ruby>遠<rt>とお</rt></ruby>い<ruby>昔<rt>むかし</rt></ruby>の<ruby>記<rt>き</rt></ruby><ruby>憶<rt>おく</rt></ruby>が<span class='ex-highlight'><ruby>薄<rt>うす</rt></ruby>まる</span>。", "cn": "遥远的记忆变得淡薄了。" }
+        ],
+        "practice": {
+            "sentence": "彼の無実が証明されるにつれて、周囲の彼に対する疑いは次第に<span class='blank-space'></span>いった。",
+            "answer": "薄まって",
+            "options": ["薄まって", "弱って", "澄んで", "透けて"]
+        }
+    },
+    {
+        "word": "弄る",
+        "word_html": "<ruby>弄<rt>いじ</rt></ruby>る",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "摆弄、玩弄；随意改动、捣鼓；调侃、戏弄",
+        "nuance": "1. 手不自觉地触摸、抚摸或把玩某物。\n2. 作为爱好，对机器、庭院等进行修整或改装。\n3. 拿人开玩笑。",
+        "examples": [
+            { "jp": "<ruby>会<rt>かい</rt></ruby><ruby>話<rt>わ</rt></ruby><ruby>中<rt>ちゅう</rt></ruby>、ずっとスマホを<span class='ex-highlight'><ruby>弄<rt>いじ</rt></ruby>っている</span>。", "cn": "谈话时一直在玩手机。" },
+            { "jp": "<ruby>素<rt>しら</rt></ruby><ruby>人<rt>うと</rt></ruby>がパソコンを<span class='ex-highlight'><ruby>弄<rt>いじ</rt></ruby>って</span><ruby>壊<rt>こわ</rt></ruby>してしまった。", "cn": "外行人随意摆弄电脑，结果弄坏了。" },
+            { "jp": "<ruby>後<rt>こう</rt></ruby><ruby>輩<rt>はい</rt></ruby>を<span class='ex-highlight'><ruby>弄<rt>いじ</rt></ruby>る</span>。", "cn": "拿后辈开玩笑。" }
+        ],
+        "practice": {
+            "sentence": "彼は大事なプレゼンテーションの最中、緊張のあまりネクタイを<span class='blank-space'></span>癖が出てしまった。",
+            "answer": "弄る",
+            "options": ["弄る", "怠ける", "サボる", "霞む"]
+        }
+    },
+    {
+        "word": "怠ける",
+        "word_html": "<ruby>怠<rt>なま</rt></ruby>ける",
+        "tone": "3",
+        "pos": "自/他一",
+        "mean": "偷懒、懈怠",
+        "nuance": "1. 该做的事情不做，贪图安逸。",
+        "examples": [
+            { "jp": "<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>を<span class='ex-highlight'><ruby>怠<rt>なま</rt></ruby>ける</span>。", "cn": "工作偷懒。" }
+        ],
+        "practice": {
+            "sentence": "受験生であるにもかかわらず、夏休みの間ずっと勉強を<span class='blank-space'></span>いたため、志望校の判定が下がってしまった。",
+            "answer": "怠けて",
+            "options": ["怠けて", "怠って", "サボって", "ばてて"]
+        }
+    },
+    {
+        "word": "怠る",
+        "word_html": "<ruby>怠<rt>おこた</rt></ruby>る",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "疏忽、懈怠",
+        "nuance": "1. 该做的准备没做，或没给到应有的注意。",
+        "examples": [
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>は<span class='ex-highlight'><ruby>健<rt>けん</rt></ruby><ruby>康<rt>こう</rt></ruby><ruby>管<rt>かん</rt></ruby><ruby>理<rt>り</rt></ruby>を<ruby>怠<rt>おこた</rt></ruby>った</span>ため、<ruby>病<rt>びょう</rt></ruby><ruby>気<rt>き</rt></ruby>になった。", "cn": "他因为忽视健康管理，给自己整生病了。" }
+        ],
+        "practice": {
+            "sentence": "建設現場での安全確認を<span class='blank-space'></span>ことが、今回の大規模な事故につながったと見られている。",
+            "answer": "怠った",
+            "options": ["怠った", "怠けた", "逆らった", "覆した"]
+        }
+    },
+    {
+        "word": "霞む",
+        "word_html": "<ruby>霞<rt>かす</rt></ruby>む",
+        "tone": "0",
+        "pos": "自五",
+        "mean": "朦胧、看不清；相形见绌、被抢风头",
+        "nuance": "1. 因雾气或眼力衰退导致视线模糊。\n2. 因旁人过于出色而显得黯淡无光。",
+        "examples": [
+            { "jp": "<ruby>霧<rt>きり</rt></ruby>で<ruby>山<rt>やま</rt></ruby>が<span class='ex-highlight'><ruby>霞<rt>かす</rt></ruby>んで</span><ruby>見<rt>み</rt></ruby>える。", "cn": "因为雾，山看起来蒙蒙眬眬。" },
+            { "jp": "<ruby>主<rt>しゅ</rt></ruby><ruby>役<rt>やく</rt></ruby>が<span class='ex-highlight'><ruby>霞<rt>かす</rt></ruby>む</span>ほどの<ruby>名<rt>めい</rt></ruby><ruby>演<rt>えん</rt></ruby><ruby>技<rt>ぎ</rt></ruby>。", "cn": "演技好到让主角都黯然失色。" }
+        ],
+        "practice": {
+            "sentence": "今年の新人選手の活躍があまりにも凄すぎて、ベテラン選手の存在感が<span class='blank-space'></span>しまった。",
+            "answer": "霞んで",
+            "options": ["霞んで", "ぼやけて", "薄まって", "弱って"]
+        }
+    },
+    {
+        "word": "ぼやける",
+        "word_html": "ぼやける",
+        "tone": "3",
+        "pos": "自一",
+        "mean": "模糊、看不清；含糊、暧昧",
+        "nuance": "1. 轮廓或焦点不清晰导致视力模糊。\n2. 意思或记忆不再明确。",
+        "examples": [
+            { "jp": "<ruby>涙<rt>なみだ</rt></ruby>で<ruby>視<rt>し</rt></ruby><ruby>界<rt>かい</rt></ruby>が<span class='ex-highlight'>ぼやける</span>。", "cn": "因为眼泪，视线变得模糊。" },
+            { "jp": "<ruby>記<rt>き</rt></ruby><ruby>憶<rt>おく</rt></ruby>が<span class='ex-highlight'>ぼやける</span>。", "cn": "记忆变得模糊了。" }
+        ],
+        "practice": {
+            "sentence": "久しぶりに故郷の写真を眺めていると、涙で視界が<span class='blank-space'></span>何も見えなくなった。",
+            "answer": "ぼやけて",
+            "options": ["ぼやけて", "霞んで", "掠れて", "滲んで"]
+        }
+    },
+    {
+        "word": "サボる",
+        "word_html": "サボる",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "偷懒、逃课、旷工",
+        "nuance": "1. 逃避本来该做的工作或学习。",
+        "examples": [
+            { "jp": "<ruby>学<rt>がっ</rt></ruby><ruby>校<rt>こう</rt></ruby>を<span class='ex-highlight'>サボって</span><ruby>遊<rt>あそ</rt></ruby>びに<ruby>行<rt>い</rt></ruby>く。", "cn": "逃学去玩。" }
+        ],
+        "practice": {
+            "sentence": "面倒な会議を<span class='blank-space'></span>映画を見に行ったら、そこで部長とばったり鉢合わせしてしまった。",
+            "answer": "サボって",
+            "options": ["サボって", "怠けて", "弄って", "設けて"]
+        }
+    },
+    {
+        "word": "澄む",
+        "word_html": "<ruby>澄<rt>す</rt></ruby>む",
+        "tone": "1",
+        "pos": "自五",
+        "mean": "清澈、澄清；清亮、宁静",
+        "nuance": "1. 液体透明、没有混浊。\n2. 声音、神情或心境没有杂质，显得纯净。",
+        "examples": [
+            { "jp": "<ruby>川<rt>かわ</rt></ruby>の<ruby>水<rt>みず</rt></ruby>が<span class='ex-highlight'><ruby>澄<rt>す</rt></ruby>んで</span>いる。", "cn": "河水清澈。" },
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>の<span class='ex-highlight'><ruby>澄<rt>す</rt></ruby>んだ</span><ruby>笑<rt>え</rt></ruby><ruby>顔<rt>がお</rt></ruby>に<ruby>癒<rt>い</rt></ruby>やされる。", "cn": "被他纯净的笑容治愈了。" }
+        ],
+        "practice": {
+            "sentence": "早朝の山頂で深呼吸をすると、冷たくて<span class='blank-space'></span>空気が体中に行き渡るのを感じた。",
+            "answer": "澄んだ",
+            "options": ["澄んだ", "透けた", "弱った", "薄まった"]
+        }
+    },
+    {
+        "word": "透ける",
+        "word_html": "<ruby>透<rt>す</rt></ruby>ける",
+        "tone": "0",
+        "pos": "自一",
+        "mean": "透明、透视；看穿、显露",
+        "nuance": "1. 透过物体可以看到里面或后面。\n2. 谎言或本心暴露出来。",
+        "examples": [
+            { "jp": "<ruby>中<rt>なか</rt></ruby><ruby>身<rt>み</rt></ruby>が<span class='ex-highlight'><ruby>透<rt>す</rt></ruby>けて</span><ruby>見<rt>み</rt></ruby>える。", "cn": "能透过包装看到里面的东西。" },
+            { "jp": "<ruby>下<rt>した</rt></ruby><ruby>心<rt>ごころ</rt></ruby>が<span class='ex-highlight'><ruby>透<rt>す</rt></ruby>けて</span><ruby>見<rt>み</rt></ruby>える。", "cn": "企图显露无遗。" }
+        ],
+        "practice": {
+            "sentence": "彼の提案は一見親切そうに見えるが、その裏にある利益独占の意図が<span class='blank-space'></span>見えている。",
+            "answer": "透けて",
+            "options": ["透けて", "澄んで", "滲んで", "染みて"]
+        }
+    },
+    {
+        "word": "掠れる",
+        "word_html": "<ruby>掠<rt>かす</rt></ruby>れる",
+        "tone": "3",
+        "pos": "自一",
+        "mean": "嘶哑；模糊、飞白",
+        "nuance": "1. 声音不响亮。\n2. 墨水不足导致字迹出现断痕。",
+        "examples": [
+            { "jp": "<ruby>叫<rt>さけ</rt></ruby>びすぎて<ruby>声<rt>こえ</rt></ruby>が<span class='ex-highlight'><ruby>掠<rt>かす</rt></ruby>れる</span>。", "cn": "喊得太多嗓子哑了。" },
+            { "jp": "インクがなくなって<ruby>字<rt>じ</rt></ruby>が<span class='ex-highlight'><ruby>掠<rt>かす</rt></ruby>れる</span>。", "cn": "没墨水了，字迹模糊。" }
+        ],
+        "practice": {
+            "sentence": "昨日、カラオケで長時間歌いすぎたせいで、今日は声が<span class='blank-space'></span>しまってうまく話せない。",
+            "answer": "掠れて",
+            "options": ["掠れて", "滲んで", "ぼやけて", "霞んで"]
+        }
+    },
+    {
+        "word": "滲む",
+        "word_html": "<ruby>滲<rt>にじ</rt></ruby>む",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "晕开、洇；渗出、涌出；流露",
+        "nuance": "1. 液体在纸或布上扩散。\n2. 液体从内部冒出来。\n3. 感情自然表现出来。",
+        "examples": [
+            { "jp": "<ruby>雨<rt>あめ</rt></ruby>で<ruby>宛<rt>あて</rt></ruby><ruby>名<rt>な</rt></ruby>が<span class='ex-highlight'><ruby>滲<rt>にじ</rt></ruby>む</span>。", "cn": "因为淋雨，信封上的名字晕开了。" },
+            { "jp": "<ruby>包<rt>ほう</rt></ruby><ruby>帯<rt>たい</rt></ruby>に<ruby>血<rt>ち</rt></ruby>が<span class='ex-highlight'><ruby>滲<rt>にじ</rt></ruby>む</span>。", "cn": "血渗出了绷带。" },
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>の<ruby>態<rt>たい</rt></ruby><ruby>度<rt>ど</rt></ruby>には<ruby>自<rt>じ</rt></ruby><ruby>信<rt>しん</rt></ruby>が<span class='ex-highlight'><ruby>滲<rt>にじ</rt></ruby>んで</span>いた。", "cn": "他的态度中透出一股自信。" }
+        ],
+        "practice": {
+            "sentence": "突然の雨でカバンの中まで濡れてしまい、封筒に書いた宛名の文字が<span class='blank-space'></span>読めなくなってしまった。",
+            "answer": "滲んで",
+            "options": ["滲んで", "染みて", "掠れて", "透けて"]
+        }
+    },
+    {
+        "word": "染みる",
+        "word_html": "<ruby>染<rt>し</rt></ruby>みる",
+        "tone": "0",
+        "pos": "自一",
+        "mean": "渗入、渗透；刺痛；铭刻于心、感动",
+        "nuance": "1. 液体渗进内部，多指味道、汗水等。\n2. 药物、寒气、烟雾等刺激身体。\n3. 深深地触动感情。",
+        "examples": [
+            { "jp": "<ruby>味<rt>あじ</rt></ruby>がよく<span class='ex-highlight'><ruby>染<rt>し</rt></ruby>みた</span><ruby>大<rt>だい</rt></ruby><ruby>根<rt>こん</rt></ruby>。", "cn": "非常入味的萝卜。" },
+            { "jp": "<ruby>消<rt>しょう</rt></ruby><ruby>毒<rt>どく</rt></ruby><ruby>薬<rt>やく</rt></ruby>が<ruby>傷<rt>きず</rt></ruby><ruby>口<rt>ぐち</rt></ruby>に<span class='ex-highlight'><ruby>染<rt>し</rt></ruby>みる</span>。", "cn": "消毒药刺痛伤口。" },
+            { "jp": "<ruby>親<rt>おや</rt></ruby>の<ruby>優<rt>やさ</rt></ruby>しさが<ruby>心<rt>こころ</rt></ruby>に<span class='ex-highlight'><ruby>染<rt>し</rt></ruby>みる</span>。", "cn": "父母的温柔铭刻在心。" }
+        ],
+        "practice": {
+            "sentence": "辛いときに掛けてくれた友人の温かい言葉が、冷え切った心に深く<span class='blank-space'></span>。",
+            "answer": "染みた",
+            "options": ["染みた", "滲んだ", "澄んだ", "怠った"]
+        }
+    },
+    {
+        "word": "ばてる",
+        "word_html": "ばてる",
+        "tone": "2",
+        "pos": "自一",
+        "mean": "精疲力竭、累趴下",
+        "nuance": "1. 体力耗尽，动弹不得。",
+        "examples": [
+            { "jp": "<ruby>暑<rt>あつ</rt></ruby>さで<span class='ex-highlight'>ばてる</span>。", "cn": "热得累趴下了。" }
+        ],
+        "practice": {
+            "sentence": "炎天下の中で激しい運動を続けたため、すっかり<span class='blank-space'></span>動けなくなってしまった。",
+            "answer": "ばてて",
+            "options": ["ばてて", "サボって", "怠けて", "弱って"]
+        }
+    },
+    
+];
+const DAY8_WORDS = [
+{
+        "word": "冷やす",
+        "word_html": "<ruby>冷<rt>ひ</rt></ruby>やす",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "冰镇、使变凉；使(头脑)冷静；惊出冷汗",
+        "nuance": "1. 降低物体的温度。\n2. 让激动的感情平复。\n3. 特指「肝を冷やす」，吓破胆。",
+        "examples": [
+            { "jp": "ビールを<span class='ex-highlight'><ruby>冷<rt>ひ</rt></ruby>やす</span>。", "cn": "冰镇啤酒。" },
+            { "jp": "<ruby>少<rt>すこ</rt></ruby>し<ruby>頭<rt>あたま</rt></ruby>を<span class='ex-highlight'><ruby>冷<rt>ひ</rt></ruby>やして</span>こい。", "cn": "去冷静一下头脑。" },
+            { "jp": "<ruby>事<rt>じ</rt></ruby><ruby>故<rt>こ</rt></ruby>になりそうで<ruby>肝<rt>きも</rt></ruby>を<span class='ex-highlight'><ruby>冷<rt>ひ</rt></ruby>やした</span>。", "cn": "差点出事故，吓出一身冷汗。" }
+        ],
+        "practice": {
+            "sentence": "子供が急に道路に飛び出してきたため、ブレーキをかけて<span class='blank-space'></span>。",
+            "answer": "肝を冷やした",
+            "options": ["肝を冷やした", "安らいだ", "寛いだ", "憩った"]
+        }
+    },
+    {
+        "word": "安らぐ",
+        "word_html": "<ruby>安<rt>やす</rt></ruby>らぐ",
+        "tone": "3",
+        "pos": "自五",
+        "mean": "安宁、平静",
+        "nuance": "1. 心情放松，没有烦恼。",
+        "examples": [
+            { "jp": "<ruby>音<rt>おん</rt></ruby><ruby>楽<rt>がく</rt></ruby>を<ruby>聴<rt>き</rt></ruby>くと<ruby>心<rt>こころ</rt></ruby>が<span class='ex-highlight'><ruby>安<rt>やす</rt></ruby>らぐ</span>。", "cn": "听音乐让心灵安宁。" }
+        ],
+        "practice": {
+            "sentence": "激しい議論のあと、美しい景色を眺めていると次第に心が<span class='blank-space'></span>きた。",
+            "answer": "安らいで",
+            "options": ["安らいで", "冷やして", "隠して", "秘めて"]
+        }
+    },
+    {
+        "word": "隠す",
+        "word_html": "<ruby>隠<rt>かく</rt></ruby>す",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "隐藏、遮盖；隐瞒",
+        "nuance": "1. 把东西藏起来不让人看见。\n2. 掩盖真相、秘密。",
+        "examples": [
+            { "jp": "<ruby>雲<rt>くも</rt></ruby>に<span class='ex-highlight'><ruby>隠<rt>かく</rt></ruby>された</span><ruby>月<rt>つき</rt></ruby>。", "cn": "被云遮住的月亮。" },
+            { "jp": "<ruby>本<rt>ほん</rt></ruby><ruby>心<rt>しん</rt></ruby>を<span class='ex-highlight'><ruby>隠<rt>かく</rt></ruby>す</span>。", "cn": "隐藏真心话。" }
+        ],
+        "practice": {
+            "sentence": "彼は何かを<span class='blank-space'></span>いるようで、私の質問に対して曖昧な返事しかしなかった。",
+            "answer": "隠して",
+            "options": ["隠して", "庇って", "担って", "帯びて"]
+        }
+    },
+    {
+        "word": "秘める",
+        "word_html": "<ruby>秘<rt>ひ</rt></ruby>める",
+        "tone": "2",
+        "pos": "他一",
+        "mean": "秘藏、藏在心里；蕴藏",
+        "nuance": "1. 不公开，深藏于内部。\n2. 内部含有某种潜力或可能性。",
+        "examples": [
+            { "jp": "<ruby>想<rt>おも</rt></ruby>いを<ruby>胸<rt>むね</rt></ruby>に<span class='ex-highlight'><ruby>秘<rt>ひ</rt></ruby>める</span>。", "cn": "把思念深藏在心底。" },
+            { "jp": "<ruby>無<rt>む</rt></ruby><ruby>限<rt>げん</rt></ruby>の<ruby>可<rt>か</rt></ruby><ruby>能<rt>のう</rt></ruby><ruby>性<rt>せい</rt></ruby>を<span class='ex-highlight'><ruby>秘<rt>ひ</rt></ruby>めた</span><ruby>新<rt>しん</rt></ruby><ruby>人<rt>じん</rt></ruby>。", "cn": "蕴藏着无限潜力的新人。" }
+        ],
+        "practice": {
+            "sentence": "この新製品は、市場を大きく変える可能性を<span class='blank-space'></span>ている。",
+            "answer": "秘め",
+            "options": ["秘め", "潜め", "隠し", "庇い"]
+        }
+    },
+    {
+        "word": "潜める",
+        "word_html": "<ruby>潜<rt>ひそ</rt></ruby>める",
+        "tone": "3",
+        "pos": "他一",
+        "mean": "隐藏(身形)；压低、屏住；隐藏(情绪/恶意)",
+        "nuance": "1. 藏身以等待时机。\n2. 使声音、呼吸变小以防被发现。\n3. 隐藏负面的、危险的内心活动。",
+        "examples": [
+            { "jp": "<ruby>息<rt>いき</rt></ruby>を<span class='ex-highlight'><ruby>潜<rt>ひそ</rt></ruby>める</span>。", "cn": "屏住呼吸。" },
+            { "jp": "<ruby>声<rt>こえ</rt></ruby>を<span class='ex-highlight'><ruby>潜<rt>ひそ</rt></ruby>めて</span><ruby>話<rt>はな</rt></ruby>す。", "cn": "压低声音说话。" },
+            { "jp": "<ruby>殺<rt>さっ</rt></ruby><ruby>気<rt>き</rt></ruby>を<span class='ex-highlight'><ruby>潜<rt>ひそ</rt></ruby>める</span>。", "cn": "隐藏杀气。" }
+        ],
+        "practice": {
+            "sentence": "犯人は警察の捜査を逃れるため、古いアパートの一室に身を<span class='blank-space'></span>いた。",
+            "answer": "潜めて",
+            "options": ["潜めて", "秘めて", "隠して", "安らいで"]
+        }
+    },
+    {
+        "word": "庇う",
+        "word_html": "<ruby>庇<rt>かば</rt></ruby>う",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "袒护、包庇；护着",
+        "nuance": "1. 保护某人不受指责或攻击。\n2. 因受伤而小心保护患处。",
+        "examples": [
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>部<rt>ぶ</rt></ruby><ruby>下<rt>か</rt></ruby>のミスを<span class='ex-highlight'><ruby>庇<rt>かば</rt></ruby>った</span>。", "cn": "他包庇下属的失误。" },
+            { "jp": "<ruby>傷<rt>きず</rt></ruby>ついた<ruby>足<rt>あし</rt></ruby>を<span class='ex-highlight'><ruby>庇<rt>かば</rt></ruby>って</span><ruby>歩<rt>ある</rt></ruby>く。", "cn": "护着受伤的脚走。" }
+        ],
+        "practice": {
+            "sentence": "部長は自分の責任を問われることを覚悟で、部下の失敗を<span class='blank-space'></span>。",
+            "answer": "庇った",
+            "options": ["庇った", "隠した", "潜めた", "秘めた"]
+        }
+    },
+    {
+        "word": "寛ぐ",
+        "word_html": "<ruby>寛<rt>くつろ</rt></ruby>ぐ",
+        "tone": "3",
+        "pos": "自五",
+        "mean": "放松、舒服",
+        "nuance": "1. 身心放松，不拘束。",
+        "examples": [
+            { "jp": "ソファで<span class='ex-highlight'><ruby>寛<rt>くつろ</rt></ruby>いで</span>テレビを<ruby>見<rt>み</rt></ruby>る。", "cn": "在沙发上舒舒服服地看电视。" }
+        ],
+        "practice": {
+            "sentence": "休日は家でゆっくりと<span class='blank-space'></span>、日頃の疲れを癒やすことにしている。",
+            "answer": "寛いで",
+            "options": ["寛いで", "憩って", "粘って", "貫いて"]
+        }
+    },
+    {
+        "word": "憩う",
+        "word_html": "<ruby>憩<rt>いこ</rt></ruby>う",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "休息、休憩",
+        "nuance": "1. 在舒适的场所暂停活动，恢复精神。",
+        "examples": [
+            { "jp": "<ruby>水<rt>みず</rt></ruby><ruby>辺<rt>べ</rt></ruby>で<ruby>鳥<rt>とり</rt></ruby>たちが<span class='ex-highlight'><ruby>憩<rt>いこ</rt></ruby>っている</span>。", "cn": "鸟儿们在水边休憩。" }
+        ],
+        "practice": {
+            "sentence": "公園のベンチでは、散歩を楽しむ人々が思い思いに<span class='blank-space'></span>いた。",
+            "answer": "憩って",
+            "options": ["憩って", "寛いで", "安らいで", "冷やして"]
+        }
+    },
+    {
+        "word": "貫く",
+        "word_html": "<ruby>貫<rt>つらぬ</rt></ruby>く",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "贯穿、穿透；贯彻、坚持",
+        "nuance": "1. 物理上穿过。\n2. 始终保持某种信念或风格。",
+        "examples": [
+            { "jp": "トンネルが<ruby>山<rt>やま</rt></ruby>を<span class='ex-highlight'><ruby>貫<rt>つらぬ</rt></ruby>く</span>。", "cn": "隧道贯穿了山脉。" },
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>最<rt>さい</rt></ruby><ruby>後<rt>ご</rt></ruby>まで<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>のスタイルを<span class='ex-highlight'><ruby>貫<rt>つらぬ</rt></ruby>いた</span>。", "cn": "他坚持自己的风格直到最后。" }
+        ],
+        "practice": {
+            "sentence": "周囲からの反対があっても、彼は自分の信念を最後まで<span class='blank-space'></span>。",
+            "answer": "貫いた",
+            "options": ["貫いた", "粘った", "担った", "帯びた"]
+        }
+    },
+    {
+        "word": "粘る",
+        "word_html": "<ruby>粘<rt>ねば</rt></ruby>る",
+        "tone": "2",
+        "pos": "自五",
+        "mean": "发黏；坚持不懈、死磨硬泡",
+        "nuance": "1. 像纳豆一样拉丝。\n2. 顽强地支撑，不轻易放弃。",
+        "examples": [
+            { "jp": "この<ruby>納<rt>なっ</rt></ruby><ruby>豆<rt>とう</rt></ruby>はよく<span class='ex-highlight'><ruby>粘<rt>ねば</rt></ruby>る</span>。", "cn": "这个纳豆很黏。" },
+            { "jp": "<ruby>試<rt>し</rt></ruby><ruby>合<rt>あい</rt></ruby>で<ruby>最<rt>さい</rt></ruby><ruby>後<rt>ご</rt></ruby>まで<span class='ex-highlight'><ruby>粘<rt>ねば</rt></ruby>る</span>。", "cn": "在比赛中顽强坚持到最后。" }
+        ],
+        "practice": {
+            "sentence": "交渉は難航したが、最後まで<span class='blank-space'></span>おかげで、有利な条件を引き出せた。",
+            "answer": "粘った",
+            "options": ["粘った", "担った", "帯びた", "労った"]
+        }
+    },
+    {
+        "word": "担う",
+        "word_html": "<ruby>担<rt>にな</rt></ruby>う",
+        "tone": "2",
+        "pos": "他五",
+        "mean": "挑、背；肩负、承担",
+        "nuance": "1. 物理上用肩膀挑东西。\n2. 承担责任、任务、未来。",
+        "examples": [
+            { "jp": "<ruby>荷<rt>に</rt></ruby><ruby>物<rt>もつ</rt></ruby>を<ruby>肩<rt>かた</rt></ruby>に<span class='ex-highlight'><ruby>担<rt>にな</rt></ruby>う</span>。", "cn": "把行李扛在肩上。" },
+            { "jp": "<ruby>次<rt>つぎ</rt></ruby>の<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>を<span class='ex-highlight'><ruby>担<rt>にな</rt></ruby>う</span><ruby>若<rt>わか</rt></ruby><ruby>者<rt>もの</rt></ruby>。", "cn": "肩负下一时代的年轻人。" }
+        ],
+        "practice": {
+            "sentence": "今後の日本経済を<span class='blank-space'></span>重要な産業として、IT分野が注目されている。",
+            "answer": "担う",
+            "options": ["担う", "帯びる", "粘る", "貫く"]
+        }
+    },
+    {
+        "word": "帯びる",
+        "word_html": "<ruby>帯<rt>お</rt></ruby>びる",
+        "tone": "2",
+        "pos": "他一",
+        "mean": "佩戴；带有、呈...色；肩负、负有",
+        "nuance": "1. 佩刀、勋章等。\n2. 含有某种性质、成分或颜色。\n3. 承担某种使命。",
+        "examples": [
+            { "jp": "<ruby>武<rt>ぶ</rt></ruby><ruby>士<rt>し</rt></ruby>は<ruby>常<rt>つね</rt></ruby>に<ruby>刀<rt>かたな</rt></ruby>を<span class='ex-highlight'><ruby>帯<rt>お</rt></ruby>びて</span>いた。", "cn": "武士总是佩带着刀。" },
+            { "jp": "<ruby>計<rt>けい</rt></ruby><ruby>画<rt>かく</rt></ruby>が<ruby>現<rt>げん</rt></ruby><ruby>実<rt>じつ</rt></ruby><ruby>味<rt>み</rt></ruby>を<span class='ex-highlight'><ruby>帯<rt>お</rt></ruby>びて</span>きた。", "cn": "计划变得现实可行了。" },
+            { "jp": "<ruby>重<rt>じゅう</rt></ruby><ruby>要<rt>よう</rt></ruby>な<ruby>使<rt>し</rt></ruby><ruby>命<rt>めい</rt></ruby>を<span class='ex-highlight'><ruby>帯<rt>お</rt></ruby>びて</span><ruby>帰<rt>き</rt></ruby><ruby>国<rt>こく</rt></ruby>する。", "cn": "身负重要使命回国。" }
+        ],
+        "practice": {
+            "sentence": "彼の話は具体的で、次第に現実味を<span class='blank-space'></span>きた。",
+            "answer": "帯びて",
+            "options": ["帯びて", "担って", "隠して", "秘めて"]
+        }
+    },
+    {
+        "word": "労る",
+        "word_html": "<ruby>労<rt>いたわ</rt></ruby>る",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "体恤、照顾；慰劳",
+        "nuance": "1. 同情并善待老人、病人或弱者。\n2. 体贴他人的劳苦。",
+        "examples": [
+            { "jp": "お<ruby>年<rt>とし</rt></ruby><ruby>寄<rt>よ</rt></ruby>りを<span class='ex-highlight'><ruby>労<rt>いたわ</rt></ruby>る</span>。", "cn": "照顾老人。" },
+            { "jp": "<ruby>部<rt>ぶ</rt></ruby><ruby>下<rt>か</rt></ruby>を<span class='ex-highlight'><ruby>労<rt>いたわ</rt></ruby>る</span>。", "cn": "慰劳下属。" }
+        ],
+        "practice": {
+            "sentence": "連日の残業で疲れている部下を<span class='blank-space'></span>、食事に連れて行った。",
+            "answer": "労って",
+            "options": ["労って", "案じて", "危ぶんで", "恐れて"]
+        }
+    },
+    {
+        "word": "案じる",
+        "word_html": "<ruby>案<rt>あん</rt></ruby>じる",
+        "tone": "3",
+        "pos": "他一",
+        "mean": "担心、挂念",
+        "nuance": "1. 担心某人的安危或将来。",
+        "examples": [
+            { "jp": "<ruby>親<rt>おや</rt></ruby>は<ruby>常<rt>つね</rt></ruby>に<ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>の<ruby>将<rt>しょう</rt></ruby><ruby>来<rt>らい</rt></ruby>を<span class='ex-highlight'><ruby>案<rt>あん</rt></ruby>じて</span>いる。", "cn": "父母总是挂念着孩子的未来。" }
+        ],
+        "practice": {
+            "sentence": "夜遅くなっても帰ってこない娘の身を<span class='blank-space'></span>、父親は何度も時計を見た。",
+            "answer": "案じて",
+            "options": ["案じて", "危ぶんで", "恐れて", "慰めて"]
+        }
+    },
+    {
+        "word": "危ぶむ",
+        "word_html": "<ruby>危<rt>あや</rt></ruby>ぶむ",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "担心(结果)、怀疑",
+        "nuance": "1. 认为情况不妙，怀疑能否成功。",
+        "examples": [
+            { "jp": "<ruby>計<rt>けい</rt></ruby><ruby>画<rt>かく</rt></ruby>の<ruby>実<rt>じつ</rt></ruby><ruby>現<rt>げん</rt></ruby>が<span class='ex-highlight'><ruby>危<rt>あや</rt></ruby>ぶまれる</span>。", "cn": "计划能否实现令人担忧。" }
+        ],
+        "practice": {
+            "sentence": "資金不足により、新プロジェクトの存続が<span class='blank-space'></span>ている。",
+            "answer": "危ぶまれ",
+            "options": ["危ぶまれ", "案じられ", "恐れられ", "慰められ"]
+        }
+    },
+    {
+        "word": "恐れる",
+        "word_html": "<ruby>恐<rt>おそ</rt></ruby>れる",
+        "tone": "3",
+        "pos": "他一",
+        "mean": "害怕、畏惧；敬畏",
+        "nuance": "1. 对可怕的事物或坏结果感到恐惧。\n2. 对神、伟人感到敬畏。",
+        "examples": [
+            { "jp": "<ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>を<span class='ex-highlight'><ruby>恐<rt>おそ</rt></ruby>れて</span>はいけない。", "cn": "不要害怕失败。" },
+            { "jp": "<ruby>神<rt>かみ</rt></ruby>を<span class='ex-highlight'><ruby>恐<rt>おそ</rt></ruby>れる</span>。", "cn": "敬畏神明。" }
+        ],
+        "practice": {
+            "sentence": "彼は失敗を<span class='blank-space'></span>あまり、新しいことに挑戦できずにいる。",
+            "answer": "恐れる",
+            "options": ["恐れる", "危ぶむ", "案じる", "労る"]
+        }
+    },
+    {
+        "word": "慰める",
+        "word_html": "<ruby>慰<rt>なぐさ</rt></ruby>める",
+        "tone": "4",
+        "pos": "他一",
+        "mean": "安慰、抚慰；排解(无聊)",
+        "nuance": "1. 使悲伤、痛苦的人心情平静。\n2. 做某事来排遣心情。",
+        "examples": [
+            { "jp": "<ruby>失<rt>しつ</rt></ruby><ruby>恋<rt>れん</rt></ruby>した<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>を<span class='ex-highlight'><ruby>慰<rt>なぐさ</rt></ruby>める</span>。", "cn": "安慰失恋的朋友。" },
+            { "jp": "<ruby>暇<rt>ひま</rt></ruby>を<span class='ex-highlight'><ruby>慰<rt>なぐさ</rt></ruby>める</span>。", "cn": "排遣无聊。" }
+        ],
+        "practice": {
+            "sentence": "落ち込んでいる友人を<span class='blank-space'></span>ために、美味しい食事に誘った。",
+            "answer": "慰める",
+            "options": ["慰める", "宥める", "労る", "案じる"]
+        }
+    },
+    {
+        "word": "宥める",
+        "word_html": "<ruby>宥<rt>なだ</rt></ruby>める",
+        "tone": "3",
+        "pos": "他一",
+        "mean": "安抚、劝解",
+        "nuance": "1. 平息对方的愤怒或不满、哭闹。",
+        "examples": [
+            { "jp": "<ruby>怒<rt>おこ</rt></ruby>っている<ruby>客<rt>きゃく</rt></ruby>を<span class='ex-highlight'><ruby>宥<rt>なだ</rt></ruby>める</span>。", "cn": "安抚生气的客人。" }
+        ],
+        "practice": {
+            "sentence": "泣き叫ぶ子供を<span class='blank-space'></span>、母親は優しく背中をさすった。",
+            "answer": "宥めて",
+            "options": ["宥めて", "慰めて", "彷徨って", "躊躇って"]
+        }
+    },
+    {
+        "word": "彷徨う",
+        "word_html": "<ruby>彷徨<rt>さまよ</rt></ruby>う",
+        "tone": "3",
+        "pos": "自五",
+        "mean": "徘徊、游荡；挣扎、游离",
+        "nuance": "1. 无目的地到处走动，或迷路。\n2. 在某种危险边缘徘徊。",
+        "examples": [
+            { "jp": "<ruby>森<rt>もり</rt></ruby>の<ruby>中<rt>なか</rt></ruby>を<span class='ex-highlight'><ruby>彷<rt>さま</rt></ruby><ruby>徨<rt>よ</rt></ruby>う</span>。", "cn": "在森林里徘徊。" },
+            { "jp": "<ruby>生<rt>せい</rt></ruby><ruby>死<rt>し</rt></ruby>の<ruby>境<rt>さかい</rt></ruby>を<span class='ex-highlight'><ruby>彷<rt>さま</rt></ruby><ruby>徨<rt>よ</rt></ruby>う</span>。", "cn": "在生死边缘徘徊。" }
+        ],
+        "practice": {
+            "sentence": "道に迷ってしまい、暗い森の中を朝まで<span class='blank-space'></span>。",
+            "answer": "彷徨った",
+            "options": ["彷徨った", "躊躇った", "宥めた", "憩った"]
+        }
+    },
+    {
+        "word": "躊躇う",
+        "word_html": "<ruby>躊躇<rt>ためら</rt></ruby>う",
+        "tone": "3",
+        "pos": "他五",
+        "mean": "犹豫、踌躇",
+        "nuance": "1. 因无法下决心而停止行动，或迟迟不行动。",
+        "examples": [
+            { "jp": "<ruby>告<rt>こく</rt></ruby><ruby>白<rt>はく</rt></ruby>するのを<span class='ex-highlight'><ruby>躊躇<rt>ためら</rt></ruby>う</span>。", "cn": "想告白但迟疑了。" }
+        ],
+        "practice": {
+            "sentence": "高額な買い物だったので、購入ボタンを押すのを一瞬<span class='blank-space'></span>。",
+            "answer": "躊躇った",
+            "options": ["躊躇った", "彷徨った", "危ぶんだ", "恐れた"]
+        }
+    }  
+];
 // Combine all words
-const ALL_DEFINED_WORDS = [...DAY1_WORDS, ...DAY2_WORDS, ...DAY3_WORDS, ...DAY4_WORDS];
+const ALL_DEFINED_WORDS = [...DAY1_WORDS, ...DAY2_WORDS, ...DAY3_WORDS, ...DAY4_WORDS, ...DAY5_WORDS, ...DAY6_WORDS, ...DAY7_WORDS, ...DAY8_WORDS];
 
 // Generate full list for 15 days * 20 words = 300 words
 const FULL_WORD_LIST = [];
