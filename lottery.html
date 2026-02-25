@@ -116,38 +116,103 @@
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
+        /* 结果卡片 - 御神签风格 */
         .result-card {
             background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            max-width: 300px;
-            width: 100%;
-            display: none; /* Hidden by default */
-            animation: fadeIn 0.5s ease-out;
+            padding: 20px;
+            width: 160px; /* 竖向窄卡片 */
+            height: 320px;
+            display: none;
+            animation: fadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            margin-top: 20px;
+            position: relative;
+            box-sizing: border-box;
+            
+            /* 默认边框颜色，JS会覆盖 */
+            border: 8px solid #d32f2f; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* 内层细线框 */
+        .result-inner {
+            width: 100%;
+            height: 100%;
+            border: 1px solid currentColor; /* 跟随父元素颜色 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 5px;
+            box-sizing: border-box;
+            color: inherit; /* 继承颜色 */
         }
+
+        .result-header {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            position: relative;
+            width: 80%;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        /* 顶部横线装饰 */
+        .result-header::before,
+        .result-header::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 1px;
+            background-color: currentColor;
+        }
+        .result-header::before { top: -5px; }
+        .result-header::after { bottom: -5px; }
 
         .result-title {
-            font-size: 36px;
-            color: var(--accent-color);
-            margin: 0 0 10px 0;
-            font-weight: bold;
+            font-size: 48px;
+            line-height: 1.2;
+            font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+            font-weight: 900;
+            margin: 0;
+            writing-mode: vertical-rl; /* 竖排文字 */
+            text-orientation: upright;
+            letter-spacing: 5px;
+        }
+
+        .result-icon {
+            font-size: 48px;
+            margin-top: auto; /* 推到底部 */
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        /* 描述文字单独放在卡片外面 */
+        .result-desc-container {
+            margin-top: 20px;
+            max-width: 300px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            display: none; /* JS控制显示 */
+            animation: fadeIn 0.6s 0.3s backwards; /* 延迟显示 */
         }
 
         .result-desc {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 20px;
+            font-size: 14px;
+            color: #555;
             line-height: 1.6;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .count-info {
-            margin-top: 30px;
+            margin-top: 40px;
             font-size: 14px;
             color: #888;
             background: rgba(0,0,0,0.03);
@@ -187,7 +252,14 @@
         <div class="omikuji-box" id="omikujiBox"></div>
 
         <div class="result-card" id="resultCard">
-            <div class="result-title" id="resultTitle">大吉</div>
+            <div class="result-inner" id="resultInner">
+                <div class="result-header">運勢</div>
+                <div class="result-title" id="resultTitle">大吉</div>
+                <div class="result-icon" id="resultIcon">🎯</div>
+            </div>
+        </div>
+        
+        <div class="result-desc-container" id="resultDescBox">
             <div class="result-desc" id="resultDesc">今天的学习效率会非常高！适合攻克难点语法。</div>
         </div>
 
@@ -202,19 +274,22 @@
         const MAX_DAILY_COUNT = 3;
         const omikujiBox = document.getElementById('omikujiBox');
         const resultCard = document.getElementById('resultCard');
+        const resultInner = document.getElementById('resultInner');
         const resultTitle = document.getElementById('resultTitle');
+        const resultIcon = document.getElementById('resultIcon');
+        const resultDescBox = document.getElementById('resultDescBox');
         const resultDesc = document.getElementById('resultDesc');
         const drawBtn = document.getElementById('drawBtn');
         const remainCountSpan = document.getElementById('remainCount');
 
         // Results data with weights (Total: 100)
         const fortunes = [
-            { title: "大吉", desc: "运气爆棚！今天的记忆力提升200%，快去背单词吧！", weight: 4 },
-            { title: "中吉", desc: "状态不错哦。适合做听力练习，会有意外的收获。", weight: 12 },
-            { title: "小吉", desc: "平稳的一天。积少成多，每天进步一点点。", weight: 22 },
-            { title: "吉", desc: "适合复习旧知识。温故而知新。", weight: 33 },
-            { title: "末吉", desc: "稍微有点懈怠？喝杯咖啡提提神，继续加油！", weight: 25 },
-            { title: "凶", desc: "虽然有点不顺，但只要坚持学习，就能转运哦！", weight: 4 }
+            { title: "大吉", desc: "运气爆棚！今天的记忆力提升200%，快去背单词吧！", weight: 4, color: "#d32f2f", icon: "👺" }, // Red / Daruma (Tengu/Daruma emoji)
+            { title: "中吉", desc: "状态不错哦。适合做听力练习，会有意外的收获。", weight: 12, color: "#388e3c", icon: "🎍" }, // Green / Kadomatsu
+            { title: "小吉", desc: "平稳的一天。积少成多，每天进步一点点。", weight: 22, color: "#1976d2", icon: "🗻" }, // Blue / Fuji
+            { title: "吉", desc: "适合复习旧知识。温故而知新。", weight: 33, color: "#f57c00", icon: "🍊" }, // Orange / Mikan
+            { title: "末吉", desc: "稍微有点懈怠？喝杯咖啡提提神，继续加油！", weight: 25, color: "#7b1fa2", icon: "🏸" }, // Purple / Hanetsuki (Badminton)
+            { title: "凶", desc: "虽然有点不顺，但只要坚持学习，就能转运哦！", weight: 4, color: "#424242", icon: "🍱" } // Grey / Osechi (Box)
         ];
 
         // Weighted random selection
@@ -268,13 +343,21 @@
             omikujiBox.classList.add('shake');
             drawBtn.disabled = true;
             resultCard.style.display = 'none';
+            if (resultDescBox) resultDescBox.style.display = 'none';
 
             setTimeout(() => {
                 omikujiBox.classList.remove('shake');
                 
                 // Logic
                 const randomFortune = drawFortune();
+
+                // Apply styles
+                resultCard.style.borderColor = randomFortune.color;
+                if (resultInner) resultInner.style.color = randomFortune.color;
+
+                // Set Content
                 resultTitle.textContent = randomFortune.title;
+                if (resultIcon) resultIcon.textContent = randomFortune.icon;
                 resultDesc.textContent = randomFortune.desc;
                 
                 // Update State
@@ -285,6 +368,7 @@
 
                 // Show Result
                 resultCard.style.display = 'block';
+                if (resultDescBox) resultDescBox.style.display = 'block';
 
                 if (remain > 0) {
                     drawBtn.disabled = false;
