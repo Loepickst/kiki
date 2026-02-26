@@ -26,7 +26,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 0; /* Remove padding to accommodate full-width header */
+            padding: 0 0 120px 0; /* Add bottom padding for fixed audio player */
             display: flex;
             flex-direction: column; /* Allow header to stack above container */
             align-items: center;
@@ -152,17 +152,25 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         }
 
-        /* 音频播放器区域 */
-        .audio-section {
-            margin-bottom: 40px;
-            background: #fcfcfc;
-            padding: 15px 25px;
-            border-radius: 12px;
-            border: 1px solid #f0f0f0;
+        /* Audio Player - Fixed Bottom */
+        .audio-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px 25px 20px;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
         }
 
         .custom-audio-player {
             width: 100%;
+            max-width: 850px; /* Match container width */
             display: flex;
             align-items: center;
             gap: 20px;
@@ -500,6 +508,31 @@
             min-width: 120px;
         }
 
+        /* Mark Button (Dog) */
+        .mark-btn {
+            font-size: 22px;
+            padding: 4px 10px;
+            background: none;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            opacity: 0.2; /* Inactive state */
+            filter: grayscale(100%);
+            transition: all 0.2s ease;
+            margin-left: 5px;
+        }
+
+        .mark-btn:hover {
+            opacity: 0.6;
+            transform: scale(1.1);
+        }
+
+        .mark-btn.active {
+            opacity: 1;
+            filter: grayscale(0%);
+            transform: scale(1.1);
+        }
+
         .nav-controls {
             margin-top: 30px;
             display: flex;
@@ -630,7 +663,7 @@
 
     <header>
         <a href="N2_j.html" class="back-btn">← 戻る</a>
-        <h1>即時応答 - 2010.7</h1>
+        <h1>即時応答 - 2010</h1>
     </header>
 
     <div class="practice-container mode-practice" id="appContainer">
@@ -642,25 +675,11 @@
                 <select id="questionSelect" class="question-select" onchange="changeQuestion(this.value)">
                     <!-- Options populated by JS -->
                 </select>
+                <button id="markBtn" class="mark-btn" onclick="toggleMark()" title="あとで復習する（复习标记）">🐶</button>
             </div>
             <div class="mode-switch">
                 <button id="btnPractice" class="active" onclick="setMode('practice')">練習</button>
                 <button id="btnExplanation" onclick="setMode('explanation')">解説</button>
-            </div>
-        </div>
-
-        <div class="audio-section">
-            <div class="custom-audio-player">
-                <button class="play-btn" id="playBtn">
-                    <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M13 7.13397C14.3333 7.90377 14.3333 9.82823 13 10.598L2.5 16.6603C1.16667 17.4301 -1.45707e-06 16.4678 -1.38973e-06 14.9282L-8.59795e-07 2.80385C-7.92455e-07 1.26425 1.16667 0.301995 2.5 1.0718L13 7.13397Z" fill="white"/>
-                    </svg>
-                </button>
-                <div class="progress-container" id="progressContainer">
-                    <div class="progress-bar" id="progressBar"></div>
-                </div>
-                <div class="time-display" id="timeDisplay">00:00 / 00:00</div>
-                <audio id="audioElement" preload="metadata"></audio>
             </div>
         </div>
 
@@ -680,6 +699,21 @@
                     <button id="nextBtn" class="nav-btn" onclick="nextQuestion()">次へ →</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="audio-wrapper">
+        <div class="custom-audio-player">
+            <button class="play-btn" id="playBtn">
+                <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13 7.13397C14.3333 7.90377 14.3333 9.82823 13 10.598L2.5 16.6603C1.16667 17.4301 -1.45707e-06 16.4678 -1.38973e-06 14.9282L-8.59795e-07 2.80385C-7.92455e-07 1.26425 1.16667 0.301995 2.5 1.0718L13 7.13397Z" fill="white"/>
+                </svg>
+            </button>
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="time-display" id="timeDisplay">00:00 / 00:00</div>
+            <audio id="audioElement" preload="metadata"></audio>
         </div>
     </div>
 
@@ -990,16 +1024,41 @@
 
         let currentExamKey = "2010-07";
         let currentQuestionIndex = 0;
+        let preferredMode = 'practice'; // Track user's preferred mode
 
         // --- Initialization ---
         function init() {
             // 1. Get Year from URL or default
             const urlParams = new URLSearchParams(window.location.search);
             const yearParam = urlParams.get('year');
+            const modeParam = urlParams.get('mode');
             
             // Check if valid
             if (yearParam && examData[yearParam]) {
                 currentExamKey = yearParam;
+
+                // --- REVIEW MODE LOGIC ---
+                if (modeParam === 'review') {
+                    const marks = getMarks();
+                    if (marks.length === 0) {
+                        alert('マークされた問題はありません。(No marked questions)');
+                    } else {
+                        const originalQuestions = examData[currentExamKey].questions;
+                        const filtered = originalQuestions.filter(q => marks.includes(q.id));
+                        
+                        if (filtered.length > 0) {
+                            examData[currentExamKey].questions = filtered;
+                            setTimeout(() => {
+                                const lbl = document.getElementById('yearLabel');
+                                if(lbl) {
+                                    lbl.innerHTML += ' <span style="color:#d81b60; font-size:0.8em;">(🐶 復習モード)</span>';
+                                }
+                            }, 100);
+                        } else {
+                             alert('マークされた問題が見つかりませんでした。(Questions not found)');
+                        }
+                    }
+                }
             } else {
                 // Default to first key if not specified or invalid
                 currentExamKey = Object.keys(examData)[0];
@@ -1016,6 +1075,47 @@
 
             // 4. Initial Render
             renderQuestion();
+        }
+
+        // --- Mark/Bookmark Logic ---
+        function getMarks() {
+            const key = `jlpt_marks_${currentExamKey}`;
+            const saved = localStorage.getItem(key);
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function saveMarks(marks) {
+            const key = `jlpt_marks_${currentExamKey}`;
+            localStorage.setItem(key, JSON.stringify(marks));
+        }
+
+        function toggleMark() {
+            const marks = getMarks();
+            const qId = examData[currentExamKey].questions[currentQuestionIndex].id;
+            
+            const index = marks.indexOf(qId);
+            if (index === -1) {
+                marks.push(qId);
+            } else {
+                marks.splice(index, 1);
+            }
+            saveMarks(marks);
+            updateMarkUI();
+        }
+
+        function updateMarkUI() {
+            const marks = getMarks();
+            // Guard clause if questions aren't loaded yet
+            if (!examData[currentExamKey] || !examData[currentExamKey].questions[currentQuestionIndex]) return;
+            
+            const qId = examData[currentExamKey].questions[currentQuestionIndex].id;
+            const btn = document.getElementById('markBtn');
+            
+            if (marks.includes(qId)) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
         }
 
         function updateQuestionSelect() {
@@ -1080,15 +1180,29 @@
                         options[i].classList.add('judged-correct');
                     }
                 });
+
+                // Auto-mark wrong answer
+                const marks = getMarks();
+                if (!marks.includes(question.id)) {
+                    marks.push(question.id);
+                    saveMarks(marks);
+                    updateMarkUI();
+                }
             }
             
             // Hide confirm button
             document.getElementById('confirmBtn').style.display = 'none';
+
+            // Auto switch to explanation mode after 1s (temporary)
+            setTimeout(() => {
+                setMode('explanation', false);
+            }, 1000);
         }
 
         function prevQuestion() {
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
+                setMode(preferredMode, false); // Restore preferred mode
                 renderQuestion();
             }
         }
@@ -1097,7 +1211,7 @@
             const questions = examData[currentExamKey].questions;
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
-                setMode('practice');
+                setMode(preferredMode, false); // Restore preferred mode
                 renderQuestion();
             }
         }
@@ -1108,6 +1222,9 @@
 
             const data = examData[currentExamKey].questions[currentQuestionIndex];
             const total = examData[currentExamKey].questions.length;
+
+            // Update Mark UI
+            updateMarkUI();
 
             // Update Select Box
             const select = document.getElementById('questionSelect');
@@ -1223,7 +1340,11 @@
             return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
         }
 
-        function setMode(mode) {
+        function setMode(mode, updatePreference = true) {
+            if (updatePreference) {
+                preferredMode = mode;
+            }
+
             const container = document.getElementById('appContainer');
             const btnPractice = document.getElementById('btnPractice');
             const btnExplanation = document.getElementById('btnExplanation');
@@ -1241,7 +1362,23 @@
                 container.classList.add('mode-explanation');
                 btnExplanation.classList.add('active');
                 btnPractice.classList.remove('active');
-            }
+
+                 // Auto-scroll to show image and explanation
+                setTimeout(() => {
+                    const contentWrapper = document.querySelector('.content-wrapper');
+                    if (contentWrapper) {
+                        // Calculate offset to account for sticky header (approx 80px)
+                        const headerOffset = 100;
+                        const elementPosition = contentWrapper.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                    
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: "smooth"
+                        });
+                    }
+                }, 100);
+        }
         }
 
         function showTooltip(event, text) {
