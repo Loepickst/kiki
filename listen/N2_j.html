@@ -78,6 +78,63 @@
             transform: translateY(-2px);
         }
 
+        /* Review Section */
+        .review-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: none; /* Hidden by default */
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .review-section h2 {
+            margin: 0 0 15px 0;
+            color: var(--accent-color);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .review-grid {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .review-btn {
+            background: #f8f8f8;
+            color: #555;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            border: 1px solid #eee;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+        }
+        .review-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(179, 62, 62, 0.2);
+        }
+        .review-count {
+            background: rgba(0,0,0,0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .review-btn:hover .review-count {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
         .year-title {
             font-size: 18px;
             font-weight: bold;
@@ -163,6 +220,14 @@
     </header>
 
     <div class="container">
+        <!-- Mistake Review Section -->
+        <div id="mistakeReview" class="review-section">
+            <h2>🐶 难题回顾</h2>
+            <div class="review-grid" id="reviewGrid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
         <div class="year-grid" id="yearGrid">
             <!-- Populated by JS -->
         </div>
@@ -176,6 +241,52 @@
         // Mock data for last practice (In real app, fetch from localStorage)
         const lastPractice = '2010-07'; // Format: YYYY-MM
 
+        // --- Load Mistake Review Data ---
+        function loadMistakes() {
+            const reviewGrid = document.getElementById('reviewGrid');
+            const section = document.getElementById('mistakeReview');
+            let hasMistakes = false;
+
+            // Map year to filename
+            // You can expand this map as you add more files
+            const fileMap = {
+                '2010': 'j_2010.html',
+                '2011': 'j_2011.html'
+            };
+
+            // Iterate localStorage to find marks
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('jlpt_marks_')) {
+                    const marks = JSON.parse(localStorage.getItem(key));
+                    
+                    if (marks && marks.length > 0) {
+                        hasMistakes = true;
+                        const examKey = key.replace('jlpt_marks_', ''); // e.g., 2010-07
+                        const year = examKey.split('-')[0]; // 2010
+                        
+                        // Only show if we know the file mapping
+                        if (fileMap[year]) {
+                            const btn = document.createElement('a');
+                            btn.className = 'review-btn';
+                            btn.href = `${fileMap[year]}?year=${examKey}&mode=review`;
+                            btn.innerHTML = `
+                                <span>${examKey}</span>
+                                <span class="review-count">${marks.length}问</span>
+                            `;
+                            reviewGrid.appendChild(btn);
+                        }
+                    }
+                }
+            }
+
+            // Toggle section visibility
+            if (hasMistakes) {
+                section.style.display = 'block';
+            }
+        }
+        loadMistakes();
+
         // Generate cards in chronological order (oldest first)
         for (let year = startYear; year <= endYear; year++) {
             const card = document.createElement('div');
@@ -183,8 +294,10 @@
             
             // Define available exams
             const available = {
-                '2010-07': 'j_2010.7.html?year=2010-07',
-                '2010-12': 'j_2010.7.html?year=2010-12'
+                '2010-07': 'j_2010.html?year=2010-07',
+                '2010-12': 'j_2010.html?year=2010-12',
+                '2011-07': 'j_2011.html?year=2011-07',
+                '2011-12': 'j_2011.html?year=2011-12'
             };
 
             const julyKey = `${year}-07`;
