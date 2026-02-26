@@ -23,7 +23,7 @@
             color: var(--text-color);
             font-family: var(--japanese-font);
             margin: 0;
-            padding: 100px 15px 60px;
+            padding: 100px 15px 120px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -100,118 +100,74 @@
         .footer { margin-top: 50px; color: #ccc; font-size: 0.8rem; letter-spacing: 3px; }
 
 
-        /* 音频播放器样式 */
-        .audio-player-container {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto 40px;
-            background: #fff;
-            border: 1px solid rgba(179, 62, 62, 0.15);
-            border-radius: 50px;
-            padding: 12px 24px;
+        /* Audio Player - Fixed Bottom */
+        .audio-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px 25px 20px; /* Extra bottom padding for iPhone Home bar */
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+
+        .audio-player {
             display: flex;
             align-items: center;
-            gap: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            box-sizing: border-box;
+            width: 100%;
+            max-width: 600px; /* Wider on desktop */
         }
 
         .play-btn {
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: var(--accent-color);
+            background-color: var(--accent-color);
             color: white;
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            margin-right: 12px;
             flex-shrink: 0;
-            transition: transform 0.2s, background 0.2s;
+            transition: transform 0.2s;
             padding: 0;
         }
 
-        .play-btn:hover { background: #c64747; }
         .play-btn:active { transform: scale(0.95); }
-
-        .play-icon {
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 7px 0 7px 11px;
-            border-color: transparent transparent transparent white;
-            margin-left: 3px;
-        }
-
-        .pause-icon {
-            width: 10px;
-            height: 14px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .pause-icon span {
-            width: 3px;
-            height: 100%;
-            background: white;
-            border-radius: 2px;
-        }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
 
         .progress-container {
             flex-grow: 1;
             height: 4px;
-            background: #f0f0f0;
+            background-color: #f0f0f0;
             border-radius: 2px;
+            margin-right: 12px;
             cursor: pointer;
             position: relative;
-            padding: 4px 0; /* 增加点击区域 */
-        }
-
-        .progress-bar-bg {
-            height: 4px;
-            background: #f0f0f0;
-            border-radius: 2px;
-            width: 100%;
-            position: absolute;
-            top: 4px;
         }
 
         .progress-bar {
-            height: 4px;
-            background: var(--accent-color);
-            border-radius: 2px;
+            height: 100%;
+            background-color: #d1d1d1;
             width: 0%;
-            position: absolute;
-            top: 4px;
-            pointer-events: none;
+            border-radius: 2px;
         }
-
-        .progress-bar::after {
-            content: '';
-            position: absolute;
-            right: -6px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 12px;
-            height: 12px;
-            background: var(--accent-color);
-            border-radius: 50%;
-            opacity: 0;
-            transition: opacity 0.2s;
-            box-shadow: 0 0 4px rgba(0,0,0,0.2);
-        }
-
-        .progress-container:hover .progress-bar::after { opacity: 1; }
 
         .time-display {
+            font-size: 0.7rem;
+            color: #999;
             font-family: var(--chinese-font);
-            font-size: 0.75rem;
-            color: var(--sub-color);
-            min-width: 80px;
+            min-width: 70px;
             text-align: right;
             font-variant-numeric: tabular-nums;
-            letter-spacing: 0.5px;
         }
     </style>
 </head>
@@ -219,12 +175,12 @@
 
 <div class="top-bar">
     <!-- 左侧返回按钮 -->
-    <a href="read.html" class="toggle-btn" style="text-decoration: none; margin-right: 15px;">← 戻る</a>
+    <a href="../read.html" class="toggle-btn" style="text-decoration: none; margin-right: 15px;">← 戻る</a>
     
     <!-- 日期显示（可加 flex-grow 让它占据中间位置，或者保持原样） -->
     <div id="today-date" style="flex-grow: 1; text-align: center; border-bottom: none;">2026年2月25日 水曜日</div>
     
-    <button class="toggle-btn" onclick="toggleTranslation()">訳文を表示/非表示</button>
+    <button id="trans-btn" class="toggle-btn" onclick="toggleTranslation()">訳文を表示/非表示</button>
 </div>
 
 <div class="container">
@@ -233,23 +189,7 @@
     <span style="color: #bbb; font-size: 0.8rem;">在修学旅行中了解到的事</span>
 </div>
 
-    <!-- 音频播放器 -->
-    <div class="audio-player-container">
-        <audio id="audio-element" src="./audio_read/2.25.mp3" preload="metadata"></audio>
-        
-        <button class="play-btn" id="play-btn" title="再生/一時停止">
-            <div class="play-icon"></div>
-        </button>
-        
-        <div class="progress-container" id="progress-container">
-            <div class="progress-bar-bg"></div>
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
-        
-        <div class="time-display">
-            <span id="current-time">00:00</span> / <span id="duration">00:00</span>
-        </div>
-    </div>
+
 
 <div class="reading-block">
     <p class="japanese">
@@ -308,6 +248,22 @@
 
 <div id="smart-tooltip"></div>
 
+<!-- Audio Player - Fixed Bottom -->
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container" onclick="seek(event)">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="time-display">
+            <span id="current-time">00:00</span> / <span id="duration">00:00</span>
+        </div>
+        <audio id="audio-element" src="../audio_read/2.25.mp3" preload="metadata"></audio>
+    </div>
+</div>
+
 <div class="footer">Ichigo Ichie - 一期一会</div>
 
 <script>
@@ -315,8 +271,11 @@
 
     // 2. 译文切换
     function toggleTranslation() {
+        const btn = document.getElementById('trans-btn');
+        const isActive = btn.classList.toggle('active');
+        
         document.querySelectorAll('.translation').forEach(el => {
-            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+            el.style.display = isActive ? 'block' : 'none';
         });
     }
 
@@ -375,78 +334,51 @@
     window.addEventListener('resize', hideTooltip);
 
 
-    // 4. 音频播放器逻辑
+    // --- Audio Player Logic ---
     const audio = document.getElementById('audio-element');
     const playBtn = document.getElementById('play-btn');
-    const progressContainer = document.getElementById('progress-container');
     const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
     const currentTimeEl = document.getElementById('current-time');
     const durationEl = document.getElementById('duration');
-    let isPlaying = false;
 
-    // 播放/暂停切换
-    playBtn.addEventListener('click', () => {
-        if (!audio.src || audio.src === window.location.href) {
-            alert('音声ファイルが設定されていません。\\n(音频文件未设置)');
-            return;
-        }
-        
-        if (isPlaying) {
-            audio.pause();
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+            playBtn.classList.add('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
         } else {
-            audio.play();
+            audio.pause();
+            playBtn.classList.remove('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        }
+    }
+
+    function seek(e) {
+        const rect = progressContainer.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const percent = x / rect.width;
+        audio.currentTime = percent * audio.duration;
+    }
+
+    audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = percent + '%';
+            currentTimeEl.textContent = formatTime(audio.currentTime);
         }
     });
 
-    audio.addEventListener('play', () => {
-        isPlaying = true;
-        playBtn.innerHTML = '<div class="pause-icon"><span></span><span></span></div>';
-    });
-
-    audio.addEventListener('pause', () => {
-        isPlaying = false;
-        playBtn.innerHTML = '<div class="play-icon"></div>';
+    audio.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audio.duration);
     });
 
     audio.addEventListener('ended', () => {
-        isPlaying = false;
-        playBtn.innerHTML = '<div class="play-icon"></div>';
+        playBtn.classList.remove('playing');
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
         progressBar.style.width = '0%';
-        currentTimeEl.textContent = '00:00';
     });
 
-    // 更新进度条和时间
-    audio.addEventListener('timeupdate', () => {
-        const { currentTime, duration } = audio;
-        if (isNaN(duration)) return;
-        
-        const progressPercent = (currentTime / duration) * 100;
-        progressBar.style.width = `${progressPercent}%`;
-        
-        currentTimeEl.textContent = formatTime(currentTime);
-        durationEl.textContent = formatTime(duration);
-    });
-    
-    // 加载元数据时显示总时长
-    audio.addEventListener('loadedmetadata', () => {
-        if (!isNaN(audio.duration)) {
-            durationEl.textContent = formatTime(audio.duration);
-        }
-    });
-
-    // 点击进度条跳转
-    progressContainer.addEventListener('click', (e) => {
-        if (!audio.src || isNaN(audio.duration)) return;
-        
-        const rect = progressContainer.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        const width = rect.width;
-        const duration = audio.duration;
-        
-        audio.currentTime = (clickX / width) * duration;
-    });
-
-    // 时间格式化 helper
     function formatTime(seconds) {
         const min = Math.floor(seconds / 60);
         const sec = Math.floor(seconds % 60);
