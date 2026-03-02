@@ -13,8 +13,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "恵みの雨が降り、乾いた大地が<span class='blank-space'></span>。",
-            "answer": "潤った",
-            "options": ["潤った", "蓄えた", "賄った", "費やした"]
+            "answer": "うるおった",
+            "options": ["うるおった", "たくわえた", "まかなった", "ついやした"]
         }
     },
     {
@@ -30,8 +30,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "この新しいビジネスモデルは、将来的に大きく<span class='blank-space'></span>だろう。",
-            "answer": "儲かる",
-            "options": ["儲かる", "備える", "携わる", "背く"]
+            "answer": "もうかる",
+            "options": ["もうかる", "そなえる", "たずさわる", "そむく"]
         }
     },
     {
@@ -48,8 +48,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "災害に<span class='blank-space'></span>、避難経路を確認しておく。",
-            "answer": "備えて",
-            "options": ["備えて", "蓄えて", "従うて", "凭れて"]
+            "answer": "そなえて",
+            "options": ["そなえて", "たくわえて", "したがって", "もたれて"]
         }
     },
     {
@@ -65,8 +65,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "老後の生活のために、若いうちから資金を<span class='blank-space'></span>。",
-            "answer": "蓄える",
-            "options": ["蓄える", "備える", "賄う", "商う"]
+            "answer": "たくわえる",
+            "options": ["たくわえる", "そなえる", "まかなう", "あきなう"]
         }
     },
     {
@@ -82,8 +82,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "仕事が忙しくて、ストレスが<span class='blank-space'></span>一方だ。",
-            "answer": "溜まる",
-            "options": ["溜まる", "潤う", "砕ける", "唆る"]
+            "answer": "たまる",
+            "options": ["たまる", "うるおう", "くだける", "そそる"]
         }
     },
     {
@@ -100,8 +100,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "電車のドアに<span class='blank-space'></span>のは危険です。",
-            "answer": "凭れる",
-            "options": ["凭れる", "倒れる", "崩れる", "備える"]
+            "answer": "もたれる",
+            "options": ["もたれる", "たおれる", "くずれる", "そなえる"]
         }
     },
     {
@@ -117,8 +117,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "この給料だけで、家族全員の生活費を<span class='blank-space'></span>のは難しい。",
-            "answer": "賄う",
-            "options": ["賄う", "儲かる", "潤う", "費やす"]
+            "answer": "まかなう",
+            "options": ["まかなう", "もうかる", "うるおう", "ついやす"]
         }
     },
     {
@@ -133,8 +133,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "彼は代々、呉服を<span class='blank-space'></span>老舗の主人だ。",
-            "answer": "商う",
-            "options": ["商う", "賄う", "携わる", "従う"]
+            "answer": "あきなう",
+            "options": ["あきなう", "まかなう", "たずさわる", "したがって"]
         }
     },
     {
@@ -151,8 +151,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "細かいお金がないので、千円札を<span class='blank-space'></span>もらえませんか。",
-            "answer": "崩して",
-            "options": ["崩して", "壊して", "倒して", "潰して"]
+            "answer": "くずして",
+            "options": ["くずして", "こわして", "たおして", "つぶして"]
         }
     },
     {
@@ -168,8 +168,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "将棋で、ついに師匠を<span class='blank-space'></span>。",
-            "answer": "倒した",
-            "options": ["倒した", "崩した", "壊した", "潰した"]
+            "answer": "たおした",
+            "options": ["たおした", "くずした", "こわした", "つぶした"]
         }
     },
     {
@@ -186,8 +186,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "無理なスケジュールで働いて、体を<span class='blank-space'></span>しまった。",
-            "answer": "壊して",
-            "options": ["壊して", "倒して", "崩して", "砕けて"]
+            "answer": "こわして",
+            "options": ["こわして", "たおして", "くずして", "くだけて"]
         }
     },
     {
@@ -202,8 +202,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "彼はその問題の解決に、多くの労力を<span class='blank-space'></span>。",
-            "answer": "費やした",
-            "options": ["費やした", "蓄えた", "賄った", "備えた"]
+            "answer": "ついやした",
+            "options": ["ついやした", "たくわえた", "まかなった", "そなえた"]
         }
     },
     {
@@ -215,13 +215,13 @@ const DAY1_WORDS = [
         "nuance": "1. 施加压力使形状破坏。\n2. 为了度过空闲时间做某事。\n3. 使组织解散、人才埋没。",
         "examples": [
             { "jp": "<ruby>空<rt>あ</rt></ruby>き<ruby>缶<rt>かん</rt></ruby>を<ruby>足<rt>あし</rt></ruby>で<ruby>踏<rt>ふ</rt></ruby>んで<span class='ex-highlight'><ruby>潰<rt>つぶ</rt></ruby>す</span>。", "cn": "用脚把空罐子踩扁。" },
-            { "jp": "カフェで<ruby>暇<rt>ひま</rt></ruby>を<span class='ex-highlight'><ruby>潰<rt>つぶ</rt></ruby>す</span>。", "cn": "因为饮酒过量把身体搞垮了。" },
+            { "jp": "カフェで<ruby>暇<rt>ひま</rt></ruby>を<span class='ex-highlight'><ruby>潰<rt>つぶ</rt></ruby>す</span>。", "cn": "喝咖啡来打发时间。" },
             { "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>才<rt>さい</rt></ruby><ruby>能<rt>のう</rt></ruby>を<span class='ex-highlight'><ruby>潰<rt>つぶ</rt></ruby>されて</span>しまった。", "cn": "他的才能被埋没了。" }
         ],
         "practice": {
             "sentence": "待ち合わせの時間まで、近くの本屋で時間を<span class='blank-space'></span>。",
-            "answer": "潰した",
-            "options": ["潰した", "費やした", "壊した", "倒した"]
+            "answer": "つぶした",
+            "options": ["つぶした", "ついやした", "こわした", "たおした"]
         }
     },
     {
@@ -236,8 +236,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "彼は長年、医療の現場に<span class='blank-space'></span>きた。",
-            "answer": "携わって",
-            "options": ["携わって", "従わって", "備えて", "商って"]
+            "answer": "たずさわって",
+            "options": ["たずさわって", "したがって", "そなえて", "あきなって"]
         }
     },
     {
@@ -254,8 +254,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "面接官が<span class='blank-space'></span>態度で接してくれたので、緊張がほぐれた。",
-            "answer": "砕けた",
-            "options": ["砕けた", "壊れた", "倒れた", "崩れた"]
+            "answer": "くだけた",
+            "options": ["くだけた", "こわれた", "たおれた", "くずれた"]
         }
     },
     {
@@ -270,8 +270,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "些細なことにいつまでも<span class='blank-space'></span>と、前に進めないよ。",
-            "answer": "拘っている",
-            "options": ["拘っている", "備えている", "従っている", "背いている"]
+            "answer": "こだわっている",
+            "options": ["こだわっている", "そなえている", "したがっている", "そむいている"]
         }
     },
     {
@@ -288,8 +288,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "親の言いつけに<span class='blank-space'></span>、家を出た。",
-            "answer": "背いて",
-            "options": ["背いて", "従いて", "離れて", "逃げて"]
+            "answer": "そむいて",
+            "options": ["そむいて", "したがって", "はなれて", "にげて"]
         }
     },
     {
@@ -305,7 +305,7 @@ const DAY1_WORDS = [
         "practice": {
             "sentence": "それはどこにでもある、<span class='blank-space'></span>話だ。",
             "answer": "ありふれた",
-            "options": ["ありふれた", "備えた", "蓄えた", "賄った"]
+            "options": ["ありふれた", "そなえた", "たくわえた", "まかなった"]
         }
     },
     {
@@ -322,8 +322,8 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "法律には<span class='blank-space'></span>なければならない。",
-            "answer": "従わ",
-            "options": ["従わ", "背か", "備え", "携わ"]
+            "answer": "したがわ",
+            "options": ["したがわ", "そむか", "そなえ", "たずさわ"]
         }
     },
     {
@@ -338,26 +338,14 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "sentence": "このミステリー小説は、読者の好奇心を<span class='blank-space'></span>。",
-            "answer": "唆る",
-            "options": ["唆る", "潤う", "儲かる", "溜まる"]
+            "answer": "そそる",
+            "options": ["そそる", "うるおう", "もうかる", "たまる"]
         }
     }
 ];
 
 // Day 2 Words (Add new words here)
 const DAY2_WORDS = [
-    // 示例 (Example):
-    /*
-    {
-        "word": "例",
-        "word_html": "<ruby>例<rt>れい</rt></ruby>",
-        "tone": "1",
-        "pos": "名",
-        "mean": "例子",
-        "nuance": "说明...",
-        "examples": []
-    },
-    */
    {
         "word": "馴染む",
         "word_html": "<ruby>馴<rt>な</rt></ruby><ruby>染<rt>じ</rt></ruby>む",
@@ -371,8 +359,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "転校して一ヶ月が経ち、ようやくクラスの雰囲気に<span class='blank-space'></span>きた。",
-            "answer": "馴染んで",
-            "options": ["馴染んで", "絡んで", "歪んで", "緩んで"]
+            "answer": "なじんで",
+            "options": ["なじんで", "からんで", "ゆがんで", "ゆるんで"]
         }
     },
     {
@@ -388,8 +376,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "彼女は末っ子で、いつも親に<span class='blank-space'></span>いる。",
-            "answer": "甘えて",
-            "options": ["甘えて", "構えて", "鍛えて", "控えて"]
+            "answer": "あまえて",
+            "options": ["あまえて", "かまえて", "きたえて", "ひかえて"]
         }
     },
     {
@@ -404,8 +392,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "この猫は人見知りが激しいが、私にはすぐに<span class='blank-space'></span>。",
-            "answer": "懐いた",
-            "options": ["懐いた", "頷いた", "囁いた", "嘆いた"]
+            "answer": "なついた",
+            "options": ["なついた", "うなずいた", "ささやいた", "なげいた"]
         }
     },
     {
@@ -421,8 +409,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "彼は新人時代から部長に<span class='blank-space'></span>いた。",
-            "answer": "可愛がられて",
-            "options": ["可愛がられて", "重宝がられて", "面白がられて", "嫌がられて"]
+            "answer": "かわいがられて",
+            "options": ["かわいがられて", "ちょうほうがられて", "おもしろがられて", "いやがられて"]
         }
     },
     {
@@ -438,8 +426,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "休日になると、この公園は家族連れで<span class='blank-space'></span>。",
-            "answer": "賑わう",
-            "options": ["賑わう", "味わう", "構う", "養う"]
+            "answer": "にぎわう",
+            "options": ["にぎわう", "あじわう", "かまう", "やしなう"]
         }
     },
     {
@@ -454,8 +442,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "かつてこの国は貿易によって<span class='blank-space'></span>いた。",
-            "answer": "栄えて",
-            "options": ["栄えて", "冴えて", "映えて", "称えて"]
+            "answer": "さかえて",
+            "options": ["さかえて", "さえて", "はえて", "たたえて"]
         }
     },
     {
@@ -471,8 +459,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "明治時代になって、新しい産業が次々と<span class='blank-space'></span>。",
-            "answer": "興った",
-            "options": ["興った", "募った", "浸った", "凝った"]
+            "answer": "おこった",
+            "options": ["おこった", "つのった", "ひたった", "こった"]
         }
     },
     {
@@ -488,8 +476,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "若者が都市へ流出し、この村はすっかり<span class='blank-space'></span>しまった。",
-            "answer": "寂れて",
-            "options": ["寂れて", "廃れて", "呆れて", "戯れて"]
+            "answer": "さびれて",
+            "options": ["さびれて", "すたれて", "あきれて", "たわむれて"]
         }
     },
     {
@@ -505,8 +493,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "彼は失敗しないように、綿密に計画を<span class='blank-space'></span>。",
-            "answer": "練った",
-            "options": ["練った", "掘った", "盛った", "釣った"]
+            "answer": "ねった",
+            "options": ["ねった", "ほった", "もった", "つった"]
         }
     },
     {
@@ -522,8 +510,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "留学経験を通して、国際的な視野を<span class='blank-space'></span>。",
-            "answer": "培った",
-            "options": ["培った", "賄った", "繕った", "葬った"]
+            "answer": "つちかった",
+            "options": ["つちかった", "まかなった", "つくろった", "ほうむった"]
         }
     },
     {
@@ -539,8 +527,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "彼は一代で巨万の富を<span class='blank-space'></span>。",
-            "answer": "築いた",
-            "options": ["築いた", "拓いた", "弾いた", "描いた"]
+            "answer": "きずいた",
+            "options": ["きずいた", "ひらいた", "はじいた", "えがいた"]
         }
     },
     {
@@ -556,8 +544,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "プロとして通用するように、さらに技術を<span class='blank-space'></span>必要がある。",
-            "answer": "磨く",
-            "options": ["磨く", "砕く", "裁く", "嘆く"]
+            "answer": "みがく",
+            "options": ["みがく", "くだく", "さばく", "なげく"]
         }
     },
     {
@@ -573,8 +561,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "彼は病気療養中で、田舎で英気を<span class='blank-space'></span>いる。",
-            "answer": "養って",
-            "options": ["養って", "伴って", "繕って", "慕って"]
+            "answer": "やしなって",
+            "options": ["やしなって", "ともなって", "つくろって", "したって"]
         }
     },
     {
@@ -590,8 +578,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "豊かな自然が、彼らの感性を<span class='blank-space'></span>。",
-            "answer": "育んだ",
-            "options": ["育んだ", "絡んだ", "歪んだ", "励んだ"]
+            "answer": "はぐくんだ",
+            "options": ["はぐくんだ", "からんだ", "ゆがんだ", "はげんだ"]
         }
     },
     {
@@ -607,8 +595,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "予算を<span class='blank-space'></span>ために、無駄な経費を見直した。",
-            "answer": "削る",
-            "options": ["削る", "探る", "粘る", "潜る"]
+            "answer": "けずる",
+            "options": ["けずる", "さぐる", "ねばる", "もぐる"]
         }
     },
     {
@@ -624,8 +612,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "捜査の範囲を<span class='blank-space'></span>、犯人を特定した。",
-            "answer": "狭めて",
-            "options": ["狭めて", "歪めて", "緩めて", "痛めて"]
+            "answer": "せばめて",
+            "options": ["せばめて", "ゆがめて", "ゆるめて", "いためて"]
         }
     },
     {
@@ -641,8 +629,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "落ちていた飴に、すぐに蟻が<span class='blank-space'></span>きた。",
-            "answer": "集って",
-            "options": ["集って", "潜って", "焦って", "巡って"]
+            "answer": "たかって",
+            "options": ["たかって", "もぐって", "あせって", "めぐって"]
         }
     },
     {
@@ -657,8 +645,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "そのイベントには、全国から愛好家が<span class='blank-space'></span>。",
-            "answer": "集った",
-            "options": ["集った", "祝った", "補った", "慕った"]
+            "answer": "つどった",
+            "options": ["つどった", "いわった", "おぎなった", "したった"]
         }
     },
     {
@@ -674,8 +662,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "留学したいという思いは、日増しに<span class='blank-space'></span>ばかりだ。",
-            "answer": "募る",
-            "options": ["募る", "茂る", "悟る", "粘る"]
+            "answer": "つのる",
+            "options": ["つのる", "しげる", "さとる", "ねばる"]
         }
     },
     {
@@ -690,8 +678,8 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "sentence": "アイドルが登場すると、ファンが一斉に<span class='blank-space'></span>。",
-            "answer": "群がった",
-            "options": ["群がった", "転がった", "繋がった", "広がった"]
+            "answer": "むらがった",
+            "options": ["むらがった", "ころがった", "つながった", "ひろがった"]
         }
     },
 ];
@@ -708,8 +696,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "トラクターで畑を<span class='blank-space'></span>、種まきの準備をする。",
-            "answer": "耕して",
-            "options": ["耕して", "植えて", "掘って", "刈って"]
+            "answer": "たがやして",
+            "options": ["たがやして", "うえて", "ほって", "かって"]
         }
     },
     {
@@ -725,8 +713,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "庭に記念の木を<span class='blank-space'></span>。",
-            "answer": "植える",
-            "options": ["植える", "掘る", "摘む", "漕ぐ"]
+            "answer": "うえる",
+            "options": ["うえる", "ほる", "つむ", "こぐ"]
         }
     },
     {
@@ -742,8 +730,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "犬が庭の土を<span class='blank-space'></span>いる。",
-            "answer": "掘って",
-            "options": ["掘って", "耕して", "埋めて", "盛って"]
+            "answer": "ほって",
+            "options": ["ほって", "たがやして", "うめて", "もって"]
         }
     },
     {
@@ -760,8 +748,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "自転車を<span class='blank-space'></span>坂を上る。",
-            "answer": "漕いで",
-            "options": ["漕いで", "跨いで", "担いで", "押して"]
+            "answer": "こいで",
+            "options": ["こいで", "またいで", "かついで", "おして"]
         }
     },
     {
@@ -778,8 +766,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "彼は長年の修行で武道を<span class='blank-space'></span>。",
-            "answer": "極めた",
-            "options": ["極めた", "励んだ", "努めた", "尽くした"]
+            "answer": "きわめた",
+            "options": ["きわめた", "はげんだ", "つとめた", "つくした"]
         }
     },
     {
@@ -794,8 +782,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "将来の夢に向かって勉強に<span class='blank-space'></span>。",
-            "answer": "励む",
-            "options": ["励む", "挑む", "絡む", "惜しむ"]
+            "answer": "はげむ",
+            "options": ["はげむ", "いどむ", "からむ", "おしむ"]
         }
     },
     {
@@ -812,8 +800,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "全力を<span class='blank-space'></span>戦ったが、負けてしまった。",
-            "answer": "尽くして",
-            "options": ["尽くして", "費やして", "壊して", "倒して"]
+            "answer": "つくして",
+            "options": ["つくして", "ついやして", "こわして", "たおして"]
         }
     },
     {
@@ -828,8 +816,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "問題の早期解決に<span class='blank-space'></span>。",
-            "answer": "努める",
-            "options": ["努める", "務める", "勤める", "励める"]
+            "answer": "つとめる",
+            "options": ["つとめる", "もとめる", "まとめる", "はげめる"]
         }
     },
     {
@@ -846,8 +834,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "ネックレスの鎖が<span class='blank-space'></span>ほどけない。",
-            "answer": "絡んで",
-            "options": ["絡んで", "結んで", "繋いで", "編んで"]
+            "answer": "からんで",
+            "options": ["からんで", "むすんで", "つないで", "あんで"]
         }
     },
     {
@@ -863,8 +851,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "野に咲く花を<span class='blank-space'></span>。",
-            "answer": "摘む",
-            "options": ["摘む", "掘る", "刈る", "植える"]
+            "answer": "つむ",
+            "options": ["つむ", "ほる", "かる", "うえる"]
         }
     },
     {
@@ -881,7 +869,7 @@ const DAY3_WORDS = [
         "practice": {
             "sentence": "要点を<span class='blank-space'></span>話してください。",
             "answer": "つまんで",
-            "options": ["つまんで", "掴んで", "摘んで", "絡んで"]
+            "options": ["つまんで", "つかんで", "つんで", "からんで"]
         }
     },
     {
@@ -896,8 +884,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "羊の毛を<span class='blank-space'></span>。",
-            "answer": "刈る",
-            "options": ["刈る", "剃る", "削る", "切る"]
+            "answer": "かる",
+            "options": ["かる", "そる", "けずる", "きる"]
         }
     },
     {
@@ -914,8 +902,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "彼は大金を<span class='blank-space'></span>チャンスを狙っている。",
-            "answer": "掴む",
-            "options": ["掴む", "摘む", "盗む", "拾う"]
+            "answer": "つかむ",
+            "options": ["つかむ", "つむ", "ぬすむ", "ひろう"]
         }
     },
     {
@@ -932,7 +920,7 @@ const DAY3_WORDS = [
         "practice": {
             "sentence": "必死にロープに<span class='blank-space'></span>、助けを待った。",
             "answer": "しがみついて",
-            "options": ["しがみついて", "掴まって", "ぶら下がって", "寄りかかって"]
+            "options": ["しがみついて", "つかまって", "ぶらさがって", "よりかかって"]
         }
     },
     {
@@ -948,8 +936,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "誤解が<span class='blank-space'></span>、二人は仲直りした。",
-            "answer": "解けて",
-            "options": ["解けて", "溶けて", "融けて", "説けて"]
+            "answer": "ほどけて",
+            "options": ["ほどけて", "むすべて", "ちぎれて", "やぶれて"]
         }
     },
     {
@@ -966,7 +954,7 @@ const DAY3_WORDS = [
         "practice": {
             "sentence": "準備運動をして体が<span class='blank-space'></span>きた。",
             "answer": "ほぐれて",
-            "options": ["ほぐれて", "崩れて", "壊れて", "砕けて"]
+            "options": ["ほぐれて", "くずれて", "こわれて", "くだけて"]
         }
     },
     {
@@ -983,8 +971,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "梅のつぼみが<span class='blank-space'></span>始めた。",
-            "answer": "綻び",
-            "options": ["綻び", "裂け", "解け", "緩み"]
+            "answer": "ほころび",
+            "options": ["ほころび", "さけ", "ほどけ", "ゆるみ"]
         }
     },
     {
@@ -1000,8 +988,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "友情が<span class='blank-space'></span>ような出来事があった。",
-            "answer": "裂ける",
-            "options": ["裂ける", "割れる", "折れる", "砕ける"]
+            "answer": "さける",
+            "options": ["さける", "われる", "おれる", "くだける"]
         }
     },
     {
@@ -1018,8 +1006,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "攻撃の手を<span class='blank-space'></span>な。",
-            "answer": "緩める",
-            "options": ["緩める", "止める", "休める", "弱める"]
+            "answer": "ゆるめる",
+            "options": ["ゆるめる", "とめる", "やすめる", "よわめる"]
         }
     },
     {
@@ -1035,8 +1023,8 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "sentence": "彼の優しい言葉で、不安が<span class='blank-space'></span>。",
-            "answer": "和らいだ",
-            "options": ["和らいだ", "緩んだ", "解けた", "薄れた"]
+            "answer": "やわらいだ",
+            "options": ["やわらいだ", "ゆるんだ", "ほどけた", "うすれた"]
         }
     },    
 ];
@@ -1054,8 +1042,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "相手を罠に<span class='blank-space'></span>。",
-            "answer": "嵌める",
-            "options": ["嵌める", "埋める", "止める", "決める"]
+            "answer": "はめる",
+            "options": ["はめる", "うめる", "とめる", "きめる"]
         }
     },
     {
@@ -1071,8 +1059,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "久しぶりに故郷に帰って、思い出に<span class='blank-space'></span>。",
-            "answer": "浸った",
-            "options": ["浸った", "漬かった", "沈んだ", "溺れた"]
+            "answer": "ひたった",
+            "options": ["ひたった", "つかった", "しずんだ", "おぼれた"]
         }
     },
     {
@@ -1088,8 +1076,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "この会社では女性が全社員の6割を<span class='blank-space'></span>。",
-            "answer": "占めている",
-            "options": ["占めている", "示している", "湿っている", "閉めている"]
+            "answer": "しめている",
+            "options": ["しめている", "しめしている", "しめっている", "もとめている"]
         }
     },
     {
@@ -1105,8 +1093,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "美しい景色に心を<span class='blank-space'></span>。",
-            "answer": "奪われた",
-            "options": ["奪われた", "失った", "隠した", "覆った"]
+            "answer": "うばわれた",
+            "options": ["うばわれた", "うしなった", "かくした", "おおった"]
         }
     },
     {
@@ -1121,8 +1109,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "親の行動は子供に大きな影響を<span class='blank-space'></span>。",
-            "answer": "及ぼす",
-            "options": ["及ぼす", "及ぶ", "至る", "迫る"]
+            "answer": "およぼす",
+            "options": ["およぼす", "およぶ", "いたる", "せまる"]
         }
     },
     {
@@ -1138,8 +1126,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "神が人間に知恵を<span class='blank-space'></span>と言われている。",
-            "answer": "授けた",
-            "options": ["授けた", "預けた", "捧げた", "掲げた"]
+            "answer": "さずけた",
+            "options": ["さずけた", "あずけた", "ささげた", "かかげた"]
         }
     },
     {
@@ -1155,8 +1143,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "彼は難色を示して、協力を<span class='blank-space'></span>。",
-            "answer": "渋った",
-            "options": ["渋った", "滞った", "粘った", "偏った"]
+            "answer": "しぶった",
+            "options": ["しぶった", "とどこおった", "ねばった", "かたよった"]
         }
     },
     {
@@ -1172,8 +1160,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "不景気で資金の回転が<span class='blank-space'></span>。",
-            "answer": "滞る",
-            "options": ["滞る", "詰まる", "留まる", "塞がる"]
+            "answer": "とどこおる",
+            "options": ["とどこおる", "つまる", "とどまる", "ふさがる"]
         }
     },
     {
@@ -1189,8 +1177,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "大声で話して、周りの人の勉強を<span class='blank-space'></span>はいけない。",
-            "answer": "妨げて",
-            "options": ["妨げて", "隔てて", "支えて", "構えて"]
+            "answer": "さまたげて",
+            "options": ["さまたげて", "へだてて", "ささえて", "かまえて"]
         }
     },
     {
@@ -1206,8 +1194,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "大きな壁が彼らの行く手を<span class='blank-space'></span>。",
-            "answer": "阻んでいる",
-            "options": ["阻んでいる", "拒んでいる", "憎んでいる", "望んでいる"]
+            "answer": "はばんでいる",
+            "options": ["はばんでいる", "こばんでいる", "にくんでいる", "のぞんでいる"]
         }
     },
     {
@@ -1222,8 +1210,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "彼は不当な要求を断固として<span class='blank-space'></span>。",
-            "answer": "拒んだ",
-            "options": ["拒んだ", "阻んだ", "摘んだ", "絡んだ"]
+            "answer": "こばんだ",
+            "options": ["こばんだ", "はばんだ", "うらんだ", "あゆんだ"]
         }
     },
     {
@@ -1239,7 +1227,7 @@ const DAY4_WORDS = [
         "practice": {
             "sentence": "危険だから、その計画は<span class='blank-space'></span>方がいい。",
             "answer": "よした",
-            "options": ["よした", "逃れた", "免れた", "離れた"]
+            "options": ["よした", "のがれた", "まぬがれた", "はなれた"]
         }
     },
     {
@@ -1256,8 +1244,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "あまり無理をすると体に<span class='blank-space'></span>よ。",
-            "answer": "障る",
-            "options": ["障る", "触る", "困る", "腐る"]
+            "answer": "さわる",
+            "options": ["さわる", "まわる", "こまる", "くさる"]
         }
     },
     {
@@ -1272,8 +1260,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "明日の仕事に<span class='blank-space'></span>ので、もう帰ります。",
-            "answer": "差し支える",
-            "options": ["差し支える", "仕える", "捕まえる", "控える"]
+            "answer": "さしつかえる",
+            "options": ["さしつかえる", "つかえる", "つかまえる", "ひかえる"]
         }
     },
     {
@@ -1290,8 +1278,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "彼女は難しい役を見事に<span class='blank-space'></span>。",
-            "answer": "熟した",
-            "options": ["熟した", "耕した", "浸した", "逃した"]
+            "answer": "こなした",
+            "options": ["こなした", "たがやした", "ひたした", "のがした"]
         }
     },
     {
@@ -1306,8 +1294,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "静かな環境で勉強が<span class='blank-space'></span>。",
-            "answer": "捗る",
-            "options": ["捗る", "粘る", "潜る", "巡る"]
+            "answer": "はかどる",
+            "options": ["はかどる", "ねばる", "くぐる", "めぐる"]
         }
     },
     {
@@ -1323,8 +1311,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "犯人は警察の目を<span class='blank-space'></span>、海外へ逃亡した。",
-            "answer": "逃れて",
-            "options": ["逃れて", "離れて", "逸れて", "隠れて"]
+            "answer": "のがれて",
+            "options": ["のがれて", "はなれて", "それて", "かくれて"]
         }
     },
     {
@@ -1341,8 +1329,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "ふるさとを<span class='blank-space'></span>、都会で暮らす。",
-            "answer": "離れて",
-            "options": ["離れて", "逃れて", "別れて", "遅れて"]
+            "answer": "はなれて",
+            "options": ["はなれて", "のがれて", "わかれて", "おくれて"]
         }
     },
     {
@@ -1358,8 +1346,8 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "sentence": "彼は証拠不十分で罪を<span class='blank-space'></span>。",
-            "answer": "免れた",
-            "options": ["免れた", "逃れた", "許された", "救われた"]
+            "answer": "まぬがれた",
+            "options": ["まぬがれた", "のがれた", "ゆるされた", "すくわれた"]
         }
     },
     {
@@ -1393,9 +1381,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>話<rt>はなし</rt></ruby>が<ruby>本<rt>ほん</rt></ruby><ruby>題<rt>だい</rt></ruby>から<span class='ex-highlight'><ruby>逸<rt>そ</rt></ruby>れて</span>しまった。", "cn": "话题偏离了主题。" }
         ],
         "practice": {
-            "sentence": "話が横道に<span class='blank-space'></span>。",
-            "answer": "逸れた",
-            "options": ["逸れた", "ずれた", "外れた", "歪んだ"]
+            "sentence": "話がいつの間にか横道に<span class='blank-space'></span>、結論が出なかった。",
+            "answer": "それた",
+            "options": ["それた", "ずれた", "はずれた", "ゆがんだ"]
         }
     },
     {
@@ -1410,9 +1398,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>彼<rt>かれ</rt></ruby>とは<ruby>話<rt>はなし</rt></ruby>の<ruby>焦<rt>しょう</rt></ruby><ruby>点<rt>てん</rt></ruby>が<span class='ex-highlight'>ずれている</span>。", "cn": "和他聊天不在一个频道。" }
         ],
         "practice": {
-            "sentence": "彼の感覚は一般人と少し<span class='blank-space'></span>。",
+            "sentence": "議論の焦点が本来の目的から<span class='blank-space'></span>いる。",
             "answer": "ずれている",
-            "options": ["ずれている", "外れている", "隔てている", "遮っている"]
+            "options": ["ずれている", "はずれている", "へだてている", "さえぎっている"]
         }
     },
     {
@@ -1428,9 +1416,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>代<rt>だい</rt></ruby><ruby>表<rt>ひょう</rt></ruby>メンバーから<span class='ex-highlight'><ruby>外<rt>はず</rt></ruby>れる</span>。", "cn": "落选代表队成员。" }
         ],
         "practice": {
-            "sentence": "期待が<span class='blank-space'></span>、がっかりした。",
-            "answer": "外れて",
-            "options": ["外れて", "逸れて", "ずれて", "転がって"]
+            "sentence": "天気予報が<span class='blank-space'></span>、午後から激しい雨が降り出した。",
+            "answer": "はずれて",
+            "options": ["はずれて", "それて", "ずれて", "ころがって"]
         }
     },
     {
@@ -1444,9 +1432,9 @@ const DAY5_WORDS = [
             { "jp": "<span class='ex-highlight'><ruby>偏<rt>かたよ</rt></ruby>った</span><ruby>考<rt>かんが</rt></ruby>えを<ruby>持<rt>も</rt></ruby>つ。", "cn": "持有偏激的想法。" }
         ],
         "practice": {
-            "sentence": "彼の意見は一方に<span class='blank-space'></span>いる。",
-            "answer": "偏って",
-            "options": ["偏って", "歪んで", "隔てて", "舞って"]
+            "sentence": "彼の考え方は極端に<span class='blank-space'></span>いて、柔軟性に欠ける。",
+            "answer": "かたよって",
+            "options": ["かたよって", "ゆがんで", "へだてて", "まって"]
         }
     },
     {
@@ -1462,9 +1450,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>家<rt>か</rt></ruby><ruby>庭<rt>てい</rt></ruby><ruby>環<rt>かん</rt></ruby><ruby>境<rt>きょう</rt></ruby>が<ruby>彼<rt>かれ</rt></ruby>の<ruby>性<rt>せい</rt></ruby><ruby>格<rt>かく</rt></ruby>を<span class='ex-highlight'><ruby>歪<rt>ゆが</rt></ruby>めて</span>しまった。", "cn": "家庭环境使他的性格变得扭曲了。" }
         ],
         "practice": {
-            "sentence": "真実を<span class='blank-space'></span>報道してはいけない。",
-            "answer": "歪めて",
-            "options": ["歪めて", "隔てて", "遮って", "外して"]
+            "sentence": "事実を<span class='blank-space'></span>解釈し、誤った情報を広めてしまった。",
+            "answer": "ゆがめて",
+            "options": ["ゆがめて", "へだてて", "さえぎって", "はずして"]
         }
     },
     {
@@ -1479,9 +1467,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>無<rt>む</rt></ruby><ruby>理<rt>り</rt></ruby>がたたって<ruby>夫<rt>ふう</rt></ruby><ruby>婦<rt>ふ</rt></ruby><ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby>が<span class='ex-highlight'>ひずむ</span>。", "cn": "因长期勉强维持，夫妻关系出现了裂痕。" }
         ],
         "practice": {
-            "sentence": "高熱でプラスチックが<span class='blank-space'></span>。",
-            "answer": "歪んだ",
-            "options": ["歪んだ", "偏った", "ずれた", "逸れた"]
+            "sentence": "地震の激しい揺れで、建物の鉄骨がぐにゃりと<span class='blank-space'></span>。",
+            "answer": "ひずんだ",
+            "options": ["ひずんだ", "かたよった", "ずれた", "それた"]
         }
     },
     {
@@ -1496,9 +1484,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>と<span class='ex-highlight'><ruby>隔<rt>へだ</rt></ruby>て</span>のない<ruby>会<rt>かい</rt></ruby><ruby>話<rt>わ</rt></ruby>をする。", "cn": "和朋友进行亲密无间的交谈。" }
         ],
         "practice": {
-            "sentence": "20年の時を<span class='blank-space'></span>再会した。",
-            "answer": "隔てて",
-            "options": ["隔てて", "遮って", "離れて", "逃れて"]
+            "sentence": "長年音信不通だった友人と、二十年の時を<span class='blank-space'></span>再会を果たした。",
+            "answer": "へだてて",
+            "options": ["へだてて", "さえぎって", "はなれて", "のがれて"]
         }
     },
     {
@@ -1513,9 +1501,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>人<rt>ひと</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>を<span class='ex-highlight'><ruby>遮<rt>さえぎ</rt></ruby>らないで</span>ください。", "cn": "请不要打断别人的话。" }
         ],
         "practice": {
-            "sentence": "雲が太陽を<span class='blank-space'></span>、急に暗くなった。",
-            "answer": "遮り",
-            "options": ["遮り", "隔て", "歪め", "外し"]
+            "sentence": "カーテンを閉めて外からの強い日差しを<span class='blank-space'></span>、室内を暗くした。",
+            "answer": "さえぎり",
+            "options": ["さえぎり", "へだて", "ゆがめ", "はずし"]
         }
     },
     {
@@ -1530,9 +1518,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>舞<rt>ぶ</rt></ruby><ruby>台<rt>たい</rt></ruby>で<ruby>優<rt>ゆう</rt></ruby><ruby>雅<rt>が</rt></ruby>に<span class='ex-highlight'><ruby>舞<rt>ま</rt></ruby>う</span>。", "cn": "在舞台上优雅地起舞。" }
         ],
         "practice": {
-            "sentence": "ほこりが空中に<span class='blank-space'></span>。",
-            "answer": "舞う",
-            "options": ["舞う", "転がる", "逸れる", "偏る"]
+            "sentence": "春風に吹かれて、満開の桜の花びらが美しく空に<span class='blank-space'></span>。",
+            "answer": "まう",
+            "options": ["まう", "ころがる", "それる", "かたよる"]
         }
     },
     {
@@ -1548,9 +1536,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>部<rt>へ</rt></ruby><ruby>屋<rt>や</rt></ruby>には<ruby>本<rt>ほん</rt></ruby>が<span class='ex-highlight'><ruby>転<rt>ころ</rt></ruby>がっている</span>。", "cn": "房间里到处都是书。" }
         ],
         "practice": {
-            "sentence": "道端に石が<span class='blank-space'></span>。",
-            "answer": "転がっている",
-            "options": ["転がっている", "舞っている", "歪んでいる", "隔てている"]
+            "sentence": "リビングの床には、子供のおもちゃがあちこちに<span class='blank-space'></span>。",
+            "answer": "ころがっている",
+            "options": ["ころがっている", "まっている", "ひずんでいる", "へだてている"]
         }
     },
     {
@@ -1566,9 +1554,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>記<rt>き</rt></ruby><ruby>事<rt>じ</rt></ruby>を<ruby>新<rt>しん</rt></ruby><ruby>聞<rt>ぶん</rt></ruby>に<span class='ex-highlight'><ruby>掲<rt>かか</rt></ruby>げる</span>。", "cn": "在报纸上刊登文章。" }
         ],
         "practice": {
-            "sentence": "理念を<span class='blank-space'></span>会社を設立した。",
-            "answer": "掲げて",
-            "options": ["掲げて", "捲って", "絞って", "挟んで"]
+            "sentence": "崇高な理念を<span class='blank-space'></span>、新しい会社を設立した。",
+            "answer": "かかげて",
+            "options": ["かかげて", "めくって", "しぼって", "はさんで"]
         }
     },
     {
@@ -1582,9 +1570,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>本<rt>ほん</rt></ruby>のページを<ruby>一<rt>いち</rt></ruby><ruby>枚<rt>まい</rt></ruby><ruby>一<rt>いち</rt></ruby><ruby>枚<rt>まい</rt></ruby><span class='ex-highlight'><ruby>捲<rt>めく</rt></ruby>る</span>。", "cn": "一页一页地翻书。" }
         ],
         "practice": {
-            "sentence": "カレンダーを<span class='blank-space'></span>。",
-            "answer": "捲る",
-            "options": ["捲る", "絞る", "掬う", "掲げる"]
+            "sentence": "新しい月になったので、カレンダーを一枚<span class='blank-space'></span>。",
+            "answer": "めくる",
+            "options": ["めくる", "しぼる", "すくう", "かかげる"]
         }
     },
     {
@@ -1600,9 +1588,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>候<rt>こう</rt></ruby><ruby>補<rt>ほ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>を3<ruby>人<rt>にん</rt></ruby>に<span class='ex-highlight'><ruby>絞<rt>しぼ</rt></ruby>る</span>。", "cn": "把候选人缩小到3人。" }
         ],
         "practice": {
-            "sentence": "知恵を<span class='blank-space'></span>解決策を考えた。",
-            "answer": "絞って",
-            "options": ["絞って", "捲って", "挟んで", "弾いて"]
+            "sentence": "皆で知恵を<span class='blank-space'></span>、難局を乗り越えるための解決策を考えた。",
+            "answer": "しぼって",
+            "options": ["しぼって", "めくって", "はさんで", "はじいて"]
         }
     },
     {
@@ -1616,9 +1604,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>川<rt>かわ</rt></ruby>の<ruby>水<rt>みず</rt></ruby>を<ruby>手<rt>て</rt></ruby>に<span class='ex-highlight'><ruby>掬<rt>すく</rt></ruby>って</span><ruby>飲<rt>の</rt></ruby>む。", "cn": "用手捧起河水喝。" }
         ],
         "practice": {
-            "sentence": "スープをスプーンで<span class='blank-space'></span>。",
-            "answer": "掬う",
-            "options": ["掬う", "弾く", "絞る", "被る"]
+            "sentence": "冷めないうちに、熱々のスープをスプーンで<span class='blank-space'></span>口に運んだ。",
+            "answer": "すくう",
+            "options": ["すくう", "はじく", "しぼる", "かぶる"]
         }
     },
     {
@@ -1634,9 +1622,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>不<rt>ふ</rt></ruby><ruby>満<rt>まん</rt></ruby>を<span class='ex-highlight'><ruby>挟<rt>はさ</rt></ruby>んだ</span><ruby>口<rt>く</rt></ruby><ruby>調<rt>ちょう</rt></ruby>で<ruby>答<rt>こた</rt></ruby>えた。", "cn": "用带着不满的语气回答。" }
         ],
         "practice": {
-            "sentence": "本にしおりを<span class='blank-space'></span>。",
-            "answer": "挟む",
-            "options": ["挟む", "遮る", "隔てる", "偏る"]
+            "sentence": "読みかけの本にしおりを<span class='blank-space'></span>、机の上に置いた。",
+            "answer": "はさんで",
+            "options": ["はさんで", "さえぎって", "へだてて", "かたよって"]
         }
     },
     {
@@ -1650,7 +1638,7 @@ const DAY5_WORDS = [
             { "jp": "<ruby>長<rt>なが</rt></ruby>い<ruby>看<rt>かん</rt></ruby><ruby>病<rt>びょう</rt></ruby>で<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>は<span class='ex-highlight'>やつれて</span>しまった。", "cn": "长时间的护理让她变得憔悴。" }
         ],
         "practice": {
-            "sentence": "苦労が続いて、すっかり<span class='blank-space'></span>しまった。",
+            "sentence": "長年の過労がたたり（产生恶果）、彼はすっかり<span class='blank-space'></span>しまった。",
             "answer": "やつれて",
             "options": ["やつれて", "かぶって", "はずんで", "かさんで"]
         }
@@ -1668,9 +1656,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>職<rt>しょく</rt></ruby><ruby>場<rt>ば</rt></ruby>で<ruby>服<rt>ふく</rt></ruby><ruby>装<rt>そう</rt></ruby>が<span class='ex-highlight'>かぶって</span>しまった。", "cn": "在职场上与别人撞衫了。" }
         ],
         "practice": {
-            "sentence": "損害を<span class='blank-space'></span>。",
-            "answer": "被る",
-            "options": ["被る", "掲げる", "逸れる", "歪む"]
+            "sentence": "彼は他人のミスによる損害を全て<span class='blank-space'></span>ことになった。",
+            "answer": "かぶる",
+            "options": ["かぶる", "かかげる", "それる", "ゆがむ"]
         }
     },
     {
@@ -1684,9 +1672,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>荷<rt>に</rt></ruby><ruby>物<rt>もつ</rt></ruby>が<span class='ex-highlight'><ruby>嵩<rt>かさ</rt></ruby>んで</span><ruby>持<rt>も</rt></ruby>ちきれない。", "cn": "行李太多拿不了。" }
         ],
         "practice": {
-            "sentence": "借金が<span class='blank-space'></span>、返済が苦しい。",
-            "answer": "嵩んで",
-            "options": ["嵩んで", "弾んで", "歪んで", "転がって"]
+            "sentence": "無駄遣いが重なり、借金が予想以上に<span class='blank-space'></span>しまった。",
+            "answer": "かさんで",
+            "options": ["かさんで", "はずんで", "ゆがんで", "ころがって"]
         }
     },
     {
@@ -1701,9 +1689,9 @@ const DAY5_WORDS = [
             { "jp": "<ruby>旧<rt>きゅう</rt></ruby><ruby>友<rt>ゆう</rt></ruby>との<ruby>話<rt>はなし</rt></ruby>が<span class='ex-highlight'><ruby>弾<rt>はず</rt></ruby>んだ</span>。", "cn": "和老朋友聊得很投机。" }
         ],
         "practice": {
-            "sentence": "期待に胸が<span class='blank-space'></span>。",
-            "answer": "弾む",
-            "options": ["弾む", "弾く", "舞う", "転がる"]
+            "sentence": "明日からの旅行のことを考えると、期待に胸が<span class='blank-space'></span>。",
+            "answer": "はずむ",
+            "options": ["はずむ", "はじく", "まう", "ころがる"]
         }
     },
     {
@@ -1718,9 +1706,9 @@ const DAY5_WORDS = [
             { "jp": "この<ruby>布<rt>ぬの</rt></ruby>は<ruby>水<rt>みず</rt></ruby>を<span class='ex-highlight'><ruby>弾<rt>はじ</rt></ruby>く</span><ruby>加<rt>か</rt></ruby><ruby>工<rt>こう</rt></ruby>がされている。", "cn": "这块布料做了防水处理。" }
         ],
         "practice": {
-            "sentence": "油は水を<span class='blank-space'></span>。",
-            "answer": "弾く",
-            "options": ["弾く", "弾む", "絞る", "掬う"]
+            "sentence": "このレインコートは特殊な素材でできており、雨水をよく<span class='blank-space'></span>。",
+            "answer": "はじく",
+            "options": ["はじく", "はずむ", "しぼる", "すくう"]
         }
     }    
 ];
@@ -1737,9 +1725,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>予<rt>よ</rt></ruby><ruby>算<rt>さん</rt></ruby>については<ruby>一<rt>いっ</rt></ruby><ruby>歩<rt>ぽ</rt></ruby>も<span class='ex-highlight'><ruby>譲<rt>ゆず</rt></ruby>れない</span>。", "cn": "关于预算一步也不能退让。" }
         ],
         "practice": {
-            "sentence": "後輩に道を<span class='blank-space'></span>。",
-            "answer": "譲る",
-            "options": ["譲る", "探る", "響く", "聳える"]
+            "sentence": "電車でお年寄りに席を<span class='blank-space'></span>。",
+            "answer": "ゆずった",
+            "options": ["ゆずった", "さぐった", "ひびいた", "そびえた"]
         }
     },
     {
@@ -1754,9 +1742,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>の<ruby>腹<rt>はら</rt></ruby>を<span class='ex-highlight'><ruby>探<rt>さぐ</rt></ruby>る</span>。", "cn": "试探对方的心思。" }
         ],
         "practice": {
-            "sentence": "原因を<span class='blank-space'></span>。",
-            "answer": "探る",
-            "options": ["探る", "譲る", "響く", "敵う"]
+            "sentence": "手探りで暗闇の中、出口を<span class='blank-space'></span>。",
+            "answer": "さぐる",
+            "options": ["さぐる", "ゆずる", "ひびく", "かなう"]
         }
     },
     {
@@ -1772,9 +1760,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>睡<rt>すい</rt></ruby><ruby>眠<rt>みん</rt></ruby><ruby>不<rt>ふ</rt></ruby><ruby>足<rt>そく</rt></ruby>が<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>に<span class='ex-highlight'><ruby>響<rt>ひび</rt></ruby>く</span>。", "cn": "睡眠不足影响了工作。" }
         ],
         "practice": {
-            "sentence": "彼の言葉が心に<span class='blank-space'></span>。",
-            "answer": "響いた",
-            "options": ["響いた", "聳えた", "敵った", "譲った"]
+            "sentence": "彼の励ましの言葉が、落ち込んでいた私の心に深く<span class='blank-space'></span>。",
+            "answer": "ひびいた",
+            "options": ["ひびいた", "そびえた", "かなった", "ゆずった"]
         }
     },
     {
@@ -1788,9 +1776,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>目<rt>め</rt></ruby>の<ruby>前<rt>まえ</rt></ruby>に<ruby>高<rt>こう</rt></ruby><ruby>層<rt>そう</rt></ruby>ビルが<span class='ex-highlight'><ruby>聳<rt>そび</rt></ruby>えている</span>。", "cn": "眼前耸立着高层建筑。" }
         ],
         "practice": {
-            "sentence": "富士山が雲の上に<span class='blank-space'></span>。",
-            "answer": "聳えている",
-            "options": ["聳えている", "響いている", "探っている", "敵っている"]
+            "sentence": "遠くからでも見えるほど、巨大な塔が街の中心に<span class='blank-space'></span>。",
+            "answer": "そびえている",
+            "options": ["そびえている", "ひびいている", "さぐっている", "かなっている"]
         }
     },
     {
@@ -1805,9 +1793,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>今<rt>きょう</rt></ruby><ruby>日<rt>ひ</rt></ruby>は<ruby>暑<rt>あつ</rt></ruby>くて<span class='ex-highlight'><ruby>敵<rt>かな</rt></ruby>わない</span>。", "cn": "今天热得让人受不了。" }
         ],
         "practice": {
-            "sentence": "口喧嘩では彼女に<span class='blank-space'></span>。",
-            "answer": "敵わない",
-            "options": ["敵わない", "譲らない", "探らない", "響かない"]
+            "sentence": "口喧嘩では、どう頑張っても彼女に<span class='blank-space'></span>。",
+            "answer": "かなわない",
+            "options": ["かなわない", "ゆずらない", "さぐらない", "ひびかない"]
         }
     },
     {
@@ -1821,9 +1809,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>目<rt>もく</rt></ruby><ruby>的<rt>てき</rt></ruby>に<span class='ex-highlight'><ruby>適<rt>かな</rt></ruby>う</span><ruby>人<rt>じん</rt></ruby><ruby>材<rt>ざい</rt></ruby>を<ruby>探<rt>さが</rt></ruby>す。", "cn": "寻找符合目的的人才。" }
         ],
         "practice": {
-            "sentence": "条件に<span class='blank-space'></span>物件を探す。",
-            "answer": "適う",
-            "options": ["適う", "済ます", "遂げる", "施す"]
+            "sentence": "厳しい条件に<span class='blank-space'></span>物件を、根気よく探す。",
+            "answer": "かなう",
+            "options": ["かなう", "すます", "とげる", "ほどこす"]
         }
     },
     {
@@ -1839,9 +1827,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>借<rt>しゃっ</rt></ruby><ruby>金<rt>きん</rt></ruby>を<span class='ex-highlight'><ruby>済<rt>す</rt></ruby>ます</span>。", "cn": "还清欠款。" }
         ],
         "practice": {
-            "sentence": "夕食はピザで<span class='blank-space'></span>。",
-            "answer": "済ませた",
-            "options": ["済ませた", "遂げた", "施した", "果たした"]
+            "sentence": "時間がないので、夕食は宅配ピザで簡単に<span class='blank-space'></span>。",
+            "answer": "すませた",
+            "options": ["すませた", "とげた", "ほどこした", "はたした"]
         }
     },
     {
@@ -1855,9 +1843,9 @@ const DAY6_WORDS = [
             { "jp": "ついに<ruby>目<rt>もく</rt></ruby><ruby>的<rt>てき</rt></ruby>を<span class='ex-highlight'><ruby>遂<rt>と</rt></ruby>げた</span>。", "cn": "终于达成了目的。" }
         ],
         "practice": {
-            "sentence": "彼は悲劇的な最期を<span class='blank-space'></span>。",
-            "answer": "遂げた",
-            "options": ["遂げた", "済ませた", "施した", "果たした"]
+            "sentence": "多くの苦難を乗り越え、彼はついに悲願を<span class='blank-space'></span>。",
+            "answer": "とげた",
+            "options": ["とげた", "すませた", "ほどこした", "はたした"]
         }
     },
     {
@@ -1873,9 +1861,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>患<rt>かん</rt></ruby><ruby>者<rt>じゃ</rt></ruby>に<ruby>緊<rt>きん</rt></ruby><ruby>急<rt>きゅう</rt></ruby><ruby>手<rt>しゅ</rt></ruby><ruby>術<rt>じゅつ</rt></ruby>を<span class='ex-highlight'><ruby>施<rt>ほどこ</rt></ruby>す</span>。", "cn": "对患者施行紧急手术。" }
         ],
         "practice": {
-            "sentence": "壁に装飾を<span class='blank-space'></span>。",
-            "answer": "施す",
-            "options": ["施す", "果たす", "凌ぐ", "勝る"]
+            "sentence": "古くなった建物の外壁に、美しい装飾を<span class='blank-space'></span>。",
+            "answer": "ほどこす",
+            "options": ["ほどこす", "はたす", "しのぐ", "まさる"]
         }
     },
     {
@@ -1890,9 +1878,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>重<rt>じゅう</rt></ruby><ruby>要<rt>よう</rt></ruby>な<ruby>役<rt>やく</rt></ruby><ruby>割<rt>わり</rt></ruby>を<span class='ex-highlight'><ruby>果<rt>は</rt></ruby>たす</span>。", "cn": "发挥重要的作用。" }
         ],
         "practice": {
-            "sentence": "約束を<span class='blank-space'></span>。",
-            "answer": "果たす",
-            "options": ["果たす", "施す", "凌ぐ", "劣る"]
+            "sentence": "長年の努力が実り、ついに子供の頃からの約束を<span class='blank-space'></span>。",
+            "answer": "はたす",
+            "options": ["はたす", "ほどこす", "しのぐ", "おとる"]
         }
     },
     {
@@ -1907,9 +1895,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>前<rt>ぜん</rt></ruby><ruby>作<rt>さく</rt></ruby>を<span class='ex-highlight'><ruby>凌<rt>しの</rt></ruby>ぐ</span>ヒット<ruby>作<rt>さく</rt></ruby>。", "cn": "超越前作的热门作品。" }
         ],
         "practice": {
-            "sentence": "空腹を水で<span class='blank-space'></span>。",
-            "answer": "凌ぐ",
-            "options": ["凌ぐ", "勝る", "劣る", "補う"]
+            "sentence": "水を飲んで、一時的に空腹を<span class='blank-space'></span>。",
+            "answer": "しのぐ",
+            "options": ["しのぐ", "まさる", "おとる", "おぎなう"]
         }
     },
     {
@@ -1923,9 +1911,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>健<rt>けん</rt></ruby><ruby>康<rt>こう</rt></ruby>に<span class='ex-highlight'><ruby>勝<rt>まさ</rt></ruby>る</span><ruby>宝<rt>たから</rt></ruby>はない。", "cn": "没有比健康更宝贵的财富了。" }
         ],
         "practice": {
-            "sentence": "実力では彼に<span class='blank-space'></span>。",
-            "answer": "勝る",
-            "options": ["勝る", "劣る", "補う", "忍ぶ"]
+            "sentence": "経験と実績では、誰にも<span class='blank-space'></span>自信がある。",
+            "answer": "まさる",
+            "options": ["まさる", "おとる", "おぎなう", "しのぶ"]
         }
     },
     {
@@ -1939,9 +1927,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>性<rt>せい</rt></ruby><ruby>能<rt>のう</rt></ruby>では<ruby>他<rt>た</rt></ruby><ruby>社<rt>しゃ</rt></ruby><ruby>製<rt>せい</rt></ruby><ruby>品<rt>ひん</rt></ruby>に<span class='ex-highlight'><ruby>劣<rt>おと</rt></ruby>る</span>。", "cn": "在性能上逊色于其他公司的产品。" }
         ],
         "practice": {
-            "sentence": "技量で相手より<span class='blank-space'></span>。",
-            "answer": "劣る",
-            "options": ["劣る", "勝る", "忍ぶ", "堪える"]
+            "sentence": "最新機種と比べると、このパソコンは性能が<span class='blank-space'></span>。",
+            "answer": "おとる",
+            "options": ["おとる", "まさる", "しのぶ", "こらえる"]
         }
     },
     {
@@ -1956,9 +1944,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>損<rt>そん</rt></ruby><ruby>害<rt>がい</rt></ruby>を<ruby>金<rt>きん</rt></ruby><ruby>銭<rt>せん</rt></ruby>で<span class='ex-highlight'><ruby>補<rt>おぎな</rt></ruby>う</span>。", "cn": "用金钱来填补损失。" }
         ],
         "practice": {
-            "sentence": "欠員をアルバイトで<span class='blank-space'></span>。",
-            "answer": "補う",
-            "options": ["補う", "忍ぶ", "堪える", "鈍る"]
+            "sentence": "急な欠員が出たため、短期のアルバイトで<span class='blank-space'></span>。",
+            "answer": "おぎなう",
+            "options": ["おぎなう", "しのぶ", "こらえる", "にぶる"]
         }
     },
     {
@@ -1973,9 +1961,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>人<rt>ひと</rt></ruby><ruby>目<rt>め</rt></ruby>を<span class='ex-highlight'><ruby>忍<rt>しの</rt></ruby>んで</span><ruby>会<rt>あ</rt></ruby>う。", "cn": "偷偷地见面。" }
         ],
         "practice": {
-            "sentence": "恥を<span class='blank-space'></span>お願いする。",
-            "answer": "忍んで",
-            "options": ["忍んで", "堪えて", "鈍って", "尖って"]
+            "sentence": "恥を<span class='blank-space'></span>、先生に教えを請う。",
+            "answer": "しのんで",
+            "options": ["しのんで", "こらえて", "にぶって", "とがって"]
         }
     },
     {
@@ -1989,9 +1977,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>笑<rt>わら</rt></ruby>いたい<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちを<ruby>必<rt>ひっ</rt></ruby><ruby>死<rt>し</rt></ruby>に<span class='ex-highlight'><ruby>堪<rt>こら</rt></ruby>えた</span>。", "cn": "拼命忍住想笑的心情。" }
         ],
         "practice": {
-            "sentence": "痛みを<span class='blank-space'></span>。",
-            "answer": "堪える",
-            "options": ["堪える", "忍ぶ", "鈍る", "尖る"]
+            "sentence": "足の激しい痛みを<span class='blank-space'></span>、ゴールまで走りきった。",
+            "answer": "こらえる",
+            "options": ["こらえる", "しのぶ", "にぶる", "とがる"]
         }
     },
     {
@@ -2007,9 +1995,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>試<rt>し</rt></ruby><ruby>合<rt>あい</rt></ruby>で<ruby>負<rt>ま</rt></ruby>けて<ruby>意<rt>い</rt></ruby><ruby>欲<rt>よく</rt></ruby>が<span class='ex-highlight'><ruby>鈍<rt>にぶ</rt></ruby>った</span>。", "cn": "因为比赛失败，干劲减弱了。" }
         ],
         "practice": {
-            "sentence": "寒さで動きが<span class='blank-space'></span>。",
-            "answer": "鈍る",
-            "options": ["鈍る", "尖る", "冴える", "企む"]
+            "sentence": "厳しい寒さで手足がかじかみ、動きが<span class='blank-space'></span>。",
+            "answer": "にぶる",
+            "options": ["にぶる", "とがる", "さえる", "たくらむ"]
         }
     },
     {
@@ -2024,9 +2012,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>神<rt>しん</rt></ruby><ruby>経<rt>けい</rt></ruby>が<span class='ex-highlight'><ruby>尖<rt>とが</rt></ruby>っている</span>。", "cn": "神经紧绷。" }
         ],
         "practice": {
-            "sentence": "鉛筆の先が<span class='blank-space'></span>。",
-            "answer": "尖っている",
-            "options": ["尖っている", "鈍っている", "冴えている", "企んでいる"]
+            "sentence": "削りたての鉛筆の先のように、神経が<span class='blank-space'></span>。",
+            "answer": "とがっている",
+            "options": ["とがっている", "にぶっている", "さえている", "たくらんでいる"]
         }
     },
     {
@@ -2042,9 +2030,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>職<rt>しょく</rt></ruby><ruby>人<rt>にん</rt></ruby>の<ruby>技<rt>わざ</rt></ruby>が<span class='ex-highlight'><ruby>冴<rt>さ</rt></ruby>える</span>。", "cn": "工匠的技艺精湛。" }
         ],
         "practice": {
-            "sentence": "目が<span class='blank-space'></span>眠れない。",
-            "answer": "冴えて",
-            "options": ["冴えて", "鈍って", "尖って", "企んで"]
+            "sentence": "コーヒーを飲んだせいか、夜になっても目が<span class='blank-space'></span>眠れない。",
+            "answer": "さえて",
+            "options": ["さえて", "にぶって", "とがって", "たくらんで"]
         }
     },
     {
@@ -2058,9 +2046,9 @@ const DAY6_WORDS = [
             { "jp": "<ruby>何<rt>なに</rt></ruby>か<ruby>悪<rt>あく</rt></ruby><ruby>事<rt>じ</rt></ruby>を<span class='ex-highlight'><ruby>企<rt>たくら</rt></ruby>んで</span>いるに<ruby>違<rt>ちが</rt></ruby>いない。", "cn": "肯定在策划什么坏事。" }
         ],
         "practice": {
-            "sentence": "復讐を<span class='blank-space'></span>。",
-            "answer": "企む",
-            "options": ["企む", "冴える", "尖る", "鈍る"]
+            "sentence": "彼はライバル会社への復讐を密かに<span class='blank-space'></span>。",
+            "answer": "たくらむ",
+            "options": ["たくらむ", "さえる", "とがる", "にぶる"]
         }
     }
 ];
@@ -2079,8 +2067,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "彼は会議の中で、自説を裏付けるための具体的なデータをいくつも<span class='blank-space'></span>説明した。",
-            "answer": "挙げて",
-            "options": ["挙げて", "設けて", "催して", "目論んで"]
+            "answer": "あげて",
+            "options": ["あげて", "もうけて", "もよおして", "もくろんで"]
         }
     },
     {
@@ -2095,8 +2083,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "その企業は新技術を導入することで、業界シェアの拡大を<span class='blank-space'></span>ている。",
-            "answer": "目論んで",
-            "options": ["目論んで", "挙げて", "逆らって", "覆して"]
+            "answer": "もくろんで",
+            "options": ["もくろんで", "あげて", "さからって", "くつがえして"]
         }
     },
     {
@@ -2112,8 +2100,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "来月、定年退職される田中部長のために、ホテルで盛大な送別会を<span class='blank-space'></span>ことになった。",
-            "answer": "催す",
-            "options": ["催す", "弄る", "弱る", "霞む"]
+            "answer": "もよおす",
+            "options": ["もよおす", "いじる", "よわる", "かすむ"]
         }
     },
     {
@@ -2129,8 +2117,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "トラブルを未然に防ぐため、会社は従業員に対して厳格なセキュリティガイドラインを<span class='blank-space'></span>。",
-            "answer": "設けた",
-            "options": ["設けた", "挙げた", "目論んだ", "逆らった"]
+            "answer": "もうけた",
+            "options": ["もうけた", "あげた", "もくろんだ", "さからった"]
         }
     },
     {
@@ -2146,8 +2134,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "時代の流れに<span class='blank-space'></span>、彼はあくまでも伝統的な手法にこだわり続けている。",
-            "answer": "逆らって",
-            "options": ["逆らって", "覆して", "弱って", "薄まって"]
+            "answer": "さからって",
+            "options": ["さからって", "くつがえして", "よわって", "うすまって"]
         }
     },
     {
@@ -2163,8 +2151,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "彼は圧倒的な実力を見せつけ、事前の予想を<span class='blank-space'></span>勝利を手にした。",
-            "answer": "覆して",
-            "options": ["覆して", "逆らって", "設けて", "催して"]
+            "answer": "くつがえして",
+            "options": ["くつがえして", "さからって", "もうけて", "もよおして"]
         }
     },
     {
@@ -2180,8 +2168,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "長引く不況の影響で、多くの中小企業の経営体力が急速に<span class='blank-space'></span>きている。",
-            "answer": "弱って",
-            "options": ["弱って", "薄まって", "霞んで", "ぼやけて"]
+            "answer": "よわって",
+            "options": ["よわって", "うすまって", "かすんで", "ぼやけて"]
         }
     },
     {
@@ -2197,8 +2185,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "彼の無実が証明されるにつれて、周囲の彼に対する疑いは次第に<span class='blank-space'></span>いった。",
-            "answer": "薄まって",
-            "options": ["薄まって", "弱って", "澄んで", "透けて"]
+            "answer": "うすまって",
+            "options": ["うすまって", "よわって", "すんで", "すけて"]
         }
     },
     {
@@ -2215,8 +2203,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "彼は大事なプレゼンテーションの最中、緊張のあまりネクタイを<span class='blank-space'></span>癖が出てしまった。",
-            "answer": "弄る",
-            "options": ["弄る", "怠ける", "サボる", "霞む"]
+            "answer": "いじる",
+            "options": ["いじる", "なまける", "さぼる", "かすむ"]
         }
     },
     {
@@ -2231,8 +2219,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "受験生であるにもかかわらず、夏休みの間ずっと勉強を<span class='blank-space'></span>いたため、志望校の判定が下がってしまった。",
-            "answer": "怠けて",
-            "options": ["怠けて", "怠って", "サボって", "ばてて"]
+            "answer": "なまけて",
+            "options": ["なまけて", "おこたって", "さぼって", "ばてて"]
         }
     },
     {
@@ -2247,8 +2235,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "建設現場での安全確認を<span class='blank-space'></span>ことが、今回の大規模な事故につながったと見られている。",
-            "answer": "怠った",
-            "options": ["怠った", "怠けた", "逆らった", "覆した"]
+            "answer": "おこたった",
+            "options": ["おこたった", "なまけた", "さからった", "くつがえした"]
         }
     },
     {
@@ -2264,8 +2252,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "今年の新人選手の活躍があまりにも凄すぎて、ベテラン選手の存在感が<span class='blank-space'></span>しまった。",
-            "answer": "霞んで",
-            "options": ["霞んで", "ぼやけて", "薄まって", "弱って"]
+            "answer": "かすんで",
+            "options": ["かすんで", "ぼやけて", "うすまって", "よわって"]
         }
     },
     {
@@ -2282,7 +2270,7 @@ const DAY7_WORDS = [
         "practice": {
             "sentence": "久しぶりに故郷の写真を眺めていると、涙で視界が<span class='blank-space'></span>何も見えなくなった。",
             "answer": "ぼやけて",
-            "options": ["ぼやけて", "霞んで", "掠れて", "滲んで"]
+            "options": ["ぼやけて", "かすんで", "かすれて", "にじんで"]
         }
     },
     {
@@ -2297,8 +2285,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "面倒な会議を<span class='blank-space'></span>映画を見に行ったら、そこで部長とばったり鉢合わせしてしまった。",
-            "answer": "サボって",
-            "options": ["サボって", "怠けて", "弄って", "設けて"]
+            "answer": "さぼって",
+            "options": ["さぼって", "なまけて", "いじって", "もうけて"]
         }
     },
     {
@@ -2314,8 +2302,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "早朝の山頂で深呼吸をすると、冷たくて<span class='blank-space'></span>空気が体中に行き渡るのを感じた。",
-            "answer": "澄んだ",
-            "options": ["澄んだ", "透けた", "弱った", "薄まった"]
+            "answer": "すんだ",
+            "options": ["すんだ", "すけた", "よわった", "うすまった"]
         }
     },
     {
@@ -2331,8 +2319,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "彼の提案は一見親切そうに見えるが、その裏にある利益独占の意図が<span class='blank-space'></span>見えている。",
-            "answer": "透けて",
-            "options": ["透けて", "澄んで", "滲んで", "染みて"]
+            "answer": "すけて",
+            "options": ["すけて", "すんで", "にじんで", "しみて"]
         }
     },
     {
@@ -2348,8 +2336,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "昨日、カラオケで長時間歌いすぎたせいで、今日は声が<span class='blank-space'></span>しまってうまく話せない。",
-            "answer": "掠れて",
-            "options": ["掠れて", "滲んで", "ぼやけて", "霞んで"]
+            "answer": "かすれて",
+            "options": ["かすれて", "にじんで", "ぼやけて", "かすんで"]
         }
     },
     {
@@ -2366,8 +2354,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "突然の雨でカバンの中まで濡れてしまい、封筒に書いた宛名の文字が<span class='blank-space'></span>読めなくなってしまった。",
-            "answer": "滲んで",
-            "options": ["滲んで", "染みて", "掠れて", "透けて"]
+            "answer": "にじんで",
+            "options": ["にじんで", "しみて", "かすれて", "すけて"]
         }
     },
     {
@@ -2384,8 +2372,8 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "sentence": "辛いときに掛けてくれた友人の温かい言葉が、冷え切った心に深く<span class='blank-space'></span>。",
-            "answer": "染みた",
-            "options": ["染みた", "滲んだ", "澄んだ", "怠った"]
+            "answer": "しみた",
+            "options": ["しみた", "にじんだ", "すんだ", "おこたった"]
         }
     },
     {
@@ -2401,10 +2389,9 @@ const DAY7_WORDS = [
         "practice": {
             "sentence": "炎天下の中で激しい運動を続けたため、すっかり<span class='blank-space'></span>動けなくなってしまった。",
             "answer": "ばてて",
-            "options": ["ばてて", "サボって", "怠けて", "弱って"]
+            "options": ["ばてて", "さぼって", "なまけて", "よわって"]
         }
-    },
-    
+    },   
 ];
 const DAY8_WORDS = [
 {
@@ -2420,9 +2407,9 @@ const DAY8_WORDS = [
             { "jp": "<ruby>事<rt>じ</rt></ruby><ruby>故<rt>こ</rt></ruby>になりそうで<ruby>肝<rt>きも</rt></ruby>を<span class='ex-highlight'><ruby>冷<rt>ひ</rt></ruby>やした</span>。", "cn": "差点出事故，吓出一身冷汗。" }
         ],
         "practice": {
-            "sentence": "子供が急に道路に飛び出してきたため、ブレーキをかけて<span class='blank-space'></span>。",
-            "answer": "肝を冷やした",
-            "options": ["肝を冷やした", "安らいだ", "寛いだ", "憩った"]
+            "sentence": "子供が急に道路に飛び出してきたため、ブレーキをかけて肝を<span class='blank-space'></span>。",
+            "answer": "ひやした",
+            "options": ["ひやした", "やすらいだ", "くつろいだ", "いこった"]
         }
     },
     {
@@ -2437,8 +2424,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "激しい議論のあと、美しい景色を眺めていると次第に心が<span class='blank-space'></span>きた。",
-            "answer": "安らいで",
-            "options": ["安らいで", "冷やして", "隠して", "秘めて"]
+            "answer": "やすらいで",
+            "options": ["やすらいで", "ひやして", "かくして", "ひめて"]
         }
     },
     {
@@ -2454,8 +2441,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "彼は何かを<span class='blank-space'></span>いるようで、私の質問に対して曖昧な返事しかしなかった。",
-            "answer": "隠して",
-            "options": ["隠して", "庇って", "担って", "帯びて"]
+            "answer": "かくして",
+            "options": ["かくして", "かばって", "になって", "おびて"]
         }
     },
     {
@@ -2471,8 +2458,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "この新製品は、市場を大きく変える可能性を<span class='blank-space'></span>ている。",
-            "answer": "秘め",
-            "options": ["秘め", "潜め", "隠し", "庇い"]
+            "answer": "ひめ",
+            "options": ["ひめ", "ひそめ", "かくし", "かばい"]
         }
     },
     {
@@ -2489,8 +2476,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "犯人は警察の捜査を逃れるため、古いアパートの一室に身を<span class='blank-space'></span>いた。",
-            "answer": "潜めて",
-            "options": ["潜めて", "秘めて", "隠して", "安らいで"]
+            "answer": "ひそめて",
+            "options": ["ひそめて", "ひめて", "かくして", "やすらいで"]
         }
     },
     {
@@ -2506,8 +2493,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "部長は自分の責任を問われることを覚悟で、部下の失敗を<span class='blank-space'></span>。",
-            "answer": "庇った",
-            "options": ["庇った", "隠した", "潜めた", "秘めた"]
+            "answer": "かばった",
+            "options": ["かばった", "かくした", "ひそめた", "ひめた"]
         }
     },
     {
@@ -2522,8 +2509,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "休日は家でゆっくりと<span class='blank-space'></span>、日頃の疲れを癒やすことにしている。",
-            "answer": "寛いで",
-            "options": ["寛いで", "憩って", "粘って", "貫いて"]
+            "answer": "くつろいで",
+            "options": ["くつろいで", "いこって", "ねばって", "つらぬいて"]
         }
     },
     {
@@ -2538,8 +2525,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "公園のベンチでは、散歩を楽しむ人々が思い思いに<span class='blank-space'></span>いた。",
-            "answer": "憩って",
-            "options": ["憩って", "寛いで", "安らいで", "冷やして"]
+            "answer": "いこって",
+            "options": ["いこって", "くつろいで", "やすらいで", "ひやして"]
         }
     },
     {
@@ -2555,8 +2542,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "周囲からの反対があっても、彼は自分の信念を最後まで<span class='blank-space'></span>。",
-            "answer": "貫いた",
-            "options": ["貫いた", "粘った", "担った", "帯びた"]
+            "answer": "つらぬいた",
+            "options": ["つらぬいた", "ねばった", "になった", "おびた"]
         }
     },
     {
@@ -2572,8 +2559,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "交渉は難航したが、最後まで<span class='blank-space'></span>おかげで、有利な条件を引き出せた。",
-            "answer": "粘った",
-            "options": ["粘った", "担った", "帯びた", "労った"]
+            "answer": "ねばった",
+            "options": ["ねばった", "になった", "おびた", "いたわった"]
         }
     },
     {
@@ -2589,8 +2576,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "今後の日本経済を<span class='blank-space'></span>重要な産業として、IT分野が注目されている。",
-            "answer": "担う",
-            "options": ["担う", "帯びる", "粘る", "貫く"]
+            "answer": "になう",
+            "options": ["になう", "おびる", "ねばる", "つらぬく"]
         }
     },
     {
@@ -2607,8 +2594,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "彼の話は具体的で、次第に現実味を<span class='blank-space'></span>きた。",
-            "answer": "帯びて",
-            "options": ["帯びて", "担って", "隠して", "秘めて"]
+            "answer": "おびて",
+            "options": ["おびて", "になって", "かくして", "ひめて"]
         }
     },
     {
@@ -2624,8 +2611,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "連日の残業で疲れている部下を<span class='blank-space'></span>、食事に連れて行った。",
-            "answer": "労って",
-            "options": ["労って", "案じて", "危ぶんで", "恐れて"]
+            "answer": "いたわって",
+            "options": ["いたわって", "あんじて", "あやぶんで", "おそれて"]
         }
     },
     {
@@ -2640,8 +2627,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "夜遅くなっても帰ってこない娘の身を<span class='blank-space'></span>、父親は何度も時計を見た。",
-            "answer": "案じて",
-            "options": ["案じて", "危ぶんで", "恐れて", "慰めて"]
+            "answer": "あんじて",
+            "options": ["あんじて", "あやぶんで", "おそれて", "なぐさめて"]
         }
     },
     {
@@ -2656,8 +2643,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "資金不足により、新プロジェクトの存続が<span class='blank-space'></span>ている。",
-            "answer": "危ぶまれ",
-            "options": ["危ぶまれ", "案じられ", "恐れられ", "慰められ"]
+            "answer": "あやぶまれ",
+            "options": ["あやぶまれ", "あんじられ", "おそれられ", "なぐさめられ"]
         }
     },
     {
@@ -2673,8 +2660,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "彼は失敗を<span class='blank-space'></span>あまり、新しいことに挑戦できずにいる。",
-            "answer": "恐れる",
-            "options": ["恐れる", "危ぶむ", "案じる", "労る"]
+            "answer": "おそれる",
+            "options": ["おそれる", "あやぶむ", "あんじる", "いたわる"]
         }
     },
     {
@@ -2690,8 +2677,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "落ち込んでいる友人を<span class='blank-space'></span>ために、美味しい食事に誘った。",
-            "answer": "慰める",
-            "options": ["慰める", "宥める", "労る", "案じる"]
+            "answer": "なぐさめる",
+            "options": ["なぐさめる", "なだめる", "いたわる", "あんじる"]
         }
     },
     {
@@ -2706,8 +2693,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "泣き叫ぶ子供を<span class='blank-space'></span>、母親は優しく背中をさすった。",
-            "answer": "宥めて",
-            "options": ["宥めて", "慰めて", "彷徨って", "躊躇って"]
+            "answer": "なだめて",
+            "options": ["なだめて", "なぐさめて", "さまよって", "ためらって"]
         }
     },
     {
@@ -2723,8 +2710,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "道に迷ってしまい、暗い森の中を朝まで<span class='blank-space'></span>。",
-            "answer": "彷徨った",
-            "options": ["彷徨った", "躊躇った", "宥めた", "憩った"]
+            "answer": "さまよった",
+            "options": ["さまよった", "ためらった", "なだめた", "いこった"]
         }
     },
     {
@@ -2739,8 +2726,8 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "sentence": "高額な買い物だったので、購入ボタンを押すのを一瞬<span class='blank-space'></span>。",
-            "answer": "躊躇った",
-            "options": ["躊躇った", "彷徨った", "危ぶんだ", "恐れた"]
+            "answer": "ためらった",
+            "options": ["ためらった", "さまよった", "あやぶんだ", "おそれた"]
         }
     }  
 ];
@@ -2756,9 +2743,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>突<rt>とつ</rt></ruby><ruby>然<rt>ぜん</rt></ruby>の<ruby>質<rt>しつ</rt></ruby><ruby>問<rt>もん</rt></ruby>に<span class='ex-highlight'><ruby>戸<rt>と</rt></ruby><ruby>惑<rt>まど</rt></ruby>う</span>。", "cn": "面对突然的提问感到困惑。" }
         ],
         "practice": {
-            "sentence": "海外での生活習慣の違いに<span class='blank-space'></span>。",
-            "answer": "戸惑う",
-            "options": ["戸惑う", "手こずる", "まごつく", "狼狽える"]
+            "sentence": "海外赴任の初日は、言葉も習慣も違う環境に<span class='blank-space'></span>。",
+            "answer": "とまどった",
+            "options": ["とまどった", "てこずった", "まごついた", "うろたえた"]
         }
     },
     {
@@ -2772,9 +2759,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>反<rt>はん</rt></ruby><ruby>抗<rt>こう</rt></ruby><ruby>期<rt>き</rt></ruby>の<ruby>息<rt>むす</rt></ruby><ruby>子<rt>こ</rt></ruby>に<span class='ex-highlight'><ruby>手<rt>て</rt></ruby>こずる</span>。", "cn": "对处于叛逆期的儿子感到棘手。" }
         ],
         "practice": {
-            "sentence": "新しいソフトの操作が難しく、設定に<span class='blank-space'></span>。",
-            "answer": "手こずった",
-            "options": ["手こずった", "患った", "煩った", "急かした"]
+            "sentence": "このネジは錆びついていて、外すのにずいぶん<span class='blank-space'></span>。",
+            "answer": "てこずった",
+            "options": ["てこずった", "わずらった", "いつわった", "せかした"]
         }
     },
     {
@@ -2788,9 +2775,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>道<rt>みち</rt></ruby>がわからず<span class='ex-highlight'>まごつく</span>。", "cn": "因为不认识路而转悠。" }
         ],
         "practice": {
-            "sentence": "自動改札機の通り方がわからず<span class='blank-space'></span>。",
-            "answer": "まごつく",
-            "options": ["まごつく", "拝む", "慕う", "促す"]
+            "sentence": "慣れない着物の着付けに<span class='blank-space'></span>、約束の時間に遅れてしまいそうだ。",
+            "answer": "まごついて",
+            "options": ["まごついて", "おがんで", "したって", "うながして"]
         }
     },
     {
@@ -2804,9 +2791,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>嘘<rt>うそ</rt></ruby>がバレて<span class='ex-highlight'><ruby>狼狽<rt>うろた</rt></ruby>える</span>。", "cn": "谎言败露而惊慌失措。" }
         ],
         "practice": {
-            "sentence": "突然の事故の知らせに<span class='blank-space'></span>。",
-            "answer": "狼狽える",
-            "options": ["狼狽える", "戸惑う", "まごつく", "患う"]
+            "sentence": "想定外のトラブルが発生したが、リーダーは<span class='blank-space'></span>ことなく冷静に対処した。",
+            "answer": "うろたえる",
+            "options": ["うろたえる", "とまどう", "まごつく", "わずらう"]
         }
     },
     {
@@ -2820,9 +2807,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>肺<rt>はい</rt></ruby><ruby>炎<rt>えん</rt></ruby>を<span class='ex-highlight'><ruby>患<rt>わずら</rt></ruby>った</span><ruby>経<rt>けい</rt></ruby><ruby>験<rt>けん</rt></ruby>がある。", "cn": "曾经得过肺炎。" }
         ],
         "practice": {
-            "sentence": "若い頃に大病を<span class='blank-space'></span>ことがある。",
-            "answer": "患った",
-            "options": ["患った", "煩った", "慕った", "拝んだ"]
+            "sentence": "若い頃に大病を<span class='blank-space'></span>せいで、健康には人一倍気を使っている。",
+            "answer": "わずらった",
+            "options": ["わずらった", "したった", "おがんだ", "うながした"]
         }
     },
     {
@@ -2836,9 +2823,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>恋<rt>こい</rt></ruby><span class='ex-highlight'><ruby>煩<rt>わずら</rt></ruby>い</span>。", "cn": "相思病。" }
         ],
         "practice": {
-            "sentence": "人間関係に思い<span class='blank-space'></span>。",
-            "answer": "煩う",
-            "options": ["煩う", "患う", "手こずる", "急かす"]
+            "sentence": "些細なことでくよくよと思いを<span class='blank-space'></span>のは、精神衛生上よくない。",
+            "answer": "わずらう",
+            "options": ["わずらう", "てこずる", "せかす", "うながす"]
         }
     },
     {
@@ -2853,9 +2840,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>植<rt>しょく</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>の<ruby>成<rt>せい</rt></ruby><ruby>長<rt>ちょう</rt></ruby>を<span class='ex-highlight'><ruby>促<rt>うなが</rt></ruby>す</span>。", "cn": "促进植物生长。" }
         ],
         "practice": {
-            "sentence": "政府は企業に省エネを<span class='blank-space'></span>。",
-            "answer": "促した",
-            "options": ["促した", "急かした", "拝んだ", "慕った"]
+            "sentence": "司会者は、議論が停滞しないように参加者に発言を<span class='blank-space'></span>。",
+            "answer": "うながした",
+            "options": ["うながした", "せかした", "おがんだ", "したった"]
         }
     },
     {
@@ -2869,9 +2856,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>を<span class='ex-highlight'><ruby>急<rt>せ</rt></ruby>かして</span><ruby>学<rt>がっ</rt></ruby><ruby>校<rt>こう</rt></ruby>へ<ruby>行<rt>い</rt></ruby>かせる。", "cn": "催促孩子去学校。" }
         ],
         "practice": {
-            "sentence": "準備が遅いので「早くして」と<span class='blank-space'></span>。",
-            "answer": "急かす",
-            "options": ["急かす", "促す", "まごつく", "狼狽える"]
+            "sentence": "出発時間が迫っているのに、母は「早くしなさい」と私を<span class='blank-space'></span>。",
+            "answer": "せかした",
+            "options": ["せかした", "うながした", "まごついた", "うろたえた"]
         }
     },
     {
@@ -2886,9 +2873,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>借<rt>しゃっ</rt></ruby><ruby>金<rt>きん</rt></ruby>を<ruby>返<rt>かえ</rt></ruby>すために<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>に<span class='ex-highlight'><ruby>拝<rt>おが</rt></ruby>んで</span><ruby>金<rt>かね</rt></ruby>を<ruby>借<rt>か</rt></ruby>りた。", "cn": "为了还债，低声下气地向朋友借钱。" }
         ],
         "practice": {
-            "sentence": "合格祈願で神様を<span class='blank-space'></span>。",
-            "answer": "拝む",
-            "options": ["拝む", "慕う", "患う", "煩う"]
+            "sentence": "初日の出に向かって手を合わせ、今年一年の家族の健康を<span class='blank-space'></span>。",
+            "answer": "おがんだ",
+            "options": ["おがんだ", "したった", "てこずった", "うながした"]
         }
     },
     {
@@ -2903,9 +2890,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>亡<rt>な</rt></ruby>き<ruby>友<rt>とも</rt></ruby>を<span class='ex-highlight'><ruby>慕<rt>した</rt></ruby>う</span><ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちは<ruby>消<rt>き</rt></ruby>えない。", "cn": "思念已逝朋友的心情挥之不去。" }
         ],
         "practice": {
-            "sentence": "学生時代、恩師を父のように<span class='blank-space'></span>いた。",
-            "answer": "慕って",
-            "options": ["慕って", "拝んで", "促して", "手こずって"]
+            "sentence": "学生時代から彼の高潔な人柄を<span class='blank-space'></span>、多くの後輩が集まってきた。",
+            "answer": "したって",
+            "options": ["したって", "おがんで", "うながして", "てこずって"]
         }
     },
     {
@@ -2921,9 +2908,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>上<rt>じょう</rt></ruby><ruby>司<rt>し</rt></ruby>の<ruby>指<rt>し</rt></ruby><ruby>示<rt>じ</rt></ruby>を<span class='ex-highlight'><ruby>仰<rt>あお</rt></ruby>ぐ</span>。", "cn": "请示上级。" }
         ],
         "practice": {
-            "sentence": "判断に迷い、上司の指示を<span class='blank-space'></span>。",
-            "answer": "仰ぐ",
-            "options": ["仰ぐ", "敬う", "慕う", "拝む"]
+            "sentence": "プロジェクトの進行に重大な問題が発生したため、本社に判断を<span class='blank-space'></span>ことにした。",
+            "answer": "あおぐ",
+            "options": ["あおぐ", "うやまう", "したう", "おがむ"]
         }
     },
     {
@@ -2937,9 +2924,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>神<rt>かみ</rt></ruby>を<span class='ex-highlight'><ruby>敬<rt>うやま</rt></ruby>い</span>、<ruby>自<rt>し</rt></ruby><ruby>然<rt>ぜん</rt></ruby>を<ruby>畏<rt>おそ</rt></ruby>れる。", "cn": "敬神畏自然。" }
         ],
         "practice": {
-            "sentence": "お年寄りを<span class='blank-space'></span>気持ちが大切だ。",
-            "answer": "敬う",
-            "options": ["敬う", "仰ぐ", "遠ざける", "囲む"]
+            "sentence": "長年にわたり地域医療に貢献してきた医師を、町の人々は<span class='blank-space'></span>。",
+            "answer": "うやまった",
+            "options": ["うやまった", "あおいだ", "とおざけた", "かこんだ"]
         }
     },
     {
@@ -2954,9 +2941,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>甘<rt>あま</rt></ruby>いものを<span class='ex-highlight'><ruby>遠<rt>とお</rt></ruby>ざけて</span>いる。", "cn": "我在戒甜食。" }
         ],
         "practice": {
-            "sentence": "健康のためにタバコを<span class='blank-space'></span>。",
-            "answer": "遠ざける",
-            "options": ["遠ざける", "縮める", "急かす", "促す"]
+            "sentence": "彼はスキャンダルを恐れて、以前の遊び仲間を意識的に<span class='blank-space'></span>ようになった。",
+            "answer": "とおざける",
+            "options": ["とおざける", "ちぢめる", "せかす", "うながす"]
         }
     },
     {
@@ -2970,9 +2957,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>寿<rt>じゅ</rt></ruby><ruby>命<rt>みょう</rt></ruby>が<span class='ex-highlight'><ruby>縮<rt>ちぢ</rt></ruby>まる</span><ruby>思<rt>おも</rt></ruby>いだ。", "cn": "吓得我折寿。" }
         ],
         "practice": {
-            "sentence": "トップとの差が一気に<span class='blank-space'></span>。",
-            "answer": "縮まった",
-            "options": ["縮まった", "遠ざかった", "長けた", "飢えた"]
+            "sentence": "ライバルとの実力差は、この一年の猛特訓で確実に<span class='blank-space'></span>。",
+            "answer": "ちぢまった",
+            "options": ["ちぢまった", "とおざかった", "たけた", "うえた"]
         }
     },
     {
@@ -2986,9 +2973,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>交<rt>こう</rt></ruby><ruby>渉<rt>しょう</rt></ruby>に<span class='ex-highlight'><ruby>長<rt>た</rt></ruby>けて</span>いる。", "cn": "他擅长谈判。" }
         ],
         "practice": {
-            "sentence": "彼は弁舌に<span class='blank-space'></span>いる。",
-            "answer": "長けて",
-            "options": ["長けて", "飢えて", "伝って", "辿って"]
+            "sentence": "彼女は語学だけでなく、人身掌握術にも<span class='blank-space'></span>優秀なリーダーだ。",
+            "answer": "たけて",
+            "options": ["たけて", "うえて", "つたって", "たどって"]
         }
     },
     {
@@ -3003,9 +2990,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>愛<rt>あい</rt></ruby>に<span class='ex-highlight'><ruby>飢<rt>う</rt></ruby>えて</span>いる<ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>。", "cn": "缺爱的孩子。" }
         ],
         "practice": {
-            "sentence": "愛に<span class='blank-space'></span>子供たち。",
-            "answer": "飢えた",
-            "options": ["飢えた", "長けた", "仰いだ", "敬った"]
+            "sentence": "戦後の混乱期には、多くの人々が日々の食料に<span class='blank-space'></span>いた。",
+            "answer": "うえて",
+            "options": ["うえて", "たけて", "あおいだ", "うやまった"]
         }
     },
     {
@@ -3020,9 +3007,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>共<rt>とも</rt></ruby>に<ruby>人<rt>じん</rt></ruby><ruby>生<rt>せい</rt></ruby>を<span class='ex-highlight'><ruby>歩<rt>あゆ</rt></ruby>む</span>。", "cn": "共同走过人生。" }
         ],
         "practice": {
-            "sentence": "共に苦難の人生を<span class='blank-space'></span>。",
-            "answer": "歩む",
-            "options": ["歩む", "伝う", "辿る", "囲む"]
+            "sentence": "彼女は女優として、誰にも真似できない独自の道を<span class='blank-space'></span>きた。",
+            "answer": "あゆんで",
+            "options": ["あゆんで", "つたって", "たどって", "かこんで"]
         }
     },
     {
@@ -3036,9 +3023,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>涙<rt>なみだ</rt></ruby>が<ruby>頬<rt>ほお</rt></ruby>を<span class='ex-highlight'><ruby>伝<rt>つた</rt></ruby>う</span>。", "cn": "眼泪顺着脸颊流下。" }
         ],
         "practice": {
-            "sentence": "汗が額を<span class='blank-space'></span>落ちる。",
-            "answer": "伝って",
-            "options": ["伝って", "辿って", "歩んで", "囲んで"]
+            "sentence": "雨のしずくが窓ガラスを<span class='blank-space'></span>落ちるのを、ぼんやりと眺めていた。",
+            "answer": "つたって",
+            "options": ["つたって", "たどって", "あゆんで", "かこんで"]
         }
     },
     {
@@ -3054,9 +3041,9 @@ const DAY9_WORDS = [
             { "jp": "<ruby>破<rt>は</rt></ruby><ruby>滅<rt>めつ</rt></ruby>の<ruby>道<rt>みち</rt></ruby>を<span class='ex-highlight'><ruby>辿<rt>たど</rt></ruby>る</span>。", "cn": "走向毁灭的道路。" }
         ],
         "practice": {
-            "sentence": "古い地図を<span class='blank-space'></span>目的地へ向かう。",
-            "answer": "辿って",
-            "options": ["辿って", "伝って", "歩んで", "遠ざけて"]
+            "sentence": "わずかな記憶を<span class='blank-space'></span>、子供の頃に住んでいた家を探し当てた。",
+            "answer": "たどって",
+            "options": ["たどって", "つたって", "あゆんで", "とおざけて"]
         }
     },
     {
@@ -3070,9 +3057,9 @@ const DAY9_WORDS = [
             { "jp": "テーブルを<span class='ex-highlight'><ruby>囲<rt>かこ</rt></ruby>んで</span>みんなで<ruby>食<rt>しょく</rt></ruby><ruby>事<rt>じ</rt></ruby>する。", "cn": "大家围着桌子一起吃饭。" }
         ],
         "practice": {
-            "sentence": "食卓を家族全員で<span class='blank-space'></span>。",
-            "answer": "囲む",
-            "options": ["囲む", "仰ぐ", "敬う", "慕う"]
+            "sentence": "週末は鍋を<span class='blank-space'></span>、家族みんなで団らんのひとときを過ごした。",
+            "answer": "かこんで",
+            "options": ["かこんで", "あおいだ", "うやまった", "したった"]
         }
     }
 ];
@@ -3091,7 +3078,7 @@ const DAY10_WORDS = [
         "practice": {
             "sentence": "書き始める前に、手本の文字を何度も<span class='blank-space'></span>練習した。",
             "answer": "なぞって",
-            "options": ["なぞって", "据えて", "剥がして", "留めて"]
+            "options": ["なぞって", "すえて", "はがして", "とどめて"]
         }
     },
     {
@@ -3108,8 +3095,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "不審者を監視するために、入り口に防犯カメラを<span class='blank-space'></span>。",
-            "answer": "据えた",
-            "options": ["据えた", "なぞった", "剥がした", "臨んだ"]
+            "answer": "すえた",
+            "options": ["すえた", "なぞった", "はがした", "のぞんだ"]
         }
     },
     {
@@ -3124,8 +3111,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "商品に貼られているシールを、糊が残らないように丁寧に<span class='blank-space'></span>ください。",
-            "answer": "剥がして",
-            "options": ["剥がして", "留めて", "据えて", "なぞって"]
+            "answer": "はがして",
+            "options": ["はがして", "とどめて", "すえて", "なぞって"]
         }
     },
     {
@@ -3141,8 +3128,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "迅速な対応のおかげで、火災の被害を最小限に<span class='blank-space'></span>ことができた。",
-            "answer": "留める",
-            "options": ["留める", "剥がす", "臨む", "据える"]
+            "answer": "とどめる",
+            "options": ["とどめる", "はがす", "のぞむ", "すえる"]
         }
     },
     {
@@ -3159,8 +3146,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "選手たちは厳しいトレーニングを積み、オリンピックの決勝戦に<span class='blank-space'></span>。",
-            "answer": "臨んだ",
-            "options": ["臨んだ", "据えた", "留めた", "なぞった"]
+            "answer": "のぞんだ",
+            "options": ["のぞんだ", "すえた", "とどめた", "なぞった"]
         }
     },
     {
@@ -3175,8 +3162,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "彼は幾度もの失敗を乗り越え、前人未到の大記録に果敢に<span class='blank-space'></span>。",
-            "answer": "挑んだ",
-            "options": ["挑んだ", "営んだ", "扱った", "謝った"]
+            "answer": "いどんだ",
+            "options": ["いどんだ", "いとなんだ", "あつかった", "あやまった"]
         }
     },
     {
@@ -3193,8 +3180,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "この店では、国内では手に入りにくい海外の珍しい雑貨を幅広く<span class='blank-space'></span>いる。",
-            "answer": "扱って",
-            "options": ["扱って", "あやして", "挑んで", "臨んで"]
+            "answer": "あつかって",
+            "options": ["あつかって", "あやして", "いどんで", "のぞんで"]
         }
     },
     {
@@ -3210,7 +3197,7 @@ const DAY10_WORDS = [
         "practice": {
             "sentence": "人見知りで泣き止まない赤ちゃんを、ベテランの保育士が巧みに<span class='blank-space'></span>くれた。",
             "answer": "あやして",
-            "options": ["あやして", "扱って", "営んで", "剥がして"]
+            "options": ["あやして", "あつかって", "いとなんで", "はがして"]
         }
     },
     {
@@ -3227,8 +3214,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "彼らは都会の喧騒を離れ、自然豊かな山奥で自給自足の生活を<span class='blank-space'></span>いる。",
-            "answer": "営んで",
-            "options": ["営んで", "挑んで", "留めて", "据えて"]
+            "answer": "いとなんで",
+            "options": ["いとなんで", "いどんで", "とどめて", "すえて"]
         }
     },
     {
@@ -3243,8 +3230,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "誤解から友人を傷つけてしまったので、すぐに電話をして素直に<span class='blank-space'></span>。",
-            "answer": "謝った",
-            "options": ["謝った", "営んだ", "扱った", "あやした"]
+            "answer": "あやまった",
+            "options": ["あやまった", "いとなんだ", "あつかった", "あやした"]
         }
     },
     {
@@ -3260,8 +3247,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "彼は長年にわたり、組織の抜本的な改革を<span class='blank-space'></span>きた。",
-            "answer": "唱えて",
-            "options": ["唱えて", "讃えて", "諭して", "偽って"]
+            "answer": "となえて",
+            "options": ["となえて", "たたえて", "さとして", "いつわって"]
         }
     },
     {
@@ -3276,8 +3263,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "彼の長年の功績を<span class='blank-space'></span>、記念碑が建てられた。",
-            "answer": "讃えて",
-            "options": ["讃えて", "唱えて", "訴えて", "あやして"]
+            "answer": "たたえて",
+            "options": ["たたえて", "となえて", "うったえて", "あやして"]
         }
     },
     {
@@ -3294,8 +3281,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "被害者は法廷で、涙ながらにその悲惨さを<span class='blank-space'></span>。",
-            "answer": "訴えた",
-            "options": ["訴えた", "偽った", "諭した", "挑んだ"]
+            "answer": "うったえた",
+            "options": ["うったえた", "いつわった", "さとした", "いどんだ"]
         }
     },
     {
@@ -3310,8 +3297,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "悪戯をした子供を、頭ごなしに叱るのではなく優しく<span class='blank-space'></span>。",
-            "answer": "諭した",
-            "options": ["諭した", "訴えた", "唱えた", "讃えた"]
+            "answer": "さとした",
+            "options": ["さとした", "うったえた", "となえた", "たたえた"]
         }
     },
     {
@@ -3327,8 +3314,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "経歴を<span class='blank-space'></span>入社したことが発覚し、解雇された。",
-            "answer": "偽って",
-            "options": ["偽って", "扱って", "営んで", "剥がして"]
+            "answer": "いつわって",
+            "options": ["いつわって", "あつかって", "いとなんで", "はがして"]
         }
     },
     {
@@ -3344,8 +3331,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "敵を<span class='blank-space'></span>には、まず味方からと言われる。",
-            "answer": "欺く",
-            "options": ["欺く", "諭す", "唱える", "訴える"]
+            "answer": "あざむく",
+            "options": ["あざむく", "さとす", "となえる", "うったえる"]
         }
     },
     {
@@ -3362,8 +3349,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "都合が悪くなると、彼はいつも笑って話を<span class='blank-space'></span>。",
-            "answer": "誤魔化す",
-            "options": ["誤魔化す", "欺く", "騙す", "省みる"]
+            "answer": "ごまかす",
+            "options": ["ごまかす", "あざむく", "だます", "かえりみる"]
         }
     },
     {
@@ -3378,8 +3365,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "詐欺グループに<span class='blank-space'></span>、大金を奪われてしまった。",
-            "answer": "騙されて",
-            "options": ["騙されて", "誤魔化されて", "顧みられて", "省みられて"]
+            "answer": "だまされて",
+            "options": ["だまされて", "ごまかされて", "かえりみられて", "かえりみられて"]
         }
     },
     {
@@ -3394,8 +3381,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "彼は仕事に熱中するあまり、家庭を<span class='blank-space'></span>余裕がなかった。",
-            "answer": "顧みる",
-            "options": ["顧みる", "省みる", "欺く", "誤魔化す"]
+            "answer": "かえりみる",
+            "options": ["かえりみる", "かえりみる", "あざむく", "ごまかす"]
         }
     },
     {
@@ -3410,8 +3397,8 @@ const DAY10_WORDS = [
         ],
         "practice": {
             "sentence": "失敗したときは、他人のせいにする前に自らを<span class='blank-space'></span>べきだ。",
-            "answer": "省みる",
-            "options": ["省みる", "顧みる", "騙す", "唱える"]
+            "answer": "かえりみる",
+            "options": ["かえりみる", "かえりみる", "だます", "となえる"]
         }
     },
 ];
