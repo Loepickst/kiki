@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #b33e3e; 
+            --sub-color: #787878;
+            --popup-bg: #333333;
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 100px 15px 120px; /* Increased bottom padding for audio player */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 顶部控制栏 */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; border-bottom: 1px solid; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) {
+            .toggle-btn:hover { background: var(--accent-color); color: white; }
+        }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        /* 主容器 */
+        .container {
+            max-width: 720px; width: 100%;
+            background: var(--paper-color); padding: 50px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .header-title { text-align: center; margin-bottom: 50px; }
+
+        /* Audio Player - Fixed Bottom */
+        .audio-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px 25px 20px; /* Extra bottom padding for iPhone Home bar */
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+
+        .audio-player {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 600px; /* Wider on desktop */
+        }
+
+        .play-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-right: 12px;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+            padding: 0;
+        }
+
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+
+        .progress-container {
+            flex-grow: 1;
+            height: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
+            margin-right: 12px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #d1d1d1;
+            width: 0%;
+            border-radius: 2px;
+        }
+
+        .time-display {
+            font-size: 0.7rem;
+            color: #999;
+            font-family: var(--chinese-font);
+            min-width: 70px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.8; 
+            text-align: justify; margin: 0;
+        }
+
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        /* 译文（黑体中文） */
+        .translation {
+            display: none; margin-top: 20px; font-size: 0.95rem;
+            color: #5a626b; line-height: 1.8; padding: 18px 20px;
+            background-color: #f7f8f9; font-family: var(--chinese-font);
+            border-left: 3px solid #eee; text-align: justify;
+        }
+        .translation::before { content: "訳"; display: block; font-size: 0.7rem; color: #ccc; margin-bottom: 5px; font-weight: bold; }
+
+        /* 重点词汇样式 */
+        .vocab-word {
+            color: var(--accent-color);
+            border-bottom: 2px solid #f2d0d0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* 动态气泡容器 */
+        #smart-tooltip {
+            position: absolute; z-index: 2000;
+            background: var(--popup-bg); color: white;
+            padding: 12px 16px; border-radius: 8px;
+            font-size: 0.85rem; font-family: var(--chinese-font);
+            line-height: 1.6; max-width: 280px; min-width: 140px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none; opacity: 0; pointer-events: none;
+        }
+        #smart-tooltip::after {
+            content: ""; position: absolute; top: 100%;
+            border: 8px solid transparent; border-top-color: var(--popup-bg);
+        }
+
+        .footer { margin-top: 50px; color: #ccc; font-size: 0.8rem; letter-spacing: 3px; }
+
+
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <!-- 左侧返回按钮 -->
+    <a href="../read.html" class="toggle-btn" style="text-decoration: none; margin-right: 15px;">← 戻る</a>
+    
+    <!-- 日期显示（可加 flex-grow 让它占据中间位置，或者保持原样） -->
+    <div id="today-date" style="flex-grow: 1; text-align: center; border-bottom: none;">3月2日 月曜日</div>
+    
+    <button id="trans-btn" class="toggle-btn" onclick="toggleTranslation()">译文</button>
+</div>
+
+<div class="container">
+    <div class="header-title">
+    <h2 style="font-weight: 500; letter-spacing: 0.1em; margin-bottom: 5px;"><ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>の<ruby>中<rt>なか</rt></ruby>のさらに<ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby></h2>
+    <span style="color: #bbb; font-size: 0.8rem;">孩子中的孩子</span>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>高<rt>こう</rt></ruby><ruby>校<rt>こう</rt></ruby><ruby>三<rt>さん</rt></ruby><ruby>年<rt>ねん</rt></ruby>の<ruby>時<rt>とき</rt></ruby>、あなたは<ruby>何<rt>なん</rt></ruby><ruby>歳<rt>さい</rt></ruby>だったでしょうか？　わたしの<ruby>場<rt>ば</rt></ruby><ruby>合<rt>あい</rt></ruby>は<ruby>十<rt>じゅう</rt></ruby><ruby>七<rt>なな</rt></ruby><ruby>歳<rt>さい</rt></ruby>です。わたしは<ruby>一<rt>いち</rt></ruby><ruby>月<rt>がつ</rt></ruby><ruby>生<rt>う</rt></ruby>まれで、<ruby>高<rt>こう</rt></ruby><ruby>三<rt>さん</rt></ruby>の<ruby>最<rt>さい</rt></ruby><ruby>初<rt>しょ</rt></ruby>の<ruby>約<rt>やく</rt></ruby><ruby>十<rt>じっ</rt></ruby>か<ruby>月<rt>げつ</rt></ruby>を<ruby>十<rt>じゅう</rt></ruby><ruby>七<rt>なな</rt></ruby><ruby>歳<rt>さい</rt></ruby>として<ruby>過<rt>す</rt></ruby>ごし、<ruby>大<rt>だい</rt></ruby><ruby>学<rt>がく</rt></ruby>の<ruby>一<rt>いっ</rt></ruby><ruby>般<rt>ぱん</rt></ruby><ruby>入<rt>にゅう</rt></ruby><ruby>試<rt>し</rt></ruby>が<ruby>始<rt>はじ</rt></ruby>まった<ruby>一<rt>いち</rt></ruby><ruby>月<rt>がつ</rt></ruby>の<ruby>半<rt>なか</rt></ruby>ばを<ruby>過<rt>す</rt></ruby>ぎて<ruby>十<rt>じゅう</rt></ruby><ruby>八<rt>はち</rt></ruby><ruby>歳<rt>さい</rt></ruby>になりました。<ruby>一<rt>いち</rt></ruby><ruby>月<rt>がつ</rt></ruby><ruby>以<rt>い</rt></ruby><ruby>降<rt>こう</rt></ruby>は<ruby>大<rt>だい</rt></ruby><ruby>学<rt>がく</rt></ruby>の<ruby>入<rt>にゅう</rt></ruby><ruby>試<rt>し</rt></ruby>があるので、<ruby>十<rt>じゅう</rt></ruby><ruby>八<rt>はち</rt></ruby><ruby>歳<rt>さい</rt></ruby>で<ruby>高<rt>こう</rt></ruby><ruby>校<rt>こう</rt></ruby>に<ruby>通<rt>かよ</rt></ruby>った<ruby>記<rt>き</rt></ruby><ruby>憶<rt>おく</rt></ruby>はほとんどありません。
+    </p>
+    <div class="translation">
+        高三的时候，你几岁了呢？我的话是十七岁。因为我是一月出生的，所以高三最初的大约十个月我都是以十七岁的年纪度过的，直到大学普通入学考试开始的一月中旬过后，我才满十八岁。因为一月之后就要参加大学的入学考试了，所以我几乎没有“十八岁还在高中上学”的记忆。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        そういうわけで、わたしはときどき<ruby>高<rt>こう</rt></ruby><ruby>校<rt>こう</rt></ruby><ruby>三<rt>さん</rt></ruby><ruby>年<rt>ねん</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>が<ruby>十<rt>じゅう</rt></ruby><ruby>二<rt>に</rt></ruby><ruby>月<rt>がつ</rt></ruby>に<ruby>十<rt>じゅう</rt></ruby><ruby>七<rt>なな</rt></ruby><ruby>歳<rt>さい</rt></ruby>だったと<ruby>書<rt>か</rt></ruby>くようなことをやって、<span class="vocab-word" data-info="校閲（こうえつ）：校阅，审阅，把关。"><ruby>校<rt>こう</rt></ruby><ruby>閲<rt>えつ</rt></ruby></span>さんから「これでいいですか？」と<ruby>言<rt>い</rt></ruby>われる。<ruby>十<rt>じゅう</rt></ruby><ruby>八<rt>はち</rt></ruby><ruby>歳<rt>さい</rt></ruby>に<ruby>変<rt>へん</rt></ruby><ruby>更<rt>こう</rt></ruby>するのもなんだか<ruby>違<rt>い</rt></ruby><ruby>和<rt>わ</rt></ruby><ruby>感<rt>かん</rt></ruby>があって「その<ruby>人<rt>ひと</rt></ruby>は<span class="vocab-word" data-info="早生まれ（はやうまれ）：早出生（指1月1日至4月1日之间出生。日本学校4月开学，因此他们会和前一年4-12月出生的人同级，是同年级中最小的一批）。"><ruby>早<rt>はや</rt></ruby><ruby>生<rt>う</rt></ruby>まれ</span>です」と<span class="vocab-word" data-info="言い訳（いいわけ）：借口，辩解。"><ruby>言<rt>い</rt></ruby>い<ruby>訳<rt>わけ</rt></ruby></span>を<ruby>返<rt>かえ</rt></ruby>し、<span class="vocab-word" data-info="早生まれ（はやうまれ）：早出生。"><ruby>早<rt>はや</rt></ruby><ruby>生<rt>う</rt></ruby>まれ</span>の<ruby>登<rt>とう</rt></ruby><ruby>場<rt>じょう</rt></ruby><ruby>人<rt>じん</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>が<ruby>増<rt>ふ</rt></ruby>えていく。
+    </p>
+    <div class="translation">
+        正因如此，我写小说时，偶尔会写出“高三学生在十二月时是十七岁”这样的句子，然后就会被校对人员询问：“这样写没问题吗？”要是把它改成十八岁，我总觉得有些违和感，于是便找借口回道：“那个人是早出生的（注：日本学制中1月至4月1日出生的人，在同一年级中年龄最小）”，结果我小说里“早出生”的登场人物就变得越来越多了。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <span class="vocab-word" data-info="心情的（しんじょうてき）：心理上的，感情上的。"><ruby>心<rt>しん</rt></ruby><ruby>情<rt>じょう</rt></ruby><ruby>的<rt>てき</rt></ruby></span>にも<ruby>小<rt>しょう</rt></ruby><ruby>説<rt>せつ</rt></ruby>の<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby><ruby>人<rt>じん</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>は<ruby>早<rt>はや</rt></ruby><ruby>生<rt>う</rt></ruby>まれの<ruby>人<rt>ひと</rt></ruby>しか<ruby>書<rt>か</rt></ruby>けないと<ruby>思<rt>おも</rt></ruby>う。<ruby>他<rt>ほか</rt></ruby>の<ruby>登<rt>とう</rt></ruby><ruby>場<rt>じょう</rt></ruby><ruby>人<rt>じん</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>が<ruby>何<rt>なん</rt></ruby><ruby>月<rt>がつ</rt></ruby><ruby>生<rt>う</rt></ruby>まれでもいいのだが、<ruby>起<rt>お</rt></ruby>こっていることに<ruby>解<rt>かい</rt></ruby><ruby>釈<rt>しゃく</rt></ruby>を<ruby>加<rt>くわ</rt></ruby>える<ruby>役<rt>やく</rt></ruby><ruby>割<rt>わり</rt></ruby>がある<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby><ruby>人<rt>じん</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>は<ruby>早<rt>はや</rt></ruby><ruby>生<rt>う</rt></ruby>まれだ。なんと<ruby>狭<rt>せま</rt></ruby>い<span class="vocab-word" data-info="芸風（げいふう）：艺术风格。这里借指作者的写作套路或风格。"><ruby>芸<rt>げい</rt></ruby><ruby>風<rt>ふう</rt></ruby></span>なのか。
+    </p>
+    <div class="translation">
+        从心理上来说，我觉得我也只能写“早出生”的人作为小说的视点人物（第一视角角色）。其他登场人物是几月出生的倒无所谓，但负责对发生的事情进行解释、抒发感想的视点人物，必定是早出生的。我的写作戏路还真是狭窄啊。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>幼<rt>よう</rt></ruby><ruby>稚<rt>ち</rt></ruby><ruby>園<rt>えん</rt></ruby>でのわたしは、<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby>がわからないぐらい<ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>だった。<ruby>本<rt>ほん</rt></ruby><ruby>当<rt>とう</rt></ruby>にあれはなんだったのか。<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>が<ruby>同<rt>おな</rt></ruby>じクラスの<ruby>子<rt>こ</rt></ruby>たちと<ruby>比<rt>くら</rt></ruby>べてばかみたいに<ruby>幼<rt>よう</rt></ruby><ruby>稚<rt>ち</rt></ruby>で、ずーっと<ruby>怒<rt>おこ</rt></ruby>られているということについて、<span class="vocab-word" data-info="長らく（ながらく）：长期，好久。"><ruby>長<rt>なが</rt></ruby>らく</span><ruby>誰<rt>だれ</rt></ruby>も<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>してくれなかったのだ。なんで<ruby>他<rt>ほか</rt></ruby>の<ruby>女<rt>おんな</rt></ruby>の<ruby>子<rt>こ</rt></ruby>たちは<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>より<ruby>背<rt>せ</rt></ruby>が<ruby>高<rt>たか</rt></ruby>くて<ruby>髪<rt>かみ</rt></ruby>をきれいに<ruby>結<rt>ゆ</rt></ruby>っているのに、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>は<ruby>単<rt>たん</rt></ruby><ruby>純<rt>じゅん</rt></ruby>な<span class="vocab-word" data-info="おかっぱ：妹妹头，童花头（一种齐刘海齐耳短发）。">おかっぱ</span>で<ruby>帰<rt>かえ</rt></ruby>る<ruby>頃<rt>ころ</rt></ruby>には<span class="vocab-word" data-info="ぐちゃぐちゃ：乱七八糟，一团糟。">ぐちゃぐちゃ</span>なのか、なんで<ruby>他<rt>ほか</rt></ruby>の<ruby>子<rt>こ</rt></ruby>たちは<ruby>先<rt>せん</rt></ruby><ruby>生<rt>せい</rt></ruby>の<ruby>言<rt>い</rt></ruby>われた<ruby>通<rt>とお</rt></ruby>りにできるのか、なんで<span class="vocab-word" data-info="おとなしく：老实地，乖乖地。">おとなしく</span>していられるのか、なんで<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>はすぐに<span class="vocab-word" data-info="スモック：Smock，罩衫，罩衣（幼儿园小朋友常穿的防护服）。">スモック</span>を<ruby>汚<rt>よご</rt></ruby>すのか。ずっと<span class="vocab-word" data-info="場違い（ばちがい）：不合时宜，场合不对，格格不入。"><ruby>場<rt>ば</rt></ruby><ruby>違<rt>ちが</rt></ruby>い</span>だった。
+    </p>
+    <div class="translation">
+        幼儿园时期的我，简直是个幼稚到莫名其妙的小孩。那到底是怎么回事呢。比起同班的孩子们，自己简直像个傻瓜一样幼稚，还一直挨骂——关于这件事，很长一段时间里都没有人向我解释过原因。为什么其他女孩子都比我高，头发也扎得漂漂亮亮的，而我却只是顶着个简单的妹妹头，而且到了放学时就变得乱七八糟了呢？为什么其他孩子都能按照老师说的去做呢？为什么他们能乖乖待着呢？为什么我总是很快就把罩衣弄脏呢？我一直觉得自己和周围格格不入。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>になると、あの<ruby>学<rt>がく</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>内<rt>ない</rt></ruby>の<ruby>差<rt>さ</rt></ruby>というものはかなり<span class="vocab-word" data-info="縮まる（ちぢまる）：（原型）缩小，缩短。"><ruby>縮<rt>ちぢ</rt></ruby>まる</span>し、<ruby>同<rt>おな</rt></ruby>じ<ruby>学<rt>がく</rt></ruby><ruby>年<rt>ねん</rt></ruby>の<ruby>中<rt>なか</rt></ruby>でもちょっと<ruby>若<rt>わか</rt></ruby>いのはいいものだと<ruby>思<rt>おも</rt></ruby>う。それでも、<ruby>幼<rt>よう</rt></ruby><ruby>稚<rt>ち</rt></ruby><ruby>園<rt>えん</rt></ruby>に<ruby>通<rt>かよ</rt></ruby>っていた<ruby>時<rt>とき</rt></ruby>のあの<span class="vocab-word" data-info="心許ない（こころもとない）：心里没底，不安，不可靠。"><ruby>心<rt>こころ</rt></ruby><ruby>許<rt>もと</rt></ruby>ない</span><ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちをすっかり<ruby>忘<rt>わす</rt></ruby>れた<ruby>頃<rt>ころ</rt></ruby>に、「<ruby>学<rt>がく</rt></ruby><ruby>年<rt>ねん</rt></ruby>と<ruby>年<rt>ねん</rt></ruby><ruby>齢<rt>れい</rt></ruby>の<ruby>一<rt>いっ</rt></ruby><ruby>般<rt>ぱん</rt></ruby><ruby>的<rt>てき</rt></ruby>な<span class="vocab-word" data-info="釣り合い（つりあい）：平衡，均衡，相称。"><ruby>釣<rt>つ</rt></ruby>り<ruby>合<rt>あ</rt></ruby>い</span>の<span class="vocab-word" data-info="齟齬（そご）：龃龉，不一致，矛盾。"><ruby>齟<rt>そ</rt></ruby><ruby>齬<rt>ご</rt></ruby></span>」の<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>がやってきて、わたしはあの<span class="vocab-word" data-info="わけのわからない：莫名其妙的，无法理解的。">わけのわからない</span><ruby>感<rt>かん</rt></ruby>じを<ruby>思<rt>おも</rt></ruby>い<ruby>出<rt>だ</rt></ruby>す。たぶん<ruby>一<rt>いっ</rt></ruby><ruby>生<rt>しょう</rt></ruby>「<ruby>高<rt>こう</rt></ruby><ruby>三<rt>さん</rt></ruby>の<ruby>十<rt>じゅう</rt></ruby><ruby>二<rt>に</rt></ruby><ruby>月<rt>がつ</rt></ruby>は<ruby>十<rt>じゅう</rt></ruby><ruby>七<rt>なな</rt></ruby><ruby>歳<rt>さい</rt></ruby>に<ruby>決<rt>き</rt></ruby>まってるだろう」<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>は<span class="vocab-word" data-info="噴出する（ふんしゅつする）：（原型）喷出，涌出，爆发。"><ruby>噴<rt>ふん</rt></ruby><ruby>出<rt>しゅつ</rt></ruby>する</span>だろう。<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>と<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>をしてくださる<ruby>人<rt>ひと</rt></ruby>たちに、<ruby>先<rt>さき</rt></ruby>にお<ruby>伝<rt>つた</rt></ruby>えしておきます。
+    </p>
+    <div class="translation">
+        长大以后，那种同年级内的差距就会大幅缩小，而且在同一年级中能稍微年轻一点，我觉得也是件好事。尽管如此，就在我已经把上幼儿园时那种忐忑不安的心情忘得一干二净的时候，“年级与年龄的常规匹配存在出入”的问题又找上门来，让我再次回想起了那种莫名其妙的感觉。估计我这一生都会不断喷涌出“高三的十二月理所当然是十七岁吧”这种执念引发的问题吧。在此，我想先跟那些与我共事的人们打个招呼、提前告知一下了。
+    </div>
+</div>
+</div>
+
+<div id="smart-tooltip"></div>
+
+<!-- Fixed Bottom Audio Player -->
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container" onclick="seek(event)">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="time-display">
+            <span id="current-time">00:00</span> / <span id="duration">00:00</span>
+        </div>
+        <audio id="audio-element" src="../audio_read/3.02.mp3"></audio>
+    </div>
+</div>
+
+<div class="footer">Ichigo Ichie - 一期一会</div>
+
+<script>
+    // 1. (已移除) 实时日期逻辑 -> 改为在 HTML 中手动输入
+
+    // 2. 译文切换
+    function toggleTranslation() {
+        const btn = document.getElementById('trans-btn');
+        const isActive = btn.classList.toggle('active');
+        
+        document.querySelectorAll('.translation').forEach(el => {
+            el.style.display = isActive ? 'block' : 'none';
+        });
+    }
+
+    // 3. 智能自适应气泡逻辑
+    const tooltip = document.getElementById('smart-tooltip');
+    let activeWord = null;
+
+    // --- Audio Player Logic ---
+    const audio = document.getElementById('audio-element');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+            playBtn.classList.add('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        } else {
+            audio.pause();
+            playBtn.classList.remove('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        }
+    }
+
+    audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = percent + '%';
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        }
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener('ended', () => {
+        playBtn.classList.remove('playing');
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        progressBar.style.width = '0%';
+        currentTimeEl.textContent = "00:00";
+    });
+
+    function seek(e) {
+        if (!audio.duration) return;
+        const rect = progressContainer.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const width = rect.width;
+        audio.currentTime = (clickX / width) * audio.duration;
+    }
+
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return "00:00";
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    // --------------------------
+
+    document.querySelectorAll('.vocab-word').forEach(word => {
+        word.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (activeWord === this) { hideTooltip(); return; }
+
+            activeWord = this;
+            tooltip.innerText = this.getAttribute('data-info');
+            tooltip.style.display = 'block';
+
+            const rect = this.getBoundingClientRect();
+            const tipRect = tooltip.getBoundingClientRect();
+            const screenWidth = window.innerWidth;
+            
+            // 计算初始位置
+            let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
+            let top = rect.top + window.scrollY - tipRect.height - 12;
+
+            // 溢出检测与修正
+            const margin = 15;
+            let arrowOffset = '50%';
+
+            if (left < margin) {
+                left = margin;
+                arrowOffset = (rect.left + rect.width/2 - margin) + 'px';
+            } else if (left + tipRect.width > screenWidth - margin) {
+                left = screenWidth - tipRect.width - margin;
+                arrowOffset = (rect.left + rect.width/2 - left) + 'px';
+            }
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.style.opacity = '1';
+
+            // 动态修正箭头位置
+            const styleTag = document.getElementById('dynamic-arrow') || document.createElement('style');
+            styleTag.id = 'dynamic-arrow';
+            styleTag.innerHTML = `#smart-tooltip::after { left: ${arrowOffset} !important; transform: translateX(-50%); }`;
+            document.head.appendChild(styleTag);
+        });
+    });
+
+    function hideTooltip() {
+        tooltip.style.opacity = '0';
+        setTimeout(() => { tooltip.style.display = 'none'; }, 200);
+        activeWord = null;
+    }
+
+    document.addEventListener('click', hideTooltip);
+    window.addEventListener('resize', hideTooltip);
+
+
+</script>
+
+</body>
+</html>
