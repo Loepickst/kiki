@@ -106,19 +106,43 @@
 
         .progress-container {
             flex-grow: 1;
-            height: 4px;
-            background-color: #f0f0f0;
-            border-radius: 2px;
+            height: 20px; /* Increased height for better touch target */
+            display: flex;
+            align-items: center;
             margin-right: 12px;
             cursor: pointer;
             position: relative;
         }
 
+        .progress-bg {
+            width: 100%;
+            height: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
+            position: relative;
+        }
+
         .progress-bar {
             height: 100%;
-            background-color: #d1d1d1;
+            background-color: var(--accent-color);
             width: 0%;
             border-radius: 2px;
+            position: relative;
+        }
+
+        /* The draggable thumb */
+        .progress-bar::after {
+            content: "";
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background-color: white;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .time-display {
@@ -255,8 +279,10 @@
         <button id="play-btn" class="play-btn" onclick="togglePlay()">
             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </button>
-        <div class="progress-container" id="progress-container" onclick="seek(event)">
-            <div class="progress-bar" id="progress-bar"></div>
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bg">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
         </div>
         <div class="time-display">
             <span id="current-time">00:00</span> / <span id="duration">00:00</span>
@@ -326,10 +352,47 @@
     function seek(e) {
         if (!audio.duration) return;
         const rect = progressContainer.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
         const width = rect.width;
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        let clickX = clientX - rect.left;
+        clickX = Math.max(0, Math.min(clickX, width));
         audio.currentTime = (clickX / width) * audio.duration;
     }
+
+    // --- Drag to Seek Logic ---
+    let isDragging = false;
+
+    progressContainer.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        seek(e);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            seek(e);
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Touch support
+    progressContainer.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        seek(e);
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (isDragging) {
+            e.preventDefault(); // Prevent scrolling while dragging
+            seek(e);
+        }
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => {
+        isDragging = false;
+    });
 
     function formatTime(seconds) {
         if (isNaN(seconds)) return "00:00";
