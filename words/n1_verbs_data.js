@@ -605,10 +605,10 @@ const DAY2_WORDS = [
         "tone": "3",
         "pos": "他一",
         "mean": "弄窄、缩小；缩小",
-        "nuance": "1. 使物理空间变窄。\n2. 限定范围。",
+        "nuance": "1. 使物理空间变窄。\n2. 使抽象的范围、差距或界限变窄。",
         "examples": [
             { "jp": "<ruby>工<rt>こう</rt></ruby><ruby>事<rt>じ</rt></ruby>のため<ruby>道<rt>みち</rt></ruby><ruby>幅<rt>はば</rt></ruby>を<span class='ex-highlight'><ruby>狭<rt>せば</rt></ruby>める</span>。", "cn": "因为施工缩小了路宽。" },
-            { "jp": "<ruby>睡<rt>すい</rt></ruby><ruby>眠<rt>みん</rt></ruby><ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>を<ruby>削<rt>けず</rt></ruby>って<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>する。", "cn": "削减睡眠时间来学习。" }
+            { "jp": "<ruby>犯<rt>はん</rt></ruby><ruby>人<rt>にん</rt></ruby>の<ruby>捜<rt>そう</rt></ruby><ruby>査<rt>さ</rt></ruby><ruby>範<rt>はん</rt></ruby><ruby>囲<rt>い</rt></ruby>を<span class='ex-highlight'><ruby>狭<rt>せば</rt></ruby>めている</span>。", "cn": "正在缩小犯人的搜查范围。" }
         ],
         "practice": {
             "sentence": "捜査の範囲を<span class='blank-space'></span>、犯人を特定した。",
