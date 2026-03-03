@@ -532,10 +532,10 @@ const DAY2_WORDS = [
         "word_html": "<ruby>快<rt>こころよ</rt></ruby>い",
         "tone": "3",
         "pos": "い形",
-        "mean": "舒服、爽快；欣然、爽快地",
-        "nuance": "1. 感觉舒适，心情舒畅。\n2. 痛快地答应，毫不勉强。",
+        "mean": "愉快 爽快；欣然、爽快地",
+        "nuance": "1. 侧重于主观感情和心情上的舒畅，或者事情发展令人满意。\n2. 痛快地答应，毫不勉强。",
         "examples": [
-            { "jp": "<span class='ex-highlight'><ruby>快<rt>こころよ</rt></ruby>い</span><ruby>風<rt>かぜ</rt></ruby>が<ruby>吹<rt>ふ</rt></ruby>いている。", "cn": "吹着令人舒畅的风。" },
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>の<ruby>心<rt>こころ</rt></ruby>のこもったもてなしに、<span class='ex-highlight'><ruby>快<rt>こころよ</rt></ruby>い</span><ruby>気分<rt>きぶん</rt></ruby>になった。", "cn": "他那充满诚意的款待，让人心情十分愉快。" },
             { "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>頼<rt>たの</rt></ruby>みを<span class='ex-highlight'><ruby>快<rt>こころよ</rt></ruby>く</span><ruby>引<rt>ひ</rt></ruby>き<ruby>受<rt>う</rt></ruby>けてくれた。", "cn": "他爽快地接受了请求。" }
         ],
         "practice": {
@@ -550,7 +550,7 @@ const DAY2_WORDS = [
         "tone": "4",
         "pos": "い形",
         "mean": "舒服、舒适",
-        "nuance": "1. 感觉舒畅，身心愉悦，多用于感官体验。",
+        "nuance": "1. 感觉舒畅，身心愉悦，侧重于身体感官接触到外界刺激时，比如风、气温、声音、震动等，产生的生理或心理上的舒服感觉。",
         "examples": [
             { "jp": "<span class='ex-highlight'><ruby>心<rt>ここ</rt></ruby><ruby>地<rt>ち</rt></ruby>よい</span><ruby>風<rt>かぜ</rt></ruby>が<ruby>吹<rt>ふ</rt></ruby>いている。", "cn": "吹着令人舒适的风。" }
         ],
