@@ -4129,7 +4129,7 @@ const DAY13_WORDS = [
         ],
         "practice": {
             "sentence": "この<ruby>家<rt>いえ</rt></ruby>のインテリアは<span class='ex-highlight'>____</span>で、<ruby>過<rt>か</rt></ruby>ごし<ruby>や<rt>や</rt></ruby>すい。",
-            "options": ["シンプル", "コンプレックス", "ゴージャス", "ファンタジー"],
+            "options": ["シンプル", "コンプレックス", "カラフル", "ハード"],
             "answer": "シンプル"
         }
     },
@@ -4145,7 +4145,7 @@ const DAY13_WORDS = [
         ],
         "practice": {
             "sentence": "このホテルのロビーは<span class='ex-highlight'>____</span>なインテリアで、<ruby>寛<rt>くつろ</rt></ruby>げる。",
-            "options": ["エレガント", "カントリー", "ユニバーサル", "シンプル"],
+            "options": ["エレガント", "カジュアル", "シンプル", "ラフ"],
             "answer": "エレガント"
         }
     }, 
@@ -4162,7 +4162,7 @@ const DAY13_WORDS = [
         ],
         "practice": {
             "sentence": "プレゼンの<ruby>質<rt>しつ</rt></ruby><ruby>問<rt>もん</rt></ruby>に<span class='ex-highlight'>____</span>に<ruby>答<rt>こた</rt></ruby>えた。",
-            "options": ["クール", "パニック", "オーバー", "フェア"],
+            "options": ["クール", "ホット", "ウォーム", "ダーク"],
             "answer": "クール"
         }
     },
@@ -4178,7 +4178,7 @@ const DAY13_WORDS = [
         ],
         "practice": {
             "sentence": "このカフェは<span class='ex-highlight'>____</span>なデザインで、<ruby>若<rt>わか</rt></ruby>い<ruby>客<rt>きゃく</rt></ruby>が<ruby>多<rt>おお</rt></ruby>い。",
-            "options": ["モダン", "レトロ", "イージー", "ヘビー"],
+            "options": ["モダン", "クラシック", "レトロ", "アンティーク"],
             "answer": "モダン"
         }
     },
@@ -4194,7 +4194,7 @@ const DAY13_WORDS = [
         ],
         "practice": {
             "sentence": "この<ruby>試<rt>し</rt></ruby><ruby>験<rt>けん</rt></ruby>は<ruby>合<rt>ごう</rt></ruby><ruby>格<rt>かく</rt></ruby>ラインが<span class='ex-highlight'>____</span>で、<ruby>落<rt>お</rt></ruby>ちる<ruby>人<rt>ひと</rt></ruby>が<ruby>多<rt>おお</rt></ruby>い。",
-            "options": ["シビア", "イージー", "ルーズ", "ハッピー"],
+            "options": ["シビア", "アバウト", "ルーズ", "イージー"],
             "answer": "シビア"
         }
     },
@@ -4211,7 +4211,7 @@ const DAY13_WORDS = [
         ],
         "practice": {
             "sentence": "この<ruby>国<rt>くに</rt></ruby>は<ruby>冬<rt>ふゆ</rt></ruby>になると<span class='ex-highlight'>____</span>な<ruby>気<rt>くう</rt></ruby><ruby>候<rt>こう</rt></ruby>になる。",
-            "options": ["ドライ", "ウェット", "ホット", "オールド"],
+            "options": ["ドライ", "ウェット", "ソフト", "マイルド"],
             "answer": "ドライ"
         }
     },
@@ -4228,7 +4228,7 @@ const DAY13_WORDS = [
         ],
         "practice": {
             "sentence": "この<ruby>子<rt>こ</rt></ruby>は<span class='ex-highlight'>____</span>で、<ruby>微<rt>び</rt></ruby><ruby>妙<rt>みょう</rt></ruby>な<ruby>空<rt>くう</rt></ruby><ruby>気<rt>き</rt></ruby>に<ruby>気<rt>き</rt></ruby>づく。",
-            "options": ["ナイーブ", "タフ", "ポジティブ", "ワイルド"],
+            "options": ["ナイーブ", "タフ", "ワイルド", "クール"],
             "answer": "ナイーブ"
         }
     },
@@ -4244,7 +4244,7 @@ const DAY13_WORDS = [
         ],
         "practice": {
             "sentence": "この<ruby>人<rt>ひと</rt></ruby>の<span class='ex-highlight'>____</span>な<ruby>物<rt>もの</rt></ruby><ruby>言<rt>い</rt></ruby>いは<ruby>信<rt>しん</rt></ruby><ruby>頼<rt>らい</rt></ruby>できる。",
-            "options": ["ストレート", "カーブ", "ラウンド", "シャープ"],
+            "options": ["ストレート", "カーブ", "トリッキー", "シャープ"],
             "answer": "ストレート"
         }
     },
@@ -4260,7 +4260,7 @@ const DAY13_WORDS = [
         ],
         "practice": {
             "sentence": "この<ruby>部<rt>ぶ</rt></ruby><ruby>隊<rt>たい</rt></ruby>の<ruby>隊<rt>たい</rt></ruby><ruby>員<rt>いん</rt></ruby>は<span class='ex-highlight'>____</span>で、<ruby>厳<rt>きび</rt></ruby>しい<ruby>訓<rt>くん</rt></ruby><ruby>練<rt>れん</rt></ruby>にも<ruby>耐<rt>た</rt></ruby>える。",
-            "options": ["タフ", "ソフト", "デリケート", "スマート"],
+            "options": ["タフ", "デリケート", "センシティブ", "ソフト"],
             "answer": "タフ"
         }
     },
@@ -4277,7 +4277,7 @@ const DAY13_WORDS = [
         ],
         "practice": {
             "sentence": "この<ruby>会<rt>かい</rt></ruby><ruby>議<rt>ぎ</rt></ruby>の<ruby>日<rt>ひ</rt></ruby><ruby>程<rt>てい</rt></ruby>は<span class='ex-highlight'>____</span>で、<ruby>休<rt>やす</rt></ruby>む<ruby>暇<rt>ひま</rt></ruby>がない。",
-            "options": ["タイト", "ルーズ", "ワイド", "ロング"],
+            "options": ["タイト", "ルーズ", "ワイド", "ラフ"],
             "answer": "タイト"
         }
     },
@@ -4342,7 +4342,7 @@ const DAY13_WORDS = [
         ],
         "practice": {
             "sentence": "この<ruby>店<rt>みせ</rt></ruby>は<ruby>品<rt>しな</rt></ruby><ruby>質<rt>しつ</rt></ruby>がよくて、<ruby>値<rt>ね</rt></ruby><ruby>段<rt>だん</rt></ruby>も<span class='ex-highlight'>____</span>だ。",
-            "options": ["リーズナブル", "リッチ", "ラグジュアリー", "プレミアム"],
+            "options": ["リーズナブル", "エクスペンシブ", "リッチ", "プレミアム"],
             "answer": "リーズナブル"
         }
     },
@@ -4359,7 +4359,7 @@ const DAY13_WORDS = [
         ],
         "practice": {
             "sentence": "このスーツは<span class='ex-highlight'>____</span>で、<ruby>着<rt>き</rt></ruby>こなしが<ruby>簡<rt>かん</rt></ruby><ruby>単<rt>たん</rt></ruby>だ。",
-            "options": ["スマート", "ファット", "ルーズ", "ヘビー"],
+            "options": ["スマート", "ルーズ", "ヘビー", "ワイド"],
             "answer": "スマート"
         }
     },
@@ -4375,7 +4375,7 @@ const DAY13_WORDS = [
         ],
         "practice": {
             "sentence": "この<ruby>先<rt>せん</rt></ruby><ruby>輩<rt>ぱい</rt></ruby>は<span class='ex-highlight'>____</span>で、<ruby>話<rt>はな</rt></ruby>しかけやすい。",
-            "options": ["フランク", "シャイ", "クール", "ドライ"],
+            "options": ["フランク", "シャイ", "ナーバス", "クール"],
             "answer": "フランク"
         }
     },
