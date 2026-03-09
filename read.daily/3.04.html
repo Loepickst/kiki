@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #b33e3e; 
+            --sub-color: #787878;
+            --popup-bg: #333333;
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 100px 15px 120px; /* Increased bottom padding for audio player */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 顶部控制栏 */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; border-bottom: 1px solid; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) {
+            .toggle-btn:hover { background: var(--accent-color); color: white; }
+        }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        /* 主容器 */
+        .container {
+            max-width: 720px; width: 100%;
+            background: var(--paper-color); padding: 50px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .header-title { text-align: center; margin-bottom: 50px; }
+
+        /* Audio Player - Fixed Bottom */
+        .audio-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px 25px 20px; /* Extra bottom padding for iPhone Home bar */
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+
+        .audio-player {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 600px; /* Wider on desktop */
+        }
+
+        .play-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-right: 12px;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+            padding: 0;
+        }
+
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+
+        .progress-container {
+            flex-grow: 1;
+            height: 20px; /* Increased height for better touch target */
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bg {
+            width: 100%;
+            height: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        /* The draggable thumb */
+        .progress-bar::after {
+            content: "";
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background-color: white;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .time-display {
+            font-size: 0.7rem;
+            color: #999;
+            font-family: var(--chinese-font);
+            min-width: 70px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.8; 
+            text-align: justify; margin: 0;
+        }
+
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        /* 译文（黑体中文） */
+        .translation {
+            display: none; margin-top: 20px; font-size: 0.95rem;
+            color: #5a626b; line-height: 1.8; padding: 18px 20px;
+            background-color: #f7f8f9; font-family: var(--chinese-font);
+            border-left: 3px solid #eee; text-align: justify;
+        }
+        .translation::before { content: "訳"; display: block; font-size: 0.7rem; color: #ccc; margin-bottom: 5px; font-weight: bold; }
+
+        /* 重点词汇样式 */
+        .vocab-word {
+            color: var(--accent-color);
+            border-bottom: 2px solid #f2d0d0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* 动态气泡容器 */
+        #smart-tooltip {
+            position: absolute; z-index: 2000;
+            background: var(--popup-bg); color: white;
+            padding: 12px 16px; border-radius: 8px;
+            font-size: 0.85rem; font-family: var(--chinese-font);
+            line-height: 1.6; max-width: 280px; min-width: 140px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none; opacity: 0; pointer-events: none;
+        }
+        #smart-tooltip::after {
+            content: ""; position: absolute; top: 100%;
+            border: 8px solid transparent; border-top-color: var(--popup-bg);
+        }
+
+        .footer { margin-top: 50px; color: #ccc; font-size: 0.8rem; letter-spacing: 3px; }
+
+
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <!-- 左侧返回按钮 -->
+    <a href="read_daily.html" class="toggle-btn" style="text-decoration: none; margin-right: 15px;">← 戻る</a>
+    
+    <!-- 日期显示（可加 flex-grow 让它占据中间位置，或者保持原样） -->
+    <div id="today-date" style="flex-grow: 1; text-align: center; border-bottom: none;">3月4日 水曜日</div>
+    
+    <button id="trans-btn" class="toggle-btn" onclick="toggleTranslation()">译文</button>
+</div>
+
+<div class="container">
+    <div class="header-title">
+    <h2 style="font-weight: 500; letter-spacing: 0.1em; margin-bottom: 5px;"><ruby>区<rt>く</rt></ruby><ruby>切<rt>ぎ</rt></ruby>りを<ruby>数<rt>かぞ</rt></ruby>える</h2>
+    <span style="color: #bbb; font-size: 0.8rem;">细数人生的节点</span>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>毎<rt>まい</rt></ruby><ruby>日<rt>にち</rt></ruby>、<ruby>目<rt>め</rt></ruby>の<ruby>前<rt>まえ</rt></ruby>の<ruby>締<rt>しめ</rt></ruby><ruby>切<rt>きり</rt></ruby>ばかり<ruby>考<rt>かんが</rt></ruby>えているせいか、ある<ruby>日<rt>ひ</rt></ruby><span class="vocab-word" data-info="はっと：猛地，突然，恍然大悟。">はっと</span><ruby>気<rt>き</rt></ruby>づいて「もうこんな<ruby>季<rt>き</rt></ruby><ruby>節<rt>せつ</rt></ruby>なの？」と<ruby>驚<rt>おどろ</rt></ruby>くことが<ruby>多<rt>おお</rt></ruby>い。<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>感<rt>かん</rt></ruby><ruby>覚<rt>かく</rt></ruby>が<ruby>現<rt>げん</rt></ruby><ruby>実<rt>じつ</rt></ruby>より<span class="vocab-word" data-info="先行する（せんこうする）：（原型）先行，走在前面。"><ruby>先<rt>せん</rt></ruby><ruby>行<rt>こう</rt></ruby>する</span>ことは、<ruby>不<rt>ふ</rt></ruby><ruby>思<rt>し</rt></ruby><ruby>議<rt>ぎ</rt></ruby>にない。<span class="vocab-word" data-info="ちなみに：顺便提一下，顺便说一句。">ちなみに</span><ruby>現<rt>げん</rt></ruby><ruby>在<rt>ざい</rt></ruby>は<ruby>気<rt>き</rt></ruby><ruby>分<rt>ぶん</rt></ruby>は<ruby>一<rt>いち</rt></ruby><ruby>月<rt>がつ</rt></ruby><ruby>下<rt>げ</rt></ruby><ruby>旬<rt>じゅん</rt></ruby>ぐらいなのに、<ruby>世<rt>せ</rt></ruby><ruby>間<rt>けん</rt></ruby>ではそろそろ<ruby>桜<rt>さくら</rt></ruby>が<ruby>咲<rt>さ</rt></ruby>きそうと<ruby>知<rt>し</rt></ruby>って<span class="vocab-word" data-info="呆然として（ぼうぜんとして）：（呆然とする的「て形」）发呆，茫然若失。"><ruby>呆<rt>ぼう</rt></ruby><ruby>然<rt>ぜん</rt></ruby>として</span>いる。
+    </p>
+    <div class="translation">
+        不知是因为每天都只想着眼前的截稿日，还是怎么回事，我经常会突然回过神来，惊觉“怎么都已经到了这个季节了？”。因为自己的时间感总是走在现实前面，所以有这种错觉也不足为奇。顺便一提，虽然现在我的心理感觉还在一月下旬左右，但得知外界已快到樱花盛开的时节了，我感到十分茫然。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>年<rt>ねん</rt></ruby><ruby>度<rt>ど</rt></ruby><ruby>末<rt>まつ</rt></ruby>や<ruby>年<rt>ねん</rt></ruby><ruby>末<rt>まつ</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>始<rt>し</rt></ruby>の<ruby>概<rt>がい</rt></ruby><ruby>念<rt>ねん</rt></ruby>が<ruby>乏<rt>とぼ</rt></ruby>しいのも、<ruby>締<rt>しめ</rt></ruby><ruby>切<rt>きり</rt></ruby>ばかり<ruby>眺<rt>なが</rt></ruby>めているためだろう。<span class="vocab-word" data-info="定年（ていねん）：退休年龄，退休。"><ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby></span>のない<span class="vocab-word" data-info="自営業（じえいぎょう）：自营业，个体户。"><ruby>自<rt>じ</rt></ruby><ruby>営<rt>えい</rt></ruby><ruby>業<rt>ぎょう</rt></ruby></span>なので、<ruby>年<rt>ねん</rt></ruby><ruby>代<rt>だい</rt></ruby>の<ruby>区<rt>く</rt></ruby><ruby>切<rt>ぎ</rt></ruby>りにも<ruby>基<rt>き</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>的<rt>てき</rt></ruby>に<span class="vocab-word" data-info="無頓着（むとんちゃく）：满不在乎，不介意，不放在心上。"><ruby>無<rt>む</rt></ruby><ruby>頓<rt>とん</rt></ruby><ruby>着<rt>ちゃく</rt></ruby></span>だが、<ruby>各<rt>かく</rt></ruby><ruby>社<rt>しゃ</rt></ruby>の<ruby>担<rt>たん</rt></ruby><ruby>当<rt>とう</rt></ruby><ruby>者<rt>しゃ</rt></ruby>さんが<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby>を<ruby>迎<rt>むか</rt></ruby>える<ruby>折<rt>おり</rt></ruby>だけは<ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>の<ruby>流<rt>なが</rt></ruby>れに<ruby>立<rt>た</rt></ruby>ちすくむ。<ruby>実<rt>じつ</rt></ruby>はこのコーナーをご<ruby>担<rt>たん</rt></ruby><ruby>当<rt>とう</rt></ruby>くださっている<ruby>担<rt>たん</rt></ruby><ruby>当<rt>とう</rt></ruby><ruby>記<rt>き</rt></ruby><ruby>者<rt>しゃ</rt></ruby>さんも<ruby>間<rt>ま</rt></ruby>もなく<ruby>選<rt>せん</rt></ruby><ruby>択<rt>たく</rt></ruby><ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><span class="vocab-word" data-info="とのこと：听说，据说（表示传闻或转述他人的话）。">とのこと</span>で、ご<ruby>丁<rt>てい</rt></ruby><ruby>寧<rt>ねい</rt></ruby>なメールを<ruby>頂<rt>ちょう</rt></ruby><ruby>戴<rt>だい</rt></ruby>した。「カバンの<ruby>隅<rt>すみ</rt></ruby>には」を<ruby>書<rt>か</rt></ruby>き<ruby>始<rt>はじ</rt></ruby>めて、<ruby>来<rt>らい</rt></ruby><ruby>年<rt>ねん</rt></ruby>で<ruby>十<rt>じゅう</rt></ruby><ruby>年<rt>ねん</rt></ruby>。その<ruby>間<rt>あいだ</rt></ruby>、<ruby>担<rt>たん</rt></ruby><ruby>当<rt>とう</rt></ruby><ruby>記<rt>き</rt></ruby><ruby>者<rt>しゃ</rt></ruby>さんは<ruby>異<rt>い</rt></ruby><ruby>動<rt>どう</rt></ruby>のために<ruby>幾<rt>いく</rt></ruby><ruby>人<rt>にん</rt></ruby>もお<ruby>代<rt>か</rt></ruby>わりになったが、<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby>を<ruby>迎<rt>むか</rt></ruby>える<ruby>方<rt>かた</rt></ruby>は<ruby>意<rt>い</rt></ruby><ruby>外<rt>がい</rt></ruby>にも<ruby>今<rt>いま</rt></ruby>の<ruby>方<rt>かた</rt></ruby>が<ruby>初<rt>はじ</rt></ruby>めてだ。おめでとうござい ますと<ruby>申<rt>もう</rt></ruby>し<ruby>上<rt>あ</rt></ruby>げるとともに、<span class="vocab-word" data-info="正直（しょうじき）：老实说，说实话。"><ruby>正<rt>しょう</rt></ruby><ruby>直<rt>じき</rt></ruby></span>お<ruby>別<rt>わか</rt></ruby>れが<ruby>寂<rt>さび</rt></ruby>しい。
+    </p>
+    <div class="translation">
+        缺乏财年末或年末年初的概念，大概也是因为我只顾着看截稿日的缘故吧。因为是没有退休制度的个体户，所以对年代的节点基本上也不怎么放在心上，只有在各家公司的负责编辑迎来退休的时候，我才会在时光的流逝面前停下脚步。其实，负责这个专栏的记者也马上就要选择退休了，我收到了他非常郑重的邮件。开始写《在包的角落里》，到明年就十年了。这期间，负责的记者因为人事调动换了好几位，但迎来退休的，意外地现在的这位还是第一人。在表达“恭喜您”的同时，老实说，离别也让我感到寂寞。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        わたしはいわゆる<ruby>就<rt>しゅう</rt></ruby><ruby>職<rt>しょく</rt></ruby><ruby>氷<rt>ひょう</rt></ruby><ruby>河<rt>が</rt></ruby><ruby>期<rt>き</rt></ruby>に<ruby>大<rt>だい</rt></ruby><ruby>学<rt>がく</rt></ruby><ruby>院<rt>いん</rt></ruby>を<ruby>修<rt>しゅう</rt></ruby><ruby>了<rt>りょう</rt></ruby>し、<ruby>非<rt>ひ</rt></ruby><ruby>正<rt>せい</rt></ruby><ruby>規<rt>き</rt></ruby><ruby>労<rt>ろう</rt></ruby><ruby>働<rt>どう</rt></ruby>を<ruby>複<rt>ふく</rt></ruby><ruby>数<rt>すう</rt></ruby><span class="vocab-word" data-info="かけもちした：（掛け持ちする的「た形」）兼职，兼任。">かけもちした</span><span class="vocab-word" data-info="末（すえ）：最后，结果。"><ruby>末<rt>すえ</rt></ruby></span>、<ruby>小<rt>しょう</rt></ruby><ruby>説<rt>せつ</rt></ruby>を<ruby>書<rt>か</rt></ruby>き<ruby>出<rt>だ</rt></ruby>した。ゆえに<ruby>正<rt>せい</rt></ruby><ruby>規<rt>き</rt></ruby><ruby>労<rt>ろう</rt></ruby><ruby>働<rt>どう</rt></ruby>、<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>制<rt>せい</rt></ruby><ruby>度<rt>ど</rt></ruby>の<ruby>類<rt>たぐい</rt></ruby>とは<ruby>関<rt>かか</rt></ruby>わりが<ruby>乏<rt>とぼ</rt></ruby>しく、<span class="vocab-word" data-info="どうも：总觉得，似乎（表示隐约的判断）。">どうも</span>このまま<ruby>一<rt>いっ</rt></ruby><ruby>生<rt>しょう</rt></ruby>を<ruby>過<rt>す</rt></ruby>ごしそうだ。だがこんな<span class="vocab-word" data-info="ぼんやり：发呆，糊里糊涂，模糊不清。">ぼんやり</span>な<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>は<span class="vocab-word" data-info="どうあれ：无论如何，不管怎样。">どうあれ</span>、<ruby>周<rt>しゅう</rt></ruby><ruby>囲<rt>い</rt></ruby>は<ruby>確<rt>かく</rt></ruby><ruby>実<rt>じつ</rt></ruby>な<span class="vocab-word" data-info="暦を刻んで（こよみをきざんで）：（暦を刻む的「て形」）刻画日历，比喻随着时间的推移、踏实地度过岁月。"><ruby>暦<rt>こよみ</rt></ruby>を<ruby>刻<rt>きざ</rt></ruby>んで</span><ruby>生<rt>い</rt></ruby>きて<ruby>行<rt>い</rt></ruby>かれる。
+    </p>
+    <div class="translation">
+        我是在所谓的“就职冰河期”读完研究生的，在做了几份非正式劳动工作之后，开始写小说。因此，我与正式劳动、退休制度之类的事情缘分浅薄，似乎这一生就要这样度过了。然而，无论我这样一个迷迷糊糊的人如何，周围的人都在踏踏实实地刻下日历的印记生活着。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>先<rt>せん</rt></ruby><ruby>日<rt>じつ</rt></ruby>も<ruby>子<rt>こ</rt></ruby><ruby>育<rt>そだ</rt></ruby>てが<ruby>一<rt>いち</rt></ruby><ruby>段<rt>だん</rt></ruby><ruby>落<rt>らく</rt></ruby>した<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>が、<ruby>二<rt>に</rt></ruby><ruby>十<rt>じゅう</rt></ruby><ruby>数<rt>すう</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>暮<rt>く</rt></ruby>らした<ruby>関<rt>かん</rt></ruby><ruby>東<rt>とう</rt></ruby>から<ruby>実<rt>じっ</rt></ruby><ruby>家<rt>か</rt></ruby>のある<ruby>関<rt>かん</rt></ruby><ruby>西<rt>さい</rt></ruby>に<ruby>戻<rt>もど</rt></ruby>ってきた。<ruby>人<rt>じん</rt></ruby><ruby>生<rt>せい</rt></ruby>の<span class="vocab-word" data-info="着実（ちゃくじつ）：踏实，稳健。"><ruby>着<rt>ちゃく</rt></ruby><ruby>実<rt>じつ</rt></ruby></span>な<ruby>転<rt>てん</rt></ruby><ruby>換<rt>かん</rt></ruby><ruby>点<rt>てん</rt></ruby>を<ruby>迎<rt>むか</rt></ruby>えた<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>を<ruby>祝<rt>いわ</rt></ruby>わねばならないと、<ruby>他<rt>ほか</rt></ruby>の<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>たちと<ruby>言<rt>い</rt></ruby>い<ruby>合<rt>あ</rt></ruby>っている。ただ<ruby>世<rt>せ</rt></ruby><ruby>間<rt>けん</rt></ruby>には<ruby>数<rt>かず</rt></ruby><ruby>多<rt>おお</rt></ruby>くのひと<ruby>区<rt>く</rt></ruby><ruby>切<rt>ぎ</rt></ruby>りがあるが、わたしのように<ruby>小<rt>ちい</rt></ruby>さな<span class="vocab-word" data-info="多忙（たぼう）：繁忙，忙碌。"><ruby>多<rt>た</rt></ruby><ruby>忙<rt>ぼう</rt></ruby></span>に<ruby>追<rt>お</rt></ruby>われているとそれが<ruby>見<rt>み</rt></ruby>えなくなる。そして<ruby>区<rt>く</rt></ruby><ruby>切<rt>ぎ</rt></ruby>りが<ruby>見<rt>み</rt></ruby>えぬとは、<ruby>時<rt>とき</rt></ruby>の<ruby>流<rt>なが</rt></ruby>れに<span class="vocab-word" data-info="漫然（まんぜん）：漫不经心，漫无目的。"><ruby>漫<rt>まん</rt></ruby><ruby>然<rt>ぜん</rt></ruby></span>と<span class="vocab-word" data-info="身をひたして（みをひたして）：（身を浸す的「て形」）沉浸于，置身于。"><ruby>身<rt>み</rt></ruby>をひたして</span>いることを<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby>する。これはよくないと<ruby>思<rt>おも</rt></ruby>う<ruby>一<rt>いっ</rt></ruby><ruby>方<rt>ぽう</rt></ruby>で、<ruby>世<rt>せ</rt></ruby><ruby>間<rt>けん</rt></ruby>からガラス<ruby>一<rt>いち</rt></ruby><ruby>枚<rt>まい</rt></ruby><ruby>隔<rt>へだ</rt></ruby>てたようなこのふわふわとした<ruby>感<rt>かん</rt></ruby><ruby>覚<rt>かく</rt></ruby>がいつまで<ruby>続<rt>つづ</rt></ruby>くのかとの<ruby>好<rt>こう</rt></ruby><ruby>奇<rt>き</rt></ruby><ruby>心<rt>しん</rt></ruby>もある。いつか<ruby>数<rt>すう</rt></ruby><ruby>十<rt>じゅう</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>後<rt>ご</rt></ruby>、<span class="vocab-word" data-info="大いなる（おおいなる）：伟大的，巨大的。"><ruby>大<rt>おお</rt></ruby>いなる</span><ruby>感<rt>かん</rt></ruby><ruby>覚<rt>かく</rt></ruby>の<ruby>遅<rt>おく</rt></ruby>れに<ruby>驚<rt>おどろ</rt></ruby>くのか、それともこのまま<ruby>生<rt>い</rt></ruby>きて<ruby>行<rt>い</rt></ruby>ってしまうのか。そんなことを<ruby>思<rt>おも</rt></ruby>いながら、<ruby>明<rt>あす</rt></ruby><ruby>日<rt>あす</rt></ruby>の<ruby>締<rt>しめ</rt></ruby><ruby>切<rt>きり</rt></ruby>を<ruby>一<rt>ひと</rt></ruby>つ<ruby>二<rt>ふた</rt></ruby>つと<ruby>数<rt>かぞ</rt></ruby>えている。
+    </p>
+    <div class="translation">
+        前几天，一位育儿告一段落的朋友，从生活了二十多年的关东回到了老家所在的关西。我和其他朋友们都说，必须好好祝贺这位迎来人生踏实转折点的她。世上有许许多多的节点，但如果像我这样总是被微小的忙碌所追赶，就会变得视而不见。而看不见这些节点，就意味着我正漫不经心地沉浸在时间的洪流中。一方面，我觉得这样并不好；另一方面，我也有种好奇心：这种仿佛与世间隔着一层玻璃的轻飘飘的感觉，究竟能持续到什么时候？在几十年后的某一天，我会对这种巨大的感知迟钝感到惊讶吗，还是就这样一直活下去呢？我一边这样想着，一边细数着明天的一两个截稿日。
+    </div>
+</div>
+</div>
+
+<div id="smart-tooltip"></div>
+
+<!-- Fixed Bottom Audio Player -->
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bg">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+        <div class="time-display">
+            <span id="current-time">00:00</span> / <span id="duration">00:00</span>
+        </div>
+        <audio id="audio-element" src="audio_read/3.04.mp3"></audio>
+    </div>
+</div>
+
+<div class="footer">Ichigo Ichie - 一期一会</div>
+
+<script>
+    // 1. (已移除) 实时日期逻辑 -> 改为在 HTML 中手动输入
+
+    // 2. 译文切换
+    function toggleTranslation() {
+        const btn = document.getElementById('trans-btn');
+        const isActive = btn.classList.toggle('active');
+        
+        document.querySelectorAll('.translation').forEach(el => {
+            el.style.display = isActive ? 'block' : 'none';
+        });
+    }
+
+    // 3. 智能自适应气泡逻辑
+    const tooltip = document.getElementById('smart-tooltip');
+    let activeWord = null;
+
+    // --- Audio Player Logic ---
+    const audio = document.getElementById('audio-element');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+            playBtn.classList.add('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        } else {
+            audio.pause();
+            playBtn.classList.remove('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        }
+    }
+
+    audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = percent + '%';
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        }
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener('ended', () => {
+        playBtn.classList.remove('playing');
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        progressBar.style.width = '0%';
+        currentTimeEl.textContent = "00:00";
+    });
+
+    function seek(e) {
+        if (!audio.duration) return;
+        const rect = progressContainer.getBoundingClientRect();
+        const width = rect.width;
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        let clickX = clientX - rect.left;
+        clickX = Math.max(0, Math.min(clickX, width));
+        audio.currentTime = (clickX / width) * audio.duration;
+    }
+
+    // --- Drag to Seek Logic ---
+    let isDragging = false;
+
+    progressContainer.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        seek(e);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            seek(e);
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Touch support
+    progressContainer.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        seek(e);
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (isDragging) {
+            e.preventDefault(); // Prevent scrolling while dragging
+            seek(e);
+        }
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => {
+        isDragging = false;
+    });
+
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return "00:00";
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    // --------------------------
+
+    document.querySelectorAll('.vocab-word').forEach(word => {
+        word.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (activeWord === this) { hideTooltip(); return; }
+
+            activeWord = this;
+            tooltip.innerText = this.getAttribute('data-info');
+            tooltip.style.display = 'block';
+
+            const rect = this.getBoundingClientRect();
+            const tipRect = tooltip.getBoundingClientRect();
+            const screenWidth = window.innerWidth;
+            
+            // 计算初始位置
+            let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
+            let top = rect.top + window.scrollY - tipRect.height - 12;
+
+            // 溢出检测与修正
+            const margin = 15;
+            let arrowOffset = '50%';
+
+            if (left < margin) {
+                left = margin;
+                arrowOffset = (rect.left + rect.width/2 - margin) + 'px';
+            } else if (left + tipRect.width > screenWidth - margin) {
+                left = screenWidth - tipRect.width - margin;
+                arrowOffset = (rect.left + rect.width/2 - left) + 'px';
+            }
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.style.opacity = '1';
+
+            // 动态修正箭头位置
+            const styleTag = document.getElementById('dynamic-arrow') || document.createElement('style');
+            styleTag.id = 'dynamic-arrow';
+            styleTag.innerHTML = `#smart-tooltip::after { left: ${arrowOffset} !important; transform: translateX(-50%); }`;
+            document.head.appendChild(styleTag);
+        });
+    });
+
+    function hideTooltip() {
+        tooltip.style.opacity = '0';
+        setTimeout(() => { tooltip.style.display = 'none'; }, 200);
+        activeWord = null;
+    }
+
+    document.addEventListener('click', hideTooltip);
+    window.addEventListener('resize', hideTooltip);
+
+
+</script>
+
+</body>
+</html>
