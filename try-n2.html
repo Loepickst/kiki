@@ -4461,15 +4461,29 @@
                 li.onclick = () => loadLesson(id);
                 navList.appendChild(li);
             });
-            // 默认加载第一课
-            loadLesson(keys[0]);
+            // 默认加载第一课 (Restore from localStorage)
+            const lastLesson = localStorage.getItem('try_n2_last_lesson');
+            if (lastLesson && lessonConfig[lastLesson]) {
+                loadLesson(lastLesson);
+            } else {
+                loadLesson(keys[0]);
+            }
         }
 
         function loadLesson(lessonId) {
+            // Save to localStorage
+            localStorage.setItem('try_n2_last_lesson', lessonId);
+
             const config = lessonConfig[lessonId];
             if (!config) return;
             document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.toggle('active', item.textContent === config.title);
+                const isActive = item.textContent === config.title;
+                item.classList.toggle('active', isActive);
+                if (isActive) {
+                    setTimeout(() => {
+                        item.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }, 100);
+                }
             });
             document.getElementById('audio-player').src = config.audio;
             const container = document.getElementById('lesson-container');
