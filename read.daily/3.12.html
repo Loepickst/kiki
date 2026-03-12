@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #b33e3e; 
+            --sub-color: #787878;
+            --popup-bg: #333333;
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 100px 15px 120px; /* Increased bottom padding for audio player */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 顶部控制栏 */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; border-bottom: 1px solid; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) {
+            .toggle-btn:hover { background: var(--accent-color); color: white; }
+        }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        /* 主容器 */
+        .container {
+            max-width: 720px; width: 100%;
+            background: var(--paper-color); padding: 50px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .header-title { text-align: center; margin-bottom: 50px; }
+
+        /* Audio Player - Fixed Bottom */
+        .audio-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px 25px 20px; /* Extra bottom padding for iPhone Home bar */
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+
+        .audio-player {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 600px; /* Wider on desktop */
+        }
+
+        .play-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-right: 12px;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+            padding: 0;
+        }
+
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+
+        .progress-container {
+            flex-grow: 1;
+            height: 20px; /* Increased height for better touch target */
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bg {
+            width: 100%;
+            height: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        /* The draggable thumb */
+        .progress-bar::after {
+            content: "";
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background-color: white;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .time-display {
+            font-size: 0.7rem;
+            color: #999;
+            width: 70px; /* Fixed width for stability */
+            text-align: right;
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+        }
+
+        .loop-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            margin-left: 8px;
+            opacity: 0.5;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loop-btn.active {
+            opacity: 1;
+            color: var(--accent-color);
+        }
+        
+        .loop-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.8; 
+            text-align: justify; margin: 0;
+        }
+
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        /* 译文（黑体中文） */
+        .translation {
+            display: none; margin-top: 20px; font-size: 0.95rem;
+            color: #5a626b; line-height: 1.8; padding: 18px 20px;
+            background-color: #f7f8f9; font-family: var(--chinese-font);
+            border-left: 3px solid #eee; text-align: justify;
+        }
+        .translation::before { content: "訳"; display: block; font-size: 0.7rem; color: #ccc; margin-bottom: 5px; font-weight: bold; }
+
+        /* 重点词汇样式 */
+        .vocab-word {
+            color: var(--accent-color);
+            border-bottom: 2px solid #f2d0d0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* 动态气泡容器 */
+        #smart-tooltip {
+            position: absolute; z-index: 2000;
+            background: var(--popup-bg); color: white;
+            padding: 12px 16px; border-radius: 8px;
+            font-size: 0.85rem; font-family: var(--chinese-font);
+            line-height: 1.6; max-width: 280px; min-width: 140px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none; opacity: 0; pointer-events: none;
+        }
+        #smart-tooltip::after {
+            content: ""; position: absolute; top: 100%;
+            border: 8px solid transparent; border-top-color: var(--popup-bg);
+        }
+
+        .footer { margin-top: 50px; color: #ccc; font-size: 0.8rem; letter-spacing: 3px; }
+
+
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <!-- 左侧返回按钮 -->
+    <a href="read_daily.html" class="toggle-btn" style="text-decoration: none; margin-right: 15px;">← 戻る</a>
+    
+    <!-- 日期显示（可加 flex-grow 让它占据中间位置，或者保持原样） -->
+    <div id="today-date" style="flex-grow: 1; text-align: center; border-bottom: none;">3月12日 木曜日</div>
+    
+    <button id="trans-btn" class="toggle-btn" onclick="toggleTranslation()">译文</button>
+</div>
+
+<div class="container">
+   <div class="header-title">
+    <h2 style="font-weight: 500; letter-spacing: 0.1em; margin-bottom: 5px;"><ruby>見<rt>み</rt></ruby><ruby>切<rt>き</rt></ruby>り<ruby>発<rt>はっ</rt></ruby><ruby>車<rt>しゃ</rt></ruby></h2>
+    <span style="color: #bbb; font-size: 0.8rem;">仓促上阵</span>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>去<rt>きょ</rt></ruby><ruby>年<rt>ねん</rt></ruby>の<ruby>今<rt>いま</rt></ruby>ごろはアメリカにいたなあ、と<ruby>思<rt>おも</rt></ruby>う。<ruby>十<rt>じゅう</rt></ruby><ruby>月<rt>がつ</rt></ruby>は<ruby>天<rt>てん</rt></ruby><ruby>気<rt>き</rt></ruby>が<ruby>悪<rt>わる</rt></ruby>い<ruby>日<rt>ひ</rt></ruby>が<ruby>続<rt>つづ</rt></ruby>いたので、<span class="vocab-word" data-info="ロサンゼルス：Los Angeles，洛杉矶。">ロサンゼルス</span>は<ruby>毎<rt>まい</rt></ruby><ruby>日<rt>にち</rt></ruby><ruby>晴<rt>せい</rt></ruby><ruby>天<rt>てん</rt></ruby>で<ruby>天<rt>てん</rt></ruby><ruby>気<rt>き</rt></ruby>のことなど<ruby>気<rt>き</rt></ruby>にしなくてよかったなと、<span class="vocab-word" data-info="懐かしんで（なつかしんで）：（原型：懐かしむ，て形）怀念，追忆。"><ruby>懐<rt>なつ</rt></ruby>かしんで</span>しまった。
+    </p>
+    <div class="translation">
+        想起去年的这个时候，我还在美国呢。因为十月接连都是坏天气，我不禁怀念起每天都是大晴天、完全不用操心天气的洛杉矶。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        ロサンゼルスで<ruby>三<rt>さん</rt></ruby>か<ruby>月<rt>げつ</rt></ruby><ruby>滞<rt>たい</rt></ruby><ruby>在<rt>ざい</rt></ruby>する<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>を、<ruby>決<rt>き</rt></ruby>めるときには<span class="vocab-word" data-info="ぎりぎり：极限，直到最后关头。">ぎりぎり</span>まで<ruby>迷<rt>まよ</rt></ruby>った。<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>が<ruby>片<rt>かた</rt></ruby>づかないままだったし、<ruby>英<rt>えい</rt></ruby><ruby>語<rt>ご</rt></ruby>も<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>し<ruby>直<rt>なお</rt></ruby>したかったし、<ruby>翌<rt>よく</rt></ruby><ruby>年<rt>ねん</rt></ruby>にしようかと<ruby>悩<rt>なや</rt></ruby>んだ。<ruby>結<rt>けっ</rt></ruby><ruby>果<rt>か</rt></ruby><ruby>的<rt>てき</rt></ruby>に、<ruby>行<rt>い</rt></ruby>ってよかった。<ruby>滞<rt>たい</rt></ruby><ruby>在<rt>ざい</rt></ruby><ruby>中<rt>ちゅう</rt></ruby>の<ruby>大<rt>だい</rt></ruby><ruby>統<rt>とう</rt></ruby><ruby>領<rt>りょう</rt></ruby><ruby>選<rt>せん</rt></ruby>の<ruby>結<rt>けっ</rt></ruby><ruby>果<rt>か</rt></ruby>、<ruby>様<rt>さまざ</rt></ruby>々な<ruby>情<rt>じょう</rt></ruby><ruby>勢<rt>せい</rt></ruby>が<ruby>急<rt>きゅう</rt></ruby><ruby>激<rt>げき</rt></ruby>に<ruby>変<rt>へん</rt></ruby><ruby>化<rt>か</rt></ruby>した。<span class="vocab-word" data-info="とりわけ：特别是，尤其是。">とりわけ</span>、<ruby>大<rt>だい</rt></ruby><ruby>学<rt>がく</rt></ruby>への<ruby>圧<rt>あっ</rt></ruby><ruby>力<rt>りょく</rt></ruby>は<ruby>強<rt>つよ</rt></ruby>まり、<span class="vocab-word" data-info="ビザ：Visa，签证。">ビザ</span>の<ruby>審<rt>しん</rt></ruby><ruby>査<rt>さ</rt></ruby>は<ruby>厳<rt>きび</rt></ruby>しくなり<ruby>予<rt>よ</rt></ruby><ruby>算<rt>さん</rt></ruby>が<ruby>削<rt>さく</rt></ruby><ruby>減<rt>げん</rt></ruby>されて、<ruby>今<rt>こと</rt></ruby><ruby>年<rt>し</rt></ruby>だったら<ruby>実<rt>じつ</rt></ruby><ruby>現<rt>げん</rt></ruby>しなかったかもしれない。
+    </p>
+    <div class="translation">
+        决定接受那份要在洛杉矶逗留三个月的工作时，我一直犹豫到了最后一刻。手头的工作还没处理完，英语也想重新学一下，我曾苦恼着要不要推迟到第二年再去。但从结果来看，去了真是太好了。因为在我逗留期间的总统大选结果，导致各种局势发生了急剧的变化。尤其是对大学的施压增强，签证审查变得严格，预算也被削减，如果换作是今年，这趟行程可能就无法实现了。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>二<rt>に</rt></ruby><ruby>〇<rt>ぜろ</rt></ruby><ruby>一<rt>じゅう</rt></ruby><ruby>九<rt>きゅう</rt></ruby><ruby>年<rt>ねん</rt></ruby>には、<ruby>七<rt>なな</rt></ruby><ruby>回<rt>かい</rt></ruby><ruby>外<rt>がい</rt></ruby><ruby>国<rt>こく</rt></ruby>へ<ruby>行<rt>い</rt></ruby>った。すべて<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>での<ruby>旅<rt>りょ</rt></ruby><ruby>行<rt>こう</rt></ruby>だ。<ruby>連<rt>れん</rt></ruby><ruby>載<rt>さい</rt></ruby>が<ruby>複<rt>ふく</rt></ruby><ruby>数<rt>すう</rt></ruby>あるのに<ruby>七<rt>なな</rt></ruby><ruby>回<rt>かい</rt></ruby>はさすがに<span class="vocab-word" data-info="無茶（むちゃ）：乱来，胡来，毫无道理。"><ruby>無<rt>む</rt></ruby><ruby>茶<rt>ちゃ</rt></ruby></span>ではないかと<ruby>思<rt>おも</rt></ruby>ったが、<ruby>行<rt>い</rt></ruby>っておいてよかった。<ruby>翌<rt>よく</rt></ruby><ruby>年<rt>ねん</rt></ruby>からコロナ<ruby>禍<rt>か</rt></ruby>で<ruby>移<rt>い</rt></ruby><ruby>動<rt>どう</rt></ruby>が<ruby>制<rt>せい</rt></ruby><ruby>限<rt>げん</rt></ruby>されたからだ。さらに、そのとき<ruby>訪<rt>おとず</rt></ruby>れた<ruby>国<rt>くに</rt></ruby>の<ruby>一<rt>ひと</rt></ruby>つはロシアで、コロナ<ruby>禍<rt>か</rt></ruby>が<ruby>終<rt>お</rt></ruby>わっても<span class="vocab-word" data-info="当分（とうぶん）：暂时，目前。"><ruby>当<rt>とう</rt></ruby><ruby>分<rt>ぶん</rt></ruby></span><ruby>行<rt>い</rt></ruby>けそうにない。そして<ruby>最<rt>さい</rt></ruby><ruby>近<rt>きん</rt></ruby>の<span class="vocab-word" data-info="インフレ：Inflation，通货膨胀。">インフレ</span>と<span class="vocab-word" data-info="円安（えんやす）：日元贬值。"><ruby>円<rt>えん</rt></ruby><ruby>安<rt>やす</rt></ruby></span>で、<ruby>外<rt>がい</rt></ruby><ruby>国<rt>こく</rt></ruby>に<ruby>行<rt>い</rt></ruby>く<span class="vocab-word" data-info="ハードル：Hurdle，门槛，障碍。">ハードル</span>が<ruby>上<rt>あ</rt></ruby>がってしまってもいる。
+    </p>
+    <div class="translation">
+        2019年，我出了七次国。全都是因为工作出差。明明手里有多个连载，去七次未免也太乱来了吧，但我依然觉得，去了真是太好了。因为从第二年起，新冠疫情就限制了人们的出行。而且，当时造访的国家之一是俄罗斯，就算疫情结束，近期恐怕也是去不成的。再加上最近的通货膨胀和日元贬值，出国的门槛也随之变高了。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>私<rt>わたし</rt></ruby>は<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>で<ruby>休<rt>やす</rt></ruby>みを<ruby>決<rt>き</rt></ruby>めて<ruby>旅<rt>りょ</rt></ruby><ruby>行<rt>こう</rt></ruby>することがとても<ruby>難<rt>むずか</rt></ruby>しいので、<ruby>国<rt>こく</rt></ruby><ruby>内<rt>ない</rt></ruby><ruby>外<rt>がい</rt></ruby><ruby>問<rt>と</rt></ruby>わずどこかへ<ruby>行<rt>い</rt></ruby>く<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>は<span class="vocab-word" data-info="極力（きょくりょく）：极力，尽力。"><ruby>極<rt>きょく</rt></ruby><ruby>力<rt>りょく</rt></ruby></span><ruby>受<rt>う</rt></ruby>けるようにしている。そうやって、<ruby>強<rt>きょう</rt></ruby><ruby>制<rt>せい</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>日<rt>にっ</rt></ruby><ruby>程<rt>てい</rt></ruby>を<ruby>決<rt>き</rt></ruby>めなければ<ruby>出<rt>で</rt></ruby><ruby>か<rt>か</rt></ruby>けられないのだ。
+    </p>
+    <div class="translation">
+        对我来说，自己定下假期去旅行是件非常困难的事，所以无论是国内还是国外，只要是去某个地方的工作，我都会极力接下。只有像那样强制性地定下日程，我才能出得了门。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>去<rt>きょ</rt></ruby><ruby>年<rt>ねん</rt></ruby>のロサンゼルスも、<ruby>二<rt>に</rt></ruby><ruby>〇<rt>ぜろ</rt></ruby><ruby>一<rt>じゅう</rt></ruby><ruby>九<rt>きゅう</rt></ruby><ruby>年<rt>ねん</rt></ruby>の<ruby>七<rt>なな</rt></ruby><ruby>回<rt>かい</rt></ruby>の<ruby>旅<rt>たび</rt></ruby>も、<ruby>毎<rt>まい</rt></ruby><ruby>回<rt>かい</rt></ruby>「まだ<ruby>準<rt>じゅん</rt></ruby><ruby>備<rt>び</rt></ruby>ができていないのに」と<ruby>思<rt>おも</rt></ruby>った。<ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>を<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>して、<ruby>現<rt>げん</rt></ruby><ruby>地<rt>ち</rt></ruby>の<ruby>作<rt>さっ</rt></ruby><ruby>家<rt>か</rt></ruby>や<ruby>文<rt>ぶん</rt></ruby><ruby>化<rt>か</rt></ruby>のことももっとじっくり<ruby>調<rt>しら</rt></ruby>べて、<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>での<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>も<span class="vocab-word" data-info="区切りをつけて（くぎりをつけて）：（原型：区切りをつける，て形）告一段落，做个了结。"><ruby>区<rt>く</rt></ruby><ruby>切<rt>ぎ</rt></ruby>りを<ruby>つ<rt>つ</rt></ruby>けて</span><ruby>落<rt>お</rt></ruby>ち<ruby>着<rt>つ</rt></ruby>いて<ruby>行<rt>い</rt></ruby>きたいのに、あれもこれもやっておきたかったのに、と<ruby>慌<rt>あわ</rt></ruby>ただしく<ruby>出<rt>で</rt></ruby><ruby>か<rt>か</rt></ruby>けることになる。
+    </p>
+    <div class="translation">
+        无论是去年的洛杉矶，还是2019年的那七次旅行，每次我都会想：“明明还没准备好啊”。明明想学好语言，想更深入地研究当地的作家和文化，想把在日本的工作告一段落后再从容地出发，明明有那么多想提前做好的事，结果每次都是匆匆忙忙地启程。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        しかし、<span class="vocab-word" data-info="振り返ってみれば（ふりかえってみれば）：（原型：振り返る，て形＋みるの仮定形）回头看看，回首往事。"><ruby>振<rt>ふ</rt></ruby>り<ruby>返<rt>かえ</rt></ruby>ってみれば</span>、<ruby>人<rt>じん</rt></ruby><ruby>生<rt>せい</rt></ruby>の<ruby>中<rt>なか</rt></ruby>で<ruby>準<rt>じゅん</rt></ruby><ruby>備<rt>び</rt></ruby>がちゃんとできてからやったことなど、<ruby>一<rt>いち</rt></ruby><ruby>度<rt>ど</rt></ruby>もなかったかもしれない。まだできてない、と<ruby>焦<rt>あせ</rt></ruby>り、もっと<ruby>準<rt>じゅん</rt></ruby><ruby>備<rt>び</rt></ruby>すればよかったと<ruby>後<rt>こう</rt></ruby><ruby>悔<rt>かい</rt></ruby>しながら、なんとかやってきて、<ruby>今<rt>いま</rt></ruby>の<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>になっている。<ruby>準<rt>じゅん</rt></ruby><ruby>備<rt>び</rt></ruby>ができるのを<ruby>待<rt>ま</rt></ruby>っていたら、きっといろんなことに出<ruby>会<rt>あ</rt></ruby>えなかったと<ruby>思<rt>おも</rt></ruby>う。
+    </p>
+    <div class="translation">
+        然而，回首往事，在人生的长河中，或许根本就没有哪怕一次，是在“准备万全”之后才去做的事。我总是一边焦急地觉得“还没准备好”，一边后悔着“要是多做点准备就好了”，就这样一路跌跌撞撞地走过来，才有了现在的自己。我想，如果一直等待“准备万全”的那一天，我一定会错过人生中许多的相遇与风景吧。
+    </div>
+</div>
+</div>
+
+<div id="smart-tooltip"></div>
+
+<!-- Fixed Bottom Audio Player -->
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bg">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+        <div class="time-display">
+            <span id="current-time">00:00</span> / <span id="duration">00:00</span>
+        </div>
+        <button id="loop-btn" class="loop-btn" onclick="toggleLoop()" title="ループ再生">
+            <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        </button>
+        <audio id="audio-element" src="audio_read/3.12.mp3"></audio>
+    </div>
+</div>
+
+<div class="footer">Ichigo Ichie - 一期一会</div>
+
+<script>
+    // 1. (已移除) 实时日期逻辑 -> 改为在 HTML 中手动输入
+
+    // 2. 译文切换
+    function toggleTranslation() {
+        const btn = document.getElementById('trans-btn');
+        const isActive = btn.classList.toggle('active');
+        
+        document.querySelectorAll('.translation').forEach(el => {
+            el.style.display = isActive ? 'block' : 'none';
+        });
+    }
+
+    // 3. 智能自适应气泡逻辑
+    const tooltip = document.getElementById('smart-tooltip');
+    let activeWord = null;
+
+    // --- Audio Player Logic ---
+    const audio = document.getElementById('audio-element');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+    const loopBtn = document.getElementById('loop-btn');
+
+    // Loop state
+    let isLooping = false;
+
+    function toggleLoop() {
+        isLooping = !isLooping;
+        audio.loop = isLooping;
+        loopBtn.classList.toggle('active', isLooping);
+    }
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+            playBtn.classList.add('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        } else {
+            audio.pause();
+            playBtn.classList.remove('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        }
+    }
+
+    audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = percent + '%';
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        }
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener('ended', () => {
+        playBtn.classList.remove('playing');
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        progressBar.style.width = '0%';
+        currentTimeEl.textContent = "00:00";
+    });
+
+    function seek(e) {
+        if (!audio.duration) return;
+        const rect = progressContainer.getBoundingClientRect();
+        const width = rect.width;
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        let clickX = clientX - rect.left;
+        clickX = Math.max(0, Math.min(clickX, width));
+        audio.currentTime = (clickX / width) * audio.duration;
+    }
+
+    // --- Drag to Seek Logic ---
+    let isDragging = false;
+
+    progressContainer.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        seek(e);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            seek(e);
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Touch support
+    progressContainer.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        seek(e);
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (isDragging) {
+            e.preventDefault(); // Prevent scrolling while dragging
+            seek(e);
+        }
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => {
+        isDragging = false;
+    });
+
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return "00:00";
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    // --------------------------
+
+    document.querySelectorAll('.vocab-word').forEach(word => {
+        word.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (activeWord === this) { hideTooltip(); return; }
+
+            activeWord = this;
+            tooltip.innerText = this.getAttribute('data-info');
+            tooltip.style.display = 'block';
+
+            const rect = this.getBoundingClientRect();
+            const tipRect = tooltip.getBoundingClientRect();
+            const screenWidth = window.innerWidth;
+            
+            // 计算初始位置
+            let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
+            let top = rect.top + window.scrollY - tipRect.height - 12;
+
+            // 溢出检测与修正
+            const margin = 15;
+            let arrowOffset = '50%';
+
+            if (left < margin) {
+                left = margin;
+                arrowOffset = (rect.left + rect.width/2 - margin) + 'px';
+            } else if (left + tipRect.width > screenWidth - margin) {
+                left = screenWidth - tipRect.width - margin;
+                arrowOffset = (rect.left + rect.width/2 - left) + 'px';
+            }
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.style.opacity = '1';
+
+            // 动态修正箭头位置
+            const styleTag = document.getElementById('dynamic-arrow') || document.createElement('style');
+            styleTag.id = 'dynamic-arrow';
+            styleTag.innerHTML = `#smart-tooltip::after { left: ${arrowOffset} !important; transform: translateX(-50%); }`;
+            document.head.appendChild(styleTag);
+        });
+    });
+
+    function hideTooltip() {
+        tooltip.style.opacity = '0';
+        setTimeout(() => { tooltip.style.display = 'none'; }, 200);
+        activeWord = null;
+    }
+
+    document.addEventListener('click', hideTooltip);
+    window.addEventListener('resize', hideTooltip);
+
+
+</script>
+
+</body>
+</html>
