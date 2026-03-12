@@ -707,7 +707,7 @@ const DAY3_WORDS = [
             { "jp": "<ruby>頭<rt>あたま</rt></ruby>を<span class='ex-highlight'><ruby>柔<rt>やわ</rt></ruby>らかに</span>して<ruby>考<rt>かんが</rt></ruby>える。", "cn": "放开思路（灵活地）思考。" }
         ],
         "practice": {
-            "sentence": "赤ちゃんの頬は驚くほど<span class='ex-highlight'>____</span>、ずっと触っていたくなる。",
+            "sentence": "赤ちゃんの頬は驚くほど<span class='ex-highlight'>____</span>で、ずっと触っていたくなる。",
             "options": ["やわらか", "なめらか", "おだやか", "きよらか"],
             "answer": "やわらか"
         }

@@ -3366,7 +3366,7 @@ const DAY10_WORDS = [
         "practice": {
             "sentence": "詐欺グループに<span class='blank-space'></span>、大金を奪われてしまった。",
             "answer": "だまされて",
-            "options": ["だまされて", "ごまかされて", "かえりみられて", "かえりみられて"]
+            "options": ["だまされて", "ごまかされて", "かえりみられて", "せかされて"]
         }
     },
     {
@@ -3382,7 +3382,7 @@ const DAY10_WORDS = [
         "practice": {
             "sentence": "彼は仕事に熱中するあまり、家庭を<span class='blank-space'></span>余裕がなかった。",
             "answer": "かえりみる",
-            "options": ["かえりみる", "かえりみる", "あざむく", "ごまかす"]
+            "options": ["かえりみる", "やしなう", "あざむく", "ごまかす"]
         }
     },
     {
@@ -3398,7 +3398,7 @@ const DAY10_WORDS = [
         "practice": {
             "sentence": "失敗したときは、他人のせいにする前に自らを<span class='blank-space'></span>べきだ。",
             "answer": "かえりみる",
-            "options": ["かえりみる", "かえりみる", "だます", "となえる"]
+            "options": ["かえりみる", "あやまる", "だます", "となえる"]
         }
     },
 ];
