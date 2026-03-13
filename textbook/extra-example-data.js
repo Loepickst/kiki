@@ -1601,6 +1601,672 @@ const extraExampleData = {
             "cn": "我不会找借口说做不到，在期限之前我绝对会完成给你看。"
         }
     ],
+    "90": [
+        {
+            "jp": "トップ<ruby>争<rt>あらそ</rt></ruby>いは<ruby>抜<rt>ぬ</rt></ruby>き<span style='color:#d64045'>つ</span><ruby>抜<rt>ぬ</rt></ruby>かれ<span style='color:#d64045'>つ</span>の<ruby>激<rt>はげ</rt></ruby>しい<ruby>展<rt>てん</rt></ruby><ruby>開<rt>かい</rt></ruby>となり、<ruby>観<rt>かん</rt></ruby><ruby>客<rt>きゃく</rt></ruby>を<ruby>沸<rt>わ</rt></ruby>かせた。",
+            "cn": "冠军之争时而你超我时而我超你，激烈的赛况让观众们沸腾了。"
+        },
+        {
+            "jp": "<ruby>人<rt>ひと</rt></ruby>は<ruby>誰<rt>だれ</rt></ruby>しも、<ruby>持<rt>も</rt></ruby>ち<span style='color:#d64045'>つ</span><ruby>持<rt>も</rt></ruby>たれ<span style='color:#d64045'>つ</span>で<ruby>生<rt>い</rt></ruby>きているのだから、<ruby>困<rt>こま</rt></ruby>ったときは<ruby>互<rt>たが</rt></ruby>いに<ruby>助<rt>たす</rt></ruby>け<ruby>合<rt>あ</rt></ruby>おう。",
+            "cn": "人无论谁都是互相扶持着生存的，所以困难时就互相帮助吧。"
+        },
+        {
+            "jp": "<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>の<ruby>家<rt>いえ</rt></ruby>の<ruby>前<rt>まえ</rt></ruby>を<ruby>行<rt>い</rt></ruby>き<span style='color:#d64045'>つ</span><ruby>戻<rt>もど</rt></ruby>り<span style='color:#d64045'>つ</span>しながら、<ruby>声<rt>こえ</rt></ruby>をかけるタイミングをずっと<ruby>計<rt>はか</rt></ruby>っていた。",
+            "cn": "我在她家门前徘徊（时而走前时而退后），一直盘算着搭话的时机。"
+        },
+        {
+            "jp": "<ruby>波<rt>なみ</rt></ruby>の<ruby>間<rt>ま</rt></ruby>に<ruby>見<rt>み</rt></ruby>え<ruby>隠<rt>かく</rt></ruby>れする<ruby>小<rt>こ</rt></ruby><ruby>舟<rt>ぶね</rt></ruby>が、<ruby>浮<rt>う</rt></ruby>き<span style='color:#d64045'>つ</span><ruby>沈<rt>しず</rt></ruby>み<span style='color:#d64045'>つ</span>して<ruby>今<rt>いま</rt></ruby>にも<ruby>転<rt>てん</rt></ruby><ruby>覆<rt>ぷく</rt></ruby>しそうだ。",
+            "cn": "波浪间若隐若现的小船，时而浮起时而沉下，眼看就要翻覆了。"
+        }
+    ],
+    "91": [
+        {
+            "jp": "<ruby>休<rt>やす</rt></ruby>みの<ruby>日<rt>ひ</rt></ruby>は、<ruby>見<rt>み</rt></ruby>る<span style='color:#d64045'>ともなく</span>テレビを<ruby>眺<rt>なが</rt></ruby>めて<ruby>過<rt>す</rt></ruby>ごすのが<ruby>一<rt>いち</rt></ruby><ruby>番<rt>ばん</rt></ruby>のリラックス<ruby>法<rt>ほう</rt></ruby>だ。",
+            "cn": "休息日的时候，漫不经心地看着电视度过，是最好的放松方法。"
+        },
+        {
+            "jp": "<ruby>夜<rt>よる</rt></ruby><ruby>道<rt>みち</rt></ruby>を<ruby>歩<rt>ある</rt></ruby>いていると、どこから<span style='color:#d64045'>ともなく</span><ruby>甘<rt>あま</rt></ruby>い<ruby>金<rt>きん</rt></ruby><ruby>木<rt>もく</rt></ruby><ruby>犀<rt>せい</rt></ruby>の<ruby>香<rt>かお</rt></ruby>りが<ruby>漂<rt>ただよ</rt></ruby>ってきた。",
+            "cn": "走在夜路上，不知从哪里飘来了一阵桂花的甜香。"
+        },
+        {
+            "jp": "<ruby>将<rt>しょう</rt></ruby><ruby>来<rt>らい</rt></ruby>のことについて、<ruby>何<rt>なに</rt></ruby>を<ruby>考<rt>かんが</rt></ruby>える<span style='color:#d64045'>ともなく</span>ぼんやりと<ruby>空<rt>そら</rt></ruby>を<ruby>見<rt>み</rt></ruby><ruby>上<rt>あ</rt></ruby>げていた。",
+            "cn": "并不是在特意想什么关于未来的事，只是心不在焉地仰望着天空。"
+        },
+        {
+            "jp": "<ruby>誰<rt>だれ</rt></ruby>から<span style='color:#d64045'>ともなく</span><ruby>拍<rt>はく</rt></ruby><ruby>手<rt>しゅ</rt></ruby>が<ruby>湧<rt>わ</rt></ruby>き<ruby>起<rt>お</rt></ruby>こり、やがて<ruby>会<rt>かい</rt></ruby><ruby>場<rt>じょう</rt></ruby><ruby>全<rt>ぜん</rt></ruby><ruby>体<rt>たい</rt></ruby>が<ruby>歓<rt>かん</rt></ruby><ruby>声<rt>せい</rt></ruby>に<ruby>包<rt>つつ</rt></ruby>まれた。",
+            "cn": "不知是谁先带的头，掌声涌起，不久整个会场便被欢呼声包围了。"
+        }
+    ],
+    "92": [
+        {
+            "jp": "この<ruby>厄<rt>やっ</rt></ruby><ruby>介<rt>かい</rt></ruby>な<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>を<ruby>一<rt>いっ</rt></ruby><ruby>刻<rt>こく</rt></ruby>も<ruby>早<rt>はや</rt></ruby>く<ruby>解<rt>かい</rt></ruby><ruby>決<rt>けつ</rt></ruby>す<span style='color:#d64045'>べく</span>、プロジェクトチームが<ruby>結<rt>けっ</rt></ruby><ruby>成<rt>せい</rt></ruby>された。",
+            "cn": "为了尽早解决这个棘手的问题，项目团队成立了。"
+        },
+        {
+            "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>次<rt>つぎ</rt></ruby>の<ruby>大<rt>たい</rt></ruby><ruby>会<rt>かい</rt></ruby>で<ruby>金<rt>きん</rt></ruby><ruby>メダル<rt>メダル</rt></ruby>を<ruby>獲<rt>と</rt></ruby>る<span style='color:#d64045'>べく</span>、<ruby>血<rt>ち</rt></ruby>の<ruby>滲<rt>にじ</rt></ruby>むような<ruby>努<rt>ど</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<ruby>重<rt>かさ</rt></ruby>ねているのだ。",
+            "cn": "为了在下次大赛中夺得金牌，他正日复一日地进行着极其艰苦的努力。"
+        },
+        {
+            "jp": "<ruby>事<rt>じ</rt></ruby><ruby>件<rt>けん</rt></ruby>の<ruby>真<rt>しん</rt></ruby><ruby>相<rt>そう</rt></ruby>を<ruby>探<rt>さぐ</rt></ruby>る<span style='color:#d64045'>べく</span>、<ruby>我<rt>わ</rt></ruby>々<ruby>取<rt>しゅ</rt></ruby><ruby>材<rt>ざい</rt></ruby><ruby>班<rt>はん</rt></ruby>は<ruby>直<rt>ただ</rt></ruby>ちに<ruby>現<rt>げん</rt></ruby><ruby>地<rt>ち</rt></ruby>へと<ruby>飛<rt>と</rt></ruby>んだ。",
+            "cn": "为了探寻事件的真相，我们采访小组立刻飞往了现场。"
+        },
+        {
+            "jp": "<ruby>皆<rt>みな</rt></ruby><ruby>様<rt>さま</rt></ruby>の<ruby>期<rt>き</rt></ruby><ruby>待<rt>たい</rt></ruby>に<ruby>応<rt>こた</rt></ruby>える<span style='color:#d64045'>べく</span>、<ruby>全<rt>ぜん</rt></ruby><ruby>力<rt>りょく</rt></ruby>でこの<ruby>任<rt>にん</rt></ruby><ruby>務<rt>む</rt></ruby>に<ruby>当<rt>あ</rt></ruby>たらせていただきます。",
+            "cn": "为了不辜负大家的期待，我将全力以赴地执行这项任务。"
+        }
+    ],
+    "93": [
+        {
+            "jp": "その<ruby>悲<rt>ひ</rt></ruby><ruby>惨<rt>さん</rt></ruby>な<ruby>事<rt>じ</rt></ruby><ruby>故<rt>こ</rt></ruby>のニュースを<ruby>耳<rt>みみ</rt></ruby>にし<span style='color:#d64045'>てからというもの</span>、<ruby>彼<rt>かれ</rt></ruby>はすっかり<ruby>塞<rt>ふさ</rt></ruby>ぎ<ruby>込<rt>こ</rt></ruby>んでしまった。",
+            "cn": "自从听到了那起悲惨事故的新闻之后，他就完全郁郁寡欢了。"
+        },
+        {
+            "jp": "<ruby>一<rt>いち</rt></ruby><ruby>度<rt>ど</rt></ruby>あの<ruby>店<rt>みせ</rt></ruby>のラーメンを<ruby>食<rt>た</rt></ruby>べ<span style='color:#d64045'>てからというもの</span>、すっかりその<ruby>味<rt>あじ</rt></ruby>の<ruby>虜<rt>とりこ</rt></ruby>になってしまったのだ。",
+            "cn": "自从吃过一次那家店的拉面之后，我就完全被那个味道迷住了。"
+        },
+        {
+            "jp": "<ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>が<ruby>生<rt>う</rt></ruby>まれ<span style='color:#d64045'>てからというもの</span>、<ruby>休<rt>きゅう</rt></ruby><ruby>日<rt>じつ</rt></ruby>は<ruby>家<rt>か</rt></ruby><ruby>族<rt>ぞく</rt></ruby>サービスばかりで<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>など<ruby>全<rt>まった</rt></ruby>くない。",
+            "cn": "自从有了孩子以后，休息日全都在陪家人，根本没有属于自己的时间。"
+        },
+        {
+            "jp": "すっかり<ruby>見<rt>み</rt></ruby><ruby>違<rt>ちが</rt></ruby>えたよ、<ruby>君<rt>きみ</rt></ruby>が<ruby>海<rt>かい</rt></ruby><ruby>外<rt>がい</rt></ruby><ruby>留<rt>りゅう</rt></ruby><ruby>学<rt>がく</rt></ruby>から<ruby>帰<rt>かえ</rt></ruby>っ<span style='color:#d64045'>てからというもの</span>。",
+            "cn": "真是让人刮目相看啊，自从你从海外留学回来之后。"
+        }
+    ],
+    "94": [
+        {
+            "jp": "ここ<ruby>数<rt>すう</rt></ruby><ruby>日<rt>じつ</rt></ruby><span style='color:#d64045'>というもの</span>、<ruby>風<rt>かぜ</rt></ruby><ruby>邪<rt>じゃ</rt></ruby>をこじらせてずっとベッドで<ruby>寝<rt>ね</rt></ruby>たきりの<ruby>状<rt>じょう</rt></ruby><ruby>態<rt>たい</rt></ruby>だ。",
+            "cn": "这几天以来，因为感冒加重，一直处于卧床不起的状态。"
+        },
+        {
+            "jp": "この<ruby>一<rt>いっ</rt></ruby><ruby>ヶ<rt>か</rt></ruby><ruby>月<rt>げつ</rt></ruby><span style='color:#d64045'>というもの</span>、<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>が<ruby>忙<rt>いそが</rt></ruby>しすぎてまともに<ruby>休<rt>やす</rt></ruby>みすら<ruby>取<rt>と</rt></ruby>れていない。",
+            "cn": "这长达一个月以来，工作实在太忙，连个正经的休息日都没休过。"
+        },
+        {
+            "jp": "<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>が<ruby>家<rt>いえ</rt></ruby>を<ruby>出<rt>で</rt></ruby>ていってからこの<ruby>半<rt>はん</rt></ruby><ruby>年<rt>とし</rt></ruby><span style='color:#d64045'>というもの</span>、<ruby>彼<rt>かれ</rt></ruby>は<ruby>酒<rt>さけ</rt></ruby>に<ruby>溺<rt>おぼ</rt></ruby>れる<ruby>毎<rt>まい</rt></ruby><ruby>日<rt>にち</rt></ruby>を<ruby>送<rt>おく</rt></ruby>っている。",
+            "cn": "自从她离家出走后的这半年以来，他每天都过着借酒浇愁的日子。"
+        },
+        {
+            "jp": "まさか<ruby>成<rt>せい</rt></ruby><ruby>功<rt>こう</rt></ruby>するとはね、この<ruby>十<rt>じゅう</rt></ruby><ruby>年<rt>ねん</rt></ruby><span style='color:#d64045'>というもの</span><ruby>誰<rt>だれ</rt></ruby>も<ruby>成<rt>な</rt></ruby>し<ruby>遂<rt>と</rt></ruby>げられなかった<ruby>難<rt>なん</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>だったのに。",
+            "cn": "没想到居然成功了，这可是长达十年以来谁都没能完成的艰难事业啊。"
+        }
+    ],
+    "95": [
+        {
+            "jp": "<ruby>誰<rt>だれ</rt></ruby>もが<ruby>驚<rt>おどろ</rt></ruby>くほどの<ruby>優<rt>すぐ</rt></ruby>れた<ruby>音<rt>おん</rt></ruby><ruby>感<rt>かん</rt></ruby>を、<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>は<ruby>生<rt>う</rt></ruby>まれ<span style='color:#d64045'>ながらに</span><ruby>備<rt>そな</rt></ruby>えている。",
+            "cn": "她天生（生来就保持这种状态）具备着让所有人惊叹的卓越乐感。"
+        },
+        {
+            "jp": "<ruby>事<rt>じ</rt></ruby><ruby>件<rt>けん</rt></ruby>の<ruby>恐<rt>おそ</rt></ruby>ろしさを、<ruby>被<rt>ひ</rt></ruby><ruby>害<rt>がい</rt></ruby><ruby>者<rt>しゃ</rt></ruby>は<ruby>涙<rt>なみだ</rt></ruby><span style='color:#d64045'>ながらに</span><ruby>訴<rt>うった</rt></ruby>えかけた。",
+            "cn": "被害者流着泪（带着泪水），控诉了事件的可怕。"
+        },
+        {
+            "jp": "どこか<ruby>懐<rt>なつ</rt></ruby>かしさを<ruby>感<rt>かん</rt></ruby>じる<ruby>昔<rt>むかし</rt></ruby><span style='color:#d64045'>ながらの</span><ruby>喫<rt>きっ</rt></ruby><ruby>茶<rt>さ</rt></ruby><ruby>店<rt>てん</rt></ruby>が、この<ruby>路<rt>ろ</rt></ruby><ruby>地<rt>じ</rt></ruby><ruby>裏<rt>うら</rt></ruby>にはまだ<ruby>残<rt>のこ</rt></ruby>っている。",
+            "cn": "这条小巷里，依然保留着一家能让人感到几分怀旧的、从以前就一直没变过的咖啡馆。"
+        },
+        {
+            "jp": "<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby><ruby>中<rt>じゅう</rt></ruby>の<ruby>情<rt>じょう</rt></ruby><ruby>報<rt>ほう</rt></ruby>が<ruby>居<rt>い</rt></ruby><span style='color:#d64045'>ながらにして</span><ruby>手<rt>て</rt></ruby>に<ruby>入<rt>はい</rt></ruby>るなんて、<ruby>本<rt>ほん</rt></ruby><ruby>当<rt>とう</rt></ruby>に<ruby>便<rt>べん</rt></ruby><ruby>利<rt>り</rt></ruby>な<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>になったものだ。",
+            "cn": "足不出户（待在原处）就能获取全世界的信息，真是到了个方便的时代啊。"
+        }
+    ],
+    "96": [
+        {
+            "jp": "<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>信<rt>しん</rt></ruby><ruby>念<rt>ねん</rt></ruby>を<ruby>最<rt>さい</rt></ruby><ruby>後<rt>ご</rt></ruby>まで<ruby>貫<rt>つらぬ</rt></ruby>き<ruby>通<rt>とお</rt></ruby>したよ、<ruby>周<rt>しゅう</rt></ruby><ruby>囲<rt>い</rt></ruby>の<ruby>猛<rt>もう</rt></ruby><ruby>反<rt>はん</rt></ruby><ruby>対<rt>たい</rt></ruby><span style='color:#d64045'>をものともせずに</span>ね。",
+            "cn": "他把自己的信念坚持到了最后，完全无视了周围人的强烈反对。"
+        },
+        {
+            "jp": "<ruby>悪<rt>あく</rt></ruby><ruby>天<rt>てん</rt></ruby><ruby>候<rt>こう</rt></ruby><span style='color:#d64045'>をものともせず</span>、<ruby>選<rt>せん</rt></ruby><ruby>手<rt>しゅ</rt></ruby>たちは<ruby>力<rt>ちから</rt></ruby><ruby>強<rt>づよ</rt></ruby>い<ruby>走<rt>はし</rt></ruby>りを<ruby>見<rt>み</rt></ruby>せ、<ruby>観<rt>かん</rt></ruby><ruby>客<rt>きゃく</rt></ruby>を<ruby>魅<rt>み</rt></ruby><ruby>了<rt>りょう</rt></ruby>した。",
+            "cn": "选手们不畏恶劣的天气，展现出了充满力量的奔跑，令观众们为之着迷。"
+        },
+        {
+            "jp": "ついに<ruby>新<rt>しん</rt></ruby><ruby>薬<rt>やく</rt></ruby>の<ruby>開<rt>かい</rt></ruby><ruby>発<rt>はつ</rt></ruby>を<ruby>成<rt>な</rt></ruby>し<ruby>遂<rt>と</rt></ruby>げたのだ、これまでの<ruby>度<rt>たび</rt></ruby><ruby>重<rt>かさ</rt></ruby>なる<ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby><span style='color:#d64045'>をものともせず</span>。",
+            "cn": "终于完成了新药的研发，他们把迄今为止的屡次失败都克服了。"
+        },
+        {
+            "jp": "ピアニストになるという<ruby>夢<rt>ゆめ</rt></ruby>を<ruby>見<rt>み</rt></ruby><ruby>事<rt>ごと</rt></ruby>に<ruby>叶<rt>かな</rt></ruby>えてみせた、<ruby>体<rt>からだ</rt></ruby>のハンデ<span style='color:#d64045'>をものともせずに</span>。",
+            "cn": "出色地实现了成为钢琴家的梦想，将身体上的障碍完全克服了。"
+        }
+    ],
+    "97": [
+        {
+            "jp": "<ruby>小<rt>しょう</rt></ruby><ruby>説<rt>せつ</rt></ruby><ruby>家<rt>か</rt></ruby>としても<ruby>見<rt>み</rt></ruby><ruby>事<rt>ごと</rt></ruby>な<ruby>作<rt>さく</rt></ruby><ruby>品<rt>ひん</rt></ruby>を<ruby>発<rt>はっ</rt></ruby><ruby>表<rt>ぴょう</rt></ruby>しているよ、<ruby>彼<rt>かれ</rt></ruby>は<ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby><ruby>員<rt>いん</rt></ruby>として<ruby>働<rt>はたら</rt></ruby>く<span style='color:#d64045'>かたわら</span>ね。",
+            "cn": "作为小说家也发表了精彩的作品呢，他在作为公司职员工作的同时。"
+        },
+        {
+            "jp": "<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>が<ruby>家<rt>か</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>を<ruby>手<rt>て</rt></ruby><ruby>伝<rt>つだ</rt></ruby>う<span style='color:#d64045'>かたわら</span><ruby>続<rt>つづ</rt></ruby>けてきた<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>の<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>が、ついに<ruby>実<rt>み</rt></ruby>を<ruby>結<rt>むす</rt></ruby>んだ。",
+            "cn": "她在帮忙打理家业之余一直坚持的日语学习，终于结出了果实。"
+        },
+        {
+            "jp": "ボランティア<ruby>活<rt>かつ</rt></ruby><ruby>動<rt>どう</rt></ruby>にも<ruby>精<rt>せい</rt></ruby><ruby>力<rt>りょく</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>取<rt>と</rt></ruby>り<ruby>組<rt>く</rt></ruby>んでいるそうだ、<ruby>主<rt>しゅ</rt></ruby><ruby>婦<rt>ふ</rt></ruby>としての<ruby>家<rt>か</rt></ruby><ruby>事<rt>じ</rt></ruby>の<span style='color:#d64045'>かたわら</span>に。",
+            "cn": "听说她还精力充沛地投身于志愿活动，在作为主妇做家务的同时。"
+        },
+        {
+            "jp": "<ruby>俳<rt>はい</rt></ruby><ruby>優<rt>ゆう</rt></ruby>として<ruby>第<rt>だい</rt></ruby><ruby>一<rt>いっ</rt></ruby><ruby>線<rt>せん</rt></ruby>で<ruby>活<rt>かつ</rt></ruby><ruby>躍<rt>やく</rt></ruby>する<span style='color:#d64045'>かたわら</span>、<ruby>彼<rt>かれ</rt></ruby>は<ruby>映<rt>えい</rt></ruby><ruby>画<rt>が</rt></ruby><ruby>監<rt>かん</rt></ruby><ruby>督<rt>とく</rt></ruby>としても<ruby>素<rt>す</rt></ruby><ruby>晴<rt>ば</rt></ruby>らしい<ruby>才<rt>さい</rt></ruby><ruby>能<rt>のう</rt></ruby>を<ruby>発<rt>はっ</rt></ruby><ruby>揮<rt>き</rt></ruby>している。",
+            "cn": "在作为演员活跃于第一线的同时，他作为电影导演也发挥出了卓越的才能。"
+        }
+    ],
+    "98": [
+        {
+            "jp": "<ruby>日<rt>ひ</rt></ruby><ruby>差<rt>ざ</rt></ruby>しがすっかり<ruby>春<rt>はる</rt></ruby><span style='color:#d64045'>めいて</span>きて、<ruby>散<rt>さん</rt></ruby><ruby>歩<rt>ぽ</rt></ruby>に<ruby>出<rt>で</rt></ruby>かけるのが<ruby>楽<rt>たの</rt></ruby>しい<ruby>季<rt>き</rt></ruby><ruby>節<rt>せつ</rt></ruby>になった。",
+            "cn": "阳光已经完全透出春天的气息，到了出门散步会很愉快的季节。"
+        },
+        {
+            "jp": "どこか<ruby>謎<rt>なぞ</rt></ruby><span style='color:#d64045'>めいた</span><ruby>雰<rt>ふん</rt></ruby><ruby>囲<rt>い</rt></ruby><ruby>気<rt>き</rt></ruby>を<ruby>漂<rt>ただよ</rt></ruby>わせているあの<ruby>人<rt>ひと</rt></ruby>に、みんな<ruby>惹<rt>ひ</rt></ruby>きつけられているようだ。",
+            "cn": "大家似乎都被那个散发着些许神秘气息的人给吸引了。"
+        },
+        {
+            "jp": "<ruby>急<rt>きゅう</rt></ruby>に<ruby>朝<rt>あさ</rt></ruby><ruby>晩<rt>ばん</rt></ruby>の<ruby>風<rt>かぜ</rt></ruby>が<ruby>秋<rt>あき</rt></ruby><span style='color:#d64045'>めいて</span>きて、<ruby>少<rt>すこ</rt></ruby>し<ruby>肌<rt>はだ</rt></ruby><ruby>寒<rt>ざむ</rt></ruby>いくらいだ。",
+            "cn": "早晚的风突然带上了秋天的凉意，甚至有点微冷了。"
+        },
+        {
+            "jp": "「お<ruby>見<rt>み</rt></ruby><ruby>事<rt>ごと</rt></ruby>ですね」と<ruby>彼<rt>かれ</rt></ruby>が<ruby>口<rt>くち</rt></ruby>にしたその<ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>は、どうしても<ruby>皮<rt>ひ</rt></ruby><ruby>肉<rt>にく</rt></ruby><span style='color:#d64045'>めいて</span><ruby>聞<rt>き</rt></ruby>こえた。",
+            "cn": "“干得真漂亮啊”，他脱口而出的那句话，怎么听都带着点讽刺的意味。"
+        }
+    ],
+    "99": [
+        {
+            "jp": "<ruby>玄<rt>げん</rt></ruby><ruby>関<rt>かん</rt></ruby>のドアを<ruby>開<rt>あ</rt></ruby>ける<span style='color:#d64045'>や<ruby>否<rt>いな</rt></ruby>や</span>、<ruby>彼<rt>かれ</rt></ruby>はソファーに<ruby>倒<rt>たお</rt></ruby>れ<ruby>込<rt>こ</rt></ruby>んで<ruby>眠<rt>ねむ</rt></ruby>ってしまった。",
+            "cn": "刚一打开玄关的门，他就倒在沙发上睡着了。"
+        },
+        {
+            "jp": "<ruby>授<rt>じゅ</rt></ruby><ruby>業<rt>ぎょう</rt></ruby><ruby>終<rt>しゅう</rt></ruby><ruby>了<rt>りょう</rt></ruby>のチャイムが<ruby>鳴<rt>な</rt></ruby>る<span style='color:#d64045'>や<ruby>否<rt>いな</rt></ruby>や</span>、<ruby>学<rt>がく</rt></ruby><ruby>生<rt>せい</rt></ruby>たちは<ruby>一<rt>いっ</rt></ruby><ruby>斉<rt>せい</rt></ruby>に<ruby>教<rt>きょう</rt></ruby><ruby>室<rt>しつ</rt></ruby>から<ruby>飛<rt>と</rt></ruby>び<ruby>出<rt>だ</rt></ruby>していった。",
+            "cn": "下课铃声刚一响，学生们就齐刷刷地冲出了教室。"
+        },
+        {
+            "jp": "<ruby>私<rt>わたし</rt></ruby>の<ruby>顔<rt>かお</rt></ruby>を<ruby>見<rt>み</rt></ruby>る<span style='color:#d64045'>や<ruby>否<rt>いな</rt></ruby>や</span>、<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>は<ruby>何<rt>なに</rt></ruby>かを<ruby>言<rt>い</rt></ruby>いたげに<ruby>駆<rt>か</rt></ruby>け<ruby>寄<rt>よ</rt></ruby>ってきた。",
+            "cn": "一看到我的脸，她就一副欲言又止的样子跑了过来。"
+        },
+        {
+            "jp": "<ruby>発<rt>はつ</rt></ruby><ruby>売<rt>ばい</rt></ruby>が<ruby>開<rt>かい</rt></ruby><ruby>始<rt>し</rt></ruby>される<span style='color:#d64045'>や<ruby>否<rt>いな</rt></ruby>や</span>、その<ruby>限<rt>げん</rt></ruby><ruby>定<rt>てい</rt></ruby>モデルのパソコンはあっという<ruby>間<rt>ま</rt></ruby>に<ruby>完<rt>かん</rt></ruby><ruby>売<rt>ばい</rt></ruby>した。",
+            "cn": "刚一开始发售，那款限量版的电脑就瞬间售罄了。"
+        }
+    ],
+    "101": [
+        {
+            "jp": "<ruby>光<rt>こう</rt></ruby><ruby>陰<rt>いん</rt></ruby><ruby>矢<rt>や</rt></ruby>の<span style='color:#d64045'>ごとし</span>というが、この<ruby>一<rt>いち</rt></ruby><ruby>年<rt>ねん</rt></ruby>はまさにその<ruby>通<rt>とお</rt></ruby>りだった。",
+            "cn": "常言道光阴似箭，这一年真的是正如这句话一般。"
+        },
+        {
+            "jp": "まるで<ruby>氷<rt>こおり</rt></ruby>の<span style='color:#d64045'>ごとき</span><ruby>冷<rt>つめ</rt></ruby>たい<ruby>視<rt>し</rt></ruby><ruby>線<rt>せん</rt></ruby>で、<ruby>彼<rt>かれ</rt></ruby>は<ruby>私<rt>わたし</rt></ruby>を<ruby>見<rt>み</rt></ruby>つめていた。",
+            "cn": "他用如同冰块一般冰冷的视线注视着我。"
+        },
+        {
+            "jp": "<ruby>激<rt>げき</rt></ruby><ruby>烈<rt>れつ</rt></ruby>なトレーニングの<ruby>後<rt>あと</rt></ruby>、<ruby>滝<rt>たき</rt></ruby>の<span style='color:#d64045'>ごとく</span><ruby>汗<rt>あせ</rt></ruby>が<ruby>流<rt>なが</rt></ruby>れ<ruby>落<rt>お</rt></ruby>ちてきた。",
+            "cn": "激烈的训练之后，汗水如同瀑布一般流了下来。"
+        },
+        {
+            "jp": "<ruby>何<rt>なに</rt></ruby>かに<ruby>追<rt>お</rt></ruby>われるが<span style='color:#d64045'>ごとく</span>、<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>は<ruby>慌<rt>あわ</rt></ruby>ただしく<ruby>部<rt>へ</rt></ruby><ruby>屋<rt>や</rt></ruby>を<ruby>出<rt>で</rt></ruby>ていった。",
+            "cn": "如同被什么东西追赶着似的，她慌慌张张地走出了房间。"
+        }
+    ],
+    "102": [
+        {
+            "jp": "やっと<ruby>雨<rt>あめ</rt></ruby>が<ruby>止<rt>や</rt></ruby>んだ<span style='color:#d64045'>かと<ruby>思<rt>おも</rt></ruby>いきや</span>、また<ruby>激<rt>はげ</rt></ruby>しく<ruby>降<rt>ふ</rt></ruby>り<ruby>出<rt>だ</rt></ruby>してきたではないか。",
+            "cn": "原以为雨终于停了，没想到又猛烈地下了起来。"
+        },
+        {
+            "jp": "<ruby>絶<rt>ぜっ</rt></ruby><ruby>対<rt>たい</rt></ruby>に<ruby>怒<rt>おこ</rt></ruby>られる<span style='color:#d64045'>かと<ruby>思<rt>おも</rt></ruby>いきや</span>、<ruby>逆<rt>ぎゃく</rt></ruby>に「よく<ruby>正<rt>しょう</rt></ruby><ruby>直<rt>じき</rt></ruby>に<ruby>言<rt>い</rt></ruby>った」と<ruby>褒<rt>ほ</rt></ruby>られたのだ。",
+            "cn": "本来以为绝对会被骂，没想到反而被夸奖“难得你这么诚实”。"
+        },
+        {
+            "jp": "<ruby>前<rt>ぜん</rt></ruby><ruby>代<rt>だい</rt></ruby><ruby>未<rt>み</rt></ruby><ruby>聞<rt>もん</rt></ruby>の<ruby>難<rt>なん</rt></ruby><ruby>問<rt>もん</rt></ruby><span style='color:#d64045'>かと<ruby>思<rt>おも</rt></ruby>いきや</span>、<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>を<ruby>変<rt>か</rt></ruby>えればあっさり<ruby>解<rt>と</rt></ruby>ける<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>だった。",
+            "cn": "原以为是前所未闻的难题，没想到只要换个视角就能轻松解开。"
+        },
+        {
+            "jp": "これで<ruby>事<rt>じ</rt></ruby><ruby>件<rt>けん</rt></ruby>も<ruby>解<rt>かい</rt></ruby><ruby>決<rt>けつ</rt></ruby><span style='color:#d64045'>かと<ruby>思<rt>おも</rt></ruby>いきや</span>、さらなる<ruby>黒<rt>くろ</rt></ruby><ruby>幕<rt>まく</rt></ruby>が<ruby>潜<rt>ひそ</rt></ruby>んでいたとは<ruby>驚<rt>おどろ</rt></ruby>きだ。",
+            "cn": "原以为事件到此就解决结案了，没想到背后居然还潜藏着更大的黑幕，真是令人震惊。"
+        }
+    ],
+    "103": [
+        {
+            "jp": "<ruby>難<rt>なん</rt></ruby><ruby>病<rt>びょう</rt></ruby>に<ruby>苦<rt>くる</rt></ruby>しむ<ruby>患<rt>かん</rt></ruby><ruby>者<rt>じゃ</rt></ruby>を<ruby>救<rt>すく</rt></ruby>わ<span style='color:#d64045'>んがため</span>、<ruby>彼<rt>かれ</rt></ruby>は<ruby>私<rt>し</rt></ruby><ruby>財<rt>ざい</rt></ruby>を<ruby>投<rt>なげ</rt></ruby>うって<ruby>研<rt>けん</rt></ruby><ruby>究<rt>きゅう</rt></ruby>を<ruby>続<rt>つづ</rt></ruby>けた。",
+            "cn": "为了拯救饱受疑难杂症折磨的患者，他倾尽家财继续着研究。"
+        },
+        {
+            "jp": "どんな<ruby>卑<rt>ひ</rt></ruby><ruby>怯<rt>きょう</rt></ruby>な<ruby>手<rt>て</rt></ruby>を<ruby>使<rt>つか</rt></ruby>ってでも<ruby>勝<rt>か</rt></ruby>た<span style='color:#d64045'>んがための</span><ruby>作<rt>さく</rt></ruby><ruby>戦<rt>せん</rt></ruby>など、<ruby>誰<rt>だれ</rt></ruby>が<ruby>賛<rt>さん</rt></ruby><ruby>成<rt>せい</rt></ruby>するものか。",
+            "cn": "那种为了赢不择手段（哪怕使用卑鄙手段也要赢）的作战计划，有谁会赞成呢。"
+        },
+        {
+            "jp": "<ruby>生<rt>い</rt></ruby>き<span style='color:#d64045'>んがため</span>とはいえ、<ruby>他<rt>た</rt></ruby><ruby>人<rt>にん</rt></ruby>の<ruby>食<rt>しょく</rt></ruby><ruby>料<rt>りょう</rt></ruby>を<ruby>奪<rt>うば</rt></ruby>うような<ruby>真<rt>ま</rt></ruby><ruby>似<rt>ね</rt></ruby>はしたくない。",
+            "cn": "虽说是为了活下去，但我也不想做出抢夺他人食物的举动。"
+        },
+        {
+            "jp": "<ruby>自<rt>じ</rt></ruby><ruby>国<rt>こく</rt></ruby>の<ruby>利<rt>り</rt></ruby><ruby>益<rt>えき</rt></ruby>を<ruby>守<rt>まも</rt></ruby>ら<span style='color:#d64045'>んがために</span>、<ruby>罪<rt>つみ</rt></ruby>のない<ruby>人<rt>ひと</rt></ruby><ruby>々<rt>びと</rt></ruby>を<ruby>犠<rt>ぎ</rt></ruby><ruby>牲<rt>せい</rt></ruby>にするのは<ruby>許<rt>ゆる</rt></ruby>されない。",
+            "cn": "为了保护本国的利益而让无辜的人们做出牺牲，这是不可原谅的。"
+        }
+    ],
+    "104": [
+        {
+            "jp": "あの<ruby>大<rt>だい</rt></ruby><ruby>事<rt>じ</rt></ruby><ruby>故<rt>こ</rt></ruby>で<ruby>命<rt>いのち</rt></ruby>を<ruby>落<rt>お</rt></ruby>としていたかもしれないなんて、<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>する<span style='color:#d64045'>だに</span><ruby>恐<rt>おそ</rt></ruby>ろしい。",
+            "cn": "在那场大事故中我可能连命都没了，这件事光是想想就觉得后怕。"
+        },
+        {
+            "jp": "<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>がどれほどの<ruby>苦<rt>く</rt></ruby><ruby>労<rt>ろう</rt></ruby>を<ruby>重<rt>かさ</rt></ruby>ねてきたか、それを<ruby>考<rt>かんが</rt></ruby>える<span style='color:#d64045'>だに</span><ruby>胸<rt>むね</rt></ruby>が<ruby>痛<rt>いた</rt></ruby>む。",
+            "cn": "她一路走来到底经历了多少艰辛，光是考虑到这一点就让人心痛。"
+        },
+        {
+            "jp": "まさか<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>がこんな<ruby>大<rt>おお</rt></ruby><ruby>舞<rt>ぶ</rt></ruby><ruby>台<rt>たい</rt></ruby>に<ruby>立<rt>た</rt></ruby>つことになろうとは、<ruby>夢<rt>ゆめ</rt></ruby>に<span style='color:#d64045'>だに</span><ruby>思<rt>おも</rt></ruby>わなかった。",
+            "cn": "我居然能站在这么大的舞台上，真是做梦都没想到过。"
+        },
+        {
+            "jp": "<ruby>周<rt>しゅう</rt></ruby><ruby>囲<rt>い</rt></ruby>がどれほど<ruby>騒<rt>さわ</rt></ruby>ぎ<ruby>立<rt>た</rt></ruby>てようとも、<ruby>彼<rt>かれ</rt></ruby>は<ruby>微<rt>び</rt></ruby><ruby>動<rt>どう</rt></ruby><span style='color:#d64045'>だに</span>せず<ruby>前<rt>まえ</rt></ruby>を<ruby>見<rt>み</rt></ruby>つめていた。",
+            "cn": "不管周围怎么喧闹，他都纹丝不动地注视着前方。"
+        }
+    ],
+    "105": [
+        {
+            "jp": "あの<ruby>温<rt>おん</rt></ruby><ruby>厚<rt>こう</rt></ruby>な<ruby>部<rt>ぶ</rt></ruby><ruby>長<rt>ちょう</rt></ruby>があれほど<ruby>激<rt>げき</rt></ruby><ruby>怒<rt>ど</rt></ruby>するなんて、<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby><span style='color:#d64045'>だにしなかった</span>よ。",
+            "cn": "那个温和的部长居然会发那么大的火，真是连想都没想过啊。"
+        },
+        {
+            "jp": "<ruby>予<rt>よ</rt></ruby><ruby>想<rt>そう</rt></ruby><span style='color:#d64045'>だにしなかった</span>トラブルの<ruby>連<rt>れん</rt></ruby><ruby>続<rt>ぞく</rt></ruby>に、プロジェクトのメンバーは<ruby>頭<rt>あたま</rt></ruby>を<ruby>抱<rt>かか</rt></ruby>えている。",
+            "cn": "面对接连不断、甚至连预料都没预料到的麻烦，项目成员们都愁破了头。"
+        },
+        {
+            "jp": "<ruby>敵<rt>てき</rt></ruby>の<ruby>激<rt>はげ</rt></ruby>しい<ruby>攻<rt>こう</rt></ruby><ruby>撃<rt>げき</rt></ruby>を<ruby>受<rt>う</rt></ruby>けても、<ruby>彼<rt>かれ</rt></ruby>の<ruby>決<rt>けつ</rt></ruby><ruby>意<rt>い</rt></ruby>は<ruby>微<rt>び</rt></ruby><ruby>動<rt>どう</rt></ruby><span style='color:#d64045'>だにしなかった</span>。",
+            "cn": "即使受到敌人猛烈的攻击，他的决心也纹丝不动。"
+        },
+        {
+            "jp": "このような<ruby>事<rt>じ</rt></ruby><ruby>態<rt>たい</rt></ruby>に<ruby>陥<rt>おちい</rt></ruby>るとは、<ruby>数<rt>すう</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>前<rt>まえ</rt></ruby>までは<ruby>誰<rt>だれ</rt></ruby><ruby>一<rt>ひと</rt></ruby><ruby>人<rt>り</rt></ruby>として<ruby>考<rt>かんが</rt></ruby>え<span style='color:#d64045'>だにしなかった</span>だろう。",
+            "cn": "会陷入这样的事态，在几年前大概没有一个人能考虑到吧。"
+        }
+    ],
+    "106": [
+        {
+            "jp": "<ruby>誠<rt>まこと</rt></ruby>に<ruby>申<rt>もう</rt></ruby>し<ruby>訳<rt>わけ</rt></ruby>ございませんが、ご<ruby>要<rt>よう</rt></ruby><ruby>望<rt>ぼう</rt></ruby>の<ruby>件<rt>けん</rt></ruby>につきましては<ruby>対<rt>たい</rt></ruby><ruby>応<rt>おう</rt></ruby>し<span style='color:#d64045'>かねます</span>。",
+            "cn": "非常抱歉，关于您要求的这件事，我们难以办理。"
+        },
+        {
+            "jp": "<ruby>彼<rt>かれ</rt></ruby>のやり<ruby>方<rt>かた</rt></ruby>にはどうしても<ruby>賛<rt>さん</rt></ruby><ruby>成<rt>せい</rt></ruby>し<span style='color:#d64045'>かねる</span><ruby>部<rt>ぶ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>があり、<ruby>最<rt>さい</rt></ruby><ruby>後<rt>ご</rt></ruby>まで<ruby>納<rt>なっ</rt></ruby><ruby>得<rt>とく</rt></ruby>できなかった。",
+            "cn": "他的做法里无论如何都有让我难以赞成的部分，直到最后我也没能想通。"
+        },
+        {
+            "jp": "どちらの<ruby>条<rt>じょう</rt></ruby><ruby>件<rt>けん</rt></ruby>も<ruby>魅<rt>み</rt></ruby><ruby>力<rt>りょく</rt></ruby><ruby>的<rt>てき</rt></ruby>で、<ruby>最<rt>さい</rt></ruby><ruby>後<rt>ご</rt></ruby>まで<ruby>結<rt>けつ</rt></ruby><ruby>論<rt>ろん</rt></ruby>を<ruby>出<rt>だ</rt></ruby>し<span style='color:#d64045'>かねて</span>いる<ruby>様<rt>よう</rt></ruby><ruby>子<rt>し</rt></ruby>だった。",
+            "cn": "两个条件都很有吸引力，他看起来直到最后都在难以抉择。"
+        },
+        {
+            "jp": "その<ruby>件<rt>けん</rt></ruby>に<ruby>関<rt>かん</rt></ruby>しては<ruby>私<rt>わたし</rt></ruby>の<ruby>一<rt>いち</rt></ruby><ruby>存<rt>ぞん</rt></ruby>では<ruby>決<rt>き</rt></ruby>め<span style='color:#d64045'>かねます</span>ので、<ruby>上<rt>じょう</rt></ruby><ruby>司<rt>し</rt></ruby>と<ruby>相<rt>そう</rt></ruby><ruby>談<rt>だん</rt></ruby>させてください。",
+            "cn": "关于那件事，凭我个人的判断难以决定，所以请允许我和上司商量一下。"
+        }
+    ],
+    "107": [
+        {
+            "jp": "<ruby>健康上<rt>けんこうじょう</rt></ruby>の<ruby>理由<rt>りゆう</rt></ruby>から、<ruby>今日<rt>きょう</rt></ruby><span style='color:#d64045'>を<ruby>限<rt>かぎ</rt></ruby>りに</span>きっぱりと<ruby>酒<rt>さけ</rt></ruby>を<ruby>断<rt>た</rt></ruby>つと<ruby>家族<rt>かぞく</rt></ruby>に<ruby>約束<rt>やくそく</rt></ruby>したんだ。",
+            "cn": "出于健康考虑，我向家人保证过了今天就彻底戒酒。"
+        },
+        {
+            "jp": "<ruby>今<rt>こん</rt></ruby><ruby>月<rt>げつ</rt></ruby><ruby>末<rt>まつ</rt></ruby><span style='color:#d64045'>を<ruby>限<rt>かぎ</rt></ruby>りに</span><ruby>長<rt>なが</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>勤<rt>つと</rt></ruby>めた<ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby>を<ruby>辞<rt>や</rt></ruby>め、<ruby>田<rt>いな</rt></ruby><ruby>舎<rt>か</rt></ruby>で<ruby>農<rt>のう</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>を<ruby>始<rt>はじ</rt></ruby>めるつもりだ。",
+            "cn": "我打算在这个月底，辞去工作多年的公司，在乡下开始务农。"
+        },
+        {
+            "jp": "<ruby>本<rt>ほん</rt></ruby><ruby>日<rt>じつ</rt></ruby><span style='color:#d64045'><ruby>限<rt>かぎ</rt></ruby>りで</span>この<ruby>店<rt>てん</rt></ruby><ruby>舗<rt>ぽ</rt></ruby>は<ruby>閉<rt>へい</rt></ruby><ruby>店<rt>てん</rt></ruby>となりますが、<ruby>長<rt>なが</rt></ruby>らくのご<ruby>愛<rt>あい</rt></ruby><ruby>顧<rt>こ</rt></ruby>に<ruby>感<rt>かん</rt></ruby><ruby>謝<rt>しゃ</rt></ruby><ruby>申<rt>もう</rt></ruby>し<ruby>上<rt>あ</rt></ruby>げます。",
+            "cn": "本店到今天为止就关门停业了，感谢大家长久以来的惠顾。"
+        },
+        {
+            "jp": "<ruby>残<rt>ざん</rt></ruby><ruby>念<rt>ねん</rt></ruby>だよ、あの<ruby>名<rt>めい</rt></ruby><ruby>作<rt>さく</rt></ruby>シリーズが<ruby>今<rt>こん</rt></ruby><ruby>期<rt>き</rt></ruby>の<ruby>放<rt>ほう</rt></ruby><ruby>送<rt>そう</rt></ruby><span style='color:#d64045'>を<ruby>限<rt>かぎ</rt></ruby>りに</span><ruby>終<rt>しゅう</rt></ruby><ruby>了<rt>りょう</rt></ruby>してしまうなんて。",
+            "cn": "真是遗憾啊，那个名作系列居然在本期的播出之后就结束了。"
+        }
+    ],
+    "108": [
+        {
+            "jp": "30キロ<span style='color:#d64045'>からある</span><ruby>荷<rt>に</rt></ruby><ruby>物<rt>もつ</rt></ruby>を<ruby>一<rt>ひと</rt></ruby><ruby>人<rt>り</rt></ruby>で<ruby>運<rt>はこ</rt></ruby>ぶなんて、<ruby>絶<rt>ぜっ</rt></ruby><ruby>対<rt>たい</rt></ruby>に<ruby>無<rt>む</rt></ruby><ruby>理<rt>り</rt></ruby>だ。",
+            "cn": "一个人搬运重达30公斤的行李，绝对是不可能的。"
+        },
+        {
+            "jp": "100<ruby>万<rt>まん</rt></ruby><ruby>円<rt>えん</rt></ruby><span style='color:#d64045'>からする</span><ruby>腕<rt>うで</rt></ruby><ruby>時<rt>ど</rt></ruby><ruby>計<rt>けい</rt></ruby>をポンと<ruby>買<rt>か</rt></ruby>えるなんて、どんな<ruby>金<rt>かね</rt></ruby><ruby>持<rt>も</rt></ruby>ちなんだろう。",
+            "cn": "居然能随手买下高达100万日元的手表，到底是什么样的有钱人啊。"
+        },
+        {
+            "jp": "<ruby>会<rt>かい</rt></ruby><ruby>場<rt>じょう</rt></ruby>には1<ruby>万<rt>まん</rt></ruby><ruby>人<rt>にん</rt></ruby><span style='color:#d64045'>からいる</span>ファンが<ruby>詰<rt>つ</rt></ruby>めかけ、<ruby>熱<rt>ねっ</rt></ruby><ruby>気<rt>き</rt></ruby>に<ruby>包<rt>つつ</rt></ruby>まれていた。",
+            "cn": "会场挤满了足足一万多名粉丝，现场洋溢着狂热的气氛。"
+        },
+        {
+            "jp": "50キロ<span style='color:#d64045'>からある</span><ruby>山<rt>やま</rt></ruby><ruby>道<rt>みち</rt></ruby>を<ruby>歩<rt>ある</rt></ruby>き<ruby>通<rt>とお</rt></ruby>した<ruby>彼<rt>かれ</rt></ruby>の<ruby>体<rt>たい</rt></ruby><ruby>力<rt>りょく</rt></ruby>には、ただ<ruby>驚<rt>おどろ</rt></ruby>くばかりだ。",
+            "cn": "他居然走完了长达50公里的山路，这等体力真让人惊叹。"
+        }
+    ],
+    "109": [
+        {
+            "jp": "<ruby>人<rt>ひと</rt></ruby>の<ruby>命<rt>いのち</rt></ruby><span style='color:#d64045'>にかかわる</span><ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>なのだから、もっと<ruby>真<rt>しん</rt></ruby><ruby>剣<rt>けん</rt></ruby>に<ruby>話<rt>はな</rt></ruby>し<ruby>合<rt>あ</rt></ruby>うべきだ。",
+            "cn": "这可是关乎人命的问题，我们应该更认真地讨论。"
+        },
+        {
+            "jp": "これは<ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby>の<ruby>信<rt>しん</rt></ruby><ruby>用<rt>よう</rt></ruby><span style='color:#d64045'>にかかわる</span><ruby>重<rt>じゅう</rt></ruby><ruby>大<rt>だい</rt></ruby>なミスなので、<ruby>絶<rt>ぜっ</rt></ruby><ruby>対<rt>たい</rt></ruby>に<ruby>隠<rt>かく</rt></ruby>してはいけない。",
+            "cn": "这是关系到公司信誉的重大失误，绝对不能隐瞒。"
+        },
+        {
+            "jp": "プライバシー<span style='color:#d64045'>にかかわる</span>ことには、あまり<ruby>深<rt>ふか</rt></ruby><ruby>入<rt>い</rt></ruby>りしないほうがいいよ。",
+            "cn": "涉及隐私的事情，最好还是不要过多干涉。"
+        },
+        {
+            "jp": "<ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>の<ruby>将<rt>しょう</rt></ruby><ruby>来<rt>らい</rt></ruby><span style='color:#d64045'>にかかわる</span><ruby>決<rt>けつ</rt></ruby><ruby>断<rt>だん</rt></ruby>だからこそ、<ruby>親<rt>おや</rt></ruby>としても<ruby>慎<rt>しん</rt></ruby><ruby>重<rt>ちょう</rt></ruby>にならざるを<ruby>得<rt>え</rt></ruby>ない。",
+            "cn": "正因为是关系到孩子未来的决断，作为父母也不得不慎重对待。"
+        }
+    ],
+    "110": [
+        {
+            "jp": "このような<ruby>緊<rt>きん</rt></ruby><ruby>急<rt>きゅう</rt></ruby><ruby>事<rt>じ</rt></ruby><ruby>態<rt>たい</rt></ruby><span style='color:#d64045'>にあって</span>、<ruby>彼<rt>かれ</rt></ruby>は<ruby>驚<rt>おどろ</rt></ruby>くほど<ruby>冷<rt>れい</rt></ruby><ruby>静<rt>せい</rt></ruby>な<ruby>判<rt>はん</rt></ruby><ruby>断<rt>だん</rt></ruby>を<ruby>下<rt>くだ</rt></ruby>した。",
+            "cn": "处于这样的紧急事态下，他却做出了令人惊讶的冷静判断。"
+        },
+        {
+            "jp": "<ruby>激<rt>げき</rt></ruby><ruby>動<rt>どう</rt></ruby>の<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby><span style='color:#d64045'>にあって</span>も、<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>の<ruby>信<rt>しん</rt></ruby><ruby>念<rt>ねん</rt></ruby>が<ruby>揺<rt>ゆ</rt></ruby>らぐことは<ruby>一<rt>いち</rt></ruby><ruby>度<rt>ど</rt></ruby>もなかった。",
+            "cn": "即便身处动荡的时代，她的信念也一次都不曾动摇过。"
+        },
+        {
+            "jp": "トップの<ruby>地<rt>ち</rt></ruby><ruby>位<rt>い</rt></ruby><span style='color:#d64045'>にあって</span>なお、<ruby>驕<rt>おご</rt></ruby>ることなく<ruby>努<rt>ど</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<ruby>続<rt>つづ</rt></ruby>ける<ruby>姿<rt>し</rt></ruby><ruby>勢<rt>せい</rt></ruby>は<ruby>立<rt>りっ</rt></ruby><ruby>派<rt>ぱ</rt></ruby>だ。",
+            "cn": "身处最高地位却依然不骄不躁、持续努力的态度，真是令人钦佩。"
+        },
+        {
+            "jp": "グローバル<ruby>化<rt>か</rt></ruby>が<ruby>進<rt>すす</rt></ruby>む<ruby>現<rt>げん</rt></ruby><ruby>代<rt>だい</rt></ruby><span style='color:#d64045'>にあって</span>、<ruby>語<rt>ご</rt></ruby><ruby>学<rt>がく</rt></ruby><ruby>力<rt>りょく</rt></ruby>は<ruby>必<rt>ひっ</rt></ruby><ruby>須<rt>す</rt></ruby>のスキルと<ruby>言<rt>い</rt></ruby>えるだろう。",
+            "cn": "在全球化不断推进的现代社会，语言能力可以说是必备的技能。"
+        }
+    ],
+    "111": [
+        {
+            "jp": "<ruby>考<rt>かんが</rt></ruby>え<span style='color:#d64045'>ようによっては</span>、<ruby>今<rt>こん</rt></ruby><ruby>回<rt>かい</rt></ruby>の<ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>もいい<ruby>経<rt>けい</rt></ruby><ruby>験<rt>けん</rt></ruby>になったと<ruby>言<rt>い</rt></ruby>えるのではないか。",
+            "cn": "换个角度想，这次的失败也可以说是一次宝贵的经验吧。"
+        },
+        {
+            "jp": "この<ruby>古<rt>ふる</rt></ruby>い<ruby>道<rt>どう</rt></ruby><ruby>具<rt>ぐ</rt></ruby>も、<ruby>使<rt>つか</rt></ruby>い<span style='color:#d64045'>ようによっては</span>まだまだ<ruby>十<rt>じゅう</rt></ruby><ruby>分<rt>ぶん</rt></ruby>に<ruby>役<rt>やく</rt></ruby><ruby>立<rt>だ</rt></ruby>つはずだ。",
+            "cn": "这件旧工具，根据使用方法的不同，应该还能发挥很大的作用。"
+        },
+        {
+            "jp": "<ruby>言<rt>い</rt></ruby>い<span style='color:#d64045'>ようによっては</span><ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>をひどく<ruby>傷<rt>きず</rt></ruby>つけてしまうから、<ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby><ruby>選<rt>えら</rt></ruby>びには<ruby>気<rt>き</rt></ruby>をつけなさい。",
+            "cn": "说话方式不当的话会严重伤害到对方，所以请注意你的措辞。"
+        },
+        {
+            "jp": "どんなピンチだってチャンスに<ruby>変<rt>か</rt></ruby>えられるさ、やり<span style='color:#d64045'>ようによっては</span>ね。",
+            "cn": "任何危机都能化为转机的，只要看你怎么去处理啦。"
+        }
+    ],
+    "112": [
+        {
+            "jp": "<ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby><ruby>者<rt>しゃ</rt></ruby><ruby>以<rt>い</rt></ruby><ruby>外<rt>がい</rt></ruby>この<ruby>部<rt>へ</rt></ruby><ruby>屋<rt>や</rt></ruby>に<ruby>入<rt>はい</rt></ruby>る<span style='color:#d64045'>べからず</span>。",
+            "cn": "非工作人员严禁入内。"
+        },
+        {
+            "jp": "<ruby>働<rt>はたら</rt></ruby>かざる<ruby>者<rt>もの</rt></ruby><ruby>食<rt>く</rt></ruby>う<span style='color:#d64045'>べからず</span>と、<ruby>昔<rt>むかし</rt></ruby>からよく<ruby>言<rt>い</rt></ruby>ったものだ。",
+            "cn": "老话常说，不劳动者不得食。"
+        },
+        {
+            "jp": "これは<ruby>私<rt>わたし</rt></ruby>たちの<ruby>長<rt>なが</rt></ruby>い<ruby>人<rt>じん</rt></ruby><ruby>生<rt>せい</rt></ruby>において、<ruby>決<rt>けっ</rt></ruby>して<ruby>忘<rt>わす</rt></ruby>れる<span style='color:#d64045'>べからざる</span><ruby>教<rt>きょう</rt></ruby><ruby>訓<rt>くん</rt></ruby>である。",
+            "cn": "这是我们在漫长人生中绝不能忘记的教训。"
+        },
+        {
+            "jp": "<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>利<rt>り</rt></ruby><ruby>益<rt>えき</rt></ruby>のために<ruby>他<rt>た</rt></ruby><ruby>人<rt>にん</rt></ruby>を<ruby>騙<rt>だま</rt></ruby>すなんて、<ruby>全<rt>まった</rt></ruby>く<ruby>許<rt>ゆる</rt></ruby>す<span style='color:#d64045'>べからざる</span><ruby>行<rt>こう</rt></ruby><ruby>為<rt>い</rt></ruby>だ。",
+            "cn": "为了个人利益去欺骗他人，这种行为绝对不可原谅。"
+        }
+    ],
+    "113": [
+        {
+            "jp": "<ruby>我<rt>わ</rt></ruby>々はただ、この<ruby>計<rt>けい</rt></ruby><ruby>画<rt>かく</rt></ruby>が<ruby>無<rt>む</rt></ruby><ruby>事<rt>じ</rt></ruby>に<ruby>成<rt>せい</rt></ruby><ruby>功<rt>こう</rt></ruby>することを<ruby>祈<rt>いの</rt></ruby>る<span style='color:#d64045'>のみ</span>だ。",
+            "cn": "我们现在只能祈祷计划能顺利成功。"
+        },
+        {
+            "jp": "<ruby>今<rt>こん</rt></ruby><ruby>回<rt>かい</rt></ruby>の<ruby>採<rt>さい</rt></ruby><ruby>用<rt>よう</rt></ruby>は、<ruby>実<rt>じつ</rt></ruby><ruby>務<rt>む</rt></ruby><ruby>経<rt>けい</rt></ruby><ruby>験<rt>けん</rt></ruby>のある<ruby>方<rt>かた</rt></ruby><span style='color:#d64045'>のみ</span>を<ruby>対<rt>たい</rt></ruby><ruby>象<rt>しょう</rt></ruby>とさせていただきます。",
+            "cn": "本次招聘仅面向有实际工作经验的人员。"
+        },
+        {
+            "jp": "<ruby>彼<rt>かれ</rt></ruby>が<ruby>残<rt>のこ</rt></ruby>してくれたのは、わずかな<ruby>貯<rt>ちょ</rt></ruby><ruby>金<rt>きん</rt></ruby>とこの<ruby>古<rt>ふる</rt></ruby>い<ruby>家<rt>いえ</rt></ruby><span style='color:#d64045'>のみ</span>だった。",
+            "cn": "他留下来的，只有一点点存款和这栋老房子。"
+        },
+        {
+            "jp": "<ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>を<ruby>恐<rt>おそ</rt></ruby>れていては<ruby>何<rt>なに</rt></ruby>も<ruby>始<rt>はじ</rt></ruby>まらない、ただ<ruby>前<rt>まえ</rt></ruby>へ<ruby>進<rt>すす</rt></ruby>む<span style='color:#d64045'>のみ</span>である。",
+            "cn": "害怕失败的话就什么也干不成，唯有不断向前。"
+        }
+    ],
+    "114": [
+        {
+            "jp": "<ruby>優<rt>やさ</rt></ruby>しすぎる<span style='color:#d64045'>がゆえに</span>、<ruby>彼<rt>かれ</rt></ruby>はいつも<ruby>貧<rt>びん</rt></ruby><ruby>乏<rt>ぼう</rt></ruby>くじを<ruby>引<rt>ひ</rt></ruby>いてしまうようだ。",
+            "cn": "也许是因为太心软了，他总是吃亏。"
+        },
+        {
+            "jp": "トップアイドル<span style='color:#d64045'>ゆえの</span><ruby>苦<rt>く</rt></ruby><ruby>悩<rt>のう</rt></ruby>は、<ruby>一<rt>いっ</rt></ruby><ruby>般<rt>ぱん</rt></ruby><ruby>人<rt>じん</rt></ruby>にはなかなか<ruby>理<rt>り</rt></ruby><ruby>解<rt>かい</rt></ruby>できないだろう。",
+            "cn": "顶流偶像的烦恼，普通人大概很难体会吧。"
+        },
+        {
+            "jp": "<ruby>美<rt>うつく</rt></ruby>しい<span style='color:#d64045'>がゆえに</span><ruby>狙<rt>ねら</rt></ruby>われやすいというのも、また<ruby>悲<rt>ひ</rt></ruby><ruby>劇<rt>げき</rt></ruby>なのだ。",
+            "cn": "正因为美丽才容易被盯上，这也是一种悲哀。"
+        },
+        {
+            "jp": "<ruby>新<rt>あたら</rt></ruby>しいことに<ruby>挑<rt>ちょう</rt></ruby><ruby>戦<rt>せん</rt></ruby>した<span style='color:#d64045'>がゆえの</span><ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>ならば、<ruby>誰<rt>だれ</rt></ruby>も<ruby>責<rt>せ</rt></ruby>めることはできない。",
+            "cn": "如果是为了尝试新事物而失败，那谁也没资格指责。"
+        }
+    ],
+    "115": [
+        {
+            "jp": "<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>の<ruby>生<rt>う</rt></ruby>まれもった<ruby>才<rt>さい</rt></ruby><ruby>能<rt>のう</rt></ruby>は、<ruby>血<rt>ち</rt></ruby>の<ruby>滲<rt>にじ</rt></ruby>むような<ruby>努<rt>ど</rt></ruby><ruby>力<rt>りょく</rt></ruby><span style='color:#d64045'>と<ruby>相<rt>あい</rt></ruby>まって</span><ruby>見<rt>み</rt></ruby><ruby>事<rt>ごと</rt></ruby>に<ruby>開<rt>かい</rt></ruby><ruby>花<rt>か</rt></ruby>した。",
+            "cn": "她与生俱来的天赋加上刻苦的努力，最终完美绽放。"
+        },
+        {
+            "jp": "<ruby>青<rt>あお</rt></ruby>い<ruby>空<rt>そら</rt></ruby>と<ruby>澄<rt>す</rt></ruby>んだ<ruby>海<rt>うみ</rt></ruby>が、<ruby>白<rt>しろ</rt></ruby>い<ruby>砂<rt>すな</rt></ruby><ruby>浜<rt>はま</rt></ruby><span style='color:#d64045'>と<ruby>相<rt>あい</rt></ruby>まって</span>まるで<ruby>絵<rt>え</rt></ruby><ruby>画<rt>が</rt></ruby>のような<ruby>美<rt>うつく</rt></ruby>しさだ。",
+            "cn": "蓝天碧海与白沙滩交相辉映，美得就像一幅画。"
+        },
+        {
+            "jp": "<ruby>円<rt>えん</rt></ruby><ruby>安<rt>やす</rt></ruby>の<ruby>影<rt>えい</rt></ruby><ruby>響<rt>きょう</rt></ruby>が<ruby>原<rt>げん</rt></ruby><ruby>油<rt>ゆ</rt></ruby><ruby>高<rt>だか</rt></ruby><span style='color:#d64045'>と<ruby>相<rt>あい</rt></ruby>まって</span>、<ruby>物<rt>ぶっ</rt></ruby><ruby>価<rt>か</rt></ruby>の<ruby>上<rt>じょう</rt></ruby><ruby>昇<rt>しょう</rt></ruby>に<ruby>歯<rt>は</rt></ruby><ruby>止<rt>ど</rt></ruby>めがかからない。",
+            "cn": "受日元贬值和油价飙升的双重影响，物价上涨已经快要失控了。"
+        },
+        {
+            "jp": "<ruby>厳<rt>きび</rt></ruby>しい<ruby>指<rt>し</rt></ruby><ruby>導<rt>どう</rt></ruby>の<ruby>中<rt>なか</rt></ruby>に<ruby>見<rt>み</rt></ruby>せる<ruby>優<rt>やさ</rt></ruby>しさが、<ruby>彼<rt>かれ</rt></ruby>の<ruby>人<rt>じん</rt></ruby><ruby>柄<rt>がら</rt></ruby><span style='color:#d64045'>と<ruby>相<rt>あい</rt></ruby>まって</span><ruby>学<rt>がく</rt></ruby><ruby>生<rt>せい</rt></ruby>たちから<ruby>慕<rt>した</rt></ruby>われている。",
+            "cn": "严厉指导中流露出的温柔，再加上他本身的人品，让他深受学生们的爱戴。"
+        }
+    ],
+    "116": [
+        {
+            "jp": "<ruby>愛<rt>あい</rt></ruby><ruby>犬<rt>けん</rt></ruby>を<ruby>亡<rt>な</rt></ruby>くした<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>の<ruby>悲<rt>かな</rt></ruby>しみは、<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby><span style='color:#d64045'>にかたくない</span>。",
+            "cn": "失去了爱犬，她内心的悲痛可想而知。"
+        },
+        {
+            "jp": "<ruby>異<rt>い</rt></ruby><ruby>国<rt>こく</rt></ruby>の<ruby>地<rt>ち</rt></ruby>でたった<ruby>一<rt>ひと</rt></ruby><ruby>人<rt>り</rt></ruby>で<ruby>育<rt>そだ</rt></ruby><ruby>児<rt>じ</rt></ruby>をする<ruby>苦<rt>く</rt></ruby><ruby>労<rt>ろう</rt></ruby>は、<ruby>察<rt>さっ</rt></ruby>する<span style='color:#d64045'>にかたくない</span>だろう。",
+            "cn": "独自一人在异国他乡带孩子有多辛苦，完全不难体会。"
+        },
+        {
+            "jp": "これだけの<ruby>証<rt>しょう</rt></ruby><ruby>拠<rt>こ</rt></ruby>が<ruby>揃<rt>そろ</rt></ruby>っていれば、<ruby>彼<rt>かれ</rt></ruby>が<ruby>犯<rt>はん</rt></ruby><ruby>人<rt>にん</rt></ruby>だと<ruby>皆<rt>みな</rt></ruby>が<ruby>疑<rt>うたが</rt></ruby>うのも<ruby>理<rt>り</rt></ruby><ruby>解<rt>かい</rt></ruby><span style='color:#d64045'>にかたくない</span>。",
+            "cn": "证据都已经这么确凿了，大家会怀疑他是凶手也合情合理。"
+        },
+        {
+            "jp": "どんなに<ruby>悔<rt>くや</rt></ruby>しい<ruby>思<rt>おも</rt></ruby>いをしたか、あの<ruby>涙<rt>なみだ</rt></ruby>を<ruby>見<rt>み</rt></ruby>れば<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby><span style='color:#d64045'>にかたくない</span>はずだ。",
+            "cn": "看到他流下的眼泪，就不难想象他心里有多么不甘。"
+        }
+    ],
+    "117": [
+        {
+            "jp": "<ruby>患<rt>かん</rt></ruby><ruby>者<rt>じゃ</rt></ruby>の<ruby>命<rt>いのち</rt></ruby>を<ruby>軽<rt>けい</rt></ruby><ruby>視<rt>し</rt></ruby>するなんて、<ruby>医<rt>い</rt></ruby><ruby>者<rt>しゃ</rt></ruby><span style='color:#d64045'>としてあるまじき</span><ruby>行<rt>こう</rt></ruby><ruby>為<rt>い</rt></ruby>だ。",
+            "cn": "居然草菅人命，这根本就不配当个医生。"
+        },
+        {
+            "jp": "<ruby>公<rt>おおやけ</rt></ruby>の<ruby>場<rt>ば</rt></ruby>でのあのような<ruby>暴<rt>ぼう</rt></ruby><ruby>言<rt>げん</rt></ruby>は、<ruby>政<rt>せい</rt></ruby><ruby>治<rt>じ</rt></ruby><ruby>家<rt>か</rt></ruby><span style='color:#d64045'>にあるまじき</span><ruby>態<rt>たい</rt></ruby><ruby>度<rt>ど</rt></ruby>だ。",
+            "cn": "在公开场合口出狂言，这种做派岂是政治家所为。"
+        },
+        {
+            "jp": "カンニングをするとは、<ruby>学<rt>がく</rt></ruby><ruby>生<rt>せい</rt></ruby><span style='color:#d64045'>にあるまじき</span><ruby>卑<rt>ひ</rt></ruby><ruby>劣<rt>れつ</rt></ruby>な<ruby>行<rt>おこな</rt></ruby>いである。",
+            "cn": "考试作弊，简直是身为学生绝不该有的恶劣行径。"
+        },
+        {
+            "jp": "データの<ruby>改<rt>かい</rt></ruby>ざんなど、<ruby>研<rt>けん</rt></ruby><ruby>究<rt>きゅう</rt></ruby><ruby>者<rt>しゃ</rt></ruby><span style='color:#d64045'>としてあるまじき</span>ことだ。",
+            "cn": "篡改数据这种事，对于科研人员来说是绝不能碰的高压线。"
+        }
+    ],
+    "118": [
+        {
+            "jp": "これほどの<ruby>損<rt>そん</rt></ruby><ruby>害<rt>がい</rt></ruby>を<ruby>与<rt>あた</rt></ruby>えたのだから、<ruby>社<rt>しゃ</rt></ruby><ruby>長<rt>ちょう</rt></ruby>が<ruby>自<rt>みずか</rt></ruby>ら<ruby>謝<rt>しゃ</rt></ruby><ruby>罪<rt>ざい</rt></ruby>せ<span style='color:#d64045'>ずにはすまない</span>だろう。",
+            "cn": "造成了这么大的损失，总裁不亲自出面道歉肯定是过不了关的。"
+        },
+        {
+            "jp": "<ruby>人<rt>ひと</rt></ruby>の<ruby>車<rt>くるま</rt></ruby>をこんなに<ruby>傷<rt>きず</rt></ruby>つけてしまっては、<ruby>修<rt>しゅう</rt></ruby><ruby>理<rt>り</rt></ruby><ruby>代<rt>だい</rt></ruby>を<ruby>払<rt>はら</rt></ruby>わ<span style='color:#d64045'>ずにはすまない</span>。",
+            "cn": "把人家的车刮成这样，不赔修理费绝对说不过去。"
+        },
+        {
+            "jp": "あの<ruby>不<rt>ふ</rt></ruby><ruby>祥<rt>しょう</rt></ruby><ruby>事<rt>じ</rt></ruby>が<ruby>明<rt>あき</rt></ruby>るみに<ruby>出<rt>で</rt></ruby>た<ruby>以<rt>い</rt></ruby><ruby>上<rt>じょう</rt></ruby>、<ruby>彼<rt>かれ</rt></ruby>は<ruby>辞<rt>じ</rt></ruby><ruby>任<rt>にん</rt></ruby>せ<span style='color:#d64045'>ずにはすまない</span>はずだ。",
+            "cn": "既然那件丑闻已经被曝光，他除了引咎辞职别无他法。"
+        },
+        {
+            "jp": "<ruby>絶<rt>ぜっ</rt></ruby><ruby>対<rt>たい</rt></ruby>に<ruby>責<rt>せき</rt></ruby><ruby>任<rt>にん</rt></ruby>を<ruby>取<rt>と</rt></ruby>ら<span style='color:#d64045'>ずにはすまない</span>よ、ここまで<ruby>事<rt>じ</rt></ruby><ruby>態<rt>たい</rt></ruby>を<ruby>悪<rt>あっ</rt></ruby><ruby>化<rt>か</rt></ruby>させたからには。",
+            "cn": "既然你把事情搞得这么糟，这责任你绝对跑不了。"
+        }
+    ],
+    "119": [
+        {
+            "jp": "<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>命<rt>いのち</rt></ruby>を<ruby>犠<rt>ぎ</rt></ruby><ruby>牲<rt>せい</rt></ruby>にしてまで<ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>を<ruby>守<rt>まも</rt></ruby>る、これが<ruby>親<rt>おや</rt></ruby>の<ruby>愛<rt>あい</rt></ruby><span style='color:#d64045'>でなくてなんだろう</span>。",
+            "cn": "宁愿牺牲自己的生命也要保护孩子，这如果不是伟大的母爱，还能是什么呢。"
+        },
+        {
+            "jp": "<ruby>絶<rt>ぜつ</rt></ruby><ruby>望<rt>ぼう</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>状<rt>じょう</rt></ruby><ruby>況<rt>きょう</rt></ruby>から<ruby>見<rt>み</rt></ruby><ruby>事<rt>ごと</rt></ruby>に<ruby>生<rt>せい</rt></ruby><ruby>還<rt>かん</rt></ruby>できたなんて、これが<ruby>奇<rt>き</rt></ruby><ruby>跡<rt>せき</rt></ruby><span style='color:#d64045'>でなくてなんだろう</span>。",
+            "cn": "居然能从如此绝望的处境中奇迹生还，这简直就是个奇迹。"
+        },
+        {
+            "jp": "<ruby>何<rt>なん</rt></ruby><ruby>度<rt>ど</rt></ruby>も<ruby>別<rt>わか</rt></ruby>れを<ruby>経<rt>けい</rt></ruby><ruby>験<rt>けん</rt></ruby>しながらまた<ruby>巡<rt>めぐ</rt></ruby>り<ruby>会<rt>あ</rt></ruby>うなんて、これが<ruby>運<rt>うん</rt></ruby><ruby>命<rt>めい</rt></ruby><span style='color:#d64045'>でなくてなんだろう</span>。",
+            "cn": "经历了那么多次离别却还能再次重逢，这绝对是命中注定啊。"
+        },
+        {
+            "jp": "<ruby>一<rt>いち</rt></ruby><ruby>度<rt>ど</rt></ruby><ruby>聞<rt>き</rt></ruby>いただけで<ruby>完<rt>かん</rt></ruby><ruby>璧<rt>ぺき</rt></ruby>に<ruby>弾<rt>ひ</rt></ruby>きこなすなんて、<ruby>彼<rt>かれ</rt></ruby>が<ruby>天<rt>てん</rt></ruby><ruby>才<rt>さい</rt></ruby><span style='color:#d64045'>でなくてなんだろう</span>。",
+            "cn": "仅仅听了一遍就能完美弹奏出来，他不是天才谁是天才。"
+        }
+    ],
+    "120": [
+        {
+            "jp": "<ruby>台<rt>たい</rt></ruby><ruby>風<rt>ふう</rt></ruby>が<ruby>接<rt>せっ</rt></ruby><ruby>近<rt>きん</rt></ruby>しているのに<ruby>海<rt>うみ</rt></ruby>に<ruby>出<rt>で</rt></ruby>るなんて、<ruby>危<rt>き</rt></ruby><ruby>険<rt>けん</rt></ruby><span style='color:#d64045'><ruby>極<rt>きわ</rt></ruby>まりない</span><ruby>行<rt>こう</rt></ruby><ruby>為<rt>い</rt></ruby>だ。",
+            "cn": "台风逼近的时候还敢出海，简直是危险到了极点。"
+        },
+        {
+            "jp": "<ruby>夜<rt>よ</rt></ruby><ruby>中<rt>なか</rt></ruby>に<ruby>大<rt>おお</rt></ruby><ruby>声<rt>ごえ</rt></ruby>で<ruby>騒<rt>さわ</rt></ruby>ぐとは、<ruby>近<rt>きん</rt></ruby><ruby>所<rt>じょ</rt></ruby><ruby>迷<rt>めい</rt></ruby><ruby>惑<rt>わく</rt></ruby><span style='color:#d64045'><ruby>極<rt>きわ</rt></ruby>まりない</span>。",
+            "cn": "大半夜的大声喧哗，实在是太扰民了。"
+        },
+        {
+            "jp": "<ruby>初<rt>しょ</rt></ruby><ruby>対<rt>たい</rt></ruby><ruby>面<rt>めん</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>に<ruby>向<rt>む</rt></ruby>かってそんな<ruby>質<rt>しつ</rt></ruby><ruby>問<rt>もん</rt></ruby>をするとは、<ruby>失<rt>しつ</rt></ruby><ruby>礼<rt>れい</rt></ruby><span style='color:#d64045'><ruby>極<rt>きわ</rt></ruby>まる</span>。",
+            "cn": "对着初次见面的人问那种问题，真是极其无礼。"
+        },
+        {
+            "jp": "<ruby>罪<rt>つみ</rt></ruby>のない<ruby>市<rt>し</rt></ruby><ruby>民<rt>みん</rt></ruby>が<ruby>次<rt>つぎ</rt></ruby><ruby>々<rt>つぎ</rt></ruby>と<ruby>犠<rt>ぎ</rt></ruby><ruby>牲<rt>せい</rt></ruby>になるなんて、<ruby>悲<rt>ひ</rt></ruby><ruby>惨<rt>さん</rt></ruby><span style='color:#d64045'><ruby>極<rt>きわ</rt></ruby>まる</span><ruby>光<rt>こう</rt></ruby><ruby>景<rt>けい</rt></ruby>だった。",
+            "cn": "无辜市民接连丧命，那真是惨绝人寰的一幕。"
+        }
+    ],
+    "121": [
+        {
+            "jp": "<ruby>一<rt>いっ</rt></ruby><ruby>泊<rt>ぱく</rt></ruby>100<ruby>万<rt>まん</rt></ruby><ruby>円<rt>えん</rt></ruby>のスイートルームに<ruby>泊<rt>と</rt></ruby>まるなんて、まさに<ruby>贅<rt>ぜい</rt></ruby><ruby>沢<rt>たく</rt></ruby><span style='color:#d64045'>の<ruby>極<rt>きわ</rt></ruby>み</span>だ。",
+            "cn": "住一晚一百万日元的总统套房，那可真是极致的奢华。"
+        },
+        {
+            "jp": "<ruby>私<rt>わたし</rt></ruby>の<ruby>不<rt>ふ</rt></ruby><ruby>注<rt>ちゅう</rt></ruby><ruby>意<rt>い</rt></ruby>で<ruby>皆<rt>みな</rt></ruby><ruby>様<rt>さま</rt></ruby>に<ruby>多<rt>た</rt></ruby><ruby>大<rt>だい</rt></ruby>なご<ruby>迷<rt>めい</rt></ruby><ruby>惑<rt>わく</rt></ruby>をおかけし、<ruby>痛<rt>つう</rt></ruby><ruby>恨<rt>こん</rt></ruby><span style='color:#d64045'>の<ruby>極<rt>きわ</rt></ruby>み</span>でございます。",
+            "cn": "由于我的疏忽给各位添了这么大的麻烦，我实在是追悔莫及。"
+        },
+        {
+            "jp": "<ruby>三<rt>みっ</rt></ruby><ruby>日<rt>か</rt></ruby><ruby>三<rt>み</rt></ruby><ruby>晩<rt>ばん</rt></ruby><ruby>徹<rt>てつ</rt></ruby><ruby>夜<rt>や</rt></ruby>で<ruby>働<rt>はたら</rt></ruby>き<ruby>続<rt>つづ</rt></ruby>け、もう<ruby>疲<rt>ひ</rt></ruby><ruby>労<rt>ろう</rt></ruby><span style='color:#d64045'>の<ruby>極<rt>きわ</rt></ruby>み</span>に<ruby>達<rt>たっ</rt></ruby>している。",
+            "cn": "三天三夜连轴转通宵工作，我现在已经累到极限了。"
+        },
+        {
+            "jp": "<ruby>憧<rt>あこが</rt></ruby>れのスターから<ruby>直<rt>ちょく</rt></ruby><ruby>接<rt>せつ</rt></ruby><ruby>手<rt>て</rt></ruby><ruby>紙<rt>がみ</rt></ruby>の<ruby>返<rt>へん</rt></ruby><ruby>事<rt>じ</rt></ruby>をもらえて、<ruby>歓<rt>かん</rt></ruby><ruby>喜<rt>き</rt></ruby><span style='color:#d64045'>の<ruby>極<rt>きわ</rt></ruby>み</span>だった。",
+            "cn": "竟然能收到偶像亲笔回信，我简直开心到了极点。"
+        }
+    ],
+    "122": [
+        {
+            "jp": "<ruby>被<rt>ひ</rt></ruby><ruby>災<rt>さい</rt></ruby><ruby>地<rt>ち</rt></ruby>の<ruby>惨<rt>さん</rt></ruby><ruby>状<rt>じょう</rt></ruby>を<ruby>目<rt>め</rt></ruby>の<ruby>当<rt>あ</rt></ruby>たりにして、<ruby>深<rt>ふか</rt></ruby>い<ruby>同<rt>どう</rt></ruby><ruby>情<rt>じょう</rt></ruby><span style='color:#d64045'>を<ruby>禁<rt>きん</rt></ruby>じ<ruby>得<rt>え</rt></ruby>ない</span>。",
+            "cn": "亲眼目睹灾区的惨状，实在让人不禁深表同情。"
+        },
+        {
+            "jp": "<ruby>犯<rt>はん</rt></ruby><ruby>人<rt>にん</rt></ruby>の<ruby>反<rt>はん</rt></ruby><ruby>省<rt>せい</rt></ruby>の<ruby>色<rt>いろ</rt></ruby>が<ruby>全<rt>まった</rt></ruby>くない<ruby>態<rt>たい</rt></ruby><ruby>度<rt>ど</rt></ruby>には、<ruby>強<rt>つよ</rt></ruby>い<ruby>怒<rt>いか</rt></ruby>り<span style='color:#d64045'>を<ruby>禁<rt>きん</rt></ruby>じ<ruby>得<rt>え</rt></ruby>ない</span>。",
+            "cn": "看到凶手那毫无悔意的态度，真是让人压不住心里的怒火。"
+        },
+        {
+            "jp": "<ruby>涙<rt>なみだ</rt></ruby><span style='color:#d64045'>を<ruby>禁<rt>きん</rt></ruby>じ<ruby>得<rt>え</rt></ruby>なかった</span>よ、<ruby>彼<rt>かれ</rt></ruby>のあまりにも<ruby>不<rt>ふ</rt></ruby><ruby>幸<rt>こう</rt></ruby>な<ruby>生<rt>お</rt></ruby>い<ruby>立<rt>た</rt></ruby>ちを<ruby>聞<rt>き</rt></ruby>いて。",
+            "cn": "听了他那过于凄惨的身世，我实在是忍不住落泪。"
+        },
+        {
+            "jp": "こんな<ruby>初<rt>しょ</rt></ruby><ruby>歩<rt>ほ</rt></ruby><ruby>的<rt>てき</rt></ruby>なミスをするとは、もはや<ruby>苦<rt>く</rt></ruby><ruby>笑<rt>しょう</rt></ruby><span style='color:#d64045'>を<ruby>禁<rt>きん</rt></ruby>じ<ruby>得<rt>え</rt></ruby>ない</span>。",
+            "cn": "竟然会犯这种低级错误，简直让人哭笑不得。"
+        }
+    ],
+    "123": [
+        {
+            "jp": "あのサイトに<ruby>載<rt>の</rt></ruby>っている<ruby>情<rt>じょう</rt></ruby><ruby>報<rt>ほう</rt></ruby>は、<ruby>到<rt>とう</rt></ruby><ruby>底<rt>てい</rt></ruby><ruby>信<rt>しん</rt></ruby><ruby>頼<rt>らい</rt></ruby><span style='color:#d64045'>に<ruby>足<rt>た</rt></ruby>る</span>ものではない。",
+            "cn": "那个网站上登载的信息，根本不值得信任。"
+        },
+        {
+            "jp": "<ruby>取<rt>と</rt></ruby>る<span style='color:#d64045'>に<ruby>足<rt>た</rt></ruby>らない</span><ruby>噂<rt>うわさ</rt></ruby><ruby>話<rt>ばなし</rt></ruby>にいちいち<ruby>振<rt>ふ</rt></ruby>り<ruby>回<rt>まわ</rt></ruby>されるな。",
+            "cn": "别总被那些无足轻重的流言蜚语弄得团团转。"
+        },
+        {
+            "jp": "この<ruby>本<rt>ほん</rt></ruby>は、<ruby>専<rt>せん</rt></ruby><ruby>門<rt>もん</rt></ruby><ruby>家<rt>か</rt></ruby>だけでなく<ruby>一<rt>いっ</rt></ruby><ruby>般<rt>ぱん</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>が<ruby>読<rt>よ</rt></ruby>む<span style='color:#d64045'>に<ruby>足<rt>た</rt></ruby>る</span><ruby>名<rt>めい</rt></ruby><ruby>著<rt>ちょ</rt></ruby>だ。",
+            "cn": "这本书不仅适合专家，也是一本完全值得普通大众一读的好书。"
+        },
+        {
+            "jp": "<ruby>今<rt>こん</rt></ruby><ruby>回<rt>かい</rt></ruby>の<ruby>優<rt>ゆう</rt></ruby><ruby>勝<rt>しょう</rt></ruby>は、<ruby>彼<rt>かれ</rt></ruby>の<ruby>実<rt>じつ</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<ruby>証<rt>しょう</rt></ruby><ruby>明<rt>めい</rt></ruby>する<span style='color:#d64045'>に<ruby>足<rt>た</rt></ruby>る</span><ruby>素<rt>す</rt></ruby><ruby>晴<rt>ば</rt></ruby>らしい<ruby>結<rt>けっ</rt></ruby><ruby>果<rt>か</rt></ruby>と<ruby>言<rt>い</rt></ruby>えるでしょう。",
+            "cn": "这次的冠军，可以说是足以证明他实力的最好结果。"
+        }
+    ],
+    "124": [
+        {
+            "jp": "<ruby>事<rt>じ</rt></ruby><ruby>件<rt>けん</rt></ruby>の<ruby>真<rt>しん</rt></ruby><ruby>相<rt>そう</rt></ruby>は、<ruby>今<rt>いま</rt></ruby>となっては<ruby>知<rt>し</rt></ruby>る<span style='color:#d64045'>べくもない</span>。",
+            "cn": "事到如今，事件的真相已经无从知晓了。"
+        },
+        {
+            "jp": "まさか<ruby>彼<rt>かれ</rt></ruby>が<ruby>裏<rt>うら</rt></ruby><ruby>切<rt>ぎ</rt></ruby>るなんて、<ruby>当<rt>とう</rt></ruby><ruby>時<rt>じ</rt></ruby>の<ruby>私<rt>わたし</rt></ruby>は<ruby>疑<rt>うたが</rt></ruby>う<span style='color:#d64045'>べくもなかった</span>。",
+            "cn": "那个时候的我，根本没法料到他竟然会背叛。"
+        },
+        {
+            "jp": "<ruby>素<rt>し</rt></ruby><ruby>人<rt>ろうと</rt></ruby>の<ruby>私<rt>わたし</rt></ruby>が<ruby>作<rt>つく</rt></ruby>った<ruby>作<rt>さく</rt></ruby><ruby>品<rt>ひん</rt></ruby>など、プロの<ruby>足<rt>あし</rt></ruby><ruby>元<rt>もと</rt></ruby>にも<ruby>及<rt>およ</rt></ruby>ぶ<span style='color:#d64045'>べくもない</span>。",
+            "cn": "我这种外行人做出来的东西，根本不可能和专业人士相提并论。"
+        },
+        {
+            "jp": "<ruby>果<rt>は</rt></ruby>たしてどんな<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby>になるのか、<ruby>十<rt>じゅう</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>先<rt>さき</rt></ruby>の<ruby>未<rt>み</rt></ruby><ruby>来<rt>らい</rt></ruby>すら<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>す<span style='color:#d64045'>べくもない</span><ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>だ。",
+            "cn": "到底会变成什么样的社会呢？如今这时代，连十年后的未来都无从想象。"
+        }
+    ],
+    "125": [
+        {
+            "jp": "<ruby>絶<rt>た</rt></ruby>え<ruby>間<rt>ま</rt></ruby>ない<ruby>努<rt>ど</rt></ruby><ruby>力<rt>りょく</rt></ruby><span style='color:#d64045'>なくしては</span>、この<ruby>偉<rt>い</rt></ruby><ruby>大<rt>だい</rt></ruby>な<ruby>目<rt>もく</rt></ruby><ruby>標<rt>ひょう</rt></ruby>を<ruby>達<rt>たっ</rt></ruby><ruby>成<rt>せい</rt></ruby>することはできない。",
+            "cn": "倘若没有坚持不懈的努力，是无法实现这个伟大目标的。"
+        },
+        {
+            "jp": "<ruby>家<rt>か</rt></ruby><ruby>族<rt>ぞく</rt></ruby>の<ruby>支<rt>ささ</rt></ruby>え<span style='color:#d64045'>なくして</span>、<ruby>今<rt>いま</rt></ruby>の<ruby>私<rt>わたし</rt></ruby>の<ruby>成<rt>せい</rt></ruby><ruby>功<rt>こう</rt></ruby>はあり<ruby>得<rt>え</rt></ruby>なかった。",
+            "cn": "要不是有家人的支持，绝对不会有我今天的成功。"
+        },
+        {
+            "jp": "お<ruby>互<rt>たが</rt></ruby>いの<ruby>信<rt>しん</rt></ruby><ruby>頼<rt>らい</rt></ruby><span style='color:#d64045'>なくしては</span>、<ruby>良<rt>りょう</rt></ruby><ruby>好<rt>こう</rt></ruby>な<ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby>を<ruby>築<rt>きず</rt></ruby>くことなど<ruby>不<rt>ふ</rt></ruby><ruby>可<rt>か</rt></ruby><ruby>能<rt>のう</rt></ruby>だ。",
+            "cn": "彼此之间如果不信任，根本不可能建立起良好的关系。"
+        },
+        {
+            "jp": "<ruby>皆<rt>みな</rt></ruby><ruby>様<rt>さま</rt></ruby>からのご<ruby>支<rt>し</rt></ruby><ruby>援<rt>えん</rt></ruby><span style='color:#d64045'>なくしては</span>、このプロジェクトを<ruby>継<rt>けい</rt></ruby><ruby>続<rt>ぞく</rt></ruby>することは<ruby>困<rt>こん</rt></ruby><ruby>難<rt>なん</rt></ruby>です。",
+            "cn": "要是得不到各位的鼎力相助，这个项目恐怕很难再继续下去。"
+        }
+    ],
+    "126": [
+        {
+            "jp": "<ruby>上<rt>じょう</rt></ruby><ruby>司<rt>し</rt></ruby>の<ruby>許<rt>きょ</rt></ruby><ruby>可<rt>か</rt></ruby><span style='color:#d64045'>なしに</span>、<ruby>勝<rt>かっ</rt></ruby><ruby>手<rt>て</rt></ruby>に<ruby>計<rt>けい</rt></ruby><ruby>画<rt>かく</rt></ruby>を<ruby>変<rt>へん</rt></ruby><ruby>更<rt>こう</rt></ruby>してはいけない。",
+            "cn": "没经过上司批准，绝不能擅自更改计划。"
+        },
+        {
+            "jp": "<ruby>何<rt>なに</rt></ruby>かを<ruby>犠<rt>ぎ</rt></ruby><ruby>牲<rt>せい</rt></ruby>にする<span style='color:#d64045'>ことなしに</span>、<ruby>大<rt>おお</rt></ruby>きな<ruby>成<rt>せい</rt></ruby><ruby>果<rt>か</rt></ruby>を<ruby>上<rt>あ</rt></ruby>げることは<ruby>難<rt>むずか</rt></ruby>しい。",
+            "cn": "要想取得巨大的成就，往往免不了要做出一些牺牲。"
+        },
+        {
+            "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>一<rt>いち</rt></ruby><ruby>日<rt>にち</rt></ruby>も<ruby>休<rt>やす</rt></ruby>む<span style='color:#d64045'>ことなしに</span>、<ruby>三<rt>さん</rt></ruby><ruby>ヶ<rt>か</rt></ruby><ruby>月<rt>げつ</rt></ruby><ruby>間<rt>かん</rt></ruby><ruby>働<rt>はたら</rt></ruby>き<ruby>続<rt>つづ</rt></ruby>けた。",
+            "cn": "他一天都没歇，连轴转地干了三个月。"
+        },
+        {
+            "jp": "<ruby>事<rt>じ</rt></ruby><ruby>前<rt>ぜん</rt></ruby>の<ruby>予<rt>よ</rt></ruby><ruby>告<rt>こく</rt></ruby><span style='color:#d64045'>なしに</span>、サービスが<ruby>停<rt>てい</rt></ruby><ruby>止<rt>し</rt></ruby>されることがあります。",
+            "cn": "服务有时可能会在不作事先通知的情况下暂停。"
+        }
+    ],
+    "127": [
+        {
+            "jp": "<ruby>朝<rt>あさ</rt></ruby>のコーヒー<span style='color:#d64045'>なしでは</span>、<ruby>一<rt>いち</rt></ruby><ruby>日<rt>にち</rt></ruby>が<ruby>始<rt>はじ</rt></ruby>まらない<ruby>気<rt>き</rt></ruby>がする。",
+            "cn": "感觉如果不喝杯晨间咖啡，这一天都没法开始。"
+        },
+        {
+            "jp": "<ruby>現<rt>げん</rt></ruby><ruby>代<rt>だい</rt></ruby><ruby>人<rt>じん</rt></ruby>は、もはやスマートフォン<span style='color:#d64045'>なしで</span><ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>することなど<ruby>考<rt>かんが</rt></ruby>えられない。",
+            "cn": "对现代人来说，简直无法想象没有智能手机的日子要怎么过。"
+        },
+        {
+            "jp": "<ruby>彼<rt>かれ</rt></ruby>の<ruby>的<rt>てき</rt></ruby><ruby>確<rt>かく</rt></ruby>なアドバイス<span style='color:#d64045'>なしでは</span>、あの<ruby>危<rt>き</rt></ruby><ruby>機<rt>き</rt></ruby>を<ruby>乗<rt>の</rt></ruby>り<ruby>越<rt>こ</rt></ruby>えられなかっただろう。",
+            "cn": "如果没有他中肯的建议，我们当时恐怕很难渡过难关。"
+        },
+        {
+            "jp": "<ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>りそうなのに、<ruby>傘<rt>かさ</rt></ruby><span style='color:#d64045'>なしで</span><ruby>出<rt>で</rt></ruby>かけるなんて<ruby>無<rt>む</rt></ruby><ruby>謀<rt>ぼう</rt></ruby>だ。",
+            "cn": "眼看就要下雨了，居然不带伞就出门，胆子也太大了。"
+        }
+    ],
     "128": [
         {
             "jp": "<ruby>店<rt>てん</rt></ruby><ruby>舗<rt>ぽ</rt></ruby><ruby>改<rt>かい</rt></ruby><ruby>装<rt>そう</rt></ruby><span style='color:#d64045'>につき</span>、<ruby>来<rt>らい</rt></ruby><ruby>月<rt>げつ</rt></ruby>まで<ruby>休<rt>きゅう</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>とさせていただきます。",
