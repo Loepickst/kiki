@@ -279,7 +279,39 @@
             text-align: right;
         }
 
+        /* 修改后的容器样式，不再直接作为 grid */
         .collection-grid {
+            display: block;
+        }
+
+        /* 新增的分组样式 */
+        .rarity-section {
+            margin-bottom: 25px;
+        }
+
+        .rarity-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #555;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .rarity-badge-small {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: white;
+            font-size: 12px;
+            margin-right: 8px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .rarity-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 15px;
@@ -344,7 +376,7 @@
 
     <header>
         <a href="index.html" class="back-btn">← Home</a>
-        <h1>每日运势 (おみくじ)</h1>
+        <h1>每日运势</h1>
         <button class="collection-btn" id="openCollectionBtn">📖 图鉴</button>
     </header>
 
@@ -391,7 +423,8 @@
         // ---------------------------------------------------
         const fortunes = [
             // KR 级别 (最高级)
-            { id: "f1", rarity: "KR", title: "旺吉", desc: "🎉你就是最帅（美）的气运之子🎉！kiki祝福你，旺！", weight: 1, color: "#000000", icon: "takarakuji/wangji.png" },
+            { id: "f1", rarity: "KR", title: "旺吉", desc: "🎉你就是最帅（美）的气运之子🎉！kiki祝福你，旺！", weight: 2, color: "#000000", icon: "takarakuji/wangji.png" },
+            { id: "f19", rarity: "KR", title: "乐吉", desc: "喝上一口肥宅水，快乐一整天！", weight: 8, color: "#000000", icon: "takarakuji/keleji.png" },
 
             // UR 级别 (极稀有)
             { id: "f8", rarity: "UR", title: "神吉", desc: "⛩️考神附体！今天直觉准得可怕，做阅读题一抓一个准，就算蒙的也全对！", weight: 1, color: "#d4af37", icon: "takarakuji/shenji.png" },
@@ -474,31 +507,56 @@
             const col = getCollection();
             collectionGrid.innerHTML = '';
             
-            const sortedFortunes = [...fortunes].sort((a, b) => {
-                const order = { "KR": 0, "UR": 1, "SSR": 2, "SR": 3, "R": 4, "N": 5 };
-                return order[a.rarity] - order[b.rarity];
+            // 定义稀有度顺序和颜色映射
+            const rarityOrder = ['KR', 'UR', 'SSR', 'SR', 'R'];
+            const rarityColors = {
+                'KR': '#000000',
+                'UR': '#d4af37',
+                'SSR': '#d32f2f',
+                'SR': '#00897b',
+                'R': '#f57c00'
+            };
+
+            rarityOrder.forEach(rarity => {
+                const items = fortunes.filter(f => f.rarity === rarity);
+                if (items.length === 0) return;
+
+                // 创建分组容器
+                const section = document.createElement('div');
+                section.className = 'rarity-section';
+
+                // 创建标题
+                const title = document.createElement('div');
+                title.className = 'rarity-title';
+                const unlockedInRarity = items.filter(i => col.includes(i.id)).length;
+                title.innerHTML = `<span class="rarity-badge-small" style="background:${rarityColors[rarity] || '#ccc'}">${rarity}</span> 收集进度: ${unlockedInRarity}/${items.length}`;
+                section.appendChild(title);
+
+                // 创建网格
+                const grid = document.createElement('div');
+                grid.className = 'rarity-grid';
+
+                items.forEach(f => {
+                    const isUnlocked = col.includes(f.id);
+                    const div = document.createElement('div');
+                    div.className = `collection-item ${isUnlocked ? '' : 'locked'}`;
+                    if(isUnlocked) div.style.borderColor = f.color;
+                    
+                    div.innerHTML = `
+                        <div class="item-icon">
+                            <img src="${f.icon}" alt="${f.title}" class="collection-icon-img">
+                        </div>
+                        <div class="item-title">${isUnlocked ? f.title : '???'}</div>
+                        <div class="item-rarity" style="background: ${f.color}; color: white;">${f.rarity}</div>
+                    `;
+                    grid.appendChild(div);
+                });
+
+                section.appendChild(grid);
+                collectionGrid.appendChild(section);
             });
 
-            sortedFortunes.forEach(f => {
-                const isUnlocked = col.includes(f.id);
-                const div = document.createElement('div');
-                div.className = `collection-item ${isUnlocked ? '' : 'locked'}`;
-                if(isUnlocked) div.style.borderColor = f.color;
-                
-                // ---------------------------------------------------
-                // 修改后的图鉴渲染逻辑：输出 img 标签
-                // ---------------------------------------------------
-                div.innerHTML = `
-                    <div class="item-icon">
-                        <img src="${f.icon}" alt="${f.title}" class="collection-icon-img">
-                    </div>
-                    <div class="item-title">${isUnlocked ? f.title : '???'}</div>
-                    <div class="item-rarity" style="background: ${f.color}; color: white;">${f.rarity}</div>
-                `;
-                collectionGrid.appendChild(div);
-            });
-
-            collectionStats.textContent = `收集进度：${col.length} / ${fortunes.length}`;
+            collectionStats.textContent = `总收集进度：${col.length} / ${fortunes.length}`;
         }
 
         openCollectionBtn.addEventListener('click', () => {
@@ -513,11 +571,11 @@
         function drawFortune() {
             // 定义各稀有度的概率 (总和必须为 100)
             const rarityRates = {
-                "KR": 1,   // 1%
+                "KR": 2,   // 2%
                 "UR": 4,   // 4%
                 "SSR": 15, // 15%
                 "SR": 35,  // 35%
-                "R": 45    // 45%
+                "R": 44    // 45%
             };
 
             // 1. 按照概率决定稀有度
