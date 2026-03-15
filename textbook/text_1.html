@@ -598,6 +598,12 @@
                 <div id="modalRelatedArea" style="margin-top:30px; display:none;">
                     <span class="label">关联语法</span><br><div id="modalRelatedTags" style="margin-top:10px;"></div>
                 </div>
+                
+                <!-- 翻页导航 -->
+                <div class="modal-footer" style="display:flex; justify-content:space-between; margin-top:30px; padding-top:20px; border-top:1px solid #eee;">
+                    <button id="prevDetailBtn" class="nav-btn" style="visibility:hidden;">⬅ 前へ</button>
+                    <button id="nextDetailBtn" class="nav-btn" style="visibility:hidden;">次へ ➜</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1282,10 +1288,14 @@
 
         function showDetail(id, isFromHistory = false) {
             document.body.classList.add('no-scroll');
-            if (!isFromHistory) {
-                let bgView = 'review';
+            let bgView = 'review';
+            
+            if (isFromHistory) {
+                if (history.state && history.state.bgView) bgView = history.state.bgView;
+            } else {
                 if (document.getElementById('favoritesView').style.display === 'block') bgView = 'favorites';
                 else if (document.getElementById('lessonDetailView').style.display === 'block') bgView = 'lessonDetail';
+                else if (document.getElementById('mistakesView').style.display === 'block') bgView = 'mistakes';
                 history.pushState({view: 'modal', id: id, bgView: bgView}, '', '');
             }
             const item = grammarData.find(g => g.id === id);
@@ -1355,6 +1365,48 @@
             // 切换内容时自动回到顶部
             const content = modal.querySelector('.modal-content');
             if(content) content.scrollTop = 0;
+            
+            updateNavigation(id, bgView);
+        }
+
+        // --- 翻页导航逻辑 ---
+        function getDetailList(bgView) {
+            if (bgView === 'mistakes') {
+                return grammarData.filter(item => mistakes.includes(item.id)).map(i => i.id);
+            } else if (bgView === 'favorites') {
+                return grammarData.filter(item => favorites.includes(item.id)).map(i => i.id);
+            } else if (bgView === 'lessonDetail') {
+                 if (!currentLessonName) return [];
+                 return grammarData.filter(i => i.book === 'Try! N1 文法' && i.lesson.split('/').map(s=>s.trim()).includes(currentLessonName)).map(i => i.id);
+            }
+            return [];
+        }
+
+        function updateNavigation(id, bgView) {
+            const list = getDetailList(bgView);
+            const idx = list.indexOf(id);
+            
+            const prevBtn = document.getElementById('prevDetailBtn');
+            const nextBtn = document.getElementById('nextDetailBtn');
+            
+            if (idx > 0) {
+                prevBtn.style.visibility = 'visible';
+                prevBtn.onclick = () => navigateDetail(list[idx - 1], bgView);
+            } else {
+                prevBtn.style.visibility = 'hidden';
+            }
+            
+            if (idx > -1 && idx < list.length - 1) {
+                nextBtn.style.visibility = 'visible';
+                nextBtn.onclick = () => navigateDetail(list[idx + 1], bgView);
+            } else {
+                nextBtn.style.visibility = 'hidden';
+            }
+        }
+
+        function navigateDetail(id, bgView) {
+            history.replaceState({view: 'modal', id: id, bgView: bgView}, '', '');
+            showDetail(id, true);
         }
 
         // --- 更多例句逻辑 ---
