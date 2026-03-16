@@ -1414,7 +1414,7 @@ const DAY7_WORDS = [
             {
                 "jp": "<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>は<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>を<span class='ex-highlight'>てきぱき（と）<ruby>片<rt>かた</rt></ruby><ruby>付<rt>づ</rt></ruby>ける</span>。",
                 "cn": "她干脆利落地把工作处理完。",
-                "image": "./image(mime)/tekipaki1.png"
+                "image": "./image(mime)/tekipaki.png"
             }
         ],
         "practice": {
@@ -1434,7 +1434,7 @@ const DAY7_WORDS = [
             {
                 "jp": "<ruby>面<rt>めん</rt></ruby><ruby>接<rt>せつ</rt></ruby>の<ruby>前<rt>まえ</rt></ruby>で、<ruby>胸<rt>むね</rt></ruby>が<span class='ex-highlight'>どきどきしている</span>。",
                 "cn": "面试前，紧张得心扑通扑通跳。",
-                "image": "./image(mime)/dokidoki1.png"
+                "image": "./image(mime)/dokidoki.png"
             }
         ],
         "practice": {
@@ -1484,7 +1484,7 @@ const DAY7_WORDS = [
             {
                 "jp": "<ruby>魚<rt>さかな</rt></ruby>の<ruby>表<rt>ひょう</rt></ruby><ruby>面<rt>めん</rt></ruby>が<span class='ex-highlight'>ぬるぬるしている</span>。",
                 "cn": "鱼的表面滑溜溜的。",
-                "image": "./image(mime)/nurunuru1.png"
+                "image": "./image(mime)/nurunuru.png"
             }
         ],
         "practice": {
@@ -1504,7 +1504,7 @@ const DAY7_WORDS = [
             {
                 "jp": "<ruby>納<rt>なっ</rt></ruby><ruby>豆<rt>とう</rt></ruby>が<span class='ex-highlight'>ねばねば</span>（と）<ruby>糸<rt>いと</rt></ruby>を<ruby>引<rt>ひ</rt></ruby>く。",
                 "cn": "纳豆黏糊糊地拉着丝。",
-                "image": "./image(mime)/nebaneba1.png"
+                "image": "./image(mime)/nebaneba.png"
             }
         ],
         "practice": {
@@ -1549,7 +1549,7 @@ const DAY7_WORDS = [
             {
                 "jp": "<ruby>庭<rt>にわ</rt></ruby>の<ruby>野<rt>や</rt></ruby><ruby>菜<rt>さい</rt></ruby>が<span class='ex-highlight'>すくすく<ruby>伸<rt>の</rt></ruby>びて</span>いる。",
                 "cn": "院子里的蔬菜长得很快。",
-                "image": "./image(mime)/sukusuku1.png"
+                "image": "./image(mime)/sukusuku.png"
             }
         ],
         "practice": {
@@ -1569,7 +1569,7 @@ const DAY7_WORDS = [
             {
                 "jp": "<ruby>赤<rt>あか</rt></ruby>ちゃんの<ruby>肌<rt>はだ</rt></ruby>は<span class='ex-highlight'>すべすべして</span>いる。",
                 "cn": "婴儿的皮肤很光滑。",
-                "image": "./image(mime)/subesube1.png"
+                "image": "./image(mime)/subesube.png"
             }
         ],
         "practice": {
@@ -1589,7 +1589,7 @@ const DAY7_WORDS = [
             {
                 "jp": "<ruby>彼<rt>かれ</rt></ruby>はいつも<span class='ex-highlight'>はきはき</span>（と）<ruby>答<rt>こた</rt></ruby>える。",
                 "cn": "他总是干脆利落地回答。",
-                "image": "./image(mime)/hakihaki1.png"
+                "image": "./image(mime)/hakihaki.png"
             }
         ],
         "practice": {
@@ -1611,13 +1611,8 @@ const DAY8_WORDS = [
             {
                 "jp": "<ruby>道<rt>みち</rt></ruby>が<ruby>混<rt>こ</rt></ruby>んでいて、<ruby>車<rt>くるま</rt></ruby>が<span class='ex-highlight'>のろのろ</span>（と）<ruby>進<rt>すす</rt></ruby>んでいる。",
                 "cn": "道路拥挤，车子在慢吞吞地前进。",
-                "image": "./image(mime)/noronoro1.png"
+                "image": "./image(mime)/noronoro.png"
             },
-            {
-                "jp": "<ruby>工<rt>こう</rt></ruby><ruby>事<rt>じ</rt></ruby>が<span class='ex-highlight'>のろのろ</span>（と）しか<ruby>進<rt>すす</rt></ruby>まない。",
-                "cn": "工程进展得慢吞吞的。",
-                "image": "./image(mime)/noronoro2.png"
-            }
         ],
         "practice": {
             "question": "<ruby>亀<rt>かめ</rt></ruby>が<span class='ex-highlight'>____</span>と<ruby>歩<rt>ある</rt></ruby>いている。",
@@ -1721,7 +1716,7 @@ const DAY8_WORDS = [
             {
                 "jp": "<ruby>残<rt>ざん</rt></ruby><ruby>業<rt>ぎょう</rt></ruby><ruby>続<rt>つづ</rt></ruby>きで、もう<span class='ex-highlight'>へとへとだ</span>。",
                 "cn": "连续加班，已经精疲力竭了。",
-                "image": "./image(mime)/hetoheto1.png"
+                "image": "./image(mime)/hetoheto.png"
             }
         ],
         "practice": {
@@ -1741,7 +1736,7 @@ const DAY8_WORDS = [
             {
                 "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>が<span class='ex-highlight'>めきめき（と）<ruby>上<rt>じょう</rt></ruby><ruby>達<rt>たつ</rt></ruby>して</span>いる。",
                 "cn": "他的日语正突飞猛进地提高。",
-                "image": "./image(mime)/mekimeki1.png"
+                "image": "./image(mime)/mekimeki.png"
             }
         ],
         "practice": {
@@ -1761,7 +1756,7 @@ const DAY8_WORDS = [
             {
                 "jp": "<ruby>失<rt>しつ</rt></ruby><ruby>恋<rt>れん</rt></ruby>した<ruby>友<rt>とも</rt></ruby><ruby>だち<rt>だち</rt></ruby>が<span class='ex-highlight'>めそめそ<ruby>泣<rt>な</rt></ruby>いて</span>いる。",
                 "cn": "失恋的朋友抽抽搭搭地哭个不停。",
-                "image": "./image(mime)/mesomeso1.png"
+                "image": "./image(mime)/mesomeso.png"
             }
         ],
         "practice": {
@@ -1806,7 +1801,7 @@ const DAY8_WORDS = [
             {
                 "jp": "<ruby>人<rt>ひと</rt></ruby>の<ruby>欠<rt>けっ</rt></ruby><ruby>点<rt>てん</rt></ruby>を<span class='ex-highlight'>ずけずけ（と）<ruby>言<rt>い</rt></ruby>う</span>のはよくない。",
                 "cn": "毫不客气地指出别人的缺点是不好的。",
-                "image": "./image(mime)/zukezuke1.png"
+                "image": "./image(mime)/zukezuke.png"
             }
         ],
         "practice": {
@@ -1853,7 +1848,7 @@ const DAY9_WORDS = [
             {
                 "jp": "<ruby>電<rt>でん</rt></ruby><ruby>車<rt>しゃ</rt></ruby>がなかなか<ruby>来<rt>こ</rt></ruby>なくて、<span class='ex-highlight'>いらいらしている</span>。",
                 "cn": "电车迟迟不来，让人非常焦躁。",
-                "image": "./image(mime)/iraira1.png"
+                "image": "./image(mime)/iraira.png"
             }
         ],
         "practice": {
@@ -1898,7 +1893,7 @@ const DAY9_WORDS = [
             {
                 "jp": "<ruby>怒<rt>おこ</rt></ruby>られると<ruby>思<rt>おも</rt></ruby>って、<span class='ex-highlight'>びくびくしている</span>。",
                 "cn": "以为要挨骂，吓得战战兢兢的。",
-                "image": "./image(mime)/bikubiku1.png"
+                "image": "./image(mime)/bikubiku.png"
             }
         ],
         "practice": {
@@ -1918,7 +1913,7 @@ const DAY9_WORDS = [
             {
                 "jp": "<ruby>面<rt>めん</rt></ruby><ruby>接<rt>せつ</rt></ruby>で<ruby>紧<rt>きん</rt></ruby><ruby>张<rt>ちょう</rt></ruby>して、<span class='ex-highlight'>おどおどしている</span>。",
                 "cn": "面试时太紧张，战战兢兢的。",
-                "image": "./image(mime)/odoodo1.png"
+                "image": "./image(mime)/odoodo.png"
             }
         ],
         "practice": {
@@ -1938,7 +1933,7 @@ const DAY9_WORDS = [
             {
                 "jp": "<ruby>敵<rt>てき</rt></ruby>は<ruby>逃<rt>に</rt></ruby>げ<ruby>場<rt>ば</rt></ruby>を<ruby>失<rt>うしな</rt></ruby>って<span class='ex-highlight'>まごまごしていた</span>。",
                 "cn": "敌人无处逃避而张皇失措。",
-                "image": "./image(mime)/magomago1.png"
+                "image": "./image(mime)/magomago.png"
             }
         ],
         "practice": {
@@ -1958,7 +1953,7 @@ const DAY9_WORDS = [
             {
                 "jp": "デートの<ruby>前<rt>まえ</rt></ruby>で、<ruby>朝<rt>あさ</rt></ruby>から<span class='ex-highlight'>そわそわしている</span>。",
                 "cn": "因为要去约会，从早上开始就坐立不安。",
-                "image": "./image(mime)/sowasowa1.png"
+                "image": "./image(mime)/sowasowa.png"
             }
         ],
         "practice": {
@@ -1978,7 +1973,7 @@ const DAY9_WORDS = [
             {
                 "jp": "<ruby>亲<rt>おや</rt></ruby>のありがたみを<span class='ex-highlight'>ひしひし（と）<ruby>感<rt>かん</rt></ruby>じた</span>。",
                 "cn": "深切地感受到了父母的恩情。",
-                "image": "./image(mime)/hishihishi1.png"
+                "image": "./image(mime)/hishihishi.png"
             }
         ],
         "practice": {
@@ -1998,7 +1993,7 @@ const DAY9_WORDS = [
             {
                 "jp": "<ruby>彼<rt>かれ</rt></ruby>の<ruby>嘘<rt>うそ</rt></ruby>には、<span class='ex-highlight'>うすうす<ruby>気<rt>き</rt></ruby>づいて</span>いた。",
                 "cn": "隐约察觉到了他在撒谎。",
-                "image": "./image(mime)/usuusu1.png"
+                "image": "./image(mime)/usuusu.png"
             }
         ],
         "practice": {
@@ -2018,7 +2013,7 @@ const DAY9_WORDS = [
             {
                 "jp": "いいゲームをやりたくて、<span class='ex-highlight'>うずうずしている</span>。",
                 "cn": "想玩新游戏，急得按捺不住了。",
-                "image": "./image(mime)/uzuuzu1.png"
+                "image": "./image(mime)/uzuuzu.png"
             }
         ],
         "practice": {
@@ -2038,7 +2033,7 @@ const DAY9_WORDS = [
             {
                 "jp": "<ruby>小<rt>ちい</rt></ruby>さなミスで、いつまでも<span class='ex-highlight'>くよくよしない</span>で。",
                 "cn": "别因为一点小失误就一直愁眉不展。",
-                "image": "./image(mime)/kuyokuyo1.png"
+                "image": "./image(mime)/kuyokuyo.png"
             }
         ],
         "practice": {
