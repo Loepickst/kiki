@@ -263,6 +263,7 @@
             };
 
             // Iterate localStorage to find marks
+            let reviewItems = [];
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 if (key && key.startsWith('jlpt_marks_')) { // Note: Might need distinct prefix for N1
@@ -275,18 +276,30 @@
                         
                         // Only show if we know the file mapping
                         if (fileMap[year]) {
-                            const btn = document.createElement('a');
-                            btn.className = 'review-btn';
-                            btn.href = `${fileMap[year]}?year=${examKey}&mode=review`;
-                            btn.innerHTML = `
-                                <span>${examKey}</span>
-                                <span class="review-count">${marks.length}问</span>
-                            `;
-                            reviewGrid.appendChild(btn);
+                            reviewItems.push({
+                                examKey: examKey,
+                                year: year,
+                                count: marks.length
+                            });
                         }
                     }
                 }
             }
+
+            // Sort descending (e.g. 2020-12, 2020-07, 2019-12...)
+            reviewItems.sort((a, b) => b.examKey.localeCompare(a.examKey));
+
+            // Render buttons
+            reviewItems.forEach(item => {
+                const btn = document.createElement('a');
+                btn.className = 'review-btn';
+                btn.href = `${fileMap[item.year]}?year=${item.examKey}&mode=review`;
+                btn.innerHTML = `
+                    <span>${item.examKey}</span>
+                    <span class="review-count">${item.count}问</span>
+                `;
+                reviewGrid.appendChild(btn);
+            });
 
             // Toggle section visibility
             if (hasMistakes) {
