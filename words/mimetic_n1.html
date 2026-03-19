@@ -646,7 +646,52 @@
                 `;
                 dayCard.onclick = () => selectDay(i);
                 container.appendChild(dayCard);
+
+                // Render Stage Practice Card (Every 5 days)
+                if (i % 5 === 0) {
+                    const stageNum = i / 5;
+                    const stageCard = document.createElement('div');
+                    stageCard.className = 'day-card';
+                    stageCard.style.borderLeft = '4px solid #2196f3';
+                    stageCard.style.marginTop = '10px';
+                    stageCard.style.marginBottom = '10px';
+                    stageCard.style.background = '#f1f8ff'; // Very light blue
+
+                    stageCard.innerHTML = `
+                        <div class="day-info">
+                            <div class="day-icon" style="background: #e3f2fd; color: #1976d2;">🏆</div>
+                            <div class="day-text-group">
+                                <div class="day-title" style="color: #0d47a1;">阶段练习 ${stageNum}</div>
+                                <div class="day-subtitle">Day ${i-4} - Day ${i} • 20問ランダム</div>
+                            </div>
+                        </div>
+                        <div class="go-badge" style="background: #2196f3; color: white;">挑戦</div>
+                    `;
+                    stageCard.onclick = () => startStagePractice(stageNum);
+                    container.appendChild(stageCard);
+                }
             }
+
+            // Render Final Practice Card (After all days)
+            const finalCard = document.createElement('div');
+            finalCard.className = 'day-card';
+            finalCard.style.borderLeft = '4px solid #9c27b0'; // Purple
+            finalCard.style.marginTop = '10px';
+            finalCard.style.marginBottom = '20px';
+            finalCard.style.background = '#f3e5f5'; // Light Purple
+
+            finalCard.innerHTML = `
+                <div class="day-info">
+                    <div class="day-icon" style="background: #e1bee7; color: #7b1fa2;">🎓</div>
+                    <div class="day-text-group">
+                        <div class="day-title" style="color: #4a148c;">総復習 (全範囲)</div>
+                        <div class="day-subtitle">全${TOTAL_DAYS}日分 • 20問ランダム</div>
+                    </div>
+                </div>
+                <div class="go-badge" style="background: #9c27b0; color: white;">挑戦</div>
+            `;
+            finalCard.onclick = () => startFinalPractice();
+            container.appendChild(finalCard);
 
             // Render a "Preparation" card (Figure 2 Style)
             const prepCard = document.createElement('div');
@@ -885,6 +930,14 @@
             window.location.href = `practice_n1_mimetic.html?day=${day}`;
         }
 
+        function startStagePractice(stage) {
+            window.location.href = `practice_n1_mimetic.html?stage=${stage}`;
+        }
+
+        function startFinalPractice() {
+            window.location.href = `practice_n1_mimetic.html?mode=final`;
+        }
+
         // 6. UI Update (View Switching)
         function updateUI() {
             const daysView = document.getElementById('days-view');
@@ -967,6 +1020,42 @@
                 }
             }
         });
+
+        // --- Swipe Support ---
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+        const minSwipeDistance = 50;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, false);
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }, false);
+
+        function handleSwipe() {
+            if (currentView !== 'detail') return;
+
+            const distanceX = touchEndX - touchStartX;
+            const distanceY = touchEndY - touchStartY;
+            
+            // Check if horizontal swipe is dominant and long enough
+            if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > minSwipeDistance) {
+                if (distanceX < 0) {
+                    // Swipe Left -> Next
+                    navigateWord(1);
+                } else {
+                    // Swipe Right -> Previous
+                    navigateWord(-1);
+                }
+            }
+        }
 
     </script>
 </body>
