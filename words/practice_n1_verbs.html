@@ -226,7 +226,18 @@
         .score-num { font-size: 48px; font-weight: bold; line-height: 1; }
         .score-label { font-size: 14px; opacity: 0.9; margin-top: 5px; }
         
-        .result-msg { font-size: 18px; font-weight: bold; margin-bottom: 30px; color: #555; }
+        .result-msg { font-size: 18px; font-weight: bold; margin-bottom: 14px; color: #555; }
+        .result-sub { font-size: 14px; color: #777; margin-bottom: 24px; }
+        .difficulty-select { display: flex; flex-direction: column; gap: 12px; }
+        .difficulty-btn { border: 2px solid #eee; background: #fff; border-radius: 12px; padding: 16px; cursor: pointer; text-align: left; }
+        .difficulty-btn:hover { border-color: var(--study-theme); }
+        .status-pill { font-size:12px; padding:4px 10px; border-radius:20px; background:#f5f5f5; color:#666; font-weight:bold; }
+        .hp-pill { background:#ffebee; color:#c62828; position: relative; overflow: visible; }
+        .hp-pill.hit { animation: hpShake 0.35s ease; }
+        .hp-damage-float { position:absolute; right:2px; top:-20px; color:#e53935; font-size:14px; font-weight:800; pointer-events:none; animation: hpFloat 0.8s ease forwards; }
+        .timer-pill { background:#fff3e0; color:#ef6c00; }
+        @keyframes hpFloat { 0%{opacity:0; transform:translateY(4px) scale(0.9);} 20%{opacity:1; transform:translateY(0) scale(1);} 100%{opacity:0; transform:translateY(-18px) scale(1.05);} }
+        @keyframes hpShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-3px);} 50%{transform:translateX(3px);} 75%{transform:translateX(-2px);} }
 
         .action-btn {
             display: block;
@@ -306,16 +317,69 @@
     <script>
         // --- Logic ---
         
-        // 1. Get Day from URL
+        // 1. Get Params from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const currentDay = parseInt(urlParams.get('day')) || 1;
-        document.getElementById('page-title').textContent = `${currentDay}日目 - 練習`;
+        const stageParam = urlParams.get('stage');
+        const modeParam = urlParams.get('mode');
+        const isStageMode = !!stageParam;
+        let targetWords = [];
+        let selectedDifficulty = null;
+        let hp = 20;
+        let timerId = null;
+        let timeLeft = 0;
+        let clearedCount = 0;
 
-        // 2. Get Words for the Day
-        const start = (currentDay - 1) * WORDS_PER_DAY;
-        const end = start + WORDS_PER_DAY;
-        // Ensure data is loaded
-        const targetWords = FULL_WORD_LIST.slice(start, end).filter(w => w.word !== "（準備中）");
+        const difficultyMap = {
+            easy: { label: '简单', damage: 2, timed: false },
+            hard: { label: '困难', damage: 4, timed: false },
+            hell: { label: '地狱', damage: 5, timed: true }
+        };
+
+        // Helper for shuffle (hoisted)
+        function shuffleArray(array) {
+            const newArr = [...array];
+            for (let i = newArr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+            }
+            return newArr;
+        }
+
+        if (modeParam === 'final') {
+            document.getElementById('page-title').textContent = `総復習 - 総合練習`;
+            // Get all words (excluding placeholders)
+            if (typeof FULL_WORD_LIST !== 'undefined') {
+                const pool = FULL_WORD_LIST.filter(w => w.word !== "（準備中）");
+                // Pick 20 random words
+                targetWords = shuffleArray(pool).slice(0, 20);
+            }
+        } else if (stageParam) {
+            const stage = parseInt(stageParam);
+            document.getElementById('page-title').textContent = `段階練習 ${stage}`;
+            
+            // Calculate range: e.g. Stage 1 (Day 1-5) -> 5 days * 20 words = 100 words
+            const daysPerStage = 5;
+            const endIdx = stage * daysPerStage * WORDS_PER_DAY;
+            const startIdx = endIdx - (daysPerStage * WORDS_PER_DAY);
+            
+            // Get all words in range (excluding placeholders)
+            // Ensure FULL_WORD_LIST is available (from n1_verbs_data.js)
+            if (typeof FULL_WORD_LIST !== 'undefined') {
+                const pool = FULL_WORD_LIST.slice(startIdx, endIdx).filter(w => w.word !== "（準備中）");
+                // Pick 20 random words
+                targetWords = shuffleArray(pool).slice(0, 20);
+            }
+        } else {
+            const currentDay = parseInt(urlParams.get('day')) || 1;
+            document.getElementById('page-title').textContent = `${currentDay}日目 - 練習`;
+
+            // 2. Get Words for the Day
+            const start = (currentDay - 1) * WORDS_PER_DAY;
+            const end = start + WORDS_PER_DAY;
+            if (typeof FULL_WORD_LIST !== 'undefined') {
+                targetWords = FULL_WORD_LIST.slice(start, end).filter(w => w.word !== "（準備中）");
+            }
+        }
 
         // 3. Generate Questions
         let questions = [];
@@ -324,6 +388,48 @@
         let isAnswering = false;
         let remainingHints = 3;
         let isHintUsed = false;
+
+        function showDifficultySelector() {
+            const stage = parseInt(stageParam);
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = `
+                <div class="card">
+                    <div style="font-size:20px; font-weight:bold; color:#333; text-align:center;">段階練習 ${stage} · 选择难度</div>
+                    <div class="difficulty-select">
+                        <button class="difficulty-btn" onclick="selectDifficulty('easy')"><div style="font-weight:bold;">🟢 简单</div><div style="color:#777; font-size:13px;">20题 · HP20 · 错1题扣2血</div></button>
+                        <button class="difficulty-btn" onclick="selectDifficulty('hard')"><div style="font-weight:bold;">🟠 困难</div><div style="color:#777; font-size:13px;">20题 · HP20 · 错1题扣4血</div></button>
+                        <button class="difficulty-btn" onclick="selectDifficulty('hell')"><div style="font-weight:bold;">🔴 地狱</div><div style="color:#777; font-size:13px;">20题 · HP20 · 错1题扣5血 · 每题10秒</div></button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectDifficulty(level) { selectedDifficulty = level; hp = 20; clearedCount = 0; initQuiz(); }
+        function clearTimer() { if (timerId) { clearInterval(timerId); timerId = null; } }
+        function startTimer() {
+            clearTimer();
+            if (!(isStageMode && selectedDifficulty === 'hell')) return;
+            timeLeft = 10;
+            const timerEl = document.getElementById('timer-pill');
+            if (timerEl) timerEl.textContent = `⏱ ${timeLeft}s`;
+            timerId = setInterval(() => {
+                timeLeft--;
+                const el = document.getElementById('timer-pill');
+                if (el) el.textContent = `⏱ ${timeLeft}s`;
+                if (timeLeft <= 0) { clearTimer(); handleTimeout(); }
+            }, 1000);
+        }
+        function handleTimeout() { if (!isAnswering) return; checkAnswer(null, null, true); }
+        function showHpDamage(damage) {
+            const hpPill = document.getElementById('hp-pill');
+            if (!hpPill) return;
+            hpPill.classList.remove('hit'); void hpPill.offsetWidth; hpPill.classList.add('hit');
+            const fx = document.createElement('span');
+            fx.className = 'hp-damage-float';
+            fx.textContent = `-${damage}❤️`;
+            hpPill.appendChild(fx);
+            setTimeout(() => { fx.remove(); hpPill.classList.remove('hit'); }, 850);
+        }
 
         function initQuiz() {
             if (targetWords.length === 0) {
@@ -419,17 +525,20 @@
                 optionsHtml += `<div class="option-btn" onclick="checkAnswer(this, '${opt}')">${opt}</div>`;
             });
 
+            const inStageChallenge = isStageMode && !!selectedDifficulty;
+            const diffText = inStageChallenge ? `<span class="status-pill">难度: ${difficultyMap[selectedDifficulty].label}</span>` : '';
+            const hpText = inStageChallenge ? `<span class="status-pill hp-pill" id="hp-pill">❤️ HP: ${hp}</span>` : '';
+            const timerText = selectedDifficulty === 'hell' ? `<span class="status-pill timer-pill" id="timer-pill">⏱ 10s</span>` : '';
+
             container.innerHTML = `
                 <div class="card">
                     <div>
                         <div class="question-header">
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <span>Q: ${currentQuestionIndex + 1} / ${questions.length}</span>
-                                <button id="hint-btn" class="hint-btn ${remainingHints <= 0 ? 'disabled' : ''}" onclick="useHint()">
-                                    💡 提示 (${remainingHints})
-                                </button>
+                                ${inStageChallenge ? `${diffText}${selectedDifficulty === 'hell' ? timerText : ''}` : `<button id="hint-btn" class="hint-btn ${remainingHints <= 0 ? 'disabled' : ''}" onclick="useHint()">💡 提示 (${remainingHints})</button>`}
                             </div>
-                            <span>Score: ${score}</span>
+                            ${inStageChallenge ? hpText : `<span>Score: ${score}</span>`}
                         </div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${progress}%"></div>
@@ -439,7 +548,7 @@
                     <div class="question-text">
                         <div class="question-jp">${q.questionHtml}</div>
                         <div class="question-cn">${q.cn}</div>
-                        <div id="hint-area" class="hint-display"></div>
+                        ${inStageChallenge ? '' : `<div id="hint-area" class="hint-display"></div>`}
                     </div>
 
                     <div class="options-grid">
@@ -448,6 +557,7 @@
                 </div>
             `;
             isAnswering = true;
+            startTimer();
         }
 
         function useHint() {
@@ -494,41 +604,48 @@
             }, 2000);
         }
 
-        function checkAnswer(btn, selected) {
+        function checkAnswer(btn, selected, isTimeout = false) {
             if (!isAnswering) return;
             isAnswering = false;
+            clearTimer();
 
             const q = questions[currentQuestionIndex];
-            const isCorrect = selected === q.correctAnswer;
-            
-            // Highlight buttons
+            const isCorrect = !isTimeout && selected === q.correctAnswer;
+
             const buttons = document.querySelectorAll('.option-btn');
             buttons.forEach(b => {
-                b.classList.add('disabled'); // Disable all
-                if (b.innerText === q.correctAnswer) {
-                    b.classList.add('correct'); // Show correct
-                }
-                if (b.innerText === selected && !isCorrect) {
-                    b.classList.add('wrong'); // Show error
-                    
-                    // --- Auto-add to Difficult Words ---
-                    const wordId = q.word.word; // Base form
+                b.classList.add('disabled');
+                if (b.innerText === q.correctAnswer) b.classList.add('correct');
+                if (!isTimeout && b.innerText === selected && !isCorrect) b.classList.add('wrong');
+            });
+
+            if (!isCorrect) {
+                if (!(isStageMode && selectedDifficulty)) {
+                    const wordId = q.word.word;
                     const key = 'n1_verbs_star_' + wordId;
-                    
                     if (localStorage.getItem(key) !== 'true') {
                         localStorage.setItem(key, 'true');
                         showToast(`「${wordId}」を難詞に追加しました`);
                     }
-                    // -----------------------------------
                 }
-            });
-
-            if (isCorrect) {
-                score++;
-                setTimeout(nextQuestion, 800); // Faster transition for correct
+                if (isTimeout) showToast('⏰ 时间到，判定错误');
+                if (isStageMode && selectedDifficulty) {
+                    const damage = difficultyMap[selectedDifficulty].damage;
+                    hp = Math.max(0, hp - damage);
+                    const hpPill = document.getElementById('hp-pill');
+                    if (hpPill) hpPill.textContent = `❤️ HP: ${hp}`;
+                    showHpDamage(damage);
+                }
             } else {
-                setTimeout(nextQuestion, 2000); // Slower for incorrect (gave more time to read toast)
+                score++;
             }
+
+            clearedCount++;
+            if (isStageMode && selectedDifficulty && hp <= 0) {
+                setTimeout(renderResult, 1200);
+                return;
+            }
+            setTimeout(nextQuestion, isCorrect ? 800 : 2000);
         }
 
         function nextQuestion() {
@@ -541,14 +658,17 @@
         }
 
         function renderResult() {
+            clearTimer();
             const container = document.getElementById('quiz-container');
             const percentage = Math.round((score / questions.length) * 100);
-            
-            let msg = "頑張りました！";
-            if (percentage === 100) msg = "没什么好说的了，老铁🧎";
-            else if (percentage >= 80) msg = "不戳哦，来，整一杯！🍷";
-            else if (percentage >= 60) msg = "未来可期です！👍";
-            
+            let msg = '稳扎稳打，继续冲！';
+            if (percentage === 100) msg = '满分通关！你就是词汇关卡里的最终Boss。';
+            else if (percentage >= 85) msg = '火力全开，差一点就无伤通关了！';
+            else if (percentage >= 70) msg = '状态很好，再打一轮就能轻松破纪录。';
+            else if (percentage >= 50) msg = '已经找到节奏了，复盘后会明显变强。';
+            else msg = '这轮是热身局，下一把开始逆袭！';
+            if (isStageMode && selectedDifficulty && hp <= 0) msg = `💀 血量归零，本次挑战结束！${msg}`;
+
             container.innerHTML = `
                 <div class="result-view">
                     <div class="score-circle">
@@ -556,15 +676,19 @@
                         <div class="score-label">/ ${questions.length}</div>
                     </div>
                     <div class="result-msg">${msg}</div>
-                    
+                    <div class="result-sub">闯关数：${clearedCount} / ${questions.length}${isStageMode && selectedDifficulty ? ` · 剩余HP：${hp}` : ''}</div>
                     <button class="action-btn" onclick="location.reload()">もう一度練習する</button>
                     <button class="action-btn secondary" onclick="location.href='verbs_n1.html'">単語リストに戻る</button>
                 </div>
             `;
         }
 
-        // Start
-        initQuiz();
+        function startApp() {
+            if (isStageMode && !selectedDifficulty) { showDifficultySelector(); return; }
+            initQuiz();
+        }
+
+        startApp();
 
     </script>
 </body>
