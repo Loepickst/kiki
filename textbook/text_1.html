@@ -633,6 +633,8 @@
         let currentQuestionIndex = 0;
         let currentPracticeMode = 'choice'; // 'choice' or 'sort'
         let currentSortAnswer = []; // 排序题当前用户答案
+        let practiceScore = 0;
+        let practiceWrongQuestions = [];
 
         // 课程标题映射 (从 try-n1.html 提取)
         const chapterTitles = {
@@ -901,6 +903,21 @@
             navigateTo('practiceSelect');
         }
 
+        function getPracticeQuestionKey(item) {
+            const answerPart = typeof item.answer !== 'undefined' ? String(item.answer) : (item.answerOrder || []).join('-');
+            const optionsPart = Array.isArray(item.options) ? item.options.join('|') : '';
+            return `${item.question || item.displayQuestion || ''}__${optionsPart}__${answerPart}`;
+        }
+
+        function addPracticeWrongQuestion(item) {
+            const key = getPracticeQuestionKey(item);
+            if (!practiceWrongQuestions.some(q => q.__wrongKey === key)) {
+                const copied = JSON.parse(JSON.stringify(item));
+                copied.__wrongKey = key;
+                practiceWrongQuestions.push(copied);
+            }
+        }
+
         function startPracticeMode(mode) {
             currentPracticeMode = mode;
             const data = questionData[currentLessonId];
@@ -920,6 +937,7 @@
             
             currentQuestionIndex = 0;
             practiceScore = 0;
+            practiceWrongQuestions = [];
             
             const displayTitle = chapterTitles[currentLessonId] || ("第" + currentLessonId + "课");
             document.getElementById('practiceTitle').innerText = displayTitle + (mode === 'choice' ? " - 选择题" : " - 排序题");
@@ -1026,9 +1044,12 @@
                 correctBtn.querySelector('.status-mark').innerHTML = '<span style="color:#2ecc71; font-weight:bold; font-size:1.2rem;">⭕</span>';
 
                 // 记录错题
-                if (item.grammarId && !mistakes.includes(item.grammarId)) {
-                    mistakes.push(item.grammarId);
-                    localStorage.setItem('n1_mistakes', JSON.stringify(mistakes));
+                if (item.grammarId) {
+                    if (!mistakes.includes(item.grammarId)) {
+                        mistakes.push(item.grammarId);
+                        localStorage.setItem('n1_mistakes', JSON.stringify(mistakes));
+                    }
+                    addPracticeWrongQuestion(item);
                 }
             }
 
@@ -1139,9 +1160,12 @@
             if (isCorrect) {
                 practiceScore += 20; // 排序题分值高一点? 暂定20
             } else {
-                if (item.grammarId && !mistakes.includes(item.grammarId)) {
-                    mistakes.push(item.grammarId);
-                    localStorage.setItem('n1_mistakes', JSON.stringify(mistakes));
+                if (item.grammarId) {
+                    if (!mistakes.includes(item.grammarId)) {
+                        mistakes.push(item.grammarId);
+                        localStorage.setItem('n1_mistakes', JSON.stringify(mistakes));
+                    }
+                    addPracticeWrongQuestion(item);
                 }
             }
             
@@ -1160,27 +1184,73 @@
             renderQuestion();
         }
 
+        function viewPracticeMistakes() {
+            if (practiceWrongQuestions.length === 0) {
+                alert('本次练习没有错题可回顾！');
+                return;
+            }
+
+            practiceQueue = JSON.parse(JSON.stringify(practiceWrongQuestions));
+            currentQuestionIndex = 0;
+            practiceScore = 0;
+
+            const displayTitle = chapterTitles[currentLessonId] || ("第" + currentLessonId + "课");
+            document.getElementById('practiceTitle').innerText = displayTitle + (currentPracticeMode === 'choice' ? " - 选择题" : " - 排序题") + " · 错题回顾";
+
+            navigateTo('practice');
+            renderQuestion();
+        }
+
         function showPracticeResult(container) {
-            const total = currentPracticeQueue.length * (currentPracticeMode === 'choice' ? 10 : 20);
-            const percentage = Math.round((practiceScore / total) * 100);
-            
+            const unitScore = currentPracticeMode === 'choice' ? 10 : 20;
+            const total = practiceQueue.length * unitScore;
+            const percentage = total > 0 ? Math.round((practiceScore / total) * 100) : 0;
+
             let emoji = '🎉';
-            if(percentage < 60) emoji = '💪';
-            if(percentage === 100) emoji = '🏆';
+            let comment = '状态在线，继续保持这个节奏。';
+            if (percentage === 100) {
+                emoji = '👑';
+                comment = '语法之神降临！全对通关，出题老师看了都想鼓掌。';
+            } else if (percentage >= 90) {
+                emoji = '🚀';
+                comment = '火力全开！你已经在 N1 赛道上进入超车道了。';
+            } else if (percentage >= 80) {
+                emoji = '🌟';
+                comment = '表现亮眼！只差几步就是“满分选手”称号。';
+            } else if (percentage >= 70) {
+                emoji = '🔥';
+                comment = '稳中有进！把这轮错题再刷一遍，战力还能再涨。';
+            } else if (percentage >= 60) {
+                emoji = '💪';
+                comment = '及格线守住了！再练一轮，马上就能从“会做”到“做快”。';
+            } else if (percentage >= 40) {
+                emoji = '🛠️';
+                comment = '这轮像在打 Boss 前热身，先复盘错题，下一把会明显提升。';
+            } else {
+                emoji = '📚';
+                comment = '别慌，这是升级前的必经关卡。先看错题，再开一把逆袭局！';
+            }
 
             container.innerHTML = `
                 <div class="practice-card" style="text-align:center; padding:50px 30px;">
                     <div style="font-size:5rem; margin-bottom:20px;">${emoji}</div>
                     <h2 style="color:#2c3e50; margin-bottom:10px;">练习完成!</h2>
-                    <div style="font-size:1.2rem; color:#7f8c8d; margin-bottom:30px;">
+                    <div style="font-size:1.2rem; color:#7f8c8d; margin-bottom:8px;">
                         得分: <span style="color:var(--accent); font-weight:bold; font-size:2rem;">${practiceScore}</span> / ${total}
                     </div>
+                    <div style="font-size:1rem; color:#7f8c8d; margin-bottom:10px;">
+                        正确率: <span style="font-weight:bold; color:#2c3e50;">${percentage}%</span>
+                    </div>
+                    <div style="font-size:1rem; color:#34495e; margin-bottom:26px;">${comment}</div>
                     
                     <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
-                        <button class="nav-btn" onclick="startPracticeMode('${currentPracticeMode}')" style="background:var(--blue); color:white; border:none; padding:12px 30px;">
-                            🔄 再练一次
+                        <button class="nav-btn" onclick="startPracticeMode('${currentPracticeMode}')" style="background:var(--blue); color:white; border:none; padding:12px 24px;">
+                            🔄 重新练习
                         </button>
-                        <button class="nav-btn" onclick="quitPracticeSelect()" style="padding:12px 30px;">
+                        <button class="nav-btn" onclick="viewPracticeMistakes()" style="background:#fff5f5; color:var(--accent); border:1px solid var(--accent); padding:12px 24px;">
+                            📒 查看错题
+                        </button>
+                        <button class="nav-btn" onclick="quitPracticeSelect()" style="padding:12px 24px;">
                             ↩ 返回目录
                         </button>
                     </div>

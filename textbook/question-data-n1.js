@@ -251,7 +251,7 @@ const questionData = {
     {
       "id": "c1_20",
       "grammarId": 4,
-      "question": "<ruby>今<rt>こん</rt></ruby><ruby>回<rt>かい</rt></ruby>の<ruby>新<rt>しん</rt></ruby><ruby>製<rt>せい</rt></ruby><ruby>品<rt>ひん</rt></ruby><ruby>発<rt>はっ</rt></ruby><ruby>表<rt>ぴょう</rt></ruby><ruby>会<rt>かい</rt></ruby>では、ライバル<ruby>他<rt>た</rt></ruby><ruby>社<rt>しゃ</rt></ruby>の<ruby>動<rt>どう</rt></ruby><ruby>向<rt>こう</rt></ruby>が<ruby>常<rt>つね</rt></ruby>（　　　）<ruby>注<rt>ちゅう</rt></ruby><ruby>目<rt>もく</rt></ruby>されている。",
+      "question": "<ruby>今<rt>こん</rt></ruby><ruby>回<rt>かい</rt></ruby>の<ruby>新<rt>しん</rt></ruby><ruby>製<rt>せい</rt></ruby><ruby>品<rt>ひん</rt></ruby><ruby>発<rt>はっ</rt></ruby><ruby>表<rt>ぴょう</rt></ruby><ruby>会<rt>かい</rt></ruby>では、ライバル<ruby>他<rt>た</rt></ruby><ruby>社<rt>しゃ</rt></ruby>の<ruby>動<rt>どう</rt></ruby><ruby>向<rt>こう</rt></ruby>がいつも（　　　）<ruby>注<rt>ちゅう</rt></ruby><ruby>目<rt>もく</rt></ruby>されている。",
       "options": [
         "にもまして",
         "に限って",

@@ -47,7 +47,7 @@ const grammarData = [
     "lesson": "第1課",
     "meaning": "以…为开端 / 从…开始",
     "connection": "名词 + を皮切りに（して） / を皮切りとして",
-    "desc": "表示<b>以某件事为起点</b>，随后<b>类似的事情接连发生</b>或<b>范围不断扩大</b>。通常用于<b>积极的发展</b>，不用于自然现象或坏事。",
+    "desc": "表示<b>以某件事为起点</b>，随后<b>类似的事情接连发生</b>或<b>范围不断扩大</b>。多用于描述事情<b>积极的发展</b>。",
     "examples": [
       {
         "jp": "<b>この<ruby>展<rt>てん</rt></ruby><ruby>覧<rt>らん</rt></ruby><ruby>会<rt>かい</rt></ruby>は、<ruby>東<rt>とう</rt></ruby><ruby>京<rt>きょう</rt></ruby><span style='color:#d64045'>を<ruby>皮<rt>かわ</rt></ruby><ruby>切<rt>き</rt></ruby>りに</span><ruby>全<rt>ぜん</rt></ruby><ruby>国<rt>こく</rt></ruby><ruby>各<rt>かく</rt></ruby><ruby>地<rt>ち</rt></ruby>で<ruby>行<rt>おこな</rt></ruby>われる。</b>",
