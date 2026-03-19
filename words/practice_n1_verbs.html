@@ -322,6 +322,7 @@
         const stageParam = urlParams.get('stage');
         const modeParam = urlParams.get('mode');
         const isStageMode = !!stageParam;
+        const isChallengeMode = isStageMode || modeParam === 'final';
         let targetWords = [];
         let selectedDifficulty = null;
         let hp = 20;
@@ -408,7 +409,7 @@
         function clearTimer() { if (timerId) { clearInterval(timerId); timerId = null; } }
         function startTimer() {
             clearTimer();
-            if (!(isStageMode && selectedDifficulty === 'hell')) return;
+            if (!(isChallengeMode && selectedDifficulty === 'hell')) return;
             timeLeft = 10;
             const timerEl = document.getElementById('timer-pill');
             if (timerEl) timerEl.textContent = `⏱ ${timeLeft}s`;
@@ -525,7 +526,7 @@
                 optionsHtml += `<div class="option-btn" onclick="checkAnswer(this, '${opt}')">${opt}</div>`;
             });
 
-            const inStageChallenge = isStageMode && !!selectedDifficulty;
+            const inStageChallenge = isChallengeMode && !!selectedDifficulty;
             const diffText = inStageChallenge ? `<span class="status-pill">难度: ${difficultyMap[selectedDifficulty].label}</span>` : '';
             const hpText = inStageChallenge ? `<span class="status-pill hp-pill" id="hp-pill">❤️ HP: ${hp}</span>` : '';
             const timerText = selectedDifficulty === 'hell' ? `<span class="status-pill timer-pill" id="timer-pill">⏱ 10s</span>` : '';
@@ -620,7 +621,7 @@
             });
 
             if (!isCorrect) {
-                if (!(isStageMode && selectedDifficulty)) {
+                if (!(isChallengeMode && selectedDifficulty)) {
                     const wordId = q.word.word;
                     const key = 'n1_verbs_star_' + wordId;
                     if (localStorage.getItem(key) !== 'true') {
@@ -629,7 +630,7 @@
                     }
                 }
                 if (isTimeout) showToast('⏰ 时间到，判定错误');
-                if (isStageMode && selectedDifficulty) {
+                if (isChallengeMode && selectedDifficulty) {
                     const damage = difficultyMap[selectedDifficulty].damage;
                     hp = Math.max(0, hp - damage);
                     const hpPill = document.getElementById('hp-pill');
@@ -641,7 +642,7 @@
             }
 
             clearedCount++;
-            if (isStageMode && selectedDifficulty && hp <= 0) {
+            if (isChallengeMode && selectedDifficulty && hp <= 0) {
                 setTimeout(renderResult, 1200);
                 return;
             }
@@ -667,7 +668,7 @@
             else if (percentage >= 70) msg = '状态很好，再打一轮就能轻松破纪录。';
             else if (percentage >= 50) msg = '已经找到节奏了，复盘后会明显变强。';
             else msg = '这轮是热身局，下一把开始逆袭！';
-            if (isStageMode && selectedDifficulty && hp <= 0) msg = `💀 血量归零，本次挑战结束！${msg}`;
+            if (isChallengeMode && selectedDifficulty && hp <= 0) msg = `💀 血量归零，本次挑战结束！${msg}`;
 
             container.innerHTML = `
                 <div class="result-view">
@@ -676,7 +677,7 @@
                         <div class="score-label">/ ${questions.length}</div>
                     </div>
                     <div class="result-msg">${msg}</div>
-                    <div class="result-sub">闯关数：${clearedCount} / ${questions.length}${isStageMode && selectedDifficulty ? ` · 剩余HP：${hp}` : ''}</div>
+                    <div class="result-sub">闯关数：${clearedCount} / ${questions.length}${isChallengeMode && selectedDifficulty ? ` · 剩余HP：${hp}` : ''}</div>
                     <button class="action-btn" onclick="location.reload()">もう一度練習する</button>
                     <button class="action-btn secondary" onclick="location.href='verbs_n1.html'">単語リストに戻る</button>
                 </div>
@@ -684,7 +685,7 @@
         }
 
         function startApp() {
-            if (isStageMode && !selectedDifficulty) { showDifficultySelector(); return; }
+            if (isChallengeMode && !selectedDifficulty) { showDifficultySelector(); return; }
             initQuiz();
         }
 
