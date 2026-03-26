@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解 - 2010年12月 短文（四）</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #3b5998; 
+            --sub-color: #787878;
+            --note-bg: #f4f6f9; 
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 80px 15px 120px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 顶部控制栏 */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) { .toggle-btn:hover { background: var(--accent-color); color: white; } }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        .container {
+            max-width: 720px; width: 100%;
+            background: var(--paper-color); padding: 50px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box; border-radius: 8px;
+        }
+
+        .header-title { 
+            text-align: center; margin-top: 0; margin-bottom: 40px; 
+            font-size: 1.3rem; color: var(--text-color); border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        /* 文章段落基础样式 */
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.2; 
+            text-align: justify; margin: 0 0 20px 0;
+            text-indent: 1em; 
+        }
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        /* 统一控制[解析]模式的显示 */
+        .analysis-element { display: none; }
+        body.show-analysis .analysis-element { display: block; }
+
+        /* 译文区块 */
+        .translation {
+            margin: -5px 0 30px 0; font-size: 0.95rem;
+            color: #5a626b; line-height: 1.8; padding: 15px 20px;
+            background-color: #f7f8f9; font-family: var(--chinese-font);
+            border-left: 3px solid #ddd; text-align: justify;
+        }
+        .translation::before { content: "訳"; display: block; font-size: 0.75rem; color: #aaa; margin-bottom: 5px; font-weight: bold; }
+
+        /* --- 内联句法交互 (重点高亮与展开) --- */
+        .key-sentence {
+            transition: 0.3s ease;
+        }
+        
+        body.show-analysis .key-sentence {
+            background-color: rgba(59, 89, 152, 0.06); 
+            border-bottom: 2px dashed #baccf1;
+            cursor: pointer;
+            border-radius: 3px;
+            padding: 2px 0;
+        }
+
+        body.show-analysis .key-sentence:hover {
+            background-color: rgba(59, 89, 152, 0.12);
+        }
+
+        body.show-analysis .key-sentence.active {
+            background-color: rgba(216, 67, 21, 0.08); 
+            border-bottom-color: #e74c3c;
+        }
+
+        .sentence-badge {
+            display: none;
+        }
+
+        body.show-analysis .sentence-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            background-color: var(--accent-color); color: white;
+            font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;
+            margin: 0 6px; vertical-align: middle;
+            font-family: var(--chinese-font); font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateY(-2px); transition: 0.3s;
+        }
+
+        body.show-analysis .key-sentence:hover .sentence-badge {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        body.show-analysis .key-sentence.active .sentence-badge {
+            background-color: #e74c3c;
+        }
+
+        .inline-note-container {
+            display: none;
+            background-color: #fff; border-left: 4px solid #e74c3c;
+            padding: 15px 20px; margin: 15px 0 15px -1em; 
+            font-size: 0.95rem; color: #444; box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            font-family: var(--chinese-font); border-radius: 0 6px 6px 0;
+            text-indent: 0; line-height: 1.8; cursor: text;
+        }
+
+        .key-sentence.active .inline-note-container {
+            display: block; 
+        }
+
+        .inline-note-title {
+            font-weight: bold; color: #e74c3c; margin-bottom: 8px;
+            font-size: 1rem; display: flex; align-items: center;
+        }
+        /* ------------------------------------------- */
+
+        /* 实战演练区 (设问与选项辨析) */
+        .qa-section {
+            margin-top: 50px; border-top: 2px solid #f0f0f0; padding-top: 40px; font-family: var(--chinese-font);
+        }
+        .question-title { font-size: 1.1rem; color: var(--text-color); margin-bottom: 25px; font-weight: bold; font-family: var(--japanese-font); line-height: 1.6; }
+        
+        .option-item {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 15px;
+            cursor: pointer; transition: 0.2s; overflow: hidden;
+        }
+        .option-item:hover { border-color: var(--accent-color); box-shadow: 0 2px 10px rgba(59, 89, 152, 0.1); }
+        
+        /* 选中状态及答案判定（学生答题用，解析模式下隐藏） */
+        body:not(.show-analysis) .option-item.answered-correct {
+            border-color: #38a169;
+            background-color: rgba(56, 161, 105, 0.05);
+        }
+        body:not(.show-analysis) .option-item.answered-wrong {
+            border-color: #e53e3e;
+            background-color: rgba(229, 62, 62, 0.05);
+        }
+        body:not(.show-analysis) .option-item.answered-correct .option-number::after {
+            content: " ⭕";
+            font-size: 1rem;
+            color: #38a169;
+        }
+        body:not(.show-analysis) .option-item.answered-wrong .option-number::after {
+            content: " ❌";
+            font-size: 1rem;
+            color: #e53e3e;
+        }
+
+        /* 仅在解析模式下显示正确答案的绿边 */
+        body.show-analysis .option-item.is-correct {
+            border-left: 4px solid #38a169;
+        }
+
+        /* 仅在解析模式下显示选项的注音（非解析模式隐藏rt标签） */
+        body:not(.show-analysis) .option-content rt {
+            display: none;
+        }
+
+        .option-content { padding: 15px 20px; display: flex; align-items: flex-start; font-family: var(--japanese-font); }
+        .option-number { font-weight: bold; color: var(--accent-color); margin-right: 15px; font-family: var(--chinese-font); white-space: nowrap; }
+        
+        .option-text-group { display: flex; flex-direction: column; }
+        
+        /* 仅在解析模式下显示翻译 */
+        .option-translation { display: none; font-size: 0.85rem; color: #718096; margin-top: 4px; font-family: var(--chinese-font); }
+        body.show-analysis .option-translation { display: block; }
+
+        .option-explanation {
+            display: none; padding: 15px 20px; background: #f8fafc; border-top: 1px dashed #e2e8f0;
+            font-size: 0.95rem; color: #4a5568; line-height: 1.7;
+        }
+        body.show-analysis .option-item.expanded .option-explanation { display: block; }
+        
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 8px; }
+        .badge.wrong { background: #e53e3e; }
+        .badge.correct { background: #38a169; }
+
+        /* 文章导航区 */
+        .article-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px dashed #f0f0f0;
+        }
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: #ffffff;
+            color: var(--accent-color);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: var(--chinese-font);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 1px solid #d0dcf2;
+            box-shadow: 0 2px 4px rgba(59, 89, 152, 0.05);
+        }
+        .nav-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(59, 89, 152, 0.15);
+        }
+        .nav-btn.disabled {
+            opacity: 0.5; pointer-events: none; background: #f8fafc; color: #a0aec0; border-color: #e2e8f0; box-shadow: none;
+        }
+
+        /* 音频播放器 */
+        .audio-wrapper { position: fixed; bottom: 0; left: 0; right: 0; z-index: 2000; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 15px 20px 25px 20px; display: flex; justify-content: center; border-top: 1px solid rgba(0,0,0,0.05); box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+        .audio-player { display: flex; align-items: center; width: 100%; max-width: 600px; }
+        .play-btn { width: 36px; height: 36px; border-radius: 50%; background-color: var(--accent-color); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 12px; flex-shrink: 0; transition: transform 0.2s; padding: 0; }
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+        .progress-container { flex-grow: 1; height: 20px; display: flex; align-items: center; margin-right: 12px; cursor: pointer; position: relative; }
+        .progress-bg { width: 100%; height: 4px; background-color: #f0f0f0; border-radius: 2px; position: relative; }
+        .progress-bar { height: 100%; background-color: var(--accent-color); width: 0%; border-radius: 2px; position: relative; }
+        .progress-bar::after { content: ""; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background-color: white; border: 2px solid var(--accent-color); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .time-display { font-size: 0.7rem; color: #999; width: 70px; text-align: right; font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
+        .loop-btn { background: none; border: none; cursor: pointer; padding: 8px; margin-left: 8px; opacity: 0.5; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .loop-btn.active { opacity: 1; color: var(--accent-color); }
+        .loop-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        /* 播放速度按钮 */
+        .speed-btn {
+            background: none; border: 1px solid #ccc; border-radius: 4px;
+            cursor: pointer; padding: 2px 6px; margin-left: 8px;
+            font-size: 0.75rem; color: #787878; transition: all 0.2s;
+            font-family: var(--chinese-font); font-variant-numeric: tabular-nums;
+            font-weight: 500;
+        }
+        .speed-btn.active {
+            color: var(--accent-color); border-color: var(--accent-color); background: rgba(59, 89, 152, 0.05);
+        }
+
+        .footer { margin-top: 50px; color: #ccc; font-size: 0.8rem; letter-spacing: 3px; }
+
+        @media (max-width: 768px) {
+            /* 页面整体与标题 */
+            .container { padding: 30px 18px 90px; }
+            .header-title { font-size: 1.15rem; margin-bottom: 25px; text-align: center; }
+            
+            /* 正文排版：字号略缩，增加行高和字间距，提升呼吸感 */
+            p.japanese { font-size: 0.95rem; line-height: 2.2; letter-spacing: 0.05em; margin-bottom: 25px; }
+            p.japanese rt { font-size: 0.55rem; }
+            
+            /* 重点句与解析弹窗 */
+            .key-sentence { padding: 2px 0; }
+            .inline-note-container { margin: 15px 0 0 0; padding: 15px; font-size: 0.85rem; line-height: 1.6; border-radius: 8px; }
+            
+            /* 题目区域 */
+            .qa-section { margin-top: 35px; padding-top: 30px; }
+            .question-title { font-size: 1rem; margin-bottom: 20px; padding: 0 5px; }
+            .option-content { padding: 12px 15px; }
+            .option-text-group span { font-size: 0.95rem; line-height: 1.5; }
+            .option-explanation { padding: 12px 15px; font-size: 0.85rem; }
+            
+            /* 顶部栏与按钮 */
+            .top-bar { padding: 0 15px; height: 55px; }
+            .toggle-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+            
+            /* 播放器区域缩放 */
+            .audio-wrapper { padding: 10px 15px 20px; }
+            .speed-btn { padding: 2px 6px; font-size: 0.7rem; }
+            .time-display { width: 55px; font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="../read_jlpt.html?level=N1&type=short" class="toggle-btn" style="text-decoration: none;">← 戻る</a>
+    <div id="today-date">N1真题・名文鑑賞</div>
+    <div class="top-bar-controls">
+        <button id="analysis-btn" class="toggle-btn" onclick="toggleAnalysis()">解析</button>
+    </div>
+</div>
+
+<div class="container">
+    <h2 class="header-title">2010年12月 短文（四）</h2>
+
+    <div class="article-content">
+        <p class="japanese">
+            データが<ruby>示<rt>しめ</rt></ruby>す<ruby>姿<rt>すがた</rt></ruby>は<ruby>光<rt>ひかり</rt></ruby>の<ruby>部<rt>ぶ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>もあれば<ruby>影<rt>かげ</rt></ruby>の<ruby>部<rt>ぶ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>もある。
+            
+            <!-- 句子一：可点击交互 -->
+            <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                そのどちらか<ruby>一<rt>いっ</rt></ruby><ruby>方<rt>ぽう</rt></ruby>だけを<ruby>強<rt>きょう</rt></ruby><ruby>調<rt>ちょう</rt></ruby>することは、<ruby>分<rt>わ</rt></ruby>かりやすさという<ruby>面<rt>めん</rt></ruby>はあるものの、いたずらに<ruby>対<rt>たい</rt></ruby><ruby>立<rt>りつ</rt></ruby><ruby>軸<rt>じく</rt></ruby>を<ruby>先<rt>せん</rt></ruby><ruby>鋭<rt>えい</rt></ruby><ruby>化<rt>か</rt></ruby>させたり、<ruby>無<rt>む</rt></ruby><ruby>用<rt>よう</rt></ruby>の<ruby>混<rt>こん</rt></ruby><ruby>乱<rt>らん</rt></ruby>を<ruby>生<rt>しょう</rt></ruby>じさせる<ruby>危<rt>き</rt></ruby><ruby>険<rt>けん</rt></ruby><ruby>性<rt>せい</rt></ruby>がある。
+                <span class="sentence-badge">提出隐患</span>
+                <span class="inline-note-container">
+                    <span class="inline-note-title">💡 構文の役割と意味</span>
+                    作者在此指出了片面解读数据的隐患。虽然「一方だけを強調する」（只强调其中一方）能带来「分かりやすさ」（通俗易懂），但却隐藏着「無用の混乱を生じさせる」（引发不必要混乱）的危险。
+                </span>
+            </span>
+
+            これらをいちいち<ruby>意<rt>い</rt></ruby><ruby>識<rt>しき</rt></ruby>しているのは<ruby>大<rt>たい</rt></ruby><ruby>変<rt>へん</rt></ruby>であるが、<ruby>少<rt>すく</rt></ruby>なくともデータをやみくもに<ruby>信<rt>しん</rt></ruby>じてしまう<ruby>態<rt>たい</rt></ruby><ruby>度<rt>ど</rt></ruby>だけはとるべきでない。
+        </p>
+
+        <p class="japanese">
+            <!-- 句子二：可点击交互 -->
+            <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                データの<ruby>罠<rt>わな</rt></ruby>を<ruby>見<rt>み</rt></ruby><ruby>分<rt>わ</rt></ruby>ける<ruby>力<rt>ちから</rt></ruby>、すなわちデータリテラシーは、<ruby>多<rt>おお</rt></ruby>くの<ruby>人<rt>ひと</rt></ruby>にとって<ruby>必<rt>ひつ</rt></ruby><ruby>要<rt>よう</rt></ruby>なものではあるが、<ruby>本<rt>ほん</rt></ruby><ruby>来<rt>らい</rt></ruby>は、<ruby>公<rt>こう</rt></ruby><ruby>平<rt>へい</rt></ruby>で<ruby>客<rt>きゃっ</rt></ruby><ruby>観<rt>かん</rt></ruby><ruby>的<rt>てき</rt></ruby><ruby>報<rt>ほう</rt></ruby><ruby>道<rt>どう</rt></ruby>に<ruby>努<rt>つと</rt></ruby>めるべきメディアに<ruby>携<rt>たずさ</rt></ruby>わる<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>が、しっかりと<ruby>備<rt>そな</rt></ruby>えていなければならない<ruby>必<rt>ひっ</rt></ruby><ruby>須<rt>す</rt></ruby>の<ruby>条<rt>じょう</rt></ruby><ruby>件<rt>けん</rt></ruby>である。
+                <span class="sentence-badge">表明主旨</span>
+                <span class="inline-note-container">
+                    <span class="inline-note-title">💡 構文の役割と意味</span>
+                    给出最终结论。「データの罠を見分ける力」（识破数据陷阱的能力）对大众很重要，但这「本来は」（原本应该是）那些致力于客观报道的「メディアに携わる人間」（媒体从业人员）所必须具备的条件。完美点明了对媒体人的核心要求。
+                </span>
+            </span>
+        </p>
+        
+        <div class="translation analysis-element">数据所呈现出来的面貌，既有光鲜的一面，也有阴暗的一面。如果仅仅强调其中某一方，虽然有通俗易懂的优点，但却存在徒然激化对立矛盾、引发无谓混乱的危险。<br>想要把这些都一一意识到是很困难的，但至少我们不应该采取盲目相信数据的态度。识破数据陷阱的能力，也就是数据素养，虽然对许多人来说都是必要的，但这原本应该是那些致力于公平、客观报道的媒体从业人员所必须牢牢具备的首要条件。</div>
+    </div>
+
+    <!-- 实战演练区 -->
+    <div class="qa-section">
+        <div class="question-title">
+            <ruby>問<rt>とい</rt></ruby>：<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>によると、<ruby>報<rt>ほう</rt></ruby><ruby>道<rt>どう</rt></ruby>に<ruby>携<rt>たずさ</rt></ruby>わる<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>が<ruby>備<rt>そな</rt></ruby>えておくべき<ruby>必<rt>ひっ</rt></ruby><ruby>須<rt>す</rt></ruby><ruby>条<rt>じょう</rt></ruby><ruby>件<rt>けん</rt></ruby>とは<ruby>何<rt>なに</rt></ruby>か。
+        </div>
+        
+        <div class="option-item" onclick="toggleOption(this)">
+            <div class="option-content">
+                <span class="option-number">1</span>
+                <div class="option-text-group">
+                    <span><ruby>示<rt>しめ</rt></ruby>されたデータから<ruby>影<rt>かげ</rt></ruby>の<ruby>部<rt>ぶ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>を<ruby>取<rt>と</rt></ruby>り<ruby>除<rt>のぞ</rt></ruby>く<ruby>力<rt>ちから</rt></ruby>。</span>
+                    <span class="option-translation">从展示的数据中剔除阴暗面的能力。</span>
+                </div>
+            </div>
+            <div class="option-explanation">
+                <span class="badge wrong">誤り</span>
+                原文中提到数据既有光也有影，但并没有主张要「影の部分を取り除く」（剔除阴暗面），而是强调要看清数据的全貌，避免被片面强调的信息误导。
+            </div>
+        </div>
+
+        <div class="option-item is-correct" onclick="toggleOption(this)">
+            <div class="option-content">
+                <span class="option-number">2</span>
+                <div class="option-text-group">
+                    <span><ruby>示<rt>しめ</rt></ruby>されたデータが<ruby>偏<rt>かたよ</rt></ruby>ったものではないか<ruby>見<rt>み</rt></ruby><ruby>抜<rt>ぬ</rt></ruby>く<ruby>力<rt>ちから</rt></ruby>。</span>
+                    <span class="option-translation">看透展示的数据是否有所偏颇的能力。</span>
+                </div>
+            </div>
+            <div class="option-explanation">
+                <span class="badge correct">正解</span>
+                完美对应文章的主旨。选项中的「データが偏ったものではないか見抜く」（看透数据是否有所偏颇）准确解释了原文中媒体人应当具备的「データの罠を見分ける力」（识破数据陷阱的能力），以及防范「一方だけを強調する」（只强调其中一方）的偏颇行为。
+            </div>
+        </div>
+
+        <div class="option-item" onclick="toggleOption(this)">
+            <div class="option-content">
+                <span class="option-number">3</span>
+                <div class="option-text-group">
+                    <span><ruby>示<rt>しめ</rt></ruby>されたデータをありのまま<ruby>分<rt>わ</rt></ruby>かりやすく<ruby>伝<rt>つた</rt></ruby>える<ruby>力<rt>ちから</rt></ruby>。</span>
+                    <span class="option-translation">原封不动且通俗易懂地传达展示的数据的能力。</span>
+                </div>
+            </div>
+            <div class="option-explanation">
+                <span class="badge wrong">誤り</span>
+                原文中提到，仅仅追求「分かりやすさ」（通俗易懂）而只强调某一方面，是存在危险的。因此「ありのまま分かりやすく伝える」（原封不动且通俗易懂地传达）并不符合文章推崇的看透数据陷阱的严谨态度。
+            </div>
+        </div>
+
+        <div class="option-item" onclick="toggleOption(this)">
+            <div class="option-content">
+                <span class="option-number">4</span>
+                <div class="option-text-group">
+                    <span><ruby>示<rt>しめ</rt></ruby>されたデータから<ruby>報<rt>ほう</rt></ruby><ruby>道<rt>どう</rt></ruby><ruby>目<rt>もく</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>合<rt>あ</rt></ruby>ったものを<ruby>選<rt>えら</rt></ruby>び<ruby>取<rt>と</rt></ruby>る<ruby>力<rt>ちから</rt></ruby>。</span>
+                    <span class="option-translation">从展示的数据中挑选出符合报道目的的数据的能力。</span>
+                </div>
+            </div>
+            <div class="option-explanation">
+                <span class="badge wrong">誤り</span>
+                「報道目的に合ったものを選び取る」（挑选出符合报道目的的数据）正是导致数据产生偏颇（只强调某一方）的做法，与作者呼吁的「公平で客観的報道」（公平客观的报道）背道而驰。
+            </div>
+        </div>
+    </div>
+
+    <!-- 文章导航区 -->
+    <div class="article-navigation">
+        <a href="2010.12-3.html" class="nav-btn">← 上一篇</a> 
+        <a href="#" class="nav-btn disabled">下一篇 →</a>
+    </div>
+
+</div>
+
+<!-- 音频播放器 -->
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bg"><div class="progress-bar" id="progress-bar"></div></div>
+        </div>
+        <div class="time-display"><span id="current-time">00:00</span> / <span id="duration">00:00</span></div>
+        <button id="speed-btn" class="speed-btn" onclick="toggleSpeed()" title="再生速度">1.0x</button>
+        <button id="loop-btn" class="loop-btn" onclick="toggleLoop()" title="ループ再生">
+            <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        </button>
+        <audio id="audio-element" src="audio/2010.12-4.mp3"></audio>
+    </div>
+</div>
+
+<div class="footer">Ichigo Ichie - 一期一会</div>
+
+<script>
+    // 切换解析模式
+    function toggleAnalysis() {
+        const btn = document.getElementById('analysis-btn');
+        btn.classList.toggle('active');
+        document.body.classList.toggle('show-analysis');
+        
+        // 当关闭解析时，重置所有已展开的状态
+        if (!document.body.classList.contains('show-analysis')) {
+            document.querySelectorAll('.option-item.expanded').forEach(item => item.classList.remove('expanded'));
+            document.querySelectorAll('.key-sentence.active').forEach(item => item.classList.remove('active'));
+        }
+    }
+
+    // 内联句法交互逻辑
+    function toggleInlineNote(event, element) {
+        // 如果未开启解析模式，则不响应点击
+        if (!document.body.classList.contains('show-analysis')) return;
+        
+        // 防止点击展开的笔记框本身（如复制文字）导致笔记意外关闭
+        if (event.target.closest('.inline-note-container')) {
+            return; 
+        }
+        
+        element.classList.toggle('active');
+    }
+
+    // 选项点击逻辑（非解析模式可单选并判定，解析模式可展开）
+    function toggleOption(element) {
+        if (!document.body.classList.contains('show-analysis')) {
+            // 非解析模式：单选并实时判定对错
+            document.querySelectorAll('.option-item').forEach(item => {
+                item.classList.remove('selected', 'answered-correct', 'answered-wrong');
+            });
+            
+            // 验证是否正确并添加对应的判定类
+            if (element.classList.contains('is-correct')) {
+                element.classList.add('answered-correct');
+            } else {
+                element.classList.add('answered-wrong');
+            }
+        } else {
+            // 解析模式：展开解析内容
+            element.classList.toggle('expanded');
+        }
+    }
+
+    // 音频播放器逻辑
+    const audio = document.getElementById('audio-element');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+    const loopBtn = document.getElementById('loop-btn');
+    const speedBtn = document.getElementById('speed-btn');
+
+    let isLooping = false;
+    let currentSpeed = 1.0;
+
+    function toggleLoop() { 
+        isLooping = !isLooping; 
+        audio.loop = isLooping; 
+        loopBtn.classList.toggle('active', isLooping); 
+    }
+
+    function toggleSpeed() {
+        if (currentSpeed === 1.0) {
+            currentSpeed = 0.75;
+            speedBtn.textContent = '0.75x';
+            speedBtn.classList.add('active');
+        } else {
+            currentSpeed = 1.0;
+            speedBtn.textContent = '1.0x';
+            speedBtn.classList.remove('active');
+        }
+        audio.playbackRate = currentSpeed;
+    }
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+            playBtn.classList.add('playing');
+            // 切换为暂停图标 (两条竖线)
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        } else {
+            audio.pause();
+            playBtn.classList.remove('playing');
+            // 切换回播放图标 (三角形)
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        }
+    }
+    
+    audio.addEventListener('timeupdate', () => { 
+        if (audio.duration) { 
+            progressBar.style.width = (audio.currentTime / audio.duration * 100) + '%'; 
+            currentTimeEl.textContent = formatTime(audio.currentTime); 
+        }
+    });
+    
+    audio.addEventListener('loadedmetadata', () => { 
+        durationEl.textContent = formatTime(audio.duration); 
+    });
+    
+    audio.addEventListener('ended', () => { 
+        playBtn.classList.remove('playing'); 
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'; 
+        progressBar.style.width = '0%'; 
+        currentTimeEl.textContent = "00:00"; 
+    });
+    
+    function seek(e) { 
+        if (!audio.duration) return; 
+        const rect = progressContainer.getBoundingClientRect(); 
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX; 
+        let clickX = Math.max(0, Math.min(clientX - rect.left, rect.width)); 
+        audio.currentTime = (clickX / rect.width) * audio.duration; 
+    }
+    
+    let isDragging = false;
+    progressContainer.addEventListener('mousedown', (e) => { isDragging = true; seek(e); });
+    window.addEventListener('mousemove', (e) => { if (isDragging) seek(e); });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    progressContainer.addEventListener('touchstart', (e) => { isDragging = true; seek(e); });
+    window.addEventListener('touchmove', (e) => { if (isDragging) { e.preventDefault(); seek(e); } }, { passive: false });
+    window.addEventListener('touchend', () => { isDragging = false; });
+    
+    function formatTime(seconds) { 
+        if (isNaN(seconds)) return "00:00"; 
+        const m = Math.floor(seconds / 60); 
+        const s = Math.floor(seconds % 60); 
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; 
+    }
+</script>
+
+</body>
+</html>

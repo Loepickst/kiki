@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解 - 2010年7月 短文（四）</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #3b5998; 
+            --sub-color: #787878;
+            --note-bg: #f4f6f9; 
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 80px 15px 120px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 顶部控制栏 */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) { .toggle-btn:hover { background: var(--accent-color); color: white; } }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        .container {
+            max-width: 720px; width: 100%;
+            background: var(--paper-color); padding: 50px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box; border-radius: 8px;
+        }
+
+        .header-title { 
+            text-align: center; margin-top: 0; margin-bottom: 40px; 
+            font-size: 1.3rem; color: var(--text-color); border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        /* 文章段落基础样式 */
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.2; 
+            text-align: justify; margin: 0 0 20px 0;
+            text-indent: 1em; 
+        }
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        /* 统一控制[解析]模式的显示 */
+        .analysis-element { display: none; }
+        body.show-analysis .analysis-element { display: block; }
+
+        /* 译文区块 */
+        .translation {
+            margin: -5px 0 30px 0; font-size: 0.95rem;
+            color: #5a626b; line-height: 1.8; padding: 15px 20px;
+            background-color: #f7f8f9; font-family: var(--chinese-font);
+            border-left: 3px solid #ddd; text-align: justify;
+        }
+        .translation::before { content: "訳"; display: block; font-size: 0.75rem; color: #aaa; margin-bottom: 5px; font-weight: bold; }
+
+        /* --- 内联句法交互 (重点高亮与展开) --- */
+        .key-sentence {
+            transition: 0.3s ease;
+        }
+        
+        body.show-analysis .key-sentence {
+            background-color: rgba(59, 89, 152, 0.06); 
+            border-bottom: 2px dashed #baccf1;
+            cursor: pointer;
+            border-radius: 3px;
+            padding: 2px 0;
+        }
+
+        body.show-analysis .key-sentence:hover {
+            background-color: rgba(59, 89, 152, 0.12);
+        }
+
+        body.show-analysis .key-sentence.active {
+            background-color: rgba(216, 67, 21, 0.08); 
+            border-bottom-color: #e74c3c;
+        }
+
+        .sentence-badge {
+            display: none;
+        }
+
+        body.show-analysis .sentence-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            background-color: var(--accent-color); color: white;
+            font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;
+            margin: 0 6px; vertical-align: middle;
+            font-family: var(--chinese-font); font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateY(-2px); transition: 0.3s;
+        }
+
+        body.show-analysis .key-sentence:hover .sentence-badge {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        body.show-analysis .key-sentence.active .sentence-badge {
+            background-color: #e74c3c;
+        }
+
+        .inline-note-container {
+            display: none;
+            background-color: #fff; border-left: 4px solid #e74c3c;
+            padding: 15px 20px; margin: 15px 0 15px -1em; 
+            font-size: 0.95rem; color: #444; box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            font-family: var(--chinese-font); border-radius: 0 6px 6px 0;
+            text-indent: 0; line-height: 1.8; cursor: text;
+        }
+
+        .key-sentence.active .inline-note-container {
+            display: block; 
+        }
+
+        .inline-note-title {
+            font-weight: bold; color: #e74c3c; margin-bottom: 8px;
+            font-size: 1rem; display: flex; align-items: center;
+        }
+        /* ------------------------------------------- */
+
+        /* 实战演练区 (设问与选项辨析) */
+        .qa-section {
+            margin-top: 50px; border-top: 2px solid #f0f0f0; padding-top: 40px; font-family: var(--chinese-font);
+        }
+        .question-title { font-size: 1.1rem; color: var(--text-color); margin-bottom: 25px; font-weight: bold; font-family: var(--japanese-font); line-height: 1.6; }
+        
+        .option-item {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 15px;
+            cursor: pointer; transition: 0.2s; overflow: hidden;
+        }
+        .option-item:hover { border-color: var(--accent-color); box-shadow: 0 2px 10px rgba(59, 89, 152, 0.1); }
+        
+        /* 选中状态及答案判定（学生答题用，解析模式下隐藏） */
+        body:not(.show-analysis) .option-item.answered-correct {
+            border-color: #38a169;
+            background-color: rgba(56, 161, 105, 0.05);
+        }
+        body:not(.show-analysis) .option-item.answered-wrong {
+            border-color: #e53e3e;
+            background-color: rgba(229, 62, 62, 0.05);
+        }
+        body:not(.show-analysis) .option-item.answered-correct .option-number::after {
+            content: " ⭕";
+            font-size: 1rem;
+            color: #38a169;
+        }
+        body:not(.show-analysis) .option-item.answered-wrong .option-number::after {
+            content: " ❌";
+            font-size: 1rem;
+            color: #e53e3e;
+        }
+
+        /* 仅在解析模式下显示正确答案的绿边 */
+        body.show-analysis .option-item.is-correct {
+            border-left: 4px solid #38a169;
+        }
+
+        /* 仅在解析模式下显示选项的注音（非解析模式隐藏rt标签） */
+        body:not(.show-analysis) .option-content rt {
+            display: none;
+        }
+
+        .option-content { padding: 15px 20px; display: flex; align-items: flex-start; font-family: var(--japanese-font); }
+        .option-number { font-weight: bold; color: var(--accent-color); margin-right: 15px; font-family: var(--chinese-font); white-space: nowrap; }
+        
+        .option-text-group { display: flex; flex-direction: column; }
+        
+        /* 仅在解析模式下显示翻译 */
+        .option-translation { display: none; font-size: 0.85rem; color: #718096; margin-top: 4px; font-family: var(--chinese-font); }
+        body.show-analysis .option-translation { display: block; }
+
+        .option-explanation {
+            display: none; padding: 15px 20px; background: #f8fafc; border-top: 1px dashed #e2e8f0;
+            font-size: 0.95rem; color: #4a5568; line-height: 1.7;
+        }
+        body.show-analysis .option-item.expanded .option-explanation { display: block; }
+        
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 8px; }
+        .badge.wrong { background: #e53e3e; }
+        .badge.correct { background: #38a169; }
+
+        /* 文章导航区 */
+        .article-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px dashed #f0f0f0;
+        }
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: #ffffff;
+            color: var(--accent-color);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: var(--chinese-font);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 1px solid #d0dcf2;
+            box-shadow: 0 2px 4px rgba(59, 89, 152, 0.05);
+        }
+        .nav-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(59, 89, 152, 0.15);
+        }
+        .nav-btn.disabled {
+            opacity: 0.5; pointer-events: none; background: #f8fafc; color: #a0aec0; border-color: #e2e8f0; box-shadow: none;
+        }
+
+        /* 音频播放器 */
+        .audio-wrapper { position: fixed; bottom: 0; left: 0; right: 0; z-index: 2000; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 15px 20px 25px 20px; display: flex; justify-content: center; border-top: 1px solid rgba(0,0,0,0.05); box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+        .audio-player { display: flex; align-items: center; width: 100%; max-width: 600px; }
+        .play-btn { width: 36px; height: 36px; border-radius: 50%; background-color: var(--accent-color); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 12px; flex-shrink: 0; transition: transform 0.2s; padding: 0; }
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+        .progress-container { flex-grow: 1; height: 20px; display: flex; align-items: center; margin-right: 12px; cursor: pointer; position: relative; }
+        .progress-bg { width: 100%; height: 4px; background-color: #f0f0f0; border-radius: 2px; position: relative; }
+        .progress-bar { height: 100%; background-color: var(--accent-color); width: 0%; border-radius: 2px; position: relative; }
+        .progress-bar::after { content: ""; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background-color: white; border: 2px solid var(--accent-color); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .time-display { font-size: 0.7rem; color: #999; width: 70px; text-align: right; font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
+        .loop-btn { background: none; border: none; cursor: pointer; padding: 8px; margin-left: 8px; opacity: 0.5; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .loop-btn.active { opacity: 1; color: var(--accent-color); }
+        .loop-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        /* 播放速度按钮 */
+        .speed-btn {
+            background: none; border: 1px solid #ccc; border-radius: 4px;
+            cursor: pointer; padding: 2px 6px; margin-left: 8px;
+            font-size: 0.75rem; color: #787878; transition: all 0.2s;
+            font-family: var(--chinese-font); font-variant-numeric: tabular-nums;
+            font-weight: 500;
+        }
+        .speed-btn.active {
+            color: var(--accent-color); border-color: var(--accent-color); background: rgba(59, 89, 152, 0.05);
+        }
+
+        .footer { margin-top: 50px; color: #ccc; font-size: 0.8rem; letter-spacing: 3px; }
+
+        @media (max-width: 768px) {
+            /* 页面整体与标题 */
+            .container { padding: 30px 18px 90px; }
+            .header-title { font-size: 1.15rem; margin-bottom: 25px; text-align: center; }
+            
+            /* 正文排版：字号略缩，增加行高和字间距，提升呼吸感 */
+            p.japanese { font-size: 0.95rem; line-height: 2.2; letter-spacing: 0.05em; margin-bottom: 25px; }
+            p.japanese rt { font-size: 0.55rem; }
+            
+            /* 重点句与解析弹窗 */
+            .key-sentence { padding: 2px 0; }
+            .inline-note-container { margin: 15px 0 0 0; padding: 15px; font-size: 0.85rem; line-height: 1.6; border-radius: 8px; }
+            
+            /* 题目区域 */
+            .qa-section { margin-top: 35px; padding-top: 30px; }
+            .question-title { font-size: 1rem; margin-bottom: 20px; padding: 0 5px; }
+            .option-content { padding: 12px 15px; }
+            .option-text-group span { font-size: 0.95rem; line-height: 1.5; }
+            .option-explanation { padding: 12px 15px; font-size: 0.85rem; }
+            
+            /* 顶部栏与按钮 */
+            .top-bar { padding: 0 15px; height: 55px; }
+            .toggle-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+            
+            /* 播放器区域缩放 */
+            .audio-wrapper { padding: 10px 15px 20px; }
+            .speed-btn { padding: 2px 6px; font-size: 0.7rem; }
+            .time-display { width: 55px; font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="../read_jlpt.html?level=N1&type=short" class="toggle-btn" style="text-decoration: none;">← 戻る</a>
+    <div id="today-date">N1真题・名文鑑賞</div>
+    <div class="top-bar-controls">
+        <button id="analysis-btn" class="toggle-btn" onclick="toggleAnalysis()">解析</button>
+    </div>
+</div>
+
+<div class="container">
+    <h2 class="header-title">2010年7月 短文（四）</h2>
+
+    <div class="article-content">
+        <p class="japanese">
+            <!-- 句子一：可点击交互 -->
+            <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                <ruby>飲<rt>いん</rt></ruby><ruby>料<rt>りょう</rt></ruby><ruby>大<rt>おお</rt></ruby><ruby>手<rt>て</rt></ruby>の<ruby>商<rt>しょう</rt></ruby><ruby>品<rt>ひん</rt></ruby><ruby>開<rt>かい</rt></ruby><ruby>発<rt>はつ</rt></ruby><ruby>担<rt>たん</rt></ruby><ruby>当<rt>とう</rt></ruby><ruby>者<rt>しゃ</rt></ruby>が「<ruby>当<rt>あ</rt></ruby>たり<ruby>前<rt>まえ</rt></ruby>の<ruby>名<rt>な</rt></ruby><ruby>前<rt>まえ</rt></ruby>では<ruby>消<rt>しょう</rt></ruby><ruby>費<rt>ひ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>琴<rt>きん</rt></ruby><ruby>線<rt>せん</rt></ruby>に<ruby>触<rt>ふ</rt></ruby>れず、<ruby>踏<rt>ふ</rt></ruby>み<ruby>込<rt>こ</rt></ruby>みすぎると『ふざけている』と<ruby>思<rt>おも</rt></ruby>われる。そのバランスを<ruby>測<rt>はか</rt></ruby>り、<ruby>試<rt>し</rt></ruby><ruby>行<rt>こう</rt></ruby><ruby>錯<rt>さく</rt></ruby><ruby>誤<rt>ご</rt></ruby>を<ruby>続<rt>つづ</rt></ruby>けるしかない」と<ruby>語<rt>かた</rt></ruby>っていましたが、<ruby>本<rt>ほん</rt></ruby><ruby>音<rt>ね</rt></ruby>でしょう。
+                <span class="sentence-badge">引出话题</span>
+                <span class="inline-note-container">
+                    <span class="inline-note-title">💡 構文の役割と意味</span>
+                    作者在开篇引用了大型饮料公司产品开发负责人的话：“太普通的名字无法触动消费者的心弦，但如果做得太过火又会被认为是在‘开玩笑’。只能去权衡这个平衡，不断试错。”借此引出了在商品命名中面临的实际困境，为后文提出自己的观点做铺垫。
+                </span>
+            </span>
+            
+            <!-- 句子二：可点击交互 -->
+            <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                でも<ruby>場<rt>ば</rt></ruby><ruby>当<rt>あ</rt></ruby>たり<ruby>的<rt>てき</rt></ruby>なネーミングでは<ruby>過<rt>か</rt></ruby><ruby>激<rt>げき</rt></ruby>な<ruby>競<rt>きょう</rt></ruby><ruby>争<rt>そう</rt></ruby>に<ruby>勝<rt>か</rt></ruby>ち<ruby>抜<rt>ぬ</rt></ruby>けません。
+                <span class="sentence-badge">提出转折</span>
+                <span class="inline-note-container">
+                    <span class="inline-note-title">💡 構文の役割と意味</span>
+                    作者通过「でも」（但是）进行转折，指出仅仅依靠「場当たり的なネーミング」（临场发挥、随意的命名）是无法在「過激な競争に勝ち抜けません」（激烈的竞争中胜出）的，否定了单靠试错和权衡表面的平衡就能成功的做法。
+                </span>
+            </span>
+
+            <!-- 句子三：可点击交互 -->
+            <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                <ruby>音<rt>おと</rt></ruby>に<ruby>対<rt>たい</rt></ruby>する<ruby>感<rt>かん</rt></ruby><ruby>性<rt>せい</rt></ruby>を<ruby>磨<rt>みが</rt></ruby>き、<ruby>音<rt>おと</rt></ruby>の<ruby>表<rt>ひょう</rt></ruby><ruby>情<rt>じょう</rt></ruby>に<ruby>敏<rt>びん</rt></ruby><ruby>感<rt>かん</rt></ruby>になり、<ruby>何<rt>なに</rt></ruby>はさておき<ruby>自<rt>じ</rt></ruby><ruby>社<rt>しゃ</rt></ruby><ruby>製<rt>せい</rt></ruby><ruby>品<rt>ひん</rt></ruby>を<ruby>愛<rt>あい</rt></ruby>し、<ruby>育<rt>そだ</rt></ruby>てる<ruby>意<rt>い</rt></ruby><ruby>欲<rt>よく</rt></ruby>を<ruby>持<rt>も</rt></ruby>つことがネーミングの<ruby>前<rt>ぜん</rt></ruby><ruby>提<rt>てい</rt></ruby><ruby>条<rt>じょう</rt></ruby><ruby>件<rt>けん</rt></ruby>です。
+                <span class="sentence-badge">表明主旨</span>
+                <span class="inline-note-container">
+                    <span class="inline-note-title">💡 構文の役割と意味</span>
+                    作者在此给出了自己对于命名的最终结论。要在激烈竞争中胜出的前提条件有两个核心：一是「音に対する感性」（对声音的感性），二是「自社製品を愛し、育てる意欲」（热爱并培育自家产品的意愿）。其中「何はさておき」（首要的是）更是强调了后者的决定性作用。
+                </span>
+            </span>
+        </p>
+        
+        <div class="translation analysis-element">一家大型饮料公司的产品开发主管曾表示：“太过普通的名字无法触动消费者的心弦，但如果做得太过火，又会被认为是在‘开玩笑’。我们只能去权衡这种平衡，不断地试错。”这想必是他的真心话吧。但是，仅靠这种临场发挥式的随意命名，是无法在激烈的竞争中胜出的。磨练对声音的感性，对声音的表情变得敏感；更为首要的是，要有热爱并培育自家产品的意愿，这才是命名的前提条件。</div>
+    </div>
+
+    <!-- 实战演练区 -->
+    <div class="qa-section">
+        <div class="question-title">
+            <ruby>問<rt>とい</rt></ruby>：<ruby>競<rt>きょう</rt></ruby><ruby>争<rt>そう</rt></ruby>に<ruby>勝<rt>か</rt></ruby>つような<ruby>商<rt>しょう</rt></ruby><ruby>品<rt>ひん</rt></ruby><ruby>名<rt>めい</rt></ruby>にするには、まず<ruby>何<rt>なに</rt></ruby>が<ruby>必<rt>ひつ</rt></ruby><ruby>要<rt>よう</rt></ruby>だと<ruby>述<rt>の</rt></ruby>べているか。
+        </div>
+        
+        <div class="option-item" onclick="toggleOption(this)">
+            <div class="option-content">
+                <span class="option-number">1</span>
+                <div class="option-text-group">
+                    <span><ruby>音<rt>おと</rt></ruby>の<ruby>持<rt>も</rt></ruby>つ<ruby>表<rt>ひょう</rt></ruby><ruby>情<rt>じょう</rt></ruby>に<ruby>敏<rt>びん</rt></ruby><ruby>感<rt>かん</rt></ruby>になり、<ruby>音<rt>おと</rt></ruby>と<ruby>味<rt>あじ</rt></ruby>とのバランスに<ruby>気<rt>き</rt></ruby>を<ruby>配<rt>くば</rt></ruby>る。</span>
+                    <span class="option-translation">对声音所具有的表情变得敏感，并注重声音与味道的平衡。</span>
+                </div>
+            </div>
+            <div class="option-explanation">
+                <span class="badge wrong">誤り</span>
+                虽然选项前半部分提到了对声音的表情敏感，但原文完全没有提到「音と味とのバランス」（声音与味道的平衡），这属于无中生有的干扰项。
+            </div>
+        </div>
+
+        <div class="option-item" onclick="toggleOption(this)">
+            <div class="option-content">
+                <span class="option-number">2</span>
+                <div class="option-text-group">
+                    <span><ruby>自<rt>じ</rt></ruby><ruby>社<rt>しゃ</rt></ruby>のイメージを<ruby>大<rt>たい</rt></ruby><ruby>切<rt>せつ</rt></ruby>に<ruby>思<rt>おも</rt></ruby>い、<ruby>消<rt>しょう</rt></ruby><ruby>費<rt>ひ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>音<rt>おと</rt></ruby>の<ruby>好<rt>この</rt></ruby>みを<ruby>考<rt>こう</rt></ruby><ruby>慮<rt>りょ</rt></ruby>する。</span>
+                    <span class="option-translation">重视本公司的形象，并考虑消费者对声音的喜好。</span>
+                </div>
+            </div>
+            <div class="option-explanation">
+                <span class="badge wrong">誤り</span>
+                原文在最后一句强调的是要热爱自家产品（「自社製品を愛し」），而不是重视本公司的形象（「自社のイメージ」）。同时，也没有提到要考虑消费者对声音的喜好。
+            </div>
+        </div>
+
+        <div class="option-item" onclick="toggleOption(this)">
+            <div class="option-content">
+                <span class="option-number">3</span>
+                <div class="option-text-group">
+                    <span><ruby>音<rt>おと</rt></ruby>と<ruby>味<rt>あじ</rt></ruby>への<ruby>感<rt>かん</rt></ruby><ruby>性<rt>せい</rt></ruby>を<ruby>磨<rt>みが</rt></ruby>き、その<ruby>商<rt>しょう</rt></ruby><ruby>品<rt>ひん</rt></ruby>が<ruby>持<rt>も</rt></ruby>つイメージを<ruby>考<rt>こう</rt></ruby><ruby>慮<rt>りょ</rt></ruby>する。</span>
+                    <span class="option-translation">磨练对声音和味道的感性，并考虑该产品所具有的形象。</span>
+                </div>
+            </div>
+            <div class="option-explanation">
+                <span class="badge wrong">誤り</span>
+                与选项1同样的问题，原文并未提及「味への感性」（对味道的感性），也未提到要考虑产品的形象。
+            </div>
+        </div>
+
+        <div class="option-item is-correct" onclick="toggleOption(this)">
+            <div class="option-content">
+                <span class="option-number">4</span>
+                <div class="option-text-group">
+                    <span><ruby>開<rt>かい</rt></ruby><ruby>発<rt>はつ</rt></ruby>した<ruby>商<rt>しょう</rt></ruby><ruby>品<rt>ひん</rt></ruby>への<ruby>思<rt>おも</rt></ruby>いを<ruby>大<rt>たい</rt></ruby><ruby>切<rt>せつ</rt></ruby>にし、<ruby>音<rt>おと</rt></ruby>の<ruby>持<rt>も</rt></ruby>つ<ruby>響<rt>ひび</rt></ruby>きに<ruby>気<rt>き</rt></ruby>を<ruby>配<rt>くば</rt></ruby>る。</span>
+                    <span class="option-translation">珍视对开发出的产品的感情，并留心声音所具有的回响。</span>
+                </div>
+            </div>
+            <div class="option-explanation">
+                <span class="badge correct">正解</span>
+                完美对应文章最后一句的核心主旨。前半句「商品への思いを大切にし」（珍视对产品的感情）对应了原文中作者认为最重要的「自社製品を愛し、育てる意欲を持つ」（热爱并培育自家产品的意愿）；后半句「音の持つ響きに気を配る」（留心声音的回响）则恰好对应了文中的「音の表情に敏感になり」（对声音的表情变得敏感）。
+            </div>
+        </div>
+    </div>
+
+    <!-- 文章导航区 -->
+    <div class="article-navigation">
+        <a href="2010.7-3.html" class="nav-btn">← 上一篇</a> 
+        <a href="2010.12-1.html" class="nav-btn">下一篇 →</a>
+    </div>
+
+</div>
+
+<!-- 音频播放器 -->
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bg"><div class="progress-bar" id="progress-bar"></div></div>
+        </div>
+        <div class="time-display"><span id="current-time">00:00</span> / <span id="duration">00:00</span></div>
+        <button id="speed-btn" class="speed-btn" onclick="toggleSpeed()" title="再生速度">1.0x</button>
+        <button id="loop-btn" class="loop-btn" onclick="toggleLoop()" title="ループ再生">
+            <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        </button>
+        <audio id="audio-element" src="audio/2010.7-4.mp3"></audio>
+    </div>
+</div>
+
+<div class="footer">Ichigo Ichie - 一期一会</div>
+
+<script>
+    // 切换解析模式
+    function toggleAnalysis() {
+        const btn = document.getElementById('analysis-btn');
+        btn.classList.toggle('active');
+        document.body.classList.toggle('show-analysis');
+        
+        // 当关闭解析时，重置所有已展开的状态
+        if (!document.body.classList.contains('show-analysis')) {
+            document.querySelectorAll('.option-item.expanded').forEach(item => item.classList.remove('expanded'));
+            document.querySelectorAll('.key-sentence.active').forEach(item => item.classList.remove('active'));
+        }
+    }
+
+    // 内联句法交互逻辑
+    function toggleInlineNote(event, element) {
+        // 如果未开启解析模式，则不响应点击
+        if (!document.body.classList.contains('show-analysis')) return;
+        
+        // 防止点击展开的笔记框本身（如复制文字）导致笔记意外关闭
+        if (event.target.closest('.inline-note-container')) {
+            return; 
+        }
+        
+        element.classList.toggle('active');
+    }
+
+    // 选项点击逻辑（非解析模式可单选并判定，解析模式可展开）
+    function toggleOption(element) {
+        if (!document.body.classList.contains('show-analysis')) {
+            // 非解析模式：单选并实时判定对错
+            document.querySelectorAll('.option-item').forEach(item => {
+                item.classList.remove('selected', 'answered-correct', 'answered-wrong');
+            });
+            
+            // 验证是否正确并添加对应的判定类
+            if (element.classList.contains('is-correct')) {
+                element.classList.add('answered-correct');
+            } else {
+                element.classList.add('answered-wrong');
+            }
+        } else {
+            // 解析模式：展开解析内容
+            element.classList.toggle('expanded');
+        }
+    }
+
+    // 音频播放器逻辑
+    const audio = document.getElementById('audio-element');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+    const loopBtn = document.getElementById('loop-btn');
+    const speedBtn = document.getElementById('speed-btn');
+
+    let isLooping = false;
+    let currentSpeed = 1.0;
+
+    function toggleLoop() { 
+        isLooping = !isLooping; 
+        audio.loop = isLooping; 
+        loopBtn.classList.toggle('active', isLooping); 
+    }
+
+    function toggleSpeed() {
+        if (currentSpeed === 1.0) {
+            currentSpeed = 0.75;
+            speedBtn.textContent = '0.75x';
+            speedBtn.classList.add('active');
+        } else {
+            currentSpeed = 1.0;
+            speedBtn.textContent = '1.0x';
+            speedBtn.classList.remove('active');
+        }
+        audio.playbackRate = currentSpeed;
+    }
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+            playBtn.classList.add('playing');
+            // 切换为暂停图标 (两条竖线)
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        } else {
+            audio.pause();
+            playBtn.classList.remove('playing');
+            // 切换回播放图标 (三角形)
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        }
+    }
+    
+    audio.addEventListener('timeupdate', () => { 
+        if (audio.duration) { 
+            progressBar.style.width = (audio.currentTime / audio.duration * 100) + '%'; 
+            currentTimeEl.textContent = formatTime(audio.currentTime); 
+        }
+    });
+    
+    audio.addEventListener('loadedmetadata', () => { 
+        durationEl.textContent = formatTime(audio.duration); 
+    });
+    
+    audio.addEventListener('ended', () => { 
+        playBtn.classList.remove('playing'); 
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'; 
+        progressBar.style.width = '0%'; 
+        currentTimeEl.textContent = "00:00"; 
+    });
+    
+    function seek(e) { 
+        if (!audio.duration) return; 
+        const rect = progressContainer.getBoundingClientRect(); 
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX; 
+        let clickX = Math.max(0, Math.min(clientX - rect.left, rect.width)); 
+        audio.currentTime = (clickX / rect.width) * audio.duration; 
+    }
+    
+    let isDragging = false;
+    progressContainer.addEventListener('mousedown', (e) => { isDragging = true; seek(e); });
+    window.addEventListener('mousemove', (e) => { if (isDragging) seek(e); });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    progressContainer.addEventListener('touchstart', (e) => { isDragging = true; seek(e); });
+    window.addEventListener('touchmove', (e) => { if (isDragging) { e.preventDefault(); seek(e); } }, { passive: false });
+    window.addEventListener('touchend', () => { isDragging = false; });
+    
+    function formatTime(seconds) { 
+        if (isNaN(seconds)) return "00:00"; 
+        const m = Math.floor(seconds / 60); 
+        const s = Math.floor(seconds % 60); 
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; 
+    }
+</script>
+
+</body>
+</html>

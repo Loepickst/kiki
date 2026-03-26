@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解 - 2010年12月 短文（一）</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #3b5998; 
+            --sub-color: #787878;
+            --note-bg: #f4f6f9; 
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 80px 15px 120px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 顶部控制栏 */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) { .toggle-btn:hover { background: var(--accent-color); color: white; } }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        .container {
+            max-width: 720px; width: 100%;
+            background: var(--paper-color); padding: 50px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box; border-radius: 8px;
+        }
+
+        .header-title { 
+            text-align: center; margin-top: 0; margin-bottom: 40px; 
+            font-size: 1.3rem; color: var(--text-color); border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        /* 文章段落基础样式 */
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.2; 
+            text-align: justify; margin: 0 0 20px 0;
+            text-indent: 1em; 
+        }
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        /* 统一控制[解析]模式的显示 */
+        .analysis-element { display: none; }
+        body.show-analysis .analysis-element { display: block; }
+
+        /* 译文区块 */
+        .translation {
+            margin: -5px 0 30px 0; font-size: 0.95rem;
+            color: #5a626b; line-height: 1.8; padding: 15px 20px;
+            background-color: #f7f8f9; font-family: var(--chinese-font);
+            border-left: 3px solid #ddd; text-align: justify;
+        }
+        .translation::before { content: "訳"; display: block; font-size: 0.75rem; color: #aaa; margin-bottom: 5px; font-weight: bold; }
+
+        /* --- 内联句法交互 (重点高亮与展开) --- */
+        .key-sentence {
+            transition: 0.3s ease;
+        }
+        
+        body.show-analysis .key-sentence {
+            background-color: rgba(59, 89, 152, 0.06); 
+            border-bottom: 2px dashed #baccf1;
+            cursor: pointer;
+            border-radius: 3px;
+            padding: 2px 0;
+        }
+
+        body.show-analysis .key-sentence:hover {
+            background-color: rgba(59, 89, 152, 0.12);
+        }
+
+        body.show-analysis .key-sentence.active {
+            background-color: rgba(216, 67, 21, 0.08); 
+            border-bottom-color: #e74c3c;
+        }
+
+        .sentence-badge {
+            display: none;
+        }
+
+        body.show-analysis .sentence-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            background-color: var(--accent-color); color: white;
+            font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;
+            margin: 0 6px; vertical-align: middle;
+            font-family: var(--chinese-font); font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateY(-2px); transition: 0.3s;
+        }
+
+        body.show-analysis .key-sentence:hover .sentence-badge {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        body.show-analysis .key-sentence.active .sentence-badge {
+            background-color: #e74c3c;
+        }
+
+        .inline-note-container {
+            display: none;
+            background-color: #fff; border-left: 4px solid #e74c3c;
+            padding: 15px 20px; margin: 15px 0 15px -1em; 
+            font-size: 0.95rem; color: #444; box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            font-family: var(--chinese-font); border-radius: 0 6px 6px 0;
+            text-indent: 0; line-height: 1.8; cursor: text;
+        }
+
+        .key-sentence.active .inline-note-container {
+            display: block; 
+        }
+
+        .inline-note-title {
+            font-weight: bold; color: #e74c3c; margin-bottom: 8px;
+            font-size: 1rem; display: flex; align-items: center;
+        }
+        /* ------------------------------------------- */
+
+        /* 实战演练区 (设问与选项辨析) */
+        .qa-section {
+            margin-top: 50px; border-top: 2px solid #f0f0f0; padding-top: 40px; font-family: var(--chinese-font);
+        }
+        .question-title { font-size: 1.1rem; color: var(--text-color); margin-bottom: 25px; font-weight: bold; font-family: var(--japanese-font); line-height: 1.6; }
+        
+        .option-item {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 15px;
+            cursor: pointer; transition: 0.2s; overflow: hidden;
+        }
+        .option-item:hover { border-color: var(--accent-color); box-shadow: 0 2px 10px rgba(59, 89, 152, 0.1); }
+        
+        /* 选中状态及答案判定（学生答题用，解析模式下隐藏） */
+        body:not(.show-analysis) .option-item.answered-correct {
+            border-color: #38a169;
+            background-color: rgba(56, 161, 105, 0.05);
+        }
+        body:not(.show-analysis) .option-item.answered-wrong {
+            border-color: #e53e3e;
+            background-color: rgba(229, 62, 62, 0.05);
+        }
+        body:not(.show-analysis) .option-item.answered-correct .option-number::after {
+            content: " ⭕";
+            font-size: 1rem;
+            color: #38a169;
+        }
+        body:not(.show-analysis) .option-item.answered-wrong .option-number::after {
+            content: " ❌";
+            font-size: 1rem;
+            color: #e53e3e;
+        }
+
+        /* 仅在解析模式下显示正确答案的绿边 */
+        body.show-analysis .option-item.is-correct {
+            border-left: 4px solid #38a169;
+        }
+
+        /* 仅在解析模式下显示选项的注音（非解析模式隐藏rt标签） */
+        body:not(.show-analysis) .option-content rt {
+            display: none;
+        }
+
+        .option-content { padding: 15px 20px; display: flex; align-items: flex-start; font-family: var(--japanese-font); }
+        .option-number { font-weight: bold; color: var(--accent-color); margin-right: 15px; font-family: var(--chinese-font); white-space: nowrap; }
+        
+        .option-text-group { display: flex; flex-direction: column; }
+        
+        /* 仅在解析模式下显示翻译 */
+        .option-translation { display: none; font-size: 0.85rem; color: #718096; margin-top: 4px; font-family: var(--chinese-font); }
+        body.show-analysis .option-translation { display: block; }
+
+        .option-explanation {
+            display: none; padding: 15px 20px; background: #f8fafc; border-top: 1px dashed #e2e8f0;
+            font-size: 0.95rem; color: #4a5568; line-height: 1.7;
+        }
+        body.show-analysis .option-item.expanded .option-explanation { display: block; }
+        
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 8px; }
+        .badge.wrong { background: #e53e3e; }
+        .badge.correct { background: #38a169; }
+
+        /* 文章导航区 */
+        .article-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px dashed #f0f0f0;
+        }
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: #ffffff;
+            color: var(--accent-color);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: var(--chinese-font);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 1px solid #d0dcf2;
+            box-shadow: 0 2px 4px rgba(59, 89, 152, 0.05);
+        }
+        .nav-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(59, 89, 152, 0.15);
+        }
+        .nav-btn.disabled {
+            opacity: 0.5; pointer-events: none; background: #f8fafc; color: #a0aec0; border-color: #e2e8f0; box-shadow: none;
+        }
+
+        /* 音频播放器 */
+        .audio-wrapper { position: fixed; bottom: 0; left: 0; right: 0; z-index: 2000; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 15px 20px 25px 20px; display: flex; justify-content: center; border-top: 1px solid rgba(0,0,0,0.05); box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+        .audio-player { display: flex; align-items: center; width: 100%; max-width: 600px; }
+        .play-btn { width: 36px; height: 36px; border-radius: 50%; background-color: var(--accent-color); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 12px; flex-shrink: 0; transition: transform 0.2s; padding: 0; }
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+        .progress-container { flex-grow: 1; height: 20px; display: flex; align-items: center; margin-right: 12px; cursor: pointer; position: relative; }
+        .progress-bg { width: 100%; height: 4px; background-color: #f0f0f0; border-radius: 2px; position: relative; }
+        .progress-bar { height: 100%; background-color: var(--accent-color); width: 0%; border-radius: 2px; position: relative; }
+        .progress-bar::after { content: ""; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background-color: white; border: 2px solid var(--accent-color); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .time-display { font-size: 0.7rem; color: #999; width: 70px; text-align: right; font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
+        .loop-btn { background: none; border: none; cursor: pointer; padding: 8px; margin-left: 8px; opacity: 0.5; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .loop-btn.active { opacity: 1; color: var(--accent-color); }
+        .loop-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        /* 播放速度按钮 */
+        .speed-btn {
+            background: none; border: 1px solid #ccc; border-radius: 4px;
+            cursor: pointer; padding: 2px 6px; margin-left: 8px;
+            font-size: 0.75rem; color: #787878; transition: all 0.2s;
+            font-family: var(--chinese-font); font-variant-numeric: tabular-nums;
+            font-weight: 500;
+        }
+        .speed-btn.active {
+            color: var(--accent-color); border-color: var(--accent-color); background: rgba(59, 89, 152, 0.05);
+        }
+
+        .footer { margin-top: 50px; color: #ccc; font-size: 0.8rem; letter-spacing: 3px; }
+
+        @media (max-width: 768px) {
+            /* 页面整体与标题 */
+            .container { padding: 30px 18px 90px; }
+            .header-title { font-size: 1.15rem; margin-bottom: 25px; text-align: center; }
+            
+            /* 正文排版：字号略缩，增加行高和字间距，提升呼吸感 */
+            p.japanese { font-size: 0.95rem; line-height: 2.2; letter-spacing: 0.05em; margin-bottom: 25px; }
+            p.japanese rt { font-size: 0.55rem; }
+            
+            /* 重点句与解析弹窗 */
+            .key-sentence { padding: 2px 0; }
+            .inline-note-container { margin: 15px 0 0 0; padding: 15px; font-size: 0.85rem; line-height: 1.6; border-radius: 8px; }
+            
+            /* 题目区域 */
+            .qa-section { margin-top: 35px; padding-top: 30px; }
+            .question-title { font-size: 1rem; margin-bottom: 20px; padding: 0 5px; }
+            .option-content { padding: 12px 15px; }
+            .option-text-group span { font-size: 0.95rem; line-height: 1.5; }
+            .option-explanation { padding: 12px 15px; font-size: 0.85rem; }
+            
+            /* 顶部栏与按钮 */
+            .top-bar { padding: 0 15px; height: 55px; }
+            .toggle-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+            
+            /* 播放器区域缩放 */
+            .audio-wrapper { padding: 10px 15px 20px; }
+            .speed-btn { padding: 2px 6px; font-size: 0.7rem; }
+            .time-display { width: 55px; font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="../read_jlpt.html?level=N1&type=short" class="toggle-btn" style="text-decoration: none;">← 戻る</a>
+    <div id="today-date">N1真题・名文鑑賞</div>
+    <div class="top-bar-controls">
+        <button id="analysis-btn" class="toggle-btn" onclick="toggleAnalysis()">解析</button>
+    </div>
+</div>
+
+<div class="container">
+    <h2 class="header-title">2010年12月 短文（一）</h2>
+
+    <div class="article-content">
+        <p class="japanese">
+            <!-- 句子一：可点击交互 -->
+            <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                ほかの<ruby>人<rt>ひと</rt></ruby>の<ruby>成<rt>せい</rt></ruby><ruby>功<rt>こう</rt></ruby><ruby>事<rt>じ</rt></ruby><ruby>例<rt>れい</rt></ruby>をマネすることが、<ruby>必<rt>かなら</rt></ruby>ずしも<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>成<rt>せい</rt></ruby><ruby>功<rt>こう</rt></ruby>を<ruby>約<rt>やく</rt></ruby><ruby>束<rt>そく</rt></ruby>するものではなくなったのがいまの<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>です。
+                <span class="sentence-badge">提出现状</span>
+                <span class="inline-note-container">
+                    <span class="inline-note-title">💡 構文の役割と意味</span>
+                    作者开篇指出了当今时代的现状：「マネする」（模仿）他人的成功案例「必ずしも自分の成功を約束するものではなくなった」（未必能保证自己的成功）。这为下文提出“创造力”的必要性做好了铺垫。
+                </span>
+            </span>
+            
+            <ruby>昨日<rt>きのう</rt></ruby>までの<ruby>成<rt>せい</rt></ruby><ruby>功<rt>こう</rt></ruby>は、<ruby>今日<rt>きょう</rt></ruby>の<ruby>成<rt>せい</rt></ruby><ruby>功<rt>こう</rt></ruby>を<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby>しません。そのような<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>に<ruby>大<rt>たい</rt></ruby><ruby>切<rt>せつ</rt></ruby>なのは、やはり<ruby>創<rt>そう</rt></ruby><ruby>造<rt>ぞう</rt></ruby><ruby>力<rt>りょく</rt></ruby>です。
+
+            <!-- 句子二：可点击交互 -->
+            <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                そして<ruby>創<rt>そう</rt></ruby><ruby>造<rt>ぞう</rt></ruby><ruby>力<rt>りょく</rt></ruby>とは<ruby>新<rt>あたら</rt></ruby>しいものをつくりだす<ruby>力<rt>ちから</rt></ruby>を<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby>している<ruby>以<rt>い</rt></ruby><ruby>上<rt>じょう</rt></ruby>、<ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>を<ruby>避<rt>さ</rt></ruby>けて<ruby>培<rt>つちか</rt></ruby>えるものではありません。
+                <span class="sentence-badge">阐述特征</span>
+                <span class="inline-note-container">
+                    <span class="inline-note-title">💡 構文の役割と意味</span>
+                    紧接上文，作者进一步阐述了创造力的特征。既然创造力意味着创造新事物，那就「失敗を避けて培えるものではありません」（绝不是能够避开失败来培养的）。这说明经历失败是培养创造力的必经之路。
+                </span>
+            </span>
+
+            <!-- 句子三：可点击交互 -->
+            <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                <ruby>創<rt>そう</rt></ruby><ruby>造<rt>ぞう</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<ruby>身<rt>み</rt></ruby>につける<ruby>上<rt>うえ</rt></ruby>でまず<ruby>第<rt>だい</rt></ruby><ruby>一<rt>いち</rt></ruby>に<ruby>必<rt>ひつ</rt></ruby><ruby>要<rt>よう</rt></ruby>なのは、<ruby>決<rt>き</rt></ruby>められた<ruby>課<rt>か</rt></ruby><ruby>題<rt>だい</rt></ruby>に<ruby>解<rt>かい</rt></ruby>を<ruby>出<rt>だ</rt></ruby>すことではなく、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>で<ruby>課<rt>か</rt></ruby><ruby>題<rt>だい</rt></ruby>を<ruby>設<rt>せっ</rt></ruby><ruby>定<rt>てい</rt></ruby>する<ruby>能<rt>のう</rt></ruby><ruby>力<rt>りょく</rt></ruby>です。
+                <span class="sentence-badge">总结主旨</span>
+                <span class="inline-note-container">
+                    <span class="inline-note-title">💡 構文の役割と意味</span>
+                    给出最终结论。明确指出掌握创造力首要需要的不是「決められた課題に解を出す」（去解答已经定好的课题），而是「自分で課題を設定する」（自己去设定课题）。这两者的对比直接点明了文章的核心主旨。
+                </span>
+            </span>
+        </p>
+        
+        <div class="translation analysis-element">在当今时代，模仿他人的成功案例未必能保证自己的成功。昨天的成功并不意味着今天的成功。在这样一个时代，最重要的依然是创造力。而既然创造力意味着创造新事物的能力，那么它就绝不是能够避开失败来培养的。在掌握创造力的过程中，首要需要的并不是去解答已经定好的课题，而是自己设定课题的能力。</div>
+    </div>
+
+    <!-- 实战演练区 -->
+    <div class="qa-section">
+        <div class="question-title">
+            <ruby>問<rt>とい</rt></ruby>：<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>によると、いまの<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>に<ruby>創<rt>そう</rt></ruby><ruby>造<rt>ぞう</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<ruby>養<rt>やしな</rt></ruby>うには<ruby>何<rt>なに</rt></ruby>が<ruby>必<rt>ひつ</rt></ruby><ruby>要<rt>よう</rt></ruby>か。
+        </div>
+        
+        <div class="option-item is-correct" onclick="toggleOption(this)">
+            <div class="option-content">
+                <span class="option-number">1</span>
+                <div class="option-text-group">
+                    <span><ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>を<ruby>経<rt>けい</rt></ruby><ruby>験<rt>けん</rt></ruby>しながら<ruby>課<rt>か</rt></ruby><ruby>題<rt>だい</rt></ruby>を<ruby>見<rt>み</rt></ruby>つけ<ruby>出<rt>だ</rt></ruby>す<ruby>力<rt>ちから</rt></ruby></span>
+                    <span class="option-translation">在经历失败的同时去发现课题的能力</span>
+                </div>
+            </div>
+            <div class="option-explanation">
+                <span class="badge correct">正解</span>
+                完美契合文章主旨。前半句「失敗を経験しながら」（在经历失败的同时）对应了原文中的「失敗を避けて培えるものではありません」（绝不是能够避开失败来培养的）；后半句「課題を見つけ出す」（去发现课题）准确对应了原文最后强调的「自分で課題を設定する能力」（自己设定课题的能力）。
+            </div>
+        </div>
+
+        <div class="option-item" onclick="toggleOption(this)">
+            <div class="option-content">
+                <span class="option-number">2</span>
+                <div class="option-text-group">
+                    <span><ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>を<ruby>重<rt>かさ</rt></ruby>ねながら<ruby>課<rt>か</rt></ruby><ruby>題<rt>だい</rt></ruby>をこなしていく<ruby>力<rt>ちから</rt></ruby></span>
+                    <span class="option-translation">在不断失败的同时去处理完成课题的能力</span>
+                </div>
+            </div>
+            <div class="option-explanation">
+                <span class="badge wrong">誤り</span>
+                选项后半句「課題をこなしていく」（去处理完成课题）等同于原文中被作者明确否定的「決められた課題に解を出す」（去解答已经定好的课题），违背了作者强调的“需要自己去设定课题”的核心观点。
+            </div>
+        </div>
+
+        <div class="option-item" onclick="toggleOption(this)">
+            <div class="option-content">
+                <span class="option-number">3</span>
+                <div class="option-text-group">
+                    <span><ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>を<ruby>生<rt>い</rt></ruby>かしながら<ruby>課<rt>か</rt></ruby><ruby>題<rt>だい</rt></ruby>を<ruby>遂<rt>すい</rt></ruby><ruby>行<rt>こう</rt></ruby>する<ruby>力<rt>ちから</rt></ruby></span>
+                    <span class="option-translation">在利用失败经验的同时去执行课题的能力</span>
+                </div>
+            </div>
+            <div class="option-explanation">
+                <span class="badge wrong">誤り</span>
+                与选项2同理，「課題を遂行する」（去执行课题）依然是停留在被动地解决已有问题的层面上，这与原文所主张的「自分で課題を設定する」（自己设定课题）的意思不符。
+            </div>
+        </div>
+
+        <div class="option-item" onclick="toggleOption(this)">
+            <div class="option-content">
+                <span class="option-number">4</span>
+                <div class="option-text-group">
+                    <span><ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>を<ruby>受<rt>う</rt></ruby>け<ruby>入<rt>い</rt></ruby>れながら<ruby>課<rt>か</rt></ruby><ruby>題<rt>だい</rt></ruby>を<ruby>解<rt>と</rt></ruby>く<ruby>力<rt>ちから</rt></ruby></span>
+                    <span class="option-translation">在接受失败的同时去解答课题的能力</span>
+                </div>
+            </div>
+            <div class="option-explanation">
+                <span class="badge wrong">誤り</span>
+                选项中的「課題を解く」（解答课题）直接违背了原文中「決められた課題に解を出すことではなく」（首要需要的并不是去解答已经定好的课题）的明确表述。
+            </div>
+        </div>
+    </div>
+
+    <!-- 文章导航区 -->
+    <div class="article-navigation">
+        <a href="2010.7-4.html" class="nav-btn">← 上一篇</a> 
+        <a href="2010.12-2.html" class="nav-btn">下一篇 →</a>
+    </div>
+
+</div>
+
+<!-- 音频播放器 -->
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bg"><div class="progress-bar" id="progress-bar"></div></div>
+        </div>
+        <div class="time-display"><span id="current-time">00:00</span> / <span id="duration">00:00</span></div>
+        <button id="speed-btn" class="speed-btn" onclick="toggleSpeed()" title="再生速度">1.0x</button>
+        <button id="loop-btn" class="loop-btn" onclick="toggleLoop()" title="ループ再生">
+            <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        </button>
+        <audio id="audio-element" src="audio/2010.12-1.mp3"></audio>
+    </div>
+</div>
+
+<div class="footer">Ichigo Ichie - 一期一会</div>
+
+<script>
+    // 切换解析模式
+    function toggleAnalysis() {
+        const btn = document.getElementById('analysis-btn');
+        btn.classList.toggle('active');
+        document.body.classList.toggle('show-analysis');
+        
+        // 当关闭解析时，重置所有已展开的状态
+        if (!document.body.classList.contains('show-analysis')) {
+            document.querySelectorAll('.option-item.expanded').forEach(item => item.classList.remove('expanded'));
+            document.querySelectorAll('.key-sentence.active').forEach(item => item.classList.remove('active'));
+        }
+    }
+
+    // 内联句法交互逻辑
+    function toggleInlineNote(event, element) {
+        // 如果未开启解析模式，则不响应点击
+        if (!document.body.classList.contains('show-analysis')) return;
+        
+        // 防止点击展开的笔记框本身（如复制文字）导致笔记意外关闭
+        if (event.target.closest('.inline-note-container')) {
+            return; 
+        }
+        
+        element.classList.toggle('active');
+    }
+
+    // 选项点击逻辑（非解析模式可单选并判定，解析模式可展开）
+    function toggleOption(element) {
+        if (!document.body.classList.contains('show-analysis')) {
+            // 非解析模式：单选并实时判定对错
+            document.querySelectorAll('.option-item').forEach(item => {
+                item.classList.remove('selected', 'answered-correct', 'answered-wrong');
+            });
+            
+            // 验证是否正确并添加对应的判定类
+            if (element.classList.contains('is-correct')) {
+                element.classList.add('answered-correct');
+            } else {
+                element.classList.add('answered-wrong');
+            }
+        } else {
+            // 解析模式：展开解析内容
+            element.classList.toggle('expanded');
+        }
+    }
+
+    // 音频播放器逻辑
+    const audio = document.getElementById('audio-element');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+    const loopBtn = document.getElementById('loop-btn');
+    const speedBtn = document.getElementById('speed-btn');
+
+    let isLooping = false;
+    let currentSpeed = 1.0;
+
+    function toggleLoop() { 
+        isLooping = !isLooping; 
+        audio.loop = isLooping; 
+        loopBtn.classList.toggle('active', isLooping); 
+    }
+
+    function toggleSpeed() {
+        if (currentSpeed === 1.0) {
+            currentSpeed = 0.75;
+            speedBtn.textContent = '0.75x';
+            speedBtn.classList.add('active');
+        } else {
+            currentSpeed = 1.0;
+            speedBtn.textContent = '1.0x';
+            speedBtn.classList.remove('active');
+        }
+        audio.playbackRate = currentSpeed;
+    }
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+            playBtn.classList.add('playing');
+            // 切换为暂停图标 (两条竖线)
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        } else {
+            audio.pause();
+            playBtn.classList.remove('playing');
+            // 切换回播放图标 (三角形)
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        }
+    }
+    
+    audio.addEventListener('timeupdate', () => { 
+        if (audio.duration) { 
+            progressBar.style.width = (audio.currentTime / audio.duration * 100) + '%'; 
+            currentTimeEl.textContent = formatTime(audio.currentTime); 
+        }
+    });
+    
+    audio.addEventListener('loadedmetadata', () => { 
+        durationEl.textContent = formatTime(audio.duration); 
+    });
+    
+    audio.addEventListener('ended', () => { 
+        playBtn.classList.remove('playing'); 
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'; 
+        progressBar.style.width = '0%'; 
+        currentTimeEl.textContent = "00:00"; 
+    });
+    
+    function seek(e) { 
+        if (!audio.duration) return; 
+        const rect = progressContainer.getBoundingClientRect(); 
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX; 
+        let clickX = Math.max(0, Math.min(clientX - rect.left, rect.width)); 
+        audio.currentTime = (clickX / rect.width) * audio.duration; 
+    }
+    
+    let isDragging = false;
+    progressContainer.addEventListener('mousedown', (e) => { isDragging = true; seek(e); });
+    window.addEventListener('mousemove', (e) => { if (isDragging) seek(e); });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    progressContainer.addEventListener('touchstart', (e) => { isDragging = true; seek(e); });
+    window.addEventListener('touchmove', (e) => { if (isDragging) { e.preventDefault(); seek(e); } }, { passive: false });
+    window.addEventListener('touchend', () => { isDragging = false; });
+    
+    function formatTime(seconds) { 
+        if (isNaN(seconds)) return "00:00"; 
+        const m = Math.floor(seconds / 60); 
+        const s = Math.floor(seconds % 60); 
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; 
+    }
+</script>
+
+</body>
+</html>
