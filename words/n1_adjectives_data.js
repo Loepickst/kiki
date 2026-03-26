@@ -1528,8 +1528,8 @@ const DAY5_WORDS = [
         ],
         "practice": {
             "sentence": "害虫は生命力が<span class='ex-highlight'>____</span>、駆除するのが大変だ。",
-            "options": ["しぶたく", "なだかく", "たのもしく", "みすぼらしく"],
-            "answer": "しぶたく"
+            "options": ["しぶとく", "なだかく", "たのもしく", "みすぼらしく"],
+            "answer": "しぶとく"
         }
     },
     {
@@ -1578,7 +1578,7 @@ const DAY5_WORDS = [
         ],
         "practice": {
             "sentence": "何年も手入れされていないその家は、とても<span class='ex-highlight'>____</span>見えた。",
-            "options": ["みすぼらしく", "なだかく", "たのもしく", "しぶたく"],
+            "options": ["みすぼらしく", "なだかく", "たのもしく", "しぶとく"],
             "answer": "みすぼらしく"
         }
     },
