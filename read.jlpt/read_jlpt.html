@@ -293,6 +293,110 @@
         }
 
         /* ========================================= */
+        /* ✨ 年份卡片与错题回顾 (新增) */
+        /* ========================================= */
+        .review-card {
+            background: #fffdf8;
+            border: 1px solid #f2e6ce;
+            border-radius: 6px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .review-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 24px;
+            background-color: #e6c855;
+            border-radius: 0 4px 4px 0;
+        }
+        .review-title {
+            font-size: 16px;
+            font-weight: bold;
+            font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+            margin-left: 10px;
+            color: #8c6b2e;
+        }
+        .review-btn {
+            font-size: 13px;
+            color: #aaa;
+            background: #fff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        .year-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .year-grid {
+                grid-template-columns: 1fr; /* 手机端单列 */
+            }
+        }
+
+        .year-card {
+            background: #fff;
+            border-radius: 6px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            border: 1px solid #f0f0f0;
+            text-decoration: none;
+            color: var(--text-ink);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .year-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+            border-color: #e0e0e0;
+        }
+        .year-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 24px;
+            background-color: #a0a0a0;
+            border-radius: 0 4px 4px 0;
+        }
+        .year-title {
+            font-size: 16px;
+            font-weight: bold;
+            font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+            margin-left: 10px;
+        }
+        .year-count {
+            font-size: 13px;
+            color: #666;
+            background: #fcfcfc;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+            border: 1px solid #eee;
+        }
+
+        /* ========================================= */
         /* ✨ 搜索框与底部 */
         /* ========================================= */
         .search-box {
@@ -423,16 +527,16 @@
         </div>
     </div>
 
-    <!-- 🌟 View 3: 文章列表 -->
-    <div id="articleListView" class="container hidden">
-        <!-- 搜索框 -->
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="可输入关键词或年份（例如: 2023）" oninput="filterArticles()">
+    <!-- 🌟 View 3: 年份列表 -->
+    <div id="yearListView" class="container hidden">
+        <!-- 错题回顾卡片 -->
+        <div class="review-card">
+            <div class="review-title">错题回顾（暂时有问题，勿用）</div>
+            <div class="review-btn">无错题记录</div>
         </div>
         
-        <div id="articleContainer"></div>
-        <div style="text-align:center; color:#999; padding:20px; font-size: 12px; letter-spacing: 1px; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;">
-            🚧 更多真题解析正在努力整理中...
+        <div id="yearContainer" class="year-grid">
+            <!-- 年份卡片将在这里渲染 -->
         </div>
     </div>
 
@@ -447,7 +551,7 @@
         // --- 视图控制逻辑 ---
         const levelView = document.getElementById('levelSelectView');
         const typeView = document.getElementById('typeSelectView');
-        const listView = document.getElementById('articleListView');
+        const yearView = document.getElementById('yearListView');
         
         const pageTitle = document.getElementById('pageTitle');
         const backText = document.getElementById('backText');
@@ -455,6 +559,7 @@
         
         let currentLevel = null;   // 当前选择的级别 (N1, N2, N3)
         let currentType = null;    // 当前选择的题型 (short, long...)
+        let currentYear = null;    // 当前选择的年份
         let activeDatabase = [];   // 当前激活的数据库
         let currentArticles = [];  // 当前筛选出的文章
 
@@ -463,16 +568,25 @@
             const urlParams = new URLSearchParams(window.location.search);
             const initLevel = urlParams.get('level');
             const initType = urlParams.get('type');
+            const initYear = urlParams.get('year');
 
             if (initLevel && initType) {
                 // 如果带有参数，直接进入对应的列表页面
                 let typeName = '';
                 if (initType === 'short') typeName = '短文理解';
-                // (如果有其他类型可以在这里扩展)
+                else if (initType === 'long') typeName = '内容理解（中・長文）';
+                else if (initType === 'integrated') typeName = '統合理解';
+                else if (initType === 'search') typeName = '情報検索';
                 
                 // 先模拟选择级别，再模拟选择题型
                 selectLevel(initLevel);
                 selectType(initType, typeName);
+
+                if (initYear) {
+                    const parts = initYear.split('.');
+                    const displayYear = parts.length === 2 ? `${parts[0]}年${parseInt(parts[1])}月` : initYear;
+                    selectYear(initYear, displayYear);
+                }
             }
         };
 
@@ -496,74 +610,111 @@
             window.scrollTo(0, 0);
         }
 
-        // 🌟 2. 选择题型 (进入文章列表)
+        // 🌟 2. 选择题型 (进入年份列表)
         function selectType(type, typeName) {
             currentType = type;
             
             // 在当前激活的数据库(N1或N2)中，过滤对应题型的文章
             currentArticles = activeDatabase.filter(a => a.type === type);
             
-            // 渲染列表
-            renderArticles(currentArticles);
+            // 渲染年份列表
+            renderYears(currentArticles);
 
             // 切换视图
             typeView.classList.add('hidden');
-            listView.classList.remove('hidden');
+            yearView.classList.remove('hidden');
             
             // 更新头部文字
             pageTitle.innerText = `${currentLevel} - ${typeName}`;
             backText.innerText = '題型';
             window.scrollTo(0, 0);
+        }
+
+        // 🌟 3. 渲染年份卡片
+        function renderYears(list) {
+            const container = document.getElementById('yearContainer');
             
-            // 清空搜索框
-            document.getElementById('searchInput').value = '';
+            // 计算错题数量
+            let mistakes = JSON.parse(localStorage.getItem('jlpt_read_mistakes') || '[]');
+            let currentMistakes = mistakes.filter(m => m.level === currentLevel && m.type === currentType);
+            
+            const reviewCard = document.querySelector('.review-card');
+            const reviewBtn = document.querySelector('.review-btn');
+            
+            if (currentMistakes.length > 0) {
+                reviewBtn.innerText = `待复习：${currentMistakes.length} 题`;
+                reviewBtn.style.color = '#fff';
+                reviewBtn.style.backgroundColor = '#e6c855';
+                reviewBtn.style.borderColor = '#e6c855';
+                reviewCard.style.cursor = 'pointer';
+                reviewCard.onclick = function() {
+                    const separator = currentMistakes[0].url.includes('?') ? '&' : '?';
+                    window.location.href = currentMistakes[0].url + separator + 'mode=mistake';
+                };
+            } else {
+                reviewBtn.innerText = `无错题记录`;
+                reviewBtn.style.color = '#aaa';
+                reviewBtn.style.backgroundColor = '#fff';
+                reviewBtn.style.borderColor = '#eee';
+                reviewCard.style.cursor = 'default';
+                reviewCard.onclick = null;
+            }
+
+            // 提取年份并统计数量
+            const yearMap = {};
+            list.forEach(item => {
+                if (!yearMap[item.year]) yearMap[item.year] = 0;
+                
+                // 优先使用数据源中手动指定的题数，如果没有则默认为1
+                if (item.questionCount) {
+                    yearMap[item.year] += item.questionCount;
+                } else {
+                    yearMap[item.year]++;
+                }
+            });
+
+            // 按年份降序排列
+            const years = Object.keys(yearMap).sort((a, b) => b.localeCompare(a));
+
+            if (years.length > 0) {
+                container.innerHTML = years.map(year => {
+                    // 格式化年份，如 "2010.07" -> "2010年7月"
+                    const parts = year.split('.');
+                    const displayYear = parts.length === 2 ? `${parts[0]}年${parseInt(parts[1])}月` : year;
+
+                    return `
+                    <div class="year-card" onclick="selectYear('${year}', '${displayYear}')">
+                        <div class="year-title">${displayYear}</div>
+                        <div class="year-count">共 ${yearMap[year]} 题</div>
+                    </div>
+                    `;
+                }).join('');
+            } else {
+                container.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; padding:40px; color:#aaa; font-size:13px; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;">该分类下暂无真题</div>`;
+            }
+        }
+
+        // 🌟 4. 选择年份 (直接跳转到该年份第一篇文章)
+        function selectYear(year, displayYear) {
+            currentYear = year;
+            
+            // 过滤对应年份的文章
+            const filteredByYear = currentArticles.filter(a => a.year === year);
+            
+            if (filteredByYear.length > 0) {
+                // 取该年份的第一篇文章，并进行跳转
+                const firstArticle = filteredByYear[0];
+                window.location.href = firstArticle.link;
+            } else {
+                alert('该年份暂无试题！');
+            }
         }
         
-        // 🌟 3. 搜索过滤逻辑
-        function filterArticles() {
-            const query = document.getElementById('searchInput').value.trim().toLowerCase();
-            if (!query) {
-                renderArticles(currentArticles);
-                return;
-            }
-            
-            const filtered = currentArticles.filter(item => 
-                item.title.toLowerCase().includes(query) || 
-                item.desc.toLowerCase().includes(query) ||
-                item.year.includes(query)
-            );
-            renderArticles(filtered);
-        }
-
-        // 🌟 4. 渲染文章卡片
-        function renderArticles(list) {
-            const container = document.getElementById('articleContainer');
-            if (list.length > 0) {
-                container.innerHTML = list.map(item => {
-                    let borderColor = `var(--tag-${item.level.toLowerCase()})`;
-                    return `
-                    <a href="${item.link}" class="article-card" style="border-left-color: ${borderColor};">
-                        <div class="list-header">
-                            <div class="tag-group">
-                                <span class="level-tag tag-${item.level}">${item.level}</span>
-                                <span class="year-text">${item.year}</span>
-                            </div>
-                            <span>詳細を見る ＞</span>
-                        </div>
-                        <h2 class="article-title">${item.title}</h2>
-                        <p class="article-desc">${item.desc}</p>
-                    </a>
-                `}).join('');
-            } else {
-                container.innerHTML = `<div style="text-align:center; padding:40px; color:#aaa; font-size:13px; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;">该分类下暂无解析，或更换搜索关键词</div>`;
-            }
-        }
-
         // 🌟 5. 返回按钮逻辑 (三级层级返回)
         function handleBack() {
-            if (!listView.classList.contains('hidden')) {
-                // 状态 3：从文章列表 -> 返回题型选择
-                listView.classList.add('hidden');
+            if (!yearView.classList.contains('hidden')) {
+                // 状态 3：从年份选择 -> 返回题型选择
+                yearView.classList.add('hidden');
                 typeView.classList.remove('hidden');
                 pageTitle.innerText = `${currentLevel} 読解真題`;
                 backText.innerText = '級別';
