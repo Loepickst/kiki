@@ -748,6 +748,9 @@
 
     const ARTICLE_LEVEL = 'N1';
     const ARTICLE_TYPE = 'short';
+    const ARTICLE_YEAR = '2010.12';
+    const ARTICLE_ID = 'n1-2010-12-short';
+    const ARTICLE_LINK = 's/2010.12.html';
 
     function toggleOption(element) {
         if (document.body.classList.contains('show-analysis')) {
@@ -774,9 +777,7 @@
     }
 
     function recordAnswer(isCorrect) {
-        const path = window.location.pathname.split('/').pop().replace('.html', '');
-        const filename = window.location.pathname.split('/').pop();
-        const qid = `${path}-${currentPage}`;
+        const qid = `${ARTICLE_ID}-p${currentPage}`;
         
         let mistakes = JSON.parse(localStorage.getItem('jlpt_read_mistakes') || '[]');
         const existingIndex = mistakes.findIndex(m => m.id === qid);
@@ -789,10 +790,14 @@
                 
                 mistakes.push({
                     id: qid,
-                    url: `${filename}?page=${currentPage}`,
-                    title: title,
+                    articleId: ARTICLE_ID,
+                    year: ARTICLE_YEAR,
                     level: ARTICLE_LEVEL,
-                    type: ARTICLE_TYPE
+                    type: ARTICLE_TYPE,
+                    title: title,
+                    url: `${ARTICLE_LINK}?page=${currentPage}`,
+                    articleLink: ARTICLE_LINK,
+                    page: currentPage
                 });
                 localStorage.setItem('jlpt_read_mistakes', JSON.stringify(mistakes));
             }
@@ -955,13 +960,14 @@
         let filtered = mistakes.filter(m => m.level === ARTICLE_LEVEL && m.type === ARTICLE_TYPE);
         
         const path = window.location.pathname.split('/').pop().replace('.html', '');
-        const qid = `${path}-${currentPage}`;
+        const qid = `${ARTICLE_ID}-p${currentPage}`;
         
         const currentIndex = filtered.findIndex(m => m.id === qid);
         
         if (currentIndex === -1) {
             if (filtered.length > 0) {
-                window.location.href = '../s/' + filtered[0].url + (filtered[0].url.includes('?') ? '&' : '?') + 'mode=mistake';
+                const targetUrl = filtered[0].url + (filtered[0].url.includes('?') ? '&' : '?') + 'mode=mistake';
+                window.location.href = '../' + targetUrl;
             } else {
                 alert('🎉 太棒了！所有错题已复习完毕！');
                 window.location.href = '../read_jlpt.html?level=' + ARTICLE_LEVEL + '&type=' + ARTICLE_TYPE;
@@ -971,7 +977,8 @@
 
         const nextIndex = currentIndex + direction;
         if (nextIndex >= 0 && nextIndex < filtered.length) {
-            window.location.href = '../s/' + filtered[nextIndex].url + (filtered[nextIndex].url.includes('?') ? '&' : '?') + 'mode=mistake';
+            const targetUrl = filtered[nextIndex].url + (filtered[nextIndex].url.includes('?') ? '&' : '?') + 'mode=mistake';
+            window.location.href = '../' + targetUrl;
         } else {
             if (direction > 0) {
                 alert('🎉 已经是最后一题了，错题复习完毕！');
