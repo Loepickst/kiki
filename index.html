@@ -36,6 +36,7 @@
 
         html {
             scroll-behavior: smooth;
+            overscroll-behavior-y: none;
         }
 
         body {
@@ -46,6 +47,7 @@
             font-synthesis: none;
             text-rendering: optimizeLegibility;
             overflow-x: hidden;
+            overscroll-behavior-y: none;
         }
 
         body.modal-open {
@@ -340,6 +342,22 @@
 
         .content-panel {
             padding: 18px 0; /* PC 端也移除左右内边距，保持对齐逻辑统一 */
+        }
+
+        .feature-panels {
+            position: relative;
+        }
+
+        .feature-panel {
+            display: none;
+        }
+
+        .feature-panel.is-active {
+            display: block;
+        }
+
+        .feature-panel.is-entering {
+            animation: featurePanelFade 220ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         .feature-grid {
@@ -908,6 +926,17 @@
             }
         }
 
+        @keyframes featurePanelFade {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         @media (max-width: 920px) {
             .feature-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1407,7 +1436,7 @@
                 </div>
 
                 <div class="content-panel is-hidden" id="content-panel">
-                    <div class="feature-grid" id="feature-grid"></div>
+                    <div class="feature-panels" id="feature-panels"></div>
                 </div>
             </section>
         </main>
@@ -1816,7 +1845,7 @@
 
         const noticePanel = document.getElementById("notice-panel");
         const contentPanel = document.getElementById("content-panel");
-        const featureGrid = document.getElementById("feature-grid");
+        const featurePanels = document.getElementById("feature-panels");
         const sponsorBtn = document.getElementById("sponsor-btn");
         const sponsorModal = document.getElementById("sponsor-modal");
         const supportGrid = document.getElementById("support-grid");
@@ -1835,6 +1864,10 @@
         let editingFavoriteIndex = null;
         let isFavoritesModalOpen = false;
         let homePetController = null;
+        let favoritesPanelDirty = false;
+        const sectionPanels = new Map();
+        let touchStartY = 0;
+        let touchStartX = 0;
 
         function getIconMarkup(name) {
             return SKETCH_ICONS[name] || "";
@@ -2230,8 +2263,8 @@
             return cards.join("");
         }
 
-        function bindFeatureCoverFallbacks() {
-            featureGrid.querySelectorAll(".feature-cover-image").forEach((image) => {
+        function bindFeatureCoverFallbacks(scope = featurePanels) {
+            scope.querySelectorAll(".feature-cover-image").forEach((image) => {
                 if (image.dataset.bound === "true") {
                     return;
                 }
@@ -2251,28 +2284,79 @@
             });
         }
 
-        function renderGrid(sectionKey, animate = true) {
-            if (animate) {
-                featureGrid.classList.add("is-switching");
+        function getSectionGridMarkup(sectionKey) {
+            return sectionKey === "favorites"
+                ? getFavoritesGridMarkup()
+                : HOME_SECTIONS[sectionKey].items.map((item, index) => getFeatureCardMarkup(item, index, sectionKey)).join("");
+        }
+
+        function getOrCreateSectionPanel(sectionKey) {
+            if (sectionPanels.has(sectionKey)) {
+                return sectionPanels.get(sectionKey);
             }
 
-            const commitRender = () => {
-                const markup = sectionKey === "favorites"
-                    ? getFavoritesGridMarkup()
-                    : HOME_SECTIONS[sectionKey].items.map((item, index) => getFeatureCardMarkup(item, index, sectionKey)).join("");
+            const panel = document.createElement("section");
+            panel.className = "feature-panel";
+            panel.dataset.section = sectionKey;
 
-                featureGrid.innerHTML = markup;
-                bindFeatureCoverFallbacks();
+            const grid = document.createElement("div");
+            grid.className = "feature-grid";
+            grid.dataset.sectionGrid = sectionKey;
+
+            panel.appendChild(grid);
+            featurePanels.appendChild(panel);
+            sectionPanels.set(sectionKey, panel);
+            return panel;
+        }
+
+        function renderSectionPanel(sectionKey) {
+            const panel = getOrCreateSectionPanel(sectionKey);
+            const grid = panel.querySelector(".feature-grid");
+            if (!grid) {
+                return panel;
+            }
+
+            grid.innerHTML = getSectionGridMarkup(sectionKey);
+            bindFeatureCoverFallbacks(grid);
+            panel.dataset.rendered = "true";
+            if (sectionKey === "favorites") {
+                favoritesPanelDirty = false;
+            }
+            return panel;
+        }
+
+        function ensureSectionPanel(sectionKey) {
+            const panel = getOrCreateSectionPanel(sectionKey);
+            const needsRender = panel.dataset.rendered !== "true" || (sectionKey === "favorites" && favoritesPanelDirty);
+            if (needsRender) {
+                return renderSectionPanel(sectionKey);
+            }
+            return panel;
+        }
+
+        function showSectionPanel(sectionKey, animate = true) {
+            const targetPanel = ensureSectionPanel(sectionKey);
+            sectionPanels.forEach((panel, key) => {
+                const isTarget = key === sectionKey;
+                panel.classList.toggle("is-active", isTarget);
+                panel.classList.remove("is-entering");
+            });
+
+            if (targetPanel && animate) {
                 requestAnimationFrame(() => {
-                    featureGrid.classList.remove("is-switching");
+                    targetPanel.classList.add("is-entering");
                 });
-            };
-
-            if (animate) {
-                window.setTimeout(commitRender, 120);
-            } else {
-                commitRender();
             }
+        }
+
+        function initializeSectionPanels() {
+            ["daily", "exam", "favorites"].forEach((sectionKey) => {
+                renderSectionPanel(sectionKey);
+                const panel = sectionPanels.get(sectionKey);
+                if (panel) {
+                    panel.classList.remove("is-active", "is-entering");
+                }
+            });
         }
 
         function syncFavoriteDeleteButton() {
@@ -2319,7 +2403,6 @@
             setActiveSwitch(null);
             noticePanel.classList.remove("is-hidden");
             contentPanel.classList.add("is-hidden");
-            featureGrid.innerHTML = "";
             if (syncHash) {
                 syncSectionHash(null);
             }
@@ -2337,7 +2420,7 @@
             setActiveSwitch(sectionKey);
             noticePanel.classList.add("is-hidden");
             contentPanel.classList.remove("is-hidden");
-            renderGrid(sectionKey, animate);
+            showSectionPanel(sectionKey, animate);
             if (syncHash) {
                 syncSectionHash(sectionKey);
             }
@@ -2357,7 +2440,7 @@
 
         sponsorBtn.addEventListener("click", () => openModal(sponsorModal));
 
-        featureGrid.addEventListener("click", (event) => {
+        featurePanels.addEventListener("click", (event) => {
             const addTarget = event.target.closest("[data-favorite-add]");
             if (addTarget) {
                 event.preventDefault();
@@ -2374,7 +2457,7 @@
             }
 
             const launchTarget = event.target.closest("a[href]");
-            if (launchTarget && featureGrid.contains(launchTarget) && homePetController) {
+            if (launchTarget && featurePanels.contains(launchTarget) && homePetController) {
                 const titleNode = launchTarget.querySelector(".feature-title");
                 homePetController.recordStudyLaunch({
                     href: launchTarget.getAttribute("href"),
@@ -2408,6 +2491,7 @@
             }
 
             saveFavoriteEntries(favorites);
+            favoritesPanelDirty = true;
             if (activeSection === "favorites") {
                 renderSection("favorites", false, false);
             }
@@ -2434,6 +2518,7 @@
 
             favorites.splice(editingFavoriteIndex, 1);
             saveFavoriteEntries(favorites);
+            favoritesPanelDirty = true;
             if (activeSection === "favorites") {
                 renderSection("favorites", false, false);
             }
@@ -2469,20 +2554,34 @@
             }
         });
 
-        let resizeFrame = null;
-        window.addEventListener("resize", () => {
-            if (resizeFrame) {
-                cancelAnimationFrame(resizeFrame);
+        document.addEventListener("touchstart", (event) => {
+            if (event.touches.length !== 1) {
+                return;
+            }
+            touchStartY = event.touches[0].clientY;
+            touchStartX = event.touches[0].clientX;
+        }, { passive: true });
+
+        document.addEventListener("touchmove", (event) => {
+            if (event.touches.length !== 1 || document.body.classList.contains("modal-open")) {
+                return;
             }
 
-            resizeFrame = requestAnimationFrame(() => {
-                if (activeSection) {
-                    renderSection(activeSection, false, false);
-                } else {
-                    renderNotice(false);
-                }
-            });
-        });
+            const touch = event.touches[0];
+            const deltaY = touch.clientY - touchStartY;
+            const deltaX = touch.clientX - touchStartX;
+            const target = event.target;
+
+            if (window.scrollY > 0 || deltaY <= 0 || Math.abs(deltaY) <= Math.abs(deltaX)) {
+                return;
+            }
+
+            if (target && target.closest("#home-pet-root, input, textarea, select, [contenteditable='true']")) {
+                return;
+            }
+
+            event.preventDefault();
+        }, { passive: false });
 
         window.addEventListener("hashchange", () => {
             const sectionKey = location.hash.replace(/^#/, "");
@@ -2495,6 +2594,7 @@
 
         mountStaticIcons();
         renderSupportCards();
+        initializeSectionPanels();
         resetFavoriteEditor();
         document.body.classList.add("has-home-pet");
 
