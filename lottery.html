@@ -302,15 +302,63 @@
 
         .modal-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            gap: 12px;
             margin-bottom: 20px;
             border-bottom: 2px solid rgba(0,0,0,0.05);
             padding-bottom: 10px;
+            min-width: 0;
         }
-        .modal-header h2 { margin: 0; font-size: 18px; color: var(--text-color); }
-        .close-btn { font-size: 24px; cursor: pointer; color: #888; }
-        .close-btn:hover { color: var(--accent-color); }
+        .modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--text-color);
+            white-space: nowrap;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .modal-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 0 auto;
+        }
+        .modal-action-btn {
+            border: 1px solid rgba(179, 62, 62, 0.18);
+            background: rgba(255,255,255,0.92);
+            color: #7a5d53;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .modal-action-btn:hover {
+            border-color: rgba(179, 62, 62, 0.35);
+            color: var(--accent-color);
+            background: #fff;
+        }
+        .close-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 999px;
+            background: rgba(255,255,255,0.92);
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+            color: #888;
+            padding: 0;
+            transition: all 0.2s;
+        }
+        .close-btn:hover {
+            color: var(--accent-color);
+            border-color: rgba(179, 62, 62, 0.2);
+            background: #fff;
+        }
         .collection-toolbar {
             display: flex;
             align-items: center;
@@ -388,6 +436,34 @@
         .preview-desc-container { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); position: relative; }
         .preview-desc-container::before { content: "✦"; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #fdfaf5; padding: 0 10px; color: #ccc; font-size: 12px; }
         .preview-desc { font-size: 14px; color: #555; line-height: 1.6; margin: 0; text-align: justify; }
+        .backup-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translate(-50%, 16px);
+            background: rgba(43, 39, 36, 0.92);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            letter-spacing: 0.02em;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.22s ease, transform 0.22s ease;
+            z-index: 1300;
+            white-space: nowrap;
+            max-width: min(92vw, 360px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .backup-toast.active {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+        .backup-toast.error {
+            background: rgba(144, 44, 44, 0.94);
+        }
 
         @media (max-width: 480px) {
             .omikuji-img {
@@ -421,6 +497,29 @@
                 gap: 8px;
             }
 
+            .modal-header {
+                gap: 8px;
+            }
+
+            .modal-header h2 {
+                font-size: 17px;
+            }
+
+            .modal-header-actions {
+                gap: 6px;
+            }
+
+            .modal-action-btn {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+
+            .close-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 20px;
+            }
+
             .collection-filters {
                 gap: 5px;
             }
@@ -434,6 +533,13 @@
             .collection-stats {
                 font-size: 10px;
                 letter-spacing: 0;
+            }
+
+            .backup-toast {
+                bottom: 18px;
+                max-width: min(94vw, 320px);
+                font-size: 12px;
+                padding: 9px 12px;
             }
         }
     </style>
@@ -478,8 +584,12 @@
     <div class="modal-overlay" id="collectionModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>御神签图鉴 (コレクション)</h2>
-                <span class="close-btn" id="closeCollectionBtn">&times;</span>
+                <h2>图鉴</h2>
+                <div class="modal-header-actions">
+                    <button type="button" class="modal-action-btn" id="exportCollectionBtn">导出</button>
+                    <button type="button" class="modal-action-btn" id="importCollectionBtn">导入</button>
+                    <button type="button" class="close-btn" id="closeCollectionBtn" aria-label="关闭图鉴">&times;</button>
+                </div>
             </div>
             <div class="collection-toolbar">
                 <div class="collection-filters" id="collectionFilters">
@@ -492,6 +602,8 @@
             <div class="collection-grid" id="collectionGrid"></div>
         </div>
     </div>
+    <input type="file" id="backupImportInput" accept=".json,application/json" hidden>
+    <div class="backup-toast" id="backupToast" aria-live="polite"></div>
 
     <div class="preview-overlay" id="previewOverlay">
         <div class="preview-card" id="previewCard">
@@ -575,6 +687,10 @@
         const collectionModalContent = collectionModal.querySelector('.modal-content');
         const openCollectionBtn = document.getElementById('openCollectionBtn');
         const closeCollectionBtn = document.getElementById('closeCollectionBtn');
+        const exportCollectionBtn = document.getElementById('exportCollectionBtn');
+        const importCollectionBtn = document.getElementById('importCollectionBtn');
+        const backupImportInput = document.getElementById('backupImportInput');
+        const backupToast = document.getElementById('backupToast');
         const collectionGrid = document.getElementById('collectionGrid');
         const collectionStats = document.getElementById('collectionStats');
         const collectionFilterButtons = Array.from(document.querySelectorAll('[data-collection-filter]'));
@@ -587,6 +703,21 @@
         const previewCard = document.getElementById('previewCard');
         const previewRarityBadge = document.getElementById('previewRarityBadge');
         let currentCollectionFilter = 'all';
+        let backupToastTimer = 0;
+
+        function showBackupToast(message, tone = 'info') {
+            if (!backupToast) {
+                return;
+            }
+
+            window.clearTimeout(backupToastTimer);
+            backupToast.textContent = message;
+            backupToast.classList.toggle('error', tone === 'error');
+            backupToast.classList.add('active');
+            backupToastTimer = window.setTimeout(() => {
+                backupToast.classList.remove('active');
+            }, 2200);
+        }
 
         function safeParseJSON(rawValue, fallback) {
             try {
@@ -765,6 +896,199 @@
             return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
         }
 
+        function getBackupFileName(timestamp = Date.now()) {
+            const d = new Date(timestamp);
+            return `lottery-backup-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}-${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}${String(d.getSeconds()).padStart(2, '0')}.json`;
+        }
+
+        function buildLotteryBackupPayload() {
+            const normalizedMeta = migrateLegacyCollectionIfNeeded();
+            const exportedAt = Date.now();
+
+            return {
+                version: 1,
+                exportedAt,
+                source: 'lottery',
+                data: {
+                    omikujiCollection: getUnlockedIdsFromMeta(normalizedMeta),
+                    omikujiCollectionMeta_v1: normalizedMeta,
+                    omikujiLastObtained_v1: getLastObtained(),
+                    lotteryState_v2: getDailyState(),
+                    specialPoolState_v1: getSpecialPoolState()
+                }
+            };
+        }
+
+        function createLotteryBackupFile(payload) {
+            const content = JSON.stringify(payload, null, 2);
+            const fileName = getBackupFileName(payload.exportedAt);
+            const blob = new Blob([content], { type: 'application/json' });
+            const file = typeof File === 'function'
+                ? new File([blob], fileName, { type: 'application/json' })
+                : null;
+
+            return { content, fileName, blob, file };
+        }
+
+        async function shareLotteryBackup(file) {
+            if (!file || typeof navigator.share !== 'function') {
+                return 'unsupported';
+            }
+
+            const shareData = { files: [file] };
+            if (typeof navigator.canShare === 'function' && !navigator.canShare(shareData)) {
+                return 'unsupported';
+            }
+
+            try {
+                await navigator.share(shareData);
+                return 'shared';
+            } catch (error) {
+                if (error && error.name === 'AbortError') {
+                    return 'cancelled';
+                }
+                return 'failed';
+            }
+        }
+
+        function downloadLotteryBackup(payload) {
+            const { blob, fileName } = createLotteryBackupFile(payload);
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = fileName;
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+            window.setTimeout(() => URL.revokeObjectURL(url), 1200);
+        }
+
+        function promptImportLotteryBackup() {
+            if (!backupImportInput) {
+                return;
+            }
+
+            backupImportInput.value = '';
+            backupImportInput.click();
+        }
+
+        function parseLotteryBackup(text) {
+            try {
+                return JSON.parse(text);
+            } catch (error) {
+                throw new Error('存档文件无法解析');
+            }
+        }
+
+        function validateLotteryBackup(payload) {
+            if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+                throw new Error('存档格式不正确');
+            }
+
+            if (Number(payload.version) !== 1 || payload.source !== 'lottery') {
+                throw new Error('这不是可用的抽卡存档');
+            }
+
+            const data = payload.data;
+            if (!data || typeof data !== 'object' || Array.isArray(data)) {
+                throw new Error('存档内容缺失');
+            }
+
+            const requiredKeys = [
+                COLLECTION_KEY,
+                COLLECTION_META_KEY,
+                LAST_OBTAINED_KEY,
+                'lotteryState_v2',
+                'specialPoolState_v1'
+            ];
+
+            for (const key of requiredKeys) {
+                if (!(key in data)) {
+                    throw new Error('存档内容不完整');
+                }
+            }
+
+            if (!Array.isArray(data[COLLECTION_KEY])) {
+                throw new Error('图鉴列表数据无效');
+            }
+
+            if (!data[COLLECTION_META_KEY] || typeof data[COLLECTION_META_KEY] !== 'object' || Array.isArray(data[COLLECTION_META_KEY])) {
+                throw new Error('图鉴元数据无效');
+            }
+
+            if (data[LAST_OBTAINED_KEY] !== null && (typeof data[LAST_OBTAINED_KEY] !== 'object' || Array.isArray(data[LAST_OBTAINED_KEY]))) {
+                throw new Error('最新获得数据无效');
+            }
+
+            if (!data['lotteryState_v2'] || typeof data['lotteryState_v2'] !== 'object' || Array.isArray(data['lotteryState_v2'])) {
+                throw new Error('每日抽卡记录无效');
+            }
+
+            if (!data['specialPoolState_v1'] || typeof data['specialPoolState_v1'] !== 'object' || Array.isArray(data['specialPoolState_v1'])) {
+                throw new Error('特殊奖池记录无效');
+            }
+
+            return {
+                version: 1,
+                exportedAt: Number.isFinite(Number(payload.exportedAt)) ? Number(payload.exportedAt) : Date.now(),
+                source: 'lottery',
+                data: {
+                    omikujiCollection: data[COLLECTION_KEY],
+                    omikujiCollectionMeta_v1: data[COLLECTION_META_KEY],
+                    omikujiLastObtained_v1: data[LAST_OBTAINED_KEY],
+                    lotteryState_v2: data['lotteryState_v2'],
+                    specialPoolState_v1: data['specialPoolState_v1']
+                }
+            };
+        }
+
+        function writeBackupStorageValue(key, value) {
+            if (value === undefined) {
+                return;
+            }
+            if (value === null) {
+                localStorage.setItem(key, 'null');
+                return;
+            }
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+
+        function applyLotteryBackup(payload) {
+            writeBackupStorageValue(COLLECTION_KEY, payload.data.omikujiCollection);
+            writeBackupStorageValue(COLLECTION_META_KEY, payload.data.omikujiCollectionMeta_v1);
+            writeBackupStorageValue(LAST_OBTAINED_KEY, payload.data.omikujiLastObtained_v1);
+            writeBackupStorageValue('lotteryState_v2', payload.data.lotteryState_v2);
+            writeBackupStorageValue('specialPoolState_v1', payload.data.specialPoolState_v1);
+            migrateLegacyCollectionIfNeeded();
+        }
+
+        function refreshLotteryUIAfterImport() {
+            currentState = getDailyState();
+            remain = Math.max(0, MAX_DAILY_COUNT - currentState.count);
+            remainCountSpan.textContent = remain;
+
+            resultCard.style.display = 'none';
+            if (resultDescBox) {
+                resultDescBox.style.display = 'none';
+            }
+            newBadge.style.display = 'none';
+            omikujiContainer.style.display = 'flex';
+
+            if (remain > 0) {
+                drawBtn.disabled = false;
+                drawBtn.textContent = '抽签 (Start)';
+                drawBtn.style.backgroundColor = '';
+            } else {
+                drawBtn.disabled = true;
+                drawBtn.textContent = '明日再来';
+                drawBtn.style.backgroundColor = '#ccc';
+            }
+
+            if (collectionModal.classList.contains('active')) {
+                renderCollection({ autoFocusLatest: true });
+            }
+        }
+
         function isUnlockedByFilter(filterMode, isUnlocked) {
             if (filterMode === 'unlocked') {
                 return isUnlocked;
@@ -934,6 +1258,26 @@
             collectionModal.classList.add('active');
             renderCollection({ autoFocusLatest: true });
         });
+        exportCollectionBtn.addEventListener('click', async () => {
+            const payload = buildLotteryBackupPayload();
+            const { file } = createLotteryBackupFile(payload);
+            const shareResult = await shareLotteryBackup(file);
+
+            if (shareResult === 'shared') {
+                showBackupToast('存档已准备好，可保存到“文件”');
+                return;
+            }
+
+            if (shareResult === 'cancelled') {
+                return;
+            }
+
+            downloadLotteryBackup(payload);
+            showBackupToast('存档文件已导出');
+        });
+        importCollectionBtn.addEventListener('click', () => {
+            promptImportLotteryBackup();
+        });
         closeCollectionBtn.addEventListener('click', () => collectionModal.classList.remove('active'));
         collectionModal.addEventListener('click', (e) => {
             if(e.target === collectionModal) collectionModal.classList.remove('active');
@@ -947,6 +1291,30 @@
         previewClose.addEventListener('click', () => previewOverlay.classList.remove('active'));
         previewOverlay.addEventListener('click', (e) => {
             if (e.target === previewOverlay) previewOverlay.classList.remove('active');
+        });
+        backupImportInput.addEventListener('change', async (event) => {
+            const [file] = Array.from(event.target.files || []);
+            if (!file) {
+                return;
+            }
+
+            try {
+                const text = await file.text();
+                const parsed = parseLotteryBackup(text);
+                const payload = validateLotteryBackup(parsed);
+                const shouldImport = window.confirm('导入后会覆盖当前本地抽卡记录，确定继续吗？');
+                if (!shouldImport) {
+                    return;
+                }
+
+                applyLotteryBackup(payload);
+                refreshLotteryUIAfterImport();
+                showBackupToast('抽卡记录已恢复');
+            } catch (error) {
+                showBackupToast(error && error.message ? error.message : '导入失败', 'error');
+            } finally {
+                event.target.value = '';
+            }
         });
 
         function drawFortune() {
