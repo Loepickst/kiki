@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解 - 中篇読解テンプレート</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #3b5998;
+            --sub-color: #787878;
+            --soft-blue: #eef4ff;
+            --soft-red: #fff4f2;
+            --soft-green: #edf9f1;
+            --border-color: #e6ebf2;
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 86px 15px 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-bar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 64px;
+            background: rgba(253, 250, 245, 0.96);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .top-title {
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .toggle-btn {
+            background: white;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            padding: 6px 12px;
+            border-radius: 18px;
+            font-size: 0.78rem;
+            font-family: var(--chinese-font);
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .toggle-btn.active {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .container {
+            max-width: 780px;
+            width: 100%;
+            background: var(--paper-color);
+            padding: 46px 30px 56px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+            border-radius: 12px;
+        }
+
+        .header-title {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.35rem;
+            letter-spacing: 2px;
+        }
+
+        .header-subtitle {
+            text-align: center;
+            font-size: 0.92rem;
+            color: #8b8b8b;
+            margin-bottom: 24px;
+            font-family: var(--chinese-font);
+        }
+
+        .reading-path {
+            background: linear-gradient(90deg, #fafcff 0%, #f7f9fc 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 28px;
+            font-family: var(--chinese-font);
+            font-size: 0.9rem;
+            color: #556070;
+            line-height: 1.7;
+        }
+
+        .reading-path strong {
+            color: var(--accent-color);
+        }
+
+        .article-map {
+            display: none;
+            margin-bottom: 28px;
+            padding: 18px 18px 14px;
+            background: #fafcff;
+            border: 1px solid #dce6f7;
+            border-radius: 10px;
+            font-family: var(--chinese-font);
+        }
+
+        body.show-article-analysis .article-map {
+            display: block;
+        }
+
+        .map-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 12px;
+        }
+
+        .map-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .map-item {
+            background: white;
+            border: 1px solid #e8edf6;
+            border-radius: 8px;
+            padding: 12px 14px;
+            line-height: 1.7;
+        }
+
+        .map-item strong {
+            color: #d84315;
+            margin-right: 6px;
+        }
+
+        .article-content {
+            margin-bottom: 10px;
+        }
+
+        .paragraph-block {
+            margin-bottom: 24px;
+        }
+
+        .para-role {
+            display: none;
+            margin-bottom: 8px;
+            font-family: var(--chinese-font);
+            font-size: 0.82rem;
+            color: var(--accent-color);
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        body.show-article-analysis .para-role {
+            display: block;
+        }
+
+        p.japanese {
+            font-size: 1.12rem;
+            line-height: 2.25;
+            text-align: justify;
+            margin: 0;
+            text-indent: 1em;
+        }
+
+        ruby rt {
+            font-size: 0.55em;
+            color: var(--sub-color);
+            letter-spacing: 0;
+        }
+
+        .translation {
+            display: none;
+            margin: 18px 0 8px 0;
+            font-size: 0.95rem;
+            color: #5a626b;
+            line-height: 1.85;
+            padding: 15px 20px;
+            background-color: #f7f8f9;
+            font-family: var(--chinese-font);
+            border-left: 3px solid #ddd;
+            text-align: justify;
+            border-radius: 6px;
+        }
+
+        body.show-article-analysis .translation {
+            display: block;
+        }
+
+        .translation::before {
+            content: "文章参考译文";
+            display: block;
+            font-size: 0.76rem;
+            color: #999;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .key-sentence {
+            transition: 0.25s ease;
+        }
+
+        body.show-article-analysis .key-sentence {
+            background-color: rgba(59, 89, 152, 0.06);
+            border-bottom: 2px dashed #baccf1;
+            cursor: pointer;
+            border-radius: 3px;
+            padding: 2px 0;
+        }
+
+        body.show-article-analysis .key-sentence:hover {
+            background-color: rgba(59, 89, 152, 0.12);
+        }
+
+        body.show-article-analysis .key-sentence.active {
+            background-color: rgba(216, 67, 21, 0.08);
+            border-bottom-color: #e74c3c;
+        }
+
+        .sentence-badge {
+            display: none;
+        }
+
+        body.show-article-analysis .sentence-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--accent-color);
+            color: white;
+            font-size: 0.72rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin: 0 6px;
+            vertical-align: middle;
+            font-family: var(--chinese-font);
+            font-weight: bold;
+            transform: translateY(-1px);
+        }
+
+        body.show-article-analysis .key-sentence.active .sentence-badge {
+            background-color: #e74c3c;
+        }
+
+        .inline-note-container {
+            display: none;
+            background-color: #fff;
+            border-left: 4px solid #e74c3c;
+            padding: 15px 18px;
+            margin: 14px 0 6px -1em;
+            font-size: 0.94rem;
+            color: #444;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            font-family: var(--chinese-font);
+            border-radius: 0 8px 8px 0;
+            text-indent: 0;
+            line-height: 1.8;
+            cursor: text;
+        }
+
+        .key-sentence.active .inline-note-container {
+            display: block;
+        }
+
+        .inline-note-title {
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 8px;
+            font-size: 0.98rem;
+        }
+
+        .qa-section {
+            margin-top: 44px;
+            border-top: 2px solid #f0f0f0;
+            padding-top: 34px;
+            font-family: var(--chinese-font);
+        }
+
+        .qa-title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .qa-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .qa-tip {
+            font-size: 0.82rem;
+            color: #8b8b8b;
+        }
+
+        .question-block {
+            margin-bottom: 34px;
+        }
+
+        .question-title {
+            font-size: 1.06rem;
+            color: var(--text-color);
+            margin-bottom: 18px;
+            font-weight: bold;
+            font-family: var(--japanese-font);
+            line-height: 1.7;
+        }
+
+        .option-item {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            overflow: hidden;
+        }
+
+        .option-item:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 2px 10px rgba(59, 89, 152, 0.08);
+        }
+
+        .option-content {
+            padding: 15px 18px;
+            display: flex;
+            align-items: flex-start;
+            font-family: var(--japanese-font);
+        }
+
+        .option-number {
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-right: 14px;
+            font-family: var(--chinese-font);
+            white-space: nowrap;
+        }
+
+        .option-text-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        body:not(.show-option-analysis) .option-content rt {
+            display: none;
+        }
+
+        .option-translation {
+            display: none;
+            font-size: 0.84rem;
+            color: #718096;
+            margin-top: 4px;
+            font-family: var(--chinese-font);
+            line-height: 1.6;
+        }
+
+        body.show-option-analysis .option-translation {
+            display: block;
+        }
+
+        body:not(.show-option-analysis) .option-item.answered-correct {
+            border-color: #38a169;
+            background-color: rgba(56, 161, 105, 0.05);
+        }
+
+        body:not(.show-option-analysis) .option-item.answered-wrong {
+            border-color: #e53e3e;
+            background-color: rgba(229, 62, 62, 0.05);
+        }
+
+        body:not(.show-option-analysis) .option-item.answered-correct .option-number::after {
+            content: " ⭕";
+            color: #38a169;
+        }
+
+        body:not(.show-option-analysis) .option-item.answered-wrong .option-number::after {
+            content: " ❌";
+            color: #e53e3e;
+        }
+
+        body.show-option-analysis .option-item.is-correct {
+            border-left: 4px solid #38a169;
+        }
+
+        .option-explanation {
+            display: none;
+            padding: 14px 18px;
+            background: #f8fafc;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.94rem;
+            color: #4a5568;
+            line-height: 1.75;
+        }
+
+        body.show-option-analysis .option-item.expanded .option-explanation {
+            display: block;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: white;
+            font-size: 0.78rem;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .badge.correct { background: #38a169; }
+        .badge.wrong { background: #e53e3e; }
+
+        .article-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 46px;
+            padding-top: 28px;
+            border-top: 2px dashed #f0f0f0;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 18px;
+            background: #ffffff;
+            color: var(--accent-color);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.92rem;
+            font-family: var(--chinese-font);
+            font-weight: bold;
+            transition: all 0.25s ease;
+            border: 1px solid #d0dcf2;
+            box-shadow: 0 2px 4px rgba(59, 89, 152, 0.05);
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .audio-wrapper {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 2000;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px 24px;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+
+        .audio-player {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .play-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-right: 12px;
+            flex-shrink: 0;
+            padding: 0;
+        }
+
+        .play-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: white;
+        }
+
+        .progress-container {
+            flex-grow: 1;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bg {
+            width: 100%;
+            height: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: "";
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background-color: white;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+        }
+
+        .time-display {
+            font-size: 0.7rem;
+            color: #999;
+            width: 70px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .speed-btn, .loop-btn {
+            background: none;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 4px 7px;
+            margin-left: 8px;
+            font-size: 0.74rem;
+            color: #787878;
+            font-family: var(--chinese-font);
+        }
+
+        .loop-btn.active, .speed-btn.active {
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+            background: rgba(59, 89, 152, 0.05);
+        }
+
+        .footer {
+            margin-top: 46px;
+            color: #ccc;
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 38px 20px 52px; }
+            .top-bar { padding: 0 12px; }
+            .top-actions { gap: 6px; }
+            .toggle-btn { padding: 5px 10px; font-size: 0.73rem; }
+            p.japanese { font-size: 1.04rem; line-height: 2.35; }
+            .inline-note-container { margin-left: 0; }
+        }
+    </style>
+    <link rel="stylesheet" href="../../../shared/site-fonts.css">
+    <link rel="stylesheet" href="../shared/reading-tools.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="../index.html" class="toggle-btn" style="text-decoration:none;">← 戻る</a>
+    <div class="top-title">N1真题・中篇読解</div>
+    <div class="top-actions">
+        <button id="article-analysis-btn" class="toggle-btn" onclick="toggleArticleAnalysis()">文章解析</button>
+        <button id="option-analysis-btn" class="toggle-btn" onclick="toggleOptionAnalysis()">选项解析</button>
+    </div>
+</div>
+
+<div class="container">
+    <h2 class="header-title">2010年12月 中篇</h2>
+    <div class="header-subtitle">先做题，再梳理篇章结构，最后看选项辨析</div>
+
+    <div class="reading-path">
+        <strong>建议学习顺序：</strong>
+        ① 先完成题目作答 → ② 打开「文章解析」理清段落结构、主旨推进与重点句关系 → ③ 最后打开「选项解析」核对每个选项为什么对、为什么错
+    </div>
+
+    <div class="article-map">
+        <div class="map-title">文章结构总览</div>
+        <div class="map-grid">
+            <div class="map-item"><strong>第1段</strong>提出现象：数据看似客观，但呈现方式会影响读者印象。</div>
+            <div class="map-item"><strong>第2段</strong>指出问题：只强调一面虽然容易懂，却可能制造对立和混乱。</div>
+            <div class="map-item"><strong>第3段</strong>提出最低要求：一般人未必能深究全部背景，但至少不能盲信数据。</div>
+            <div class="map-item"><strong>第4段</strong>落到主旨：尤其是媒体从业者，更必须具备识别数据陷阱的能力。</div>
+        </div>
+    </div>
+
+    <div class="article-content">
+        <div class="paragraph-block">
+            <div class="para-role">第1段｜提出背景与基本问题</div>
+            <p class="japanese">
+                近年、さまざまな場面でデータが活用されるようになり、私たちは日常的に数値や統計に接している。そうしたデータは一見すると客観的で、誰にとっても同じ意味を持つもののように見える。しかし、どのような項目を取り上げ、どのように比較し、どのような言葉で示すかによって、受け手が受ける印象は大きく変わる。
+            </p>
+        </div>
+
+        <div class="paragraph-block">
+            <div class="para-role">第2段｜指出片面呈现的风险</div>
+            <p class="japanese">
+                データが示す姿は光の部分もあれば影の部分もある。
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    そのどちらか一方だけを強調することは、分かりやすさという面はあるものの、いたずらに対立軸を先鋭化させたり、無用の混乱を生じさせる危険性がある。
+                    <span class="sentence-badge">问题句</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">这句话在文章中的作用</span>
+                        这一句不是单纯说明“有危险”，而是在承接上一段“呈现方式会影响印象”，进一步指出：如果媒体只截取某一面来讲，就会把复杂问题变成单向叙述，从而引发对立。
+                    </span>
+                </span>
+            </p>
+        </div>
+
+        <div class="paragraph-block">
+            <div class="para-role">第3段｜降低要求，提出最低限度的阅读态度</div>
+            <p class="japanese">
+                これらをいちいち意識しているのは大変であるが、
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    少なくともデータをやみくもに信じてしまう態度だけはとるべきでない。
+                    <span class="sentence-badge">转折句</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">这句话在文章中的作用</span>
+                        这里先承认“普通人很难逐一核查”，然后用「少なくとも」把要求降到最低限度：不是要求人人都专业，而是要求读者至少保留判断，不要盲信。
+                    </span>
+                </span>
+            </p>
+        </div>
+
+        <div class="paragraph-block">
+            <div class="para-role">第4段｜总结并落到作者真正强调的对象</div>
+            <p class="japanese">
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    データの罠を見分ける力、すなわちデータリテラシーは、多くの人にとって必要なものではあるが、本来は、公平で客観的報道に努めるべきメディアに携わる人間が、しっかりと備えていなければならない必須の条件である。
+                    <span class="sentence-badge">主旨句</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">这句话在文章中的作用</span>
+                        这是全文落点。前面三段是铺垫：先说数据会被呈现方式影响，再说片面强调会有危险，再说一般人至少不能盲信，最后才真正指出：最应该具备这种能力的，是媒体从业者。
+                    </span>
+                </span>
+            </p>
+        </div>
+
+        <div class="translation">
+            数据在日常生活中广泛出现，表面上看似客观，但实际上会因为选取项目、比较方式和表述方式不同，而让读者形成不同印象。数据既有光鲜的一面，也有阴暗的一面，如果只强调其中一面，虽然更容易理解，却可能制造对立和不必要的混乱。普通人要逐一辨别这些并不容易，但至少不应盲目相信数据。作者最终强调，识别数据陷阱的能力，也就是数据素养，对很多人都重要，而尤其应该具备这一能力的，是本应坚持公平、客观报道的媒体从业者。
+        </div>
+    </div>
+
+    <div class="qa-section">
+        <div class="qa-title-bar">
+            <div class="qa-title">实战演练</div>
+            <div class="qa-tip">默认先答题；开启「选项解析」后可逐项查看辨析</div>
+        </div>
+
+        <div class="question-block">
+            <div class="question-title">問1：筆者によると、報道に携わる人間が備えておくべき必須条件とは何か。</div>
+
+            <div class="option-item" data-group="q1" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">1</span>
+                    <div class="option-text-group">
+                        <span>示されたデータから影の部分を取り除く力。</span>
+                        <span class="option-translation">从已给出的数据中剔除阴暗部分的能力。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文并不是说要把“不利的一面”去掉，而是说不能只看或只强调某一面。
+                </div>
+            </div>
+
+            <div class="option-item is-correct" data-group="q1" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">2</span>
+                    <div class="option-text-group">
+                        <span>示されたデータが偏ったものではないか見抜く力。</span>
+                        <span class="option-translation">看穿所呈现的数据是否存在偏向的能力。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge correct">正解</span>
+                    这项准确对应末段主旨。「データの罠を見分ける力」本质上就是识别数据是否被片面选择、片面强调、导致理解偏向。
+                </div>
+            </div>
+
+            <div class="option-item" data-group="q1" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">3</span>
+                    <div class="option-text-group">
+                        <span>示されたデータをありのまま分かりやすく伝える力。</span>
+                        <span class="option-translation">把已给出的数据原样且通俗地传达出去的能力。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    文章明确提醒，仅追求“分かりやすさ”而片面呈现，反而可能造成误导。
+                </div>
+            </div>
+
+            <div class="option-item" data-group="q1" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">4</span>
+                    <div class="option-text-group">
+                        <span>示されたデータから報道目的に合ったものを選び取る力。</span>
+                        <span class="option-translation">从已给出的数据中筛选出符合报道目的的信息的能力。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    这正是作者警惕的问题：只选取对自己叙述有利的一部分，就会让报道偏向。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="article-navigation">
+        <a href="#" class="nav-btn">← 上一篇</a>
+        <a href="#" class="nav-btn">下一篇 →</a>
+    </div>
+</div>
+
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bg"><div class="progress-bar" id="progress-bar"></div></div>
+        </div>
+        <div class="time-display"><span id="current-time">00:00</span> / <span id="duration">00:00</span></div>
+        <button id="speed-btn" class="speed-btn" onclick="toggleSpeed()">1.0x</button>
+        <button id="loop-btn" class="loop-btn" onclick="toggleLoop()">循环</button>
+        <audio id="audio-element" src="audio/2010_12_middle.mp3"></audio>
+    </div>
+</div>
+
+<div class="footer">Ichigo Ichie - 一期一会</div>
+
+<script>
+    function toggleArticleAnalysis() {
+        const btn = document.getElementById('article-analysis-btn');
+        btn.classList.toggle('active');
+        document.body.classList.toggle('show-article-analysis');
+
+        if (!document.body.classList.contains('show-article-analysis')) {
+            document.querySelectorAll('.key-sentence.active').forEach(item => item.classList.remove('active'));
+        }
+    }
+
+    function toggleOptionAnalysis() {
+        const btn = document.getElementById('option-analysis-btn');
+        btn.classList.toggle('active');
+        document.body.classList.toggle('show-option-analysis');
+
+        if (!document.body.classList.contains('show-option-analysis')) {
+            document.querySelectorAll('.option-item.expanded').forEach(item => item.classList.remove('expanded'));
+        }
+    }
+
+    function toggleInlineNote(event, element) {
+        if (!document.body.classList.contains('show-article-analysis')) return;
+        if (event.target.closest('.inline-note-container')) return;
+        element.classList.toggle('active');
+    }
+
+    function toggleOption(element) {
+        const group = element.dataset.group;
+
+        if (!document.body.classList.contains('show-option-analysis')) {
+            document.querySelectorAll(`.option-item[data-group="${group}"]`).forEach(item => {
+                item.classList.remove('answered-correct', 'answered-wrong');
+            });
+
+            if (element.classList.contains('is-correct')) {
+                element.classList.add('answered-correct');
+            } else {
+                element.classList.add('answered-wrong');
+            }
+        } else {
+            element.classList.toggle('expanded');
+        }
+    }
+
+    const audio = document.getElementById('audio-element');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+    const loopBtn = document.getElementById('loop-btn');
+    const speedBtn = document.getElementById('speed-btn');
+
+    let isLooping = false;
+    let currentSpeed = 1.0;
+
+    function getPlayIcon() {
+        return '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+    }
+
+    function getPauseIcon() {
+        return '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
+    }
+
+    function toggleLoop() {
+        isLooping = !isLooping;
+        audio.loop = isLooping;
+        loopBtn.classList.toggle('active', isLooping);
+    }
+
+    function toggleSpeed() {
+        if (currentSpeed === 1.0) {
+            currentSpeed = 0.75;
+            speedBtn.textContent = '0.75x';
+            speedBtn.classList.add('active');
+        } else {
+            currentSpeed = 1.0;
+            speedBtn.textContent = '1.0x';
+            speedBtn.classList.remove('active');
+        }
+        audio.playbackRate = currentSpeed;
+    }
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+        } else {
+            audio.pause();
+        }
+    }
+
+    audio.addEventListener('play', () => {
+        playBtn.innerHTML = getPauseIcon();
+    });
+
+    audio.addEventListener('pause', () => {
+        playBtn.innerHTML = getPlayIcon();
+    });
+
+    audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+            progressBar.style.width = (audio.currentTime / audio.duration * 100) + '%';
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        }
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener('ended', () => {
+        playBtn.innerHTML = getPlayIcon();
+        progressBar.style.width = '0%';
+        currentTimeEl.textContent = "00:00";
+    });
+
+    function seek(e) {
+        if (!audio.duration) return;
+        const rect = progressContainer.getBoundingClientRect();
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        let clickX = Math.max(0, Math.min(clientX - rect.left, rect.width));
+        audio.currentTime = (clickX / rect.width) * audio.duration;
+    }
+
+    let isDragging = false;
+    progressContainer.addEventListener('mousedown', (e) => { isDragging = true; seek(e); });
+    window.addEventListener('mousemove', (e) => { if (isDragging) seek(e); });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    progressContainer.addEventListener('touchstart', (e) => { isDragging = true; seek(e); });
+    window.addEventListener('touchmove', (e) => {
+        if (isDragging) {
+            e.preventDefault();
+            seek(e);
+        }
+    }, { passive: false });
+    window.addEventListener('touchend', () => { isDragging = false; });
+
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return "00:00";
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+</script>
+<script src="../shared/reading-tools.js"></script>
+
+</body>
+</html>

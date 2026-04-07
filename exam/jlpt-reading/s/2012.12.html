@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解 - 2012年12月 短文</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #3b5998; 
+            --sub-color: #787878;
+            --note-bg: #f4f6f9; 
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 80px 15px 120px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) { .toggle-btn:hover { background: var(--accent-color); color: white; } }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        .container {
+            max-width: 720px; width: 100%;
+            background: var(--paper-color); padding: 50px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box; border-radius: 8px;
+        }
+
+        .page-content {
+            display: none;
+            animation: fadeIn 0.35s ease-out;
+        }
+        .page-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-title { 
+            text-align: center; margin-top: 0; margin-bottom: 40px; 
+            font-size: 1.3rem; color: var(--text-color); border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.2; 
+            text-align: justify; margin: 0 0 20px 0;
+            text-indent: 1em; 
+        }
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        .analysis-element { display: none; }
+        body.show-analysis .analysis-element { display: block; }
+
+        .translation {
+            margin: -5px 0 30px 0; font-size: 0.95rem;
+            color: #5a626b; line-height: 1.8; padding: 15px 20px;
+            background-color: #f7f8f9; font-family: var(--chinese-font);
+            border-left: 3px solid #ddd; text-align: justify;
+        }
+        .translation::before { content: "訳"; display: block; font-size: 0.75rem; color: #aaa; margin-bottom: 5px; font-weight: bold; }
+
+        .key-sentence {
+            transition: 0.3s ease;
+        }
+        
+        body.show-analysis .key-sentence {
+            background-color: rgba(59, 89, 152, 0.06); 
+            border-bottom: 2px dashed #baccf1;
+            cursor: pointer;
+            border-radius: 3px;
+            padding: 2px 0;
+        }
+
+        body.show-analysis .key-sentence:hover {
+            background-color: rgba(59, 89, 152, 0.12);
+        }
+
+        body.show-analysis .key-sentence.active {
+            background-color: rgba(216, 67, 21, 0.08); 
+            border-bottom-color: #e74c3c;
+        }
+
+        .sentence-badge {
+            display: none;
+        }
+
+        body.show-analysis .sentence-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            background-color: var(--accent-color); color: white;
+            font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;
+            margin: 0 6px; vertical-align: middle;
+            font-family: var(--chinese-font); font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateY(-2px); transition: 0.3s;
+        }
+
+        body.show-analysis .key-sentence:hover .sentence-badge {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        body.show-analysis .key-sentence.active .sentence-badge {
+            background-color: #e74c3c;
+        }
+
+        .inline-note-container {
+            display: none;
+            background-color: #fff; border-left: 4px solid #e74c3c;
+            padding: 15px 20px; margin: 15px 0 15px -1em; 
+            font-size: 0.95rem; color: #444; box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            font-family: var(--chinese-font); border-radius: 0 6px 6px 0;
+            text-indent: 0; line-height: 1.8; cursor: text;
+        }
+
+        .key-sentence.active .inline-note-container {
+            display: block; 
+        }
+
+        .inline-note-title {
+            font-weight: bold; color: #e74c3c; margin-bottom: 8px;
+            font-size: 1rem; display: flex; align-items: center;
+        }
+
+        .qa-section {
+            margin-top: 50px; border-top: 2px solid #f0f0f0; padding-top: 40px; font-family: var(--chinese-font);
+        }
+        .question-title { font-size: 1.1rem; color: var(--text-color); margin-bottom: 25px; font-weight: bold; font-family: var(--japanese-font); line-height: 1.6; }
+        
+        .option-item {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 15px;
+            cursor: pointer; transition: 0.2s; overflow: hidden;
+        }
+        .option-item:hover { border-color: var(--accent-color); box-shadow: 0 2px 10px rgba(59, 89, 152, 0.1); }
+        
+        body:not(.show-analysis) .option-item.answered-correct {
+            border-color: #38a169;
+            background-color: rgba(56, 161, 105, 0.05);
+        }
+        body:not(.show-analysis) .option-item.answered-wrong {
+            border-color: #e53e3e;
+            background-color: rgba(229, 62, 62, 0.05);
+        }
+        body:not(.show-analysis) .option-item.answered-correct .option-number::after {
+            content: " ⭕";
+            font-size: 1rem;
+            color: #38a169;
+        }
+        body:not(.show-analysis) .option-item.answered-wrong .option-number::after {
+            content: " ❌";
+            font-size: 1rem;
+            color: #e53e3e;
+        }
+
+        body.show-analysis .option-item.is-correct {
+            border-left: 4px solid #38a169;
+        }
+
+        body:not(.show-analysis) .option-content rt {
+            display: none;
+        }
+
+        .option-content { padding: 15px 20px; display: flex; align-items: flex-start; font-family: var(--japanese-font); }
+        .option-number { font-weight: bold; color: var(--accent-color); margin-right: 15px; font-family: var(--chinese-font); white-space: nowrap; }
+        
+        .option-text-group { display: flex; flex-direction: column; }
+        
+        .option-translation { display: none; font-size: 0.85rem; color: #718096; margin-top: 4px; font-family: var(--chinese-font); }
+        body.show-analysis .option-translation { display: block; }
+
+        .option-explanation {
+            display: none; padding: 15px 20px; background: #f8fafc; border-top: 1px dashed #e2e8f0;
+            font-size: 0.95rem; color: #4a5568; line-height: 1.7;
+        }
+        body.show-analysis .option-item.expanded .option-explanation { display: block; }
+        
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 8px; }
+        .badge.wrong { background: #e53e3e; }
+        .badge.correct { background: #38a169; }
+
+        .article-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px dashed #f0f0f0;
+        }
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: #ffffff;
+            color: var(--accent-color);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: var(--chinese-font);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 1px solid #d0dcf2;
+            box-shadow: 0 2px 4px rgba(59, 89, 152, 0.05);
+            cursor: pointer;
+        }
+        .nav-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(59, 89, 152, 0.15);
+        }
+        .nav-btn.disabled {
+            opacity: 0.5; pointer-events: none; background: #f8fafc; color: #a0aec0; border-color: #e2e8f0; box-shadow: none;
+        }
+
+        .audio-wrapper { position: fixed; bottom: 0; left: 0; right: 0; z-index: 2000; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 15px 20px 25px 20px; display: flex; justify-content: center; border-top: 1px solid rgba(0,0,0,0.05); box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+        .audio-player { display: flex; align-items: center; width: 100%; max-width: 600px; }
+        .play-btn { width: 36px; height: 36px; border-radius: 50%; background-color: var(--accent-color); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 12px; flex-shrink: 0; transition: transform 0.2s; padding: 0; }
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+        .progress-container { flex-grow: 1; height: 20px; display: flex; align-items: center; margin-right: 12px; cursor: pointer; position: relative; }
+        .progress-bg { width: 100%; height: 4px; background-color: #f0f0f0; border-radius: 2px; position: relative; }
+        .progress-bar { height: 100%; background-color: var(--accent-color); width: 0%; border-radius: 2px; position: relative; }
+        .progress-bar::after { content: ""; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background-color: white; border: 2px solid var(--accent-color); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .time-display { font-size: 0.7rem; color: #999; width: 70px; text-align: right; font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
+        .loop-btn { background: none; border: none; cursor: pointer; padding: 8px; margin-left: 8px; opacity: 0.5; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .loop-btn.active { opacity: 1; color: var(--accent-color); }
+        .loop-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        .speed-btn {
+            background: none; border: 1px solid #ccc; border-radius: 4px;
+            cursor: pointer; padding: 2px 6px; margin-left: 8px;
+            font-size: 0.75rem; color: #787878; transition: all 0.2s;
+            font-family: var(--chinese-font); font-variant-numeric: tabular-nums;
+            font-weight: 500;
+        }
+        .speed-btn.active {
+            color: var(--accent-color); border-color: var(--accent-color); background: rgba(59, 89, 152, 0.05);
+        }
+
+        .footer { margin-top: 50px; color: #ccc; font-size: 0.8rem; letter-spacing: 3px; }
+
+        @media (max-width: 768px) {
+            .container { padding: 30px 18px 90px; }
+            .header-title { font-size: 1.15rem; margin-bottom: 25px; text-align: center; }
+            p.japanese { font-size: 0.95rem; line-height: 2.2; letter-spacing: 0.05em; margin-bottom: 25px; }
+            p.japanese rt { font-size: 0.55rem; }
+            .key-sentence { padding: 2px 0; }
+            .inline-note-container { margin: 15px 0 0 0; padding: 15px; font-size: 0.85rem; line-height: 1.6; border-radius: 8px; }
+            .qa-section { margin-top: 35px; padding-top: 30px; }
+            .question-title { font-size: 1rem; margin-bottom: 20px; padding: 0 5px; }
+            .option-content { padding: 12px 15px; }
+            .option-text-group span { font-size: 0.95rem; line-height: 1.5; }
+            .option-explanation { padding: 12px 15px; font-size: 0.85rem; }
+            .top-bar { padding: 0 15px; height: 55px; }
+            .toggle-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+            .audio-wrapper { padding: 10px 15px 20px; }
+            .speed-btn { padding: 2px 6px; font-size: 0.7rem; }
+            .time-display { width: 55px; font-size: 0.65rem; }
+        }
+    </style>
+    <link rel="stylesheet" href="../../../shared/site-fonts.css">
+    <link rel="stylesheet" href="../shared/reading-tools.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a id="back-to-reading-index" href="../index.html?level=N1&type=short" class="toggle-btn" style="text-decoration: none;">← 戻る</a>
+    <div id="today-date">N1真题・短文</div>
+    <div class="top-bar-controls">
+        <button id="analysis-btn" class="toggle-btn" onclick="toggleAnalysis()">解析</button>
+    </div>
+</div>
+
+<div class="container">
+    <div id="page-1" class="page-content">
+        <h2 class="header-title">2012年12月 短文（一）</h2>
+
+        <div class="article-content">
+            <p class="japanese">
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    ファッションなど、<ruby>流<rt>りゅう</rt></ruby><ruby>行<rt>こう</rt></ruby>は<ruby>模<rt>も</rt></ruby><ruby>倣<rt>ほう</rt></ruby>を<ruby>前<rt>ぜん</rt></ruby><ruby>提<rt>てい</rt></ruby>にしている。<ruby>真<rt>ま</rt></ruby>似<rt>ね</rt>られなければ、ファッションなど<ruby>成<rt>せい</rt></ruby><ruby>立<rt>りつ</rt></ruby>しない。
+                    <span class="sentence-badge">陈述观点</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        作者开篇直接抛出核心观点。通过「〜を前提にしている」（以...为前提）和反面假设「真似られなければ、〜成立しない」（如果不被模仿，就无法成立），清晰地界定了流行与模仿之间密不可分的依存关系。
+                    </span>
+                </span>
+                
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    ミニスカートをデザインしたとしても、<ruby>特<rt>とく</rt></ruby><ruby>定<rt>てい</rt></ruby>のデザイナーのものだけが<ruby>売<rt>う</rt></ruby>れるのでは、<ruby>流<rt>りゅう</rt></ruby><ruby>行<rt>こう</rt></ruby>にはならない。
+                    <span class="sentence-badge">举例说明</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        为了支撑开篇的观点，作者举了迷你裙的例子。说明就算有原创设计，如果仅仅局限于「特定のデザイナーのもの」（特定设计师的作品），也就是没有发生大众的模仿行为，那就无法形成「流行」（流行）。
+                    </span>
+                </span>
+
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>多<rt>おお</rt></ruby>くの<ruby>者<rt>もの</rt></ruby>が<ruby>模<rt>も</rt></ruby><ruby>倣<rt>ほう</rt></ruby>してはじめて<ruby>流<rt>りゅう</rt></ruby><ruby>行<rt>こう</rt></ruby>は<ruby>成<rt>せい</rt></ruby><ruby>立<rt>りつ</rt></ruby>するため、ファッションなどには、<ruby>模<rt>も</rt></ruby><ruby>倣<rt>ほう</rt></ruby>を<ruby>誘<rt>ゆう</rt></ruby><ruby>発<rt>はつ</rt></ruby>させようとする<ruby>意<rt>い</rt></ruby><ruby>図<rt>と</rt></ruby>が<ruby>最<rt>さい</rt></ruby><ruby>初<rt>しょ</rt></ruby>から<ruby>織<rt>お</rt></ruby>り<ruby>込<rt>こ</rt></ruby>みずみだ。
+                    <span class="sentence-badge">深入剖析</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        在列举事实后，作者进一步挖掘其背后的机制。指出正因为「模倣してはじめて流行は成立する」（只有被模仿，流行才成立），所以时尚界从一开始就包含了去主动「誘発させようとする」（诱发）模仿的意图，深化了文章的主旨。
+                    </span>
+                </span>
+            </p>
+            
+            <div class="translation analysis-element">像时尚这样的流行，是以被模仿为前提的。如果不被模仿，时尚之类的事物就无法成立。即使设计出了迷你裙，如果只有特定设计师的作品好卖，那也成不了流行。正因为只有被大众模仿，流行才能成立，所以在时尚等领域中，诱发模仿的意图从一开始就已经被包含在内了。</div>
+        </div>
+
+        <div class="qa-section">
+            <div class="question-title">
+                <ruby>問<rt>とい</rt></ruby>：<ruby>流<rt>りゅう</rt></ruby><ruby>行<rt>こう</rt></ruby>について、<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>はどのように<ruby>考<rt>かんが</rt></ruby>えているか。
+            </div>
+            
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">1</span>
+                    <div class="option-text-group">
+                        <span><ruby>多<rt>おお</rt></ruby>くの<ruby>者<rt>もの</rt></ruby>に<ruby>購<rt>こう</rt></ruby><ruby>買<rt>ばい</rt></ruby><ruby>意<rt>い</rt></ruby><ruby>欲<rt>よく</rt></ruby>を<ruby>誘<rt>ゆう</rt></ruby><ruby>発<rt>はつ</rt></ruby>させるものである。</span>
+                        <span class="option-translation">诱发许多人的购买欲望。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文强调时尚意在诱发大众的「模倣」（模仿），而不是单纯地诱发「購買意欲」（购买欲望）。
+                </div>
+            </div>
+
+            <div class="option-item is-correct" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">2</span>
+                    <div class="option-text-group">
+                        <span><ruby>多<rt>おお</rt></ruby>くの<ruby>者<rt>もの</rt></ruby>に<ruby>真<rt>ま</rt></ruby>似<rt>ね</rt>られることなしには<ruby>始<rt>はじ</rt></ruby>まらない。</span>
+                        <span class="option-translation">如果不被许多人模仿，就不会开始。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge correct">正解</span>
+                    妥切地对应了原文的主旨。原文开篇提到「流行は模倣を前提にしている」（流行以模仿为前提），并明确指出「多くの者が模倣してはじめて流行は成立する」（只有许多人去模仿，流行才能成立），该选项正是对这一核心观点的准确转述。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">3</span>
+                    <div class="option-text-group">
+                        <span><ruby>特<rt>とく</rt></ruby><ruby>定<rt>てい</rt></ruby>のデザイナーによる<ruby>誘<rt>ゆう</rt></ruby><ruby>発<rt>はつ</rt></ruby>が<ruby>欠<rt>か</rt></ruby>かせない。</span>
+                        <span class="option-translation">特定设计师的诱发是不可或缺的。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文中提到「特定のデザイナー」（特定设计师）是为了说明“只有特定设计师的作品好卖成不了流行”，并未说流行不可或缺的是特定设计师的诱发。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">4</span>
+                    <div class="option-text-group">
+                        <span><ruby>特<rt>とく</rt></ruby><ruby>定<rt>てい</rt></ruby>のデザイナーのものが<ruby>真<rt>ま</rt></ruby>似<rt>ね</rt>られなければならない。</span>
+                        <span class="option-translation">特定设计师的作品需要被模仿才行。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文虽然举了设计的例子，但核心在于“大众的模仿行为”本身造就了流行，而不是局限于特定某位设计师的作品被模仿。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-2" class="page-content">
+        <h2 class="header-title">2012年12月 短文（二）</h2>
+
+        <div class="article-content">
+            <p class="japanese">
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    このたび、<ruby>業<rt>ぎょう</rt></ruby><ruby>務<rt>む</rt></ruby><ruby>用<rt>よう</rt></ruby><ruby>携<rt>けい</rt></ruby><ruby>帯<rt>たい</rt></ruby><ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby>を<ruby>貸<rt>たい</rt></ruby><ruby>与<rt>よ</rt></ruby>することにいたしましたので、<ruby>貸<rt>たい</rt></ruby><ruby>与<rt>よ</rt></ruby><ruby>申<rt>しん</rt></ruby><ruby>請<rt>せい</rt></ruby><ruby>書<rt>しょ</rt></ruby>を7<ruby>月<rt>がつ</rt></ruby>10<ruby>日<rt>か</rt></ruby>までに<ruby>総<rt>そう</rt></ruby><ruby>務<rt>む</rt></ruby><ruby>部<rt>ぶ</rt></ruby>にご<ruby>提<rt>てい</rt></ruby><ruby>出<rt>しゅつ</rt></ruby>ください。
+                    <span class="sentence-badge">陈述主旨</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        作者开篇说明了公司即将发放工作手机的决定，并直接给出了第一个核心指令：要求员工「貸与申請書を7月10日までに総務部にご提出ください」（在7月10日前向总务部提交出借申请书）。
+                    </span>
+                </span>
+                
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>業<rt>ぎょう</rt></ruby><ruby>務<rt>む</rt></ruby><ruby>用<rt>よう</rt></ruby><ruby>携<rt>けい</rt></ruby><ruby>帯<rt>たい</rt></ruby><ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby>は、7<ruby>月<rt>がつ</rt></ruby>17<ruby>日<rt>にち</rt></ruby><ruby>以<rt>い</rt></ruby><ruby>降<rt>こう</rt></ruby><ruby>順<rt>じゅん</rt></ruby><ruby>次<rt>じ</rt></ruby><ruby>配<rt>はい</rt></ruby><ruby>付<rt>ふ</rt></ruby>いたします。また<ruby>私<rt>し</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>の<ruby>携<rt>けい</rt></ruby><ruby>帯<rt>たい</rt></ruby><ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby>の<ruby>業<rt>ぎょう</rt></ruby><ruby>務<rt>む</rt></ruby><ruby>使<rt>し</rt></ruby><ruby>用<rt>よう</rt></ruby>は、8<ruby>月<rt>がつ</rt></ruby>1<ruby>日<rt>ついたち</rt></ruby><ruby>以<rt>い</rt></ruby><ruby>降<rt>こう</rt></ruby><ruby>禁<rt>きん</rt></ruby><ruby>止<rt>し</rt></ruby>いたします。
+                    <span class="sentence-badge">补充说明</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        针对手机更替的空档期，作者进一步补充说明了业务用手机将从「7月17日以降順次配付」（7月17日起依次发放），以及将个人手机用于工作的情况将在「8月1日以降禁止」（8月1日起禁止），清晰地划定了各项规定的时间节点。
+                    </span>
+                </span>
+
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    7<ruby>月<rt>がつ</rt></ruby>31<ruby>日<rt>にち</rt></ruby>までの<ruby>通<rt>つう</rt></ruby><ruby>話<rt>わ</rt></ruby><ruby>料<rt>りょう</rt></ruby><ruby>金<rt>きん</rt></ruby>の<ruby>請<rt>せい</rt></ruby><ruby>求<rt>きゅう</rt></ruby><ruby>書<rt>しょ</rt></ruby><ruby>類<rt>るい</rt></ruby>は、8<ruby>月<rt>がつ</rt></ruby>31<ruby>日<rt>にち</rt></ruby><ruby>必<rt>ひっ</rt></ruby><ruby>着<rt>ちゃく</rt></ruby>で<ruby>総<rt>そう</rt></ruby><ruby>務<rt>む</rt></ruby><ruby>部<rt>ぶ</rt></ruby>にご<ruby>提<rt>てい</rt></ruby><ruby>出<rt>しゅつ</rt></ruby>ください。
+                    <span class="sentence-badge">提出要求</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        最后，针对工作交接期间产生的通讯费用，给出了明确的处理方案，即「7月31日までの通話料金の請求書類」（截至7月31日的通话账单）要求在「8月31日必着」（8月31日前寄达）。
+                    </span>
+                </span>
+            </p>
+            
+            <div class="translation analysis-element">此次，由于决定向大家发放业务用手机，请在7月10日之前向总务部提交出借申请书。业务用手机将从7月17日起依次发放。此外，自8月1日起，将禁止把私人物品（个人手机）用于业务。截至7月31日的通话费用账单，请在8月31日之前寄达并提交给总务部。</div>
+        </div>
+
+        <div class="qa-section">
+            <div class="question-title">
+                <ruby>問<rt>とい</rt></ruby>：<ruby>業<rt>ぎょう</rt></ruby><ruby>務<rt>む</rt></ruby>のために<ruby>携<rt>けい</rt></ruby><ruby>帯<rt>たい</rt></ruby><ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby>を<ruby>使<rt>し</rt></ruby><ruby>用<rt>よう</rt></ruby>している<ruby>人<rt>ひと</rt></ruby>はどうしなければならないか
+            </div>
+            
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">1</span>
+                    <div class="option-text-group">
+                        <span><ruby>貸<rt>たい</rt></ruby><ruby>与<rt>よ</rt></ruby><ruby>申<rt>しん</rt></ruby><ruby>請<rt>せい</rt></ruby><ruby>書<rt>しょ</rt></ruby>を7<ruby>月<rt>がつ</rt></ruby>10<ruby>日<rt>か</rt></ruby>までに、7<ruby>月<rt>がつ</rt></ruby>31<ruby>日<rt>にち</rt></ruby>までの<ruby>通<rt>つう</rt></ruby><ruby>話<rt>わ</rt></ruby><ruby>料<rt>りょう</rt></ruby><ruby>金<rt>きん</rt></ruby><ruby>請<rt>せい</rt></ruby><ruby>求<rt>きゅう</rt></ruby><ruby>書<rt>しょ</rt></ruby><ruby>類<rt>るい</rt></ruby>を8<ruby>月<rt>がつ</rt></ruby>1<ruby>日<rt>ついたち</rt></ruby>までに<ruby>総<rt>そう</rt></ruby><ruby>務<rt>む</rt></ruby><ruby>部<rt>ぶ</rt></ruby>に<ruby>提<rt>てい</rt></ruby><ruby>出<rt>しゅつ</rt></ruby>する。</span>
+                        <span class="option-translation">在7月10日前提交出借申请书，在8月1日前向总务部提交截至7月31日的通话费用账单。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文要求账单是「8月31日必着」（8月31日前寄达），而非选项所述的「8月1日までに」（8月1日前）。
+                </div>
+            </div>
+
+            <div class="option-item is-correct" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">2</span>
+                    <div class="option-text-group">
+                        <span><ruby>貸<rt>たい</rt></ruby><ruby>与<rt>よ</rt></ruby><ruby>申<rt>しん</rt></ruby><ruby>請<rt>せい</rt></ruby><ruby>書<rt>しょ</rt></ruby>を7<ruby>月<rt>がつ</rt></ruby>10<ruby>日<rt>か</rt></ruby>までに、7<ruby>月<rt>がつ</rt></ruby>31<ruby>日<rt>にち</rt></ruby>までの<ruby>通<rt>つう</rt></ruby><ruby>話<rt>わ</rt></ruby><ruby>料<rt>りょう</rt></ruby><ruby>金<rt>きん</rt></ruby><ruby>請<rt>せい</rt></ruby><ruby>求<rt>きゅう</rt></ruby><ruby>書<rt>しょ</rt></ruby><ruby>類<rt>るい</rt></ruby>を8<ruby>月<rt>がつ</rt></ruby>31<ruby>日<rt>にち</rt></ruby>までに<ruby>総<rt>そう</rt></ruby><ruby>務<rt>む</rt></ruby><ruby>部<rt>ぶ</rt></ruby>に<ruby>提<rt>てい</rt></ruby><ruby>出<rt>しゅつ</rt></ruby>する。</span>
+                        <span class="option-translation">在7月10日前提交出借申请书，在8月31日前向总务部提交截至7月31日的通话费用账单。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge correct">正解</span>
+                    妥切地对应了原文的要求。选项前半句的申请书截止日对应「貸与申請書を7月10日までに総務部にご提出ください」；后半句的账单提交时间对应「請求書類は、8月31日必着で総務部にご提出ください」。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">3</span>
+                    <div class="option-text-group">
+                        <span><ruby>貸<rt>たい</rt></ruby><ruby>与<rt>よ</rt></ruby><ruby>申<rt>しん</rt></ruby><ruby>請<rt>せい</rt></ruby><ruby>書<rt>しょ</rt></ruby>を7<ruby>月<rt>がつ</rt></ruby>17<ruby>日<rt>にち</rt></ruby>までに、7<ruby>月<rt>がつ</rt></ruby>31<ruby>日<rt>にち</rt></ruby>までの<ruby>通<rt>つう</rt></ruby><ruby>話<rt>わ</rt></ruby><ruby>料<rt>りょう</rt></ruby><ruby>金<rt>きん</rt></ruby><ruby>請<rt>せい</rt></ruby><ruby>求<rt>きゅう</rt></ruby><ruby>書<rt>しょ</rt></ruby><ruby>類<rt>るい</rt></ruby>を8<ruby>月<rt>がつ</rt></ruby>1<ruby>日<rt>ついたち</rt></ruby>までに<ruby>総<rt>そう</rt></ruby><ruby>務<rt>む</rt></ruby><ruby>部<rt>ぶ</rt></ruby>に<ruby>提<rt>てい</rt></ruby><ruby>出<rt>しゅつ</rt></ruby>する。</span>
+                        <span class="option-translation">在7月17日前提交出借申请书，在8月1日前向总务部提交截至7月31日的通话费用账单。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文中「7月17日」是工作手机「順次配付」（依次发放）的起始日期，而非提交申请书的截止日期。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">4</span>
+                    <div class="option-text-group">
+                        <span><ruby>貸<rt>たい</rt></ruby><ruby>与<rt>よ</rt></ruby><ruby>申<rt>しん</rt></ruby><ruby>請<rt>せい</rt></ruby><ruby>書<rt>しょ</rt></ruby>と7<ruby>月<rt>がつ</rt></ruby>31<ruby>日<rt>にち</rt></ruby>までの<ruby>通<rt>つう</rt></ruby><ruby>話<rt>わ</rt></ruby><ruby>料<rt>りょう</rt></ruby><ruby>金<rt>きん</rt></ruby><ruby>請<rt>せい</rt></ruby><ruby>求<rt>きゅう</rt></ruby><ruby>書<rt>しょ</rt></ruby><ruby>類<rt>るい</rt></ruby>を、8<ruby>月<rt>がつ</rt></ruby>31<ruby>日<rt>にち</rt></ruby>までに<ruby>総<rt>そう</rt></ruby><ruby>務<rt>む</rt></ruby><ruby>部<rt>ぶ</rt></ruby>に<ruby>提<rt>てい</rt></ruby><ruby>出<rt>しゅつ</rt></ruby>する。</span>
+                        <span class="option-translation">将出借申请书和截至7月31日的通话费用账单，在8月31日前提交给总务部。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文明确区分了两者的提交时间，申请书规定要在「7月10日までに」（7月10日之前）提交，不能拖到和账单一起在「8月31日までに」（8月31日之前）提交。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-3" class="page-content">
+        <h2 class="header-title">2012年12月 短文（三）</h2>
+
+        <div class="article-content">
+            <p class="japanese">
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>情<rt>じょう</rt></ruby><ruby>報<rt>ほう</rt></ruby><ruby>化<rt>か</rt></ruby>、グローバル<ruby>化<rt>か</rt></ruby>と<ruby>言<rt>い</rt></ruby>われ、<ruby>視<rt>し</rt></ruby><ruby>野<rt>や</rt></ruby>を<ruby>広<rt>ひろ</rt></ruby>げるべき<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>に、<ruby>実<rt>じつ</rt></ruby>は<ruby>極<rt>きわ</rt></ruby>めて<ruby>限<rt>かぎ</rt></ruby>られた<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby>、<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby>でしか<ruby>情<rt>じょう</rt></ruby><ruby>報<rt>ほう</rt></ruby>や<ruby>価<rt>か</rt></ruby><ruby>値<rt>ち</rt></ruby><ruby>観<rt>かん</rt></ruby>を<ruby>得<rt>え</rt></ruby>られていない<ruby>人<rt>ひと</rt></ruby>が<ruby>増<rt>ふ</rt></ruby>えているように<ruby>思<rt>おも</rt></ruby>えます。
+                    <span class="sentence-badge">提出问题</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        作者开篇通过「視野を広げるべき時代に」（在应该拓宽视野的时代）与「極めて限られた世界、社会でしか情報や価値観を得られていない」（却只能在极其局限的世界、社会中获取信息与价值观）的强烈对比，陈述了一种反常的社会现状，从而引出对这一问题的探讨。
+                    </span>
+                </span>
+                
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    インターネットは<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby><ruby>中<rt>じゅう</rt></ruby>どこにでもつながりますが、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>で<ruby>意<rt>い</rt></ruby><ruby>識<rt>しき</rt></ruby>しないと、<ruby>限<rt>かぎ</rt></ruby>られた<ruby>価<rt>か</rt></ruby><ruby>値<rt>ち</rt></ruby><ruby>観<rt>かん</rt></ruby>の<ruby>情<rt>じょう</rt></ruby><ruby>報<rt>ほう</rt></ruby>だけが<ruby>集<rt>あつ</rt></ruby>まり、さらに<ruby>深<rt>ふか</rt></ruby>く<ruby>入<rt>はい</rt></ruby>り<ruby>込<rt>こ</rt></ruby>む。
+                    <span class="sentence-badge">剖析原因</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        接着作者剖析了该现象产生的原因。指出虽然互联网「世界中どこにでもつながります」（能连接世界各地），但如果「自分で意識しないと」（自己不去有意识地对待），就会导致「限られた価値観の情報だけが集まり」（只聚集起受限的价值观信息），进而让人「さらに深く入り込む」（更加深陷其中）。
+                    </span>
+                </span>
+
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby><ruby>観<rt>かん</rt></ruby>を<ruby>広<rt>ひろ</rt></ruby>げるインターネットが、<ruby>逆<rt>ぎゃく</rt></ruby>に<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby><ruby>観<rt>かん</rt></ruby>や<ruby>価<rt>か</rt></ruby><ruby>値<rt>ち</rt></ruby><ruby>観<rt>かん</rt></ruby>を<ruby>狭<rt>せば</rt></ruby>めてしまう、<ruby>視<rt>し</rt></ruby><ruby>野<rt>や</rt></ruby><ruby>狭<rt>きょう</rt></ruby><ruby>窄<rt>さく</rt></ruby>に<ruby>陥<rt>おちい</rt></ruby>らせる<ruby>道<rt>どう</rt></ruby><ruby>具<rt>ぐ</rt></ruby>となってしまうのです。
+                    <span class="sentence-badge">揭示主旨</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        最后作者揭示了全文的主旨。原本是用来「世界観を広げる」（拓宽世界观）的互联网，如果使用不当，反而（「逆に」）会成为使人「世界観や価値観を狭めてしまう」（狭隘了世界观和价值观）、「視野狭窄に陥らせる道具」（陷入视野狭窄的工具），以此表达了作者的警示。
+                    </span>
+                </span>
+            </p>
+            
+            <div class="translation analysis-element">在这个被称为信息化、全球化、理应拓宽视野的时代，实际上却有越来越多的人只在极其局限的世界和圈子里获取信息与价值观。互联网虽然能连接世界各地，但如果自己不去有意防范，就只会聚集起那些局限于特定价值观的信息，进而让人越陷越深。原本用于拓宽世界观的互联网，反而会成为使人的世界观和价值观变得狭隘、让人陷入视野狭窄的工具。</div>
+        </div>
+
+        <div class="qa-section">
+            <div class="question-title">
+                <ruby>問<rt>とい</rt></ruby>：この<ruby>文<rt>ぶん</rt></ruby><ruby>章<rt>しょう</rt></ruby>で、<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>はインターネットをどのようにとらえているか。
+            </div>
+            
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">1</span>
+                    <div class="option-text-group">
+                        <span><ruby>広<rt>ひろ</rt></ruby>い<ruby>視<rt>し</rt></ruby><ruby>野<rt>や</rt></ruby>を<ruby>失<rt>うしな</rt></ruby>わずに<ruby>使<rt>し</rt></ruby><ruby>用<rt>よう</rt></ruby>すれば、より<ruby>深<rt>ふか</rt></ruby>い<ruby>情<rt>じょう</rt></ruby><ruby>報<rt>ほう</rt></ruby>を<ruby>得<rt>え</rt></ruby>ることができる。</span>
+                        <span class="option-translation">如果在不丧失广阔视野的前提下使用，就能获得更深层的信息。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文阐述的是如果不加以意识，就会在互联网中陷入「視野狭窄」（视野狭窄）的境地。文中并未提到只要保持广阔视野就能获得「より深い情報」（更深层的信息），该选项的推论脱离了原文内容。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">2</span>
+                    <div class="option-text-group">
+                        <span><ruby>限<rt>かぎ</rt></ruby>られた<ruby>情<rt>じょう</rt></ruby><ruby>報<rt>ほう</rt></ruby>や、<ruby>個<rt>こ</rt></ruby><ruby>人<rt>じん</rt></ruby>の<ruby>興<rt>きょう</rt></ruby><ruby>味<rt>み</rt></ruby>のあるものを<ruby>得<rt>え</rt></ruby>るには<ruby>便<rt>べん</rt></ruby><ruby>利<rt>り</rt></ruby>な<ruby>道<rt>どう</rt></ruby><ruby>具<rt>ぐ</rt></ruby>である。</span>
+                        <span class="option-translation">对于获取有限的信息或个人感兴趣的事物来说，是一个便利的工具。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文将只能获取「限られた価値観の情報」（受限的价值观信息）视为一种会导致人「視野狭窄に陥らせる」（陷入视野狭窄）的负面现象，而不是在肯定互联网是获取这些信息的「便利な道具」（便利的工具）。
+                </div>
+            </div>
+
+            <div class="option-item is-correct" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">3</span>
+                    <div class="option-text-group">
+                        <span><ruby>便<rt>べん</rt></ruby><ruby>利<rt>り</rt></ruby>なものだが、<ruby>使<rt>つか</rt></ruby>い<ruby>方<rt>かた</rt></ruby>に<ruby>気<rt>き</rt></ruby>をつけないと<ruby>限<rt>かぎ</rt></ruby>られた<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby>で<ruby>生<rt>い</rt></ruby>きることになる。</span>
+                        <span class="option-translation">虽然便利，但如果不注意使用方法，就会生活在局限的世界中。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge correct">正解</span>
+                    选项妥切地概括了作者的观点。原文先肯定了互联网「世界中どこにでもつながります」（能连接世界各地）的便利性，接着转折指出如果「自分で意識しないと」（自己不去有意识地对待），就会变成让人在「限られた世界」（局限的世界）中生存、「視野狭窄に陥らせる道具」（陷入视野狭窄的工具）。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">4</span>
+                    <div class="option-text-group">
+                        <span><ruby>意<rt>い</rt></ruby><ruby>識<rt>しき</rt></ruby>して<ruby>使<rt>し</rt></ruby><ruby>用<rt>よう</rt></ruby>しなければ、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>価<rt>か</rt></ruby><ruby>値<rt>ち</rt></ruby><ruby>観<rt>かん</rt></ruby>に<ruby>合<rt>あ</rt></ruby>った<ruby>情<rt>じょう</rt></ruby><ruby>報<rt>ほう</rt></ruby>が<ruby>得<rt>え</rt></ruby>られないことになる。</span>
+                        <span class="option-translation">如果不有意识地去使用，就无法获得符合自己价值观的信息。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    选项表述与原文表达的结果恰好相反。原文指出如果「自分で意識しないと」（自己不去有意识地对待），反而会造成「限られた価値観の情報だけが集まり」（只聚集起受限的价值观信息）的状况，让人深陷其中，而不是说「得られない」（得不到）。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-4" class="page-content" style="display:none;">
+        <h2 class="header-title">2012年12月 短文（四）</h2>
+
+        <div class="article-content">
+            <p class="japanese">
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    この<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby>にはどこかに<ruby>中<rt>ちゅう</rt></ruby><ruby>心<rt>しん</rt></ruby>があって、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>はその<ruby>中<rt>ちゅう</rt></ruby><ruby>心<rt>しん</rt></ruby>から<ruby>遠<rt>とお</rt></ruby>く<ruby>離<rt>はな</rt></ruby>れたところに<ruby>押<rt>お</rt></ruby>しやられていると<ruby>感<rt>かん</rt></ruby>じている<ruby>人<rt>ひと</rt></ruby>は<ruby>多<rt>おお</rt></ruby>い。
+                    <span class="sentence-badge">陈述现状</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        作者开篇指出一种普遍存在的社会心理，即许多人觉得自己「その中心から遠く離れたところに押しやられている」（被排挤到了离中心很远的地方），以此作为切入点，为后文提出自身截然不同的观点做铺垫。
+                    </span>
+                </span>
+                
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    しかし、<ruby>私<rt>わたし</rt></ruby>は<ruby>私<rt>わたし</rt></ruby><ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>の「<ruby>生<rt>い</rt></ruby>きる<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby>」を<ruby>創<rt>そう</rt></ruby><ruby>造<rt>ぞう</rt></ruby>し、<ruby>私<rt>わたし</rt></ruby>の<ruby>生<rt>い</rt></ruby>きる<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby>に<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby>を<ruby>与<rt>あた</rt></ruby>える<ruby>存<rt>そん</rt></ruby><ruby>在<rt>ざい</rt></ruby>なのであり、<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby>の<ruby>中<rt>ちゅう</rt></ruby><ruby>心<rt>しん</rt></ruby>は<ruby>私<rt>わたし</rt></ruby><ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>にあるのだ。
+                    <span class="sentence-badge">提出观点</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        作者用转折词「しかし」（然而）引出自己的核心主张，说明人是「生きる世界に意味を与える存在」（为生存世界赋予意义的存在），因此得出了「世界の中心は私自身にある」（世界的中心就在自己身上）的结论。
+                    </span>
+                </span>
+
+                しかし、それは「<ruby>自<rt>じ</rt></ruby><ruby>己<rt>こ</rt></ruby>チュー」の<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby>ではない。
+
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    なぜなら、<ruby>私<rt>わたし</rt></ruby><ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>が<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby>を<ruby>生<rt>う</rt></ruby>み<ruby>出<rt>だ</rt></ruby>す<ruby>中<rt>ちゅう</rt></ruby><ruby>心<rt>しん</rt></ruby>であることを<ruby>認<rt>みと</rt></ruby>めるとき、<ruby>私<rt>わたし</rt></ruby>たちの<ruby>周<rt>まわ</rt></ruby>りには<ruby>私<rt>わたし</rt></ruby>だけでなくたくさんの<ruby>中<rt>ちゅう</rt></ruby><ruby>心<rt>しん</rt></ruby>があることが<ruby>分<rt>わ</rt></ruby>かってくるからだ。
+                    <span class="sentence-badge">阐明理由</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        利用「なぜなら〜からだ」（理由在于...）的逻辑结构，解释了为什么这不是以自我为中心。因为当承认自己是产生意义的中心时，就能明白「たくさんの中心がある」（还存在着许许多多的中心），从而将这种自我肯定延伸到了对周围所有人的肯定。
+                    </span>
+                </span>
+            </p>
+            
+            <div class="translation analysis-element">有许多人觉得，这个社会在某处存在着一个中心，而自己则被排挤到了离那个中心很远的地方。然而，我是一个创造自身“生存意义”的存在，是一个为我所生活的世界赋予意义的存在，因此世界的中心就在我自己身上。但是，那并不是一个“自私自利”的世界。理由在于，当我承认自己是产生意义的中心时，就会渐渐明白，在我们的周围不仅有我，还存在着许许多多的中心。</div>
+        </div>
+
+        <div class="qa-section">
+            <div class="question-title">
+                <ruby>問<rt>とい</rt></ruby>：<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>考<rt>かんが</rt></ruby>えを<ruby>最<rt>もっと</rt></ruby>もよく<ruby>表<rt>あらわ</rt></ruby>しているのはどれか。
+            </div>
+            
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">1</span>
+                    <div class="option-text-group">
+                        <span><ruby>誰<rt>だれ</rt></ruby>もが<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby>の<ruby>中<rt>ちゅう</rt></ruby><ruby>心<rt>しん</rt></ruby>から<ruby>遠<rt>とお</rt></ruby>く<ruby>離<rt>はな</rt></ruby>れた<ruby>存<rt>そん</rt></ruby><ruby>在<rt>ざい</rt></ruby>だ。</span>
+                        <span class="option-translation">任何人都是远离社会中心的存在。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    选项所述仅仅是原文第一句提到的社会普遍错觉（「〜と感じている人は多い」），而作者随后立即用「しかし」（然而）否定了这种看法，表明世界的中心就在自己身上。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">2</span>
+                    <div class="option-text-group">
+                        <span><ruby>誰<rt>だれ</rt></ruby>もが<ruby>他<rt>た</rt></ruby><ruby>人<rt>にん</rt></ruby>の<ruby>存<rt>そん</rt></ruby><ruby>在<rt>ざい</rt></ruby>を<ruby>認<rt>みと</rt></ruby>めることが<ruby>大<rt>たい</rt></ruby><ruby>切<rt>せつ</rt></ruby>だ。</span>
+                        <span class="option-translation">认可他人的存在是很重要的。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文最后落脚于承认「たくさんの中心がある」（有许许多多的中心），强调的是每个人都是创造自身意义的中心，选项只泛泛而谈“认可他人的存在”，未能触及“产生意义的中心”这一核心概念。
+                </div>
+            </div>
+
+            <div class="option-item is-correct" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">3</span>
+                    <div class="option-text-group">
+                        <span><ruby>一<rt>ひと</rt></ruby><ruby>人<rt>り</rt></ruby><ruby>一<rt>ひと</rt></ruby><ruby>人<rt>り</rt></ruby>が<ruby>生<rt>い</rt></ruby>きる<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby>を<ruby>持<rt>も</rt></ruby>っている<ruby>大<rt>たい</rt></ruby><ruby>切<rt>せつ</rt></ruby>な<ruby>存<rt>そん</rt></ruby><ruby>在<rt>ざい</rt></ruby>だ。</span>
+                        <span class="option-translation">每个人都是拥有生存意义的重要存在。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge correct">正解</span>
+                    选项妥切地概括了作者的最终主张。原文中作者认为自己是「『生きる意味』を創造し」（创造生存意义）的中心，并且推己及人，发现周围也存在着「たくさんの中心」（许许多多的中心），这恰好说明了每一个人都是拥有各自生存意义的重要存在。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">4</span>
+                    <div class="option-text-group">
+                        <span><ruby>一<rt>ひと</rt></ruby><ruby>人<rt>り</rt></ruby><ruby>一<rt>ひと</rt></ruby><ruby>人<rt>り</rt></ruby>が<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>生<rt>い</rt></ruby>きる<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby>を<ruby>見<rt>み</rt></ruby>つけることが<ruby>大<rt>たい</rt></ruby><ruby>切<rt>せつ</rt></ruby>だ。</span>
+                        <span class="option-translation">每个人去寻找自己生存的世界是很重要的。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文强调的是每个人自己去「『生きる意味』を創造し」（创造生存意义）并「意味を与える」（赋予意义），重点在于“创造”与“赋予”，而不是去「見つける」（寻找）一个生存的世界。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="article-navigation">
+        <button id="prev-btn" class="nav-btn disabled" onclick="prevPage()">← 上一篇</button> 
+        <button id="next-btn" class="nav-btn" onclick="nextPage()">下一篇 →</button>
+    </div>
+</div>
+
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bg"><div class="progress-bar" id="progress-bar"></div></div>
+        </div>
+        <div class="time-display"><span id="current-time">00:00</span> / <span id="duration">00:00</span></div>
+        <button id="speed-btn" class="speed-btn" onclick="toggleSpeed()" title="再生速度">1.0x</button>
+        <button id="loop-btn" class="loop-btn" onclick="toggleLoop()" title="ループ再生">
+            <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        </button>
+        <audio id="audio-element" src="audio/2012.12-1.mp3"></audio>
+    </div>
+</div>
+
+<div class="footer">Ichigo Ichie - 一期一会</div>
+
+<script src="../shared/reading-year-system.js"></script>
+<script src="../categories/index.js"></script>
+<script src="../shared/reading-category-system.js"></script>
+<script>
+    function toggleAnalysis() {
+        const btn = document.getElementById('analysis-btn');
+        btn.classList.toggle('active');
+        document.body.classList.toggle('show-analysis');
+        
+        if (!document.body.classList.contains('show-analysis')) {
+            document.querySelectorAll('.option-item.expanded').forEach(item => item.classList.remove('expanded'));
+            document.querySelectorAll('.key-sentence.active').forEach(item => item.classList.remove('active'));
+        }
+    }
+
+    function toggleInlineNote(event, element) {
+        if (!document.body.classList.contains('show-analysis')) return;
+        if (event.target.closest('.inline-note-container')) return;
+        element.classList.toggle('active');
+    }
+
+    const ARTICLE_LEVEL = 'N1';
+    const ARTICLE_TYPE = 'short';
+    const ARTICLE_YEAR = '2012.12';
+    const ARTICLE_ID = 'n1-2012-12-short';
+    const ARTICLE_LINK = 's/2012.12.html';
+    const AUDIO_PREFIX = '2012.12';
+
+    function toggleOption(element) {
+        if (document.body.classList.contains('show-analysis')) {
+            element.classList.toggle('expanded');
+            return;
+        }
+        
+        const qaSection = element.closest('.qa-section');
+        if (qaSection.hasAttribute('data-answered')) return;
+        
+        const isCorrect = element.classList.contains('is-correct');
+        element.classList.add('selected');
+        
+        if (isCorrect) {
+            element.classList.add('answered-correct');
+        } else {
+            element.classList.add('answered-wrong');
+            const correctOpt = qaSection.querySelector('.is-correct');
+            if (correctOpt) correctOpt.classList.add('answered-correct');
+        }
+
+        qaSection.setAttribute('data-answered', 'true');
+        recordAnswer(isCorrect);
+    }
+
+    function handleReviewCompletionIfNeeded(isCorrect) {
+        if (!readingSession.isReviewMode || !isCorrect) {
+            return;
+        }
+
+        if (readingSession.getReviewPages().length === 0) {
+            window.setTimeout(() => {
+                alert('🎉 太棒了！这一年的错题已经复习完毕！');
+                readingSession.redirectToIndex();
+            }, 160);
+        }
+    }
+
+    function recordAnswer(isCorrect) {
+        readingSession.recordAnswer(currentPage, isCorrect);
+        handleReviewCompletionIfNeeded(isCorrect);
+    }
+
+    const audio = document.getElementById('audio-element');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+    const loopBtn = document.getElementById('loop-btn');
+    const speedBtn = document.getElementById('speed-btn');
+
+    let isLooping = false;
+    let currentSpeed = 1.0;
+
+    function toggleLoop() { 
+        isLooping = !isLooping; 
+        audio.loop = isLooping; 
+        loopBtn.classList.toggle('active', isLooping); 
+    }
+
+    function toggleSpeed() {
+        if (currentSpeed === 1.0) {
+            currentSpeed = 0.75;
+            speedBtn.textContent = '0.75x';
+            speedBtn.classList.add('active');
+        } else {
+            currentSpeed = 1.0;
+            speedBtn.textContent = '1.0x';
+            speedBtn.classList.remove('active');
+        }
+        audio.playbackRate = currentSpeed;
+    }
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+            playBtn.classList.add('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        } else {
+            audio.pause();
+            playBtn.classList.remove('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        }
+    }
+    
+    audio.addEventListener('timeupdate', () => { 
+        if (audio.duration) { 
+            progressBar.style.width = (audio.currentTime / audio.duration * 100) + '%'; 
+            currentTimeEl.textContent = formatTime(audio.currentTime); 
+        }
+    });
+    
+    audio.addEventListener('loadedmetadata', () => { 
+        durationEl.textContent = formatTime(audio.duration); 
+    });
+    
+    audio.addEventListener('ended', () => { 
+        playBtn.classList.remove('playing'); 
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'; 
+        progressBar.style.width = '0%'; 
+        currentTimeEl.textContent = "00:00"; 
+    });
+    
+    function seek(e) { 
+        if (!audio.duration) return; 
+        const rect = progressContainer.getBoundingClientRect(); 
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX; 
+        let clickX = Math.max(0, Math.min(clientX - rect.left, rect.width)); 
+        audio.currentTime = (clickX / rect.width) * audio.duration; 
+    }
+    
+    let isDragging = false;
+    progressContainer.addEventListener('mousedown', (e) => { isDragging = true; seek(e); });
+    window.addEventListener('mousemove', (e) => { if (isDragging) seek(e); });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    progressContainer.addEventListener('touchstart', (e) => { isDragging = true; seek(e); });
+    window.addEventListener('touchmove', (e) => { if (isDragging) { e.preventDefault(); seek(e); } }, { passive: false });
+    window.addEventListener('touchend', () => { isDragging = false; });
+    
+    function formatTime(seconds) { 
+        if (isNaN(seconds)) return "00:00"; 
+        const m = Math.floor(seconds / 60); 
+        const s = Math.floor(seconds % 60); 
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; 
+    }
+
+    const totalPages = 4;
+
+    const backLink = document.getElementById('back-to-reading-index');
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedPage = parseInt(urlParams.get('page'), 10);
+    const readingSession = ReadingYearSystem.createReadingYearSession({
+        level: ARTICLE_LEVEL,
+        type: ARTICLE_TYPE,
+        examKey: urlParams.get('examKey') || ARTICLE_YEAR,
+        totalPages,
+        indexPath: '../index.html',
+        urlParams
+    });
+    const categorySession = ReadingCategorySystem.createCategorySession({
+        level: ARTICLE_LEVEL,
+        type: ARTICLE_TYPE,
+        categoryId: urlParams.get('category'),
+        practiceMode: urlParams.get('practiceMode'),
+        examKey: urlParams.get('examKey') || ARTICLE_YEAR
+    });
+    const isCategoryPractice = categorySession.isCategoryMode && !readingSession.isReviewMode;
+    const categoryTarget = isCategoryPractice
+        ? categorySession.getInitialTarget(requestedPage)
+        : { empty: false };
+
+    if (isCategoryPractice) {
+        backLink.href = categorySession.buildBackUrl();
+    }
+
+    const reviewModeHasNoPages = readingSession.isReviewMode && readingSession.getReviewPages().length === 0;
+    if (reviewModeHasNoPages) {
+        alert('当前年份还没有错题记录，先去正常练习一轮吧。');
+        readingSession.redirectToIndex();
+    }
+
+    if (isCategoryPractice && categoryTarget.empty) {
+        alert('这个文章分类里还没有可练习的内容。');
+        window.location.href = categorySession.buildBackUrl();
+    }
+
+    if (isCategoryPractice && categoryTarget.redirectUrl) {
+        window.location.href = categoryTarget.redirectUrl;
+    }
+
+    let currentPage = isCategoryPractice && typeof categoryTarget.page === 'number'
+        ? categoryTarget.page
+        : readingSession.getInitialPage(requestedPage);
+
+    function syncHeaderTitles(activePage) {
+        document.querySelectorAll('.header-title').forEach(titleEl => {
+            if (!titleEl.dataset.baseTitle) {
+                titleEl.dataset.baseTitle = titleEl.textContent.replace(/\s*（🐶 復習モード）$/, '').trim();
+            }
+
+            const isActive = Boolean(activePage && activePage.contains(titleEl));
+            titleEl.textContent = isActive && readingSession.isReviewMode
+                ? `${titleEl.dataset.baseTitle}（🐶 復習モード）`
+                : titleEl.dataset.baseTitle;
+        });
+    }
+
+    function showPage(page) {
+        document.querySelectorAll('.page-content').forEach(el => {
+            el.style.display = 'none';
+            el.classList.remove('active');
+        });
+
+        const currentEl = document.getElementById('page-' + page);
+        if (currentEl) {
+            currentEl.style.display = 'block';
+            currentEl.classList.add('active');
+        }
+
+        syncHeaderTitles(currentEl);
+
+        document.querySelectorAll('.qa-section').forEach(section => {
+            section.removeAttribute('data-answered');
+        });
+
+        document.querySelectorAll('.option-item').forEach(item => {
+            item.classList.remove('selected', 'answered-correct', 'answered-wrong', 'expanded');
+        });
+
+        document.querySelectorAll('.key-sentence').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        audio.pause();
+        audio.src = `audio/${AUDIO_PREFIX}-${page}.mp3`;
+        audio.load();
+
+        playBtn.classList.remove('playing');
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        progressBar.style.width = '0%';
+        currentTimeEl.textContent = '00:00';
+        durationEl.textContent = '00:00';
+
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const navState = isCategoryPractice
+            ? categorySession.getNavState(page)
+            : readingSession.getNavState(page);
+
+        prevBtn.classList.toggle('disabled', navState.prevDisabled);
+        nextBtn.classList.toggle('disabled', navState.nextDisabled);
+
+        currentPage = page;
+        if (isCategoryPractice) {
+            categorySession.rememberProgress(page);
+            categorySession.replacePageUrl(page);
+        } else {
+            readingSession.replacePageUrl(page);
+        }
+        window.scrollTo(0, 0);
+    }
+
+    function navigateCategory(direction) {
+        const target = categorySession.getMoveTarget(currentPage, direction);
+
+        if (target.sameExamKey && typeof target.page === 'number') {
+            showPage(target.page);
+            return;
+        }
+
+        if (target.href) {
+            window.location.href = target.href;
+            return;
+        }
+
+        if (target.done) {
+            alert('已经是这个分类的最后一篇了！');
+            return;
+        }
+
+        alert('已经是这个分类的第一篇了！');
+    }
+
+    function navigateReview(direction) {
+        const target = readingSession.getMoveTarget(currentPage, direction);
+
+        if (typeof target.page === 'number') {
+            showPage(target.page);
+            return;
+        }
+
+        if (target.done) {
+            alert('🎉 太棒了！这一年的错题已经复习完毕！');
+            readingSession.redirectToIndex();
+            return;
+        }
+
+        alert('已经是这一年错题的第一题了！');
+    }
+
+    function prevPage() {
+        if (readingSession.isReviewMode) {
+            navigateReview(-1);
+            return;
+        }
+        if (isCategoryPractice) {
+            navigateCategory(-1);
+            return;
+        }
+        if (currentPage > 1) {
+            showPage(currentPage - 1);
+        }
+    }
+
+    function nextPage() {
+        if (readingSession.isReviewMode) {
+            navigateReview(1);
+            return;
+        }
+        if (isCategoryPractice) {
+            navigateCategory(1);
+            return;
+        }
+        if (currentPage < totalPages) {
+            showPage(currentPage + 1);
+        } else {
+            alert('已经是该年份的最后一篇了！');
+        }
+    }
+
+    if (!reviewModeHasNoPages && !(isCategoryPractice && categoryTarget.redirectUrl) && !(isCategoryPractice && categoryTarget.empty)) {
+        showPage(currentPage);
+    }
+</script>
+<script src="../shared/reading-tools.js"></script>
+
+</body>
+</html>

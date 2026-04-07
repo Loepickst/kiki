@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解 - 2014年7月 短文</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #3b5998; 
+            --sub-color: #787878;
+            --note-bg: #f4f6f9; 
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 80px 15px 120px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) { .toggle-btn:hover { background: var(--accent-color); color: white; } }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        .container {
+            max-width: 720px; width: 100%;
+            background: var(--paper-color); padding: 50px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box; border-radius: 8px;
+        }
+
+        .page-content {
+            display: none;
+            animation: fadeIn 0.35s ease-out;
+        }
+        .page-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-title { 
+            text-align: center; margin-top: 0; margin-bottom: 40px; 
+            font-size: 1.3rem; color: var(--text-color); border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.2; 
+            text-align: justify; margin: 0 0 20px 0;
+            text-indent: 1em; 
+        }
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        .analysis-element { display: none; }
+        body.show-analysis .analysis-element { display: block; }
+
+        .translation {
+            margin: -5px 0 30px 0; font-size: 0.95rem;
+            color: #5a626b; line-height: 1.8; padding: 15px 20px;
+            background-color: #f7f8f9; font-family: var(--chinese-font);
+            border-left: 3px solid #ddd; text-align: justify;
+        }
+        .translation::before { content: "訳"; display: block; font-size: 0.75rem; color: #aaa; margin-bottom: 5px; font-weight: bold; }
+
+        .key-sentence {
+            transition: 0.3s ease;
+        }
+        
+        body.show-analysis .key-sentence {
+            background-color: rgba(59, 89, 152, 0.06); 
+            border-bottom: 2px dashed #baccf1;
+            cursor: pointer;
+            border-radius: 3px;
+            padding: 2px 0;
+        }
+
+        body.show-analysis .key-sentence:hover {
+            background-color: rgba(59, 89, 152, 0.12);
+        }
+
+        body.show-analysis .key-sentence.active {
+            background-color: rgba(216, 67, 21, 0.08); 
+            border-bottom-color: #e74c3c;
+        }
+
+        .sentence-badge {
+            display: none;
+        }
+
+        body.show-analysis .sentence-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            background-color: var(--accent-color); color: white;
+            font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;
+            margin: 0 6px; vertical-align: middle;
+            font-family: var(--chinese-font); font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateY(-2px); transition: 0.3s;
+        }
+
+        body.show-analysis .key-sentence:hover .sentence-badge {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        body.show-analysis .key-sentence.active .sentence-badge {
+            background-color: #e74c3c;
+        }
+
+        .inline-note-container {
+            display: none;
+            background-color: #fff; border-left: 4px solid #e74c3c;
+            padding: 15px 20px; margin: 15px 0 15px -1em; 
+            font-size: 0.95rem; color: #444; box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            font-family: var(--chinese-font); border-radius: 0 6px 6px 0;
+            text-indent: 0; line-height: 1.8; cursor: text;
+        }
+
+        .key-sentence.active .inline-note-container {
+            display: block; 
+        }
+
+        .inline-note-title {
+            font-weight: bold; color: #e74c3c; margin-bottom: 8px;
+            font-size: 1rem; display: flex; align-items: center;
+        }
+
+        .qa-section {
+            margin-top: 50px; border-top: 2px solid #f0f0f0; padding-top: 40px; font-family: var(--chinese-font);
+        }
+        .question-title { font-size: 1.1rem; color: var(--text-color); margin-bottom: 25px; font-weight: bold; font-family: var(--japanese-font); line-height: 1.6; }
+        
+        .option-item {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 15px;
+            cursor: pointer; transition: 0.2s; overflow: hidden;
+        }
+        .option-item:hover { border-color: var(--accent-color); box-shadow: 0 2px 10px rgba(59, 89, 152, 0.1); }
+        
+        body:not(.show-analysis) .option-item.answered-correct {
+            border-color: #38a169;
+            background-color: rgba(56, 161, 105, 0.05);
+        }
+        body:not(.show-analysis) .option-item.answered-wrong {
+            border-color: #e53e3e;
+            background-color: rgba(229, 62, 62, 0.05);
+        }
+        body:not(.show-analysis) .option-item.answered-correct .option-number::after {
+            content: " ⭕";
+            font-size: 1rem;
+            color: #38a169;
+        }
+        body:not(.show-analysis) .option-item.answered-wrong .option-number::after {
+            content: " ❌";
+            font-size: 1rem;
+            color: #e53e3e;
+        }
+
+        body.show-analysis .option-item.is-correct {
+            border-left: 4px solid #38a169;
+        }
+
+        body:not(.show-analysis) .option-content rt {
+            display: none;
+        }
+
+        .option-content { padding: 15px 20px; display: flex; align-items: flex-start; font-family: var(--japanese-font); }
+        .option-number { font-weight: bold; color: var(--accent-color); margin-right: 15px; font-family: var(--chinese-font); white-space: nowrap; }
+        
+        .option-text-group { display: flex; flex-direction: column; }
+        
+        .option-translation { display: none; font-size: 0.85rem; color: #718096; margin-top: 4px; font-family: var(--chinese-font); }
+        body.show-analysis .option-translation { display: block; }
+
+        .option-explanation {
+            display: none; padding: 15px 20px; background: #f8fafc; border-top: 1px dashed #e2e8f0;
+            font-size: 0.95rem; color: #4a5568; line-height: 1.7;
+        }
+        body.show-analysis .option-item.expanded .option-explanation { display: block; }
+        
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 8px; }
+        .badge.wrong { background: #e53e3e; }
+        .badge.correct { background: #38a169; }
+
+        .article-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px dashed #f0f0f0;
+        }
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: #ffffff;
+            color: var(--accent-color);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: var(--chinese-font);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 1px solid #d0dcf2;
+            box-shadow: 0 2px 4px rgba(59, 89, 152, 0.05);
+            cursor: pointer;
+        }
+        .nav-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(59, 89, 152, 0.15);
+        }
+        .nav-btn.disabled {
+            opacity: 0.5; pointer-events: none; background: #f8fafc; color: #a0aec0; border-color: #e2e8f0; box-shadow: none;
+        }
+
+        .audio-wrapper { position: fixed; bottom: 0; left: 0; right: 0; z-index: 2000; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 15px 20px 25px 20px; display: flex; justify-content: center; border-top: 1px solid rgba(0,0,0,0.05); box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+        .audio-player { display: flex; align-items: center; width: 100%; max-width: 600px; }
+        .play-btn { width: 36px; height: 36px; border-radius: 50%; background-color: var(--accent-color); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 12px; flex-shrink: 0; transition: transform 0.2s; padding: 0; }
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+        .progress-container { flex-grow: 1; height: 20px; display: flex; align-items: center; margin-right: 12px; cursor: pointer; position: relative; }
+        .progress-bg { width: 100%; height: 4px; background-color: #f0f0f0; border-radius: 2px; position: relative; }
+        .progress-bar { height: 100%; background-color: var(--accent-color); width: 0%; border-radius: 2px; position: relative; }
+        .progress-bar::after { content: ""; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background-color: white; border: 2px solid var(--accent-color); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .time-display { font-size: 0.7rem; color: #999; width: 70px; text-align: right; font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
+        .loop-btn { background: none; border: none; cursor: pointer; padding: 8px; margin-left: 8px; opacity: 0.5; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .loop-btn.active { opacity: 1; color: var(--accent-color); }
+        .loop-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        .speed-btn {
+            background: none; border: 1px solid #ccc; border-radius: 4px;
+            cursor: pointer; padding: 2px 6px; margin-left: 8px;
+            font-size: 0.75rem; color: #787878; transition: all 0.2s;
+            font-family: var(--chinese-font); font-variant-numeric: tabular-nums;
+            font-weight: 500;
+        }
+        .speed-btn.active {
+            color: var(--accent-color); border-color: var(--accent-color); background: rgba(59, 89, 152, 0.05);
+        }
+
+        .footer { margin-top: 50px; color: #ccc; font-size: 0.8rem; letter-spacing: 3px; }
+
+        @media (max-width: 768px) {
+            .container { padding: 30px 18px 90px; }
+            .header-title { font-size: 1.15rem; margin-bottom: 25px; text-align: center; }
+            p.japanese { font-size: 0.95rem; line-height: 2.2; letter-spacing: 0.05em; margin-bottom: 25px; }
+            p.japanese rt { font-size: 0.55rem; }
+            .key-sentence { padding: 2px 0; }
+            .inline-note-container { margin: 15px 0 0 0; padding: 15px; font-size: 0.85rem; line-height: 1.6; border-radius: 8px; }
+            .qa-section { margin-top: 35px; padding-top: 30px; }
+            .question-title { font-size: 1rem; margin-bottom: 20px; padding: 0 5px; }
+            .option-content { padding: 12px 15px; }
+            .option-text-group span { font-size: 0.95rem; line-height: 1.5; }
+            .option-explanation { padding: 12px 15px; font-size: 0.85rem; }
+            .top-bar { padding: 0 15px; height: 55px; }
+            .toggle-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+            .audio-wrapper { padding: 10px 15px 20px; }
+            .speed-btn { padding: 2px 6px; font-size: 0.7rem; }
+            .time-display { width: 55px; font-size: 0.65rem; }
+        }
+    </style>
+    <link rel="stylesheet" href="../../../shared/site-fonts.css">
+    <link rel="stylesheet" href="../shared/reading-tools.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a id="back-to-reading-index" href="../index.html?level=N1&type=short" class="toggle-btn" style="text-decoration: none;">← 戻る</a>
+    <div id="today-date">N1真题・短文</div>
+    <div class="top-bar-controls">
+        <button id="analysis-btn" class="toggle-btn" onclick="toggleAnalysis()">解析</button>
+    </div>
+</div>
+
+<div class="container">
+    <div id="page-1" class="page-content">
+        <h2 class="header-title">2014年7月 短文（一）</h2>
+
+        <div class="article-content">
+            <p class="japanese">
+                RST<ruby>法<rt>ほう</rt></ruby><ruby>律<rt>りつ</rt></ruby><ruby>事<rt>じ</rt></ruby><ruby>務<rt>む</rt></ruby><ruby>所<rt>しょ</rt></ruby>の<ruby>田<rt>た</rt></ruby><ruby>中<rt>なか</rt></ruby><ruby>良<rt>りょう</rt></ruby><ruby>平<rt>へい</rt></ruby>と<ruby>申<rt>もう</rt></ruby>します。<br>
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>昨<rt>さく</rt></ruby><ruby>日<rt>じつ</rt></ruby>、<ruby>当<rt>とう</rt></ruby><ruby>事<rt>じ</rt></ruby><ruby>務<rt>む</rt></ruby><ruby>所<rt>しょ</rt></ruby>の「<ruby>無<rt>む</rt></ruby><ruby>料<rt>りょう</rt></ruby><ruby>法<rt>ほう</rt></ruby><ruby>律<rt>りつ</rt></ruby><ruby>相<rt>そう</rt></ruby><ruby>談<rt>だん</rt></ruby><ruby>会<rt>かい</rt></ruby>」にメールにてお<ruby>申<rt>もう</rt></ruby>し<ruby>込<rt>こ</rt></ruby>みいただきましたが、ご<ruby>予<rt>よ</rt></ruby><ruby>約<rt>やく</rt></ruby>は<ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby>のみとさせていただいております。
+                    <span class="sentence-badge">陈述现状</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        发件人开篇说明了对方虽然发来了申请邮件，但是利用「〜が」（但是）进行转折，指出「ご予約は電話のみ」（预约仅限电话），指出了对方在申请方式上出现的差错，为引出后续的核心请求铺垫。
+                    </span>
+                </span>
+                
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    お<ruby>手<rt>て</rt></ruby><ruby>数<rt>すう</rt></ruby>をおかけいたしますが、<ruby>再<rt>さい</rt></ruby><ruby>度<rt>ど</rt></ruby>お<ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby>にてお<ruby>申<rt>もう</rt></ruby>し<ruby>込<rt>こ</rt></ruby>みくださいますようお<ruby>願<rt>ねが</rt></ruby>いいたします。
+                    <span class="sentence-badge">提出主旨</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        这句话是整封邮件最核心的目的。发件人通过「お手数をおかけいたしますが」（虽然会给您添麻烦，但是），客气而明确地请求对方「再度お電話にてお申し込みくださいますようお願いいたします」（请重新通过电话进行申请）。
+                    </span>
+                </span>
+
+                その<ruby>際<rt>さい</rt></ruby>、ご<ruby>相<rt>そう</rt></ruby><ruby>談<rt>だん</rt></ruby><ruby>内<rt>ない</rt></ruby><ruby>容<rt>よう</rt></ruby>についての<ruby>簡<rt>かん</rt></ruby><ruby>単<rt>たん</rt></ruby>な<ruby>質<rt>しつ</rt></ruby><ruby>問<rt>もん</rt></ruby>をさせていただきますのでご<ruby>了<rt>りょう</rt></ruby><ruby>承<rt>しょう</rt></ruby>ください。
+
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    なお、<ruby>平<rt>へい</rt></ruby><ruby>日<rt>じつ</rt></ruby><ruby>夜<rt>よる</rt></ruby>の<ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby><ruby>帯<rt>たい</rt></ruby>は<ruby>大<rt>たい</rt></ruby><ruby>変<rt>へん</rt></ruby><ruby>込<rt>こ</rt></ruby>み<ruby>合<rt>あ</rt></ruby>いますので、お<ruby>早<rt>はや</rt></ruby>めにお<ruby>申<rt>もう</rt></ruby>し<ruby>込<rt>こ</rt></ruby>みくださいますようお<ruby>願<rt>ねが</rt></ruby>いいたします。
+                    <span class="sentence-badge">补充说明</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        信件末尾使用「なお」（另外）引出补充信息。提醒对方晚上时间段「大変込み合いますので」（会非常拥挤），从而建议对方「お早めにお申し込みくださいますよう」（尽早申请），但这只是附带的善意提醒，并非邮件的首要目的。
+                    </span>
+                </span>
+            </p>
+            
+            <div class="translation analysis-element">我是RST律师事务所的田中良平。<br>昨天，我们收到了您发邮件申请本事务所的“免费法律咨询会”，但我们的预约仅限通过电话进行。虽然会给您添麻烦，但还是请您重新通过电话进行申请。届时，我们会针对咨询内容询问一些简单的问题，敬请谅解。另外，工作日晚上的时间段会非常拥挤，请您尽早进行申请。</div>
+        </div>
+
+        <div class="qa-section">
+            <div class="question-title">
+                <ruby>問<rt>とい</rt></ruby>：このメールで<ruby>最<rt>もっと</rt></ruby>も<ruby>伝<rt>つた</rt></ruby>えたいことは<ruby>何<rt>なに</rt></ruby>か。
+            </div>
+            
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">1</span>
+                    <div class="option-text-group">
+                        <span><ruby>申<rt>もう</rt></ruby>し<ruby>込<rt>こ</rt></ruby>みに<ruby>必<rt>ひつ</rt></ruby><ruby>要<rt>よう</rt></ruby>な<ruby>情<rt>じょう</rt></ruby><ruby>報<rt>ほう</rt></ruby>が<ruby>不<rt>ふ</rt></ruby><ruby>足<rt>そく</rt></ruby>しているので、<ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby>で<ruby>知<rt>し</rt></ruby>らせてほしい。</span>
+                        <span class="option-translation">因为申请所需的信息不足，希望能通过电话告知。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文中并没有说申请所必需的信息不足（「必要な情報が不足している」），而是指出预约的方式不对，仅限电话（「ご予約は電話のみ」）。
+                </div>
+            </div>
+
+            <div class="option-item is-correct" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">2</span>
+                    <div class="option-text-group">
+                        <span><ruby>申<rt>もう</rt></ruby>し<ruby>込<rt>こ</rt></ruby>み<ruby>方<rt>ほう</rt></ruby><ruby>法<rt>ほう</rt></ruby>が<ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>っているので、<ruby>改<rt>あらた</rt></ruby>めて<ruby>申<rt>もう</rt></ruby>し<ruby>込<rt>こ</rt></ruby>みをしてほしい。</span>
+                        <span class="option-translation">因为申请的方法错了，希望重新进行申请。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge correct">正解</span>
+                    妥切地概括了邮件的主旨。原文指出对方通过邮件申请，但预约仅限电话（「メールにてお申し込みいただきましたが、ご予約は電話のみ」），这对应了选项中的“申请方法错误”（「申し込み方法が間違っている」）；随后明确请求对方重新打电话申请（「再度お電話にてお申し込みくださいますようお願いいたします」），直接对应了选项的后半句。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">3</span>
+                    <div class="option-text-group">
+                        <span><ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby>での<ruby>申<rt>もう</rt></ruby>し<ruby>込<rt>こ</rt></ruby>み<ruby>時<rt>じ</rt></ruby>に<ruby>相<rt>そう</rt></ruby><ruby>談<rt>だん</rt></ruby><ruby>内<rt>ない</rt></ruby><ruby>容<rt>よう</rt></ruby>を<ruby>聞<rt>き</rt></ruby>くので、<ruby>準<rt>じゅん</rt></ruby><ruby>備<rt>び</rt></ruby>しておいてほしい。</span>
+                        <span class="option-translation">通过电话申请时会询问咨询内容，希望做好准备。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文确实提到了打电话时会询问简单的咨询内容（「ご相談内容についての簡単な質問をさせていただきます」），但这只是重新申请过程中的一个注意事项（「その際」），并非写这封邮件的“最想传达的事”（「最も伝えたいこと」）。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">4</span>
+                    <div class="option-text-group">
+                        <span><ruby>平<rt>へい</rt></ruby><ruby>日<rt>じつ</rt></ruby><ruby>夜<rt>よる</rt></ruby>の<ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby><ruby>帯<rt>たい</rt></ruby>は<ruby>特<rt>とく</rt></ruby>に<ruby>込<rt>こ</rt></ruby>み<ruby>合<rt>あ</rt></ruby>うので、<ruby>早<rt>はや</rt></ruby>めに<ruby>予<rt>よ</rt></ruby><ruby>約<rt>やく</rt></ruby>してほしい。</span>
+                        <span class="option-translation">工作日晚上的时间段特别拥挤，希望尽早预约。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文最后确实提到了平日晚上拥挤，请尽早预约（「平日夜の時間帯は大変込み合いますので、お早めにお申し込みくださいますよう」），但这只是用「なお」（另外）带出的附加提醒，并非邮件的主旨。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="page-2" class="page-content active">
+        <h2 class="header-title">2014年7月 短文（二）</h2>
+
+        <div class="article-content">
+            <p class="japanese">
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>井<rt>いの</rt></ruby><ruby>上<rt>うえ</rt></ruby>ひさしさんが、「エッセイとはすなわち、<ruby>自<rt>じ</rt></ruby><ruby>慢<rt>まん</rt></ruby><ruby>話<rt>ばなし</rt></ruby>である」といったことを<ruby>書<rt>か</rt></ruby>いていらしたのを、<ruby>以<rt>い</rt></ruby><ruby>前<rt>ぜん</rt></ruby><ruby>読<rt>よ</rt></ruby>んだことがありますが、<ruby>私<rt>わたし</rt></ruby>はその<ruby>文<rt>ぶん</rt></ruby>を<ruby>一<rt>いち</rt></ruby><ruby>読<rt>どく</rt></ruby>した<ruby>瞬<rt>しゅん</rt></ruby><ruby>間<rt>かん</rt></ruby>、「ああっ!」と<ruby>叫<rt>さけ</rt></ruby>んで<ruby>赤<rt>せき</rt></ruby><ruby>面<rt>めん</rt></ruby>したのでした。
+                    <span class="sentence-badge">引出话题</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        作者开篇通过描绘自己读到井上厦先生一段话时大叫并羞红了脸的反应（「『ああっ!』と叫んで赤面したのでした」），生动地引出了探讨的话题，并为下文解释自己为何有如此激烈的反应制造了悬念。
+                    </span>
+                </span>
+                
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    エッセイ=<ruby>自<rt>じ</rt></ruby><ruby>慢<rt>まん</rt></ruby>、とはまさにその<ruby>通<rt>とお</rt></ruby>り。エッセイを<ruby>書<rt>か</rt></ruby>く<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>をしている<ruby>私<rt>わたし</rt></ruby>は、<ruby>心<rt>こころ</rt></ruby>のどこかでそのことを<ruby>感<rt>かん</rt></ruby>じつつ、<ruby>気<rt>き</rt></ruby>付<rt>づ</rt>かない<ruby>努<rt>ど</rt></ruby><ruby>力<rt>りょく</rt></ruby>をしていた<ruby>気<rt>き</rt></ruby>がする。
+                    <span class="sentence-badge">揭示原因</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        作者坦白了自己内心真实的状况。说明自己其实在内心的某个角落也感觉到了这一点（「心のどこかでそのことを感じつつ」），但却在努力不去察觉它（「気付かない努力をしていた」）。这就解释了前文为何会被那句话戳中痛处。
+                    </span>
+                </span>
+
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    しかしそのようにズバリ<ruby>言<rt>い</rt></ruby>われると、「<ruby>私<rt>わたし</rt></ruby>は<ruby>今<rt>いま</rt></ruby>まで、<ruby>自<rt>じ</rt></ruby><ruby>慢<rt>まん</rt></ruby><ruby>話<rt>ばなし</rt></ruby>によって、<ruby>口<rt>くち</rt></ruby>を<ruby>糊<rt>のり</rt></ruby>してきたのだなあ」ということが、 <ruby>明<rt>めい</rt></ruby><ruby>確<rt>かく</rt></ruby>に<ruby>理<rt>り</rt></ruby><ruby>解<rt>かい</rt></ruby>できるのです。
+                    <span class="sentence-badge">总结感悟</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        结尾处通过转折词「しかし」（然而），道出了被一针见血指出后的释然与清醒。表示当被直白地点破时，自己便能清楚地认识到是一直靠自夸来糊口的（「明確に理解できるのです」），深化了对自我的剖析。
+                    </span>
+                </span>
+            </p>
+            
+            <div class="translation analysis-element">以前我曾读过井上厦先生写的一段话：“所谓随笔，即是自夸。”我在读到那句话的瞬间，便不由得大叫一声“啊！”，羞红了脸。随笔=自夸，确实如此。以写随笔为职业的我，虽然在内心的某个角落也感觉到了这一点，但似乎一直在努力不去察觉它。然而，被别人如此一针见血地指出来后，我便清楚地认识到：“原来我一直以来，都是靠写自夸的话来糊口的啊。”</div>
+        </div>
+
+        <div class="qa-section">
+            <div class="question-title">
+                <ruby>問<rt>とい</rt></ruby>：<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>が「ああっ!」と<ruby>叫<rt>さけ</rt></ruby>んだのはなぜか。
+            </div>
+            
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">1</span>
+                    <div class="option-text-group">
+                        <span><ruby>前<rt>まえ</rt></ruby><ruby>々<rt>まえ</rt></ruby>から<ruby>抱<rt>いだ</rt></ruby>いていた<ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>の<ruby>思<rt>おも</rt></ruby>いを<ruby>先<rt>さき</rt></ruby>に<ruby>言<rt>い</rt></ruby>われたから</span>
+                        <span class="option-translation">因为自己一直以来的想法被别人先说出来了。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文指出作者是努力不去察觉这件事（「気付かない努力をしていた」），而不是因为自己的想法被别人“抢先说出来”（「先に言われた」）而大叫。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">2</span>
+                    <div class="option-text-group">
+                        <span>だれかに<ruby>言<rt>い</rt></ruby>いたかった<ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>の<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちを<ruby>見<rt>み</rt></ruby><ruby>抜<rt>ぬ</rt></ruby>かれたから</span>
+                        <span class="option-translation">因为自己想对别人说的心情被看穿了。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    作者内心对待这件事的态度是“努力不去察觉”（「気付かない努力をしていた」），并非是自己“想对别人说”（「だれかに言いたかった」），选项脱离了原文的语境。
+                </div>
+            </div>
+
+            <div class="option-item is-correct" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">3</span>
+                    <div class="option-text-group">
+                        <span><ruby>意<rt>い</rt></ruby><ruby>識<rt>しき</rt></ruby>しないようしていた<ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>の<ruby>思<rt>おも</rt></ruby>いを<ruby>指<rt>し</rt></ruby><ruby>摘<rt>てき</rt></ruby>されたから</span>
+                        <span class="option-translation">因为自己一直尽量不去意识的想法被指出来了。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge correct">正解</span>
+                    妥切地概括了作者大叫的原因。原文明确写道，作者虽然内心某处有所感觉，但却在“努力不去察觉”（「気付かない努力をしていた」），当这种刻意回避的想法被别人“一针见血地指出”（「ズバリ言われると」）时，便因为被戳中痛处而大叫并羞红了脸。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">4</span>
+                    <div class="option-text-group">
+                        <span><ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>にできないでいた<ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>の<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちをズバリ<ruby>言<rt>い</rt></ruby>われたから</span>
+                        <span class="option-translation">因为自己无法用言语表达的心情被一针见血地说出来了。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    作者并非是因为“无法用言语表达”（「言葉にできないでいた」）而苦恼，而是故意去回避、去努力不察觉它（「気付かない努力をしていた」），该选项曲解了作者的心理状态。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="page-3" class="page-content active">
+         <h2 class="header-title">2014年7月 短文（三）</h2>
+
+        <div class="article-content">
+            <p class="japanese">
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>の<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>日<rt>にち</rt></ruby><ruby>常<rt>じょう</rt></ruby><ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>は、<ruby>無<rt>む</rt></ruby><ruby>数<rt>すう</rt></ruby>の<ruby>暗<rt>あん</rt></ruby><ruby>黙<rt>もく</rt></ruby>の<ruby>約<rt>やく</rt></ruby><ruby>束<rt>そく</rt></ruby>を<ruby>相<rt>そう</rt></ruby><ruby>互<rt>ご</rt></ruby>に<ruby>共<rt>きょう</rt></ruby><ruby>有<rt>ゆう</rt></ruby>することで<ruby>成<rt>な</rt></ruby>り<ruby>立<rt>た</rt></ruby>っています。
+                    <span class="sentence-badge">陈述现象</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        作者开篇指出了人类社会日常生活成立的基础，说明其是通过互相共享无数的「暗黙の約束」（默认的约定）来维系的，为下文解释什么是“默认的约定”做铺垫。
+                    </span>
+                </span>
+                
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>暗<rt>あん</rt></ruby><ruby>黙<rt>もく</rt></ruby>というのは、そうした<ruby>約<rt>やく</rt></ruby><ruby>束<rt>そく</rt></ruby>が<ruby>明<rt>めい</rt></ruby><ruby>瞭<rt>りょう</rt></ruby>に<ruby>意<rt>い</rt></ruby><ruby>識<rt>しき</rt></ruby>されたり、どこかにはっきり<ruby>書<rt>か</rt></ruby>かれているわけではないということです。
+                    <span class="sentence-badge">解释说明</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        紧承上文，作者对「暗黙」（默认）一词进行了具体的定义。说明这种约定并不是被人们清晰意识到的（「明瞭に意識されたり」），也不是写在某处的明文规定（「はっきり書かれているわけではない」）。
+                    </span>
+                </span>
+
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>習<rt>しゅう</rt></ruby><ruby>慣<rt>かん</rt></ruby><ruby>化<rt>か</rt></ruby>し、なかば<ruby>無<rt>む</rt></ruby><ruby>意<rt>い</rt></ruby><ruby>識<rt>しき</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>守<rt>まも</rt></ruby>られている<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>約<rt>やく</rt></ruby><ruby>束<rt>そく</rt></ruby><ruby>事<rt>ごと</rt></ruby>の<ruby>海<rt>うみ</rt></ruby>に、<ruby>共<rt>とも</rt></ruby>に<ruby>浸<rt>つ</rt></ruby>かっているから、われわれはこの<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby>の<ruby>中<rt>なか</rt></ruby>に<ruby>安<rt>あん</rt></ruby><ruby>心<rt>しん</rt></ruby>して<ruby>毎<rt>まい</rt></ruby><ruby>日<rt>にち</rt></ruby><ruby>生<rt>い</rt></ruby>きていられるのであり、これから<ruby>何<rt>なに</rt></ruby>が<ruby>起<rt>お</rt></ruby>きるのか、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>はどう<ruby>行<rt>こう</rt></ruby><ruby>動<rt>どう</rt></ruby>したらよいのか、<ruby>一<rt>いち</rt></ruby><ruby>一<rt>いち</rt></ruby><span style="text-decoration: underline; text-underline-offset: 3px;"><ruby>思<rt>おも</rt></ruby>い<ruby>悩<rt>なや</rt></ruby>まずにいられる</span>わけです。
+                    <span class="sentence-badge">得出结论</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        利用「〜から」（因为...）的因果逻辑得出结论。正是因为大家共同沉浸在这些习惯化、半无意识遵守的约定中，所以我们才不需要去一一「思い悩まずにいられる」（烦恼和担忧）接下来会发生什么。
+                    </span>
+                </span>
+            </p>
+            
+            <div class="translation analysis-element">人类社会的日常生活，是通过相互共享无数的默认约定而成立的。所谓“默认”，就是指这些约定并不是被人们清晰地意识到，也并非明文写在某个地方。正因为大家共同沉浸在这些已经习惯化、且处于半无意识状态下被遵守的社会约定的海洋中，我们才能在这个世界上每天安心地生活，也才能够不去一一烦恼接下来会发生什么、自己该如何行动。</div>
+        </div>
+
+        <div class="qa-section">
+            <div class="question-title">
+                <ruby>問<rt>とい</rt></ruby>：<span style="text-decoration: underline; text-underline-offset: 3px;"><ruby>思<rt>おも</rt></ruby>い<ruby>悩<rt>なや</rt></ruby>まずにいられる</span>とあるが、なぜか。
+            </div>
+            
+            <div class="option-item is-correct" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">1</span>
+                    <div class="option-text-group">
+                        <span><ruby>習<rt>しゅう</rt></ruby><ruby>慣<rt>かん</rt></ruby><ruby>化<rt>か</rt></ruby>された<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby><ruby>共<rt>きょう</rt></ruby><ruby>通<rt>つう</rt></ruby>の<ruby>約<rt>やく</rt></ruby><ruby>束<rt>そく</rt></ruby><ruby>事<rt>ごと</rt></ruby>があるから</span>
+                        <span class="option-translation">因为存在已经习惯化的、社会共同的约定。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge correct">正解</span>
+                    妥切地概括了画线句的原因。原文在画线部分之前用「〜から」（因为）明确给出了理由，即人们共同沉浸在「習慣化し、なかば無意識的に守られている社会的な約束事」（习惯化、半无意识中被遵守的社会约定）之中，选项正是对这一原因的准确提炼。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">2</span>
+                    <div class="option-text-group">
+                        <span><ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>約<rt>やく</rt></ruby><ruby>束<rt>そく</rt></ruby><ruby>事<rt>ごと</rt></ruby>は<ruby>日<rt>にち</rt></ruby><ruby>常<rt>じょう</rt></ruby><ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>で<ruby>教<rt>おし</rt></ruby>えられるから</span>
+                        <span class="option-translation">因为社会的约定是在日常生活中被教导的。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文指出这些社会约定是「習慣化し、なかば無意識的に守られている」（习惯化并半无意识地被遵守的），并没有提到它们是在日常生活中由谁来「教えられる」（教导）的。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">3</span>
+                    <div class="option-text-group">
+                        <span><ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby>でお<ruby>互<rt>たが</rt></ruby>いの<ruby>約<rt>やく</rt></ruby><ruby>束<rt>そく</rt></ruby><ruby>事<rt>ごと</rt></ruby>が<ruby>意<rt>い</rt></ruby><ruby>識<rt>しき</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>守<rt>まも</rt></ruby>られているから</span>
+                        <span class="option-translation">因为在社会中彼此的约定被有意识地遵守着。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    与原文事实相反。原文第二句解释“默认”时明确指出这些约定「明瞭に意識されたり...するわけではない」（并不是被清晰意识到的），并且是「なかば無意識的に守られている」（半无意识地被遵守的），而非「意識的に」（有意识地）。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">4</span>
+                    <div class="option-text-group">
+                        <span><ruby>習<rt>しゅう</rt></ruby><ruby>慣<rt>かん</rt></ruby>や<ruby>行<rt>こう</rt></ruby><ruby>動<rt>どう</rt></ruby>に<ruby>関<rt>かん</rt></ruby>する<ruby>約<rt>やく</rt></ruby><ruby>束<rt>そく</rt></ruby><ruby>事<rt>ごと</rt></ruby>を<ruby>共<rt>きょう</rt></ruby><ruby>有<rt>ゆう</rt></ruby>する<ruby>場<rt>ば</rt></ruby>が<ruby>持<rt>も</rt></ruby>てるから</span>
+                        <span class="option-translation">因为能够拥有共享习惯与行动相关约定的场所。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文讲述的是人们共同“沉浸”在默认约定的海洋中，探讨的是共享约定这一事实本身，并没有提到人们能够拥有一个用来共享它们的实体「場」（场所），选项偏离了原文的重心。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="page-4" class="page-content active">
+        <h2 class="header-title">2014年7月 短文（四）</h2>
+
+        <div class="article-content">
+            <p class="japanese">
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>白<rt>はく</rt></ruby><ruby>色<rt>しょく</rt></ruby><ruby>度<rt>ど</rt></ruby>というのは<ruby>物<rt>ぶつ</rt></ruby><ruby>理<rt>り</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>指<rt>し</rt></ruby><ruby>標<rt>ひょう</rt></ruby>であって<ruby>感<rt>かん</rt></ruby><ruby>受<rt>じゅ</rt></ruby><ruby>性<rt>せい</rt></ruby>の<ruby>指<rt>し</rt></ruby><ruby>標<rt>ひょう</rt></ruby>ではない。したがって<ruby>白<rt>はく</rt></ruby><ruby>色<rt>しょく</rt></ruby><ruby>度<rt>ど</rt></ruby>が<ruby>高<rt>たか</rt></ruby>いというだけでは<ruby>白<rt>しろ</rt></ruby>は<ruby>印<rt>いん</rt></ruby><ruby>象<rt>しょう</rt></ruby>づけられないのである。
+                    <span class="sentence-badge">陈述前提</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        作者开篇点明了“白度”的本质，指出它只是物理指标而非人们的感受指标（「感受性の指標ではない」）。接着用「したがって」（因此）得出结论，说明单凭物理上的“白度高”是无法给人留下“白”的印象的。这就确立了全文探讨“白度”与“白色印象”之间差异的基调。
+                    </span>
+                </span>
+                
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>咲<rt>さ</rt></ruby>き<ruby>乱<rt>みだ</rt></ruby>れる<ruby>花<rt>はな</rt></ruby><ruby>々<rt>ばな</rt></ruby>の<ruby>印<rt>いん</rt></ruby><ruby>象<rt>しょう</rt></ruby>は<ruby>真<rt>ま</rt></ruby>っ<ruby>白<rt>しろ</rt></ruby>でも、その<ruby>背<rt>はい</rt></ruby><ruby>後<rt>ご</rt></ruby>にコピー<ruby>用<rt>よう</rt></ruby><ruby>紙<rt>し</rt></ruby><ruby>程<rt>てい</rt></ruby><ruby>度<rt>ど</rt></ruby>の<ruby>紙<rt>かみ</rt></ruby>を<ruby>置<rt>お</rt></ruby>いてみると、<ruby>花<rt>はな</rt></ruby>そのものの<ruby>白<rt>しろ</rt></ruby>さは<ruby>紙<rt>かみ</rt></ruby>の<ruby>白<rt>しろ</rt></ruby>さほどではないことに<ruby>気<rt>き</rt></ruby>が<ruby>付<rt>つ</rt></ruby>く。
+                    <span class="sentence-badge">举例说明</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        为了佐证开篇的观点，作者拿花朵与复印纸进行了具体的对比。说明尽管花朵给人留下了“纯白”的印象，但在物理层面，花本身的白其实并不如纸白（「紙の白さほどではない」）。
+                    </span>
+                </span>
+
+                <ruby>花<rt>か</rt></ruby><ruby>弁<rt>べん</rt></ruby>は<ruby>淡<rt>あわ</rt></ruby>い<ruby>色<rt>いろ</rt></ruby>を<ruby>含<rt>ふく</rt></ruby>み<ruby>水<rt>すい</rt></ruby><ruby>分<rt>ぶん</rt></ruby>をたたえた<ruby>重<rt>おも</rt></ruby>たい<ruby>白<rt>しろ</rt></ruby>である。
+
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    しかし<ruby>咲<rt>さ</rt></ruby>き<ruby>誇<rt>ほこ</rt></ruby>る<ruby>花<rt>はな</rt></ruby><ruby>々<rt>ばな</rt></ruby>が<ruby>僕<rt>ぼく</rt></ruby>らの<ruby>心<rt>こころ</rt></ruby>に<ruby>届<rt>とど</rt></ruby>けてくる<ruby>白<rt>しろ</rt></ruby>は<ruby>鮮<rt>せん</rt></ruby><ruby>烈<rt>れつ</rt></ruby>に<ruby>白<rt>しろ</rt></ruby>い。
+                    <span class="sentence-badge">得出结论</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        结尾处使用「しかし」（然而）进行转折，说明虽然花在物理上的白度不高，但它传递到人们心中的“白”的印象却是极其鲜明强烈的（「鮮烈に白い」）。这进一步证实了物理白度无法解释人们心中的白色印象这一核心观点。
+                    </span>
+                </span>
+            </p>
+            
+            <div class="translation analysis-element">所谓白度，是一个物理指标，而不是感受性的指标。因此，仅仅是白度高，并不能给人留下白的印象。尽管盛开的花朵给人留下的印象是纯白的，但如果试着在其背后放一张复印纸左右的白纸，就会发现花本身的白度其实并没有纸那么白。花瓣是带着淡淡的颜色、蕴含着水分的沉重的白。然而，盛开的花朵传递到我们心里的白，却是鲜明且强烈的白。</div>
+        </div>
+
+        <div class="qa-section">
+            <div class="question-title">
+                <ruby>問<rt>とい</rt></ruby>：<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>考<rt>かんが</rt></ruby>えを<ruby>表<rt>あらわ</rt></ruby>しているのはどれか。
+            </div>
+            
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">1</span>
+                    <div class="option-text-group">
+                        <span><ruby>花<rt>はな</rt></ruby>そのものの<ruby>白<rt>しろ</rt></ruby>さは<ruby>物<rt>ぶつ</rt></ruby><ruby>理<rt>り</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>指<rt>し</rt></ruby><ruby>標<rt>ひょう</rt></ruby>で<ruby>示<rt>しめ</rt></ruby>せない。</span>
+                        <span class="option-translation">花本身的白度无法用物理指标来表示。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文明确说到白度是物理指标（「白色度というのは物理的な指標」），并在后文指出花本身的白度不如纸白（「花そのものの白さは紙の白さほどではない」），这说明花本身的白度是可以在物理层面上比较和表示的，只是这种物理指标不能代表人的主观印象。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">2</span>
+                    <div class="option-text-group">
+                        <span><ruby>花<rt>はな</rt></ruby>そのものの<ruby>白<rt>しろ</rt></ruby>さは<ruby>他<rt>た</rt></ruby>のものとの<ruby>比<rt>ひ</rt></ruby><ruby>較<rt>かく</rt></ruby>によって<ruby>決<rt>き</rt></ruby>まる。</span>
+                        <span class="option-translation">花本身的白度是由与其他事物的比较决定的。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    作者拿花和纸比较（「コピー用紙程度の紙を置いてみると」），只是为了证明花在物理上并不那么白，而不是为了说明花本身的白度需要由“比较来决定”（「比較によって決まる」），该选项偏离了讨论的重心。
+                </div>
+            </div>
+
+            <div class="option-item is-correct" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">3</span>
+                    <div class="option-text-group">
+                        <span><ruby>花<rt>はな</rt></ruby>の<ruby>白<rt>しろ</rt></ruby>さの<ruby>印<rt>いん</rt></ruby><ruby>象<rt>しょう</rt></ruby>は<ruby>白<rt>はく</rt></ruby><ruby>色<rt>しょく</rt></ruby><ruby>度<rt>ど</rt></ruby>では<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>できない。</span>
+                        <span class="option-translation">花的白色的印象无法用白度来解释。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge correct">正解</span>
+                    妥切地概括了作者的核心观点。原文指出，白度只是物理指标而非感受指标（「感受性の指標ではない」），单凭白度高无法留下白的印象（「白色度が高いというだけでは白は印象づけられない」）；并且花在物理上不如纸白，但在人心中的印象却极其鲜白（「心に届けてくる白は鮮烈に白い」）。这恰好说明了“白的印象”与物理上的“白度”是脱钩的，无法用白度来解释。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">4</span>
+                    <div class="option-text-group">
+                        <span><ruby>花<rt>はな</rt></ruby>びらより<ruby>咲<rt>さ</rt></ruby>き<ruby>誇<rt>ほこ</rt></ruby>る<ruby>花<rt>はな</rt></ruby><ruby>々<rt>ばな</rt></ruby>のほうが<ruby>白<rt>はく</rt></ruby><ruby>色<rt>しょく</rt></ruby><ruby>度<rt>ど</rt></ruby>が<ruby>高<rt>たか</rt></ruby>い。</span>
+                        <span class="option-translation">相比于单片花瓣，盛开的花朵们白度更高。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文并未对“花瓣的白度”和“盛开的花朵的白度”进行物理上的高低对比。作者只是说盛开的花朵在人们“心中”的印象很鲜白（「心に届けてくる白は鮮烈に白い」），而不是它们在物理上的「白色度」（白度）更高了。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="article-navigation">
+        <button id="prev-btn" class="nav-btn disabled" onclick="prevPage()">← 上一篇</button> 
+        <button id="next-btn" class="nav-btn" onclick="nextPage()">下一篇 →</button>
+    </div>
+</div>
+
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bg"><div class="progress-bar" id="progress-bar"></div></div>
+        </div>
+        <div class="time-display"><span id="current-time">00:00</span> / <span id="duration">00:00</span></div>
+        <button id="speed-btn" class="speed-btn" onclick="toggleSpeed()" title="再生速度">1.0x</button>
+        <button id="loop-btn" class="loop-btn" onclick="toggleLoop()" title="ループ再生">
+            <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        </button>
+        <audio id="audio-element" src="audio/2014.7-1.mp3"></audio>
+    </div>
+</div>
+
+<div class="footer">Ichigo Ichie - 一期一会</div>
+
+<script src="../shared/reading-year-system.js"></script>
+<script src="../categories/index.js"></script>
+<script src="../shared/reading-category-system.js"></script>
+<script>
+    function toggleAnalysis() {
+        const btn = document.getElementById('analysis-btn');
+        btn.classList.toggle('active');
+        document.body.classList.toggle('show-analysis');
+        
+        if (!document.body.classList.contains('show-analysis')) {
+            document.querySelectorAll('.option-item.expanded').forEach(item => item.classList.remove('expanded'));
+            document.querySelectorAll('.key-sentence.active').forEach(item => item.classList.remove('active'));
+        }
+    }
+
+    function toggleInlineNote(event, element) {
+        if (!document.body.classList.contains('show-analysis')) return;
+        if (event.target.closest('.inline-note-container')) return;
+        element.classList.toggle('active');
+    }
+
+    const ARTICLE_LEVEL = 'N1';
+    const ARTICLE_TYPE = 'short';
+    const ARTICLE_YEAR = '2014.7';
+    const ARTICLE_ID = 'n1-2014-7-short';
+    const ARTICLE_LINK = 's/2014.7.html';
+    const AUDIO_PREFIX = '2014.7';
+
+    function toggleOption(element) {
+        if (document.body.classList.contains('show-analysis')) {
+            element.classList.toggle('expanded');
+            return;
+        }
+        
+        const qaSection = element.closest('.qa-section');
+        if (qaSection.hasAttribute('data-answered')) return;
+        
+        const isCorrect = element.classList.contains('is-correct');
+        element.classList.add('selected');
+        
+        if (isCorrect) {
+            element.classList.add('answered-correct');
+        } else {
+            element.classList.add('answered-wrong');
+            const correctOpt = qaSection.querySelector('.is-correct');
+            if (correctOpt) correctOpt.classList.add('answered-correct');
+        }
+
+        qaSection.setAttribute('data-answered', 'true');
+        recordAnswer(isCorrect);
+    }
+
+    function handleReviewCompletionIfNeeded(isCorrect) {
+        if (!readingSession.isReviewMode || !isCorrect) {
+            return;
+        }
+
+        if (readingSession.getReviewPages().length === 0) {
+            window.setTimeout(() => {
+                alert('🎉 太棒了！这一年的错题已经复习完毕！');
+                readingSession.redirectToIndex();
+            }, 160);
+        }
+    }
+
+    function recordAnswer(isCorrect) {
+        readingSession.recordAnswer(currentPage, isCorrect);
+        handleReviewCompletionIfNeeded(isCorrect);
+    }
+
+    const audio = document.getElementById('audio-element');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+    const loopBtn = document.getElementById('loop-btn');
+    const speedBtn = document.getElementById('speed-btn');
+
+    let isLooping = false;
+    let currentSpeed = 1.0;
+
+    function toggleLoop() { 
+        isLooping = !isLooping; 
+        audio.loop = isLooping; 
+        loopBtn.classList.toggle('active', isLooping); 
+    }
+
+    function toggleSpeed() {
+        if (currentSpeed === 1.0) {
+            currentSpeed = 0.75;
+            speedBtn.textContent = '0.75x';
+            speedBtn.classList.add('active');
+        } else {
+            currentSpeed = 1.0;
+            speedBtn.textContent = '1.0x';
+            speedBtn.classList.remove('active');
+        }
+        audio.playbackRate = currentSpeed;
+    }
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+            playBtn.classList.add('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        } else {
+            audio.pause();
+            playBtn.classList.remove('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        }
+    }
+    
+    audio.addEventListener('timeupdate', () => { 
+        if (audio.duration) { 
+            progressBar.style.width = (audio.currentTime / audio.duration * 100) + '%'; 
+            currentTimeEl.textContent = formatTime(audio.currentTime); 
+        }
+    });
+    
+    audio.addEventListener('loadedmetadata', () => { 
+        durationEl.textContent = formatTime(audio.duration); 
+    });
+    
+    audio.addEventListener('ended', () => { 
+        playBtn.classList.remove('playing'); 
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'; 
+        progressBar.style.width = '0%'; 
+        currentTimeEl.textContent = "00:00"; 
+    });
+    
+    function seek(e) { 
+        if (!audio.duration) return; 
+        const rect = progressContainer.getBoundingClientRect(); 
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX; 
+        let clickX = Math.max(0, Math.min(clientX - rect.left, rect.width)); 
+        audio.currentTime = (clickX / rect.width) * audio.duration; 
+    }
+    
+    let isDragging = false;
+    progressContainer.addEventListener('mousedown', (e) => { isDragging = true; seek(e); });
+    window.addEventListener('mousemove', (e) => { if (isDragging) seek(e); });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    progressContainer.addEventListener('touchstart', (e) => { isDragging = true; seek(e); });
+    window.addEventListener('touchmove', (e) => { if (isDragging) { e.preventDefault(); seek(e); } }, { passive: false });
+    window.addEventListener('touchend', () => { isDragging = false; });
+    
+    function formatTime(seconds) { 
+        if (isNaN(seconds)) return "00:00"; 
+        const m = Math.floor(seconds / 60); 
+        const s = Math.floor(seconds % 60); 
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; 
+    }
+
+    const totalPages = 4;
+
+    const backLink = document.getElementById('back-to-reading-index');
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedPage = parseInt(urlParams.get('page'), 10);
+    const readingSession = ReadingYearSystem.createReadingYearSession({
+        level: ARTICLE_LEVEL,
+        type: ARTICLE_TYPE,
+        examKey: urlParams.get('examKey') || ARTICLE_YEAR,
+        totalPages,
+        indexPath: '../index.html',
+        urlParams
+    });
+    const categorySession = ReadingCategorySystem.createCategorySession({
+        level: ARTICLE_LEVEL,
+        type: ARTICLE_TYPE,
+        categoryId: urlParams.get('category'),
+        practiceMode: urlParams.get('practiceMode'),
+        examKey: urlParams.get('examKey') || ARTICLE_YEAR
+    });
+    const isCategoryPractice = categorySession.isCategoryMode && !readingSession.isReviewMode;
+    const categoryTarget = isCategoryPractice
+        ? categorySession.getInitialTarget(requestedPage)
+        : { empty: false };
+
+    if (isCategoryPractice) {
+        backLink.href = categorySession.buildBackUrl();
+    }
+
+    const reviewModeHasNoPages = readingSession.isReviewMode && readingSession.getReviewPages().length === 0;
+    if (reviewModeHasNoPages) {
+        alert('当前年份还没有错题记录，先去正常练习一轮吧。');
+        readingSession.redirectToIndex();
+    }
+
+    if (isCategoryPractice && categoryTarget.empty) {
+        alert('这个文章分类里还没有可练习的内容。');
+        window.location.href = categorySession.buildBackUrl();
+    }
+
+    if (isCategoryPractice && categoryTarget.redirectUrl) {
+        window.location.href = categoryTarget.redirectUrl;
+    }
+
+    let currentPage = isCategoryPractice && typeof categoryTarget.page === 'number'
+        ? categoryTarget.page
+        : readingSession.getInitialPage(requestedPage);
+
+    function syncHeaderTitles(activePage) {
+        document.querySelectorAll('.header-title').forEach(titleEl => {
+            if (!titleEl.dataset.baseTitle) {
+                titleEl.dataset.baseTitle = titleEl.textContent.replace(/\s*（🐶 復習モード）$/, '').trim();
+            }
+
+            const isActive = Boolean(activePage && activePage.contains(titleEl));
+            titleEl.textContent = isActive && readingSession.isReviewMode
+                ? `${titleEl.dataset.baseTitle}（🐶 復習モード）`
+                : titleEl.dataset.baseTitle;
+        });
+    }
+
+    function showPage(page) {
+        document.querySelectorAll('.page-content').forEach(el => {
+            el.style.display = 'none';
+            el.classList.remove('active');
+        });
+
+        const currentEl = document.getElementById('page-' + page);
+        if (currentEl) {
+            currentEl.style.display = 'block';
+            currentEl.classList.add('active');
+        }
+
+        syncHeaderTitles(currentEl);
+
+        document.querySelectorAll('.qa-section').forEach(section => {
+            section.removeAttribute('data-answered');
+        });
+
+        document.querySelectorAll('.option-item').forEach(item => {
+            item.classList.remove('selected', 'answered-correct', 'answered-wrong', 'expanded');
+        });
+
+        document.querySelectorAll('.key-sentence').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        audio.pause();
+        audio.src = `audio/${AUDIO_PREFIX}-${page}.mp3`;
+        audio.load();
+
+        playBtn.classList.remove('playing');
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        progressBar.style.width = '0%';
+        currentTimeEl.textContent = '00:00';
+        durationEl.textContent = '00:00';
+
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const navState = isCategoryPractice
+            ? categorySession.getNavState(page)
+            : readingSession.getNavState(page);
+
+        prevBtn.classList.toggle('disabled', navState.prevDisabled);
+        nextBtn.classList.toggle('disabled', navState.nextDisabled);
+
+        currentPage = page;
+        if (isCategoryPractice) {
+            categorySession.rememberProgress(page);
+            categorySession.replacePageUrl(page);
+        } else {
+            readingSession.replacePageUrl(page);
+        }
+        window.scrollTo(0, 0);
+    }
+
+    function navigateCategory(direction) {
+        const target = categorySession.getMoveTarget(currentPage, direction);
+
+        if (target.sameExamKey && typeof target.page === 'number') {
+            showPage(target.page);
+            return;
+        }
+
+        if (target.href) {
+            window.location.href = target.href;
+            return;
+        }
+
+        if (target.done) {
+            alert('已经是这个分类的最后一篇了！');
+            return;
+        }
+
+        alert('已经是这个分类的第一篇了！');
+    }
+
+    function navigateReview(direction) {
+        const target = readingSession.getMoveTarget(currentPage, direction);
+
+        if (typeof target.page === 'number') {
+            showPage(target.page);
+            return;
+        }
+
+        if (target.done) {
+            alert('🎉 太棒了！这一年的错题已经复习完毕！');
+            readingSession.redirectToIndex();
+            return;
+        }
+
+        alert('已经是这一年错题的第一题了！');
+    }
+
+    function prevPage() {
+        if (readingSession.isReviewMode) {
+            navigateReview(-1);
+            return;
+        }
+        if (isCategoryPractice) {
+            navigateCategory(-1);
+            return;
+        }
+        if (currentPage > 1) {
+            showPage(currentPage - 1);
+        }
+    }
+
+    function nextPage() {
+        if (readingSession.isReviewMode) {
+            navigateReview(1);
+            return;
+        }
+        if (isCategoryPractice) {
+            navigateCategory(1);
+            return;
+        }
+        if (currentPage < totalPages) {
+            showPage(currentPage + 1);
+        } else {
+            alert('已经是该年份的最后一篇了！');
+        }
+    }
+
+    if (!reviewModeHasNoPages && !(isCategoryPractice && categoryTarget.redirectUrl) && !(isCategoryPractice && categoryTarget.empty)) {
+        showPage(currentPage);
+    }
+</script>
+<script src="../shared/reading-tools.js"></script>
+
+</body>
+</html>
