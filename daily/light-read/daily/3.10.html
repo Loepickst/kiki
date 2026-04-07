@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #b33e3e; 
+            --sub-color: #787878;
+            --popup-bg: #333333;
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 100px 15px 120px; /* Increased bottom padding for audio player */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 顶部控制栏 */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; border-bottom: 1px solid; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) {
+            .toggle-btn:hover { background: var(--accent-color); color: white; }
+        }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        /* 主容器 */
+        .container {
+            max-width: 720px; width: 100%;
+            background: var(--paper-color); padding: 50px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .header-title { text-align: center; margin-bottom: 50px; }
+
+        /* Audio Player - Fixed Bottom */
+        .audio-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px 25px 20px; /* Extra bottom padding for iPhone Home bar */
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+
+        .audio-player {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 600px; /* Wider on desktop */
+        }
+
+        .play-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-right: 12px;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+            padding: 0;
+        }
+
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+
+        .progress-container {
+            flex-grow: 1;
+            height: 20px; /* Increased height for better touch target */
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bg {
+            width: 100%;
+            height: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        /* The draggable thumb */
+        .progress-bar::after {
+            content: "";
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background-color: white;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .time-display {
+            font-size: 0.7rem;
+            color: #999;
+            width: 70px; /* Fixed width for stability */
+            text-align: right;
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+        }
+
+        .loop-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            margin-left: 8px;
+            opacity: 0.5;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loop-btn.active {
+            opacity: 1;
+            color: var(--accent-color);
+        }
+        
+        .loop-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.8; 
+            text-align: justify; margin: 0;
+        }
+
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        /* 译文（黑体中文） */
+        .translation {
+            display: none; margin-top: 20px; font-size: 0.95rem;
+            color: #5a626b; line-height: 1.8; padding: 18px 20px;
+            background-color: #f7f8f9; font-family: var(--chinese-font);
+            border-left: 3px solid #eee; text-align: justify;
+        }
+        .translation::before { content: "訳"; display: block; font-size: 0.7rem; color: #ccc; margin-bottom: 5px; font-weight: bold; }
+
+        /* 重点词汇样式 */
+        .vocab-word {
+            color: var(--accent-color);
+            border-bottom: 2px solid #f2d0d0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* 动态气泡容器 */
+        #smart-tooltip {
+            position: absolute; z-index: 2000;
+            background: var(--popup-bg); color: white;
+            padding: 12px 16px; border-radius: 8px;
+            font-size: 0.85rem; font-family: var(--chinese-font);
+            line-height: 1.6; max-width: 280px; min-width: 140px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none; opacity: 0; pointer-events: none;
+        }
+        #smart-tooltip::after {
+            content: ""; position: absolute; top: 100%;
+            border: 8px solid transparent; border-top-color: var(--popup-bg);
+        }
+
+        .footer { margin-top: 50px; color: #ccc; font-size: 0.8rem; letter-spacing: 3px; }
+
+
+    </style>
+    <link rel="stylesheet" href="../../../shared/site-fonts.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <!-- 左侧返回按钮 -->
+    <a href="read_daily.html" class="toggle-btn" style="text-decoration: none; margin-right: 15px;">← 戻る</a>
+    
+    <!-- 日期显示（可加 flex-grow 让它占据中间位置，或者保持原样） -->
+    <div id="today-date" style="flex-grow: 1; text-align: center; border-bottom: none;">3月10日 火曜日</div>
+    
+    <button id="trans-btn" class="toggle-btn" onclick="toggleTranslation()">译文</button>
+</div>
+
+<div class="container">
+   <div class="header-title">
+    <h2 style="font-weight: 500; letter-spacing: 0.1em; margin-bottom: 5px;">十五年、四十グラム</h2>
+    <span style="color: #bbb; font-size: 0.8rem;">十五年，四十克</span>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>今年<rt>ことし</rt></ruby>は<ruby>正月<rt>しょうがつ</rt></ruby>から、ひどく<ruby>温<rt>あたた</rt></ruby>かい<ruby>気分<rt>きぶん</rt></ruby>で<ruby>日々<rt>ひび</rt></ruby>を<ruby>過<rt>す</rt></ruby>ごしている。<ruby>二十代<rt>にじゅうだい</rt></ruby><span class="vocab-word" data-info="半ば（なかば）：一半，中途。"><ruby>半<rt>なか</rt></ruby>ば</span>から<ruby>着<rt>き</rt></ruby><ruby>続<rt>つづ</rt></ruby>けていた<span class="vocab-word" data-info="ハーフコート：中长款大衣，半大衣。">ハーフコート</span>から、<ruby>新<rt>あたら</rt></ruby>しいコートへの<ruby>乗<rt>の</rt></ruby>り<ruby>換<rt>か</rt></ruby>えを<span class="vocab-word" data-info="断行した（だんこうした）：（原型：断行する，た形）断然实行，坚决进行。"><ruby>断行<rt>だんこう</rt></ruby>した</span>からだ。
+    </p>
+    <div class="translation">
+        今年从正月开始，我每天都过得格外温暖。因为我终于下定决心，换掉了那件从二十岁出头一直穿到现在的半长外套，换上了一件新大衣。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>古<rt>ふる</rt></ruby>いコートとの<ruby>付<rt>つ</rt></ruby>き<ruby>合<rt>あ</rt></ruby>いは、<ruby>約<rt>やく</rt></ruby><ruby>十五年<rt>じゅうごねん</rt></ruby>。その<ruby>間<rt>あいだ</rt></ruby>に<span class="vocab-word" data-info="裏生地（うらきじ）：里子，内衬布料。"><ruby>裏生地<rt>うらきじ</rt></ruby></span>は<ruby>幾度<rt>いくど</rt></ruby>も<ruby>直<rt>なお</rt></ruby>し、ボタンも<ruby>二度<rt>にど</rt></ruby>、<span class="vocab-word" data-info="付け替えて（つけかえて）：（原型：付け替える，て形）更换，换上新的。"><ruby>付<rt>つ</rt></ruby>け<ruby>替<rt>か</rt></ruby>えて</span>もらった。<ruby>肩<rt>かた</rt></ruby>はカバンで<span class="vocab-word" data-info="すり切れ（すりきれ）：（原型：すり切れる，第一连用形作名词）磨损，磨破。">すり<ruby>切<rt>き</rt></ruby>れ</span>、<ruby>生地<rt>きじ</rt></ruby>が<span class="vocab-word" data-info="露わ（あらわ）：暴露，显露。"><ruby>露<rt>あら</rt></ruby>わ</span>の<ruby>部分<rt>ぶぶん</rt></ruby>もあったが、その<ruby>分<rt>ぶん</rt></ruby>、<ruby>愛着<rt>あいちゃく</rt></ruby>も<ruby>深<rt>ふか</rt></ruby>く、「そろそろ<ruby>新<rt>あたら</rt></ruby>しいコートを<ruby>買<rt>か</rt></ruby>わなきゃ」と<ruby>思<rt>おも</rt></ruby>ってもなかなか<ruby>踏<rt>ふ</rt></ruby>み<ruby>出<rt>だ</rt></ruby>せなかった。そんな<ruby>私<rt>わたし</rt></ruby>が<ruby>今年<rt>ことし</rt></ruby>、<ruby>買<rt>か</rt></ruby>い<ruby>替<rt>か</rt></ruby>えを<ruby>実施<rt>じっし</rt></ruby>できたのは<span class="vocab-word" data-info="ひとえに：完全，全是。">ひとえに</span>、<span class="vocab-word" data-info="某（ぼう）：某。"><ruby>某<rt>ぼう</rt></ruby></span><span class="vocab-word" data-info="オークションサイト：拍卖网站。">オークションサイト</span>で<ruby>同<rt>おな</rt></ruby>じ<ruby>品<rt>しな</rt></ruby>を<ruby>新品<rt>しんぴん</rt></ruby><ruby>同然<rt>どうぜん</rt></ruby>で<ruby>見<rt>み</rt></ruby>つけたからこそ。そう、<ruby>新<rt>しん</rt></ruby>コートとは<ruby>実<rt>じつ</rt></ruby>は<ruby>以前<rt>いぜん</rt></ruby>のコートと<ruby>同<rt>おな</rt></ruby>じ<ruby>商品<rt>しょうひん</rt></ruby>なのだ。
+    </p>
+    <div class="translation">
+        我和那件旧外套的交情大约有十五年了。这期间，内衬修补了好几次，扣子也让人重新钉过两回。肩膀处被包带磨破，甚至有的地方都露出了内层的布料。但也正因如此，我对它的感情极深，即便心里想着“差不多该买件新外套了”，却迟迟迈不出那一步。这样的我，今年之所以能够付诸行动换了新衣，全靠在某个拍卖网站上找到了一件几乎全新的同款。没错，所谓的新外套，其实和以前那件是同一款商品。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>新旧<rt>しんきゅう</rt></ruby>のコートを<ruby>比<rt>くら</rt></ruby>べると、「こんなところに<ruby>飾<rt>かざ</rt></ruby>り<ruby>紐<rt>ひも</rt></ruby>が」「そういえば<span class="vocab-word" data-info="ベルト：腰带，皮带。">ベルト</span>ってあったんだ」と<ruby>幾<rt>いく</rt></ruby>つかの<ruby>発見<rt>はっけん</rt></ruby>があったが、<ruby>何<rt>なに</rt></ruby>より<ruby>興味深<rt>きょうみぶか</rt></ruby>かったのは<ruby>重量<rt>じゅうりょう</rt></ruby>だ。<ruby>計測<rt>けいそく</rt></ruby>したところ、ボタンや<ruby>裏生地<rt>うらきじ</rt></ruby>の<ruby>違<rt>ちが</rt></ruby>いを<ruby>差<rt>さ</rt></ruby>し<ruby>引<rt>ひ</rt></ruby>いても、<ruby>旧<rt>きゅう</rt></ruby>コートは<ruby>新<rt>しん</rt></ruby>コートに<ruby>比<rt>くら</rt></ruby>べ<ruby>約<rt>やく</rt></ruby><ruby>四十<rt>よんじゅう</rt></ruby>グラム<ruby>軽<rt>かる</rt></ruby>かった。<ruby>私<rt>わたし</rt></ruby>と<ruby>共<rt>とも</rt></ruby>に<ruby>過<rt>す</rt></ruby>ごした<ruby>十五年間<rt>じゅうごねんかん</rt></ruby>で、<ruby>四十<rt>よんじゅう</rt></ruby>グラム。それだけ<ruby>身<rt>み</rt></ruby>を<span class="vocab-word" data-info="削って（けずって）：（原型：削る，て形）削减，消耗（身を削る：消耗身体，劳心劳力）。"><ruby>削<rt>けず</rt></ruby>って</span>くれていたのかと<ruby>思<rt>おも</rt></ruby>うと、<ruby>改<rt>あらた</rt></ruby>めて<span class="vocab-word" data-info="愛しさ（いとしさ）：怜爱，喜爱。"><ruby>愛<rt>いと</rt></ruby>しさ</span>がこみ<ruby>上<rt>あ</rt></ruby>げてきた。
+    </p>
+    <div class="translation">
+        把新旧两件外套放在一起对比，我有了几个新发现：“原来这种地方还有装饰绳啊”、“说起来它本来是有腰带的呀”。但其中最让我感兴趣的，是它们的重量。我称了一下，即使扣除纽扣和内衬的差异，旧外套也比新外套轻了大约四十克。在陪伴我度过的这十五年里，它轻了四十克。一想到它为了我竟如此“消瘦”，我心中便再次涌起一阵怜爱之情。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        それにしても<ruby>今回<rt>こんかい</rt></ruby>のコートを<ruby>前回<rt>ぜんかい</rt></ruby><ruby>同様<rt>どうよう</rt></ruby>に<ruby>着<rt>き</rt></ruby><ruby>続<rt>つづ</rt></ruby>ければ、<ruby>次<rt>つぎ</rt></ruby>の<ruby>買<rt>か</rt></ruby>い<ruby>替<rt>か</rt></ruby>えは<ruby>五十代<rt>ごじゅうだい</rt></ruby><ruby>半<rt>なか</rt></ruby>ば。その<ruby>際<rt>さい</rt></ruby>はさすがに<ruby>別<rt>べつ</rt></ruby>の<ruby>品<rt>しな</rt></ruby>を<ruby>買<rt>か</rt></ruby>うだろうが、それもまた<ruby>同<rt>おな</rt></ruby>じ<ruby>年数<rt>ねんすう</rt></ruby>だけ<ruby>着<rt>き</rt></ruby>れば、<ruby>次<rt>つぎ</rt></ruby>は<ruby>七十歳<rt>ななじゅっさい</rt></ruby>。<ruby>私<rt>わたし</rt></ruby>が<ruby>生涯<rt>しょうがい</rt></ruby>に<ruby>買<rt>か</rt></ruby>うべきコートは<span class="vocab-word" data-info="多くとも（おおくとも）：顶多，最多。"><ruby>多<rt>おお</rt></ruby>くとも</span>あと<ruby>三着<rt>さんちゃく</rt></ruby>という<ruby>計算<rt>けいさん</rt></ruby>になる。
+    </p>
+    <div class="translation">
+        话虽如此，如果这件外套我也像上次那样一直穿下去，下一次换大衣就要到五十多岁了。到那时，我应该会买件别的款式吧，但如果那件也穿上同样的年数，再下一次可就七十岁了。这么算下来，我这辈子还需要买的外套，顶多也就剩下三件了。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        ふむ。そう<ruby>考<rt>かんが</rt></ruby>えると、<ruby>人<rt>ひと</rt></ruby>が<ruby>生涯<rt>しょうがい</rt></ruby>で<ruby>必要<rt>ひつよう</rt></ruby>な<ruby>服<rt>ふく</rt></ruby>は<ruby>案外<rt>あんがい</rt></ruby><ruby>多<rt>おお</rt></ruby>くないわけだ。だが、<ruby>自分<rt>じぶん</rt></ruby>の<ruby>生涯<rt>しょうがい</rt></ruby>の<ruby>先<rt>さき</rt></ruby>が<ruby>見<rt>み</rt></ruby>えたようで、<ruby>少々<rt>しょうしょう</rt></ruby>つまらなさすら<ruby>感<rt>かん</rt></ruby>じていた<span class="vocab-word" data-info="矢先（やさき）：正当……的时候，刚要……的时候。"><ruby>矢先<rt>やさき</rt></ruby></span>、<ruby>義妹<rt>ぎまい</rt></ruby>の<ruby>結婚<rt>けっこん</rt></ruby>が<ruby>決<rt>き</rt></ruby>まり、<ruby>私<rt>わたし</rt></ruby>も<ruby>式<rt>しき</rt></ruby>に<ruby>参列<rt>さんれつ</rt></ruby>することとなった。<ruby>既婚<rt>きこん</rt></ruby>となって<ruby>初<rt>はじ</rt></ruby>めての<ruby>親族<rt>しんぞく</rt></ruby>の<ruby>結婚式<rt>けっこんしき</rt></ruby>だけに、<ruby>着<rt>き</rt></ruby>て<ruby>行<rt>い</rt></ruby>くものは<ruby>初<rt>はつ</rt></ruby>の<ruby>黒留袖<rt>くろとめそで</rt></ruby>。おお、この<ruby>年齢<rt>ねんれい</rt></ruby>でまだ「<ruby>初<rt>はじ</rt></ruby>めて」のことがあり、「<ruby>生涯<rt>しょうがい</rt></ruby>に<ruby>着<rt>き</rt></ruby>る<ruby>服<rt>ふく</rt></ruby>」が<ruby>増<rt>ふ</rt></ruby>えるとは。<ruby>人生<rt>じんせい</rt></ruby>は<ruby>徐々<rt>じょじょ</rt></ruby>に<ruby>残<rt>のこ</rt></ruby>り<ruby>時間<rt>じかん</rt></ruby>が<ruby>減<rt>へ</rt></ruby>っていく<ruby>一方<rt>いっぽう</rt></ruby>で、<ruby>確実<rt>かくじつ</rt></ruby>に<ruby>増<rt>ふ</rt></ruby>えるものもあるわけだ。そう<ruby>思<rt>おも</rt></ruby>うと<ruby>年<rt>とし</rt></ruby>を<ruby>重<rt>かさ</rt></ruby>ねるのも<ruby>悪<rt>わる</rt></ruby>くない、と<ruby>考<rt>かんが</rt></ruby>え<ruby>直<rt>なお</rt></ruby>しながら、<ruby>私<rt>わたし</rt></ruby>はまだ<ruby>四十<rt>よんじゅう</rt></ruby>グラム<ruby>軽<rt>かる</rt></ruby>い<ruby>旧<rt>きゅう</rt></ruby>コートを<ruby>捨<rt>す</rt></ruby>てるに<span class="vocab-word" data-info="しのびず（忍びず）：（原型：忍ぶ，ない形的文言表达）不忍心。">しのびず</span>、クローゼットの<ruby>奥<rt>おく</rt></ruby>に<ruby>隠<rt>かく</rt></ruby>し<ruby>続<rt>つづ</rt></ruby>けている。
+    </p>
+    <div class="translation">
+        嗯。这么一想，人这一生需要的衣服意外地并不多啊。然而，就在我仿佛一眼望到了自己人生的尽头、甚至感到了一丝无趣的时候，夫家妹妹的婚期定下来了，我也要去参加婚礼。因为这是我婚后第一次参加亲属的婚礼，所以要穿的礼服是我人生中第一件“黑留袖”（注：日本已婚女性的最高级正装）。哦，原来到了这个年纪，依然还会有“第一次”的体验，“此生要穿的衣服”竟然还会增加。人生虽然剩下的时间在逐渐减少，但确实也有在不断增加的东西啊。这么一想，觉得年岁渐长倒也不坏。我一边这样重新思量着，一边实在不忍心扔掉那件轻了四十克的旧外套，依然把它悄悄藏在衣橱的深处。
+    </div>
+</div>
+</div>
+
+<div id="smart-tooltip"></div>
+
+<!-- Fixed Bottom Audio Player -->
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bg">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+        <div class="time-display">
+            <span id="current-time">00:00</span> / <span id="duration">00:00</span>
+        </div>
+        <button id="loop-btn" class="loop-btn" onclick="toggleLoop()" title="ループ再生">
+            <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        </button>
+        <audio id="audio-element" src="audio_read/3.10.mp3"></audio>
+    </div>
+</div>
+
+<div class="footer">Ichigo Ichie - 一期一会</div>
+
+<script>
+    // 1. (已移除) 实时日期逻辑 -> 改为在 HTML 中手动输入
+
+    // 2. 译文切换
+    function toggleTranslation() {
+        const btn = document.getElementById('trans-btn');
+        const isActive = btn.classList.toggle('active');
+        
+        document.querySelectorAll('.translation').forEach(el => {
+            el.style.display = isActive ? 'block' : 'none';
+        });
+    }
+
+    // 3. 智能自适应气泡逻辑
+    const tooltip = document.getElementById('smart-tooltip');
+    let activeWord = null;
+
+    // --- Audio Player Logic ---
+    const audio = document.getElementById('audio-element');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+    const loopBtn = document.getElementById('loop-btn');
+
+    // Loop state
+    let isLooping = false;
+
+    function toggleLoop() {
+        isLooping = !isLooping;
+        audio.loop = isLooping;
+        loopBtn.classList.toggle('active', isLooping);
+    }
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+            playBtn.classList.add('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        } else {
+            audio.pause();
+            playBtn.classList.remove('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        }
+    }
+
+    audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = percent + '%';
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        }
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener('ended', () => {
+        playBtn.classList.remove('playing');
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        progressBar.style.width = '0%';
+        currentTimeEl.textContent = "00:00";
+    });
+
+    function seek(e) {
+        if (!audio.duration) return;
+        const rect = progressContainer.getBoundingClientRect();
+        const width = rect.width;
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        let clickX = clientX - rect.left;
+        clickX = Math.max(0, Math.min(clickX, width));
+        audio.currentTime = (clickX / width) * audio.duration;
+    }
+
+    // --- Drag to Seek Logic ---
+    let isDragging = false;
+
+    progressContainer.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        seek(e);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            seek(e);
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Touch support
+    progressContainer.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        seek(e);
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (isDragging) {
+            e.preventDefault(); // Prevent scrolling while dragging
+            seek(e);
+        }
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => {
+        isDragging = false;
+    });
+
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return "00:00";
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    // --------------------------
+
+    document.querySelectorAll('.vocab-word').forEach(word => {
+        word.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (activeWord === this) { hideTooltip(); return; }
+
+            activeWord = this;
+            tooltip.innerText = this.getAttribute('data-info');
+            tooltip.style.display = 'block';
+
+            const rect = this.getBoundingClientRect();
+            const tipRect = tooltip.getBoundingClientRect();
+            const screenWidth = window.innerWidth;
+            
+            // 计算初始位置
+            let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
+            let top = rect.top + window.scrollY - tipRect.height - 12;
+
+            // 溢出检测与修正
+            const margin = 15;
+            let arrowOffset = '50%';
+
+            if (left < margin) {
+                left = margin;
+                arrowOffset = (rect.left + rect.width/2 - margin) + 'px';
+            } else if (left + tipRect.width > screenWidth - margin) {
+                left = screenWidth - tipRect.width - margin;
+                arrowOffset = (rect.left + rect.width/2 - left) + 'px';
+            }
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.style.opacity = '1';
+
+            // 动态修正箭头位置
+            const styleTag = document.getElementById('dynamic-arrow') || document.createElement('style');
+            styleTag.id = 'dynamic-arrow';
+            styleTag.innerHTML = `#smart-tooltip::after { left: ${arrowOffset} !important; transform: translateX(-50%); }`;
+            document.head.appendChild(styleTag);
+        });
+    });
+
+    function hideTooltip() {
+        tooltip.style.opacity = '0';
+        setTimeout(() => { tooltip.style.display = 'none'; }, 200);
+        activeWord = null;
+    }
+
+    document.addEventListener('click', hideTooltip);
+    window.addEventListener('resize', hideTooltip);
+
+
+</script>
+
+</body>
+</html>

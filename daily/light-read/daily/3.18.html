@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #b33e3e; 
+            --sub-color: #787878;
+            --popup-bg: #333333;
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 100px 15px 120px; /* Increased bottom padding for audio player */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 顶部控制栏 */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; border-bottom: 1px solid; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) {
+            .toggle-btn:hover { background: var(--accent-color); color: white; }
+        }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        /* 主容器 */
+        .container {
+            max-width: 720px; width: 100%;
+            background: var(--paper-color); padding: 50px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .header-title { text-align: center; margin-bottom: 50px; }
+
+        /* Audio Player - Fixed Bottom */
+        .audio-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px 25px 20px; /* Extra bottom padding for iPhone Home bar */
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+
+        .audio-player {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 600px; /* Wider on desktop */
+        }
+
+        .play-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-right: 12px;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+            padding: 0;
+        }
+
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+
+        .progress-container {
+            flex-grow: 1;
+            height: 20px; /* Increased height for better touch target */
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bg {
+            width: 100%;
+            height: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        /* The draggable thumb */
+        .progress-bar::after {
+            content: "";
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background-color: white;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .time-display {
+            font-size: 0.7rem;
+            color: #999;
+            width: 70px; /* Fixed width for stability */
+            text-align: right;
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+        }
+
+        .loop-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            margin-left: 8px;
+            opacity: 0.5;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loop-btn.active {
+            opacity: 1;
+            color: var(--accent-color);
+        }
+        
+        .loop-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.8; 
+            text-align: justify; margin: 0;
+        }
+
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        /* 译文（黑体中文） */
+        .translation {
+            display: none; margin-top: 20px; font-size: 0.95rem;
+            color: #5a626b; line-height: 1.8; padding: 18px 20px;
+            background-color: #f7f8f9; font-family: var(--chinese-font);
+            border-left: 3px solid #eee; text-align: justify;
+        }
+        .translation::before { content: "訳"; display: block; font-size: 0.7rem; color: #ccc; margin-bottom: 5px; font-weight: bold; }
+
+        /* 重点词汇样式 */
+        .vocab-word {
+            color: var(--accent-color);
+            border-bottom: 2px solid #f2d0d0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* 动态气泡容器 */
+        #smart-tooltip {
+            position: absolute; z-index: 2000;
+            background: var(--popup-bg); color: white;
+            padding: 12px 16px; border-radius: 8px;
+            font-size: 0.85rem; font-family: var(--chinese-font);
+            line-height: 1.6; max-width: 280px; min-width: 140px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none; opacity: 0; pointer-events: none;
+        }
+        #smart-tooltip::after {
+            content: ""; position: absolute; top: 100%;
+            border: 8px solid transparent; border-top-color: var(--popup-bg);
+        }
+
+        .footer { margin-top: 50px; color: #ccc; font-size: 0.8rem; letter-spacing: 3px; }
+
+
+    </style>
+    <link rel="stylesheet" href="../../../shared/site-fonts.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <!-- 左侧返回按钮 -->
+    <a href="read_daily.html" class="toggle-btn" style="text-decoration: none; margin-right: 15px;">← 戻る</a>
+    
+    <!-- 日期显示（可加 flex-grow 让它占据中间位置，或者保持原样） -->
+    <div id="today-date" style="flex-grow: 1; text-align: center; border-bottom: none;">3月18日 水曜日</div>
+    
+    <button id="trans-btn" class="toggle-btn" onclick="toggleTranslation()">译文</button>
+</div>
+
+<div class="container">
+   <div class="header-title">
+    <h2 style="font-weight: 500; letter-spacing: 0.1em; margin-bottom: 5px;"><ruby>入<rt>いり</rt></ruby><ruby>口<rt>ぐち</rt></ruby>で<ruby>会<rt>あ</rt></ruby>う、あなた</h2>
+    <span style="color: #bbb; font-size: 0.8rem;">在入口遇见的你</span>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>自<rt>じ</rt></ruby><ruby>宅<rt>たく</rt></ruby>マンション<ruby>入<rt>いり</rt></ruby><ruby>口<rt>ぐち</rt></ruby>に<span class="vocab-word" data-info="備え付け（そなえつけ）：配备，事先安置好的。"><ruby>備<rt>そな</rt></ruby>え<ruby>付<rt>つ</rt></ruby>け</span>の<ruby>宅<rt>たく</rt></ruby><ruby>配<rt>はい</rt></ruby>ボックスが<ruby>新<rt>あたら</rt></ruby>しくなった。<ruby>以<rt>い</rt></ruby><ruby>前<rt>ぜん</rt></ruby>は<ruby>荷<rt>に</rt></ruby><ruby>物<rt>もつ</rt></ruby>の<ruby>届<rt>とど</rt></ruby>いている<ruby>部<rt>へ</rt></ruby><ruby>屋<rt>や</rt></ruby><ruby>番<rt>ばん</rt></ruby><ruby>号<rt>ごう</rt></ruby>が<span class="vocab-word" data-info="モニター：Monitor，显示器，屏幕。">モニター</span>に<ruby>掲<rt>けい</rt></ruby><ruby>示<rt>じ</rt></ruby>され、カードキーを<ruby>挿<rt>そう</rt></ruby><ruby>入<rt>にゅう</rt></ruby>して「<ruby>取<rt>と</rt></ruby>り<ruby>出<rt>だ</rt></ruby>す」を<ruby>選<rt>えら</rt></ruby>び、ボックスから<ruby>荷<rt>に</rt></ruby><ruby>物<rt>もつ</rt></ruby>を<ruby>引<rt>ひ</rt></ruby>き<ruby>取<rt>と</rt></ruby>るだけだった。だが<ruby>今<rt>いま</rt></ruby>はモニターを<ruby>触<rt>さわ</rt></ruby>った<ruby>段<rt>だん</rt></ruby><ruby>階<rt>かい</rt></ruby>で「こんにちは」と<ruby>声<rt>こえ</rt></ruby>が<ruby>流<rt>なが</rt></ruby>れる。
+    </p>
+    <div class="translation">
+        我家公寓入口处配备的快递柜换新的了。以前，屏幕上只会显示有包裹送达的房间号，插卡后选择“取出”，直接从柜子里把东西拿走就行了。但现在，刚一碰到屏幕，就会响起“您好”的问候声。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        「<ruby>荷<rt>に</rt></ruby><ruby>物<rt>もつ</rt></ruby>をお<ruby>預<rt>あず</rt></ruby>かりしているお<ruby>部<rt>へ</rt></ruby><ruby>屋<rt>や</rt></ruby>はこちらです」<br>
+        「カードキーを<span class="vocab-word" data-info="かざして：（原型：かざす，て形）举在上方，刷（卡）。">かざして</span>ください」<br>
+        「<ruby>扉<rt>とびら</rt></ruby>をゆっくり<ruby>閉<rt>し</rt></ruby>めてください」<br>
+        「ご<ruby>利<rt>り</rt></ruby><ruby>用<rt>よう</rt></ruby>ありがとうございました」
+    </p>
+    <div class="translation">
+        “有您包裹的房间在这里。”<br>
+        “请刷房卡。”<br>
+        “请轻轻关上柜门。”<br>
+        “感谢您的使用。”
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>我<rt>わ</rt></ruby>が<ruby>家<rt>や</rt></ruby>は<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby><ruby>柄<rt>がら</rt></ruby><ruby>荷<rt>に</rt></ruby><ruby>物<rt>もつ</rt></ruby>が<ruby>多<rt>おお</rt></ruby>いので、ほぼ<ruby>毎<rt>まい</rt></ruby><ruby>日<rt>にち</rt></ruby>このセリフを<ruby>聞<rt>き</rt></ruby>く。ただ、<ruby>今<rt>いま</rt></ruby>のボックスを<ruby>初<rt>はじ</rt></ruby>めて<ruby>利<rt>り</rt></ruby><ruby>用<rt>よう</rt></ruby>した<ruby>時<rt>とき</rt></ruby>から、わたしにはずっと<ruby>疑<rt>ぎ</rt></ruby><ruby>問<rt>もん</rt></ruby>がある。それは、「なぜこのボックスは<ruby>利<rt>り</rt></ruby><ruby>用<rt>よう</rt></ruby><ruby>者<rt>しゃ</rt></ruby>に<ruby>御<rt>お</rt></ruby><ruby>礼<rt>れい</rt></ruby>を<ruby>言<rt>い</rt></ruby>うの？」というものだ。
+    </p>
+    <div class="translation">
+        因为工作的关系，我家快递特别多，所以我几乎每天都会听到这些话。只是，从第一次使用现在这个快递柜起，我心里就一直有个疑问。那就是：“为什么这个柜子要对使用者道谢呢？”
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>自<rt>じ</rt></ruby><ruby>動<rt>どう</rt></ruby><ruby>販<rt>はん</rt></ruby><ruby>売<rt>ばい</rt></ruby><ruby>機<rt>き</rt></ruby>が「お<ruby>買<rt>か</rt></ruby>い<ruby>上<rt>あ</rt></ruby>げありがとうございました」と<ruby>言<rt>い</rt></ruby>うのは、まだわかる。だがこの<ruby>宅<rt>たく</rt></ruby><ruby>配<rt>はい</rt></ruby>ボックスは<ruby>確<rt>たし</rt></ruby>かにマンションが<ruby>購<rt>こう</rt></ruby><ruby>入<rt>にゅう</rt></ruby>し、<ruby>利<rt>り</rt></ruby><ruby>用<rt>よう</rt></ruby><ruby>料<rt>りょう</rt></ruby>を<ruby>支<rt>し</rt></ruby><ruby>払<rt>はら</rt></ruby>っているが、<ruby>荷<rt>に</rt></ruby><ruby>物<rt>もつ</rt></ruby>を<ruby>預<rt>あず</rt></ruby>かる<ruby>行<rt>こう</rt></ruby><ruby>為<rt>い</rt></ruby>においては、<ruby>一<rt>いっ</rt></ruby><ruby>方<rt>ぽう</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>私<rt>わたし</rt></ruby>にサービスを<ruby>提<rt>てい</rt></ruby><ruby>供<rt>きょう</rt></ruby>するばかり。その<span class="vocab-word" data-info="都度（つど）：每次，每当。"><ruby>都<rt>つ</rt></ruby><ruby>度<rt>ど</rt></ruby></span>、<span class="vocab-word" data-info="先方（せんぽう）：对方。"><ruby>先<rt>せん</rt></ruby><ruby>方<rt>ぽう</rt></ruby></span>が<ruby>利<rt>り</rt></ruby><ruby>益<rt>えき</rt></ruby>を<ruby>受<rt>う</rt></ruby>け<ruby>取<rt>と</rt></ruby>っているわけではない。ならば<ruby>御<rt>お</rt></ruby><ruby>礼<rt>れい</rt></ruby>を<ruby>言<rt>い</rt></ruby>わねばならないのは<ruby>私<rt>わたし</rt></ruby>ではないのか。
+    </p>
+    <div class="translation">
+        自动售货机说“谢谢惠顾”，这我还算能理解。但这个快递柜，虽说确实是公寓出资购买并支付了使用费，但在寄存包裹这件事上，它完全是在单方面为我提供服务。对方并没有在每次存取时获取什么额外利润。既然如此，该道谢的人难道不应该是我吗？
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        だがそんな<ruby>思<rt>おも</rt></ruby>いとは<span class="vocab-word" data-info="裏腹（うらはら）：相反，背道而驰。"><ruby>裏<rt>うら</rt></ruby><ruby>腹<rt>はら</rt></ruby></span>に、<ruby>宅<rt>たく</rt></ruby><ruby>配<rt>はい</rt></ruby>ボックスは<ruby>当<rt>とう</rt></ruby><ruby>然<rt>ぜん</rt></ruby>、「ご<ruby>利<rt>り</rt></ruby><ruby>用<rt>よう</rt></ruby>ありがとうございました」と<ruby>言<rt>い</rt></ruby><ruby>続<rt>つづ</rt></ruby>ける。おかげで<ruby>何<rt>なん</rt></ruby>となく、「いえ、こちらこそ」と<ruby>言<rt>い</rt></ruby>いたい<ruby>気<rt>き</rt></ruby><ruby>分<rt>ぶん</rt></ruby>になってきた。
+    </p>
+    <div class="translation">
+        然而，与我的想法恰恰相反，快递柜自然是继续说着“感谢您的使用”。弄得我总有一种想回一句“不，我才该谢谢你”的冲动。
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        <ruby>人<rt>ひと</rt></ruby>は<ruby>日<rt>ひ</rt></ruby>々、<ruby>様<rt>さまざ</rt></ruby><ruby>々<rt>ま</rt></ruby>なものの<ruby>力<rt>ちから</rt></ruby>や<ruby>手<rt>て</rt></ruby>を<ruby>借<rt>か</rt></ruby>りている。<ruby>私<rt>わたし</rt></ruby><span class="vocab-word" data-info="なぞ：等同于など，之类，等等。"><ruby>なぞ</rt></ruby></span>は<span class="vocab-word" data-info="根（ね）：本性，本质。"><ruby>根<rt>ね</rt></ruby></span>がぼんやりなので、<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby><ruby>先<rt>さき</rt></ruby>の<ruby>方<rt>かた</rt></ruby><ruby>々<rt>がた</rt></ruby>に<ruby>助<rt>たす</rt></ruby>けてもらうことばかりだ。ゆえに、「ありがとうございます」と<ruby>御<rt>お</rt></ruby><ruby>礼<rt>れい</rt></ruby>を<ruby>言<rt>い</rt></ruby>わない<ruby>日<rt>ひ</rt></ruby>は<span class="vocab-word" data-info="皆無（かいむ）：毫无，完全没有。"><ruby>皆<rt>かい</rt></ruby><ruby>無<rt>む</rt></ruby></span>に<span class="vocab-word" data-info="等しい（ひとしい）：等于，相当于。"><ruby>等<rt>ひと</rt></ruby>しい</span>。ただこうも<ruby>毎<rt>まい</rt></ruby><ruby>日<rt>にち</rt></ruby>、<ruby>御<rt>お</rt></ruby><ruby>礼<rt>れい</rt></ruby>を<ruby>繰<rt>く</rt></ruby><ruby>り</ruby><ruby>返<rt>かえ</rt></ruby>す<ruby>宅<rt>たく</rt></ruby><ruby>配<rt>はい</rt></ruby>ボックスを<span class="vocab-word" data-info="間近（まぢか）：临近，眼前，近处。"><ruby>間<rt>ま</rt></ruby><ruby>近<rt>ぢか</rt></ruby></span>にしていると、<ruby>私<rt>わたし</rt></ruby><ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>は<span class="vocab-word" data-info="適切（てきせつ）：恰当，合适。"><ruby>適<rt>てき</rt></ruby><ruby>切<rt>せつ</rt></ruby></span>な<ruby>時<rt>とき</rt></ruby>に<ruby>御<rt>お</rt></ruby><ruby>礼<rt>れい</rt></ruby>を<ruby>言<rt>い</rt></ruby>えているのか？　ただ<span class="vocab-word" data-info="口癖（くちぐせ）：口头禅。"><ruby>口<rt>くち</rt></ruby><ruby>癖<rt>ぐせ</rt></ruby></span>のように<span class="vocab-word" data-info="乱発（らんぱつ）：（原型：乱発する，名词/词干）滥发，滥用。"><ruby>乱<rt>らん</rt></ruby><ruby>発<rt>ぱつ</rt></ruby></span>していないか？と<ruby>我<rt>わ</rt></ruby>が<ruby>身<rt>み</rt></ruby>を<span class="vocab-word" data-info="顧みずにはいられない（かえりみずにはいられない）：（原型：顧みる，ない形＋ずにはいられない）不禁反省，忍不住反思。"><ruby>顧<rt>かえり</rt></ruby>みずにはいられない</span>。
+    </p>
+    <div class="translation">
+        人们每天都在借助各种事物和他人的一臂之力。像我这种生性迷糊的人，更是总要仰仗工作伙伴的帮忙。因此，我几乎没有哪天是不说“谢谢”的。只是，每天近距离面对着这个不断道谢的快递柜，我不禁开始反思自己：我真的有在恰当的时候表达感谢吗？会不会只是像口头禅一样在滥用这句谢谢呢？
+    </div>
+</div>
+
+<div class="reading-block">
+    <p class="japanese">
+        そう<ruby>気<rt>き</rt></ruby><ruby>づ</rt></ruby>かせてくれた<ruby>宅<rt>たく</rt></ruby><ruby>配<rt>はい</rt></ruby>ボックスには、ますます<ruby>御<rt>お</rt></ruby><ruby>礼<rt>れい</rt></ruby>を<ruby>伝<rt>つた</rt></ruby>えたいが、はたしてそれは<ruby>伝<rt>つた</rt></ruby>わるのか。<ruby>今<rt>きょう</rt></ruby><ruby>日<rt>どう</rt></ruby>も<ruby>我<rt>わ</rt></ruby>がマンションのボックスは<ruby>荷<rt>に</rt></ruby><ruby>物<rt>もつ</rt></ruby>を<ruby>預<rt>あず</rt></ruby>かり<ruby>続<rt>つづ</rt></ruby>け、<ruby>丁<rt>てい</rt></ruby><ruby>寧<rt>ねい</rt></ruby>な<ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>とともに<ruby>部<rt>へ</rt></ruby><ruby>屋<rt>や</rt></ruby>に<ruby>帰<rt>かえ</rt></ruby>る<ruby>私<rt>わたし</rt></ruby>を<ruby>見<rt>み</rt></ruby><ruby>送<rt>おく</rt></ruby>ってくれる。
+    </p>
+    <div class="translation">
+        对于让我意识到这一点的快递柜，我愈发想要向它道谢了，可这番心意究竟能不能传达给它呢。今天，我们公寓的快递柜依然在默默地保管着包裹，并伴随着它那礼貌的言语，目送着我走回房间。
+    </div>
+</div>
+</div>
+
+<div id="smart-tooltip"></div>
+
+<!-- Fixed Bottom Audio Player -->
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bg">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+        <div class="time-display">
+            <span id="current-time">00:00</span> / <span id="duration">00:00</span>
+        </div>
+        <button id="loop-btn" class="loop-btn" onclick="toggleLoop()" title="ループ再生">
+            <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        </button>
+        <audio id="audio-element" src="audio_read/3.18.mp3"></audio>
+    </div>
+</div>
+
+<div class="footer">Ichigo Ichie - 一期一会</div>
+
+<script>
+    // 1. (已移除) 实时日期逻辑 -> 改为在 HTML 中手动输入
+
+    // 2. 译文切换
+    function toggleTranslation() {
+        const btn = document.getElementById('trans-btn');
+        const isActive = btn.classList.toggle('active');
+        
+        document.querySelectorAll('.translation').forEach(el => {
+            el.style.display = isActive ? 'block' : 'none';
+        });
+    }
+
+    // 3. 智能自适应气泡逻辑
+    const tooltip = document.getElementById('smart-tooltip');
+    let activeWord = null;
+
+    // --- Audio Player Logic ---
+    const audio = document.getElementById('audio-element');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+    const loopBtn = document.getElementById('loop-btn');
+
+    // Loop state
+    let isLooping = false;
+
+    function toggleLoop() {
+        isLooping = !isLooping;
+        audio.loop = isLooping;
+        loopBtn.classList.toggle('active', isLooping);
+    }
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+            playBtn.classList.add('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        } else {
+            audio.pause();
+            playBtn.classList.remove('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        }
+    }
+
+    audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = percent + '%';
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        }
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener('ended', () => {
+        playBtn.classList.remove('playing');
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        progressBar.style.width = '0%';
+        currentTimeEl.textContent = "00:00";
+    });
+
+    function seek(e) {
+        if (!audio.duration) return;
+        const rect = progressContainer.getBoundingClientRect();
+        const width = rect.width;
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        let clickX = clientX - rect.left;
+        clickX = Math.max(0, Math.min(clickX, width));
+        audio.currentTime = (clickX / width) * audio.duration;
+    }
+
+    // --- Drag to Seek Logic ---
+    let isDragging = false;
+
+    progressContainer.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        seek(e);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            seek(e);
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Touch support
+    progressContainer.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        seek(e);
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (isDragging) {
+            e.preventDefault(); // Prevent scrolling while dragging
+            seek(e);
+        }
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => {
+        isDragging = false;
+    });
+
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return "00:00";
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    // --------------------------
+
+    document.querySelectorAll('.vocab-word').forEach(word => {
+        word.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (activeWord === this) { hideTooltip(); return; }
+
+            activeWord = this;
+            tooltip.innerText = this.getAttribute('data-info');
+            tooltip.style.display = 'block';
+
+            const rect = this.getBoundingClientRect();
+            const tipRect = tooltip.getBoundingClientRect();
+            const screenWidth = window.innerWidth;
+            
+            // 计算初始位置
+            let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
+            let top = rect.top + window.scrollY - tipRect.height - 12;
+
+            // 溢出检测与修正
+            const margin = 15;
+            let arrowOffset = '50%';
+
+            if (left < margin) {
+                left = margin;
+                arrowOffset = (rect.left + rect.width/2 - margin) + 'px';
+            } else if (left + tipRect.width > screenWidth - margin) {
+                left = screenWidth - tipRect.width - margin;
+                arrowOffset = (rect.left + rect.width/2 - left) + 'px';
+            }
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.style.opacity = '1';
+
+            // 动态修正箭头位置
+            const styleTag = document.getElementById('dynamic-arrow') || document.createElement('style');
+            styleTag.id = 'dynamic-arrow';
+            styleTag.innerHTML = `#smart-tooltip::after { left: ${arrowOffset} !important; transform: translateX(-50%); }`;
+            document.head.appendChild(styleTag);
+        });
+    });
+
+    function hideTooltip() {
+        tooltip.style.opacity = '0';
+        setTimeout(() => { tooltip.style.display = 'none'; }, 200);
+        activeWord = null;
+    }
+
+    document.addEventListener('click', hideTooltip);
+    window.addEventListener('resize', hideTooltip);
+
+
+</script>
+
+</body>
+</html>

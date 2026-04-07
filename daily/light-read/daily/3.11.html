@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #b33e3e; 
+            --sub-color: #787878;
+            --popup-bg: #333333;
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 100px 15px 120px; /* Increased bottom padding for audio player */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 顶部控制栏 */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; border-bottom: 1px solid; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) {
+            .toggle-btn:hover { background: var(--accent-color); color: white; }
+        }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        /* 主容器 */
+        .container {
+            max-width: 720px; width: 100%;
+            background: var(--paper-color); padding: 50px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .header-title { text-align: center; margin-bottom: 50px; }
+
+        /* Audio Player - Fixed Bottom */
+        .audio-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px 25px 20px; /* Extra bottom padding for iPhone Home bar */
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+
+        .audio-player {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 600px; /* Wider on desktop */
+        }
+
+        .play-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-right: 12px;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+            padding: 0;
+        }
+
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+
+        .progress-container {
+            flex-grow: 1;
+            height: 20px; /* Increased height for better touch target */
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bg {
+            width: 100%;
+            height: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        /* The draggable thumb */
+        .progress-bar::after {
+            content: "";
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background-color: white;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .time-display {
+            font-size: 0.7rem;
+            color: #999;
+            width: 70px; /* Fixed width for stability */
+            text-align: right;
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+        }
+
+        .loop-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            margin-left: 8px;
+            opacity: 0.5;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loop-btn.active {
+            opacity: 1;
+            color: var(--accent-color);
+        }
+        
+        .loop-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.8; 
+            text-align: justify; margin: 0;
+        }
+
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        /* 译文（黑体中文） */
+        .translation {
+            display: none; margin-top: 20px; font-size: 0.95rem;
+            color: #5a626b; line-height: 1.8; padding: 18px 20px;
+            background-color: #f7f8f9; font-family: var(--chinese-font);
+            border-left: 3px solid #eee; text-align: justify;
+        }
+        .translation::before { content: "訳"; display: block; font-size: 0.7rem; color: #ccc; margin-bottom: 5px; font-weight: bold; }
+
+        /* 重点词汇样式 */
+        .vocab-word {
+            color: var(--accent-color);
+            border-bottom: 2px solid #f2d0d0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* 动态气泡容器 */
+        #smart-tooltip {
+            position: absolute; z-index: 2000;
+            background: var(--popup-bg); color: white;
+            padding: 12px 16px; border-radius: 8px;
+            font-size: 0.85rem; font-family: var(--chinese-font);
+            line-height: 1.6; max-width: 280px; min-width: 140px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none; opacity: 0; pointer-events: none;
+        }
+        #smart-tooltip::after {
+            content: ""; position: absolute; top: 100%;
+            border: 8px solid transparent; border-top-color: var(--popup-bg);
+        }
+
+        .footer { margin-top: 50px; color: #ccc; font-size: 0.8rem; letter-spacing: 3px; }
+
+
+    </style>
+    <link rel="stylesheet" href="../../../shared/site-fonts.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <!-- 左侧返回按钮 -->
+    <a href="read_daily.html" class="toggle-btn" style="text-decoration: none; margin-right: 15px;">← 戻る</a>
+    
+    <!-- 日期显示（可加 flex-grow 让它占据中间位置，或者保持原样） -->
+    <div id="today-date" style="flex-grow: 1; text-align: center; border-bottom: none;">3月11日 水曜日</div>
+    
+    <button id="trans-btn" class="toggle-btn" onclick="toggleTranslation()">译文</button>
+</div>
+
+<div class="container">
+   <div class="header-title">
+    <h2 style="font-weight: 500; letter-spacing: 0.1em; margin-bottom: 5px;">社説——高校生のメイク</h2>
+    <span style="color: #bbb; font-size: 0.8rem;">どう思いますか</span>
+</div>
+
+<div class="article-section" style="margin-bottom: 60px;">
+    <h3 style="color: var(--accent-color); border-bottom: 2px solid var(--accent-color); padding-bottom: 5px; margin-bottom: 20px;">
+        【その一】今だけの制服、誇りもって着て
+    </h3>
+
+    <div class="reading-block">
+        <p class="japanese">
+            <ruby>確<rt>たし</rt></ruby>かに<ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>になれば<ruby>化<rt>け</rt></ruby><ruby>粧<rt>しょう</rt></ruby>するのが<ruby>当<rt>あ</rt></ruby>たり<ruby>前<rt>まえ</rt></ruby>。<ruby>公<rt>こう</rt></ruby><ruby>共<rt>きょう</rt></ruby>の<ruby>場<rt>ば</rt></ruby>での<span class="vocab-word" data-info="ノーメイク：No makeup，素颜，不化妆。">ノーメイク</span>が、<ruby>男<rt>だん</rt></ruby><ruby>性<rt>せい</rt></ruby>の<span class="vocab-word" data-info="無精ひげ（ぶしょうひげ）：因懒惰而没刮的胡茬。"><ruby>無<rt>ぶ</rt></ruby><ruby>精<rt>しょう</rt></ruby>ひげ</span><ruby>同<rt>どう</rt></ruby><ruby>様<rt>よう</rt></ruby>、マナー<ruby>違<rt>い</rt></ruby><ruby>反<rt>はん</rt></ruby>にさえなります。ではいつから<ruby>許<rt>ゆる</rt></ruby>されるのか、<span class="vocab-word" data-info="線引きする（せんびきする）：划定界限，区分。"><ruby>線<rt>せん</rt></ruby><ruby>引<rt>び</rt></ruby>きする</span>なら<ruby>高<rt>こう</rt></ruby><ruby>校<rt>こう</rt></ruby><ruby>卒<rt>そつ</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>の<span class="vocab-word" data-info="時点（じてん）：时点，时候。"><ruby>時<rt>じ</rt></ruby><ruby>点<rt>てん</rt></ruby></span>でしょう。
+        </p>
+        <div class="translation">
+            确实，一旦成为成年人，化妆就成了理所当然的事。在公共场合素面朝天，甚至会像男性不加修剪的胡茬一样，被视为违反礼仪。那么，究竟从什么时候开始才被允许化妆呢？如果要划定一条界线的话，应该就是高中毕业那个节点吧。
+        </div>
+    </div>
+
+    <div class="reading-block">
+        <p class="japanese">
+            <ruby>高<rt>こう</rt></ruby><ruby>校<rt>こう</rt></ruby><ruby>生<rt>せい</rt></ruby>までは<ruby>家<rt>か</rt></ruby><ruby>庭<rt>てい</rt></ruby>や<ruby>学<rt>がっ</rt></ruby><ruby>校<rt>こう</rt></ruby>、<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby>に<ruby>保<rt>ほ</rt></ruby><ruby>護<rt>ご</rt></ruby>されている<ruby>立<rt>たち</rt></ruby><ruby>場<rt>ば</rt></ruby>。<ruby>一<rt>いっ</rt></ruby><ruby>方<rt>ぽう</rt></ruby>、<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby><ruby>人<rt>じん</rt></ruby>、<ruby>大<rt>だい</rt></ruby><ruby>学<rt>がく</rt></ruby><ruby>生<rt>せい</rt></ruby>になれば<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<span class="vocab-word" data-info="ふるまい：举止，行为。">ふるまい</span>に<ruby>責<rt>せき</rt></ruby><ruby>任<rt>にん</rt></ruby>をとることを<span class="vocab-word" data-info="求められます（もとめられます）：（原型：求める，被动态＋ます）被要求。"><ruby>求<rt>もと</rt></ruby>められます</span>が、その<span class="vocab-word" data-info="引き換えに（ひきかえに）：作为交换。"><ruby>引<rt>ひ</rt></ruby>き<ruby>換<rt>か</rt></ruby>えに</span>たとえば<ruby>公<rt>こう</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>場<rt>ば</rt></ruby>で<span class="vocab-word" data-info="おしゃれ：打扮，爱美。">おしゃれ</span>を<ruby>楽<rt>たの</rt></ruby>しむ<ruby>自<rt>じ</rt></ruby><ruby>由<rt>ゆう</rt></ruby>も<ruby>与<rt>あた</rt></ruby>えられるのです。<ruby>成<rt>せい</rt></ruby><ruby>人<rt>じん</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>齢<rt>れい</rt></ruby>とも<ruby>一<rt>いっ</rt></ruby><ruby>致<rt>ち</rt></ruby>するので、<span class="vocab-word" data-info="妥当性（だとうせい）：妥当性，合理性。"><ruby>妥<rt>だ</rt></ruby><ruby>当<rt>とう</rt></ruby><ruby>性<rt>せい</rt></ruby></span>があると<ruby>考<rt>かんが</rt></ruby>えます。
+        </p>
+        <div class="translation">
+            在高中阶段之前，学生处于受家庭、学校和社会保护的立场。另一方面，一旦成为社会人或大学生，就会被要求对自己的行为负责，但作为交换，也会被赋予诸如在公共场合享受打扮的自由。这与成年的年龄相吻合，所以我认为是有其合理性的。
+        </div>
+    </div>
+
+    <div class="reading-block">
+        <p class="japanese">
+            メイクやピアス、<ruby>染<rt>せん</rt></ruby><ruby>髪<rt>ぱつ</rt></ruby>しても<ruby>学<rt>がく</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>に<span class="vocab-word" data-info="支障なし（ししょうなし）：没有妨碍，没有负面影响。"><ruby>支<rt>し</rt></ruby><ruby>障<rt>しょう</rt></ruby>なし</span>、との<ruby>主<rt>しゅ</rt></ruby><ruby>張<rt>ちょう</rt></ruby>もありますが、<span class="vocab-word" data-info="反対に（はんたいに）：相反地。"><ruby>反<rt>はん</rt></ruby><ruby>対<rt>たい</rt></ruby>に</span><ruby>高<rt>こう</rt></ruby><ruby>校<rt>こう</rt></ruby>でする<ruby>必<rt>ひつ</rt></ruby><ruby>要<rt>よう</rt></ruby><ruby>性<rt>せい</rt></ruby>もない。<ruby>化<rt>け</rt></ruby><ruby>粧<rt>しょう</rt></ruby>の<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>が<ruby>必<rt>ひつ</rt></ruby><ruby>要<rt>よう</rt></ruby>なら<ruby>私<rt>し</rt></ruby><ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>ですればいいし、<ruby>私<rt>わたし</rt></ruby>が<ruby>教<rt>おし</rt></ruby>えている<ruby>高<rt>こう</rt></ruby><ruby>校<rt>こう</rt></ruby>では<ruby>卒<rt>そつ</rt></ruby><ruby>業<rt>ぎょう</rt></ruby><ruby>前<rt>まえ</rt></ruby>にスーツの<span class="vocab-word" data-info="着こなし（きこなし）：（原型：着こなす，第一连用形作名词）穿戴打扮，得体的穿着。"><ruby>着<rt>き</rt></ruby>こなし</span>やメイクを<ruby>学<rt>まな</rt></ruby>ぶ<ruby>機<rt>き</rt></ruby><ruby>会<rt>かい</rt></ruby>を<ruby>設<rt>もう</rt></ruby>けています。<ruby>今<rt>いま</rt></ruby>しか<ruby>着<rt>き</rt></ruby>られない<ruby>制<rt>せい</rt></ruby><ruby>服<rt>ふく</rt></ruby>を<ruby>着<rt>き</rt></ruby>こなし、<ruby>誇<rt>ほこ</rt></ruby>りある<ruby>高<rt>こう</rt></ruby><ruby>校<rt>こう</rt></ruby><ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>を<ruby>送<rt>おく</rt></ruby>ってほしいです。
+        </p>
+        <div class="translation">
+            也有人主张，即使化妆、打耳洞、染发也不会妨碍学业，但反过来说，在高中时期也没有去做的必要性。如果需要练习化妆，在私生活中进行即可；在我任教的高中里，也会在毕业前专门安排学习如何穿正装和化妆的机会。我希望学生们能得体地穿好只有现在才能穿的校服，度过令人骄傲的高中生活。
+        </div>
+    </div>
+</div>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0)); margin: 40px 0;">
+
+<div class="article-section">
+    <h3 style="color: var(--accent-color); border-bottom: 2px solid var(--accent-color); padding-bottom: 5px; margin-bottom: 20px;">
+        【その二】性別や年齢でなく自らの選択を
+    </h3>
+
+    <div class="reading-block">
+        <p class="japanese">
+            <ruby>大<rt>だい</rt></ruby><ruby>学<rt>がく</rt></ruby><ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>、<ruby>陸<rt>りく</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>部<rt>ぶ</rt></ruby>の<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby><ruby>後<rt>ご</rt></ruby>はだいたいジャージ<ruby>姿<rt>すがた</rt></ruby>に<span class="vocab-word" data-info="素顔（すがお）：素颜，不化妆的脸。"><ruby>素<rt>す</rt></ruby><ruby>顔<rt>がお</rt></ruby></span>で<ruby>授<rt>じゅ</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>に<ruby>出<rt>で</rt></ruby>ていた。<ruby>旅<rt>りょ</rt></ruby><ruby>行<rt>こう</rt></ruby><ruby>中<rt>ちゅう</rt></ruby>も<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>たちがメイクや<ruby>髪<rt>かみ</rt></ruby>の<span class="vocab-word" data-info="セット：Set，做头发，造型。">セット</span>で<ruby>忙<rt>いそが</rt></ruby>しい<ruby>朝<rt>あさ</rt></ruby>、<ruby>私<rt>わたし</rt></ruby>は<ruby>布<rt>ふ</rt></ruby><ruby>団<rt>とん</rt></ruby>の<ruby>中<rt>なか</rt></ruby>。しかし<ruby>住<rt>じゅう</rt></ruby><ruby>宅<rt>たく</rt></ruby><ruby>設<rt>せつ</rt></ruby><ruby>備<rt>び</rt></ruby>メーカーに<ruby>就<rt>しゅう</rt></ruby><ruby>職<rt>しょく</rt></ruby>して<ruby>3<rt>さん</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>目<rt>め</rt></ruby>、<ruby>営<rt>えい</rt></ruby><ruby>業<rt>ぎょう</rt></ruby><ruby>先<rt>さき</rt></ruby>で<ruby>年<rt>とし</rt></ruby><ruby>上<rt>うえ</rt></ruby>の<ruby>女<rt>じょ</rt></ruby><ruby>性<rt>せい</rt></ruby><ruby>店<rt>てん</rt></ruby><ruby>員<rt>いん</rt></ruby>から「ノーメイクで<ruby>店<rt>てん</rt></ruby><ruby>内<rt>ない</rt></ruby>を<span class="vocab-word" data-info="うろうろ：徘徊，漫无目的地走动。">うろうろ</span>しないで」と<span class="vocab-word" data-info="揶揄された（やゆされた）：（原型：揶揄する，被动态的た形）被嘲弄，被挖苦。"><ruby>揶<rt>や</rt></ruby><ruby>揄<rt>ゆ</rt></ruby>された</span>。
+        </p>
+        <div class="translation">
+            大学时代，田径部的训练结束后，我通常都是穿着运动服、素面朝天地去上课。在旅行中，当朋友们为了化妆和做发型而忙碌的清晨，我依然躲在被窝里。然而，在一家住宅设备制造商就职的第三年，我在跑业务时，被一位年长的女性店员嘲讽道：“请不要素面朝天地在店里晃来晃去。”
+        </div>
+    </div>
+
+    <div class="reading-block">
+        <p class="japanese">
+            <ruby>高<rt>こう</rt></ruby><ruby>校<rt>こう</rt></ruby><ruby>生<rt>せい</rt></ruby>までは<ruby>校<rt>こう</rt></ruby><ruby>則<rt>そく</rt></ruby><ruby>違<rt>い</rt></ruby><ruby>反<rt>はん</rt></ruby>なのに、<ruby>卒<rt>そつ</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>すると<span class="vocab-word" data-info="瞬く（またたく）：闪烁，眨眼。瞬く間に：转眼间。"><ruby>瞬<rt>またた</rt></ruby>く</span><ruby>間<rt>ま</rt></ruby>に「<ruby>女<rt>おんな</rt></ruby>の<span class="vocab-word" data-info="たしなみ：教养，嗜好，应有的礼仪/打扮。">たしなみ</span>」へと<ruby>変<rt>か</rt></ruby>わる。<ruby>私<rt>わたし</rt></ruby>も<ruby>就<rt>しゅう</rt></ruby><ruby>職<rt>しょく</rt></ruby><ruby>活<rt>かつ</rt></ruby><ruby>動<rt>どう</rt></ruby><ruby>時<rt>じ</rt></ruby>や<ruby>入<rt>にゅう</rt></ruby><ruby>社<rt>しゃ</rt></ruby><ruby>直<rt>ちょく</rt></ruby><ruby>後<rt>ご</rt></ruby>はしっかりと<ruby>化<rt>け</rt></ruby><ruby>粧<rt>しょう</rt></ruby>をしていたが「<span class="vocab-word" data-info="流れに乗らない（ながれにのらない）：（原型：流れに乗る，ない形）不顺应潮流，不随大流。"><ruby>流<rt>なが</rt></ruby>れに<ruby>乗<rt>の</rt></ruby>らない</span>といけないの？」「なぜ<ruby>女<rt>じょ</rt></ruby><ruby>性<rt>せい</rt></ruby>だけ？」。どこか<ruby>違<rt>い</rt></ruby><ruby>和<rt>わ</rt></ruby><ruby>感<rt>かん</rt></ruby>があった。
+        </p>
+        <div class="translation">
+            明明在高中阶段之前化妆还算是违反校规，可一毕业，转眼间就变成了“女人的修养”。我在找工作时和刚入社后，也曾认认真真地化过妆，但心里总觉得有些违和感：“难道非得随波逐流不可吗？”“为什么只有女性必须这样？”
+        </div>
+    </div>
+
+    <div class="reading-block">
+        <p class="japanese">
+            <ruby>化<rt>け</rt></ruby><ruby>粧<rt>しょう</rt></ruby>やおしゃれが<ruby>時<rt>とき</rt></ruby>には<ruby>自<rt>じ</rt></ruby><ruby>信<rt>しん</rt></ruby>を<ruby>与<rt>あた</rt></ruby>えてくれること、<span class="vocab-word" data-info="ウキウキする：兴高采烈，欢欣雀跃。">ウキウキする</span><ruby>魔<rt>ま</rt></ruby><ruby>法<rt>ほう</rt></ruby>をかけてくれることも<ruby>知<rt>し</rt></ruby>っている。<ruby>性<rt>せい</rt></ruby><ruby>別<rt>べつ</rt></ruby>や<ruby>年<rt>ねん</rt></ruby><ruby>齢<rt>れい</rt></ruby>で<span class="vocab-word" data-info="区切る（くぎる）：（原型）划分，界定。"><ruby>区<rt>く</rt></ruby><ruby>切<rt>ぎ</rt></ruby>る</span>のではなく、<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby>や<ruby>周<rt>しゅう</rt></ruby><ruby>囲<rt>い</rt></ruby>に<span class="vocab-word" data-info="強いられて（しいられて）：（原型：強いる，被动态的て形）被强迫。"><ruby>強<rt>し</rt></ruby>いられて</span>するものでもなく、<ruby>日<rt>ひ</rt></ruby><ruby>々<rt>び</rt></ruby>を<ruby>存<rt>ぞん</rt></ruby><ruby>分<rt>ぶん</rt></ruby>に<ruby>楽<rt>たの</rt></ruby>しむための<ruby>自<rt>みずか</rt></ruby>らの<ruby>選<rt>せん</rt></ruby><ruby>択<rt>たく</rt></ruby>であってほしい。<ruby>私<rt>わたし</rt></ruby>は<ruby>今<rt>きょう</rt></ruby><ruby>日<rt>どう</rt></ruby>も、<ruby>自<rt>みずか</rt></ruby>らの<ruby>意<rt>い</rt></ruby><ruby>思<rt>し</rt></ruby>で<span class="vocab-word" data-info="すっぴん：素颜，不化妆的脸。">すっぴん</span>だ。
+        </p>
+        <div class="translation">
+            我也知道，化妆和打扮有时能赋予人自信，能施下让人心情雀跃的魔法。我希望这不应该是由性别或年龄来界定的，也不应该是被社会或周围人强迫去做的，而应当是为了尽情享受每一天而做出的自我选择。今天，我也依然凭借着自己的意志，保持着素颜。
+        </div>
+    </div>
+</div>
+</div>
+
+<div id="smart-tooltip"></div>
+
+<!-- Fixed Bottom Audio Player -->
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bg">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+        <div class="time-display">
+            <span id="current-time">00:00</span> / <span id="duration">00:00</span>
+        </div>
+        <button id="loop-btn" class="loop-btn" onclick="toggleLoop()" title="ループ再生">
+            <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        </button>
+        <audio id="audio-element" src="audio_read/3.11.mp3"></audio>
+    </div>
+</div>
+
+<div class="footer">Ichigo Ichie - 一期一会</div>
+
+<script>
+    // 1. (已移除) 实时日期逻辑 -> 改为在 HTML 中手动输入
+
+    // 2. 译文切换
+    function toggleTranslation() {
+        const btn = document.getElementById('trans-btn');
+        const isActive = btn.classList.toggle('active');
+        
+        document.querySelectorAll('.translation').forEach(el => {
+            el.style.display = isActive ? 'block' : 'none';
+        });
+    }
+
+    // 3. 智能自适应气泡逻辑
+    const tooltip = document.getElementById('smart-tooltip');
+    let activeWord = null;
+
+    // --- Audio Player Logic ---
+    const audio = document.getElementById('audio-element');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+    const loopBtn = document.getElementById('loop-btn');
+
+    // Loop state
+    let isLooping = false;
+
+    function toggleLoop() {
+        isLooping = !isLooping;
+        audio.loop = isLooping;
+        loopBtn.classList.toggle('active', isLooping);
+    }
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+            playBtn.classList.add('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        } else {
+            audio.pause();
+            playBtn.classList.remove('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        }
+    }
+
+    audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = percent + '%';
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        }
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener('ended', () => {
+        playBtn.classList.remove('playing');
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        progressBar.style.width = '0%';
+        currentTimeEl.textContent = "00:00";
+    });
+
+    function seek(e) {
+        if (!audio.duration) return;
+        const rect = progressContainer.getBoundingClientRect();
+        const width = rect.width;
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        let clickX = clientX - rect.left;
+        clickX = Math.max(0, Math.min(clickX, width));
+        audio.currentTime = (clickX / width) * audio.duration;
+    }
+
+    // --- Drag to Seek Logic ---
+    let isDragging = false;
+
+    progressContainer.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        seek(e);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            seek(e);
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Touch support
+    progressContainer.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        seek(e);
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (isDragging) {
+            e.preventDefault(); // Prevent scrolling while dragging
+            seek(e);
+        }
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => {
+        isDragging = false;
+    });
+
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return "00:00";
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    // --------------------------
+
+    document.querySelectorAll('.vocab-word').forEach(word => {
+        word.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (activeWord === this) { hideTooltip(); return; }
+
+            activeWord = this;
+            tooltip.innerText = this.getAttribute('data-info');
+            tooltip.style.display = 'block';
+
+            const rect = this.getBoundingClientRect();
+            const tipRect = tooltip.getBoundingClientRect();
+            const screenWidth = window.innerWidth;
+            
+            // 计算初始位置
+            let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
+            let top = rect.top + window.scrollY - tipRect.height - 12;
+
+            // 溢出检测与修正
+            const margin = 15;
+            let arrowOffset = '50%';
+
+            if (left < margin) {
+                left = margin;
+                arrowOffset = (rect.left + rect.width/2 - margin) + 'px';
+            } else if (left + tipRect.width > screenWidth - margin) {
+                left = screenWidth - tipRect.width - margin;
+                arrowOffset = (rect.left + rect.width/2 - left) + 'px';
+            }
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.style.opacity = '1';
+
+            // 动态修正箭头位置
+            const styleTag = document.getElementById('dynamic-arrow') || document.createElement('style');
+            styleTag.id = 'dynamic-arrow';
+            styleTag.innerHTML = `#smart-tooltip::after { left: ${arrowOffset} !important; transform: translateX(-50%); }`;
+            document.head.appendChild(styleTag);
+        });
+    });
+
+    function hideTooltip() {
+        tooltip.style.opacity = '0';
+        setTimeout(() => { tooltip.style.display = 'none'; }, 200);
+        activeWord = null;
+    }
+
+    document.addEventListener('click', hideTooltip);
+    window.addEventListener('resize', hideTooltip);
+
+
+</script>
+
+</body>
+</html>
