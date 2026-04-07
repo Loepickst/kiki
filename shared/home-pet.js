@@ -968,6 +968,7 @@
         let interactionModeUntil = 0;
         let interactionTimer = null;
         let welcomePending = shouldShowWelcome(state);
+        let welcomeLocked = false;
 
         settings.anchorX = null;
         settings.anchorY = null;
@@ -990,6 +991,12 @@
         const headpatBtn = root.querySelector('[data-pet-headpat]');
         const treatBtn = root.querySelector('[data-pet-treat]');
 
+        function getCurrentSection() {
+            return typeof config.getActiveSection === 'function'
+                ? (config.getActiveSection() || '')
+                : '';
+        }
+
         function clearInteractionTimer() {
             if (interactionTimer) {
                 clearTimeout(interactionTimer);
@@ -1004,6 +1011,20 @@
 
         function resetSleepWakeChain() {
             sessionSleepWakeCount = 0;
+        }
+
+        function clearWelcomeLock(options = {}) {
+            if (!welcomeLocked) {
+                return false;
+            }
+
+            welcomeLocked = false;
+            if (!options.keepCurrentDialog && interactionMode === 'normal') {
+                summary = buildLearningSummary(config, state, visitMeta);
+                currentDialog = pickDefaultBubble(summary, getCurrentSection());
+                bubbleEl.textContent = currentDialog;
+            }
+            return true;
         }
 
         function isTreatCooldownActive() {
@@ -1085,6 +1106,7 @@
                 event.preventDefault();
                 event.stopImmediatePropagation();
             }
+            clearWelcomeLock({ keepCurrentDialog: true });
             showInteractionDialog('吧唧吧唧', 'blink', 'dazed-interaction');
             return true;
         }
@@ -1095,6 +1117,7 @@
                 event.stopImmediatePropagation();
             }
 
+            clearWelcomeLock({ keepCurrentDialog: true });
             sessionSleepWakeCount += 1;
             if (sessionSleepWakeCount >= 3) {
                 resetSleepWakeChain();
@@ -1202,9 +1225,7 @@
         }
 
         function sync(reason) {
-            const currentSection = typeof config.getActiveSection === 'function'
-                ? (config.getActiveSection() || '')
-                : '';
+            const currentSection = getCurrentSection();
             const didExpireInteraction = reconcileInteractionMode();
             if (state.lastOpenedSection !== currentSection) {
                 state.lastOpenedSection = currentSection;
@@ -1216,10 +1237,11 @@
                 currentDialog = pickWelcomeBubble(state);
                 state.lastWelcomedAt = Date.now();
                 welcomePending = false;
+                welcomeLocked = true;
                 savePetState(state);
-            } else if (reason === 'interaction-timeout' || didExpireInteraction) {
+            } else if ((reason === 'interaction-timeout' || didExpireInteraction) && !welcomeLocked) {
                 currentDialog = pickDefaultBubble(summary, currentSection);
-            } else if (reason === 'boot' || reason === 'section-change') {
+            } else if ((reason === 'boot' || reason === 'section-change') && !welcomeLocked) {
                 currentDialog = pickDefaultBubble(summary, currentSection);
             }
 
@@ -1259,6 +1281,7 @@
                 return;
             }
 
+            clearWelcomeLock();
             state.totalStudyLaunches = Number(state.totalStudyLaunches || 0) + 1;
             state.bondXp = Number(state.bondXp || 0) + 1;
             state.lastClickedHref = nextHref;
@@ -1381,16 +1404,19 @@
             }
 
             awardInteractionXp();
+            clearWelcomeLock({ keepCurrentDialog: true });
             settings.collapsed = !settings.collapsed;
             persistSettings();
             if (interactionMode === 'normal') {
-                currentDialog = pickDefaultBubble(summary, config.getActiveSection ? config.getActiveSection() : '');
+                currentDialog = pickDefaultBubble(summary, getCurrentSection());
             }
             sync('toggle');
         });
 
         nameButtonEl.addEventListener('click', () => {
             awardInteractionXp();
+            clearWelcomeLock();
+            sync('welcome-cleared');
             startNameEdit();
         });
 
@@ -1410,6 +1436,7 @@
 
         headpatBtn.addEventListener('click', () => {
             awardInteractionXp();
+            clearWelcomeLock({ keepCurrentDialog: true });
             const now = Date.now();
 
             if (!lastHeadpatAt || (now - lastHeadpatAt) > INTERACTION_CHAIN_MS) {
@@ -1431,6 +1458,7 @@
 
         treatBtn.addEventListener('click', () => {
             awardInteractionXp();
+            clearWelcomeLock({ keepCurrentDialog: true });
             resetHeadpatChain();
 
             if (isTreatCooldownActive()) {
@@ -1478,6 +1506,7 @@
                 return;
             }
 
+            clearWelcomeLock();
             const titleNode = activityLink.querySelector('.home-pet-activity-title');
             recordStudyLaunch({
                 href: activityLink.getAttribute('href'),
@@ -1486,12 +1515,20 @@
             });
         });
 
+        const handlePageInteraction = (event) => {
+            const sectionSwitch = event.target.closest('.main-chip[data-section]');
+            if (sectionSwitch) {
+                clearWelcomeLock({ keepCurrentDialog: true });
+            }
+        };
+        document.addEventListener('click', handlePageInteraction);
+
         const resizeHandler = () => {
             sync('resize');
         };
         window.addEventListener('resize', resizeHandler);
 
-        currentDialog = pickDefaultBubble(summary, config.getActiveSection ? config.getActiveSection() : '');
+        currentDialog = pickDefaultBubble(summary, getCurrentSection());
         sync('boot');
 
         return {
@@ -1500,6 +1537,7 @@
             recordStudyLaunch,
             destroy() {
                 window.removeEventListener('resize', resizeHandler);
+                document.removeEventListener('click', handlePageInteraction);
                 if (motionTimer) {
                     clearTimeout(motionTimer);
                 }
