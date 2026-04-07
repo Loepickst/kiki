@@ -2,7 +2,7 @@
     const PET_STATE_KEY = 'kiki_pet_state_v1';
     const PET_SETTINGS_KEY = 'kiki_pet_settings_v1';
     const DEFAULT_SECTION = 'daily';
-    const DEFAULT_PET_NAME = '木木';
+    const DEFAULT_PET_ID = 'shiba';
     const MAX_NAME_LENGTH = 8;
     const DRAG_THRESHOLD = 8;
     const WELCOME_INTERVAL_MS = 60 * 60 * 1000;
@@ -36,25 +36,6 @@
         cheer: '状态很好',
         sleep: '慢慢苏醒'
     };
-    const WELCOME_DIALOGS = [
-        '你来啦，木木今天也准时上岗。',
-        '木木蹲好啦，先点一个轻松的开始吧。',
-        '嘿，今天也把日语慢慢啃掉一点。'
-    ];
-    const TREAT_DIALOGS = [
-        '啊呜，肉干收到，木木今天心情很好。',
-        '还挺香，那就再认真陪你一会儿。',
-        '这口我记下了，今天也会好好陪学。'
-    ];
-    const HEADPAT_DIALOGS = [
-        '嘿嘿，木木知道你来啦。',
-        '耳朵都快被你摸卷起来了。',
-        '再摸一下，尾巴都要摇起来了。'
-    ];
-    const SLEEP_WAKE_DIALOGS = [
-        '呼噜……木木还想再睡一会儿。',
-        '耳朵动了一下，又缩回去睡了。'
-    ];
     const TREAT_COOLDOWN_DIALOG = '肚子有点撑，吃不动🐦';
     const INTERACTION_CHAIN_MS = 8000;
     const DAZED_DURATION_MS = 8000;
@@ -65,9 +46,11 @@
         C: '#F7E6CF',
         D: '#2F241D',
         E: '#F4B596',
-        F: '#F9F6F0'
+        F: '#F9F6F0',
+        G: '#B86A4A',
+        H: '#F6C37B'
     };
-    const PIXEL_FRAMES = {
+    const SHIBA_PIXEL_FRAMES = {
         idle: [
             '................',
             '.....A....A.....',
@@ -158,6 +141,166 @@
             '...AA....AA.....',
             '................'
         ]
+    };
+    const CAT_PIXEL_FRAMES = {
+        idle: [
+            '................',
+            '....A......A....',
+            '...ABH....HBA...',
+            '..ABEEABBAEEBA..',
+            '..ABHHHHHHHHBA..',
+            '..BGHCCCCCCHGB..',
+            '..AHDDCCCCDDHA..',
+            '..AHDFCEECFDHA..',
+            '...BCCEDDECCB...',
+            '...ABCCCCCCCCBA.',
+            '..ABHHCCCCHHGBA.',
+            '..ABHCCCCCCHGBA.',
+            '..ABHCCFFCCHGGA.',
+            '...ABCF..FCBGAA.',
+            '...AFA....AFAA..',
+            '............GG..'
+        ],
+        blink: [
+            '................',
+            '....A......A....',
+            '...ABH....HBA...',
+            '..ABEEABBAEEBA..',
+            '..ABHHHHHHHHBA..',
+            '..BGHCCCCCCHGB..',
+            '..AHDDCCCCDDHA..',
+            '..AH..CEEC..HA..',
+            '...BCCEDDECCB...',
+            '...ABCCCCCCCCBA.',
+            '..ABHHCCCCHHGBA.',
+            '..ABHCCCCCCHGBA.',
+            '..ABHCCFFCCHGGA.',
+            '...ABCF..FCBGAA.',
+            '...AFA....AFAA..',
+            '............GG..'
+        ],
+        hop: [
+            '................',
+            '....A......A....',
+            '...ABH....HBA...',
+            '..ABEEABBAEEBA..',
+            '..ABHHHHHHHHBA..',
+            '..BGHCCCCCCHGB..',
+            '..AHDDCCCCDDHA..',
+            '..AHDFCEECFDHA..',
+            '...BCCEDDECCB...',
+            '..ABCCCCCCCCBA..',
+            '..ABHHCCCCHGBA..',
+            '..ABHCCCCCCHGAA.',
+            '...ABHCCFFCHGAA.',
+            '...ABCF..FCBGAA.',
+            '....AFA..AFAA...',
+            '......FFFFFF....'
+        ],
+        sleep: [
+            '................',
+            '................',
+            '.....A....A.....',
+            '....ABH..HBA....',
+            '...ABHHHHHHBA...',
+            '...AH.CCCC.HA...',
+            '..ABCCCEECCBA...',
+            '..ABCCDDDDCBA...',
+            '..ABCCCCCCCCBA..',
+            '...ABHCCCCHGBA..',
+            '...ABCCCCCCBA...',
+            '....ABHCCGBA....',
+            '.....ABBGAA.....',
+            '......AAA.......',
+            '....F......G....',
+            '................'
+        ],
+        cheer: [
+            '................',
+            '....A......A....',
+            '...ABH....HBA...',
+            '..ABEEABBAEEBA..',
+            '..ABHHHHHHHHBA..',
+            '..BGHCCCCCCHGB..',
+            '..AHDDCCCCDDHA..',
+            '..AHDFCEECFDHA..',
+            '...BCCEDDECCB...',
+            '..ABCCCCCCCCBA..',
+            '.AABHHCCCCHHGBA.',
+            'A..ABHCCCCCHGBA.',
+            '...ABHCCFFCHGGA.',
+            '...ABCF..FCBGAA.',
+            '..AAFA....AFAA..',
+            '............GG..'
+        ]
+    };
+    const PET_PROFILES = {
+        shiba: {
+            id: 'shiba',
+            label: '柴犬',
+            species: 'shiba',
+            defaultName: '木木',
+            levelTitles: LEVEL_TITLES,
+            pixelFrames: createPixelFrameMap(SHIBA_PIXEL_FRAMES),
+            dialogs: {
+                welcome: [
+                    '你来啦，{name}今天也准时上岗。',
+                    '{name}蹲好啦，先点一个轻松的开始吧。',
+                    '嘿，今天也把日语慢慢啃掉一点。'
+                ],
+                treat: [
+                    '啊呜，肉干收到，{name}今天心情很好。',
+                    '还挺香，那就再认真陪你一会儿。',
+                    '这口我记下了，今天也会好好陪学。'
+                ],
+                headpat: [
+                    '嘿嘿，{name}知道你来啦。',
+                    '耳朵都快被你摸卷起来了。',
+                    '再摸一下，尾巴都要摇起来了。'
+                ],
+                sleepWake: [
+                    '呼噜……{name}还想再睡一会儿。',
+                    '耳朵动了一下，又缩回去睡了。'
+                ],
+                defaultReview: '先去 {label} 吧，{name}陪你。',
+                defaultExam: '备考慢慢来，{name}陪你。',
+                defaultRecent: '刚刚学到 {label} 了。',
+                defaultIdle: '先学一点，{name}陪你。'
+            }
+        },
+        cat: {
+            id: 'cat',
+            label: '猫猫',
+            species: 'cat',
+            defaultName: '咪咪',
+            levelTitles: LEVEL_TITLES,
+            pixelFrames: createPixelFrameMap(CAT_PIXEL_FRAMES),
+            dialogs: {
+                welcome: [
+                    '{name}踩着小步子过来啦，今天也一起学一点。',
+                    '{name}已经窝好了，先挑个轻松入口开始吧。',
+                    '喵，今天也把日语一点点叼回窝里。'
+                ],
+                treat: [
+                    '喵呜，肉干收到，{name}胡子都翘起来了。',
+                    '还挺香，那就继续陪你蹲一会儿。',
+                    '这一口不错，{name}今天认真营业。'
+                ],
+                headpat: [
+                    '呼噜，{name}知道你来了。',
+                    '耳尖都被你摸得暖乎乎的。',
+                    '再摸一下，尾巴都要弯起来了。'
+                ],
+                sleepWake: [
+                    '呼噜……{name}还想再缩一会儿。',
+                    '尾巴晃了一下，又把脸埋回去了。'
+                ],
+                defaultReview: '先去 {label} 吧，{name}陪你盯着看。',
+                defaultExam: '备考别急，{name}在旁边陪你。',
+                defaultRecent: '刚刚又啃到 {label} 啦。',
+                defaultIdle: '先学一点，{name}在这儿陪着。'
+            }
+        }
     };
 
     function safeParseJSON(rawValue, fallback) {
@@ -285,12 +428,24 @@
         return clamp(parsed, 0, 1);
     }
 
-    function sanitizePetName(rawValue) {
+    function getPetIds() {
+        return Object.keys(PET_PROFILES);
+    }
+
+    function getPetProfile(petId) {
+        return PET_PROFILES[petId] || PET_PROFILES[DEFAULT_PET_ID];
+    }
+
+    function getPetDefaultName(petId) {
+        return getPetProfile(petId).defaultName;
+    }
+
+    function sanitizePetName(rawValue, petId = DEFAULT_PET_ID) {
         const trimmed = String(rawValue || '').trim();
         if (!trimmed) {
-            return DEFAULT_PET_NAME;
+            return getPetDefaultName(petId);
         }
-        return Array.from(trimmed).slice(0, MAX_NAME_LENGTH).join('') || DEFAULT_PET_NAME;
+        return Array.from(trimmed).slice(0, MAX_NAME_LENGTH).join('') || getPetDefaultName(petId);
     }
 
     function normalizeStoredPetName(rawValue) {
@@ -301,8 +456,76 @@
         return Array.from(trimmed).slice(0, MAX_NAME_LENGTH).join('');
     }
 
-    function getDisplayPetName(settings) {
-        return normalizeStoredPetName(settings.customName) || DEFAULT_PET_NAME;
+    function createDefaultPersistentPetState() {
+        return {
+            lastVisitDate: '',
+            visitStreak: 0,
+            bondXp: 0,
+            totalVisits: 0,
+            totalStudyLaunches: 0,
+            lastOpenedSection: '',
+            lastClickedHref: '',
+            lastClickedLabel: '',
+            lastStudyDate: '',
+            lastInteractionDate: '',
+            lastWelcomedAt: 0,
+            lastSleepStartedAt: 0
+        };
+    }
+
+    function createDefaultPersistentPetSettings() {
+        return {
+            customName: '',
+            anchorX: null,
+            anchorY: null,
+            collapsed: true
+        };
+    }
+
+    function normalizePersistentPetState(rawValue) {
+        const source = rawValue && typeof rawValue === 'object' && !Array.isArray(rawValue) ? rawValue : {};
+        return { ...createDefaultPersistentPetState(), ...source };
+    }
+
+    function normalizePersistentPetSettings(rawValue) {
+        const source = rawValue && typeof rawValue === 'object' && !Array.isArray(rawValue) ? rawValue : {};
+        return {
+            ...createDefaultPersistentPetSettings(),
+            ...source,
+            customName: normalizeStoredPetName(source.customName),
+            anchorX: normalizeStoredAnchor(source.anchorX),
+            anchorY: normalizeStoredAnchor(source.anchorY),
+            collapsed: source.collapsed !== false
+        };
+    }
+
+    function ensurePetStateBucket(wrapper, petId) {
+        if (!wrapper.petStates || typeof wrapper.petStates !== 'object' || Array.isArray(wrapper.petStates)) {
+            wrapper.petStates = {};
+        }
+        if (!wrapper.petStates[petId] || typeof wrapper.petStates[petId] !== 'object' || Array.isArray(wrapper.petStates[petId])) {
+            wrapper.petStates[petId] = createDefaultPersistentPetState();
+        }
+        return wrapper.petStates[petId];
+    }
+
+    function ensurePetSettingsBucket(wrapper, petId) {
+        if (!wrapper.petProfiles || typeof wrapper.petProfiles !== 'object' || Array.isArray(wrapper.petProfiles)) {
+            wrapper.petProfiles = {};
+        }
+        if (!wrapper.petProfiles[petId] || typeof wrapper.petProfiles[petId] !== 'object' || Array.isArray(wrapper.petProfiles[petId])) {
+            wrapper.petProfiles[petId] = createDefaultPersistentPetSettings();
+        }
+        return wrapper.petProfiles[petId];
+    }
+
+    function getActivePetId(settings) {
+        return PET_PROFILES[settings.activePetId] ? settings.activePetId : DEFAULT_PET_ID;
+    }
+
+    function getDisplayPetName(settings, petId = getActivePetId(settings)) {
+        const petSettings = ensurePetSettingsBucket(settings, petId);
+        return normalizeStoredPetName(petSettings.customName) || getPetDefaultName(petId);
     }
 
     function shouldShowWelcome(state) {
@@ -313,9 +536,21 @@
         return Date.now() - lastWelcomedAt >= WELCOME_INTERVAL_MS;
     }
 
-    function pickWelcomeBubble(state) {
+    function resolvePetDialog(templateOrFactory, petName, extra = {}) {
+        const rawTemplate = typeof templateOrFactory === 'function'
+            ? templateOrFactory({ name: petName, ...extra })
+            : String(templateOrFactory || '');
+
+        return rawTemplate.replace(/\{(\w+)\}/g, (match, key) => {
+            const value = key === 'name' ? petName : extra[key];
+            return value === undefined || value === null ? '' : String(value);
+        });
+    }
+
+    function pickWelcomeBubble(state, petProfile, petName) {
         const visitSeed = Math.max(0, Number(state && state.totalVisits) || 0);
-        return WELCOME_DIALOGS[visitSeed % WELCOME_DIALOGS.length] || WELCOME_DIALOGS[0];
+        const welcomeDialogs = petProfile.dialogs.welcome || [];
+        return resolvePetDialog(welcomeDialogs[visitSeed % welcomeDialogs.length] || welcomeDialogs[0], petName);
     }
 
     function buildPixelSvg(frameRows) {
@@ -338,62 +573,79 @@
         ].join('');
     }
 
-    function createPixelFrameMap() {
-        return Object.keys(PIXEL_FRAMES).reduce((accumulator, mood) => {
-            accumulator[mood] = buildPixelSvg(PIXEL_FRAMES[mood]);
+    function createPixelFrameMap(frameSource) {
+        return Object.keys(frameSource).reduce((accumulator, mood) => {
+            accumulator[mood] = buildPixelSvg(frameSource[mood]);
             return accumulator;
         }, {});
     }
 
     function loadPetState() {
-        const fallback = {
-            lastVisitDate: '',
-            visitStreak: 0,
-            bondXp: 0,
-            totalVisits: 0,
-            totalStudyLaunches: 0,
-            lastOpenedSection: '',
-            lastClickedHref: '',
-            lastClickedLabel: '',
-            lastStudyDate: '',
-            lastInteractionDate: '',
-            lastWelcomedAt: 0,
-            lastSleepStartedAt: 0
-        };
+        const parsed = safeParseJSON(storageGetItem(PET_STATE_KEY), {});
+        const petStates = {};
 
-        return { ...fallback, ...safeParseJSON(storageGetItem(PET_STATE_KEY), fallback) };
+        getPetIds().forEach((petId) => {
+            petStates[petId] = createDefaultPersistentPetState();
+        });
+
+        if (parsed && parsed.petStates && typeof parsed.petStates === 'object' && !Array.isArray(parsed.petStates)) {
+            getPetIds().forEach((petId) => {
+                petStates[petId] = normalizePersistentPetState(parsed.petStates[petId]);
+            });
+            return { petStates };
+        }
+
+        petStates.shiba = normalizePersistentPetState(parsed);
+        return { petStates };
     }
 
     function savePetState(state) {
-        storageSetItem(PET_STATE_KEY, JSON.stringify(state));
+        storageSetItem(PET_STATE_KEY, JSON.stringify({
+            petStates: getPetIds().reduce((accumulator, petId) => {
+                accumulator[petId] = normalizePersistentPetState(ensurePetStateBucket(state, petId));
+                return accumulator;
+            }, {})
+        }));
     }
 
     function loadPetSettings() {
-        const fallback = {
-            collapsed: true,
-            mutedHints: false,
-            customName: '',
-            anchorX: null,
-            anchorY: null
-        };
-        const parsed = safeParseJSON(storageGetItem(PET_SETTINGS_KEY), fallback);
+        const parsed = safeParseJSON(storageGetItem(PET_SETTINGS_KEY), {});
+        const petProfiles = {};
 
+        getPetIds().forEach((petId) => {
+            petProfiles[petId] = createDefaultPersistentPetSettings();
+        });
+
+        if (parsed && parsed.petProfiles && typeof parsed.petProfiles === 'object' && !Array.isArray(parsed.petProfiles)) {
+            getPetIds().forEach((petId) => {
+                petProfiles[petId] = normalizePersistentPetSettings(parsed.petProfiles[petId]);
+            });
+            return {
+                activePetId: PET_PROFILES[parsed.activePetId] ? parsed.activePetId : DEFAULT_PET_ID,
+                petProfiles
+            };
+        }
+
+        petProfiles.shiba = normalizePersistentPetSettings(parsed);
         return {
-            collapsed: parsed.collapsed !== false,
-            mutedHints: Boolean(parsed.mutedHints),
-            customName: normalizeStoredPetName(parsed.customName),
-            anchorX: normalizeStoredAnchor(parsed.anchorX),
-            anchorY: normalizeStoredAnchor(parsed.anchorY)
+            activePetId: DEFAULT_PET_ID,
+            petProfiles
         };
     }
 
     function savePetSettings(settings) {
         storageSetItem(PET_SETTINGS_KEY, JSON.stringify({
-            collapsed: settings.collapsed !== false,
-            mutedHints: Boolean(settings.mutedHints),
-            customName: normalizeStoredPetName(settings.customName),
-            anchorX: normalizeStoredAnchor(settings.anchorX),
-            anchorY: normalizeStoredAnchor(settings.anchorY)
+            activePetId: getActivePetId(settings),
+            petProfiles: getPetIds().reduce((accumulator, petId) => {
+                const petSettings = ensurePetSettingsBucket(settings, petId);
+                accumulator[petId] = {
+                    customName: normalizeStoredPetName(petSettings.customName),
+                    anchorX: normalizeStoredAnchor(petSettings.anchorX),
+                    anchorY: normalizeStoredAnchor(petSettings.anchorY),
+                    collapsed: petSettings.collapsed !== false
+                };
+                return accumulator;
+            }, {})
         }));
     }
 
@@ -416,10 +668,10 @@
         };
     }
 
-    function getLevelInfo(xp) {
+    function getLevelInfo(xp, levelTitles = LEVEL_TITLES) {
         const normalizedXp = Math.max(0, Number(xp || 0));
-        const level = Math.min(LEVEL_TITLES.length, Math.floor(normalizedXp / 4) + 1);
-        const title = LEVEL_TITLES[level - 1] || LEVEL_TITLES[0];
+        const level = Math.min(levelTitles.length, Math.floor(normalizedXp / 4) + 1);
+        const title = levelTitles[level - 1] || levelTitles[0];
         return { level, title };
     }
 
@@ -798,17 +1050,21 @@
         };
     }
 
-    function pickDefaultBubble(summary, activeSection) {
+    function pickDefaultBubble(summary, activeSection, petProfile, petName) {
         if (summary.reviewPressure.hasBacklog) {
-            return `先去 ${summary.recommendedNext.label} 吧，我陪你。`;
+            return resolvePetDialog(petProfile.dialogs.defaultReview, petName, {
+                label: summary.recommendedNext.label
+            });
         }
         if (activeSection === 'exam') {
-            return '备考慢慢来，木木陪你。';
+            return resolvePetDialog(petProfile.dialogs.defaultExam, petName);
         }
         if (summary.recentActivities.length > 0) {
-            return `刚刚学到 ${summary.recentActivities[0].label} 了。`;
+            return resolvePetDialog(petProfile.dialogs.defaultRecent, petName, {
+                label: summary.recentActivities[0].label
+            });
         }
-        return '先学一点，我陪你。';
+        return resolvePetDialog(petProfile.dialogs.defaultIdle, petName);
     }
 
     function escapeHtml(value) {
@@ -882,6 +1138,10 @@
                             <button type="button" class="home-pet-name-button" data-pet-name-button aria-label="修改柴犬名字">
                                 <span data-pet-name></span>
                             </button>
+                            <div class="home-pet-switch" data-pet-switch role="tablist" aria-label="切换宠物">
+                                <button type="button" class="home-pet-switch-btn" data-pet-option="shiba" aria-pressed="true">柴犬</button>
+                                <button type="button" class="home-pet-switch-btn" data-pet-option="cat" aria-pressed="false">猫猫</button>
+                            </div>
                             <label class="home-pet-name-editor" data-pet-name-editor hidden>
                                 <input
                                     class="home-pet-name-input"
@@ -941,39 +1201,43 @@
     }
 
     function createController(root, config) {
-        const frameMap = createPixelFrameMap();
-        const petProfile = {
-            id: 'mumu-shiba',
-            name: DEFAULT_PET_NAME,
-            species: 'shiba',
-            levelTitles: LEVEL_TITLES,
-            pixelFrames: frameMap
-        };
         let state = loadPetState();
         let settings = loadPetSettings();
-        const visitMeta = registerVisit(state);
         let modalOpen = false;
-        let animState = 'idle';
-        let summary = buildLearningSummary(config, state, visitMeta);
-        let currentDialog = pickDefaultBubble(summary, config.getActiveSection ? config.getActiveSection() : '');
         let motionTimer = null;
         let isNameEditing = false;
         let dragState = null;
         let justDragged = false;
-        let sessionTreatCount = 0;
-        let sessionHeadpatChainCount = 0;
-        let sessionSleepWakeCount = 0;
-        let lastHeadpatAt = 0;
-        let interactionMode = 'normal';
-        let interactionModeUntil = 0;
-        let interactionTimer = null;
-        let welcomePending = shouldShowWelcome(state);
-        let welcomeLocked = false;
+        let summary = null;
+        let visitMeta = null;
 
-        settings.anchorX = null;
-        settings.anchorY = null;
-        savePetState(state);
-        savePetSettings(settings);
+        function createRuntimeStateForPet(petId) {
+            return {
+                currentDialog: '',
+                dialogSource: { kind: 'default' },
+                animState: 'idle',
+                sessionTreatCount: 0,
+                sessionHeadpatChainCount: 0,
+                sessionSleepWakeCount: 0,
+                lastHeadpatAt: 0,
+                interactionMode: 'normal',
+                interactionModeUntil: 0,
+                interactionTimer: null,
+                welcomePending: shouldShowWelcome(ensurePetStateBucket(state, petId)),
+                welcomeLocked: false
+            };
+        }
+
+        const petRuntimeStore = getPetIds().reduce((accumulator, petId) => {
+            accumulator[petId] = createRuntimeStateForPet(petId);
+            return accumulator;
+        }, {});
+
+        getPetIds().forEach((petId) => {
+            const petSettings = ensurePetSettingsBucket(settings, petId);
+            petSettings.anchorX = null;
+            petSettings.anchorY = null;
+        });
 
         root.className = 'home-pet-root';
         root.innerHTML = buildMarkup();
@@ -990,6 +1254,22 @@
         const toggleEl = root.querySelector('[data-pet-toggle]');
         const headpatBtn = root.querySelector('[data-pet-headpat]');
         const treatBtn = root.querySelector('[data-pet-treat]');
+        const petSwitchButtons = Array.from(root.querySelectorAll('[data-pet-option]'));
+
+        function getPetStateById(petId) {
+            return ensurePetStateBucket(state, petId);
+        }
+
+        function getPetSettingsById(petId) {
+            return ensurePetSettingsBucket(settings, petId);
+        }
+
+        function getPetRuntime(petId) {
+            if (!petRuntimeStore[petId]) {
+                petRuntimeStore[petId] = createRuntimeStateForPet(petId);
+            }
+            return petRuntimeStore[petId];
+        }
 
         function getCurrentSection() {
             return typeof config.getActiveSection === 'function'
@@ -997,38 +1277,127 @@
                 : '';
         }
 
-        function clearInteractionTimer() {
-            if (interactionTimer) {
-                clearTimeout(interactionTimer);
-                interactionTimer = null;
+        function getCurrentPetId() {
+            return getActivePetId(settings);
+        }
+
+        function getCurrentPetProfile() {
+            return getPetProfile(getCurrentPetId());
+        }
+
+        function getCurrentPetState() {
+            return getPetStateById(getCurrentPetId());
+        }
+
+        function getCurrentPetSettings() {
+            return getPetSettingsById(getCurrentPetId());
+        }
+
+        function getCurrentPetRuntime() {
+            return getPetRuntime(getCurrentPetId());
+        }
+
+        function getCurrentPetName() {
+            return getDisplayPetName(settings, getCurrentPetId());
+        }
+
+        function getVisitMetaSnapshot(petId) {
+            const petState = getPetStateById(petId);
+            const today = getTodayKey();
+            return {
+                today,
+                gap: getDateGapDays(petState.lastVisitDate, today),
+                isFirstVisitToday: petState.lastVisitDate !== today
+            };
+        }
+
+        function getVisitMetaForPet(petId) {
+            if (petId === getCurrentPetId() && visitMeta) {
+                return visitMeta;
+            }
+            return getVisitMetaSnapshot(petId);
+        }
+
+        function buildSummaryForPet(petId) {
+            return buildLearningSummary(config, getPetStateById(petId), getVisitMetaForPet(petId));
+        }
+
+        function clearInteractionTimer(petId = getCurrentPetId()) {
+            const runtime = getPetRuntime(petId);
+            if (runtime.interactionTimer) {
+                clearTimeout(runtime.interactionTimer);
+                runtime.interactionTimer = null;
             }
         }
 
-        function resetHeadpatChain() {
-            sessionHeadpatChainCount = 0;
-            lastHeadpatAt = 0;
+        function resetHeadpatChain(petId = getCurrentPetId()) {
+            const runtime = getPetRuntime(petId);
+            runtime.sessionHeadpatChainCount = 0;
+            runtime.lastHeadpatAt = 0;
         }
 
-        function resetSleepWakeChain() {
-            sessionSleepWakeCount = 0;
+        function resetSleepWakeChain(petId = getCurrentPetId()) {
+            const runtime = getPetRuntime(petId);
+            runtime.sessionSleepWakeCount = 0;
+        }
+
+        function resolveDialogSourceForPet(petId, source, summaryOverride, sectionOverride) {
+            const dialogSource = source && typeof source === 'object' ? source : { kind: 'default' };
+            const petProfile = getPetProfile(petId);
+            const petName = getDisplayPetName(settings, petId);
+            const activeSummary = summaryOverride || buildSummaryForPet(petId);
+            const activeSection = sectionOverride !== undefined ? sectionOverride : getCurrentSection();
+
+            switch (dialogSource.kind) {
+                case 'welcome':
+                    return pickWelcomeBubble(getPetStateById(petId), petProfile, petName);
+                case 'headpat': {
+                    const dialogs = petProfile.dialogs.headpat || [];
+                    const index = clamp(Number(dialogSource.index || 0), 0, Math.max(0, dialogs.length - 1));
+                    return resolvePetDialog(dialogs[index] || dialogs[0] || '', petName);
+                }
+                case 'treat': {
+                    const dialogs = petProfile.dialogs.treat || [];
+                    const index = clamp(Number(dialogSource.index || 0), 0, Math.max(0, dialogs.length - 1));
+                    return resolvePetDialog(dialogs[index] || dialogs[0] || '', petName);
+                }
+                case 'sleepWake': {
+                    const dialogs = petProfile.dialogs.sleepWake || [];
+                    const index = clamp(Number(dialogSource.index || 0), 0, Math.max(0, dialogs.length - 1));
+                    return resolvePetDialog(dialogs[index] || dialogs[0] || '', petName);
+                }
+                case 'fixed':
+                    return String(dialogSource.message || '');
+                case 'default':
+                default:
+                    return pickDefaultBubble(activeSummary, activeSection, petProfile, petName);
+            }
+        }
+
+        function setDialogSourceForPet(petId, source, summaryOverride, sectionOverride) {
+            const runtime = getPetRuntime(petId);
+            runtime.dialogSource = source && typeof source === 'object' ? source : { kind: 'default' };
+            runtime.currentDialog = resolveDialogSourceForPet(petId, runtime.dialogSource, summaryOverride, sectionOverride);
+            return runtime.currentDialog;
         }
 
         function clearWelcomeLock(options = {}) {
-            if (!welcomeLocked) {
+            const petId = getCurrentPetId();
+            const runtime = getCurrentPetRuntime();
+            if (!runtime.welcomeLocked) {
                 return false;
             }
-
-            welcomeLocked = false;
-            if (!options.keepCurrentDialog && interactionMode === 'normal') {
-                summary = buildLearningSummary(config, state, visitMeta);
-                currentDialog = pickDefaultBubble(summary, getCurrentSection());
-                bubbleEl.textContent = currentDialog;
+            runtime.welcomeLocked = false;
+            if (!options.keepCurrentDialog && runtime.interactionMode === 'normal') {
+                summary = buildSummaryForPet(petId);
+                setDialogSourceForPet(petId, { kind: 'default' }, summary, getCurrentSection());
+                bubbleEl.textContent = runtime.currentDialog;
             }
             return true;
         }
 
-        function isTreatCooldownActive() {
-            const lastSleepStartedAt = Number(state.lastSleepStartedAt);
+        function isTreatCooldownActive(petId = getCurrentPetId()) {
+            const lastSleepStartedAt = Number(getPetStateById(petId).lastSleepStartedAt);
             if (!Number.isFinite(lastSleepStartedAt) || lastSleepStartedAt <= 0) {
                 return false;
             }
@@ -1036,66 +1405,76 @@
         }
 
         function showInteractionDialog(message, nextAnim, syncReason) {
-            currentDialog = message;
-            bubbleEl.textContent = currentDialog;
+            const petId = getCurrentPetId();
+            const runtime = getCurrentPetRuntime();
+            runtime.dialogSource = { kind: 'fixed', message };
+            runtime.currentDialog = message;
+            bubbleEl.textContent = message;
             if (nextAnim) {
-                setAnim(nextAnim);
+                setAnim(nextAnim, petId);
             }
             sync(syncReason || 'interaction');
         }
 
-        function setInteractionMode(nextMode, durationMs) {
-            clearInteractionTimer();
-            interactionMode = nextMode || 'normal';
-            interactionModeUntil = 0;
+        function setInteractionMode(nextMode, durationMs, petId = getCurrentPetId()) {
+            const runtime = getPetRuntime(petId);
+            clearInteractionTimer(petId);
+            runtime.interactionMode = nextMode || 'normal';
+            runtime.interactionModeUntil = 0;
 
-            if (interactionMode !== 'sleeping') {
-                resetSleepWakeChain();
+            if (runtime.interactionMode !== 'sleeping') {
+                resetSleepWakeChain(petId);
             }
-            if (isNameEditing && interactionMode !== 'normal') {
+            if (isNameEditing && petId === getCurrentPetId() && runtime.interactionMode !== 'normal') {
                 finishNameEdit(true);
             }
 
             if (durationMs && durationMs > 0) {
-                interactionModeUntil = Date.now() + durationMs;
-                interactionTimer = window.setTimeout(() => {
-                    interactionMode = 'normal';
-                    interactionModeUntil = 0;
-                    sync('interaction-timeout');
+                runtime.interactionModeUntil = Date.now() + durationMs;
+                runtime.interactionTimer = window.setTimeout(() => {
+                    const currentRuntime = getPetRuntime(petId);
+                    currentRuntime.interactionMode = 'normal';
+                    currentRuntime.interactionModeUntil = 0;
+                    if (getCurrentPetId() === petId) {
+                        sync('interaction-timeout');
+                    }
                 }, durationMs);
             }
         }
 
-        function reconcileInteractionMode() {
-            if (interactionMode === 'normal' || !interactionModeUntil) {
+        function reconcileInteractionMode(petId = getCurrentPetId()) {
+            const runtime = getPetRuntime(petId);
+            if (runtime.interactionMode === 'normal' || !runtime.interactionModeUntil) {
                 return false;
             }
 
-            if (Date.now() < interactionModeUntil) {
+            if (Date.now() < runtime.interactionModeUntil) {
                 return false;
             }
 
-            clearInteractionTimer();
-            interactionMode = 'normal';
-            interactionModeUntil = 0;
+            clearInteractionTimer(petId);
+            runtime.interactionMode = 'normal';
+            runtime.interactionModeUntil = 0;
             return true;
         }
 
-        function getVisualMood(baseMood) {
-            if (interactionMode === 'sleeping') {
+        function getVisualMood(petId, baseMood) {
+            const runtime = getPetRuntime(petId);
+            if (runtime.interactionMode === 'sleeping') {
                 return 'sleep';
             }
-            if (interactionMode === 'dazed') {
+            if (runtime.interactionMode === 'dazed') {
                 return 'blink';
             }
             return baseMood;
         }
 
-        function getDisplayedMoodLabel(baseMood) {
-            if (interactionMode === 'sleeping') {
+        function getDisplayedMoodLabel(petId, baseMood) {
+            const runtime = getPetRuntime(petId);
+            if (runtime.interactionMode === 'sleeping') {
                 return '睡着了';
             }
-            if (interactionMode === 'dazed') {
+            if (runtime.interactionMode === 'dazed') {
                 return '迷糊中';
             }
             return MOOD_LABELS[baseMood] || MOOD_LABELS.idle;
@@ -1112,46 +1491,65 @@
         }
 
         function handleSleepingInteraction(event) {
+            const petId = getCurrentPetId();
+            const runtime = getCurrentPetRuntime();
             if (event) {
                 event.preventDefault();
                 event.stopImmediatePropagation();
             }
 
             clearWelcomeLock({ keepCurrentDialog: true });
-            sessionSleepWakeCount += 1;
-            if (sessionSleepWakeCount >= 3) {
-                resetSleepWakeChain();
-                sessionHeadpatChainCount = 1;
-                lastHeadpatAt = Date.now();
-                currentDialog = '吧唧吧唧';
-                setInteractionMode('dazed', DAZED_DURATION_MS);
-                bubbleEl.textContent = currentDialog;
-                setAnim('blink');
+            runtime.sessionSleepWakeCount += 1;
+            if (runtime.sessionSleepWakeCount >= 3) {
+                resetSleepWakeChain(petId);
+                runtime.sessionHeadpatChainCount = 1;
+                runtime.lastHeadpatAt = Date.now();
+                runtime.dialogSource = { kind: 'fixed', message: '吧唧吧唧' };
+                runtime.currentDialog = '吧唧吧唧';
+                setInteractionMode('dazed', DAZED_DURATION_MS, petId);
+                bubbleEl.textContent = runtime.currentDialog;
+                setAnim('blink', petId);
                 sync('sleeping-wake');
                 return true;
             }
 
-            showInteractionDialog(
-                SLEEP_WAKE_DIALOGS[sessionSleepWakeCount - 1] || SLEEP_WAKE_DIALOGS[SLEEP_WAKE_DIALOGS.length - 1],
-                'sleep',
-                'sleeping-interaction'
-            );
+            setDialogSourceForPet(petId, { kind: 'sleepWake', index: runtime.sessionSleepWakeCount - 1 });
+            bubbleEl.textContent = runtime.currentDialog;
+            setAnim('sleep', petId);
+            sync('sleeping-interaction');
             return true;
         }
 
-        function setAnim(nextAnim) {
-            animState = nextAnim;
-            root.dataset.anim = nextAnim;
-            spriteEl.innerHTML = petProfile.pixelFrames[nextAnim] || petProfile.pixelFrames.idle;
+        function setAnim(nextAnim, petId = getCurrentPetId()) {
+            const runtime = getPetRuntime(petId);
+            const petProfile = getPetProfile(petId);
+            runtime.animState = nextAnim;
+
+            if (getCurrentPetId() === petId) {
+                root.dataset.anim = nextAnim;
+                spriteEl.innerHTML = petProfile.pixelFrames[nextAnim] || petProfile.pixelFrames.idle;
+            }
 
             if (motionTimer) {
                 clearTimeout(motionTimer);
+                motionTimer = null;
             }
 
             if (nextAnim === 'hop' || nextAnim === 'cheer') {
+                const duration = nextAnim === 'hop' ? 620 : 820;
+                const targetPetId = petId;
                 motionTimer = setTimeout(() => {
-                    setAnim(getVisualMood(summary.mood));
-                }, nextAnim === 'hop' ? 620 : 820);
+                    const targetSummary = buildSummaryForPet(targetPetId);
+                    const fallbackAnim = getVisualMood(targetPetId, targetSummary.mood);
+                    const targetRuntime = getPetRuntime(targetPetId);
+                    targetRuntime.animState = fallbackAnim;
+                    if (getCurrentPetId() === targetPetId) {
+                        const targetProfile = getPetProfile(targetPetId);
+                        root.dataset.anim = fallbackAnim;
+                        spriteEl.innerHTML = targetProfile.pixelFrames[fallbackAnim] || targetProfile.pixelFrames.idle;
+                    }
+                    motionTimer = null;
+                }, duration);
             }
         }
 
@@ -1159,20 +1557,22 @@
             savePetSettings(settings);
         }
 
-        function awardInteractionXp() {
+        function awardInteractionXp(petId = getCurrentPetId()) {
+            const petState = getPetStateById(petId);
             const today = getTodayKey();
-            if (state.lastInteractionDate === today) {
+            if (petState.lastInteractionDate === today) {
                 return;
             }
-            state.lastInteractionDate = today;
-            state.bondXp = Number(state.bondXp || 0) + 1;
+            petState.lastInteractionDate = today;
+            petState.bondXp = Number(petState.bondXp || 0) + 1;
             savePetState(state);
         }
 
         function applyAnchorPosition() {
+            const petSettings = getCurrentPetSettings();
             let nextPosition = getDefaultAnchorPosition(root, config);
 
-            if (settings.anchorX !== null && settings.anchorY !== null) {
+            if (petSettings.anchorX !== null && petSettings.anchorY !== null) {
                 const rect = root.getBoundingClientRect();
                 const width = Math.round(rect.width) || 280;
                 const height = Math.round(rect.height) || 86;
@@ -1181,8 +1581,8 @@
 
                 nextPosition = getClampedAnchor(
                     root,
-                    settings.anchorX * availableX,
-                    settings.anchorY * availableY
+                    petSettings.anchorX * availableX,
+                    petSettings.anchorY * availableY
                 );
             }
 
@@ -1195,11 +1595,13 @@
                 return;
             }
 
+            const petProfile = getCurrentPetProfile();
             isNameEditing = true;
             root.dataset.nameEditing = 'true';
             nameButtonEl.hidden = true;
             nameEditorEl.hidden = false;
-            nameInputEl.value = getDisplayPetName(settings);
+            nameInputEl.value = getCurrentPetName();
+            nameInputEl.setAttribute('aria-label', `输入${petProfile.label}名字`);
             requestAnimationFrame(() => {
                 nameInputEl.focus();
                 nameInputEl.select();
@@ -1212,8 +1614,10 @@
             }
 
             if (saveValue) {
-                const nextName = sanitizePetName(nameInputEl.value);
-                settings.customName = nextName === DEFAULT_PET_NAME ? '' : nextName;
+                const petId = getCurrentPetId();
+                const petSettings = getCurrentPetSettings();
+                const nextName = sanitizePetName(nameInputEl.value, petId);
+                petSettings.customName = nextName === getPetDefaultName(petId) ? '' : nextName;
                 persistSettings();
             }
 
@@ -1225,46 +1629,83 @@
         }
 
         function sync(reason) {
+            const petId = getCurrentPetId();
+            const petState = getCurrentPetState();
+            const petSettings = getCurrentPetSettings();
+            const runtime = getCurrentPetRuntime();
+            const petProfile = getCurrentPetProfile();
+            const petName = getCurrentPetName();
             const currentSection = getCurrentSection();
-            const didExpireInteraction = reconcileInteractionMode();
-            if (state.lastOpenedSection !== currentSection) {
-                state.lastOpenedSection = currentSection;
+            const didExpireInteraction = reconcileInteractionMode(petId);
+            if (petState.lastOpenedSection !== currentSection) {
+                petState.lastOpenedSection = currentSection;
                 savePetState(state);
             }
 
-            summary = buildLearningSummary(config, state, visitMeta);
-            if (reason === 'boot' && welcomePending) {
-                currentDialog = pickWelcomeBubble(state);
-                state.lastWelcomedAt = Date.now();
-                welcomePending = false;
-                welcomeLocked = true;
+            visitMeta = getVisitMetaSnapshot(petId);
+            summary = buildLearningSummary(config, petState, visitMeta);
+
+            if (reason === 'boot' && runtime.welcomePending) {
+                setDialogSourceForPet(petId, { kind: 'welcome' }, summary, currentSection);
+                petState.lastWelcomedAt = Date.now();
+                runtime.welcomePending = false;
+                runtime.welcomeLocked = true;
                 savePetState(state);
-            } else if ((reason === 'interaction-timeout' || didExpireInteraction) && !welcomeLocked) {
-                currentDialog = pickDefaultBubble(summary, currentSection);
-            } else if ((reason === 'boot' || reason === 'section-change') && !welcomeLocked) {
-                currentDialog = pickDefaultBubble(summary, currentSection);
+            } else if ((reason === 'interaction-timeout' || didExpireInteraction) && !runtime.welcomeLocked) {
+                setDialogSourceForPet(petId, { kind: 'default' }, summary, currentSection);
+            } else if (
+                (reason === 'boot'
+                    || reason === 'section-change'
+                    || reason === 'toggle'
+                    || reason === 'modal'
+                    || reason === 'resize'
+                    || reason === 'pet-switch'
+                    || reason === 'welcome-cleared')
+                && !runtime.welcomeLocked
+                && runtime.interactionMode === 'normal'
+            ) {
+                setDialogSourceForPet(petId, { kind: 'default' }, summary, currentSection);
+            } else if (reason === 'name' || reason === 'interaction' || reason === 'treat' || reason === 'headpat' || reason === 'sleeping-interaction' || reason === 'sleeping-wake' || reason === 'dazed-interaction' || reason === 'treat-cooldown') {
+                runtime.currentDialog = resolveDialogSourceForPet(petId, runtime.dialogSource, summary, currentSection);
+            } else if (!runtime.currentDialog) {
+                setDialogSourceForPet(petId, { kind: 'default' }, summary, currentSection);
+            } else {
+                runtime.currentDialog = resolveDialogSourceForPet(petId, runtime.dialogSource, summary, currentSection);
             }
 
-            const levelInfo = getLevelInfo(state.bondXp);
-            const isExpanded = !settings.collapsed && !modalOpen;
-            const visualMood = getVisualMood(summary.mood);
+            const levelInfo = getLevelInfo(petState.bondXp, petProfile.levelTitles);
+            const isExpanded = !petSettings.collapsed && !modalOpen;
+            const visualMood = getVisualMood(petId, summary.mood);
 
-            nameEl.textContent = getDisplayPetName(settings);
+            nameEl.textContent = petName;
             if (!isNameEditing) {
-                nameInputEl.value = getDisplayPetName(settings);
+                nameInputEl.value = petName;
             }
-            moodEl.textContent = getDisplayedMoodLabel(summary.mood);
+            nameButtonEl.setAttribute('aria-label', `修改${petProfile.label}名字`);
+            nameInputEl.setAttribute('aria-label', `输入${petProfile.label}名字`);
+            moodEl.textContent = getDisplayedMoodLabel(petId, summary.mood);
             levelEl.textContent = `Lv.${levelInfo.level}`;
             renderActivities(activitiesEl, summary.recentActivities, summary.recommendedNext);
             root.dataset.expanded = String(isExpanded);
             root.dataset.modalOpen = String(modalOpen);
             root.dataset.mood = visualMood;
-            root.dataset.draggable = String(settings.collapsed && !modalOpen);
+            root.dataset.draggable = String(petSettings.collapsed && !modalOpen);
+            root.dataset.species = petProfile.species;
             toggleEl.setAttribute('aria-expanded', String(isExpanded));
-            bubbleEl.textContent = currentDialog || pickDefaultBubble(summary, currentSection);
+            toggleEl.setAttribute('aria-label', `${isExpanded ? '收起' : '打开'}${petProfile.label}陪学面板`);
+            bubbleEl.textContent = runtime.currentDialog || resolveDialogSourceForPet(petId, runtime.dialogSource, summary, currentSection);
 
-            if (animState !== 'hop' && animState !== 'cheer') {
-                setAnim(visualMood);
+            petSwitchButtons.forEach((button) => {
+                const isActive = button.getAttribute('data-pet-option') === petId;
+                button.setAttribute('aria-pressed', String(isActive));
+                button.classList.toggle('is-active', isActive);
+            });
+
+            if (runtime.animState !== 'hop' && runtime.animState !== 'cheer') {
+                setAnim(visualMood, petId);
+            } else {
+                root.dataset.anim = runtime.animState;
+                spriteEl.innerHTML = petProfile.pixelFrames[runtime.animState] || petProfile.pixelFrames.idle;
             }
 
             applyAnchorPosition();
@@ -1281,20 +1722,22 @@
                 return;
             }
 
+            const petState = getCurrentPetState();
             clearWelcomeLock();
-            state.totalStudyLaunches = Number(state.totalStudyLaunches || 0) + 1;
-            state.bondXp = Number(state.bondXp || 0) + 1;
-            state.lastClickedHref = nextHref;
-            state.lastClickedLabel = String(payload && payload.label ? payload.label : '').trim();
-            state.lastStudyDate = getTodayKey();
+            petState.totalStudyLaunches = Number(petState.totalStudyLaunches || 0) + 1;
+            petState.bondXp = Number(petState.bondXp || 0) + 1;
+            petState.lastClickedHref = nextHref;
+            petState.lastClickedLabel = String(payload && payload.label ? payload.label : '').trim();
+            petState.lastStudyDate = getTodayKey();
             if (payload && payload.sectionKey) {
-                state.lastOpenedSection = payload.sectionKey;
+                petState.lastOpenedSection = payload.sectionKey;
             }
             savePetState(state);
         }
 
         function handleDragStart(event) {
-            if (!settings.collapsed || modalOpen || event.button > 0) {
+            const petSettings = getCurrentPetSettings();
+            if (!petSettings.collapsed || modalOpen || event.button > 0) {
                 return;
             }
 
@@ -1356,10 +1799,11 @@
                 justDragged = true;
                 persistAnchor(
                     root,
-                    settings,
+                    getCurrentPetSettings(),
                     Number.parseFloat(root.style.left) || 0,
                     Number.parseFloat(root.style.top) || 0
                 );
+                persistSettings();
                 window.setTimeout(() => {
                     justDragged = false;
                 }, 280);
@@ -1384,13 +1828,13 @@
                 return;
             }
 
-            if (interactionMode === 'dazed') {
+            if (getCurrentPetRuntime().interactionMode === 'dazed') {
                 awardInteractionXp();
                 handleDazedInteraction(event);
                 return;
             }
 
-            if (interactionMode === 'sleeping') {
+            if (getCurrentPetRuntime().interactionMode === 'sleeping') {
                 awardInteractionXp();
                 handleSleepingInteraction(event);
             }
@@ -1405,10 +1849,12 @@
 
             awardInteractionXp();
             clearWelcomeLock({ keepCurrentDialog: true });
-            settings.collapsed = !settings.collapsed;
+            const petSettings = getCurrentPetSettings();
+            const runtime = getCurrentPetRuntime();
+            petSettings.collapsed = !petSettings.collapsed;
             persistSettings();
-            if (interactionMode === 'normal') {
-                currentDialog = pickDefaultBubble(summary, getCurrentSection());
+            if (runtime.interactionMode === 'normal') {
+                setDialogSourceForPet(getCurrentPetId(), { kind: 'default' }, summary, getCurrentSection());
             }
             sync('toggle');
         });
@@ -1435,68 +1881,73 @@
         });
 
         headpatBtn.addEventListener('click', () => {
+            const petId = getCurrentPetId();
+            const runtime = getCurrentPetRuntime();
             awardInteractionXp();
             clearWelcomeLock({ keepCurrentDialog: true });
             const now = Date.now();
 
-            if (!lastHeadpatAt || (now - lastHeadpatAt) > INTERACTION_CHAIN_MS) {
-                sessionHeadpatChainCount = 1;
+            if (!runtime.lastHeadpatAt || (now - runtime.lastHeadpatAt) > INTERACTION_CHAIN_MS) {
+                runtime.sessionHeadpatChainCount = 1;
             } else {
-                sessionHeadpatChainCount += 1;
+                runtime.sessionHeadpatChainCount += 1;
             }
-            lastHeadpatAt = now;
+            runtime.lastHeadpatAt = now;
 
-            if (sessionHeadpatChainCount <= 3) {
-                currentDialog = HEADPAT_DIALOGS[sessionHeadpatChainCount - 1];
+            if (runtime.sessionHeadpatChainCount <= 3) {
+                setDialogSourceForPet(petId, { kind: 'headpat', index: runtime.sessionHeadpatChainCount - 1 }, summary, getCurrentSection());
             } else {
-                currentDialog = '诶嘿，你摸不着';
+                setDialogSourceForPet(petId, { kind: 'fixed', message: '诶嘿，你摸不着' }, summary, getCurrentSection());
             }
 
-            bubbleEl.textContent = currentDialog;
-            setAnim(sessionHeadpatChainCount >= 4 ? 'hop' : 'cheer');
+            bubbleEl.textContent = runtime.currentDialog;
+            setAnim(runtime.sessionHeadpatChainCount >= 4 ? 'hop' : 'cheer', petId);
         });
 
         treatBtn.addEventListener('click', () => {
+            const petId = getCurrentPetId();
+            const runtime = getCurrentPetRuntime();
+            const petState = getCurrentPetState();
             awardInteractionXp();
             clearWelcomeLock({ keepCurrentDialog: true });
-            resetHeadpatChain();
+            resetHeadpatChain(petId);
 
-            if (isTreatCooldownActive()) {
+            if (isTreatCooldownActive(petId)) {
                 showInteractionDialog(TREAT_COOLDOWN_DIALOG, 'idle', 'treat-cooldown');
                 return;
             }
 
-            sessionTreatCount += 1;
+            runtime.sessionTreatCount += 1;
 
-            if (sessionTreatCount === 1) {
-                currentDialog = TREAT_DIALOGS[0];
-                setInteractionMode('normal');
-                setAnim('cheer');
-            } else if (sessionTreatCount === 2) {
-                currentDialog = TREAT_DIALOGS[1];
-                setInteractionMode('normal');
-                setAnim('cheer');
-            } else if (sessionTreatCount === 3) {
-                currentDialog = TREAT_DIALOGS[2];
-                setInteractionMode('normal');
-                setAnim('cheer');
-            } else if (sessionTreatCount === 4) {
-                currentDialog = '减肥呢，别搞。';
-                setInteractionMode('normal');
-                setAnim('idle');
-            } else if (sessionTreatCount === 5) {
-                currentDialog = '说了减肥呢，不吃不吃';
-                setInteractionMode('normal');
-                setAnim('idle');
+            if (runtime.sessionTreatCount === 1) {
+                setDialogSourceForPet(petId, { kind: 'treat', index: 0 }, summary, getCurrentSection());
+                setInteractionMode('normal', 0, petId);
+                setAnim('cheer', petId);
+            } else if (runtime.sessionTreatCount === 2) {
+                setDialogSourceForPet(petId, { kind: 'treat', index: 1 }, summary, getCurrentSection());
+                setInteractionMode('normal', 0, petId);
+                setAnim('cheer', petId);
+            } else if (runtime.sessionTreatCount === 3) {
+                setDialogSourceForPet(petId, { kind: 'treat', index: 2 }, summary, getCurrentSection());
+                setInteractionMode('normal', 0, petId);
+                setAnim('cheer', petId);
+            } else if (runtime.sessionTreatCount === 4) {
+                setDialogSourceForPet(petId, { kind: 'fixed', message: '减肥呢，别搞。' }, summary, getCurrentSection());
+                setInteractionMode('normal', 0, petId);
+                setAnim('idle', petId);
+            } else if (runtime.sessionTreatCount === 5) {
+                setDialogSourceForPet(petId, { kind: 'fixed', message: '说了减肥呢，不吃不吃' }, summary, getCurrentSection());
+                setInteractionMode('normal', 0, petId);
+                setAnim('idle', petId);
             } else {
-                currentDialog = 'Z z z z z z';
-                state.lastSleepStartedAt = Date.now();
+                setDialogSourceForPet(petId, { kind: 'fixed', message: 'Z z z z z z' }, summary, getCurrentSection());
+                petState.lastSleepStartedAt = Date.now();
                 savePetState(state);
-                setInteractionMode('sleeping');
-                setAnim('sleep');
+                setInteractionMode('sleeping', 0, petId);
+                setAnim('sleep', petId);
             }
 
-            bubbleEl.textContent = currentDialog;
+            bubbleEl.textContent = runtime.currentDialog;
             sync('treat');
         });
 
@@ -1515,20 +1966,51 @@
             });
         });
 
+        petSwitchButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const nextPetId = button.getAttribute('data-pet-option');
+                if (!PET_PROFILES[nextPetId] || nextPetId === getCurrentPetId()) {
+                    return;
+                }
+
+                const wasExpanded = !getCurrentPetSettings().collapsed;
+                awardInteractionXp();
+                clearWelcomeLock();
+                if (isNameEditing) {
+                    finishNameEdit(true);
+                }
+                if (motionTimer) {
+                    clearTimeout(motionTimer);
+                    motionTimer = null;
+                }
+
+                settings.activePetId = nextPetId;
+                if (wasExpanded) {
+                    getCurrentPetSettings().collapsed = false;
+                }
+                persistSettings();
+                visitMeta = registerVisit(getCurrentPetState());
+                savePetState(state);
+                sync('pet-switch');
+            });
+        });
+
         const handlePageInteraction = (event) => {
             const sectionSwitch = event.target.closest('.main-chip[data-section]');
             if (sectionSwitch) {
                 clearWelcomeLock({ keepCurrentDialog: true });
             }
         };
-        document.addEventListener('click', handlePageInteraction);
+        document.addEventListener('click', handlePageInteraction, true);
 
         const resizeHandler = () => {
             sync('resize');
         };
         window.addEventListener('resize', resizeHandler);
 
-        currentDialog = pickDefaultBubble(summary, getCurrentSection());
+        visitMeta = registerVisit(getCurrentPetState());
+        savePetState(state);
+        savePetSettings(settings);
         sync('boot');
 
         return {
@@ -1537,11 +2019,11 @@
             recordStudyLaunch,
             destroy() {
                 window.removeEventListener('resize', resizeHandler);
-                document.removeEventListener('click', handlePageInteraction);
+                document.removeEventListener('click', handlePageInteraction, true);
                 if (motionTimer) {
                     clearTimeout(motionTimer);
                 }
-                clearInteractionTimer();
+                getPetIds().forEach((petId) => clearInteractionTimer(petId));
             }
         };
     }
