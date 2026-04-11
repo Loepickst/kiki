@@ -3,6 +3,12 @@
     const PET_SETTINGS_KEY = 'kiki_pet_settings_v1';
     const DEFAULT_SECTION = 'daily';
     const DEFAULT_PET_ID = 'shiba';
+    const DEFAULT_UNLOCKED_PET_IDS = ['shiba', 'cat'];
+    const DEFAULT_UNLOCKED_INTERACTION_IDS = [];
+    const COLA_TREAT_UNLOCK_ID = 'colaTreat';
+    const LOTTERY_COLLECTION_KEY = 'omikujiCollection';
+    const LOTTERY_COLLECTION_META_KEY = 'omikujiCollectionMeta_v1';
+    const LOTTERY_LAST_OBTAINED_KEY = 'omikujiLastObtained_v1';
     const MAX_NAME_LENGTH = 8;
     const DRAG_THRESHOLD = 8;
     const WELCOME_INTERVAL_MS = 60 * 60 * 1000;
@@ -23,23 +29,121 @@
         information: '信息检索',
         integrated: '综合理解'
     };
-    const LEVEL_TITLES = [
+    const LEVEL_XP_THRESHOLDS = [0, 5, 12, 22, 35, 51, 70, 92, 117, 145];
+    const SHIBA_LEVEL_TITLES = [
         '散歩初心者',
+        '摇尾陪跑生',
         '陪学小柴',
+        '词卡巡逻员',
         '专注犬见习',
+        '进度小跟班',
+        '复习番犬',
         '自律番犬',
+        '学习冲刺官',
         '学習守り神'
+    ];
+    const CAT_LEVEL_TITLES = [
+        '午睡见习生',
+        '窗边观察员',
+        '陪学小猫',
+        '纸页巡查员',
+        '安静读书猫',
+        '笔记踩点师',
+        '复习守夜猫',
+        '专注陪跑猫',
+        '灵感捕手',
+        '月影学伴神'
+    ];
+    const SHIBA_LEVEL_UNLOCK_LABELS = {
+        2: '新的欢迎语',
+        3: '新的待机闲聊',
+        4: '新的摸摸头回应',
+        5: '新的复习鼓励语',
+        6: '新的喂肉干回应',
+        7: '新的备考鼓劲语',
+        8: '新的睡前回应',
+        9: '新的喂可乐彩蛋语',
+        10: '满级纪念语与图鉴奖励'
+    };
+    const CAT_LEVEL_UNLOCK_LABELS = {
+        2: '新的欢迎语',
+        3: '新的待机语',
+        4: '新的摸摸头回应',
+        5: '新的复习提醒',
+        6: '新的喂食回应',
+        7: '新的备考鼓励语',
+        8: '新的睡前回应',
+        9: '新的陪学短语',
+        10: '满级纪念语与图鉴奖励'
+    };
+    const PET_MAX_REWARD_IDS = {
+        shiba: 'pet_shiba_max',
+        cat: 'pet_cat_max'
+    };
+    const STUDY_LAUNCH_MILESTONES = [
+        { count: 10, xp: 1 },
+        { count: 25, xp: 2 },
+        { count: 50, xp: 3 }
     ];
     const MOOD_LABELS = {
         idle: '安静陪跑',
         curious: '复盘雷达',
         cheer: '状态很好',
+        cola: '可乐上头',
         sleep: '慢慢苏醒'
+    };
+    const SHIBA_MOOD_LABELS = {
+        idle: '摇尾待命',
+        curious: '嗅嗅雷达',
+        cheer: '冲劲满满',
+        cola: '汽泡上头',
+        sleep: '打盹补能',
+        sleeping: '打盹补能',
+        dazed: '晕乎乎',
+        headpatGentle: '乖巧',
+        headpatPlayful: '淘气',
+        headpatAnnoyed: '厌烦'
+    };
+    const SHIBA_MOOD_LABEL_VARIANTS = {
+        idle: [
+            { minLevel: 1, label: '摇尾待命' },
+            { minLevel: 4, label: '守在身旁' },
+            { minLevel: 8, label: '前爪预热' }
+        ],
+        curious: [
+            { minLevel: 1, label: '嗅嗅雷达' },
+            { minLevel: 5, label: '巡场侦查' },
+            { minLevel: 9, label: '寻宝模式' }
+        ],
+        cheer: [
+            { minLevel: 1, label: '冲劲满满' },
+            { minLevel: 6, label: '一起冲呀' },
+            { minLevel: 10, label: '并肩冲刺' }
+        ],
+        cola: [
+            { minLevel: 1, label: '汽泡上头' },
+            { minLevel: 9, label: '快乐过载' }
+        ],
+        sleep: [
+            { minLevel: 1, label: '打盹补能' },
+            { minLevel: 8, label: '梦里巡逻' }
+        ],
+        sleeping: [
+            { minLevel: 1, label: '打盹补能' },
+            { minLevel: 8, label: '梦里巡逻' }
+        ],
+        dazed: [
+            { minLevel: 1, label: '晕乎乎' },
+            { minLevel: 7, label: '晕晕转圈' }
+        ]
     };
     const TREAT_COOLDOWN_DIALOG = '肚子有点撑，吃不动🐦';
     const INTERACTION_CHAIN_MS = 8000;
     const DAZED_DURATION_MS = 8000;
     const SLEEP_TREAT_COOLDOWN_MS = 12 * 60 * 60 * 1000;
+    const HEADPAT_EASTER_TRIGGER_CHANCE = 0.28;
+    const HEADPAT_EASTER_COOLDOWN_MS = 60 * 1000;
+    const HEADPAT_EASTER_STATE_DURATION_MS = 7000;
 
     function frameBlock(strings, ...values) {
         const raw = String.raw({ raw: strings }, ...values).trim();
@@ -406,32 +510,135 @@
             label: '柴犬',
             species: 'shiba',
             defaultName: '木木',
-            levelTitles: LEVEL_TITLES,
+            levelTitles: SHIBA_LEVEL_TITLES,
+            levelUnlockLabels: SHIBA_LEVEL_UNLOCK_LABELS,
+            moodLabels: SHIBA_MOOD_LABELS,
+            moodLabelVariants: SHIBA_MOOD_LABEL_VARIANTS,
             pixelFrames: createPixelFrameMap(SHIBA_PIXEL_FRAMES, SHIBA_FRAME_OPTIONS),
             dialogs: {
                 welcome: [
                     '你来啦，{name}今天也准时上岗。',
                     '{name}蹲好啦，先点一个轻松的开始吧。',
-                    '嘿，今天也把日语慢慢啃掉一点。'
+                    '嘿，今天也把日语慢慢啃掉一点。',
+                    '{name}已经热身好了，今天也一起往前拱一点。',
+                    '先别急着冲，{name}陪你把第一口啃下来。',
+                    '有我在，今天也不让你一个人学。'
                 ],
                 treat: [
                     '啊呜，肉干收到，{name}今天心情很好。',
                     '还挺香，那就再认真陪你一会儿。',
                     '这口我记下了，今天也会好好陪学。'
                 ],
+                colaTreat: [
+                    '咕嘟咕嘟……{name}这口气泡水也太快乐了！',
+                    '嘶——好凉，{name}尾巴都快摇成风扇啦。',
+                    '今天是可乐限定快乐日，{name}已经有点上头。'
+                ],
                 headpat: [
                     '嘿嘿，{name}知道你来啦。',
                     '耳朵都快被你摸卷起来了。',
                     '再摸一下，尾巴都要摇起来了。'
                 ],
+                headpatEaster: [
+                    { message: '看你这么真诚，就让你再摸一下好了', mode: 'headpatGentle', anim: 'blink' },
+                    { message: '你急了，诶嘿', mode: 'headpatPlayful', anim: 'hop' },
+                    { message: '别摸了别摸了，该学习了', mode: 'headpatAnnoyed', anim: 'idle' }
+                ],
                 sleepWake: [
                     '呼噜……{name}还想再睡一会儿。',
                     '耳朵动了一下，又缩回去睡了。'
                 ],
-                defaultReview: '先去 {label} 吧，{name}陪你。',
-                defaultExam: '备考慢慢来，{name}陪你。',
-                defaultRecent: '刚刚学到 {label} 了。',
-                defaultIdle: '先学一点，{name}陪你。'
+                defaultReview: [
+                    '先去 {label} 吧，{name}陪你。',
+                    '{label} 还在等你呢，{name}陪你把它啃下来。',
+                    '先把 {label} 清一点，今天就算有推进。',
+                    '{name}闻到复习味儿了，先从 {label} 下口吧。'
+                ],
+                defaultExam: [
+                    '备考慢慢来，{name}陪你。',
+                    '先做一道也算推进，{name}在旁边盯着。',
+                    '别慌，{name}陪你一题一题过。',
+                    '先开题就赢一半了，{name}陪你冲。'
+                ],
+                defaultRecent: [
+                    '刚刚学到 {label} 了。',
+                    '{label} 已经碰过啦，再往前拱一点。',
+                    '刚刷到 {label}，手感别让它跑掉。',
+                    '{name}记得你刚看到 {label}，要不要顺手再巩固一下？'
+                ],
+                defaultIdle: [
+                    '先学一点，{name}陪你。',
+                    '先点最轻的一项，{name}已经摇尾巴等着了。',
+                    '别怕开始慢，{name}陪你啃第一口。',
+                    '今天只要往前一点点，也算赢。',
+                    '{name}已经蹲好啦，随便挑一个入口，我们就开工。'
+                ]
+            },
+            dialogUnlocks: {
+                2: {
+                    welcome: [
+                        '{name}绕着你转了一圈，今天也要把进度拱一点出来。',
+                        '一见到你，{name}就知道今天又能一起赢一点点。'
+                    ]
+                },
+                3: {
+                    defaultIdle: [
+                        '先翻一页也好，{name}陪你把学习味儿热起来。',
+                        '今天别追求太满，先让 {name}陪你推开第一扇门。'
+                    ],
+                    defaultRecent: [
+                        '{label} 还热着呢，趁尾巴还在摇，再回头看一眼吧。'
+                    ]
+                },
+                4: {
+                    headpatExtras: {
+                        0: ['{name}抬起下巴，一副“我今天很配合”的样子。'],
+                        1: ['尾巴甩得更快了，像是被你夸得有点飘。'],
+                        2: ['{name}已经开始贴过来了，一副还想再来一下的样子。']
+                    }
+                },
+                5: {
+                    defaultReview: [
+                        '复习不是倒退，{name}觉得这是把路踩稳。',
+                        '卡住的地方再啃一口，往往就是今天真正的进步。'
+                    ]
+                },
+                6: {
+                    treatExtras: {
+                        0: ['吃饱一点，{name}就更有力气陪你盯题啦。'],
+                        1: ['这口下去，{name}已经把“继续学”写在脸上了。'],
+                        2: ['肉干香香，今天的陪跑热情也一起续上了。']
+                    }
+                },
+                7: {
+                    defaultExam: [
+                        '备考先稳住呼吸，{name}陪你把这一题抠干净。',
+                        '别急着全通关，今天能拿下一块就是漂亮推进。'
+                    ]
+                },
+                8: {
+                    sleepWakeExtras: {
+                        0: ['{name}半睁着眼，像是在说“再让我眯一小会儿嘛”。'],
+                        1: ['耳朵抖了抖，像是听见你在催它继续陪学了。']
+                    }
+                },
+                9: {
+                    colaTreatExtras: {
+                        0: ['气泡一炸开，{name}连脚步都轻快了不少。'],
+                        1: ['这一口下去，{name}感觉自己能陪你再冲一轮。'],
+                        2: ['尾巴摇得像小风扇，今天的快乐值真的爆表了。']
+                    }
+                },
+                10: {
+                    welcome: [
+                        '{name}已经是满级陪学搭子了，今天也照样跟你并肩。',
+                        '嘿，守到这里的我们，当然也能把今天继续过漂亮。'
+                    ],
+                    defaultIdle: [
+                        '满级不是终点，{name}更想陪你把每一天都学得踏实。',
+                        '走到这里很了不起，但今天的小进步也一样值得摇尾巴。'
+                    ]
+                }
             }
         },
         cat: {
@@ -439,7 +646,8 @@
             label: '猫猫',
             species: 'cat',
             defaultName: '咪咪',
-            levelTitles: LEVEL_TITLES,
+            levelTitles: CAT_LEVEL_TITLES,
+            levelUnlockLabels: CAT_LEVEL_UNLOCK_LABELS,
             pixelFrames: createPixelFrameMap(CAT_PIXEL_FRAMES),
             dialogs: {
                 welcome: [
@@ -465,6 +673,41 @@
                 defaultExam: '备考别急，{name}在旁边陪你。',
                 defaultRecent: '刚刚又啃到 {label} 啦。',
                 defaultIdle: '先学一点，{name}在这儿陪着。'
+            },
+            dialogUnlocks: {
+                2: {
+                    welcome: ['{name}悄悄蹭过来了，今天也陪你慢慢啃一点。']
+                },
+                3: {
+                    defaultIdle: ['先翻开一页吧，{name}会安安静静守在旁边。']
+                },
+                4: {
+                    headpatExtras: {
+                        0: ['{name}轻轻眯起眼，像是默许你多摸一下。']
+                    }
+                },
+                5: {
+                    defaultReview: ['旧题再看一遍也不错，{name}觉得这样很踏实。']
+                },
+                6: {
+                    treatExtras: {
+                        0: ['这一口让 {name}愿意多陪你窝一会儿。']
+                    }
+                },
+                7: {
+                    defaultExam: ['别急，先把这一页看顺，{name}会陪你。']
+                },
+                8: {
+                    sleepWakeExtras: {
+                        0: ['{name}迷迷糊糊地抬头，又把尾巴圈回身边。']
+                    }
+                },
+                9: {
+                    defaultRecent: ['{label} 还留着温度，{name}觉得可以再翻一眼。']
+                },
+                10: {
+                    welcome: ['{name}已经是最稳的陪学猫了，今天也继续守着你。']
+                }
             }
         }
     };
@@ -624,6 +867,7 @@
 
     function createDefaultPersistentPetState() {
         return {
+            progressVersion: 2,
             lastVisitDate: '',
             visitStreak: 0,
             bondXp: 0,
@@ -633,9 +877,11 @@
             lastClickedHref: '',
             lastClickedLabel: '',
             lastStudyDate: '',
+            lastStudyXpDate: '',
             lastInteractionDate: '',
             lastWelcomedAt: 0,
-            lastSleepStartedAt: 0
+            lastSleepStartedAt: 0,
+            claimedMilestoneIds: []
         };
     }
 
@@ -650,7 +896,18 @@
 
     function normalizePersistentPetState(rawValue) {
         const source = rawValue && typeof rawValue === 'object' && !Array.isArray(rawValue) ? rawValue : {};
-        return { ...createDefaultPersistentPetState(), ...source };
+        const normalized = {
+            ...createDefaultPersistentPetState(),
+            ...source,
+            lastStudyXpDate: typeof source.lastStudyXpDate === 'string' ? source.lastStudyXpDate : '',
+            claimedMilestoneIds: Array.from(new Set(normalizeIdList(source.claimedMilestoneIds)))
+        };
+
+        if (Number(source.progressVersion) === 2) {
+            return normalized;
+        }
+
+        return migrateLegacyPersistentPetState(normalized);
     }
 
     function normalizePersistentPetSettings(rawValue) {
@@ -662,6 +919,74 @@
             anchorX: normalizeStoredAnchor(source.anchorX),
             anchorY: normalizeStoredAnchor(source.anchorY),
             collapsed: source.collapsed !== false
+        };
+    }
+
+    function normalizeIdList(rawValue) {
+        if (!Array.isArray(rawValue)) {
+            return [];
+        }
+        return rawValue
+            .map((item) => String(item || '').trim())
+            .filter(Boolean);
+    }
+
+    function getVisitMilestoneDaysUpTo(streakDays) {
+        const days = Math.max(0, Number(streakDays || 0));
+        const milestoneDays = [];
+        if (days >= 3) {
+            milestoneDays.push(3);
+        }
+        for (let current = 7; current <= days; current += 7) {
+            milestoneDays.push(current);
+        }
+        return milestoneDays;
+    }
+
+    function getStudyMilestonesUpTo(totalLaunches) {
+        const launches = Math.max(0, Number(totalLaunches || 0));
+        return STUDY_LAUNCH_MILESTONES.filter((milestone) => launches >= milestone.count);
+    }
+
+    function migrateLegacyBondXp(oldXp) {
+        const normalizedXp = Math.max(0, Number(oldXp || 0));
+        if (normalizedXp <= 16) {
+            return Math.round((normalizedXp / 16) * 51);
+        }
+        return Math.min(92, 51 + Math.round((normalizedXp - 16) * 0.5));
+    }
+
+    function migrateLegacyPersistentPetState(normalizedState) {
+        const migrated = {
+            ...createDefaultPersistentPetState(),
+            ...normalizedState
+        };
+        const legacyBondXp = Number(normalizedState.bondXp || 0);
+        migrated.bondXp = migrateLegacyBondXp(legacyBondXp);
+        migrated.lastStudyXpDate = typeof normalizedState.lastStudyDate === 'string' ? normalizedState.lastStudyDate : '';
+        migrated.claimedMilestoneIds = Array.from(new Set([
+            ...getVisitMilestoneDaysUpTo(normalizedState.visitStreak).map((days) => `visit-streak-${days}`),
+            ...getStudyMilestonesUpTo(normalizedState.totalStudyLaunches).map((milestone) => `study-launch-${milestone.count}`)
+        ]));
+        migrated.progressVersion = 2;
+        return migrated;
+    }
+
+    function createDefaultPersistentPetCollection() {
+        return {
+            unlockedPetIds: DEFAULT_UNLOCKED_PET_IDS.slice(),
+            unlockedInteractionIds: DEFAULT_UNLOCKED_INTERACTION_IDS.slice()
+        };
+    }
+
+    function normalizePersistentPetCollection(rawValue) {
+        const source = rawValue && typeof rawValue === 'object' && !Array.isArray(rawValue) ? rawValue : {};
+        return {
+            unlockedPetIds: Array.from(new Set([
+                ...DEFAULT_UNLOCKED_PET_IDS,
+                ...normalizeIdList(source.unlockedPetIds)
+            ])),
+            unlockedInteractionIds: Array.from(new Set(normalizeIdList(source.unlockedInteractionIds)))
         };
     }
 
@@ -685,6 +1010,19 @@
         return wrapper.petProfiles[petId];
     }
 
+    function ensurePetCollectionBucket(wrapper) {
+        if (!wrapper.petCollection || typeof wrapper.petCollection !== 'object' || Array.isArray(wrapper.petCollection)) {
+            wrapper.petCollection = createDefaultPersistentPetCollection();
+        }
+        wrapper.petCollection = normalizePersistentPetCollection(wrapper.petCollection);
+        return wrapper.petCollection;
+    }
+
+    function isInteractionUnlocked(wrapper, interactionId) {
+        const collection = ensurePetCollectionBucket(wrapper);
+        return collection.unlockedInteractionIds.includes(String(interactionId || '').trim());
+    }
+
     function getActivePetId(settings) {
         return PET_PROFILES[settings.activePetId] ? settings.activePetId : DEFAULT_PET_ID;
     }
@@ -702,10 +1040,35 @@
         return Date.now() - lastWelcomedAt >= WELCOME_INTERVAL_MS;
     }
 
+    function hashDialogSeed(...parts) {
+        let hash = 0;
+        parts.forEach((part) => {
+            const text = String(part === undefined || part === null ? '' : part);
+            for (let index = 0; index < text.length; index += 1) {
+                hash = ((hash * 33) + text.charCodeAt(index)) >>> 0;
+            }
+        });
+        return hash >>> 0;
+    }
+
+    function pickSeededDialogItem(variants, seed) {
+        if (!Array.isArray(variants) || variants.length === 0) {
+            return '';
+        }
+        if (variants.length === 1) {
+            return variants[0] || '';
+        }
+        const index = hashDialogSeed(seed, variants.length) % variants.length;
+        return variants[index] || variants[0] || '';
+    }
+
     function resolvePetDialog(templateOrFactory, petName, extra = {}) {
-        const rawTemplate = typeof templateOrFactory === 'function'
+        const resolvedSource = typeof templateOrFactory === 'function'
             ? templateOrFactory({ name: petName, ...extra })
-            : String(templateOrFactory || '');
+            : templateOrFactory;
+        const rawTemplate = Array.isArray(resolvedSource)
+            ? pickSeededDialogItem(resolvedSource, extra.seed || petName)
+            : String(resolvedSource || '');
 
         return rawTemplate.replace(/\{(\w+)\}/g, (match, key) => {
             const value = key === 'name' ? petName : extra[key];
@@ -715,8 +1078,9 @@
 
     function pickWelcomeBubble(state, petProfile, petName) {
         const visitSeed = Math.max(0, Number(state && state.totalVisits) || 0);
-        const welcomeDialogs = petProfile.dialogs.welcome || [];
-        return resolvePetDialog(welcomeDialogs[visitSeed % welcomeDialogs.length] || welcomeDialogs[0], petName);
+        return resolveMergedDialogVariants(petProfile, petName, 'welcome', `welcome:${petProfile.id}:${visitSeed}`, {
+            levelXp: state && state.bondXp
+        });
     }
 
     function buildPixelSvg(frameRows) {
@@ -766,11 +1130,17 @@
             getPetIds().forEach((petId) => {
                 petStates[petId] = normalizePersistentPetState(parsed.petStates[petId]);
             });
-            return { petStates };
+            return {
+                petStates,
+                petCollection: normalizePersistentPetCollection(parsed.petCollection)
+            };
         }
 
         petStates.shiba = normalizePersistentPetState(parsed);
-        return { petStates };
+        return {
+            petStates,
+            petCollection: normalizePersistentPetCollection(parsed.petCollection)
+        };
     }
 
     function savePetState(state) {
@@ -778,7 +1148,8 @@
             petStates: getPetIds().reduce((accumulator, petId) => {
                 accumulator[petId] = normalizePersistentPetState(ensurePetStateBucket(state, petId));
                 return accumulator;
-            }, {})
+            }, {}),
+            petCollection: normalizePersistentPetCollection(ensurePetCollectionBucket(state))
         }));
     }
 
@@ -832,7 +1203,6 @@
             state.visitStreak = gap === 1 ? Math.max(1, Number(state.visitStreak || 0) + 1) : 1;
             state.lastVisitDate = today;
             state.totalVisits = Number(state.totalVisits || 0) + 1;
-            state.bondXp = Number(state.bondXp || 0) + 1;
         }
 
         return {
@@ -842,11 +1212,164 @@
         };
     }
 
-    function getLevelInfo(xp, levelTitles = LEVEL_TITLES) {
+    function getLevelInfo(xp, levelTitles = SHIBA_LEVEL_TITLES) {
         const normalizedXp = Math.max(0, Number(xp || 0));
-        const level = Math.min(levelTitles.length, Math.floor(normalizedXp / 4) + 1);
-        const title = levelTitles[level - 1] || levelTitles[0];
-        return { level, title };
+        let level = 1;
+
+        for (let index = 0; index < LEVEL_XP_THRESHOLDS.length; index += 1) {
+            if (normalizedXp >= LEVEL_XP_THRESHOLDS[index]) {
+                level = index + 1;
+            } else {
+                break;
+            }
+        }
+
+        const cappedLevel = Math.min(levelTitles.length, level);
+        const title = levelTitles[cappedLevel - 1] || levelTitles[0];
+        const currentLevelXp = LEVEL_XP_THRESHOLDS[cappedLevel - 1] || 0;
+        const nextLevelXp = LEVEL_XP_THRESHOLDS[cappedLevel] ?? currentLevelXp;
+        const isMax = cappedLevel >= levelTitles.length;
+        const progressRatio = isMax
+            ? 1
+            : clamp((normalizedXp - currentLevelXp) / Math.max(1, nextLevelXp - currentLevelXp), 0, 1);
+
+        return {
+            level: cappedLevel,
+            title,
+            xp: normalizedXp,
+            currentLevelXp,
+            nextLevelXp,
+            progressRatio,
+            xpIntoLevel: Math.max(0, normalizedXp - currentLevelXp),
+            xpNeededForNext: isMax ? 0 : Math.max(0, nextLevelXp - normalizedXp),
+            isMax
+        };
+    }
+
+    function normalizeDialogVariants(rawValue) {
+        if (Array.isArray(rawValue)) {
+            return rawValue.filter(Boolean);
+        }
+        if (rawValue === undefined || rawValue === null || rawValue === '') {
+            return [];
+        }
+        return [rawValue];
+    }
+
+    function getLevelUnlockLabel(petId, level) {
+        const petProfile = getPetProfile(petId);
+        const labels = petProfile.levelUnlockLabels || {};
+        return labels[level] || '新的陪学称号';
+    }
+
+    function getDialogUnlockPool(petProfile, level, kind) {
+        const unlocks = petProfile.dialogUnlocks || {};
+        const additions = [];
+        for (let currentLevel = 2; currentLevel <= level; currentLevel += 1) {
+            const entry = unlocks[currentLevel];
+            if (!entry || !entry[kind]) {
+                continue;
+            }
+            additions.push(...normalizeDialogVariants(entry[kind]));
+        }
+        return additions;
+    }
+
+    function getIndexedDialogUnlockPool(petProfile, level, kind, index) {
+        const unlocks = petProfile.dialogUnlocks || {};
+        const additions = [];
+        for (let currentLevel = 2; currentLevel <= level; currentLevel += 1) {
+            const entry = unlocks[currentLevel];
+            if (!entry || !entry[kind] || typeof entry[kind] !== 'object') {
+                continue;
+            }
+            additions.push(...normalizeDialogVariants(entry[kind][index]));
+        }
+        return additions;
+    }
+
+    function resolveMergedDialogVariants(petProfile, petName, kind, seed, extra = {}) {
+        const level = getLevelInfo(extra.levelXp || 0, petProfile.levelTitles).level;
+        const variants = [
+            ...normalizeDialogVariants(petProfile.dialogs[kind]),
+            ...getDialogUnlockPool(petProfile, level, kind)
+        ];
+        return resolvePetDialog(variants, petName, {
+            ...extra,
+            seed
+        });
+    }
+
+    function resolveIndexedDialogVariants(petProfile, petName, kind, index, seed, extra = {}) {
+        const baseVariants = normalizeDialogVariants(petProfile.dialogs[kind]);
+        const baseMessage = resolvePetDialog(baseVariants[index] || baseVariants[0] || '', petName, extra);
+        const level = getLevelInfo(extra.levelXp || 0, petProfile.levelTitles).level;
+        const additions = getIndexedDialogUnlockPool(petProfile, level, `${kind}Extras`, index);
+        if (!additions.length) {
+            return baseMessage;
+        }
+        const extraMessage = resolvePetDialog(additions, petName, {
+            ...extra,
+            seed: `${seed}:extra`
+        });
+        return extraMessage ? `${baseMessage} ${extraMessage}`.trim() : baseMessage;
+    }
+
+    function normalizeCollectionMeta(rawValue) {
+        const source = rawValue && typeof rawValue === 'object' && !Array.isArray(rawValue) ? rawValue : {};
+        return Object.keys(source).reduce((accumulator, id) => {
+            const entry = source[id];
+            if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+                return accumulator;
+            }
+            accumulator[id] = {
+                count: Math.max(0, Number(entry.count) || 0),
+                firstObtainedAt: Number.isFinite(Number(entry.firstObtainedAt)) && Number(entry.firstObtainedAt) > 0 ? Number(entry.firstObtainedAt) : null,
+                lastObtainedAt: Number.isFinite(Number(entry.lastObtainedAt)) && Number(entry.lastObtainedAt) > 0 ? Number(entry.lastObtainedAt) : null,
+                isNew: Boolean(entry.isNew)
+            };
+            return accumulator;
+        }, {});
+    }
+
+    function getLotteryCollectionMeta() {
+        return normalizeCollectionMeta(safeParseJSON(storageGetItem(LOTTERY_COLLECTION_META_KEY), {}));
+    }
+
+    function saveLotteryCollectionMeta(meta) {
+        storageSetItem(LOTTERY_COLLECTION_META_KEY, JSON.stringify(meta));
+    }
+
+    function saveLotteryCollectionIds(meta) {
+        const unlockedIds = Object.keys(meta).filter((id) => {
+            const entry = meta[id];
+            return entry && Number(entry.count) > 0;
+        });
+        storageSetItem(LOTTERY_COLLECTION_KEY, JSON.stringify(unlockedIds));
+    }
+
+    function unlockPetMaxRewardCard(petId) {
+        const rewardId = PET_MAX_REWARD_IDS[petId];
+        if (!rewardId) {
+            return false;
+        }
+
+        const meta = getLotteryCollectionMeta();
+        if (meta[rewardId] && Number(meta[rewardId].count) > 0) {
+            return false;
+        }
+
+        const now = Date.now();
+        meta[rewardId] = {
+            count: 1,
+            firstObtainedAt: now,
+            lastObtainedAt: now,
+            isNew: true
+        };
+        saveLotteryCollectionMeta(meta);
+        saveLotteryCollectionIds(meta);
+        storageSetItem(LOTTERY_LAST_OBTAINED_KEY, JSON.stringify({ id: rewardId, obtainedAt: now }));
+        return true;
     }
 
     function countTrueKeys(prefix) {
@@ -1220,25 +1743,57 @@
                 hasBacklog: totalReviewCount > 0
             },
             visitStreak: Number(state.visitStreak || 1),
-            mood
+            mood,
+            levelXp: Number(state.bondXp || 0)
         };
     }
 
     function pickDefaultBubble(summary, activeSection, petProfile, petName) {
+        const levelXp = summary && summary.levelXp;
         if (summary.reviewPressure.hasBacklog) {
-            return resolvePetDialog(petProfile.dialogs.defaultReview, petName, {
-                label: summary.recommendedNext.label
+            return resolveMergedDialogVariants(petProfile, petName, 'defaultReview', `review:${petProfile.id}:${summary.recommendedNext.label}:${summary.reviewPressure.total}:${summary.visitStreak}`, {
+                label: summary.recommendedNext.label,
+                levelXp
             });
         }
         if (activeSection === 'exam') {
-            return resolvePetDialog(petProfile.dialogs.defaultExam, petName);
-        }
-        if (summary.recentActivities.length > 0) {
-            return resolvePetDialog(petProfile.dialogs.defaultRecent, petName, {
-                label: summary.recentActivities[0].label
+            return resolveMergedDialogVariants(petProfile, petName, 'defaultExam', `exam:${petProfile.id}:${summary.visitStreak}:${summary.reviewPressure.total}`, {
+                levelXp
             });
         }
-        return resolvePetDialog(petProfile.dialogs.defaultIdle, petName);
+        if (summary.recentActivities.length > 0) {
+            return resolveMergedDialogVariants(petProfile, petName, 'defaultRecent', `recent:${petProfile.id}:${summary.recentActivities[0].label}:${summary.visitStreak}:${summary.recentActivities.length}`, {
+                label: summary.recentActivities[0].label,
+                levelXp
+            });
+        }
+        return resolveMergedDialogVariants(petProfile, petName, 'defaultIdle', `idle:${petProfile.id}:${summary.visitStreak}:${summary.reviewPressure.total}:${activeSection || 'none'}`, {
+            levelXp
+        });
+    }
+
+    function getPetMoodLabel(petId, moodKey, fallbackKey = moodKey, level = 1) {
+        const petProfile = getPetProfile(petId);
+        const petMoodLabels = petProfile && petProfile.moodLabels ? petProfile.moodLabels : null;
+        const petMoodVariants = petProfile && petProfile.moodLabelVariants ? petProfile.moodLabelVariants : null;
+        if (petMoodVariants && Array.isArray(petMoodVariants[moodKey])) {
+            const matchedVariant = petMoodVariants[moodKey]
+                .slice()
+                .sort((left, right) => Number(left.minLevel || 0) - Number(right.minLevel || 0))
+                .reduce((currentMatch, variant) => {
+                    if (level >= Number(variant.minLevel || 0)) {
+                        return variant;
+                    }
+                    return currentMatch;
+                }, null);
+            if (matchedVariant && matchedVariant.label) {
+                return matchedVariant.label;
+            }
+        }
+        if (petMoodLabels && petMoodLabels[moodKey]) {
+            return petMoodLabels[moodKey];
+        }
+        return MOOD_LABELS[fallbackKey] || MOOD_LABELS.idle;
     }
 
     function escapeHtml(value) {
@@ -1312,10 +1867,16 @@
                             <button type="button" class="home-pet-name-button" data-pet-name-button aria-label="修改柴犬名字">
                                 <span data-pet-name></span>
                             </button>
-                            <div class="home-pet-switch" data-pet-switch role="tablist" aria-label="切换宠物">
-                                <button type="button" class="home-pet-switch-btn" data-pet-option="shiba" aria-pressed="true">柴犬</button>
-                                <button type="button" class="home-pet-switch-btn" data-pet-option="cat" aria-pressed="false">猫猫</button>
-                            </div>
+                            <button
+                                type="button"
+                                class="home-pet-species-button"
+                                data-pet-collection-trigger
+                                aria-haspopup="dialog"
+                                aria-expanded="false"
+                                aria-label="打开宠物收藏"
+                                >
+                                <span data-pet-species-label></span>
+                            </button>
                             <label class="home-pet-name-editor" data-pet-name-editor hidden>
                                 <input
                                     class="home-pet-name-input"
@@ -1327,11 +1888,11 @@
                             </label>
                         </div>
                         <span class="home-pet-pill home-pet-pill--accent" data-pet-mood></span>
-                        <span class="home-pet-pill" data-pet-level></span>
                     </div>
                     <div class="home-pet-meta">
                         <button type="button" class="home-pet-action" data-pet-headpat>摸摸头</button>
                         <button type="button" class="home-pet-action" data-pet-treat>喂肉干</button>
+                        <button type="button" class="home-pet-action home-pet-action--special" data-pet-cola hidden>喂可乐</button>
                     </div>
                     <ul class="home-pet-activities" data-pet-activities></ul>
                 </section>
@@ -1340,6 +1901,15 @@
                     <button type="button" class="home-pet-toggle" data-pet-toggle aria-label="打开柴犬陪学面板" aria-expanded="false">
                         <span class="home-pet-sprite" data-pet-sprite></span>
                     </button>
+                </div>
+            </div>
+            <div class="home-pet-collection" data-pet-collection hidden>
+                <div class="home-pet-collection-dialog" role="dialog" aria-modal="true" aria-label="宠物收藏">
+                    <div class="home-pet-collection-head">
+                        <strong class="home-pet-collection-title">宠物图鉴</strong>
+                        <button type="button" class="home-pet-collection-close" data-pet-collection-close aria-label="关闭宠物图鉴">&times;</button>
+                    </div>
+                    <div class="home-pet-collection-grid" data-pet-collection-grid></div>
                 </div>
             </div>
         `;
@@ -1378,6 +1948,7 @@
         let state = loadPetState();
         let settings = loadPetSettings();
         let modalOpen = false;
+        let collectionOpen = false;
         let motionTimer = null;
         let isNameEditing = false;
         let dragState = null;
@@ -1391,12 +1962,17 @@
                 dialogSource: { kind: 'default' },
                 animState: 'idle',
                 sessionTreatCount: 0,
+                sessionColaCount: 0,
                 sessionHeadpatChainCount: 0,
                 sessionSleepWakeCount: 0,
                 lastHeadpatAt: 0,
+                headpatEasterCooldownUntil: 0,
                 interactionMode: 'normal',
                 interactionModeUntil: 0,
                 interactionTimer: null,
+                levelToastMessage: '',
+                levelToastUntil: 0,
+                levelToastTimer: null,
                 welcomePending: shouldShowWelcome(ensurePetStateBucket(state, petId)),
                 welcomeLocked: false
             };
@@ -1420,15 +1996,19 @@
         const nameButtonEl = root.querySelector('[data-pet-name-button]');
         const nameEditorEl = root.querySelector('[data-pet-name-editor]');
         const nameInputEl = root.querySelector('[data-pet-name-input]');
+        const speciesLabelEl = root.querySelector('[data-pet-species-label]');
+        const collectionTriggerEl = root.querySelector('[data-pet-collection-trigger]');
+        const collectionPanelEl = root.querySelector('[data-pet-collection]');
+        const collectionGridEl = root.querySelector('[data-pet-collection-grid]');
+        const collectionCloseEl = root.querySelector('[data-pet-collection-close]');
         const moodEl = root.querySelector('[data-pet-mood]');
-        const levelEl = root.querySelector('[data-pet-level]');
         const activitiesEl = root.querySelector('[data-pet-activities]');
         const bubbleEl = root.querySelector('[data-pet-bubble]');
         const spriteEl = root.querySelector('[data-pet-sprite]');
         const toggleEl = root.querySelector('[data-pet-toggle]');
         const headpatBtn = root.querySelector('[data-pet-headpat]');
         const treatBtn = root.querySelector('[data-pet-treat]');
-        const petSwitchButtons = Array.from(root.querySelectorAll('[data-pet-option]'));
+        const colaBtn = root.querySelector('[data-pet-cola]');
 
         function getPetStateById(petId) {
             return ensurePetStateBucket(state, petId);
@@ -1475,6 +2055,156 @@
             return getDisplayPetName(settings, getCurrentPetId());
         }
 
+        function getPetCollection() {
+            return ensurePetCollectionBucket(state);
+        }
+
+        function clearLevelToastTimer(petId = getCurrentPetId()) {
+            const runtime = getPetRuntime(petId);
+            if (runtime.levelToastTimer) {
+                clearTimeout(runtime.levelToastTimer);
+                runtime.levelToastTimer = null;
+            }
+        }
+
+        function showLevelToast(petId, message) {
+            const runtime = getPetRuntime(petId);
+            clearLevelToastTimer(petId);
+            runtime.levelToastMessage = String(message || '').trim();
+            runtime.levelToastUntil = Date.now() + 3200;
+            runtime.levelToastTimer = window.setTimeout(() => {
+                const currentRuntime = getPetRuntime(petId);
+                currentRuntime.levelToastMessage = '';
+                currentRuntime.levelToastUntil = 0;
+                currentRuntime.levelToastTimer = null;
+                if (getCurrentPetId() === petId) {
+                    sync('level-toast-timeout');
+                }
+            }, 3200);
+        }
+
+        function getCurrentLevelUnlockText(petId, levelInfo) {
+            if (!levelInfo || !levelInfo.isMax) {
+                return '';
+            }
+            const rewardId = PET_MAX_REWARD_IDS[petId];
+            const rewardUnlocked = rewardId
+                ? Boolean((getLotteryCollectionMeta()[rewardId] || {}).count)
+                : false;
+            return rewardUnlocked ? '满级图鉴卡已解锁' : '满级奖励待领取';
+        }
+
+        function getNextLevelUnlockText(petId, levelInfo) {
+            if (!levelInfo) {
+                return '';
+            }
+            if (levelInfo.isMax) {
+                return getCurrentLevelUnlockText(petId, levelInfo);
+            }
+            return `下一级解锁：${getLevelUnlockLabel(petId, levelInfo.level + 1)}`;
+        }
+
+        function awardBondXp(petId, amount) {
+            const xpGain = Math.max(0, Number(amount || 0));
+            if (xpGain <= 0) {
+                return { gained: 0, didLevelUp: false, rewardUnlocked: false };
+            }
+
+            const petState = getPetStateById(petId);
+            const petProfile = getPetProfile(petId);
+            const before = getLevelInfo(petState.bondXp, petProfile.levelTitles);
+            petState.bondXp = Math.max(0, Number(petState.bondXp || 0) + xpGain);
+            const after = getLevelInfo(petState.bondXp, petProfile.levelTitles);
+            const rewardUnlocked = after.isMax ? unlockPetMaxRewardCard(petId) : false;
+
+            if (after.level > before.level) {
+                const unlockLabel = getLevelUnlockLabel(petId, after.level);
+                const toastMessage = rewardUnlocked
+                    ? `Lv.${after.level} 达成 · 已解锁满级图鉴卡`
+                    : `Lv.${after.level} 达成 · 已解锁：${unlockLabel}`;
+                showLevelToast(petId, toastMessage);
+            }
+
+            return {
+                gained: xpGain,
+                didLevelUp: after.level > before.level,
+                rewardUnlocked,
+                before,
+                after
+            };
+        }
+
+        function claimMilestoneReward(petId, milestoneId, xpAmount) {
+            const petState = getPetStateById(petId);
+            if (petState.claimedMilestoneIds.includes(milestoneId)) {
+                return false;
+            }
+            petState.claimedMilestoneIds.push(milestoneId);
+            awardBondXp(petId, xpAmount);
+            return true;
+        }
+
+        function maybeClaimVisitMilestones(petId) {
+            const petState = getPetStateById(petId);
+            const streak = Math.max(0, Number(petState.visitStreak || 0));
+            let didChange = false;
+
+            if (streak >= 3) {
+                didChange = claimMilestoneReward(petId, 'visit-streak-3', 1) || didChange;
+            }
+            for (let days = 7; days <= streak; days += 7) {
+                didChange = claimMilestoneReward(petId, `visit-streak-${days}`, 2) || didChange;
+            }
+
+            return didChange;
+        }
+
+        function maybeClaimStudyMilestones(petId) {
+            const petState = getPetStateById(petId);
+            const totalLaunches = Math.max(0, Number(petState.totalStudyLaunches || 0));
+            let didChange = false;
+
+            STUDY_LAUNCH_MILESTONES.forEach((milestone) => {
+                if (totalLaunches < milestone.count) {
+                    return;
+                }
+                didChange = claimMilestoneReward(petId, `study-launch-${milestone.count}`, milestone.xp) || didChange;
+            });
+
+            return didChange;
+        }
+
+        function awardVisitXp(petId) {
+            awardBondXp(petId, 1);
+            maybeClaimVisitMilestones(petId);
+            savePetState(state);
+        }
+
+        function renderCollectionCards() {
+            const collection = getPetCollection();
+            collectionGridEl.innerHTML = getPetIds().map((petId) => {
+                const petProfile = getPetProfile(petId);
+                const isActive = petId === getCurrentPetId();
+                const isUnlocked = collection.unlockedPetIds.includes(petId);
+                const statusText = isActive ? '陪学中' : (isUnlocked ? '已收集' : '未解锁');
+                return `
+                    <button
+                        type="button"
+                        class="home-pet-collection-item${isActive ? ' is-active' : ''}${isUnlocked ? '' : ' is-locked'}"
+                        data-pet-collection-option="${escapeHtml(petId)}"
+                        aria-pressed="${isActive ? 'true' : 'false'}"
+                        ${isUnlocked ? '' : 'disabled'}
+                    >
+                        <span class="home-pet-collection-item-icon" aria-hidden="true">
+                            ${petProfile.pixelFrames.idle || ''}
+                        </span>
+                        <span class="home-pet-collection-item-title">${escapeHtml(petProfile.label)}</span>
+                        <span class="home-pet-collection-item-meta">${escapeHtml(statusText)}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
         function getVisitMetaSnapshot(petId) {
             const petState = getPetStateById(petId);
             const today = getTodayKey();
@@ -1504,6 +2234,16 @@
             }
         }
 
+        function closeCollection(options = {}) {
+            if (!collectionOpen) {
+                return;
+            }
+            collectionOpen = false;
+            if (options.sync !== false) {
+                sync('collection');
+            }
+        }
+
         function resetHeadpatChain(petId = getCurrentPetId()) {
             const runtime = getPetRuntime(petId);
             runtime.sessionHeadpatChainCount = 0;
@@ -1526,19 +2266,32 @@
                 case 'welcome':
                     return pickWelcomeBubble(getPetStateById(petId), petProfile, petName);
                 case 'headpat': {
-                    const dialogs = petProfile.dialogs.headpat || [];
+                    const dialogs = normalizeDialogVariants(petProfile.dialogs.headpat);
                     const index = clamp(Number(dialogSource.index || 0), 0, Math.max(0, dialogs.length - 1));
-                    return resolvePetDialog(dialogs[index] || dialogs[0] || '', petName);
+                    return resolveIndexedDialogVariants(petProfile, petName, 'headpat', index, `headpat:${petProfile.id}:${index}:${getPetStateById(petId).bondXp}`, {
+                        levelXp: getPetStateById(petId).bondXp
+                    });
                 }
                 case 'treat': {
-                    const dialogs = petProfile.dialogs.treat || [];
+                    const dialogs = normalizeDialogVariants(petProfile.dialogs.treat);
                     const index = clamp(Number(dialogSource.index || 0), 0, Math.max(0, dialogs.length - 1));
-                    return resolvePetDialog(dialogs[index] || dialogs[0] || '', petName);
+                    return resolveIndexedDialogVariants(petProfile, petName, 'treat', index, `treat:${petProfile.id}:${index}:${getPetStateById(petId).bondXp}`, {
+                        levelXp: getPetStateById(petId).bondXp
+                    });
+                }
+                case 'colaTreat': {
+                    const dialogs = normalizeDialogVariants(petProfile.dialogs.colaTreat || petProfile.dialogs.treat);
+                    const index = clamp(Number(dialogSource.index || 0), 0, Math.max(0, dialogs.length - 1));
+                    return resolveIndexedDialogVariants(petProfile, petName, 'colaTreat', index, `colaTreat:${petProfile.id}:${index}:${getPetStateById(petId).bondXp}`, {
+                        levelXp: getPetStateById(petId).bondXp
+                    });
                 }
                 case 'sleepWake': {
-                    const dialogs = petProfile.dialogs.sleepWake || [];
+                    const dialogs = normalizeDialogVariants(petProfile.dialogs.sleepWake);
                     const index = clamp(Number(dialogSource.index || 0), 0, Math.max(0, dialogs.length - 1));
-                    return resolvePetDialog(dialogs[index] || dialogs[0] || '', petName);
+                    return resolveIndexedDialogVariants(petProfile, petName, 'sleepWake', index, `sleepWake:${petProfile.id}:${index}:${getPetStateById(petId).bondXp}`, {
+                        levelXp: getPetStateById(petId).bondXp
+                    });
                 }
                 case 'fixed':
                     return String(dialogSource.message || '');
@@ -1556,6 +2309,7 @@
         }
 
         function clearWelcomeLock(options = {}) {
+
             const petId = getCurrentPetId();
             const runtime = getCurrentPetRuntime();
             if (!runtime.welcomeLocked) {
@@ -1640,18 +2394,95 @@
             if (runtime.interactionMode === 'dazed') {
                 return 'sleepy';
             }
+            if (runtime.interactionMode === 'cola') {
+                return 'cola';
+            }
+            if (runtime.interactionMode === 'headpatGentle') {
+                return 'blink';
+            }
+            if (runtime.interactionMode === 'headpatPlayful') {
+                return 'cheer';
+            }
+            if (runtime.interactionMode === 'headpatAnnoyed') {
+                return 'idle';
+            }
+            const petProfile = getPetProfile(petId);
+            const petState = getPetStateById(petId);
+            const levelInfo = getLevelInfo(petState.bondXp, petProfile.levelTitles);
+
+            if (petId === 'shiba' && runtime.interactionMode === 'normal') {
+                if (baseMood === 'idle' && levelInfo.level >= 3) {
+                    const blinkCadence = Math.max(4, 10 - levelInfo.level);
+                    if (Number(petState.totalVisits || 0) > 0 && Number(petState.totalVisits || 0) % blinkCadence === 0) {
+                        return 'blink';
+                    }
+                }
+                if ((baseMood === 'curious' || baseMood === 'cheer') && levelInfo.level >= 7) {
+                    return 'cheer';
+                }
+            }
+
             return baseMood;
         }
 
         function getDisplayedMoodLabel(petId, baseMood) {
             const runtime = getPetRuntime(petId);
+            const petProfile = getPetProfile(petId);
+            const petState = getPetStateById(petId);
+            const levelInfo = getLevelInfo(petState.bondXp, petProfile.levelTitles);
             if (runtime.interactionMode === 'sleeping') {
-                return '睡着了';
+                return getPetMoodLabel(petId, 'sleeping', 'sleep', levelInfo.level);
             }
             if (runtime.interactionMode === 'dazed') {
-                return '迷糊中';
+                return getPetMoodLabel(petId, 'dazed', 'sleep', levelInfo.level);
             }
-            return MOOD_LABELS[baseMood] || MOOD_LABELS.idle;
+            if (runtime.interactionMode === 'cola') {
+                return getPetMoodLabel(petId, 'cola', 'cola', levelInfo.level);
+            }
+            if (runtime.interactionMode === 'headpatGentle') {
+                return getPetMoodLabel(petId, 'headpatGentle', 'cheer', levelInfo.level);
+            }
+            if (runtime.interactionMode === 'headpatPlayful') {
+                return getPetMoodLabel(petId, 'headpatPlayful', 'cheer', levelInfo.level);
+            }
+            if (runtime.interactionMode === 'headpatAnnoyed') {
+                return getPetMoodLabel(petId, 'headpatAnnoyed', 'idle', levelInfo.level);
+            }
+            return getPetMoodLabel(petId, baseMood, baseMood, levelInfo.level);
+        }
+
+        function maybeTriggerHeadpatEaster(petId, runtime) {
+            if (petId !== 'shiba') {
+                return false;
+            }
+
+            const now = Date.now();
+            if (runtime.headpatEasterCooldownUntil && now < runtime.headpatEasterCooldownUntil) {
+                return false;
+            }
+
+            if (Math.random() >= HEADPAT_EASTER_TRIGGER_CHANCE) {
+                return false;
+            }
+
+            const petProfile = getPetProfile(petId);
+            const easterPool = Array.isArray(petProfile.dialogs.headpatEaster) ? petProfile.dialogs.headpatEaster : [];
+            if (!easterPool.length) {
+                return false;
+            }
+
+            const picked = easterPool[Math.floor(Math.random() * easterPool.length)];
+            if (!picked || !picked.message) {
+                return false;
+            }
+
+            runtime.headpatEasterCooldownUntil = now + HEADPAT_EASTER_COOLDOWN_MS;
+            setDialogSourceForPet(petId, { kind: 'fixed', message: picked.message }, summary, getCurrentSection());
+            setInteractionMode(picked.mode || 'normal', HEADPAT_EASTER_STATE_DURATION_MS, petId);
+            bubbleEl.textContent = runtime.currentDialog;
+            setAnim(picked.anim || 'idle', petId);
+            sync('headpat-easter');
+            return true;
         }
 
         function handleDazedInteraction(event) {
@@ -1701,7 +2532,7 @@
 
             if (getCurrentPetId() === petId) {
                 root.dataset.anim = nextAnim;
-                spriteEl.innerHTML = petProfile.pixelFrames[nextAnim] || petProfile.pixelFrames.idle;
+                spriteEl.innerHTML = petProfile.pixelFrames[nextAnim] || petProfile.pixelFrames.cheer || petProfile.pixelFrames.idle;
             }
 
             if (motionTimer) {
@@ -1709,8 +2540,8 @@
                 motionTimer = null;
             }
 
-            if (nextAnim === 'hop' || nextAnim === 'cheer') {
-                const duration = nextAnim === 'hop' ? 620 : 820;
+            if (nextAnim === 'hop' || nextAnim === 'cheer' || nextAnim === 'cola') {
+                const duration = nextAnim === 'hop' ? 620 : (nextAnim === 'cola' ? 940 : 820);
                 const targetPetId = petId;
                 motionTimer = setTimeout(() => {
                     const targetSummary = buildSummaryForPet(targetPetId);
@@ -1720,7 +2551,7 @@
                     if (getCurrentPetId() === targetPetId) {
                         const targetProfile = getPetProfile(targetPetId);
                         root.dataset.anim = fallbackAnim;
-                        spriteEl.innerHTML = targetProfile.pixelFrames[fallbackAnim] || targetProfile.pixelFrames.idle;
+                        spriteEl.innerHTML = targetProfile.pixelFrames[fallbackAnim] || targetProfile.pixelFrames.cheer || targetProfile.pixelFrames.idle;
                     }
                     motionTimer = null;
                 }, duration);
@@ -1738,7 +2569,7 @@
                 return;
             }
             petState.lastInteractionDate = today;
-            petState.bondXp = Number(petState.bondXp || 0) + 1;
+            awardBondXp(petId, 1);
             savePetState(state);
         }
 
@@ -1769,6 +2600,10 @@
                 return;
             }
 
+            collectionOpen = false;
+            if (collectionPanelEl) {
+                collectionPanelEl.hidden = true;
+            }
             const petProfile = getCurrentPetProfile();
             isNameEditing = true;
             root.dataset.nameEditing = 'true';
@@ -1834,6 +2669,7 @@
                     || reason === 'modal'
                     || reason === 'resize'
                     || reason === 'pet-switch'
+                    || reason === 'collection'
                     || reason === 'welcome-cleared')
                 && !runtime.welcomeLocked
                 && runtime.interactionMode === 'normal'
@@ -1848,8 +2684,15 @@
             }
 
             const levelInfo = getLevelInfo(petState.bondXp, petProfile.levelTitles);
+            if (levelInfo.isMax) {
+                unlockPetMaxRewardCard(petId);
+            }
             const isExpanded = !petSettings.collapsed && !modalOpen;
+            if (!isExpanded && collectionOpen) {
+                collectionOpen = false;
+            }
             const visualMood = getVisualMood(petId, summary.mood);
+            const isColaUnlocked = petId === 'shiba' && isInteractionUnlocked(state, COLA_TREAT_UNLOCK_ID);
 
             nameEl.textContent = petName;
             if (!isNameEditing) {
@@ -1857,11 +2700,18 @@
             }
             nameButtonEl.setAttribute('aria-label', `修改${petProfile.label}名字`);
             nameInputEl.setAttribute('aria-label', `输入${petProfile.label}名字`);
+            speciesLabelEl.textContent = petProfile.label;
+            collectionTriggerEl.setAttribute('aria-label', `打开${petProfile.label}图鉴`);
+            collectionTriggerEl.setAttribute('aria-expanded', String(collectionOpen));
+            collectionTriggerEl.classList.toggle('is-open', collectionOpen);
+            collectionPanelEl.hidden = !collectionOpen;
+            renderCollectionCards();
             moodEl.textContent = getDisplayedMoodLabel(petId, summary.mood);
-            levelEl.textContent = `Lv.${levelInfo.level}`;
+            colaBtn.hidden = !isColaUnlocked;
             renderActivities(activitiesEl, summary.recentActivities, summary.recommendedNext);
             root.dataset.expanded = String(isExpanded);
             root.dataset.modalOpen = String(modalOpen);
+            root.dataset.collectionOpen = String(collectionOpen);
             root.dataset.mood = visualMood;
             root.dataset.draggable = String(petSettings.collapsed && !modalOpen);
             root.dataset.species = petProfile.species;
@@ -1869,17 +2719,11 @@
             toggleEl.setAttribute('aria-label', `${isExpanded ? '收起' : '打开'}${petProfile.label}陪学面板`);
             bubbleEl.textContent = runtime.currentDialog || resolveDialogSourceForPet(petId, runtime.dialogSource, summary, currentSection);
 
-            petSwitchButtons.forEach((button) => {
-                const isActive = button.getAttribute('data-pet-option') === petId;
-                button.setAttribute('aria-pressed', String(isActive));
-                button.classList.toggle('is-active', isActive);
-            });
-
-            if (runtime.animState !== 'hop' && runtime.animState !== 'cheer') {
+            if (runtime.animState !== 'hop' && runtime.animState !== 'cheer' && runtime.animState !== 'cola') {
                 setAnim(visualMood, petId);
             } else {
                 root.dataset.anim = runtime.animState;
-                spriteEl.innerHTML = petProfile.pixelFrames[runtime.animState] || petProfile.pixelFrames.idle;
+                spriteEl.innerHTML = petProfile.pixelFrames[runtime.animState] || petProfile.pixelFrames.cheer || petProfile.pixelFrames.idle;
             }
 
             applyAnchorPosition();
@@ -1887,6 +2731,9 @@
 
         function setModalState(isOpen) {
             modalOpen = Boolean(isOpen);
+            if (modalOpen) {
+                collectionOpen = false;
+            }
             sync('modal');
         }
 
@@ -1897,14 +2744,21 @@
             }
 
             const petState = getCurrentPetState();
+            const petId = getCurrentPetId();
+            const today = getTodayKey();
             clearWelcomeLock();
-            petState.totalStudyLaunches = Number(petState.totalStudyLaunches || 0) + 1;
-            petState.bondXp = Number(petState.bondXp || 0) + 1;
             petState.lastClickedHref = nextHref;
             petState.lastClickedLabel = String(payload && payload.label ? payload.label : '').trim();
-            petState.lastStudyDate = getTodayKey();
+            petState.lastStudyDate = today;
+            petState.totalStudyLaunches = Number(petState.totalStudyLaunches || 0) + 1;
             if (payload && payload.sectionKey) {
                 petState.lastOpenedSection = payload.sectionKey;
+            }
+
+            maybeClaimStudyMilestones(petId);
+            if (petState.lastStudyXpDate !== today) {
+                petState.lastStudyXpDate = today;
+                awardBondXp(petId, 1);
             }
             savePetState(state);
         }
@@ -2002,6 +2856,11 @@
                 return;
             }
 
+            const passiveControl = event.target.closest('[data-pet-collection-trigger], [data-pet-collection], [data-pet-name-button], [data-pet-name-editor]');
+            if (passiveControl) {
+                return;
+            }
+
             if (getCurrentPetRuntime().interactionMode === 'dazed') {
                 awardInteractionXp();
                 handleDazedInteraction(event);
@@ -2023,6 +2882,7 @@
 
             awardInteractionXp();
             clearWelcomeLock({ keepCurrentDialog: true });
+            collectionOpen = false;
             const petSettings = getCurrentPetSettings();
             const runtime = getCurrentPetRuntime();
             petSettings.collapsed = !petSettings.collapsed;
@@ -2036,6 +2896,7 @@
         nameButtonEl.addEventListener('click', () => {
             awardInteractionXp();
             clearWelcomeLock();
+            collectionOpen = false;
             sync('welcome-cleared');
             startNameEdit();
         });
@@ -2059,6 +2920,7 @@
             const runtime = getCurrentPetRuntime();
             awardInteractionXp();
             clearWelcomeLock({ keepCurrentDialog: true });
+            collectionOpen = false;
             const now = Date.now();
 
             if (!runtime.lastHeadpatAt || (now - runtime.lastHeadpatAt) > INTERACTION_CHAIN_MS) {
@@ -2071,11 +2933,19 @@
             if (runtime.sessionHeadpatChainCount <= 3) {
                 setDialogSourceForPet(petId, { kind: 'headpat', index: runtime.sessionHeadpatChainCount - 1 }, summary, getCurrentSection());
             } else {
-                setDialogSourceForPet(petId, { kind: 'fixed', message: '诶嘿，你摸不着' }, summary, getCurrentSection());
+                const didTriggerEaster = maybeTriggerHeadpatEaster(petId, runtime);
+                if (!didTriggerEaster) {
+                    if (['headpatGentle', 'headpatPlayful', 'headpatAnnoyed'].includes(runtime.interactionMode)) {
+                        setInteractionMode('normal', 0, petId);
+                    }
+                    setDialogSourceForPet(petId, { kind: 'fixed', message: '诶嘿，你摸不着' }, summary, getCurrentSection());
+                }
             }
 
             bubbleEl.textContent = runtime.currentDialog;
-            setAnim(runtime.sessionHeadpatChainCount >= 4 ? 'hop' : 'cheer', petId);
+            if (!['headpatGentle', 'headpatPlayful', 'headpatAnnoyed'].includes(runtime.interactionMode)) {
+                setAnim(runtime.sessionHeadpatChainCount >= 4 ? 'hop' : 'cheer', petId);
+            }
         });
 
         treatBtn.addEventListener('click', () => {
@@ -2084,6 +2954,7 @@
             const petState = getCurrentPetState();
             awardInteractionXp();
             clearWelcomeLock({ keepCurrentDialog: true });
+            collectionOpen = false;
             resetHeadpatChain(petId);
 
             if (isTreatCooldownActive(petId)) {
@@ -2125,6 +2996,90 @@
             sync('treat');
         });
 
+        collectionTriggerEl.addEventListener('click', (event) => {
+            event.stopPropagation();
+            awardInteractionXp();
+            clearWelcomeLock({ keepCurrentDialog: true });
+            if (isNameEditing) {
+                finishNameEdit(true);
+            }
+            collectionOpen = !collectionOpen;
+            sync('collection');
+        });
+
+        collectionCloseEl.addEventListener('click', () => {
+            closeCollection();
+        });
+
+        collectionPanelEl.addEventListener('click', (event) => {
+            if (event.target === collectionPanelEl) {
+                closeCollection();
+            }
+        });
+
+        collectionGridEl.addEventListener('click', (event) => {
+            const optionButton = event.target.closest('[data-pet-collection-option]');
+            if (!optionButton) {
+                return;
+            }
+
+            const nextPetId = optionButton.getAttribute('data-pet-collection-option');
+            const collection = getPetCollection();
+            if (!PET_PROFILES[nextPetId] || !collection.unlockedPetIds.includes(nextPetId) || nextPetId === getCurrentPetId()) {
+                return;
+            }
+
+            const wasExpanded = !getCurrentPetSettings().collapsed;
+            awardInteractionXp();
+            clearWelcomeLock();
+            if (isNameEditing) {
+                finishNameEdit(true);
+            }
+            if (motionTimer) {
+                clearTimeout(motionTimer);
+                motionTimer = null;
+            }
+
+            collectionOpen = false;
+            settings.activePetId = nextPetId;
+            if (wasExpanded) {
+                getCurrentPetSettings().collapsed = false;
+            }
+            persistSettings();
+            visitMeta = registerVisit(getCurrentPetState());
+            if (visitMeta.isFirstVisitToday) {
+                awardVisitXp(nextPetId);
+            } else {
+                savePetState(state);
+            }
+            sync('pet-switch');
+        });
+
+        colaBtn.addEventListener('click', () => {
+            const petId = getCurrentPetId();
+            const runtime = getCurrentPetRuntime();
+            if (petId !== 'shiba' || !isInteractionUnlocked(state, COLA_TREAT_UNLOCK_ID)) {
+                return;
+            }
+
+            awardInteractionXp();
+            clearWelcomeLock({ keepCurrentDialog: true });
+            collectionOpen = false;
+            resetHeadpatChain(petId);
+            runtime.sessionColaCount += 1;
+
+            if (runtime.sessionColaCount <= 3) {
+                setDialogSourceForPet(petId, { kind: 'colaTreat', index: runtime.sessionColaCount - 1 }, summary, getCurrentSection());
+            } else {
+                setDialogSourceForPet(petId, { kind: 'fixed', message: '今天的快乐额度快被你灌满啦。' }, summary, getCurrentSection());
+            }
+
+            setInteractionMode('cola', INTERACTION_CHAIN_MS, petId);
+            bubbleEl.textContent = runtime.currentDialog;
+            setAnim('cola', petId);
+            sync('cola');
+        });
+
         activitiesEl.addEventListener('click', (event) => {
             const activityLink = event.target.closest('[data-pet-activity-link]');
             if (!activityLink) {
@@ -2132,6 +3087,7 @@
             }
 
             clearWelcomeLock();
+            collectionOpen = false;
             const titleNode = activityLink.querySelector('.home-pet-activity-title');
             recordStudyLaunch({
                 href: activityLink.getAttribute('href'),
@@ -2140,39 +3096,13 @@
             });
         });
 
-        petSwitchButtons.forEach((button) => {
-            button.addEventListener('click', () => {
-                const nextPetId = button.getAttribute('data-pet-option');
-                if (!PET_PROFILES[nextPetId] || nextPetId === getCurrentPetId()) {
-                    return;
-                }
-
-                const wasExpanded = !getCurrentPetSettings().collapsed;
-                awardInteractionXp();
-                clearWelcomeLock();
-                if (isNameEditing) {
-                    finishNameEdit(true);
-                }
-                if (motionTimer) {
-                    clearTimeout(motionTimer);
-                    motionTimer = null;
-                }
-
-                settings.activePetId = nextPetId;
-                if (wasExpanded) {
-                    getCurrentPetSettings().collapsed = false;
-                }
-                persistSettings();
-                visitMeta = registerVisit(getCurrentPetState());
-                savePetState(state);
-                sync('pet-switch');
-            });
-        });
-
         const handlePageInteraction = (event) => {
             const sectionSwitch = event.target.closest('.main-chip[data-section]');
             if (sectionSwitch) {
                 clearWelcomeLock({ keepCurrentDialog: true });
+            }
+            if (collectionOpen && !event.target.closest('.home-pet') && !event.target.closest('[data-pet-collection]')) {
+                closeCollection();
             }
         };
         document.addEventListener('click', handlePageInteraction, true);
@@ -2183,7 +3113,11 @@
         window.addEventListener('resize', resizeHandler);
 
         visitMeta = registerVisit(getCurrentPetState());
-        savePetState(state);
+        if (visitMeta.isFirstVisitToday) {
+            awardVisitXp(getCurrentPetId());
+        } else {
+            savePetState(state);
+        }
         savePetSettings(settings);
         sync('boot');
 
@@ -2197,7 +3131,10 @@
                 if (motionTimer) {
                     clearTimeout(motionTimer);
                 }
-                getPetIds().forEach((petId) => clearInteractionTimer(petId));
+                getPetIds().forEach((petId) => {
+                    clearInteractionTimer(petId);
+                    clearLevelToastTimer(petId);
+                });
             }
         };
     }
