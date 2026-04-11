@@ -1,0 +1,2178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLPT 语法排序题 - 冲刺特训</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // 修复 ReferenceError: tailwind is not defined
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['"Noto Sans JP"', 'sans-serif'],
+                        'serif-jp': ['"Noto Serif JP"', 'serif'],
+                        'serif-sc': ['"Noto Serif SC"', 'serif'],
+                    },
+                    colors: {
+                        bgMain: '#f2f1ec',
+                        bgCard: '#f9f8f6',
+                        textMain: '#2c2c2a',
+                        textSub: '#555552',
+                        textMuted: '#a0a09c',
+                        borderMain: '#e5e5e0',
+                        borderDark: '#d4d4d0',
+                        accentRed: '#8a3324',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-color: #f2f1ec;
+            color: #2c2c2a;
+        }
+        .slot-filled { border-bottom-color: #2c2c2a !important; color: #2c2c2a !important; }
+        .slot-star-filled { border-bottom-color: #8a3324 !important; color: #8a3324 !important; }
+        .option-used { opacity: 0.4; pointer-events: none; background-color: #f0f0f0; border-color: #d4d4d0; }
+        
+        /* 视图切换及淡入动画 */
+        .view-section { display: none; animation: fadeIn 0.3s ease-out; }
+        .view-section.active { display: block; }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .font-title-unified {
+            font-family: "Noto Serif SC", "Noto Serif JP", serif;
+            font-variant-east-asian: normal;
+            letter-spacing: 0.02em;
+            font-feature-settings: "palt";
+        }
+
+        .page-header {
+            width: 100%;
+            padding: 18px 20px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            position: sticky;
+            top: 0;
+            background-color: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .back-btn {
+            border: none;
+            background: transparent;
+            padding: 0;
+            text-decoration: none;
+            color: #2c2c2a;
+            font-size: 15px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            opacity: 0.72;
+            transition: opacity 0.25s, transform 0.25s;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .back-btn:hover {
+            opacity: 1;
+            transform: translateX(-2px);
+        }
+
+        .home-btn {
+            margin-left: auto;
+            text-decoration: none;
+            color: #2c2c2a;
+            font-size: 15px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            opacity: 0.72;
+            transition: opacity 0.25s, transform 0.25s;
+        }
+
+        .home-btn:hover {
+            opacity: 1;
+            transform: translateX(2px);
+        }
+
+        .page-shell {
+            width: min(100%, 1120px);
+            margin: 0 auto;
+            padding: 32px 16px 48px;
+            box-sizing: border-box;
+        }
+
+        .selection-view-shell {
+            width: min(100%, 700px);
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .selection-view-hero {
+            margin-top: 12px;
+        }
+
+        .selection-view-standard {
+            margin-top: 16px;
+        }
+
+        #view-practice.has-bottom-toolbar #practice-question-container {
+            padding-bottom: 164px;
+        }
+
+        .practice-bottom-toolbar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1600;
+            padding: 0 12px calc(env(safe-area-inset-bottom));
+            display: none;
+            pointer-events: none;
+        }
+
+        .practice-bottom-toolbar.is-visible {
+            display: block;
+        }
+
+        .practice-toolbar-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(34, 34, 32, 0.1);
+            backdrop-filter: blur(2px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .practice-bottom-toolbar.drawer-open .practice-toolbar-backdrop {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .practice-bottom-toolbar__inner {
+            position: relative;
+            max-width: 920px;
+            margin: 0 auto;
+            pointer-events: auto;
+        }
+
+        .practice-toolbar-slot {
+            position: relative;
+        }
+
+        .practice-toolbar-slot[hidden] {
+            display: none;
+        }
+
+        .practice-toolbar-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 72px;
+            padding: 12px 14px;
+            border-top: 1px solid #d2d2d7;
+            border-left: 1px solid rgba(210, 210, 215, 0.85);
+            border-right: 1px solid rgba(210, 210, 215, 0.85);
+            background: rgba(245, 245, 247, 0.96);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.02), 0 14px 30px rgba(0, 0, 0, 0.08);
+            border-radius: 18px 18px 0 0;
+        }
+
+        .practice-toolbar-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .timer-status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: #b9b9b3;
+            box-shadow: 0 0 0 4px rgba(185, 185, 179, 0.16);
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .practice-toolbar-main[data-timer-status="running"] .timer-status-dot {
+            background: #2e7d32;
+            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.14);
+        }
+
+        .practice-toolbar-main[data-timer-status="paused"] .timer-status-dot {
+            background: #b16a17;
+            box-shadow: 0 0 0 4px rgba(177, 106, 23, 0.14);
+        }
+
+        .practice-toolbar-main[data-timer-status="finished"] .timer-status-dot {
+            background: #8a3324;
+            box-shadow: 0 0 0 4px rgba(138, 51, 36, 0.12);
+        }
+
+        .practice-toolbar-main[data-timer-status="timeout"] .timer-status-dot {
+            background: #b53a2f;
+            box-shadow: 0 0 0 4px rgba(181, 58, 47, 0.14);
+        }
+
+        .practice-toolbar-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #2c2c2a;
+            white-space: nowrap;
+        }
+
+        .practice-toolbar-time {
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c2c2a;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.06em;
+            white-space: nowrap;
+        }
+
+        .practice-toolbar-time.is-concealed {
+            letter-spacing: 0.18em;
+            color: #8a8a84;
+        }
+
+        .timer-action-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .timer-toolbar-btn,
+        .timer-chip-btn,
+        .timer-control-btn,
+        .timer-hide-btn,
+        .timer-drawer-close {
+            border: 1px solid #d2d2d7;
+            background: #fff;
+            color: #2c2c2a;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            line-height: 1;
+            white-space: nowrap;
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+        }
+
+        .timer-toolbar-btn,
+        .timer-control-btn,
+        .timer-hide-btn {
+            padding: 9px 12px;
+        }
+
+        .timer-chip-btn {
+            padding: 8px 11px;
+        }
+
+        .timer-drawer-close {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+        }
+
+        .timer-toolbar-btn:hover,
+        .timer-chip-btn:hover,
+        .timer-control-btn:hover,
+        .timer-hide-btn:hover,
+        .timer-drawer-close:hover {
+            transform: translateY(-1px);
+            border-color: #b9b9b3;
+        }
+
+        .timer-toolbar-btn:disabled,
+        .timer-chip-btn:disabled,
+        .timer-control-btn:disabled,
+        .timer-hide-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .timer-toolbar-btn.is-primary,
+        .timer-chip-btn.is-selected,
+        .timer-control-btn.is-primary,
+        .timer-hide-btn.is-selected {
+            background: #2c2c2a;
+            border-color: #2c2c2a;
+            color: #fff;
+        }
+
+        .timer-drawer {
+            position: absolute;
+            right: 0;
+            bottom: calc(100% + 12px);
+            width: min(420px, calc(100vw - 24px));
+            padding: 14px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 18px 42px rgba(0, 0, 0, 0.12);
+            box-sizing: border-box;
+        }
+
+        .timer-drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .timer-drawer-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #2c2c2a;
+            letter-spacing: 0.04em;
+        }
+
+        .timer-drawer-display {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(44, 44, 42, 0.08);
+            background: #f7f6f2;
+            color: #2c2c2a;
+            font-size: 1.08rem;
+            font-weight: 700;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.08em;
+            box-sizing: border-box;
+        }
+
+        .timer-drawer-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .timer-drawer-label {
+            width: 100%;
+            font-size: 0.73rem;
+            color: #8a8a84;
+            letter-spacing: 0.04em;
+        }
+
+        .timer-chip-row,
+        .timer-control-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .timer-custom-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 34px;
+            padding: 0 10px;
+            border-radius: 999px;
+            border: 1px solid #d2d2d7;
+            background: #fff;
+            color: #555552;
+            font-size: 0.74rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .timer-custom-input {
+            width: 56px;
+            border: none;
+            background: transparent;
+            color: #2c2c2a;
+            text-align: center;
+            font-size: 0.76rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timer-custom-input:focus {
+            outline: none;
+        }
+
+        .timer-status-text {
+            min-height: 18px;
+            margin-top: 12px;
+            font-size: 0.74rem;
+            line-height: 1.5;
+            color: #8a8a84;
+        }
+
+        .timer-status-text.is-warning {
+            color: #b16a17;
+        }
+
+        .timer-status-text.is-danger {
+            color: #b53a2f;
+        }
+
+        .random-toolbar-main {
+            gap: 14px;
+        }
+
+        .random-toolbar-summary {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+            justify-content: center;
+        }
+
+        .random-toolbar-metric {
+            min-width: 76px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .random-toolbar-metric-label {
+            font-size: 0.72rem;
+            color: #8a8a84;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+        }
+
+        .random-toolbar-metric-value {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #2c2c2a;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+
+        .random-target-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .random-target-btn {
+            min-width: 44px;
+            justify-content: center;
+        }
+
+        @media (min-width: 768px) {
+            .page-shell {
+                padding: 40px 32px 56px;
+            }
+
+            .selection-view-hero {
+                margin-top: 8px;
+            }
+
+            .selection-view-standard {
+                margin-top: 12px;
+            }
+
+            #view-practice.has-bottom-toolbar #practice-question-container {
+                padding-bottom: 196px;
+            }
+
+            .practice-bottom-toolbar {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .practice-toolbar-main {
+                border-radius: 18px 18px 0 0;
+                min-height: 76px;
+                padding: 14px 18px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .practice-toolbar-main {
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 12px 12px 14px;
+            }
+
+            .practice-toolbar-meta {
+                width: calc(50% - 6px);
+            }
+
+            .practice-toolbar-time {
+                width: calc(50% - 6px);
+                text-align: right;
+                font-size: 1.08rem;
+            }
+
+            .timer-action-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .timer-toolbar-btn,
+            .random-target-btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .timer-drawer {
+                left: 0;
+                right: 0;
+                width: auto;
+                bottom: calc(100% + 10px);
+                border-radius: 18px;
+            }
+
+            .random-toolbar-main {
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 12px 12px 14px;
+            }
+
+            .random-toolbar-summary {
+                width: calc(50% - 6px);
+                justify-content: flex-start;
+                gap: 10px;
+            }
+
+            .random-toolbar-metric {
+                min-width: 64px;
+                align-items: flex-start;
+            }
+
+            .random-target-group {
+                width: calc(50% - 6px);
+                justify-content: flex-end;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../shared/site-fonts.css">
+</head>
+<body class="font-sans antialiased min-h-screen">
+
+    <header class="page-header">
+        <button type="button" id="page-back-btn" class="back-btn">← 戻る</button>
+        <a href="../../index.html" class="home-btn">ホーム</a>
+    </header>
+
+    <div class="page-shell">
+    <div class="max-w-4xl mx-auto">
+        
+        <!-- ================= 1. 引导页 - 选择级别 ================= -->
+        <div id="view-level-select" class="view-section active selection-view-shell selection-view-hero">
+            <div class="text-center mb-10">
+                <div class="inline-block bg-textMain text-white px-3 py-1 text-xs font-bold tracking-widest rounded-sm mb-4">JLPT PREPARATION</div>
+                <h1 class="text-3xl md:text-4xl font-title-unified font-bold text-textMain tracking-[0.04em] mb-4 leading-[1.2]">文法：並べ替え特訓</h1>
+                <p class="text-textSub tracking-wider">请选择你正在备考的级别</p>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-center gap-4 mb-6">
+                <button onclick="app.selectLevel('N1')" class="flex-1 bg-white border-2 border-borderMain hover:border-textMain rounded-lg py-8 px-6 transition-all hover:shadow-md focus:outline-none flex flex-col items-center group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-accentRed text-white text-[0.6rem] font-bold px-3 py-1 rounded-bl-lg tracking-widest">HOT</div>
+                    <span class="text-4xl font-bold font-sans text-textMain mb-2 group-hover:scale-110 transition-transform">N1</span>
+                    <span class="text-sm text-textSub tracking-widest">高级水平</span>
+                </button>
+                <button onclick="app.selectLevel('N2')" class="flex-1 bg-white border-2 border-borderMain hover:border-textMain rounded-lg py-8 px-6 transition-all hover:shadow-md focus:outline-none flex flex-col items-center group">
+                    <span class="text-4xl font-bold font-sans text-textMain mb-2 group-hover:scale-110 transition-transform">N2</span>
+                    <span class="text-sm text-textSub tracking-widest">中高级水平</span>
+                </button>
+                <button onclick="app.selectLevel('N3')" class="flex-1 bg-white border-2 border-borderMain hover:border-textMain rounded-lg py-8 px-6 transition-all hover:shadow-md focus:outline-none flex flex-col items-center group">
+                    <span class="text-4xl font-bold font-sans text-textMain mb-2 group-hover:scale-110 transition-transform">N3</span>
+                    <span class="text-sm text-textSub tracking-widest">中级水平</span>
+                </button>
+            </div>
+
+            <!-- 全级别乱序练习入口 -->
+            <div class="mt-6">
+                <button onclick="app.startGlobalRandomPractice()" class="w-full group bg-white border-2 border-borderMain hover:border-textMain rounded-lg p-5 transition-all hover:shadow-md focus:outline-none flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-bgMain rounded-md flex items-center justify-center group-hover:bg-textMain group-hover:text-white transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5" aria-hidden="true"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+                        </div>
+                        <div class="text-left">
+                            <h3 class="text-lg font-title-unified font-bold text-textMain tracking-[0.02em] leading-[1.25]">全级别乱序特訓</h3>
+                            <p class="text-xs text-textSub mt-1 tracking-wider">混合题库中 N1~N3 所有题目进行随机练习</p>
+                        </div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-borderDark group-hover:text-textMain transition-colors" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= 2. 引导页 - 选择模式 ================= -->
+        <div id="view-mode-select" class="view-section selection-view-shell selection-view-standard">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-textMain tracking-widest flex items-center gap-2">
+                    <span id="display-selected-level" class="bg-textMain text-white px-2 py-0.5 rounded text-lg">N?</span> 模式选择
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 按年份刷题 -->
+                <button onclick="app.showYearList()" class="group text-left bg-white border-2 border-borderMain hover:border-textMain rounded-lg p-6 md:p-8 transition-all hover:shadow-md relative overflow-hidden focus:outline-none flex flex-col items-start justify-start">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-bgMain rounded-bl-full -z-10 group-hover:bg-gray-100 transition-colors"></div>
+                    <div class="w-12 h-12 bg-bgCard border border-borderMain rounded-md flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-textMain" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-textMain mb-2 tracking-wider">按年份刷题</h3>
+                    <p class="text-sm text-textSub leading-relaxed">历年真题分类。适合考前冲刺，一年一年稳扎稳打地进行套卷练习。</p>
+                </button>
+
+                <!-- 随机乱序 -->
+                <button onclick="app.startRandomPractice()" class="group text-left bg-white border-2 border-borderMain hover:border-accentRed rounded-lg p-6 md:p-8 transition-all hover:shadow-md relative overflow-hidden focus:outline-none flex flex-col items-start justify-start">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-red-50 rounded-bl-full -z-10 group-hover:bg-red-100 transition-colors"></div>
+                    <div class="w-12 h-12 bg-red-50 border border-red-100 rounded-md flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-accentRed" aria-hidden="true"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-accentRed mb-2 tracking-wider">随机乱序</h3>
+                    <p class="text-sm text-textSub leading-relaxed">从当前级别的题库中随机抽取题目。适合日常碎片化时间查漏补缺，防止死记硬背。</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= 3. 引导页 - 选择年份真题 ================= -->
+        <div id="view-year-select" class="view-section selection-view-shell selection-view-standard">
+            <div id="year-review-section" class="hidden mb-5 border border-yellow-200 bg-[#fffdf5] rounded-lg px-4 py-4 md:px-5 md:py-4 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-yellow-100 pb-2">
+                    <div class="text-lg font-title-unified font-bold text-yellow-800 tracking-[0.04em]">🐶 错题回顾</div>
+                </div>
+                <div id="year-review-grid" class="mt-3 flex flex-wrap gap-3">
+                    <!-- JS 动态注入错题年份按钮 -->
+                </div>
+            </div>
+
+            <div id="year-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                <!-- JS 动态注入年份卡片 -->
+            </div>
+        </div>
+
+        <!-- ================= 4. 练习界面 (核心做题区) ================= -->
+        <div id="view-practice" class="view-section">
+            <header class="mb-8 border-b border-borderDark pb-4">
+                <div>
+                    <h1 id="practice-title" class="text-xl md:text-2xl font-title-unified font-bold text-textMain tracking-[0.03em] leading-[1.25]">特訓モード</h1>
+                    <p class="text-xs text-textSub mt-1 tracking-wider">点击选项填入序号，点击横线可取消已选，提交后看解析</p>
+                </div>
+            </header>
+            
+            <!-- 题目容器 -->
+            <div id="practice-question-container" class="space-y-12 mb-16">
+                <!-- JS 动态注入 -->
+            </div>
+
+            <div id="practice-bottom-toolbar" class="practice-bottom-toolbar" aria-live="polite">
+                <div id="practice-toolbar-backdrop" class="practice-toolbar-backdrop" hidden></div>
+                <div class="practice-bottom-toolbar__inner">
+                    <div id="timer-tool-slot" class="practice-toolbar-slot">
+                        <div id="timer-drawer" class="timer-drawer" hidden>
+                            <div class="timer-drawer-header">
+                                <div class="timer-drawer-title">计时设定</div>
+                                <button type="button" class="timer-drawer-close" id="timer-drawer-close-btn" aria-label="关闭">×</button>
+                            </div>
+                            <div id="timer-drawer-display" class="timer-drawer-display">00:00</div>
+                            <div class="timer-drawer-section">
+                                <div class="timer-drawer-label">模式</div>
+                                <div class="timer-chip-row">
+                                    <button type="button" class="timer-chip-btn is-selected" data-timer-mode="countup">正计时</button>
+                                    <button type="button" class="timer-chip-btn" data-timer-mode="countdown">倒计时</button>
+                                </div>
+                            </div>
+                            <div class="timer-drawer-section">
+                                <div class="timer-drawer-label">预设时长</div>
+                                <div class="timer-chip-row">
+                                    <button type="button" class="timer-chip-btn is-selected" data-timer-preset="5">5分</button>
+                                    <button type="button" class="timer-chip-btn" data-timer-preset="10">10分</button>
+                                    <button type="button" class="timer-chip-btn" data-timer-preset="15">15分</button>
+                                    <label class="timer-custom-wrap">
+                                        自定义
+                                        <input type="number" min="1" max="180" step="1" class="timer-custom-input" id="timer-custom-input" value="5">
+                                        分
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="timer-drawer-section">
+                                <div class="timer-drawer-label">控制</div>
+                                <div class="timer-control-row">
+                                    <button type="button" class="timer-control-btn is-primary" id="timer-drawer-start-btn">开始</button>
+                                    <button type="button" class="timer-control-btn" id="timer-drawer-pause-btn">暂停</button>
+                                    <button type="button" class="timer-control-btn" id="timer-drawer-reset-btn">重置</button>
+                                    <button type="button" class="timer-hide-btn" id="timer-hide-btn">隐藏时间</button>
+                                </div>
+                            </div>
+                            <div id="timer-status-text" class="timer-status-text"></div>
+                        </div>
+
+                        <div id="timer-toolbar-main" class="practice-toolbar-main" data-timer-status="idle">
+                            <div class="practice-toolbar-meta">
+                                <span class="timer-status-dot" aria-hidden="true"></span>
+                                <span class="practice-toolbar-label">计时</span>
+                            </div>
+                            <div id="timer-toolbar-display" class="practice-toolbar-time">00:00</div>
+                            <div class="timer-action-group">
+                                <button type="button" class="timer-toolbar-btn is-primary" id="timer-toolbar-toggle-btn">开始</button>
+                                <button type="button" class="timer-toolbar-btn" id="timer-toolbar-reset-btn">重置</button>
+                                <button type="button" class="timer-toolbar-btn" id="timer-toolbar-settings-btn">设置</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="random-tool-slot" class="practice-toolbar-slot" hidden>
+                        <div id="random-toolbar-main" class="practice-toolbar-main random-toolbar-main">
+                            <div class="practice-toolbar-meta">
+                                <span class="timer-status-dot" aria-hidden="true"></span>
+                                <span class="practice-toolbar-label">随机节奏</span>
+                            </div>
+                            <div class="random-toolbar-summary">
+                                <div class="random-toolbar-metric">
+                                    <span class="random-toolbar-metric-label">已做</span>
+                                    <span id="random-toolbar-progress" class="random-toolbar-metric-value">0/10</span>
+                                </div>
+                                <div class="random-toolbar-metric">
+                                    <span class="random-toolbar-metric-label">连对</span>
+                                    <span id="random-toolbar-streak" class="random-toolbar-metric-value">0</span>
+                                </div>
+                            </div>
+                            <div class="random-target-group">
+                                <button type="button" class="timer-toolbar-btn random-target-btn" data-random-target="5">5题</button>
+                                <button type="button" class="timer-toolbar-btn random-target-btn is-primary" data-random-target="10">10题</button>
+                                <button type="button" class="timer-toolbar-btn random-target-btn" data-random-target="20">20题</button>
+                                <button type="button" class="timer-toolbar-btn" id="random-toolbar-end-btn">结束本轮</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+
+    <script src="./data-sort-n1.js"></script>
+    <script src="./data-sort-n2.js"></script>
+    <script src="./data-sort-n3.js"></script>
+
+    <!-- 题目数据与核心逻辑 -->
+    <script>
+        // --- 1. 结构化题库 (带级别和年份元数据) ---
+        const sortQuestionBanks = window.sortQuestionBanks || {};
+        const questionDatabase = [
+            ...(sortQuestionBanks.N1 || []),
+            ...(sortQuestionBanks.N2 || []),
+            ...(sortQuestionBanks.N3 || [])
+        ];
+
+        const TIMER_PRESETS = [5, 10, 15];
+        const RANDOM_TARGET_PRESETS = [5, 10, 20];
+
+        function clampTimerMinutes(value) {
+            const numeric = Number(value);
+            if (!Number.isFinite(numeric)) {
+                return TIMER_PRESETS[0];
+            }
+
+            return Math.min(180, Math.max(1, Math.round(numeric)));
+        }
+
+        function formatTimerClock(totalSeconds) {
+            const safeSeconds = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+            const minutes = Math.floor(safeSeconds / 60);
+            const seconds = safeSeconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function shuffleQuestions(items) {
+            const shuffled = [...items];
+            for (let index = shuffled.length - 1; index > 0; index--) {
+                const swapIndex = Math.floor(Math.random() * (index + 1));
+                [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+            }
+            return shuffled;
+        }
+
+        function getIconSvg(name, className = '') {
+            const icons = {
+                shuffle: '<path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/>',
+                'chevron-right': '<path d="m9 18 6-6-6-6"/>',
+                'arrow-left': '<path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>',
+                list: '<path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/>',
+                'check-circle': '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>',
+                'arrow-right': '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+                calendar: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>'
+            };
+
+            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${className}" aria-hidden="true" focusable="false">${icons[name] || ''}</svg>`;
+        }
+
+        function getGrammarSortMarksKey(level, year) {
+            return `grammar_sort_marks::${level}::${year}`;
+        }
+
+        function getGrammarSortLastPracticeKey(level) {
+            return `grammar_sort_last_practice::${level}`;
+        }
+
+        function parseStoredIdList(rawValue) {
+            try {
+                const parsed = JSON.parse(rawValue || '[]');
+                if (!Array.isArray(parsed)) {
+                    return [];
+                }
+
+                return Array.from(new Set(
+                    parsed
+                        .map(item => String(item || '').trim())
+                        .filter(Boolean)
+                ));
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function getYearMistakes(level, year) {
+            return parseStoredIdList(localStorage.getItem(getGrammarSortMarksKey(level, year)));
+        }
+
+        function saveYearMistakes(level, year, ids) {
+            const normalized = Array.from(new Set(
+                (ids || [])
+                    .map(item => String(item || '').trim())
+                    .filter(Boolean)
+            ));
+            const key = getGrammarSortMarksKey(level, year);
+
+            if (normalized.length === 0) {
+                localStorage.removeItem(key);
+                return;
+            }
+
+            localStorage.setItem(key, JSON.stringify(normalized));
+        }
+
+        function getYearSortValue(year) {
+            const match = String(year || '').match(/^(\d{4})年(\d{1,2})月$/);
+            if (!match) {
+                return 0;
+            }
+
+            return Number(match[1]) * 100 + Number(match[2]);
+        }
+
+        function collectYearReviewItems(level) {
+            const prefix = `grammar_sort_marks::${level}::`;
+            const items = [];
+
+            for (let index = 0; index < localStorage.length; index++) {
+                const key = localStorage.key(index);
+                if (!key || !key.startsWith(prefix)) {
+                    continue;
+                }
+
+                const year = key.slice(prefix.length);
+                const ids = getYearMistakes(level, year);
+                if (ids.length === 0) {
+                    continue;
+                }
+
+                items.push({ year, count: ids.length });
+            }
+
+            items.sort((left, right) => getYearSortValue(right.year) - getYearSortValue(left.year));
+            return items;
+        }
+
+        function replaceAppUrl(params) {
+            const nextParams = new URLSearchParams();
+            Object.entries(params || {}).forEach(([key, value]) => {
+                if (value) {
+                    nextParams.set(key, value);
+                }
+            });
+
+            const nextUrl = nextParams.toString()
+                ? `${window.location.pathname}?${nextParams.toString()}`
+                : window.location.pathname;
+
+            try {
+                window.history.replaceState({ path: nextUrl }, '', nextUrl);
+            } catch (error) {
+                console.warn('History API is restricted in this environment.');
+            }
+        }
+
+        // --- 2. 核心应用状态与逻辑 ---
+        const app = {
+            currentLevel: null,
+            practiceMode: null, // 'year' | 'random' | 'mistake'
+            currentYear: null,
+            
+            questionQueue: [], // 当前需要练习的题目队列
+            currentIndex: 0,
+            stats: { correct: 0, incorrect: 0 }, // 记录单次练习的数据
+            randomTargetCount: RANDOM_TARGET_PRESETS[1],
+            randomRoundTarget: RANDOM_TARGET_PRESETS[1],
+            randomAnsweredCount: 0,
+            randomStreak: 0,
+            randomBestStreak: 0,
+            timer: {
+                mode: 'countup',
+                status: 'idle',
+                elapsedSeconds: 0,
+                remainingSeconds: TIMER_PRESETS[0] * 60,
+                selectedMinutes: TIMER_PRESETS[0],
+                totalSeconds: TIMER_PRESETS[0] * 60,
+                timerId: null,
+                drawerOpen: false,
+                displayHidden: false,
+                hasStarted: false,
+                timeoutTriggered: false,
+                resultHasRun: false,
+                resultSeconds: 0,
+                resultTimeout: false
+            },
+
+            // 初始化函数，恢复深链状态
+            init() {
+                const params = new URLSearchParams(window.location.search);
+                const level = params.get('level');
+                const year = params.get('year');
+                const mode = params.get('mode');
+
+                if (!['N1', 'N2', 'N3'].includes(level)) {
+                    replaceAppUrl({});
+                    return;
+                }
+
+                this.currentLevel = level;
+                document.getElementById('display-selected-level').textContent = level;
+
+                const hasYear = year && questionDatabase.some(q => q.level === level && q.year === year);
+                if (hasYear) {
+                    if (mode === 'review') {
+                        this.startMistakePractice(year, { updateUrl: false, fromInit: true });
+                    } else {
+                        this.startYearPractice(year, { updateUrl: false });
+                    }
+                    return;
+                }
+
+                replaceAppUrl({ level });
+                this.showYearList({ updateUrl: false });
+            },
+
+            // 更新错题数量角标 (废弃不用，但保留空函数防报错)
+            updateMistakeBadge() {
+                // 已合并至 showYearList 中动态渲染
+            },
+
+            getActiveViewId() {
+                return document.querySelector('.view-section.active')?.id || 'view-level-select';
+            },
+
+            handleHeaderBack() {
+                const activeViewId = this.getActiveViewId();
+
+                if (activeViewId === 'view-level-select') {
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                if (activeViewId === 'view-mode-select') {
+                    this.goHome();
+                    return;
+                }
+
+                if (activeViewId === 'view-year-select') {
+                    this.backToModeSelect();
+                    return;
+                }
+
+                if (activeViewId === 'view-practice') {
+                    this.handleBackFromPractice();
+                    return;
+                }
+
+                window.location.href = 'index.html';
+            },
+
+            isPracticeInProgress() {
+                return this.questionQueue.length > 0 && this.currentIndex < this.questionQueue.length;
+            },
+
+            getActiveToolbarMode() {
+                const practiceView = document.getElementById('view-practice');
+                const isActivePracticeView = practiceView?.classList.contains('active');
+
+                if (!isActivePracticeView || !this.isPracticeInProgress()) {
+                    return null;
+                }
+
+                if (this.practiceMode === 'year') {
+                    return 'timer';
+                }
+
+                if (this.practiceMode === 'random') {
+                    return 'random';
+                }
+
+                return null;
+            },
+
+            setPracticeToolbarMode(mode) {
+                const toolbar = document.getElementById('practice-bottom-toolbar');
+                const practiceView = document.getElementById('view-practice');
+                const backdrop = document.getElementById('practice-toolbar-backdrop');
+                const drawer = document.getElementById('timer-drawer');
+                const timerSlot = document.getElementById('timer-tool-slot');
+                const randomSlot = document.getElementById('random-tool-slot');
+                const visible = Boolean(mode);
+
+                if (!toolbar || !practiceView) {
+                    return;
+                }
+
+                toolbar.hidden = !visible;
+                toolbar.classList.toggle('is-visible', visible);
+                practiceView.classList.toggle('has-bottom-toolbar', visible);
+
+                if (timerSlot) {
+                    timerSlot.hidden = mode !== 'timer';
+                }
+
+                if (randomSlot) {
+                    randomSlot.hidden = mode !== 'random';
+                }
+
+                if (mode !== 'timer') {
+                    this.timer.drawerOpen = false;
+                    toolbar.classList.remove('drawer-open');
+                    if (backdrop) {
+                        backdrop.hidden = true;
+                    }
+                    if (drawer) {
+                        drawer.hidden = true;
+                    }
+                }
+            },
+
+            getRandomQuestionPool() {
+                if (this.currentLevel === 'ALL') {
+                    return [...questionDatabase];
+                }
+
+                return questionDatabase.filter(q => q.level === this.currentLevel);
+            },
+
+            getEffectiveRandomTarget(poolLength) {
+                const desiredTarget = RANDOM_TARGET_PRESETS.includes(Number(this.randomTargetCount))
+                    ? Number(this.randomTargetCount)
+                    : RANDOM_TARGET_PRESETS[1];
+
+                if (!poolLength) {
+                    return desiredTarget;
+                }
+
+                return Math.min(desiredTarget, poolLength);
+            },
+
+            prepareRandomRound(pool) {
+                const effectiveTarget = this.getEffectiveRandomTarget(pool.length);
+                this.randomRoundTarget = effectiveTarget;
+                this.randomAnsweredCount = 0;
+                this.randomStreak = 0;
+                this.randomBestStreak = 0;
+                this.questionQueue = shuffleQuestions(pool).slice(0, effectiveTarget);
+                this.currentIndex = 0;
+            },
+
+            setRandomTargetCount(value) {
+                const nextTarget = RANDOM_TARGET_PRESETS.includes(Number(value))
+                    ? Number(value)
+                    : RANDOM_TARGET_PRESETS[1];
+
+                this.randomTargetCount = nextTarget;
+
+                if (this.practiceMode === 'random') {
+                    if (this.currentLevel === 'ALL') {
+                        this.startGlobalRandomPractice();
+                    } else {
+                        this.startRandomPractice();
+                    }
+                    return;
+                }
+
+                this.updateTimerUI();
+            },
+
+            updateRandomProgressAfterAnswer(isStarCorrect) {
+                if (this.practiceMode !== 'random') {
+                    return;
+                }
+
+                this.randomAnsweredCount = Math.min(this.randomRoundTarget, this.randomAnsweredCount + 1);
+
+                if (isStarCorrect) {
+                    this.randomStreak += 1;
+                    if (this.randomStreak > this.randomBestStreak) {
+                        this.randomBestStreak = this.randomStreak;
+                    }
+                } else {
+                    this.randomStreak = 0;
+                }
+            },
+
+            finishRandomRound() {
+                if (this.practiceMode !== 'random') {
+                    return;
+                }
+
+                this.currentIndex = this.questionQueue.length;
+                this.renderPracticeQuestion();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            stopTimer() {
+                if (this.timer.timerId) {
+                    window.clearInterval(this.timer.timerId);
+                    this.timer.timerId = null;
+                }
+            },
+
+            getTimerClockText() {
+                return this.timer.mode === 'countdown'
+                    ? formatTimerClock(this.timer.remainingSeconds)
+                    : formatTimerClock(this.timer.elapsedSeconds);
+            },
+
+            getTimerUsedSeconds() {
+                if (!this.timer.hasStarted) {
+                    return 0;
+                }
+
+                if (this.timer.mode === 'countdown') {
+                    return Math.max(0, this.timer.totalSeconds - this.timer.remainingSeconds);
+                }
+
+                return this.timer.elapsedSeconds;
+            },
+
+            getResultTimerText() {
+                return this.timer.resultHasRun
+                    ? formatTimerClock(this.timer.resultSeconds)
+                    : '计时未开启';
+            },
+
+            getTimerStatusMeta() {
+                const timer = this.timer;
+
+                if (timer.resultTimeout || timer.status === 'timeout') {
+                    return { text: '时间结束，本轮已结束。', tone: 'danger' };
+                }
+
+                if (timer.status === 'running') {
+                    if (timer.mode === 'countdown') {
+                        return { text: '倒计时进行中，时间到会直接结算。', tone: 'warning' };
+                    }
+                    return { text: '正在记录本轮用时。', tone: '' };
+                }
+
+                if (timer.status === 'paused') {
+                    return { text: '计时已暂停。', tone: '' };
+                }
+
+                if (timer.mode === 'countdown') {
+                    return { text: `倒计时将从 ${timer.selectedMinutes} 分开始。`, tone: 'warning' };
+                }
+
+                return { text: '手动开始后会记录本轮做题时间。', tone: '' };
+            },
+
+            closeTimerDrawer(options = {}) {
+                const { skipUpdate = false } = options;
+                this.timer.drawerOpen = false;
+
+                if (!skipUpdate) {
+                    this.updateTimerUI();
+                }
+            },
+
+            openTimerDrawer() {
+                if (!this.isPracticeInProgress() || this.practiceMode !== 'year') {
+                    return;
+                }
+
+                this.timer.drawerOpen = true;
+                this.updateTimerUI();
+            },
+
+            toggleTimerDrawer() {
+                if (!this.isPracticeInProgress() || this.practiceMode !== 'year') {
+                    return;
+                }
+
+                this.timer.drawerOpen = !this.timer.drawerOpen;
+                this.updateTimerUI();
+            },
+
+            resetTimerForPractice() {
+                this.stopTimer();
+                this.timer.status = 'idle';
+                this.timer.elapsedSeconds = 0;
+                this.timer.totalSeconds = clampTimerMinutes(this.timer.selectedMinutes) * 60;
+                this.timer.remainingSeconds = this.timer.totalSeconds;
+                this.timer.hasStarted = false;
+                this.timer.timeoutTriggered = false;
+                this.timer.resultHasRun = false;
+                this.timer.resultSeconds = 0;
+                this.timer.resultTimeout = false;
+                this.closeTimerDrawer({ skipUpdate: true });
+                this.updateTimerUI();
+            },
+
+            finalizeTimerForResult(options = {}) {
+                const { timedOut = false } = options;
+
+                if (!this.timer.resultTimeout && !this.timer.resultHasRun) {
+                    this.timer.resultHasRun = this.timer.hasStarted;
+                    this.timer.resultSeconds = this.getTimerUsedSeconds();
+                }
+
+                this.timer.resultTimeout = this.timer.resultTimeout || timedOut;
+                this.stopTimer();
+
+                if (timedOut) {
+                    this.timer.status = 'timeout';
+                    this.timer.remainingSeconds = 0;
+                } else if (this.timer.hasStarted) {
+                    this.timer.status = 'finished';
+                } else {
+                    this.timer.status = 'idle';
+                }
+
+                this.setPracticeToolbarMode(null);
+                this.updateTimerUI();
+            },
+
+            setTimerMode(mode) {
+                if (!['countup', 'countdown'].includes(mode) || this.timer.mode === mode) {
+                    return;
+                }
+
+                this.stopTimer();
+                this.timer.mode = mode;
+                this.timer.status = 'idle';
+                this.timer.elapsedSeconds = 0;
+                this.timer.totalSeconds = clampTimerMinutes(this.timer.selectedMinutes) * 60;
+                this.timer.remainingSeconds = this.timer.totalSeconds;
+                this.timer.hasStarted = false;
+                this.timer.timeoutTriggered = false;
+                this.timer.resultHasRun = false;
+                this.timer.resultSeconds = 0;
+                this.timer.resultTimeout = false;
+                this.updateTimerUI();
+            },
+
+            setTimerSelectedMinutes(value) {
+                const minutes = clampTimerMinutes(value);
+                this.timer.selectedMinutes = minutes;
+                this.timer.totalSeconds = minutes * 60;
+
+                if (this.timer.mode === 'countdown') {
+                    this.stopTimer();
+                    this.timer.status = 'idle';
+                    this.timer.remainingSeconds = this.timer.totalSeconds;
+                    this.timer.hasStarted = false;
+                    this.timer.timeoutTriggered = false;
+                    this.timer.resultHasRun = false;
+                    this.timer.resultSeconds = 0;
+                    this.timer.resultTimeout = false;
+                }
+
+                this.updateTimerUI();
+            },
+
+            toggleTimerDisplayVisibility() {
+                this.timer.displayHidden = !this.timer.displayHidden;
+                this.updateTimerUI();
+            },
+
+            startTimer() {
+                if (!this.isPracticeInProgress()) {
+                    return;
+                }
+
+                const timer = this.timer;
+                this.stopTimer();
+
+                if (timer.mode === 'countdown') {
+                    timer.totalSeconds = clampTimerMinutes(timer.selectedMinutes) * 60;
+                    if (!timer.hasStarted || timer.status === 'idle' || timer.status === 'finished' || timer.status === 'timeout') {
+                        timer.remainingSeconds = timer.totalSeconds;
+                    }
+                } else if (!timer.hasStarted || timer.status === 'finished' || timer.status === 'timeout') {
+                    timer.elapsedSeconds = 0;
+                }
+
+                timer.hasStarted = true;
+                timer.timeoutTriggered = false;
+                timer.resultHasRun = false;
+                timer.resultSeconds = 0;
+                timer.resultTimeout = false;
+                timer.status = 'running';
+
+                timer.timerId = window.setInterval(() => {
+                    if (timer.mode === 'countup') {
+                        timer.elapsedSeconds += 1;
+                        this.updateTimerUI();
+                        return;
+                    }
+
+                    timer.remainingSeconds = Math.max(0, timer.remainingSeconds - 1);
+                    if (timer.remainingSeconds === 0) {
+                        this.finishCountdown();
+                        return;
+                    }
+
+                    this.updateTimerUI();
+                }, 1000);
+
+                this.updateTimerUI();
+            },
+
+            pauseTimer() {
+                if (this.timer.status !== 'running') {
+                    return;
+                }
+
+                this.stopTimer();
+                this.timer.status = this.timer.hasStarted ? 'paused' : 'idle';
+                this.updateTimerUI();
+            },
+
+            toggleTimerRun() {
+                if (this.timer.status === 'running') {
+                    this.pauseTimer();
+                    return;
+                }
+
+                this.startTimer();
+            },
+
+            resetTimer() {
+                this.stopTimer();
+                this.timer.status = 'idle';
+                this.timer.elapsedSeconds = 0;
+                this.timer.totalSeconds = clampTimerMinutes(this.timer.selectedMinutes) * 60;
+                this.timer.remainingSeconds = this.timer.totalSeconds;
+                this.timer.hasStarted = false;
+                this.timer.timeoutTriggered = false;
+                this.timer.resultHasRun = false;
+                this.timer.resultSeconds = 0;
+                this.timer.resultTimeout = false;
+                this.updateTimerUI();
+            },
+
+            finishCountdown() {
+                if (!this.isPracticeInProgress() || this.timer.timeoutTriggered) {
+                    return;
+                }
+
+                this.stopTimer();
+                this.timer.remainingSeconds = 0;
+                this.timer.status = 'timeout';
+                this.timer.timeoutTriggered = true;
+                this.currentIndex = this.questionQueue.length;
+                this.renderPracticeQuestion();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            updateTimerUI() {
+                const timer = this.timer;
+                const toolbar = document.getElementById('practice-bottom-toolbar');
+                const toolbarDisplay = document.getElementById('timer-toolbar-display');
+                const drawerDisplay = document.getElementById('timer-drawer-display');
+                const toolbarMain = document.getElementById('timer-toolbar-main');
+                const toolbarToggle = document.getElementById('timer-toolbar-toggle-btn');
+                const toolbarReset = document.getElementById('timer-toolbar-reset-btn');
+                const toolbarSettings = document.getElementById('timer-toolbar-settings-btn');
+                const drawer = document.getElementById('timer-drawer');
+                const backdrop = document.getElementById('practice-toolbar-backdrop');
+                const drawerStart = document.getElementById('timer-drawer-start-btn');
+                const drawerPause = document.getElementById('timer-drawer-pause-btn');
+                const drawerReset = document.getElementById('timer-drawer-reset-btn');
+                const hideBtn = document.getElementById('timer-hide-btn');
+                const statusText = document.getElementById('timer-status-text');
+                const customInput = document.getElementById('timer-custom-input');
+                const randomToolbarMain = document.getElementById('random-toolbar-main');
+                const randomProgress = document.getElementById('random-toolbar-progress');
+                const randomStreak = document.getElementById('random-toolbar-streak');
+                const randomEndBtn = document.getElementById('random-toolbar-end-btn');
+
+                if (!toolbar || !toolbarDisplay || !drawerDisplay || !toolbarMain) {
+                    return;
+                }
+
+                const activeToolbarMode = this.getActiveToolbarMode();
+                const shouldShowTimer = activeToolbarMode === 'timer';
+                const shouldShowRandom = activeToolbarMode === 'random';
+                this.setPracticeToolbarMode(activeToolbarMode);
+
+                const realTime = this.getTimerClockText();
+                const toolbarTime = timer.displayHidden ? '--:--' : realTime;
+
+                toolbarDisplay.textContent = toolbarTime;
+                toolbarDisplay.classList.toggle('is-concealed', timer.displayHidden);
+                drawerDisplay.textContent = realTime;
+                toolbarMain.dataset.timerStatus = timer.status;
+
+                if (toolbarToggle) {
+                    toolbarToggle.textContent = timer.status === 'running' ? '暂停' : (timer.status === 'paused' ? '继续' : '开始');
+                }
+
+                if (toolbarReset) {
+                    toolbarReset.disabled = !timer.hasStarted && timer.status === 'idle';
+                }
+
+                if (toolbarSettings) {
+                    toolbarSettings.classList.toggle('is-primary', timer.drawerOpen && shouldShowTimer);
+                }
+
+                if (drawer) {
+                    drawer.hidden = !timer.drawerOpen || !shouldShowTimer;
+                }
+
+                if (backdrop) {
+                    backdrop.hidden = !timer.drawerOpen || !shouldShowTimer;
+                }
+
+                toolbar.classList.toggle('drawer-open', timer.drawerOpen && shouldShowTimer);
+
+                if (drawerStart) {
+                    drawerStart.textContent = timer.status === 'paused' ? '继续' : '开始';
+                }
+
+                if (drawerPause) {
+                    drawerPause.disabled = timer.status !== 'running';
+                }
+
+                if (drawerReset) {
+                    drawerReset.disabled = !timer.hasStarted && timer.status === 'idle';
+                }
+
+                if (hideBtn) {
+                    hideBtn.classList.toggle('is-selected', timer.displayHidden);
+                    hideBtn.textContent = timer.displayHidden ? '显示时间' : '隐藏时间';
+                }
+
+                if (customInput) {
+                    customInput.value = String(timer.selectedMinutes);
+                }
+
+                document.querySelectorAll('[data-timer-mode]').forEach(button => {
+                    button.classList.toggle('is-selected', button.dataset.timerMode === timer.mode);
+                });
+
+                document.querySelectorAll('[data-timer-preset]').forEach(button => {
+                    button.classList.toggle('is-selected', Number(button.dataset.timerPreset) === timer.selectedMinutes);
+                });
+
+                if (statusText) {
+                    const statusMeta = this.getTimerStatusMeta();
+                    statusText.textContent = statusMeta.text;
+                    statusText.classList.remove('is-warning', 'is-danger');
+                    if (statusMeta.tone === 'warning') {
+                        statusText.classList.add('is-warning');
+                    }
+                    if (statusMeta.tone === 'danger') {
+                        statusText.classList.add('is-danger');
+                    }
+                }
+
+                if (randomToolbarMain) {
+                    randomToolbarMain.dataset.timerStatus = this.randomStreak > 0 ? 'running' : 'idle';
+                }
+
+                if (randomProgress) {
+                    randomProgress.textContent = `${Math.min(this.randomAnsweredCount, this.randomRoundTarget)}/${this.randomRoundTarget}`;
+                }
+
+                if (randomStreak) {
+                    randomStreak.textContent = String(this.randomStreak);
+                }
+
+                if (randomEndBtn) {
+                    randomEndBtn.disabled = !shouldShowRandom;
+                }
+
+                document.querySelectorAll('[data-random-target]').forEach(button => {
+                    button.classList.toggle('is-primary', Number(button.dataset.randomTarget) === this.randomTargetCount);
+                });
+            },
+
+            // 视图控制器
+            switchView(viewId) {
+                document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+                document.getElementById(viewId).classList.add('active');
+
+                if (viewId !== 'view-practice') {
+                    this.setPracticeToolbarMode(null);
+                    this.closeTimerDrawer({ skipUpdate: true });
+                } else {
+                    this.updateTimerUI();
+                }
+                
+                // 切换视图时，平滑滚动到页面最顶部
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            goHome() {
+                this.resetTimerForPractice();
+                this.setPracticeToolbarMode(null);
+                this.currentLevel = null;
+                this.practiceMode = null;
+                this.currentYear = null;
+                replaceAppUrl({});
+                this.switchView('view-level-select');
+            },
+
+            // 通用的退出练习返回逻辑
+            handleBackFromPractice() {
+                this.resetTimerForPractice();
+                this.setPracticeToolbarMode(null);
+                if (this.currentLevel === 'ALL') {
+                    this.goHome();
+                    return;
+                }
+                if (this.practiceMode === 'year' || this.practiceMode === 'mistake') {
+                    this.showYearList();
+                } else {
+                    replaceAppUrl({ level: this.currentLevel });
+                    this.switchView('view-mode-select');
+                }
+            },
+
+            backToModeSelect() {
+                this.resetTimerForPractice();
+                this.setPracticeToolbarMode(null);
+                this.practiceMode = null;
+                replaceAppUrl({ level: this.currentLevel });
+                this.switchView('view-mode-select');
+            },
+
+            // Step 1: 选择级别
+            selectLevel(level) {
+                this.currentLevel = level;
+                document.getElementById('display-selected-level').textContent = level;
+                replaceAppUrl({ level });
+                this.switchView('view-mode-select');
+            },
+
+            // Step 2-A: 显示年份列表
+            showYearList(options = {}) {
+                const { updateUrl = true } = options;
+                this.practiceMode = 'year';
+
+                if (updateUrl) {
+                    replaceAppUrl({ level: this.currentLevel });
+                }
+                
+                // 筛选当前级别包含的所有年份
+                const availableYears = [...new Set(questionDatabase
+                    .filter(q => q.level === this.currentLevel)
+                    .map(q => q.year)
+                )].sort((left, right) => getYearSortValue(right) - getYearSortValue(left));
+
+                const container = document.getElementById('year-list-container');
+                const reviewSection = document.getElementById('year-review-section');
+                const reviewGrid = document.getElementById('year-review-grid');
+                container.innerHTML = '';
+                reviewGrid.innerHTML = '';
+
+                const reviewItems = collectYearReviewItems(this.currentLevel);
+                if (reviewItems.length > 0) {
+                    reviewGrid.innerHTML = reviewItems.map(item => `
+                        <button onclick="app.startMistakePractice('${item.year}')" class="group inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-300 bg-white text-yellow-900 text-sm font-bold tracking-wide hover:bg-yellow-500 hover:text-white hover:border-yellow-500 transition-colors shadow-sm">
+                            <span>${item.year}</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 group-hover:bg-white/20">${item.count}题</span>
+                        </button>
+                    `).join('');
+                    reviewSection.classList.remove('hidden');
+                } else {
+                    reviewSection.classList.add('hidden');
+                }
+
+                const lastPractice = localStorage.getItem(getGrammarSortLastPracticeKey(this.currentLevel)) || '';
+
+                if (availableYears.length === 0) {
+                    container.innerHTML = `<div class="col-span-full text-center py-12 text-textSub bg-white border border-borderMain rounded">该级别暂无真题数据</div>`;
+                } else {
+                    container.innerHTML = availableYears.map(year => {
+                        const qCount = questionDatabase.filter(q => q.level === this.currentLevel && q.year === year).length;
+                        const isLastPractice = year === lastPractice;
+
+                        return `
+                            <button onclick="app.startYearPractice('${year}')" class="flex items-center justify-between p-5 bg-white border border-borderMain rounded hover:border-textMain hover:shadow-sm transition-all group focus:outline-none text-left">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-8 bg-textMuted group-hover:bg-textMain transition-colors rounded-sm"></div>
+                                    <div class="font-bold text-lg text-textMain tracking-wider">${year}</div>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    ${isLastPractice ? '<span class="text-[11px] font-bold tracking-[0.14em] text-sky-700 bg-sky-50 border border-sky-100 rounded-full px-2.5 py-1 whitespace-nowrap">前回</span>' : ''}
+                                    <div class="text-sm text-textSub font-sans bg-bgCard px-2 py-1 rounded border border-borderDark group-hover:bg-textMain group-hover:text-white transition-colors whitespace-nowrap">
+                                        共 ${qCount} 题
+                                    </div>
+                                </div>
+                            </button>
+                        `;
+                    }).join('');
+                }
+
+                this.switchView('view-year-select');
+            },
+
+            // Step 2-B: 启动随机乱序练习
+            startRandomPractice() {
+                this.practiceMode = 'random';
+                this.currentYear = '随机抽取';
+                this.stats = { correct: 0, incorrect: 0 };
+                replaceAppUrl({ level: this.currentLevel });
+                
+                // 获取该级别所有题目并打乱
+                const pool = this.getRandomQuestionPool();
+                if(pool.length === 0) {
+                    alert('该级别暂无题目'); return;
+                }
+
+                this.prepareRandomRound(pool);
+                this.resetTimerForPractice();
+                
+                this.renderPracticeQuestion();
+                this.switchView('view-practice');
+            },
+
+            // 启动全级别乱序练习
+            startGlobalRandomPractice() {
+                this.currentLevel = 'ALL';
+                this.practiceMode = 'random';
+                this.currentYear = '全级别乱序';
+                this.stats = { correct: 0, incorrect: 0 };
+                replaceAppUrl({});
+                
+                const pool = this.getRandomQuestionPool();
+                if(pool.length === 0) {
+                    alert('题库暂无题目'); return;
+                }
+
+                this.prepareRandomRound(pool);
+                this.resetTimerForPractice();
+                
+                this.renderPracticeQuestion();
+                this.switchView('view-practice');
+            },
+
+            // Step 2-C: 启动错题回顾练习
+            startMistakePractice(year, options = {}) {
+                const { updateUrl = true, fromInit = false } = options;
+                this.practiceMode = 'mistake';
+                this.currentYear = year;
+                this.stats = { correct: 0, incorrect: 0 };
+
+                const mistakeIds = getYearMistakes(this.currentLevel, year);
+                let pool = questionDatabase.filter(q => q.level === this.currentLevel && q.year === year && mistakeIds.includes(q.id));
+                if (pool.length === 0) {
+                    alert('太棒了！这个年份当前没有错题记录。');
+                    if (fromInit) {
+                        replaceAppUrl({ level: this.currentLevel });
+                    }
+                    this.showYearList({ updateUrl });
+                    return;
+                }
+
+                localStorage.setItem(getGrammarSortLastPracticeKey(this.currentLevel), year);
+                this.questionQueue = pool;
+                this.currentIndex = 0;
+                this.resetTimerForPractice();
+
+                if (updateUrl) {
+                    replaceAppUrl({ level: this.currentLevel, year, mode: 'review' });
+                }
+                this.renderPracticeQuestion();
+                this.switchView('view-practice');
+            },
+
+            // Step 3: 启动指定年份练习
+            startYearPractice(year, options = {}) {
+                const { updateUrl = true } = options;
+                this.practiceMode = 'year';
+                this.currentYear = year;
+                this.stats = { correct: 0, incorrect: 0 };
+                localStorage.setItem(getGrammarSortLastPracticeKey(this.currentLevel), year);
+                
+                // 提取该年份题目（保持原卷顺序）
+                this.questionQueue = questionDatabase.filter(q => q.level === this.currentLevel && q.year === year);
+                this.currentIndex = 0;
+                this.resetTimerForPractice();
+                
+                if (updateUrl) {
+                    replaceAppUrl({ level: this.currentLevel, year });
+                }
+                this.renderPracticeQuestion();
+                this.switchView('view-practice');
+            },
+
+            // 渲染做题界面
+            renderPracticeQuestion() {
+                const container = document.getElementById('practice-question-container');
+                container.innerHTML = ''; 
+                
+                // 动态更新 Header 标题
+                const headerTitle = this.currentLevel === 'ALL'
+                    ? '全级别乱序特訓'
+                    : `[${this.currentLevel}] ${this.currentYear}${this.practiceMode === 'mistake' ? '（🐶 復習モード）' : ''}`;
+                document.getElementById('practice-title').textContent = headerTitle;
+
+                // 判断是否已经做完所有题目
+                if (this.currentIndex >= this.questionQueue.length) {
+                    if (this.practiceMode === 'year') {
+                        this.finalizeTimerForResult({ timedOut: this.timer.timeoutTriggered });
+                    } else {
+                        this.stopTimer();
+                        this.setPracticeToolbarMode(null);
+                        this.closeTimerDrawer({ skipUpdate: true });
+                    }
+                    let restartAction = 'app.startRandomPractice()';
+                    if (this.practiceMode === 'year') restartAction = `app.startYearPractice('${this.currentYear}')`;
+                    if (this.practiceMode === 'mistake') restartAction = `app.startMistakePractice('${this.currentYear}')`;
+                    if (this.currentLevel === 'ALL') restartAction = `app.startGlobalRandomPractice()`;
+
+                    // 计算总题数用于得分率参考
+                    const totalQ = this.stats.correct + this.stats.incorrect;
+
+                    // 根据模式展示不同的结算文案
+                    let completeMsg = '';
+                    if (this.practiceMode === 'year') {
+                        completeMsg = `你已经完成了 <strong class="text-textMain">${headerTitle}</strong> 的 ${totalQ} 道练习。<br>非全对的题目已自动收录进【错题回顾】。`;
+                    } else if (this.practiceMode === 'mistake') {
+                        completeMsg = `你已经完成了 <strong class="text-textMain">[${this.currentLevel}] ${this.currentYear}</strong> 的错题回顾。<br>全对的题目已自动移出这一年的错题库。`;
+                    } else {
+                        completeMsg = `你已经完成了 <strong class="text-textMain">${headerTitle}</strong> 的 ${totalQ} 道练习。<br><span class="text-xs text-textMuted">（注：随机乱序模式不收录错题）</span>`;
+                    }
+
+                    const timerSummaryHtml = this.practiceMode === 'year' ? `
+                        <div class="max-w-xs mx-auto mb-8 bg-white border border-borderMain rounded-lg px-4 py-4 shadow-sm">
+                            <div class="text-xs font-bold tracking-[0.18em] text-textMuted">本次用时</div>
+                            <div class="mt-2 text-3xl font-bold text-textMain font-sans tracking-[0.08em]">${this.getResultTimerText()}</div>
+                            ${this.timer.resultTimeout ? '<p class="mt-3 text-sm font-bold text-red-600">时间结束，本轮已结束。</p>' : ''}
+                        </div>
+                    ` : '';
+
+                    const randomSummaryHtml = this.practiceMode === 'random' ? `
+                        <div class="max-w-sm mx-auto mb-8 bg-white border border-borderMain rounded-lg px-5 py-4 shadow-sm">
+                            <div class="grid grid-cols-2 gap-4 text-center">
+                                <div>
+                                    <div class="text-xs font-bold tracking-[0.18em] text-textMuted">本轮题量</div>
+                                    <div class="mt-2 text-3xl font-bold text-textMain font-sans">${this.randomRoundTarget}</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold tracking-[0.18em] text-textMuted">最高连对</div>
+                                    <div class="mt-2 text-3xl font-bold text-textMain font-sans">${this.randomBestStreak}</div>
+                                </div>
+                            </div>
+                        </div>
+                    ` : '';
+
+                    container.innerHTML = `
+                        <div class="text-center bg-white border border-borderMain p-8 md:p-12 rounded-lg shadow-sm fade-in">
+                            <div class="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                ${getIconSvg('check-circle', 'w-8 h-8')}
+                            </div>
+                            <h2 class="text-2xl font-bold text-textMain mb-6">特训完成！</h2>
+                            
+                            <!-- 得分与失分统计面板 -->
+                            <div class="flex justify-center gap-8 mb-8 border-y border-borderMain py-6 bg-bgCard rounded max-w-sm mx-auto">
+                                <div class="text-center w-24">
+                                    <div class="text-4xl font-bold text-green-600 mb-2 font-sans">${this.stats.correct}</div>
+                                    <div class="text-xs text-textSub tracking-widest font-bold border border-green-200 bg-green-50 rounded py-1 px-2">星号正确</div>
+                                </div>
+                                <div class="text-center w-24">
+                                    <div class="text-4xl font-bold text-red-600 mb-2 font-sans">${this.stats.incorrect}</div>
+                                    <div class="text-xs text-textSub tracking-widest font-bold border border-red-200 bg-red-50 rounded py-1 px-2">星号错误</div>
+                                </div>
+                            </div>
+
+                            ${timerSummaryHtml}
+                            ${randomSummaryHtml}
+
+                            <p class="text-textSub mb-8 text-sm leading-relaxed">${completeMsg}</p>
+                            
+                            <div class="flex justify-center">
+                                <button onclick="${restartAction}" class="px-5 py-2.5 bg-textMain text-white rounded shadow-sm text-sm tracking-widest font-bold hover:bg-black transition-colors">再刷一遍</button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 渲染当前题目
+                const q = this.questionQueue[this.currentIndex];
+                container.innerHTML = this.generateQuestionHTML(q, this.currentIndex, this.questionQueue.length);
+                this.updateTimerUI();
+            },
+
+            // 生成题目的 HTML 模板
+            generateQuestionHTML(q, index, total) {
+                // 生成横线槽
+                let slotsHtml = '';
+                for(let i=0; i<4; i++) {
+                    if (i === q.starIndex) {
+                        slotsHtml += `
+                            <button class="sort-slot star-slot w-8 h-9 border-b-[2px] border-accentRed/50 text-lg font-bold font-sans text-accentRed hover:border-accentRed focus:outline-none transition-colors relative" data-index="${i}">
+                                <span class="slot-text"></span>
+                                <span class="absolute -top-3 left-1/2 -translate-x-1/2 text-[0.65rem] text-accentRed">★</span>
+                            </button>
+                        `;
+                    } else {
+                        slotsHtml += `
+                            <button class="sort-slot w-8 h-9 border-b-[2px] border-textMuted text-lg font-bold font-sans text-textMuted hover:border-textMain focus:outline-none transition-colors relative" data-index="${i}">
+                                <span class="slot-text"></span>
+                            </button>
+                        `;
+                    }
+                }
+
+                // 生成选项
+                let optionsHtml = '';
+                q.options.forEach(opt => {
+                    optionsHtml += `
+                        <button class="sort-option-btn flex items-center py-2.5 px-4 rounded-md border border-borderMain bg-white focus:outline-none text-left w-full transition-all shadow-sm hover:shadow hover:border-textMuted hover:-translate-y-0.5" data-id="${opt.id}">
+                            <span class="option-letter font-sans font-bold mr-3 text-textMuted shrink-0">${opt.id}</span>
+                            <span class="leading-relaxed">${opt.text}</span>
+                        </button>
+                    `;
+                });
+
+                // 生成正确排序展示字符串 (用于解析)
+                let correctOrderStrHtml = '';
+                q.correctOrder.forEach((id, idx) => {
+                    // 保留原生的 <ruby> 标签，让浏览器的假名注音在解析区上方正常渲染
+                    const optText = q.options.find(o => o.id === id).text; 
+                    
+                    if(idx === q.starIndex) {
+                        correctOrderStrHtml += `<span class="inline-block border border-accentRed px-2 py-0.5 rounded text-xs mr-1 text-white bg-accentRed font-sans align-middle">★ ${id}</span><strong class="text-accentRed align-middle">${optText}</strong>`;
+                    } else {
+                        correctOrderStrHtml += `<span class="inline-block border border-borderDark px-2 py-0.5 bg-bgCard rounded text-xs mr-1 text-textSub font-sans align-middle">${id}</span><span class="align-middle">${optText}</span>`;
+                    }
+                    if(idx < 3) correctOrderStrHtml += ` ${getIconSvg('arrow-right', 'w-3 h-3 inline-block text-borderDark mx-1 align-middle')} `;
+                });
+
+                // 显示题目序号标签
+                let qLabel = '';
+                if (this.practiceMode === 'year') {
+                    qLabel = q.label;
+                } else if (this.practiceMode === 'mistake') {
+                    qLabel = `[${q.year}] ${q.label}`;
+                } else if (this.currentLevel === 'ALL') {
+                    qLabel = `[${q.level}] Q${index + 1}`;
+                } else {
+                    qLabel = `Q${index + 1}`;
+                }
+
+                return `
+                <div class="flex flex-col gap-3 md:gap-4 question-block mb-8 fade-in" data-correct-order="${q.correctOrder.join(',')}" data-star-index="${q.starIndex}">
+                    <div class="bg-bgCard p-5 md:p-6 border border-borderMain rounded-sm shadow-sm relative overflow-hidden">
+                        <div class="flex items-center justify-between mb-4 border-b border-borderDark pb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-white bg-textMain px-2.5 py-1 rounded-sm font-sans tracking-wider">${qLabel}</span>
+                                <span class="text-xs text-textMuted font-sans tracking-widest">(${index + 1}/${total})</span>
+                            </div>
+                            <span class="status-badge hidden text-xs font-bold px-2 py-1 rounded-sm tracking-widest"></span>
+                        </div>
+                        
+                        <div class="text-textMain font-serif-jp text-base md:text-lg mb-6 leading-loose md:leading-relaxed">
+                            ${q.prefix}
+                            <span class="inline-flex items-end gap-2 mx-2 align-middle translate-y-[2px] md:translate-y-[-2px]">
+                                ${slotsHtml}
+                            </span>
+                            ${q.suffix}
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4 text-sm md:text-base font-serif-jp text-textSub mb-6">
+                            ${optionsHtml}
+                        </div>
+
+                        <div class="flex justify-end border-t border-borderMain pt-4 action-area">
+                            <button class="submit-btn bg-textMain text-white px-5 py-2 rounded shadow-sm text-sm tracking-widest font-bold hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>提交答案</button>
+                        </div>
+                    </div>
+
+                    <!-- 解析区域 (默认隐藏) -->
+                    <div class="explanation-area hidden border border-borderMain rounded-sm bg-white mt-1 p-5 md:p-6 flex-col">
+                        <div class="space-y-5 md:space-y-6">
+                            <div>
+                                <h4 class="text-sm md:text-base text-textMuted font-bold tracking-widest mb-3">【正确排序】</h4>
+                                <p class="text-textMain text-sm md:text-base font-serif-jp tracking-wider leading-loose">
+                                    ${correctOrderStrHtml}
+                                </p>
+                            </div>
+                            <div>
+                                <h4 class="text-sm md:text-base text-textMuted font-bold tracking-widest mb-3">【逻辑拆解】</h4>
+                                <div class="space-y-3 text-sm md:text-base text-textSub leading-loose">
+                                    ${q.explanation}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }
+        };
+
+        window.app = app;
+
+        // 页面加载完毕执行初始化
+        app.init();
+        app.updateTimerUI();
+
+        document.getElementById('page-back-btn')?.addEventListener('click', () => {
+            app.handleHeaderBack();
+        });
+
+        document.getElementById('timer-toolbar-toggle-btn')?.addEventListener('click', () => {
+            app.toggleTimerRun();
+        });
+
+        document.getElementById('timer-toolbar-reset-btn')?.addEventListener('click', () => {
+            app.resetTimer();
+        });
+
+        document.getElementById('timer-toolbar-settings-btn')?.addEventListener('click', () => {
+            app.toggleTimerDrawer();
+        });
+
+        document.getElementById('timer-drawer-close-btn')?.addEventListener('click', () => {
+            app.closeTimerDrawer();
+        });
+
+        document.getElementById('practice-toolbar-backdrop')?.addEventListener('click', () => {
+            app.closeTimerDrawer();
+        });
+
+        document.querySelectorAll('[data-timer-mode]').forEach(button => {
+            button.addEventListener('click', () => {
+                app.setTimerMode(button.dataset.timerMode);
+            });
+        });
+
+        document.querySelectorAll('[data-timer-preset]').forEach(button => {
+            button.addEventListener('click', () => {
+                app.setTimerSelectedMinutes(button.dataset.timerPreset);
+            });
+        });
+
+        document.getElementById('timer-custom-input')?.addEventListener('input', (event) => {
+            app.setTimerSelectedMinutes(event.target.value);
+        });
+
+        document.getElementById('timer-custom-input')?.addEventListener('change', (event) => {
+            app.setTimerSelectedMinutes(event.target.value);
+        });
+
+        document.getElementById('timer-drawer-start-btn')?.addEventListener('click', () => {
+            app.startTimer();
+        });
+
+        document.getElementById('timer-drawer-pause-btn')?.addEventListener('click', () => {
+            app.pauseTimer();
+        });
+
+        document.getElementById('timer-drawer-reset-btn')?.addEventListener('click', () => {
+            app.resetTimer();
+        });
+
+        document.getElementById('timer-hide-btn')?.addEventListener('click', () => {
+            app.toggleTimerDisplayVisibility();
+        });
+
+        document.querySelectorAll('[data-random-target]').forEach(button => {
+            button.addEventListener('click', () => {
+                app.setRandomTargetCount(button.dataset.randomTarget);
+            });
+        });
+
+        document.getElementById('random-toolbar-end-btn')?.addEventListener('click', () => {
+            app.finishRandomRound();
+        });
+
+        window.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && app.timer.drawerOpen) {
+                app.closeTimerDrawer();
+            }
+        });
+
+        // --- 3. 全局事件委托 (处理填空与交互) ---
+        document.addEventListener('click', (e) => {
+            const block = e.target.closest('.question-block');
+            if (!block) return;
+
+            // 优先判断“下一题”按钮的点击
+            const nextQuestionBtn = e.target.closest('.next-question-btn');
+            if (nextQuestionBtn) {
+                app.currentIndex++;
+                app.renderPracticeQuestion();
+                
+                // 进入下一题时，平滑滚动回顶部，聚焦新题目
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            const slots = Array.from(block.querySelectorAll('.sort-slot'));
+            const options = Array.from(block.querySelectorAll('.sort-option-btn'));
+            const submitBtn = block.querySelector('.submit-btn');
+            if(!submitBtn) return; 
+
+            // 1. 点击选项 -> 填入横线
+            const optBtn = e.target.closest('.sort-option-btn');
+            if (optBtn && !optBtn.classList.contains('option-used') && submitBtn.textContent === '提交答案') {
+                const val = optBtn.dataset.id;
+                const emptySlot = slots.find(s => !s.dataset.val);
+                if (emptySlot) {
+                    emptySlot.dataset.val = val;
+                    emptySlot.querySelector('.slot-text').textContent = val;
+                    emptySlot.classList.add(emptySlot.classList.contains('star-slot') ? 'slot-star-filled' : 'slot-filled');
+                    optBtn.classList.add('option-used');
+                    submitBtn.disabled = !slots.every(slot => slot.dataset.val);
+                }
+                return;
+            }
+
+            // 2. 点击横线 -> 取消填入
+            const slotBtn = e.target.closest('.sort-slot');
+            if (slotBtn && slotBtn.dataset.val && submitBtn.textContent === '提交答案') {
+                const val = slotBtn.dataset.val;
+                slotBtn.removeAttribute('data-val');
+                slotBtn.querySelector('.slot-text').textContent = '';
+                slotBtn.classList.remove('slot-filled', 'slot-star-filled');
+                
+                const targetOpt = options.find(o => o.dataset.id === val);
+                if (targetOpt) targetOpt.classList.remove('option-used');
+                submitBtn.disabled = true;
+                return;
+            }
+
+            // 3. 点击提交按钮
+            if (e.target === submitBtn) {
+                const currentOrder = slots.map(slot => slot.dataset.val);
+                const correctOrder = block.dataset.correctOrder.split(',');
+                const starIndex = parseInt(block.dataset.starIndex);
+                const isStarCorrect = currentOrder[starIndex] === correctOrder[starIndex];
+                const isAllCorrect = currentOrder.join(',') === correctOrder.join(',');
+
+                // 获取当前正在做的这道题的数据对象
+                const currentQuestion = app.questionQueue[app.currentIndex];
+
+                // === 数据统计 & 错题收录逻辑 ===
+                // 1. JLPT按星号给分
+                if (isStarCorrect) {
+                    app.stats.correct++;
+                } else {
+                    app.stats.incorrect++;
+                }
+
+                // 2. 错题收录：只限于“按年份刷题”和“错题回顾”模式
+                if (app.practiceMode === 'year' || app.practiceMode === 'mistake') {
+                    let yearMistakes = getYearMistakes(app.currentLevel, app.currentYear);
+                    if (!isAllCorrect) {
+                        if (!yearMistakes.includes(currentQuestion.id)) {
+                            yearMistakes.push(currentQuestion.id);
+                            saveYearMistakes(app.currentLevel, app.currentYear, yearMistakes);
+                        }
+                    } else {
+                        yearMistakes = yearMistakes.filter(id => id !== currentQuestion.id);
+                        saveYearMistakes(app.currentLevel, app.currentYear, yearMistakes);
+                    }
+                }
+                // ==================================
+
+                app.updateRandomProgressAfterAnswer(isStarCorrect);
+
+                const statusBadge = block.querySelector('.status-badge');
+                statusBadge.classList.remove('hidden');
+                
+                // 评分与变色逻辑
+                if (isAllCorrect) {
+                    statusBadge.textContent = '正解';
+                    statusBadge.className = 'status-badge text-xs font-bold px-3 py-1 rounded-sm tracking-widest bg-green-100 text-green-800 border border-green-300';
+                    slots.forEach(slot => slot.classList.add('bg-green-50', 'border-green-600', 'text-green-700'));
+                } else if (isStarCorrect) {
+                    statusBadge.textContent = '🐶差点';
+                    statusBadge.className = 'status-badge text-xs font-bold px-3 py-1 rounded-sm tracking-widest bg-yellow-100 text-yellow-800 border border-yellow-300';
+                    slots.forEach((slot, idx) => {
+                        if (currentOrder[idx] === correctOrder[idx]) {
+                            slot.classList.add('bg-green-50', 'border-green-600', 'text-green-700');
+                        } else {
+                            slot.classList.add('bg-red-50', 'border-red-600', 'text-red-700');
+                        }
+                    });
+                } else {
+                    statusBadge.textContent = '不正解';
+                    statusBadge.className = 'status-badge text-xs font-bold px-3 py-1 rounded-sm tracking-widest bg-red-100 text-red-800 border border-red-300';
+                    slots.forEach((slot, idx) => {
+                        if (currentOrder[idx] === correctOrder[idx]) {
+                            slot.classList.add('bg-green-50', 'border-green-600', 'text-green-700');
+                        } else {
+                            slot.classList.add('bg-red-50', 'border-red-600', 'text-red-700');
+                        }
+                    });
+                }
+                
+                // 自动显示解析区
+                const explanationArea = block.querySelector('.explanation-area');
+                if (explanationArea) {
+                    explanationArea.classList.remove('hidden');
+                    explanationArea.classList.add('flex', 'fade-in');
+                }
+
+                // 更改按钮为下一题
+                const actionArea = block.querySelector('.action-area');
+                const hasReachedRandomTarget = app.practiceMode === 'random' && app.randomAnsweredCount >= app.randomRoundTarget;
+                const nextLabel = hasReachedRandomTarget ? '查看结算' : '下一题';
+                actionArea.innerHTML = `<button class="next-question-btn bg-textMain text-white px-5 py-2 rounded shadow-sm text-sm tracking-widest font-bold hover:bg-black transition-colors">${nextLabel} ${getIconSvg('arrow-right', 'w-4 h-4 inline align-[-0.125em]')}</button>`;
+                app.updateTimerUI();
+                return;
+            }
+        });
+    </script>
+</body>
+</html>
