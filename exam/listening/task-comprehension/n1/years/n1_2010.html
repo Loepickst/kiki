@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>課題理解 - 聴解練習 (N1)</title>
+    <style>
+        :root {
+            /* --- 统一配色方案 --- */
+            --bg-color: #fdfaf5;       /* 米色背景 */
+            --paper-color: #ffffff;    /* 卡片背景 */
+            --text-color: #2c2c2c;     /* 主文字 */
+            --sub-color: #787878;      /* 辅助文字 */
+            --accent-color: #b33e3e;   /* 强调色 (茜色) */
+            --accent-light: #fbe9e7;   /* 强调色淡色背景 */
+            --border-color: #e0e0e0;   /* 边框颜色 */
+            --shadow: 0 4px 20px rgba(0,0,0,0.05); /* 柔和阴影 */
+            
+            /* 功能色 */
+            --primary-btn: #2c3e50;
+            --highlight-purple: #9c27b0;
+            --question-bg: #f5f7fa;    /* 提问区块背景色 */
+        }
+
+        body {
+            font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Meiryo", "Microsoft YaHei", -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Global Header Style */
+        header {
+            width: 100%;
+            padding: 15px 20px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            margin-bottom: 0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-color);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: bold;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .back-btn:hover { opacity: 1; }
+
+        /* 主容器 */
+        .practice-container {
+            margin-top: 0; 
+            margin-bottom: 85px; 
+            background: var(--paper-color);
+            border-radius: 20px 20px 0 0;
+            max-width: 1000px; 
+            width: 95%;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0,0,0,0.02);
+            position: relative;
+            flex: 1; 
+        }
+
+        /* 顶部 Header */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* 模式切换按钮优化 */
+        .mode-switch {
+            display: flex;
+            background: #f0f0f0;
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        button {
+            padding: 8px 16px;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+            color: #888;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        button.active {
+            background-color: #fff;
+            color: var(--text-color);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        /* 内容区布局 */
+        .content-wrapper {
+            display: block;
+        }
+
+        /* 右侧面板 */
+        .right-panel {
+            width: 100%;
+        }
+
+        /* --- 模式样式控制 --- */
+        .mode-practice .right-panel {
+            filter: none;
+            opacity: 1;
+            pointer-events: auto;
+            user-select: auto;
+            transition: all 0.5s ease;
+        }
+
+        .mode-practice .transcript-section,
+        .mode-practice .translation {
+            display: none !important;
+        }
+
+        .mode-practice .options-list li {
+            cursor: pointer;
+            min-height: 24px;
+        }
+        
+        .mode-practice .options-list li:hover {
+            background-color: #f9f9f9;
+        }
+
+        .mode-practice .options-list li.selected {
+            border-color: var(--primary-btn);
+            background-color: #f0f8ff;
+            box-shadow: 0 0 0 1px var(--primary-btn);
+        }
+
+        .mode-explanation .right-panel {
+            filter: blur(0);
+            opacity: 1;
+            pointer-events: auto;
+            transition: all 0.5s ease;
+        }
+
+        .mode-explanation .translation { display: block; }
+
+        /* --- 听力原文区块排版 --- */
+        .transcript-section {
+            margin-bottom: 30px;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            overflow: hidden;
+            padding-bottom: 20px;
+        }
+
+        .question-box {
+            background-color: var(--question-bg);
+            padding: 15px 20px;
+            border-left: 4px solid var(--accent-color);
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+
+        .conversation-box {
+            padding: 20px 20px 0 20px;
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text-color);
+        }
+
+        .conversation-line {
+            margin-bottom: 12px;
+            display: flex;
+        }
+
+        .speaker-name {
+            font-weight: bold;
+            color: var(--primary-btn);
+            margin-right: 8px;
+            white-space: nowrap;
+        }
+        
+        .speaker-text {
+            flex: 1;
+        }
+
+        /* 原文高亮及选项标示 (仅在解説模式下生效) */
+        .mode-practice .highlight-correct,
+        .mode-practice .highlight-wrong {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+            font-weight: inherit;
+        }
+        
+        /* 练习模式下隐藏选项标签 */
+        .mode-practice .opt-tag {
+            display: none !important;
+        }
+
+        .mode-explanation .highlight-correct {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(46, 125, 50, 0.1);
+        }
+
+        .mode-explanation .highlight-wrong {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(198, 40, 40, 0.1);
+        }
+
+        /* 选项序号标示样式 */
+        .mode-explanation .opt-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 6px;
+            vertical-align: middle;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .mode-explanation .tag-wrong {
+            background-color: #ef5350;
+            color: white;
+        }
+        
+        .mode-explanation .tag-correct {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        /* 翻译文字统一样式 */
+        .translation {
+            color: var(--sub-color);
+            font-size: 13px;
+            line-height: 1.6;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px dashed #eee;
+            display: none;
+        }
+
+        /* 选项列表优化 */
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .options-list li {
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            background: #fff;
+            transition: all 0.2s ease;
+            position: relative;
+            padding-left: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .option-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inline-confirm-btn {
+            margin-left: 15px;
+            padding: 6px 16px;
+            background-color: var(--primary-btn);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            animation: fadeIn 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .inline-confirm-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .mode-explanation .options-list li:hover {
+            border-color: var(--accent-color);
+            background-color: #fffafa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .options-num {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: #f0f0f0;
+            color: #666;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .mode-explanation .correct-answer .options-num {
+            background: var(--accent-color);
+            color: #fff;
+        }
+
+        .mode-explanation .correct-answer {
+            background-color: var(--accent-light);
+            border-color: var(--accent-color);
+        }
+        
+        .option-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        /* 关键词样式 */
+        .keyword {
+            color: var(--accent-color);
+            border-bottom: 1px solid rgba(179, 62, 62, 0.3);
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0 2px;
+            transition: all 0.2s;
+        }
+
+        .keyword:hover {
+            background-color: var(--accent-light);
+            border-bottom-color: var(--accent-color);
+        }
+
+        /* Header Controls & Icons */
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .question-select {
+            padding: 8px 16px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px;
+            background-color: #fff; color: var(--text-color); outline: none; font-weight: bold;
+            cursor: pointer; min-width: 120px;
+        }
+        .mark-btn {
+            font-size: 22px; padding: 4px 10px; background: none; border: 2px solid transparent;
+            border-radius: 8px; cursor: pointer; opacity: 0.2; filter: grayscale(100%); transition: all 0.2s ease; margin-left: 5px;
+            position: relative; z-index: 5; flex-shrink: 0; pointer-events: auto; touch-action: manipulation;
+        }
+        .mark-btn:hover { opacity: 0.6; transform: scale(1.1); }
+        .mark-btn.active { opacity: 1; filter: grayscale(0%); transform: scale(1.1); }
+
+        .custom-tooltip { position: absolute; background-color: #333; color: #fff; padding: 10px 14px; border-radius: 6px; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); pointer-events: none; z-index: 1000; display: none; max-width: 260px; line-height: 1.6; --arrow-left: 50%; }
+        .custom-tooltip::after { content: ""; position: absolute; top: 100%; left: var(--arrow-left); margin-left: -6px; border-width: 6px; border-style: solid; border-color: #333 transparent transparent transparent; }
+
+        /* Practice Mode Results */
+        .mode-practice .options-list li.judged-correct { background-color: #e8f5e9 !important; border-color: #4caf50 !important; box-shadow: 0 0 0 1px #4caf50; }
+        .mode-practice .options-list li.judged-correct::after { content: "正解" !important; color: #2e7d32 !important; position: absolute; right: 20px; font-weight: bold; font-size: 12px;}
+        .mode-practice .options-list li.judged-wrong { background-color: #ffebee !important; border-color: #ef5350 !important; box-shadow: 0 0 0 1px #ef5350; }
+        .mode-practice .options-list li.judged-wrong::after { content: "不正解" !important; color: #ef5350 !important; position: absolute; right: 20px; font-weight: bold; font-size: 12px;}
+
+        /* --- 响应式手机端专属排版 (Apple Music Mobile Player Style) --- */
+        @media (max-width: 768px) {
+            .practice-container { width: 95%; padding: 20px; }
+            .question-box { font-size: 13px; padding: 12px 15px; }
+            .conversation-box { font-size: 13px; padding: 15px 15px 0 15px; }
+            .vocab-section { margin: 15px 15px 0 15px; }
+            .option-text { font-size: 13px; }
+            .translation { font-size: 12px; }
+            
+            /* 底部等距控制按钮 */
+            .player-controls {
+                width: 100%;
+                justify-content: space-between;
+                padding: 0 5px;
+                margin-top: 5px;
+                gap: 0;
+            }
+            
+            /* 利用 Flexbox Order 重新排列手机端按钮位置 (加入快进快退) */
+            #loopBtn { order: 1; }
+            #prevBtn { order: 2; }
+            #rewindBtn { order: 3; }
+            #playBtn { order: 4; }
+            #forwardBtn { order: 5; }
+            #nextBtn { order: 6; }
+            #speedBtn { order: 7; }
+
+            /* 缩小手机端的图标大小，以适应新增的两个按钮 */
+            .play-btn { width: 28px; height: 28px; }
+            .nav-btn { width: 20px; height: 20px; }
+            .skip-btn { width: 20px; height: 20px; }
+            .loop-btn { width: 18px; height: 18px; }
+            .speed-btn { font-size: 13px; width: 40px; padding: 0; }
+        }
+    </style>
+    <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
+    <link rel="stylesheet" href="../../../shared/audio-player-theme.css">
+</head>
+<body>
+
+    <header>
+        <a href="../index.html" class="back-btn">← 戻る</a>
+        <h1 id="yearLabel">課題理解 - 2010 (n1)</h1>
+    </header>
+
+    <div class="practice-container mode-practice" id="appContainer">
+        
+        <div class="card-header">
+            <div class="header-left">
+                <select id="questionSelect" class="question-select" onchange="changeQuestion(this.value)"></select>
+                <button type="button" id="markBtn" class="mark-btn" onclick="toggleMark()" title="あとで復習する（复习标记）">🐶</button>
+            </div>
+            <div class="mode-switch">
+                <button id="btnPractice" class="active" onclick="setMode('practice')">練習</button>
+                <button id="btnExplanation" onclick="setMode('explanation')">解説</button>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="right-panel" id="rightPanel">
+                
+                <!-- 听力原文与翻译区块 (练习模式下隐藏) -->
+                <div class="transcript-section" id="transcriptBlock">
+                    <!-- 问题区块 -->
+                    <div class="question-box">
+                        <div id="questionText"></div>
+                        <div class="translation" id="questionTrans"></div>
+                    </div>
+                    
+                    <!-- 对话区块 -->
+                    <div class="conversation-box" id="conversationText">
+                        <!-- 由JS填充对话内容 -->
+                    </div>
+                </div>
+
+                <!-- 选项列表 (练习模式下保持可见) -->
+                <ul class="options-list" id="optionsList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部音频播放器 -->
+    <div class="audio-wrapper">
+        <div class="custom-audio-player">
+            <!-- 中间信息栏：曲目、进度 -->
+            <div class="now-playing-box">
+                <div class="track-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#a0a0a5"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+                </div>
+                <div class="track-info">
+                    <div class="track-title" id="trackTitle">問題 1</div>
+                    <div class="track-subtitle" id="trackSubtitle">課題理解 - 聴解練習</div>
+                </div>
+                
+                <!-- 进度条与时间区（支持响应式切换布局） -->
+                <div class="progress-area">
+                    <div class="time-group">
+                        <span class="time-display time-current" id="timeCurrent">0:00</span>
+                        <span class="time-display time-divider"></span>
+                        <span class="time-display time-duration desktop-time" id="timeDurationDesktop">0:00</span>
+                        <span class="time-display time-duration mobile-time" id="timeDurationMobile">-0:00</span>
+                    </div>
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 控制组：包含翻页、快退、播放、快进、循环、倍速 -->
+            <div class="player-controls">
+                <button id="prevBtn" class="ctrl-btn nav-btn" onclick="prevQuestion()" title="前へ">
+                    <svg viewBox="0 0 24 24"><path d="M3 6h2v12H3zM13 6v12L5 12zM21 6v12L13 12z"/></svg>
+                </button>
+                <!-- 退回 6 秒 -->
+                <button id="rewindBtn" class="ctrl-btn skip-btn" title="6秒戻る (退回6秒)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><text x="12" y="16.5" font-size="8.5" font-weight="bold" font-family="sans-serif" stroke-width="0" fill="currentColor" text-anchor="middle">6</text></svg>
+                </button>
+                <button class="ctrl-btn play-btn" id="playBtn">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <!-- 快进 6 秒 -->
+                <button id="forwardBtn" class="ctrl-btn skip-btn" title="6秒進む (快进6秒)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><text x="12" y="16.5" font-size="8.5" font-weight="bold" font-family="sans-serif" stroke-width="0" fill="currentColor" text-anchor="middle">6</text></svg>
+                </button>
+                <button id="nextBtn" class="ctrl-btn nav-btn" onclick="nextQuestion()" title="次へ">
+                    <svg viewBox="0 0 24 24"><path d="M3 6v12L11 12zM11 6v12L19 12zM19 6h2v12H19z"/></svg>
+                </button>
+                <button id="loopBtn" class="ctrl-btn loop-btn" title="ループ再生 (循环播放)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+                </button>
+                <!-- 倍速按钮移动至循环右侧 -->
+                <button id="speedBtn" class="ctrl-btn speed-btn" title="再生速度 (点击切换 0.75x / 1.0x)">1.0x</button>
+            </div>
+            
+            <audio id="audioElement" preload="metadata"></audio>
+        </div>
+    </div>
+
+    <div id="wordTooltip" class="custom-tooltip"></div>
+
+    <script src="../../../shared/audio-player-theme.js"></script>
+    <script src="../../../shared/listening-progress.js"></script>
+    <script>
+        // --- Data Structure (针对课题理解的数据结构) ---
+        const examData = {
+            "N1-2010-07": {
+                label: "2010年7月 (N1)",
+                questions: [
+                    {
+                        id: 1,
+                        audio: "../assets/audio/2010.7-1.mp3", // 请替换为实际的 N1 2010.7 第一题音频路径
+                        script: {
+                            question: "一番：女の人が電話で話しています。女の人は講演会の当日、何をしなければなりませんか。",
+                            questionTrans: "（女人在打电话。女人在演讲会当天必须做什么？）",
+                            dialogue: [
+                                { speaker: "女", text: "もしもし、あのう、来週四日の講演会に参加したいんですが、まだあいてますか。", trans: "（喂，你好。那个，我想参加下周4号的演讲会，请问还有空位吗？）" },
+                                { speaker: "男", text: "ああ、田中先生の講演会ですね、少々お待ちください。調べますので。", trans: "（啊，是田中老师的演讲会吧，请稍等。我帮您查一下。）" },
+                                { speaker: "女", text: "お願いします。", trans: "（拜托了。）" },
+                                { speaker: "男", text: "あっ、もしもし、お待たせしました。まだ余裕がございますので、ご参加いただけます。", trans: "（啊，喂，让您久等了。名额还很宽裕，您可以参加。）" },
+                                { speaker: "女", text: "ああ、そうですか。よかった。", trans: "（啊，是吗。太好了。）" },
+                                // 对应易错选项1：加入了 <span class="opt-tag tag-wrong">①</span> 标示和时间点的排除气泡
+                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"keyword\" onclick=\"showTooltip(event, '今週末までに：时间点是“本周末之前”，不符合题目问的“当天（当日）”，因此排除。')\">参加費は今週末までにお振込みください。</span></span>", trans: "（参加费请在本周末之前汇款过来。）" },
+                                { speaker: "女", text: "はい。", trans: "（好的。）" },
+                                { speaker: "男", text: "当日は一時間前からの開場となりますが。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">② 🎯 正解キー</span>受付で入場券をお受け取りください。</span>", trans: "（当天会提前一小时开场。请在接待处领取入场券。）" },
+                                // 对应易错选项3：加入了 <span class="opt-tag tag-wrong">③</span> 标示和行为状态的排除气泡
+                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span>開始時間まで、先生の著書の<span class=\"keyword\" onclick=\"showTooltip(event, '展示販売も行っております：现场会有展示销售，但买书是听众自愿随意的行为，并不是去参加演讲会“必须（しなければなりませんか）”做的事，因此排除。')\">展示販売も行っております</span>。</span>定価の二割引ですので、ぜひご利用ください。", trans: "（在开始时间之前，现场还会进行老师著作的展示销售。因为是打八折，请务必光临选购。）" },
+                                { speaker: "女", text: "あっ、そうですか、わかりました。", trans: "（啊，是吗，我知道了。）" },
+                                // 对应易错选项4：加入了 <span class="opt-tag tag-wrong">④</span> 标示和现在行为的排除气泡
+                                { speaker: "男", text: "それでは、<span class=\"keyword\" onclick=\"showTooltip(event, '恐れ入りますが（おそれいりますが）：实在不好意思，劳驾。商务日语中常用于拜托对方做某事时的客套话。')\">恐れ入りますが</span>、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"keyword\" onclick=\"showTooltip(event, 'お名前とご連絡先お願いします：这是现在（电话中）立刻需要告知的行为，而不是演讲会当天做的事，因此排除。')\">お名前とご連絡先お願いします。</span></span>", trans: "（那么，不好意思，请告诉我您的姓名和联系方式。）" }
+                            ]
+                        },
+                        options: [
+                            { text: "参加費を支払う", translation: "（支付参加费）", correct: false },
+                            { text: "入場券を受け取る", translation: "（领取入场券）", correct: true },
+                            { text: "田中先生の本を買う", translation: "（买田中老师的书）", correct: false },
+                            { text: "名前と連絡先を言う", translation: "（说出姓名和联系方式）", correct: false }
+                        ]
+                    },
+                    {
+                        id: 2,
+                        audio: "../assets/audio/2010.7-2.mp3", // 请替换为实际的 N1 2010.7 第二题音频路径
+                        script: {
+                            question: "二番：会社で女の人と男の人が会議について話しています。男の人は何をしなければなりませんか。",
+                            questionTrans: "（公司里女人和男人正在谈论会议的事。男人必须做什么？）",
+                            dialogue: [
+                                { speaker: "女", text: "田中さん、例の金曜日の会議の件なんだけどね。", trans: "（田中，关于周五那个会议的事儿。）" },
+                                { speaker: "男", text: "はい。", trans: "（在。）" },
+                                { speaker: "女", text: "上のほうから、会議の効率化をはかるための指針っていうのが来てるんだけど。", trans: "（上面发来了旨在提高会议效率的指导方针。）" },
+                                { speaker: "男", text: "はい。", trans: "（好的。）" },
+                                // 对应排除选项1：开始时间没问题
+                                { speaker: "女", text: "それでね、まず会議の開始時間だけど、原則として、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"keyword\" onclick=\"showTooltip(event, '会议原本就计划在10点，在9点到12点的规定时间内，没问题，因此不需要【開始時間を早める】（提前开始时间）。')\">九時から十二時までの間って書いてある。</span></span>", trans: "（所以呢，首先是会议的开始时间，上面写着原则上要在9点到12点之间。）" },
+                                { speaker: "男", text: "ああ。会議は十時からの予定です。", trans: "（啊，会议计划是10点开始。）" },
+                                // 对应排除选项2：会议时长没问题
+                                { speaker: "女", text: "あっ、そうでしたね。それから、会議時間なんだけど、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"keyword\" onclick=\"showTooltip(event, '男方后面回复说“能办到（何とかなります）”，说明时间控制上没问题，不需要特别去【時間を短くする】（缩短时间）。')\">二時間を越えちゃいけない。</span></span>", trans: "（啊，是哦。还有，关于会议时长，不能超过2小时。）" },
+                                { speaker: "男", text: "ああ、それは何とかなりますね。", trans: "（啊，那个应该能办到。）" },
+                                // 对应排除选项3和正确选项4
+                                { speaker: "女", text: "それと、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span>議題は四つ以下にして</span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④ 🎯 正解キー</span>遅くとも前日までにメールで参加者に知らせておくこと。</span>", trans: "（还有，议题要控制在4个以下，并且最晚要在前一天通过邮件通知参加者。）" },
+                                { speaker: "男", text: "あっ、そうなんですか。では、今日のうちにやっておきます。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"keyword\" onclick=\"showTooltip(event, '男方表示议题数量没问题，不需要【議題を少なくする】。他所说的“今天之内把这事办了”指的是④【事前に知らせる】（提前发邮件通知参加者）。')\">数のほうは問題ないですね。</span></span>", trans: "（啊，是这样吗。那我今天之内就把这事办了。数量方面没问题。）" },
+                                { speaker: "女", text: "そうね、じゃあ、準備、よろしくね。", trans: "（是啊，那准备工作就拜托你了。）" },
+                                { speaker: "男", text: "はい、わかりました。", trans: "（好的，明白了。）" }
+                            ]
+                        },
+                        options: [
+                            { text: "開始時間を早める", translation: "（提前开始时间）", correct: false },
+                            { text: "時間を短くする", translation: "（缩短时间）", correct: false },
+                            { text: "議題を少なくする", translation: "（减少议题）", correct: false },
+                            { text: "議題を事前に知らせる", translation: "（事先通知议题）", correct: true }
+                        ]
+                    },
+                    {
+                        id: 3,
+                        audio: "../assets/audio/2010.7-3.mp3", // 请替换为实际的 N1 2010.7 第三题音频路径
+                        script: {
+                            question: "三番：ホテルで男の人がフロントに電話しています。フロントの人はこの後、客室係りにどんな指示を出しますか。",
+                            questionTrans: "（在酒店里，男人正在给前台打电话。前台接下来会给客房服务员下达什么指示？）",
+                            dialogue: [
+                                { speaker: "女", text: "はい、フロントでございます", trans: "（您好，这里是前台。）" },
+                                { speaker: "男", text: "あのう、洗面台の水の流れが悪いんだけど、後、毛布もって来てくれないかな。", trans: "（那个，洗脸台的下水不太顺畅。还有，能不能给我拿床毛毯来？）" },
+                                { speaker: "女", text: "大変申し訳ございません。あの、お客様。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"keyword\" onclick=\"showTooltip(event, '毛毯在衣柜上层的架子上，不需要服务员送，因此排除【毛布を補充する】。')\">毛布はクローゼットの上の棚にございます。</span></span><span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">① 🎯 正解キー</span>洗面台のほうは、係りの者を伺わせますので</span>、しばらく、お待ちいただけますでしょうか。", trans: "（非常抱歉。那个，客人。毛毯在衣柜上层的架子上。关于洗脸台的问题，我会派工作人员过去，能请您稍等一会儿吗？）" },
+                                { speaker: "男", text: "どのくらいかかるかな。疲れてて早く寝たいんだよね", trans: "（大概要花多久啊？我累了想早点睡。）" },
+                                { speaker: "女", text: "それでしたら。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span>ほかのお部屋にお移りいただくことも可能ですが。</span>", trans: "（那样的话，也可以为您换个房间。）" },
+                                { speaker: "男", text: "うーん、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"keyword\" onclick=\"showTooltip(event, '“行李已经打开了”是拒绝换房的理由，男方并没有要求搬运行李，因此排除【別の部屋を用意する】和【荷物を運ぶ】。')\">荷物あけちゃったし</span></span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">① 🎯 正解キー</span><span class=\"keyword\" onclick=\"showTooltip(event, 'とりあえず見てくれる：还是先让人来看看（洗脸台）吧。最终确认前台需要派人去【洗面所を点検する】。')\">とりあえず見てくれる。</span></span>", trans: "（嗯…行李都已经打开了，还是先让人来看看吧。）" },
+                                { speaker: "女", text: "承知いたしました。すぐに手配いたします。", trans: "（明白了。我马上去安排。）" }
+                            ]
+                        },
+                        options: [
+                            { text: "洗面所を点検する", translation: "（检查洗漱间）", correct: true },
+                            { text: "毛布を補充する", translation: "（补充毛毯）", correct: false },
+                            { text: "別の部屋を用意する", translation: "（准备另外的房间）", correct: false },
+                            { text: "荷物を運ぶ", translation: "（搬运行李）", correct: false }
+                        ]
+                    },
+                    {
+                        id: 4,
+                        audio: "../assets/audio/2010.7-4.mp3", // 请替换为实际的 N1 2010.7 第四题音频路径
+                        script: {
+                            question: "四番：会社で男の人と女の人が話しています。女の人は、明日何をしなければなりませんか。",
+                            questionTrans: "（在公司里男人和女人在说话。女人明天必须做什么？）",
+                            dialogue: [
+                                { speaker: "男", text: "今度の国際共同プロジェクトについてなんだけど。", trans: "（关于下次那个国际合作项目那件事。）" },
+                                { speaker: "女", text: "はい、来月から予備調査のために、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"keyword\" onclick=\"showTooltip(event, '时间是“下个月（来月から）”，不符合题目问的“明天（明日）”，因此排除【国内出張に出かける】。')\">国内の支社を幾つか回る予定です。</span></span>", trans: "（是这样的，为了进行预备调查，我计划下个月走访几家国内的分公司。）" },
+                                { speaker: "男", text: "あっ、そう。それでね。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">② 🎯 正解キー</span>この件で明日アメリカの会社から責任者がくるんだけど、君に通訳を頼めないかな。</span>実は予定していた人は急にこられなくなってね。", trans: "（啊，是吗。那个，关于这件事，明天美国公司的负责人要来，能不能拜托你来做翻译？其实，原定的人突然来不了了。）" },
+                                { speaker: "女", text: "えっ？急に言われても、私に代役が務まりますか。", trans: "（哎？这么突然，我能胜任替补吗？）" },
+                                { speaker: "男", text: "できそうな人は君しかいないんだよ。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"keyword\" onclick=\"showTooltip(event, '男方要求的是“仔细阅读会议资料做准备（資料を読み込んで）”，而不是让女方去“制作（作成する）”资料，属于动词偷换陷阱，因此排除。')\">会議の資料を読み込んで準備してくれないかな。</span>頼むよ！</span>", trans: "（看起来能做这事儿的只有你了。能不能请你把会议资料仔细读读做个准备？拜托了！）" },
+                                { speaker: "女", text: "えっ、そんな大役、自信ないんですが。", trans: "（哎，这么重大的任务，我没什么自信啊。）" },
+                                { speaker: "男", text: "何とかお願いします。", trans: "（无论如何请帮帮忙。）" },
+                                { speaker: "女", text: "はい。", trans: "（好的。）" },
+                                { speaker: "男", text: "ああ、そうそう、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"keyword\" onclick=\"showTooltip(event, '关于海外出差，男方只是说许可下来了让她“做好准备”，并不是“明天就出发”，且发生在明天之后，因此排除。')\">例の海外出張の件は許可が下りたから、そっちの準備のほうもよろしく。</span></span>", trans: "（啊，对了对了，那个海外出差的申请批下来了，那边也请做好准备。）" },
+                                { speaker: "女", text: "はい、わかりました。", trans: "（好的，明白了。）" }
+                            ]
+                        },
+                        options: [
+                            { text: "国内出張に出かける", translation: "（去国内出差）", correct: false },
+                            { text: "会議の通訳をする", translation: "（做会议翻译）", correct: true },
+                            { text: "資料を作成する", translation: "（制作资料）", correct: false },
+                            { text: "海外出張に出かける", translation: "（去海外出差）", correct: false }
+                        ]
+                    },
+                    {
+                        id: 5,
+                        audio: "../assets/audio/2010.7-5.mp3", // 请替换为实际的 N1 2010.7 第五题音频路径
+                        script: {
+                            question: "五番：繊維工場の男の人が取引先の女の人と話しています。男の人はこの後、どうしますか。",
+                            questionTrans: "（在纺织厂里，男人正在和客户女人交谈。男人接下来要做什么？）",
+                            dialogue: [
+                                { speaker: "男", text: "どうですか。この生地なんですけど。", trans: "（怎么样？这是您要的那种面料。）" },
+                                { speaker: "女", text: "ああ、いいですね。この触り心地はなかなかほかではないんですよね。", trans: "（啊，真不错呢。这种手感在别处可是很难找到的。）" },
+                                { speaker: "男", text: "そうでしょう。うちでは昔からの織り方で作ってるんで、この独特の感じが出るんですよ。", trans: "（是吧。因为我们家是用传统的织法制作的，所以才能呈现出这种独特的感觉。）" },
+                                { speaker: "女", text: "そうですか。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span>新しいやり方ですと、こうはならないんですか。</span>", trans: "（是吗。如果用新的做法，就做不出这种效果吗？）" },
+                                { speaker: "男", text: "いや、無理ですね。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"keyword\" onclick=\"showTooltip(event, '男方明确表示用新方法做不到（無理ですね），并且坚持传统做法，因此排除【最新の方法で生地を織る】。')\">手間がかかっても、うちではその点にこだわってますからね。</span></span>", trans: "（不行，做不到呢。哪怕费工夫，我们在这点上也一直很讲究。）" },
+                                { speaker: "女", text: "なるほどね。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">② 🎯 正解キー</span>色合いはかえられますか。</span>", trans: "（原来如此。色调可以调整吗？）" },
+                                { speaker: "男", text: "ご希望をいっていただければ、微妙な違いも出せますよ。", trans: "（如果您提出要求的话，细微的差别也能做出来哦。）" },
+                                { speaker: "女", text: "じゃあ、もう少し、淡い感じを出していただければ、私たちのイメージに合うんですが。", trans: "（那，如果能做得再淡雅一点的话，就符合我们的设想了。）" },
+                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">② 🎯 正解キー</span>ああ、そうですか。わかりました。じゃ、２、３日ください。</span>", trans: "（啊，是吗。明白了。那请给我两三天时间。）" },
+                                { speaker: "女", text: "後、こちらでは、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span>ふくに仕上げていただくことも可能ですか。</span>", trans: "（还有，请问你们这边也能帮我们做成衣服吗？）" },
+                                { speaker: "男", text: "うん、ちょっと時間かかりますね。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"keyword\" onclick=\"showTooltip(event, '男方只是陈述当前“人手不足”的严峻现状作为拒绝做衣服的理由，并没有说要去【人手を増やす】（增加人手），因此排除。')\">今、人手が足りないんですよ。</span>厳しくてね。</span>", trans: "（嗯，那得花点时间呢。现在人手不足。情况比较严峻。）" },
+                                { speaker: "女", text: "ああ、そうですか。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"keyword\" onclick=\"showTooltip(event, '女方听到男方人手不足后，表示“那很难办呢”，放弃了让男方做衣服的请求，因此排除【生地から服を作る】。')\">それですと、難しいですね。</span></span>", trans: "（啊，是吗。那样的话，就很难办了呢。）" },
+                                { speaker: "男", text: "すみません。じゃ、ご希望に合うようにやってみます。", trans: "（不好意思。那，我会试着做出符合您要求的面料的。）" },
+                                { speaker: "女", text: "はい、お願いします。", trans: "（好的，拜托了。）" }
+                            ]
+                        },
+                        options: [
+                            { text: "最新の方法で生地を織る", translation: "（用最新的方法织布）", correct: false },
+                            { text: "生地の色を変える", translation: "（改变布料的颜色）", correct: true },
+                            { text: "生地から服を作る", translation: "（用布料做衣服）", correct: false },
+                            { text: "人手を増やす", translation: "（增加人手）", correct: false }
+                        ]
+                    },
+                    {
+                        id: 6,
+                        audio: "../assets/audio/2010.7-6.mp3", // 请替换为实际的 N1 2010.7 第六题音频路径
+                        script: {
+                            question: "六番：電話で女の人と男の人が話しています。男の人はホテルにキャンセル料をいくら払わなければなりませんか。",
+                            questionTrans: "（在电话里女人和男人正在交谈。男人必须向酒店支付多少取消手续费？）",
+                            dialogue: [
+                                { speaker: "女", text: "はい、北国ホテルでございます。", trans: "（您好，这里是北国酒店。）" },
+                                { speaker: "男", text: "あのう、明日の予約お願いしてた山田ですが、急用ができてキャンセルしたいんですけど。", trans: "（那个，我是预订了明天入住的山田，因为有了急事，想取消预订。）" },
+                                { speaker: "女", text: "かしこまりました。山田様ですね。一万円の部屋をご予約ですね。はい、そうしましたら、所定のキャンセル料をいただくことになりますが、よろしいでしょうか。", trans: "（好的。是山田先生吧。您预订的是一万日元的房间。好的，那样的话，我们将收取规定的取消费用，可以吗？）" },
+                                { speaker: "男", text: "えーと、キャンセル料は確か、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"keyword\" onclick=\"showTooltip(event, '这是男方自己记错的比例（10%即1000日元），很快就被女方纠正，因此排除。')\">十パーセントでしたっけ。</span></span>", trans: "（呃，取消费用好像是10%来着吧？）" },
+                                { speaker: "女", text: "えー、あのう。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"keyword\" onclick=\"showTooltip(event, '不联系直接不住才是全额（10000日元），男方打了电话，因此排除。')\">ご連絡なしの場合は全額。</span></span>ご連絡いただいた場合は、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">② 🎯 正解キー</span>当日は八十パーセント</span>、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"keyword\" onclick=\"showTooltip(event, '正常情况下前一天取消是20%（2000日元），但下面女方补充了条件，男方超时了，因此排除。')\">前日は二十パーセント</span>となっております。</span>", trans: "（呃，是这样的。如果不联系我们直接不住是全额。如果联系我们要取消的话，当天是80%，前一天是20%。）" },
+                                { speaker: "男", text: "ええー、痛いなあ。", trans: "（哎——，真肉疼啊。）" },
+                                { speaker: "女", text: "あっ、お客様、申し訳ございません。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">② 🎯 正解キー</span><span class=\"keyword\" onclick=\"showTooltip(event, '关键条件：超过晚上9点按当天（80%）计算。现在过了10点，所以是10000 × 80% = 8000日元。')\">前日の午後九時以降にご連絡いただいた場合は、当日扱いとさせていただいておりました。ただいま十時を回っておりますので。</span></span>", trans: "（啊，客人，非常抱歉。如果在前一天晚上9点以后联系我们的话，是按当天的标准处理的。因为现在已经过10点了。）" },
+                                { speaker: "男", text: "ええー。なに。もう当日扱いになるの？それはひどいなあ。", trans: "（哎——？什么？已经算成当天取消了吗？这也太狠了吧。）" },
+                                { speaker: "女", text: "誠に申し訳ございません。お送りしたパンフレットに明記しておりますので。", trans: "（实在是非常抱歉。因为我们在寄给您的宣传册上已经写得很清楚了。）" },
+                                { speaker: "男", text: "そうか。しょうがないな", trans: "（这样啊。那也没办法了。）" }
+                            ]
+                        },
+                        options: [
+                            { text: "１０，０００円", translation: "（10,000日元）", correct: false },
+                            { text: "８，０００円", translation: "（8,000日元）", correct: true },
+                            { text: "２，０００円", translation: "（2,000日元）", correct: false },
+                            { text: "１，０００円", translation: "（1,000日元）", correct: false }
+                        ]
+                    }
+                ]
+            },
+            "N1-2010-12": {
+                label: "2010年12月 (N1)",
+                questions: [
+                    {
+                        id: 1,
+                        audio: "../assets/audio/2010.12-1.mp3", // 请替换为实际的 N1 2010.12 第一题音频路径
+                        script: {
+                            question: "一番：女の人と男の人が話しています。男の人はこのあと何をしますか。",
+                            questionTrans: "（女人和男人在交谈。男人接下来要做什么？）",
+                            dialogue: [
+                                { speaker: "女", text: "おはよう、今日は忙しいのに、朝早くから引越し手伝わせてごめんね。", trans: "（早啊。明明今天很忙，还让你一大早来帮我搬家，真不好意思。）" },
+                                { speaker: "男", text: "いや、こういうのはお互い様だしね。", trans: "（没事，这种事都是互相照应嘛。）" },
+                                { speaker: "女", text: "本当に助かる。", trans: "（真是帮大忙了。）" },
+                                // 对应易错选项1：已经做完了
+                                { speaker: "男", text: "それで、早速だけど、何から始めようか。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"keyword\" onclick=\"showTooltip(event, '女方接着回答打包已经结束了（全部放进纸箱里了），所以不需要男方再做【荷造りをする】（打包），因此排除。')\">荷造り、終わってる？</span></span>", trans: "（那么，事不宜迟，我们从哪儿开始呢？打包都已经结束了吗？）" },
+                                // 对应正确答案2
+                                { speaker: "女", text: "うん、持っていくものは全部ダンボールに入れといた。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">② 🎯 正解キー</span>トラックにダンボール運んでってくれる？</span>", trans: "（嗯，要带走的东西都已经放进纸箱里了。能帮我把纸箱搬到卡车上吗？）" },
+                                // 对应易错选项3：不用做
+                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"keyword\" onclick=\"showTooltip(event, '女方说床朋友想要，保持原样就行（そのままでいいよ），不需要男方搬运，因此排除【友達の家にベッドを運ぶ】。')\">ベッドとか大きな家具はどうやって運ぶ？</span></span>", trans: "（床之类的大件家具怎么搬？）" },
+                                // 对应易错选项4：是女方要做的事
+                                { speaker: "女", text: "ああ、それは友達が欲しいって言ってるから、そのままでいいよ。運ぶの終わったら休んでて。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"keyword\" onclick=\"showTooltip(event, '女方说“我来简单打扫一下房间（掃除するから）”，这是女生要做的事，而不是题目问的男方的动作，因此排除【部屋の掃除をする】。')\">その間に簡単に部屋の掃除するから。</span></span>", trans: "（啊，那个朋友说想要，所以保持原样就行。搬完之后你就休息吧。那期间我会简单打扫一下房间。）" },
+                                { speaker: "男", text: "了解。", trans: "（了解。）" }
+                            ]
+                        },
+                        options: [
+                            { text: "荷造りをする", translation: "（打包行李）", correct: false },
+                            { text: "トラックに荷物を運ぶ", translation: "（把行李搬到卡车上）", correct: true },
+                            { text: "友達の家にベッドを運ぶ", translation: "（把床搬到朋友家）", correct: false },
+                            { text: "部屋の掃除をする", translation: "（打扫房间）", correct: false }
+                        ]
+                    },
+                    {
+                        id: 2,
+                        audio: "../assets/audio/2010.12-2.mp3", // 请替换为实际的 N1 2010.12 第二题音频路径
+                        script: {
+                            question: "二番：会社で女の人と男の人がプリンターについて話しています。女の人はこれからまず何をしなければなりませんか。",
+                            questionTrans: "（在公司里女人和男人正在谈论关于打印机的事情。女人接下来首先必须做什么？）",
+                            dialogue: [
+                                { speaker: "女", text: "あのう、故障していた例のプリンターの件ですが...", trans: "（那个，关于那个出故障的打印机的事情……）" },
+                                { speaker: "男", text: "うん。", trans: "（嗯。）" },
+                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"keyword\" onclick=\"showTooltip(event, '女方说“已经请人修过了（修理をしてもらった）”，说明这是已经做过的事情，而不是接下来要做的，因此排除。')\">修理をしてもらったんですが</span>、まだ調子が悪くて...</span>", trans: "（虽然请人修过了，但状态还是不好……）" },
+                                { speaker: "男", text: "そうか、困ったなあ、やっぱり、これを機に買い換えるしかないか。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">② 🎯 正解キー</span>そうなると、まず、新しい機械の見積もりが要るな。あしたから連休だから、急いで業者に頼んどいてくれない？</span>", trans: "（这样啊，真伤脑筋啊。果然还是只能趁这个机会买台新的了吗。那样的话，首先需要新机器的报价单。明天开始就是连休了，能请你赶紧去拜托供应商吗？）" },
+                                { speaker: "女", text: "はい、わかりました。", trans: "（好的，明白了。）" },
+                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"keyword\" onclick=\"showTooltip(event, '取得课长的许可（許可を取って）是在“报价单到了之后（届いたら）”才做的事，并非“首先（まず）”要做的事。')\">届いたら、課長の許可を取って</span></span>、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"keyword\" onclick=\"showTooltip(event, '下单（注文する）是在取得许可之后才做的事，排在最后。')\">それから注文することになるから</span></span>。", trans: "（等报价单到了之后，要先取得课长的许可，然后才能下单。）" },
+                                { speaker: "女", text: "わかりました。すぐに手配します。", trans: "（明白了。我马上去安排。）" }
+                            ]
+                        },
+                        options: [
+                            { text: "プリンターの修理を頼む", translation: "（请人修理打印机）", correct: false },
+                            { text: "プリンターの見積もりを頼む", translation: "（要求提供打印机的报价单）", correct: true },
+                            { text: "プリンターを買う許可をとる", translation: "（取得购买打印机的许可）", correct: false },
+                            { text: "プリンターを注文する", translation: "（订购打印机）", correct: false }
+                        ]
+                    },
+                    {
+                        id: 3,
+                        audio: "../assets/audio/2010.12-3.mp3", // 请替换为实际的 N1 2010.12 第三题音频路径
+                        script: {
+                            question: "三番：会社で女の人と男の人が新しく発売する弁当について話しています。男の人はこのあと、まず、何をしますか。",
+                            questionTrans: "（在公司里女人和男人正在谈论新发售的便当。男人接下来首先要做什么？）",
+                            dialogue: [
+                                { speaker: "女", text: "あのう、新しいお弁当の件だけど、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"keyword\" onclick=\"showTooltip(event, '需求调查在上周已经进行完毕了，因此排除【ニーズ調査の実施】。')\">ニーズ調査はどうなった？</span></span>", trans: "（那个，关于新便当的事，需求调查怎么样了？）" },
+                                { speaker: "男", text: "あ、はい。で、対象者なんですが、最初の企画書では曖昧だというご指摘をいただきましたので、再度検討して、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"keyword\" onclick=\"showTooltip(event, '目标人群已经决定并锁定在注重健康的年轻女性身上，这是已经做完的事，因此排除【販売の対象者の決定】。')\">健康志向の若い女性に対象をしぼることにしました。</span></span>", trans: "（啊，是的。关于目标人群，因为之前收到反馈说在最初的企划书中定义得比较模糊，所以经过再次探讨，决定将目标锁定在注重健康的年轻女性身上。）" },
+                                { speaker: "女", text: "ああ、そう。", trans: "（啊，这样啊。）" },
+                                { speaker: "男", text: "それで、先週２０代から３０代の女性にニーズ調査を行ったんですが、狙い通りの結果が出ています。", trans: "（因此，上周对20到30多岁的女性进行了需求调查，得出的结果如我们预期的一样。）" },
+                                { speaker: "女", text: "そう？<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③ 🎯 正解キー</span>じゃあ、次は社内会議に向けて、企画書の修正が必要ね。</span>調査結果を反映させて、販売対象を明確に。", trans: "（是吗？那接下来为了准备公司内部会议，需要修改企划书了。要把调查结果反映进去，明确销售对象。）" },
+                                { speaker: "男", text: "わかりました。", trans: "（明白了。）" },
+                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"keyword\" onclick=\"showTooltip(event, '试吃会是在“企划在会议上通过之后（企画が通ったら）”才进行的，并非现在“首先（まず）”要做的事，因此排除【試食会の実施】。')\">会議で企画が通ったら試食会を行って、対象者の生の声も聞いてみましょう。</span></span>", trans: "（如果企划在会议上通过了，就举办试吃会，听听目标人群真实的声音吧。）" }
+                            ]
+                        },
+                        options: [
+                            { text: "ニーズ調査の実施", translation: "（实施需求调查）", correct: false },
+                            { text: "販売の対象者の決定", translation: "（决定销售对象）", correct: false },
+                            { text: "企画書の修正", translation: "（修改企划书）", correct: true },
+                            { text: "試食会の実施", translation: "（实施试吃会）", correct: false }
+                        ]
+                    },
+                    {
+                        id: 4,
+                        audio: "../assets/audio/2010.12-4.mp3", // 请替换为实际的 N1 2010.12 第四题音频路径
+                        script: {
+                            question: "四番：男の学生が女の先生にゼミの発表テーマについて相談しています。男の学生はどのテーマで発表しますか。",
+                            questionTrans: "（男学生正在和女老师商量研讨课的发表主题。男学生将要发表哪个主题？）",
+                            dialogue: [
+                                { speaker: "男", text: "来月ゼミの発表がまわってくるんですが、テーマをどうしようか、迷っているんですが。", trans: "（下个月轮到我做研讨课的发表了，我正在犹豫题目选什么好。）" },
+                                { speaker: "女", text: "確か教育政策に興味があるんだったわね。", trans: "（记得你是对教育政策感兴趣吧。）" },
+                                { speaker: "男", text: "はい、それで、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"keyword\" onclick=\"showTooltip(event, '男生最初想选的题目，但老师认为有必要先调查政策本身并给出了其他建议，最终没有采用这个，因此排除。')\">「教育政策と経済効果」という新聞記事を見つけた</span></span>ので、それを取り上げたいと思うんですが。", trans: "（是的。所以我看到了一篇名为“教育政策与经济效应”的新闻报道，想把那个作为主题。）" },
+                                { speaker: "女", text: "なかなか面白そうなテーマね。でも、まず、教育政策自体について調べる必要があるわね。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span>日本の教育政策について調べて、それから、<span class=\"keyword\" onclick=\"showTooltip(event, '老师提议进行国际比较，但下面男生觉得太难（難しそうです）拒绝了，因此排除。')\">いくつかの国と比較したら。</span></span>例えば、アメリカ、ヨーロッパ、アジアから数か国ピックアップして。", trans: "（是个挺有意思的题目呢。不过，首先有必要调查一下教育政策本身。先调查日本的教育政策，然后再和几个国家做比较怎么样？比如，从美国、欧洲、亚洲挑几个国家出来。）" },
+                                { speaker: "男", text: "うーん...国際比較ですか。やってみたいですが、難しそうです。", trans: "（嗯……国际比较吗……虽然我想试试，但好像很难。）" },
+                                { speaker: "女", text: "そう？<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③ 🎯 正解キー</span>じゃあ、まず、今の日本の問題点を調べて、解決策についても検討してみましょうか。</span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"keyword\" onclick=\"showTooltip(event, '虽然老师想让他结合过去的发展脉络（过去の流れ，即历史），但因为没时间（時間もないし）所以放弃了，因此排除。')\">本当は過去の流れも踏まえてと言いたいところだけど、今回は時間もないし。</span></span>", trans: "（是吗？那，首先调查一下目前日本的问题点，然后就解决方案也进行探讨吧。虽然其实我也想说要结合过去的发展脉络，但这次也没什么时间。）" },
+                                { speaker: "男", text: "わかりました。がんばります。", trans: "（明白了。我会加油的。）" }
+                            ]
+                        },
+                        options: [
+                            { text: "教育政策と経済効果", translation: "（教育政策与经济效果）", correct: false },
+                            { text: "教育政策の国際比較", translation: "（教育政策的国际比较）", correct: false },
+                            { text: "日本の教育政策の課題", translation: "（日本教育政策的课题/问题）", correct: true },
+                            { text: "日本の教育政策の歴史", translation: "（日本教育政策的历史）", correct: false }
+                        ]
+                    },
+                    {
+                        id: 5,
+                        audio: "../assets/audio/2010.12-5.mp3", // 请替换为实际的 N1 2010.12 第五题音频路径
+                        script: {
+                            question: "五番：会社で社員がボランティア活動について説明しています。新入社員はこれから何をしますか。",
+                            questionTrans: "（在公司里，员工正在说明志愿者活动。新员工接下来要做什么？）",
+                            dialogue: [
+                                { speaker: "男", text: "ええ、今日のボランティア活動は地域の清掃活動です。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">① 🎯 正解キー</span>新入社員には商店街の清掃を担当してもらいます。</span>所属している課とは関係なく動きますから、注意してください。", trans: "（嗯，今天的志愿者活动是社区清扫活动。新员工请负责商店街的清扫。因为这部分人员将不分所属科室进行行动，请注意。）" },
+                                { speaker: "男", text: "ええ、それ以外の人は課ごとに動きます。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"keyword\" onclick=\"showTooltip(event, '负责清扫到车站道路的是财务科和销售科（経理課と営業課），不是新员工，因此排除。')\">経理課と営業課は、ここから駅までの道の清掃です。</span></span>", trans: "（嗯，其他人按科室行动。财务科和销售科负责从这里到车站道路的清扫。）" },
+                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"keyword\" onclick=\"showTooltip(event, '回收垃圾是总务科（総務課）的工作，不是新员工，因此排除。')\">集まったゴミは総務課が回収して回ります。</span></span>", trans: "（收集起来的垃圾将由总务科负责巡回收。）" },
+                                { speaker: "男", text: "皆さん、清掃用具は駐車場に用意してありますから、各自取りに行ってください。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span>ただし、商店街については、商店街の皆さんのご好意で清掃用具をご提供いただけますので、<span class=\"keyword\" onclick=\"showTooltip(event, '虽然一开始让大家去停车场拿工具，但马上补充说“负责商店街的人（即新员工）不需要带过去”，因此排除了去拿工具的选项④，直接去【商店街を掃除する】即可。')\">持っていく必要はありません。</span></span>", trans: "（各位，清扫用具已经准备在停车场了，请各自去领取。不过，负责商店街那边的人员，承蒙商店街各位的好意提供了清扫用具，所以不需要带过去。）" }
+                            ]
+                        },
+                        options: [
+                            { text: "商店街を掃除する", translation: "（清扫商店街）", correct: true },
+                            { text: "駅までの道を掃除する", translation: "（清扫去车站的路）", correct: false },
+                            { text: "集めたごみを回収する", translation: "（回收收集的垃圾）", correct: false },
+                            { text: "駐車場に掃除用具を取りに行く", translation: "（去停车场拿清扫用具）", correct: false }
+                        ]
+                    },
+                    {
+                        id: 6,
+                        audio: "../assets/audio/2010.12-6.mp3", // 请替换为实际的 N1 2010.12 第六题音频路径
+                        script: {
+                            question: "六番：電話で男の人と女の人が話しています。女の人はこのあとすぐどうしますか。",
+                            questionTrans: "（电话里男人和女人正在说话。女人接下来马上要做什么？）",
+                            dialogue: [
+                                { speaker: "男", text: "はい、もしもし。", trans: "（喂。）" },
+                                { speaker: "女", text: "お疲れ様です。リンです。", trans: "（您辛苦了。我是林。）" },
+                                { speaker: "男", text: "あ、お疲れ様です。", trans: "（啊，辛苦了。）" },
+                                { speaker: "女", text: "あのう、桜電気との打ち合わせは無事終わったんですが。", trans: "（那个，和樱花电气的洽谈已经顺利结束了。）" },
+                                { speaker: "男", text: "どうした？", trans: "（怎么了？）" },
+                                { speaker: "女", text: "実は、今まだ山川駅にいるんです。電車が止まってまして。", trans: "（其实，我现在还在山川站。电车停运了。）" },
+                                { speaker: "男", text: "そっか。", trans: "（是吗。）" },
+                                { speaker: "女", text: "復旧に２時間はかかるとのことで、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"keyword\" onclick=\"showTooltip(event, '因为电车停运，女方回公司（社に戻る）会晚很多，后来男方改变了计划，因此排除【会社に戻る】。')\">予定より社に戻るのがだいぶ遅れそうなんですが。</span></span>", trans: "（说是恢复通车需要2小时，所以我回公司的时间可能会比计划晚很多。）" },
+                                { speaker: "男", text: "そうか。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"keyword\" onclick=\"showTooltip(event, '这是男方原本的打算（等女方回来一起去下一家），但因为突发状况无法实现了，因此排除【課長と取引先に行く】。')\">帰ってきたら一緒に次の取引先に行ってもらおうと思っていたんだが。</span></span>", trans: "（这样啊。本来想等你回来后，让你跟我一起去下一家客户那里的。）" },
+                                { speaker: "女", text: "すみません。", trans: "（不好意思。）" },
+                                { speaker: "男", text: "まあ、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"keyword\" onclick=\"showTooltip(event, '男方认为在车站干等着（駅で待ってるのも何だな）也不好，直接否定了该选项，因此排除【駅で待つ】。')\">駅で待ってるのも何だな。</span></span>そういえば、そっちの方の取引先を田中が回っているはずだから。", trans: "（哎，在车站干等着也不是个事儿。对了，田中应该正在那边拜访客户。）" },
+                                { speaker: "女", text: "あっ、そうなんですか。", trans: "（啊，是吗？）" },
+                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④ 🎯 正解キー</span>今日は予定を変えて田中と合流してくれ。携帯の連絡先、わかるな。</span>", trans: "（今天就改变计划，你去跟田中汇合吧。你知道他的手机号吧。）" },
+                                { speaker: "女", text: "はい、わかります。ご迷惑をお掛けします。", trans: "（是的，我知道。给您添麻烦了。）" }
+                            ]
+                        },
+                        options: [
+                            { text: "会社に戻る", translation: "（回公司）", correct: false },
+                            { text: "課長と取引先に行く", translation: "（和课长去客户那里）", correct: false },
+                            { text: "駅で待つ", translation: "（在车站等）", correct: false },
+                            { text: "田中さんに連絡する", translation: "（联系田中）", correct: true }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        let currentExamKey = "N1-2010-07"; // 修复默认加载的 key
+        let currentQuestionIndex = 0;
+        let preferredMode = 'practice'; 
+        const LISTENING_TYPE = 'task-comprehension';
+        const LISTENING_LEVEL = 'n1';
+
+
+        // --- Initialization ---
+        function init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const yearParam = urlParams.get('year');
+            const modeParam = urlParams.get('mode');
+            
+            // 修复：URL 参数传入的可能是 "2010-12"，需要拼接前缀 "N1-" 来匹配 examData 的 key
+            const targetKey = yearParam ? `N1-${yearParam}` : currentExamKey;
+
+            if (examData[targetKey]) {
+                currentExamKey = targetKey;
+                window.ListeningProgress.setLastPractice(LISTENING_TYPE, LISTENING_LEVEL, currentExamKey);
+
+                if (modeParam === 'review') {
+                    const marks = getMarks();
+                    if (marks.length === 0) {
+                        alert('マークされた問題はありません。(No marked questions)');
+                    } else {
+                        const originalQuestions = examData[currentExamKey].questions;
+                        const filtered = originalQuestions.filter(q => marks.includes(q.id));
+                        if (filtered.length > 0) {
+                            examData[currentExamKey].questions = filtered;
+                            setTimeout(() => {
+                                const lbl = document.getElementById('yearLabel');
+                                if(lbl) lbl.innerHTML += ' <span style="color:#d81b60; font-size:0.8em;">(🐶 復習)</span>';
+                            }, 100);
+                        } else {
+                            alert('マークされた問題が見つかりませんでした。(Questions not found)');
+                        }
+                    }
+                }
+            } else if (!examData[currentExamKey]) {
+                // Fallback if default key doesn't exist
+                currentExamKey = Object.keys(examData)[0];
+            }
+
+            const yearLabel = document.getElementById('yearLabel');
+            if (yearLabel) yearLabel.textContent = examData[currentExamKey].label + " - 課題理解";
+
+            updateQuestionSelect();
+            window.setupListeningPlayer({
+                subtitle: document.title.replace(/\s*\((N1|N2|N3)\)\s*$/, ''),
+                skipSeconds: 10
+            });
+            renderQuestion();
+        }
+
+        // --- Mark Logic ---
+        function getMarks() {
+            return window.ListeningProgress.getMistakeIds(LISTENING_TYPE, LISTENING_LEVEL, currentExamKey);
+        }
+
+        function saveMarks(marks) {
+            window.ListeningProgress.setMistakeIds(LISTENING_TYPE, LISTENING_LEVEL, currentExamKey, marks);
+        }
+
+        function toggleMark() {
+            if (!examData[currentExamKey] || !examData[currentExamKey].questions[currentQuestionIndex]) return;
+
+            const marks = getMarks();
+            const qId = examData[currentExamKey].questions[currentQuestionIndex].id;
+            const index = marks.indexOf(qId);
+
+            if (index === -1) {
+                marks.push(qId);
+                saveMarks(marks);
+                updateMarkUI();
+                return;
+            }
+
+            marks.splice(index, 1);
+            saveMarks(marks);
+
+            updateMarkUI();
+        }
+
+        function updateMarkUI() {
+            if (!examData[currentExamKey] || !examData[currentExamKey].questions[currentQuestionIndex]) return;
+            const marks = getMarks();
+            const qId = examData[currentExamKey].questions[currentQuestionIndex].id;
+            const btn = document.getElementById('markBtn');
+            if (marks.includes(qId)) btn.classList.add('active');
+            else btn.classList.remove('active');
+        }
+
+        function updateQuestionSelect() {
+            const select = document.getElementById('questionSelect');
+            select.innerHTML = '';
+            
+            const questions = examData[currentExamKey].questions;
+            questions.forEach((q, index) => {
+                const option = document.createElement('option');
+                option.value = index; 
+                option.textContent = `問題 ${q.id}`;
+                select.appendChild(option);
+            });
+        }
+
+        function changeQuestion(index) {
+            currentQuestionIndex = parseInt(index);
+            renderQuestion();
+        }
+
+        // --- Answer Selection ---
+        function selectOption(element) {
+            const container = document.getElementById('appContainer');
+            if (!container.classList.contains('mode-practice')) return;
+            if (element.parentElement.querySelector('.judged-correct') || element.parentElement.querySelector('.judged-wrong')) return;
+
+            const siblings = element.parentElement.children;
+            for (let i = 0; i < siblings.length; i++) {
+                siblings[i].classList.remove('selected');
+                const btn = siblings[i].querySelector('.inline-confirm-btn');
+                if (btn) btn.remove();
+            }
+
+            element.classList.add('selected');
+            
+            const btn = document.createElement('button');
+            btn.id = 'inlineConfirmBtn';
+            btn.className = 'inline-confirm-btn';
+            btn.textContent = '確認';
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                checkAnswer();
+            };
+            element.appendChild(btn);
+        }
+
+        function checkAnswer() {
+            const container = document.getElementById('appContainer');
+            const selected = container.querySelector('.options-list li.selected');
+            if (!selected) return;
+            
+            container.classList.add('judged');
+            const index = parseInt(selected.getAttribute('data-index'));
+            const question = examData[currentExamKey].questions[currentQuestionIndex];
+            const options = container.querySelectorAll('.options-list li');
+            
+            const isCorrect = question.options[index].correct;
+            
+            if (isCorrect) {
+                selected.classList.add('judged-correct');
+            } else {
+                selected.classList.add('judged-wrong');
+                question.options.forEach((opt, i) => {
+                    if (opt.correct) options[i].classList.add('judged-correct');
+                });
+
+                const marks = getMarks();
+                if (!marks.includes(question.id)) {
+                    marks.push(question.id);
+                    saveMarks(marks);
+                    updateMarkUI();
+                }
+            }
+            
+            const confirmBtn = document.getElementById('inlineConfirmBtn');
+            if (confirmBtn) confirmBtn.remove();
+
+            // 自动切到解析模式查看原文
+            setTimeout(() => {
+                setMode('explanation', false);
+            }, 1000);
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                setMode(preferredMode, false);
+                renderQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            const questions = examData[currentExamKey].questions;
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                setMode(preferredMode, false);
+                renderQuestion();
+            }
+        }
+
+        // --- Render Content ---
+        function renderQuestion() {
+            const container = document.getElementById('appContainer');
+            if (container) container.classList.remove('judged');
+
+            const data = examData[currentExamKey].questions[currentQuestionIndex];
+            const total = examData[currentExamKey].questions.length;
+
+            updateMarkUI();
+            document.getElementById('questionSelect').value = currentQuestionIndex;
+            window.updateListeningPlayer({
+                title: `問題 ${data.id}`,
+                audioSrc: data.audio,
+                hasPrev: currentQuestionIndex > 0,
+                hasNext: currentQuestionIndex < total - 1
+            });
+
+            // Transcript Update (分割问题与对话内容)
+            document.getElementById('questionText').innerHTML = data.script.question;
+            document.getElementById('questionTrans').innerHTML = data.script.questionTrans;
+
+            const conversationHtml = data.script.dialogue.map(line => `
+                <div class="conversation-line">
+                    <span class="speaker-name">${line.speaker}：</span>
+                    <div class="speaker-text">
+                        <div>${line.text}</div>
+                        <div class="translation">${line.trans}</div>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('conversationText').innerHTML = conversationHtml;
+
+            // Options Update
+            const optionsList = document.getElementById('optionsList');
+            optionsList.innerHTML = '';
+            data.options.forEach((opt, idx) => {
+                const li = document.createElement('li');
+                if (opt.correct) li.classList.add('correct-answer');
+                li.setAttribute('data-index', idx);
+                li.onclick = () => selectOption(li);
+
+                li.innerHTML = `
+                    <span class="options-num">${idx + 1}</span>
+                    <div class="option-content">
+                        <div class="option-text">${opt.text}</div>
+                        <div class="translation">${opt.translation}</div>
+                    </div>
+                `;
+                optionsList.appendChild(li);
+            });
+        }
+
+        // --- Mode Switching ---
+        function setMode(mode, updatePreference = true) {
+            if (updatePreference) preferredMode = mode;
+
+            const container = document.getElementById('appContainer');
+            const btnPractice = document.getElementById('btnPractice');
+            const btnExplanation = document.getElementById('btnExplanation');
+            const tooltip = document.getElementById('wordTooltip');
+
+            const confirmBtn = document.getElementById('inlineConfirmBtn');
+            if (confirmBtn) confirmBtn.remove();
+            tooltip.style.display = 'none';
+
+            if (mode === 'practice') {
+                container.classList.remove('mode-explanation');
+                container.classList.add('mode-practice');
+                btnPractice.classList.add('active');
+                btnExplanation.classList.remove('active');
+            } else {
+                container.classList.remove('mode-practice');
+                container.classList.add('mode-explanation');
+                btnExplanation.classList.add('active');
+                btnPractice.classList.remove('active');
+
+                // 滚动至顶部以查看听力原文
+                setTimeout(() => {
+                    const contentWrapper = document.querySelector('.content-wrapper');
+                    if (contentWrapper) {
+                        const headerOffset = 100;
+                        const elementPosition = contentWrapper.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                        window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+                    }
+                }, 100);
+            }
+        }
+
+        // --- Tooltip Logic ---
+        function showTooltip(event, text) {
+            event.stopPropagation();
+            const tooltip = document.getElementById('wordTooltip');
+            tooltip.innerText = text;
+            tooltip.style.display = 'block';
+            
+            const targetRect = event.target.getBoundingClientRect();
+            setTimeout(() => {
+                const width = tooltip.offsetWidth, height = tooltip.offsetHeight;
+                const top = targetRect.top + window.scrollY - height - 10; 
+                let left = targetRect.left + window.scrollX + (targetRect.width / 2) - (width / 2);
+                if (left < 10) left = 10;
+                if (left + width > window.innerWidth - 10) left = window.innerWidth - width - 10;
+                
+                const targetCenterX = targetRect.left + window.scrollX + (targetRect.width / 2);
+                tooltip.style.setProperty('--arrow-left', `${targetCenterX - left}px`);
+                tooltip.style.top = `${top}px`; tooltip.style.left = `${left}px`;
+            }, 0);
+        }
+
+        document.addEventListener('click', () => {
+            const tooltip = document.getElementById('wordTooltip');
+            if (tooltip.style.display === 'block') tooltip.style.display = 'none';
+        });
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
