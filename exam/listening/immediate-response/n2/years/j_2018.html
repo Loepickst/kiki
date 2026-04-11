@@ -451,6 +451,11 @@
             filter: grayscale(100%);
             transition: all 0.2s ease;
             margin-left: 5px;
+            position: relative;
+            z-index: 5;
+            flex-shrink: 0;
+            pointer-events: auto;
+            touch-action: manipulation;
         }
 
         .mark-btn:hover {
@@ -607,7 +612,7 @@
                 <select id="questionSelect" class="question-select" onchange="changeQuestion(this.value)">
                     <!-- Options populated by JS -->
                 </select>
-                <button id="markBtn" class="mark-btn" onclick="toggleMark()" title="あとで復習する（复习标记）">🐶</button>
+                <button type="button" id="markBtn" class="mark-btn" onclick="toggleMark()" title="あとで復習する（复习标记）">🐶</button>
             </div>
             <div class="mode-switch">
                 <button id="btnPractice" class="active" onclick="setMode('practice')">練習</button>
@@ -680,6 +685,7 @@
     <div id="wordTooltip" class="custom-tooltip"></div>
 
     <script src="../../../shared/audio-player-theme.js"></script>
+    <script src="../../../shared/listening-progress.js"></script>
     <script>
         // --- Data Structure ---
         const examData = {
@@ -962,6 +968,9 @@
         let currentExamKey = "2018-07";
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; // Track user's preferred mode
+        const LISTENING_TYPE = 'immediate-response';
+        const LISTENING_LEVEL = 'n2';
+
 
         // --- Initialization ---
         function init() {
@@ -974,7 +983,7 @@
             if (yearParam && examData[yearParam]) {
                 currentExamKey = yearParam;
                 // Save last practice session
-                localStorage.setItem('last_n2_practice', currentExamKey);
+                window.ListeningProgress.setLastPractice(LISTENING_TYPE, LISTENING_LEVEL, currentExamKey);
 
                 // --- REVIEW MODE LOGIC ---
                 if (modeParam === 'review') {
@@ -1020,27 +1029,30 @@
 
         // --- Mark/Bookmark Logic ---
         function getMarks() {
-            const key = `jlpt_marks_${currentExamKey}`;
-            const saved = localStorage.getItem(key);
-            return saved ? JSON.parse(saved) : [];
+            return window.ListeningProgress.getMistakeIds(LISTENING_TYPE, LISTENING_LEVEL, currentExamKey);
         }
 
         function saveMarks(marks) {
-            const key = `jlpt_marks_${currentExamKey}`;
-            localStorage.setItem(key, JSON.stringify(marks));
+            window.ListeningProgress.setMistakeIds(LISTENING_TYPE, LISTENING_LEVEL, currentExamKey, marks);
         }
 
         function toggleMark() {
+            if (!examData[currentExamKey] || !examData[currentExamKey].questions[currentQuestionIndex]) return;
+
             const marks = getMarks();
             const qId = examData[currentExamKey].questions[currentQuestionIndex].id;
-            
             const index = marks.indexOf(qId);
+
             if (index === -1) {
                 marks.push(qId);
-            } else {
-                marks.splice(index, 1);
+                saveMarks(marks);
+                updateMarkUI();
+                return;
             }
+
+            marks.splice(index, 1);
             saveMarks(marks);
+
             updateMarkUI();
         }
 
