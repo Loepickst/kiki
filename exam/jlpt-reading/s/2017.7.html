@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解 - 2017年7月 短文</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #3b5998; 
+            --sub-color: #787878;
+            --note-bg: #f4f6f9; 
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 80px 15px 120px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) { .toggle-btn:hover { background: var(--accent-color); color: white; } }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        .container {
+            max-width: 720px; width: 100%;
+            background: var(--paper-color); padding: 50px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box; border-radius: 8px;
+        }
+
+        .page-content {
+            display: none;
+            animation: fadeIn 0.35s ease-out;
+        }
+        .page-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-title { 
+            text-align: center; margin-top: 0; margin-bottom: 40px; 
+            font-size: 1.3rem; color: var(--text-color); border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.2; 
+            text-align: justify; margin: 0 0 20px 0;
+            text-indent: 1em; 
+        }
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        .analysis-element { display: none; }
+        body.show-analysis .analysis-element { display: block; }
+
+        .translation {
+            margin: -5px 0 30px 0; font-size: 0.95rem;
+            color: #5a626b; line-height: 1.8; padding: 15px 20px;
+            background-color: #f7f8f9; font-family: var(--chinese-font);
+            border-left: 3px solid #ddd; text-align: justify;
+        }
+        .translation::before { content: "訳"; display: block; font-size: 0.75rem; color: #aaa; margin-bottom: 5px; font-weight: bold; }
+
+        .key-sentence {
+            transition: 0.3s ease;
+        }
+        
+        body.show-analysis .key-sentence {
+            background-color: rgba(59, 89, 152, 0.06); 
+            border-bottom: 2px dashed #baccf1;
+            cursor: pointer;
+            border-radius: 3px;
+            padding: 2px 0;
+        }
+
+        body.show-analysis .key-sentence:hover {
+            background-color: rgba(59, 89, 152, 0.12);
+        }
+
+        body.show-analysis .key-sentence.active {
+            background-color: rgba(216, 67, 21, 0.08); 
+            border-bottom-color: #e74c3c;
+        }
+
+        .sentence-badge {
+            display: none;
+        }
+
+        body.show-analysis .sentence-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            background-color: var(--accent-color); color: white;
+            font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;
+            margin: 0 6px; vertical-align: middle;
+            font-family: var(--chinese-font); font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateY(-2px); transition: 0.3s;
+        }
+
+        body.show-analysis .key-sentence:hover .sentence-badge {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        body.show-analysis .key-sentence.active .sentence-badge {
+            background-color: #e74c3c;
+        }
+
+        .inline-note-container {
+            display: none;
+            background-color: #fff; border-left: 4px solid #e74c3c;
+            padding: 15px 20px; margin: 15px 0 15px -1em; 
+            font-size: 0.95rem; color: #444; box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            font-family: var(--chinese-font); border-radius: 0 6px 6px 0;
+            text-indent: 0; line-height: 1.8; cursor: text;
+        }
+
+        .key-sentence.active .inline-note-container {
+            display: block; 
+        }
+
+        .inline-note-title {
+            font-weight: bold; color: #e74c3c; margin-bottom: 8px;
+            font-size: 1rem; display: flex; align-items: center;
+        }
+
+        .qa-section {
+            margin-top: 50px; border-top: 2px solid #f0f0f0; padding-top: 40px; font-family: var(--chinese-font);
+        }
+        .question-title { font-size: 1.1rem; color: var(--text-color); margin-bottom: 25px; font-weight: bold; font-family: var(--japanese-font); line-height: 1.6; }
+        
+        .option-item {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 15px;
+            cursor: pointer; transition: 0.2s; overflow: hidden;
+        }
+        .option-item:hover { border-color: var(--accent-color); box-shadow: 0 2px 10px rgba(59, 89, 152, 0.1); }
+        
+        body:not(.show-analysis) .option-item.answered-correct {
+            border-color: #38a169;
+            background-color: rgba(56, 161, 105, 0.05);
+        }
+        body:not(.show-analysis) .option-item.answered-wrong {
+            border-color: #e53e3e;
+            background-color: rgba(229, 62, 62, 0.05);
+        }
+        body:not(.show-analysis) .option-item.answered-correct .option-number::after {
+            content: " ⭕";
+            font-size: 1rem;
+            color: #38a169;
+        }
+        body:not(.show-analysis) .option-item.answered-wrong .option-number::after {
+            content: " ❌";
+            font-size: 1rem;
+            color: #e53e3e;
+        }
+
+        body.show-analysis .option-item.is-correct {
+            border-left: 4px solid #38a169;
+        }
+
+        body:not(.show-analysis) .option-content rt {
+            display: none;
+        }
+
+        .option-content { padding: 15px 20px; display: flex; align-items: flex-start; font-family: var(--japanese-font); }
+        .option-number { font-weight: bold; color: var(--accent-color); margin-right: 15px; font-family: var(--chinese-font); white-space: nowrap; }
+        
+        .option-text-group { display: flex; flex-direction: column; }
+        
+        .option-translation { display: none; font-size: 0.85rem; color: #718096; margin-top: 4px; font-family: var(--chinese-font); }
+        body.show-analysis .option-translation { display: block; }
+
+        .option-explanation {
+            display: none; padding: 15px 20px; background: #f8fafc; border-top: 1px dashed #e2e8f0;
+            font-size: 0.95rem; color: #4a5568; line-height: 1.7;
+        }
+        body.show-analysis .option-item.expanded .option-explanation { display: block; }
+        
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 8px; }
+        .badge.wrong { background: #e53e3e; }
+        .badge.correct { background: #38a169; }
+
+        .article-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px dashed #f0f0f0;
+        }
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: #ffffff;
+            color: var(--accent-color);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: var(--chinese-font);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 1px solid #d0dcf2;
+            box-shadow: 0 2px 4px rgba(59, 89, 152, 0.05);
+            cursor: pointer;
+        }
+        .nav-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(59, 89, 152, 0.15);
+        }
+        .nav-btn.disabled {
+            opacity: 0.5; pointer-events: none; background: #f8fafc; color: #a0aec0; border-color: #e2e8f0; box-shadow: none;
+        }
+
+        .audio-wrapper { position: fixed; bottom: 0; left: 0; right: 0; z-index: 2000; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 15px 20px 25px 20px; display: flex; justify-content: center; border-top: 1px solid rgba(0,0,0,0.05); box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+        .audio-player { display: flex; align-items: center; width: 100%; max-width: 600px; }
+        .play-btn { width: 36px; height: 36px; border-radius: 50%; background-color: var(--accent-color); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 12px; flex-shrink: 0; transition: transform 0.2s; padding: 0; }
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+        .progress-container { flex-grow: 1; height: 20px; display: flex; align-items: center; margin-right: 12px; cursor: pointer; position: relative; }
+        .progress-bg { width: 100%; height: 4px; background-color: #f0f0f0; border-radius: 2px; position: relative; }
+        .progress-bar { height: 100%; background-color: var(--accent-color); width: 0%; border-radius: 2px; position: relative; }
+        .progress-bar::after { content: ""; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background-color: white; border: 2px solid var(--accent-color); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .time-display { font-size: 0.7rem; color: #999; width: 70px; text-align: right; font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
+        .loop-btn { background: none; border: none; cursor: pointer; padding: 8px; margin-left: 8px; opacity: 0.5; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .loop-btn.active { opacity: 1; color: var(--accent-color); }
+        .loop-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        .speed-btn {
+            background: none; border: 1px solid #ccc; border-radius: 4px;
+            cursor: pointer; padding: 2px 6px; margin-left: 8px;
+            font-size: 0.75rem; color: #787878; transition: all 0.2s;
+            font-family: var(--chinese-font); font-variant-numeric: tabular-nums;
+            font-weight: 500;
+        }
+        .speed-btn.active {
+            color: var(--accent-color); border-color: var(--accent-color); background: rgba(59, 89, 152, 0.05);
+        }
+
+        .footer { margin-top: 50px; color: #ccc; font-size: 0.8rem; letter-spacing: 3px; }
+
+        @media (max-width: 768px) {
+            .container { padding: 30px 18px 90px; }
+            .header-title { font-size: 1.15rem; margin-bottom: 25px; text-align: center; }
+            p.japanese { font-size: 0.95rem; line-height: 2.2; letter-spacing: 0.05em; margin-bottom: 25px; }
+            p.japanese rt { font-size: 0.55rem; }
+            .key-sentence { padding: 2px 0; }
+            .inline-note-container { margin: 15px 0 0 0; padding: 15px; font-size: 0.85rem; line-height: 1.6; border-radius: 8px; }
+            .qa-section { margin-top: 35px; padding-top: 30px; }
+            .question-title { font-size: 1rem; margin-bottom: 20px; padding: 0 5px; }
+            .option-content { padding: 12px 15px; }
+            .option-text-group span { font-size: 0.95rem; line-height: 1.5; }
+            .option-explanation { padding: 12px 15px; font-size: 0.85rem; }
+            .top-bar { padding: 0 15px; height: 55px; }
+            .toggle-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+            .audio-wrapper { padding: 10px 15px 20px; }
+            .speed-btn { padding: 2px 6px; font-size: 0.7rem; }
+            .time-display { width: 55px; font-size: 0.65rem; }
+        }
+    </style>
+    <link rel="stylesheet" href="../../../shared/site-fonts.css">
+    <link rel="stylesheet" href="../shared/reading-tools.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a id="back-to-reading-index" href="../index.html?level=N1&type=short" class="toggle-btn" style="text-decoration: none;">← 戻る</a>
+    <div id="today-date">N1真题・短文</div>
+    <div class="top-bar-controls">
+        <button id="analysis-btn" class="toggle-btn" onclick="toggleAnalysis()">解析</button>
+    </div>
+</div>
+
+<div class="container">
+    <div id="page-1" class="page-content">
+        <h2 class="header-title">2017年7月 短文（一）</h2>
+
+        <div class="article-content">
+            <p class="japanese" style="margin-bottom: 15px;">
+                <ruby>以<rt>い</rt></ruby><ruby>下<rt>か</rt></ruby>は、ある<ruby>企<rt>き</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>がホームページに<ruby>掲<rt>けい</rt></ruby><ruby>載<rt>さい</rt></ruby>したお<ruby>知<rt>し</rt></ruby>らせである。
+            </p>
+
+            <div style="border: 1px solid #d0dcf2; border-radius: 8px; padding: 25px 20px; background: #fff; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(59, 89, 152, 0.05);">
+                <div style="font-size: 0.85rem; color: #787878; margin-bottom: 15px; font-family: var(--chinese-font);">
+                    <ruby>関<rt>せき</rt></ruby><ruby>川<rt>かわ</rt></ruby><ruby>薬<rt>やく</rt></ruby><ruby>品<rt>ひん</rt></ruby><ruby>工<rt>こう</rt></ruby><ruby>業<rt>ぎょう</rt></ruby><ruby>株<rt>かぶ</rt></ruby><ruby>式<rt>しき</rt></ruby><ruby>会<rt>がい</rt></ruby><ruby>社<rt>しゃ</rt></ruby> &gt; お<ruby>知<rt>し</rt></ruby>らせ
+                </div>
+                
+                <div style="font-size: 1.15rem; font-weight: bold; color: #2c2c2c; border-bottom: 2px solid #f0f0f0; padding-bottom: 12px; margin-bottom: 20px;">
+                    2017.06.01 &nbsp;&nbsp; <ruby>重<rt>じゅう</rt></ruby><ruby>要<rt>よう</rt></ruby>なお<ruby>知<rt>し</rt></ruby>らせ
+                </div>
+
+                <p class="japanese" style="margin-bottom: 0;">
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        　すでにお<ruby>知<rt>し</rt></ruby>らせしておりますとおり、<ruby>西<rt>にし</rt></ruby><ruby>山<rt>やま</rt></ruby><ruby>営<rt>えい</rt></ruby><ruby>業<rt>ぎょう</rt></ruby><ruby>所<rt>しょ</rt></ruby>は5<ruby>月<rt>がつ</rt></ruby>31<ruby>日<rt>にち</rt></ruby>（<ruby>水<rt>すい</rt></ruby>）より<ruby>移<rt>い</rt></ruby><ruby>転<rt>てん</rt></ruby><ruby>先<rt>さき</rt></ruby>にて<ruby>業<rt>ぎょう</rt></ruby><ruby>務<rt>む</rt></ruby>を<ruby>再<rt>さい</rt></ruby><ruby>開<rt>かい</rt></ruby>しております。
+                        <span class="sentence-badge">说明背景</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 構文の役割と意味</span>
+                            开篇首先交代背景，指出西山营业所从5月31日起已经在新址恢复了业务（「移転先にて業務を再開しております」），为后续说明突发状况做铺垫。
+                        </span>
+                    </span>
+                    
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        しかしながら、<ruby>移<rt>い</rt></ruby><ruby>転<rt>てん</rt></ruby><ruby>作<rt>さ</rt></ruby><ruby>業<rt>ぎょう</rt></ruby><ruby>時<rt>じ</rt></ruby>にファクス<ruby>機<rt>き</rt></ruby>に<ruby>故<rt>こ</rt></ruby><ruby>障<rt>しょう</rt></ruby>が<ruby>生<rt>しょう</rt></ruby>じ、<ruby>本<rt>ほん</rt></ruby><ruby>日<rt>じつ</rt></ruby>（6<ruby>月<rt>がつ</rt></ruby>1<ruby>日<rt>ついたち</rt></ruby>）<ruby>現<rt>げん</rt></ruby><ruby>在<rt>ざい</rt></ruby>もファクスの<ruby>送<rt>そう</rt></ruby><ruby>受<rt>じゅ</rt></ruby><ruby>信<rt>しん</rt></ruby>ができません。
+                        <span class="sentence-badge">引出问题</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 構文の役割と意味</span>
+                            使用「しかしながら」（然而）进行转折，引出本次通知的核心问题，即传真机发生了故障，导致目前无法收发传真（「ファクスの送受信ができません」）。
+                        </span>
+                    </span>
+                    <br><br>
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        　<ruby>復<rt>ふっ</rt></ruby><ruby>旧<rt>きゅう</rt></ruby>までは<ruby>下<rt>か</rt></ruby><ruby>記<rt>き</rt></ruby>の<ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby>もしくはメールをご<ruby>利<rt>り</rt></ruby><ruby>用<rt>よう</rt></ruby>ください。
+                        <span class="sentence-badge">应对方案</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 構文の役割と意味</span>
+                            紧接着针对上述问题给出了替代方案，呼吁大家在传真机修复前，使用电话或邮件进行联系（「電話もしくはメールをご利用ください」），这也是这篇通知最想传达的应对措施。
+                        </span>
+                    </span>
+                    なお、ファクス<ruby>機<rt>き</rt></ruby>が<ruby>復<rt>ふっ</rt></ruby><ruby>旧<rt>きゅう</rt></ruby>し<ruby>次<rt>し</rt></ruby><ruby>第<rt>だい</rt></ruby>、こちらのホームページ<ruby>上<rt>じょう</rt></ruby>でお<ruby>知<rt>し</rt></ruby>らせいたします。<br>
+                    　<ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>皆<rt>みな</rt></ruby><ruby>様<rt>さま</rt></ruby>には<ruby>大<rt>たい</rt></ruby><ruby>変<rt>へん</rt></ruby>ご<ruby>迷<rt>めい</rt></ruby><ruby>惑<rt>わく</rt></ruby>をお<ruby>掛<rt>か</rt></ruby>けし<ruby>申<rt>もう</rt></ruby>し<ruby>訳<rt>わけ</rt></ruby>ございませんが、<ruby>何<rt>なに</rt></ruby><ruby>卒<rt>とぞ</rt></ruby>よろしくお<ruby>願<rt>ねが</rt></ruby>いいたします。<br>
+                    <br>
+                    <ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby><ruby>番<rt>ばん</rt></ruby><ruby>号<rt>ごう</rt></ruby>：020-428-4319<br>
+                    Eメール：info@sekikawa.com
+                </p>
+            </div>
+            
+            <div class="translation analysis-element">
+                <p style="margin-bottom: 10px; font-size: 0.95rem; color: #5a626b;">以下是某企业在主页上发布的通知。</p>
+                <div style="background-color: #f7f8f9; border-left: 3px solid #ddd; padding: 20px; font-family: var(--chinese-font); border-radius: 4px;">
+                    <div style="font-size: 0.8rem; color: #888; margin-bottom: 10px;">关川药品工业株式会社 &gt; 通知</div>
+                    <div style="font-size: 1.05rem; font-weight: bold; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px; margin-bottom: 15px; color: #333;">2017.06.01 &nbsp;重要通知</div>
+                    <div style="font-size: 0.95rem; color: #5a626b; line-height: 1.8; text-align: justify;">
+                        正如之前所通知的，西山营业所已于5月31日（周三）起在新址恢复了业务。然而，在搬迁作业时传真机发生了故障，截至今天（6月1日）依然无法收发传真。<br><br>在修复之前，请使用以下的电话或邮件。另外，传真机一经修复，我们将在本主页上另行通知。<br>给各位相关人士带来了很大的麻烦，我们深表歉意，还请多多关照。<br><br>电话号码：020-428-4319<br>电子邮件：info@sekikawa.com
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="qa-section">
+            <div class="question-title">
+                <ruby>問<rt>とい</rt></ruby>：<ruby>西<rt>にし</rt></ruby><ruby>山<rt>やま</rt></ruby><ruby>営<rt>えい</rt></ruby><ruby>業<rt>ぎょう</rt></ruby><ruby>所<rt>しょ</rt></ruby>について、このお<ruby>知<rt>し</rt></ruby>らせで<ruby>最<rt>もっと</rt></ruby>も<ruby>伝<rt>つた</rt></ruby>えたいことは<ruby>何<rt>なに</rt></ruby>か。
+            </div>
+            
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">1</span>
+                    <div class="option-text-group">
+                        <span><ruby>移<rt>い</rt></ruby><ruby>転<rt>てん</rt></ruby>が<ruby>完<rt>かん</rt></ruby><ruby>了<rt>りょう</rt></ruby>し、5<ruby>月<rt>がつ</rt></ruby>31<ruby>日<rt>にち</rt></ruby>から<ruby>業<rt>ぎょう</rt></ruby><ruby>務<rt>む</rt></ruby>を<ruby>再<rt>さい</rt></ruby><ruby>開<rt>かい</rt></ruby>している。</span>
+                        <span class="option-translation">搬迁已完成，从5月31日起已经恢复了业务。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    文章开头提到恢复业务是“已经通知过的事情”（「すでにお知らせしておりますとおり」），因此这并不是本次通知最想传达的新信息。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">2</span>
+                    <div class="option-text-group">
+                        <span><ruby>移<rt>い</rt></ruby><ruby>転<rt>てん</rt></ruby>が<ruby>完<rt>かん</rt></ruby><ruby>了<rt>りょう</rt></ruby>したので、<ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby>とメールは<ruby>使<rt>つか</rt></ruby>える。</span>
+                        <span class="option-translation">因为搬迁已经完成，所以电话和邮件可以使用了。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    虽然搬迁确实已经完成，电话和邮件也能用，但通知的重点是“因为传真机坏了”才让大家改用电话和邮件，选项遗漏了传真机故障这个核心前提。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">3</span>
+                    <div class="option-text-group">
+                        <span>ファクス<ruby>機<rt>き</rt></ruby>が<ruby>復<rt>ふっ</rt></ruby><ruby>旧<rt>きゅう</rt></ruby>し<ruby>次<rt>し</rt></ruby><ruby>第<rt>だい</rt></ruby>、<ruby>業<rt>ぎょう</rt></ruby><ruby>務<rt>む</rt></ruby>を<ruby>再<rt>さい</rt></ruby><ruby>開<rt>かい</rt></ruby>する。</span>
+                        <span class="option-translation">传真机一恢复，就重新开始业务。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    业务在5月31日就已经恢复了（「業務を再開しております」），并不是要等传真机修好后才恢复业务，这与原文事实不符。
+                </div>
+            </div>
+
+            <div class="option-item is-correct" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">4</span>
+                    <div class="option-text-group">
+                        <span>ファクス<ruby>機<rt>き</rt></ruby>は<ruby>不<rt>ふ</rt></ruby><ruby>調<rt>ちょう</rt></ruby>だが、<ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby>とメールは<ruby>使<rt>つか</rt></ruby>える。</span>
+                        <span class="option-translation">传真机出现了故障，但是电话和邮件可以使用。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge correct">正解</span>
+                    妥切地概括了通知的主旨。原文先说明目前传真机发生故障无法收发（「ファクスの送受信ができません」），接着请求大家在修复前改用电话或邮件（「電話もしくはメールをご利用ください」），这与选项所述的“传真机出故障了，但电话和邮件可以使用”的逻辑相吻合。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="page-2" class="page-content active">
+        <h2 class="header-title">2017年7月 短文（二）</h2>
+
+        <div class="article-content">
+            <p class="japanese">
+                <ruby>以<rt>い</rt></ruby><ruby>下<rt>か</rt></ruby>は、<ruby>動<rt>どう</rt></ruby><ruby>物<rt>ぶつ</rt></ruby><ruby>園<rt>えん</rt></ruby>の<ruby>飼<rt>し</rt></ruby><ruby>育<rt>いく</rt></ruby><ruby>環<rt>かん</rt></ruby><ruby>境<rt>きょう</rt></ruby>について<ruby>書<rt>か</rt></ruby>かれたものである。<br>
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>動<rt>どう</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>たちにとって<ruby>飼<rt>し</rt></ruby><ruby>育<rt>いく</rt></ruby><ruby>係<rt>がかり</rt></ruby>は<ruby>大<rt>だい</rt></ruby><ruby>事<rt>じ</rt></ruby>な<ruby>環<rt>かん</rt></ruby><ruby>境<rt>きょう</rt></ruby><ruby>要<rt>よう</rt></ruby><ruby>因<rt>いん</rt></ruby>である。
+                    <span class="sentence-badge">提出主题</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        作者开篇抛出论点，指出对于动物们来说，饲养员是重要的环境因素（「大事な環境要因である」），从而引出对饲养员角色的探讨。
+                    </span>
+                </span>
+                
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>展<rt>てん</rt></ruby><ruby>示<rt>じ</rt></ruby><ruby>場<rt>じょう</rt></ruby>としての<ruby>環<rt>かん</rt></ruby><ruby>境<rt>きょう</rt></ruby>の<ruby>改<rt>かい</rt></ruby><ruby>善<rt>ぜん</rt></ruby>だけでは、<ruby>動<rt>どう</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>たちの<ruby>飼<rt>し</rt></ruby><ruby>育<rt>いく</rt></ruby><ruby>環<rt>かん</rt></ruby><ruby>境<rt>きょう</rt></ruby>の<ruby>真<rt>しん</rt></ruby>の<ruby>改<rt>かい</rt></ruby><ruby>善<rt>ぜん</rt></ruby>にはならない。
+                    <span class="sentence-badge">补充说明</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        进一步说明单纯在硬件上改善展示场的环境是不够的，这并不能算是对动物饲养环境真正的改善（「真の改善にはならない」）。
+                    </span>
+                </span>
+
+                <ruby>日<rt>ひ</rt></ruby><ruby>々<rt>び</rt></ruby><ruby>動<rt>どう</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>と<ruby>接<rt>せっ</rt></ruby><ruby>触<rt>しょく</rt></ruby>する<ruby>飼<rt>し</rt></ruby><ruby>育<rt>いく</rt></ruby><ruby>係<rt>がかり</rt></ruby>は、<ruby>時<rt>とき</rt></ruby>として<ruby>動<rt>どう</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>たちのストレス<ruby>源<rt>げん</rt></ruby>になることがある。<br>
+
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>飼<rt>し</rt></ruby><ruby>育<rt>いく</rt></ruby><ruby>係<rt>がかり</rt></ruby>がストレス<ruby>源<rt>げん</rt></ruby>にならないためには<ruby>動<rt>どう</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>をよく<ruby>観<rt>かん</rt></ruby><ruby>察<rt>さつ</rt></ruby>し、<ruby>行<rt>こう</rt></ruby><ruby>動<rt>どう</rt></ruby>にあわせた<ruby>世<rt>せ</rt></ruby><ruby>話<rt>わ</rt></ruby>をし、その<ruby>動<rt>どう</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>の<ruby>種<rt>しゅ</rt></ruby>としての<ruby>特<rt>とく</rt></ruby><ruby>徴<rt>ちょう</rt></ruby>、<ruby>個<rt>こ</rt></ruby><ruby>体<rt>たい</rt></ruby>としての<ruby>性<rt>せい</rt></ruby><ruby>格<rt>かく</rt></ruby>を<ruby>知<rt>し</rt></ruby>らなければならない。
+                    <span class="sentence-badge">得出结论</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        结尾说明了应对方法。为了不让饲养员成为动物的压力源，也就是为了真正改善饲养环境，饲养员需要去了解动物作为物种的特征以及作为个体的性格（「特徴、個体としての性格を知らなければならない」）。
+                    </span>
+                </span>
+            </p>
+            
+            <div class="translation analysis-element">以下是一篇关于动物园饲养环境的文章。<br>对于动物们来说，饲养员是重要的环境因素。仅仅改善作为展览场所的环境，并不能算是对动物饲养环境真正的改善。每天与动物接触的饲养员，有时也会成为动物们的压力源。为了不让饲养员成为压力源，需要仔细观察动物，根据其行为进行照顾，并且应当了解该动物作为物种的特征以及作为个体的性格。</div>
+        </div>
+
+        <div class="qa-section">
+            <div class="question-title">
+                <ruby>問<rt>とい</rt></ruby>：<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>考<rt>かんが</rt></ruby>えに<ruby>合<rt>あ</rt></ruby>うのはどれか。
+            </div>
+            
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">1</span>
+                    <div class="option-text-group">
+                        <span><ruby>動<rt>どう</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>たちにとって、<ruby>飼<rt>し</rt></ruby><ruby>育<rt>いく</rt></ruby><ruby>係<rt>がかり</rt></ruby>との<ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby>は<ruby>展<rt>てん</rt></ruby><ruby>示<rt>じ</rt></ruby><ruby>場<rt>じょう</rt></ruby>の<ruby>改<rt>かい</rt></ruby><ruby>善<rt>ぜん</rt></ruby>よりも<ruby>重<rt>じゅう</rt></ruby><ruby>要<rt>よう</rt></ruby>である。</span>
+                        <span class="option-translation">对于动物们来说，与饲养员的关系比改善展示场更重要。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文指出“仅仅改善展示场的环境并不能算是真正的改善”（「展示場としての環境の改善だけでは...」），说明了饲养员作为环境因素的重要性，但并没有直接比较两者并断言饲养员“比改善展示场更重要”（「展示場の改善よりも重要である」）。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">2</span>
+                    <div class="option-text-group">
+                        <span><ruby>飼<rt>し</rt></ruby><ruby>育<rt>いく</rt></ruby><ruby>環<rt>かん</rt></ruby><ruby>境<rt>きょう</rt></ruby>を<ruby>改<rt>かい</rt></ruby><ruby>善<rt>ぜん</rt></ruby>しても、<ruby>動<rt>どう</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>にストレスがたまることがある。</span>
+                        <span class="option-translation">即使改善了饲养环境，动物也有可能会积累压力。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    文章确实提到饲养员有时会成为压力源，但作者整段论述的核心在于指出饲养环境的真正改善离不开饲养员的努力，而非仅仅陈述“动物会积累压力”这一表面现象。
+                </div>
+            </div>
+
+            <div class="option-item is-correct" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">3</span>
+                    <div class="option-text-group">
+                        <span><ruby>飼<rt>し</rt></ruby><ruby>育<rt>いく</rt></ruby><ruby>環<rt>かん</rt></ruby><ruby>境<rt>きょう</rt></ruby>の<ruby>改<rt>かい</rt></ruby><ruby>善<rt>ぜん</rt></ruby>には、<ruby>飼<rt>し</rt></ruby><ruby>育<rt>いく</rt></ruby><ruby>係<rt>がかり</rt></ruby>が<ruby>動<rt>どう</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>の<ruby>特<rt>とく</rt></ruby><ruby>徴<rt>ちょう</rt></ruby>や<ruby>性<rt>せい</rt></ruby><ruby>格<rt>かく</rt></ruby>を<ruby>把<rt>は</rt></ruby><ruby>握<rt>あく</rt></ruby>することも<ruby>重<rt>じゅう</rt></ruby><ruby>要<rt>よう</rt></ruby>である。</span>
+                        <span class="option-translation">对于改善饲养环境，饲养员把握动物的特征和性格也是很重要的。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge correct">正解</span>
+                    妥切地概括了作者的核心观点。原文表明，饲养员是重要的环境因素，真正的改善不能仅靠展示场；并且在结尾提出，为了不成为压力源（即改善环境），饲养员需要去了解动物的特征和性格（「特徴、個体としての性格を知らなければならない」）。选项与此逻辑高度吻合。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">4</span>
+                    <div class="option-text-group">
+                        <span><ruby>飼<rt>し</rt></ruby><ruby>育<rt>いく</rt></ruby><ruby>係<rt>がかり</rt></ruby>の<ruby>使<rt>し</rt></ruby><ruby>命<rt>めい</rt></ruby>は、<ruby>動<rt>どう</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>の<ruby>特<rt>とく</rt></ruby><ruby>徴<rt>ちょう</rt></ruby>や<ruby>性<rt>せい</rt></ruby><ruby>格<rt>かく</rt></ruby>に<ruby>合<rt>あ</rt></ruby>った<ruby>展<rt>てん</rt></ruby><ruby>示<rt>じ</rt></ruby><ruby>場<rt>じょう</rt></ruby>を<ruby>作<rt>つく</rt></ruby>ることである。</span>
+                        <span class="option-translation">饲养员的使命是建造符合动物特征和性格的展示场。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文提到饲养员需要了解动物的特征和性格来进行照顾（「世話をし」），并没有说他们的使命是去“建造展示场”（「展示場を作ること」）。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="page-3" class="page-content active">
+         <h2 class="header-title">2017年7月 短文（三）</h2>
+
+        <div class="article-content">
+            <p class="japanese">
+                <ruby>人<rt>ひと</rt></ruby>と<ruby>人<rt>ひと</rt></ruby>とのコミュニケーションが<ruby>希<rt>き</rt></ruby><ruby>薄<rt>はく</rt></ruby><ruby>化<rt>か</rt></ruby>していると<ruby>言<rt>い</rt></ruby>われる<ruby>今<rt>こん</rt></ruby><ruby>日<rt>にち</rt></ruby>、それを<ruby>如<rt>い</rt></ruby><ruby>何<rt>か</rt></ruby>に<ruby>円<rt>えん</rt></ruby><ruby>滑<rt>かつ</rt></ruby>に、<ruby>如<rt>い</rt></ruby><ruby>何<rt>か</rt></ruby>に<ruby>真<rt>しん</rt></ruby><ruby>意<rt>い</rt></ruby>を<ruby>外<rt>はず</rt></ruby>さずに<ruby>行<rt>おこな</rt></ruby>うかは、<ruby>誰<rt>だれ</rt></ruby>にとっても<ruby>大<rt>おお</rt></ruby>きな<ruby>課<rt>か</rt></ruby><ruby>題<rt>だい</rt></ruby>だ。<br>
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>時<rt>とき</rt></ruby>に<ruby>人<rt>ひと</rt></ruby>は「<ruby>力<rt>ちから</rt></ruby>」によって<ruby>他<rt>た</rt></ruby><ruby>者<rt>しゃ</rt></ruby>を<ruby>動<rt>うご</rt></ruby>かそうとする。あるいは「<ruby>経<rt>けい</rt></ruby><ruby>済<rt>ざい</rt></ruby><ruby>力<rt>りょく</rt></ruby>」が<ruby>人<rt>ひと</rt></ruby>を<ruby>動<rt>うご</rt></ruby>かす<ruby>手<rt>しゅ</rt></ruby><ruby>段<rt>だん</rt></ruby>ともなる。<ruby>企<rt>き</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>という<ruby>組<rt>そ</rt></ruby><ruby>織<rt>しき</rt></ruby>では、「<ruby>役<rt>やく</rt></ruby><ruby>職<rt>しょく</rt></ruby>＝ポジション」を<ruby>使<rt>つか</rt></ruby>って<ruby>人<rt>ひと</rt></ruby>を<ruby>動<rt>うご</rt></ruby>かすケースも<ruby>多<rt>おお</rt></ruby>い。
+                    <span class="sentence-badge">列举现象</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        作者列举了现实社会中的常见现象。指出人们有时会用“力量”（「力」）、“经济实力”（「経済力」）或者在企业中用“职位”（「役職」）来驱使他人。
+                    </span>
+                </span>
+                
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    だがそういった「<ruby>上<rt>じょう</rt></ruby><ruby>意<rt>い</rt></ruby><ruby>下<rt>か</rt></ruby><ruby>達<rt>たつ</rt></ruby>」「<ruby>弱<rt>じゃく</rt></ruby><ruby>肉<rt>にく</rt></ruby><ruby>強<rt>きょう</rt></ruby><ruby>食<rt>しょく</rt></ruby>」のコミュニケーションでは、<ruby>人<rt>ひと</rt></ruby>は<ruby>本<rt>ほん</rt></ruby><ruby>質<rt>しつ</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>満<rt>まん</rt></ruby><ruby>足<rt>ぞく</rt></ruby>は<ruby>得<rt>え</rt></ruby>られない。
+                    <span class="sentence-badge">指出问题</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        用「だが」（但是）进行转折，对上述现象进行反思。指出在这种“下级服从上级”、“弱肉强食”的沟通方式中，人是无法获得本质上的满足的（「本質的な満足は得られない」）。
+                    </span>
+                </span>
+
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>人<rt>ひと</rt></ruby>が<ruby>人<rt>ひと</rt></ruby>である<ruby>所<rt>ゆえ</rt></ruby><ruby>以<rt>ん</rt></ruby>は、<ruby>力<rt>ちから</rt></ruby><ruby>対<rt>たい</rt></ruby><ruby>力<rt>ちから</rt></ruby>の<ruby>拮<rt>きっ</rt></ruby><ruby>抗<rt>こう</rt></ruby>ではなく、<ruby>他<rt>た</rt></ruby><ruby>者<rt>しゃ</rt></ruby>との「<ruby>共<rt>きょう</rt></ruby><ruby>感<rt>かん</rt></ruby>」によって「<ruby>動<rt>うご</rt></ruby>く」「<ruby>動<rt>うご</rt></ruby>かす」ことができる<ruby>点<rt>てん</rt></ruby>にある。
+                    <span class="sentence-badge">得出结论</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        在结尾引出核心主张。说明人之所以为人，不在于力量的对抗，而在于能够通过与他人的“共鸣”来行动或驱使他人（「『共感』によって『動く』『動かす』ことができる点にある」），强调了“共鸣”的重要性。
+                    </span>
+                </span>
+            </p>
+            
+            <div class="translation analysis-element">在人与人之间的沟通被认为日益淡薄的今天，如何顺畅地、如何不偏离本意地进行沟通，对任何人来说都是一个大课题。有时人们会试图用“力量”来驱使他人。或者，“经济实力”也会成为驱使人的手段。在企业这种组织中，利用“职位=地位”来驱使人的情况也很多。但是在那种“下级服从上级”、“弱肉强食”的沟通中，人是无法获得本质上的满足的。人之所以为人，不在于力量与力量的抗衡，而在于能够通过与他人的“共鸣”来“行动”或“驱使”他人。</div>
+        </div>
+
+        <div class="qa-section">
+            <div class="question-title">
+                <ruby>問<rt>とい</rt></ruby>：<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>考<rt>かんが</rt></ruby>えに<ruby>合<rt>あ</rt></ruby>うのはどれか。
+            </div>
+            
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">1</span>
+                    <div class="option-text-group">
+                        <span><ruby>企<rt>き</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>では「<ruby>共<rt>きょう</rt></ruby><ruby>感<rt>かん</rt></ruby>」によるコミュニケーションで<ruby>人<rt>ひと</rt></ruby>を<ruby>動<rt>うご</rt></ruby>かしている。</span>
+                        <span class="option-translation">在企业中，正通过基于“共鸣”的沟通来驱使人。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文提到在企业组织中，多是利用“职位”（「役職」）来驱使人，而不是“共鸣”。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">2</span>
+                    <div class="option-text-group">
+                        <span><ruby>企<rt>き</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>では「<ruby>役<rt>やく</rt></ruby><ruby>職<rt>しょく</rt></ruby>」を<ruby>使<rt>つか</rt></ruby>って<ruby>人<rt>ひと</rt></ruby>を<ruby>動<rt>うご</rt></ruby>かすことも<ruby>考<rt>かんが</rt></ruby>えるべきだ。</span>
+                        <span class="option-translation">在企业中，也应该考虑利用“职位”来驱使人。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文只是客观陈述了企业中存在利用“职位”驱使人的情况（「『役職=ポジション』を使って人を動かすケースも多い」），但作者对其持否定态度，认为这无法带来本质上的满足。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">3</span>
+                    <div class="option-text-group">
+                        <span><ruby>人<rt>ひと</rt></ruby>は<ruby>本<rt>ほん</rt></ruby><ruby>質<rt>しつ</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>満<rt>まん</rt></ruby><ruby>足<rt>ぞく</rt></ruby>が<ruby>得<rt>え</rt></ruby>られると<ruby>確<rt>かく</rt></ruby><ruby>信<rt>しん</rt></ruby>しない<ruby>限<rt>かぎ</rt></ruby>り<ruby>動<rt>うご</rt></ruby>かない。</span>
+                        <span class="option-translation">人只要不确信能获得本质上的满足，就不会行动。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文并没有说人为了获得满足才行动，而是说在力量压迫下的行动无法带来满足（「本質的な満足は得られない」）。
+                </div>
+            </div>
+
+            <div class="option-item is-correct" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">4</span>
+                    <div class="option-text-group">
+                        <span><ruby>人<rt>ひと</rt></ruby>は「<ruby>力<rt>ちから</rt></ruby>」より「<ruby>共<rt>きょう</rt></ruby><ruby>感<rt>かん</rt></ruby>」によって<ruby>動<rt>うご</rt></ruby>こうとする。</span>
+                        <span class="option-translation">相比“力量”，人更倾向于因“共鸣”而行动。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge correct">正解</span>
+                    妥切地概括了作者的主旨。原文最后一句明确指出，人之所以为人的理由，并不在于力量的对抗（「力対力の拮抗ではなく」），而在于能够通过与他人的“共鸣”来行动（「『共感』によって『動く』『動かす』ことができる点にある」），这与选项表述相吻合。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="page-4" class="page-content active">
+        <h2 class="header-title">2017年7月 短文（四）</h2>
+
+        <div class="article-content">
+            <p class="japanese">
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>には、<ruby>道<rt>どう</rt></ruby><ruby>具<rt>ぐ</rt></ruby>をつくり、その<ruby>道<rt>どう</rt></ruby><ruby>具<rt>ぐ</rt></ruby>に<ruby>適<rt>てき</rt></ruby><ruby>応<rt>おう</rt></ruby>しようとする<ruby>性<rt>せい</rt></ruby><ruby>質<rt>しつ</rt></ruby>がある。そしてその<ruby>道<rt>どう</rt></ruby><ruby>具<rt>ぐ</rt></ruby>に<ruby>適<rt>てき</rt></ruby><ruby>応<rt>おう</rt></ruby>し<ruby>過<rt>す</rt></ruby>ぎてしまうことで、<ruby>本<rt>ほん</rt></ruby><ruby>来<rt>らい</rt></ruby>の<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>の<ruby>能<rt>のう</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<ruby>削<rt>そ</rt></ruby>がれてしまうことがある。
+                    <span class="sentence-badge">提出观点</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        作者开篇提出了对人类适应工具这一属性的看法。指出人类有适应工具的性质，但因为过度适应，有时会削弱原本的能力（「本来の人間の能力を削がれてしまうことがある」）。
+                    </span>
+                </span>
+                
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    その<ruby>適<rt>てき</rt></ruby><ruby>応<rt>おう</rt></ruby><ruby>力<rt>りょく</rt></ruby>が<ruby>仇<rt>あだ</rt></ruby>となり、<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>がつくった<ruby>道<rt>どう</rt></ruby><ruby>具<rt>ぐ</rt></ruby>により<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>が<ruby>左<rt>さ</rt></ruby><ruby>右<rt>ゆう</rt></ruby>される。まるで、<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>がつくった<ruby>道<rt>どう</rt></ruby><ruby>具<rt>ぐ</rt></ruby>に<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>がつくられてしまうかのように。
+                    <span class="sentence-badge">深化观点</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        进一步说明这种适应力反而成了祸害，导致人类被自己制造的工具所左右（「人間がつくった道具により人間が左右される」），也就是被工具牵制。
+                    </span>
+                </span>
+
+                <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                    <ruby>歩<rt>ある</rt></ruby>きながらでもスマートフォンを<ruby>使<rt>つか</rt></ruby>いたいという<ruby>欲<rt>よく</rt></ruby><ruby>求<rt>きゅう</rt></ruby>にかられ、<ruby>挙<rt>あ</rt></ruby>げ<ruby>句<rt>く</rt></ruby>に<ruby>視<rt>し</rt></ruby><ruby>野<rt>や</rt></ruby>を<ruby>大<rt>おお</rt></ruby>きくそこへ<ruby>奪<rt>うば</rt></ruby>われ、<ruby>自<rt>みずか</rt></ruby>ら、そして<ruby>他<rt>た</rt></ruby><ruby>者<rt>しゃ</rt></ruby>をも<ruby>危<rt>き</rt></ruby><ruby>険<rt>けん</rt></ruby>な<ruby>状<rt>じょう</rt></ruby><ruby>況<rt>きょう</rt></ruby>に<ruby>追<rt>お</rt></ruby>い<ruby>込<rt>こ</rt></ruby>んでしまう。これもその<ruby>現<rt>げん</rt></ruby><ruby>象<rt>しょう</rt></ruby>のひとつだ。
+                    <span class="sentence-badge">举例说明</span>
+                    <span class="inline-note-container">
+                        <span class="inline-note-title">💡 構文の役割と意味</span>
+                        结尾通过智能手机的例子，说明人们受欲望驱使、被夺走视野从而陷入危险（「危険な状況に追い込んでしまう」），这也是人类被工具左右（即“那个现象”）的具体体现之一。
+                    </span>
+                </span>
+            </p>
+            
+            <div class="translation analysis-element">人类有一种制造工具并试图适应工具的属性。而且，由于过度适应该工具，有时会削弱人类原本的能力。这种适应力反倒成了祸害，导致人类被自己制造的工具所左右。就好像人类被自己制造的工具所塑造了一样。受想边走边用智能手机的欲望所驱使，结果视野被大大地夺走，将自己甚至他人都逼入危险的状况中。这也是该现象之一。</div>
+        </div>
+
+        <div class="qa-section">
+            <div class="question-title">
+                <ruby>問<rt>とい</rt></ruby>：その<ruby>現<rt>げん</rt></ruby><ruby>象<rt>しょう</rt></ruby>とはどのような<ruby>現<rt>げん</rt></ruby><ruby>象<rt>しょう</rt></ruby>のことか。
+            </div>
+            
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">1</span>
+                    <div class="option-text-group">
+                        <span><ruby>道<rt>どう</rt></ruby><ruby>具<rt>ぐ</rt></ruby>によって<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>が<ruby>便<rt>べん</rt></ruby><ruby>利<rt>り</rt></ruby>さに<ruby>鈍<rt>どん</rt></ruby><ruby>感<rt>かん</rt></ruby>になる<ruby>現<rt>げん</rt></ruby><ruby>象<rt>しょう</rt></ruby></span>
+                        <span class="option-translation">因工具而导致人类对便利性变得迟钝的现象。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文并没有提到人类对便利性“变得迟钝”（「便利さに鈍感になる」）。
+                </div>
+            </div>
+
+            <div class="option-item is-correct" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">2</span>
+                    <div class="option-text-group">
+                        <span><ruby>道<rt>どう</rt></ruby><ruby>具<rt>ぐ</rt></ruby>によって<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>が<ruby>振<rt>ふ</rt></ruby>り<ruby>回<rt>まわ</rt></ruby>されている<ruby>現<rt>げん</rt></ruby><ruby>象<rt>しょう</rt></ruby></span>
+                        <span class="option-translation">人类被工具折腾、摆布的现象。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge correct">正解</span>
+                    妥切地概括了“那个现象”。原文指出人类因为过度适应工具，反而被自己制造的工具所左右（「人間がつくった道具により人間が左右される」）。选项中的“被工具折腾、摆布”（「道具によって人間が振り回されている」）正是对此现象的准确表述。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">3</span>
+                    <div class="option-text-group">
+                        <span><ruby>道<rt>どう</rt></ruby><ruby>具<rt>ぐ</rt></ruby>が<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>にとって<ruby>危<rt>き</rt></ruby><ruby>険<rt>けん</rt></ruby>なものになる<ruby>現<rt>げん</rt></ruby><ruby>象<rt>しょう</rt></ruby></span>
+                        <span class="option-translation">工具对人类来说变成危险物品的现象。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    文章中提到的“危险”是人类过度使用智能手机导致的结果（将自己逼入危险的状况中），而不是指工具本身变成危险物品（「危険なものになる」）。
+                </div>
+            </div>
+
+            <div class="option-item" onclick="toggleOption(this)">
+                <div class="option-content">
+                    <span class="option-number">4</span>
+                    <div class="option-text-group">
+                        <span><ruby>道<rt>どう</rt></ruby><ruby>具<rt>ぐ</rt></ruby>の<ruby>発<rt>はっ</rt></ruby><ruby>展<rt>てん</rt></ruby>が<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>の<ruby>欲<rt>よく</rt></ruby><ruby>求<rt>きゅう</rt></ruby>を<ruby>拡<rt>かく</rt></ruby><ruby>大<rt>だい</rt></ruby>させる<ruby>現<rt>げん</rt></ruby><ruby>象<rt>しょう</rt></ruby></span>
+                        <span class="option-translation">工具的发展使人类的欲望扩大的现象。</span>
+                    </div>
+                </div>
+                <div class="option-explanation">
+                    <span class="badge wrong">誤り</span>
+                    原文举例中提到了边走边用手机的欲望，但这只是被工具左右的具体表现，文章核心探讨的是人被工具左右的现象，而非“工具的发展使欲望扩大”（「道具の発展が人間の欲求を拡大させる」）。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="article-navigation">
+        <button id="prev-btn" class="nav-btn disabled" onclick="prevPage()">← 上一篇</button> 
+        <button id="next-btn" class="nav-btn" onclick="nextPage()">下一篇 →</button>
+    </div>
+</div>
+
+<div class="audio-wrapper">
+    <div class="audio-player">
+        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bg"><div class="progress-bar" id="progress-bar"></div></div>
+        </div>
+        <div class="time-display"><span id="current-time">00:00</span> / <span id="duration">00:00</span></div>
+        <button id="speed-btn" class="speed-btn" onclick="toggleSpeed()" title="再生速度">1.0x</button>
+        <button id="loop-btn" class="loop-btn" onclick="toggleLoop()" title="ループ再生">
+            <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        </button>
+        <audio id="audio-element" src="audio/2017.7-1.mp3"></audio>
+    </div>
+</div>
+
+<div class="footer">Ichigo Ichie - 一期一会</div>
+
+<script src="../shared/reading-year-system.js"></script>
+<script src="../categories/index.js"></script>
+<script src="../shared/reading-category-system.js"></script>
+<script>
+    function toggleAnalysis() {
+        const btn = document.getElementById('analysis-btn');
+        btn.classList.toggle('active');
+        document.body.classList.toggle('show-analysis');
+        
+        if (!document.body.classList.contains('show-analysis')) {
+            document.querySelectorAll('.option-item.expanded').forEach(item => item.classList.remove('expanded'));
+            document.querySelectorAll('.key-sentence.active').forEach(item => item.classList.remove('active'));
+        }
+    }
+
+    function toggleInlineNote(event, element) {
+        if (!document.body.classList.contains('show-analysis')) return;
+        if (event.target.closest('.inline-note-container')) return;
+        element.classList.toggle('active');
+    }
+
+    const ARTICLE_LEVEL = 'N1';
+    const ARTICLE_TYPE = 'short';
+    const ARTICLE_YEAR = '2017.7';
+    const ARTICLE_ID = 'n1-2017-7-short';
+    const ARTICLE_LINK = 's/2017.7.html';
+    const AUDIO_PREFIX = '2017.7';
+
+    function toggleOption(element) {
+        if (document.body.classList.contains('show-analysis')) {
+            element.classList.toggle('expanded');
+            return;
+        }
+        
+        const qaSection = element.closest('.qa-section');
+        if (qaSection.hasAttribute('data-answered')) return;
+        
+        const isCorrect = element.classList.contains('is-correct');
+        element.classList.add('selected');
+        
+        if (isCorrect) {
+            element.classList.add('answered-correct');
+        } else {
+            element.classList.add('answered-wrong');
+            const correctOpt = qaSection.querySelector('.is-correct');
+            if (correctOpt) correctOpt.classList.add('answered-correct');
+        }
+
+        qaSection.setAttribute('data-answered', 'true');
+        recordAnswer(isCorrect);
+    }
+
+    function handleReviewCompletionIfNeeded(isCorrect) {
+        if (!readingSession.isReviewMode || !isCorrect) {
+            return;
+        }
+
+        if (readingSession.getReviewPages().length === 0) {
+            window.setTimeout(() => {
+                alert('🎉 太棒了！这一年的错题已经复习完毕！');
+                readingSession.redirectToIndex();
+            }, 160);
+        }
+    }
+
+    function recordAnswer(isCorrect) {
+        readingSession.recordAnswer(currentPage, isCorrect);
+        handleReviewCompletionIfNeeded(isCorrect);
+    }
+
+    const audio = document.getElementById('audio-element');
+    const playBtn = document.getElementById('play-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+    const loopBtn = document.getElementById('loop-btn');
+    const speedBtn = document.getElementById('speed-btn');
+
+    let isLooping = false;
+    let currentSpeed = 1.0;
+
+    function toggleLoop() { 
+        isLooping = !isLooping; 
+        audio.loop = isLooping; 
+        loopBtn.classList.toggle('active', isLooping); 
+    }
+
+    function toggleSpeed() {
+        if (currentSpeed === 1.0) {
+            currentSpeed = 0.75;
+            speedBtn.textContent = '0.75x';
+            speedBtn.classList.add('active');
+        } else {
+            currentSpeed = 1.0;
+            speedBtn.textContent = '1.0x';
+            speedBtn.classList.remove('active');
+        }
+        audio.playbackRate = currentSpeed;
+    }
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Audio play error:", e));
+            playBtn.classList.add('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        } else {
+            audio.pause();
+            playBtn.classList.remove('playing');
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        }
+    }
+    
+    audio.addEventListener('timeupdate', () => { 
+        if (audio.duration) { 
+            progressBar.style.width = (audio.currentTime / audio.duration * 100) + '%'; 
+            currentTimeEl.textContent = formatTime(audio.currentTime); 
+        }
+    });
+    
+    audio.addEventListener('loadedmetadata', () => { 
+        durationEl.textContent = formatTime(audio.duration); 
+    });
+    
+    audio.addEventListener('ended', () => { 
+        playBtn.classList.remove('playing'); 
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'; 
+        progressBar.style.width = '0%'; 
+        currentTimeEl.textContent = "00:00"; 
+    });
+    
+    function seek(e) { 
+        if (!audio.duration) return; 
+        const rect = progressContainer.getBoundingClientRect(); 
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX; 
+        let clickX = Math.max(0, Math.min(clientX - rect.left, rect.width)); 
+        audio.currentTime = (clickX / rect.width) * audio.duration; 
+    }
+    
+    let isDragging = false;
+    progressContainer.addEventListener('mousedown', (e) => { isDragging = true; seek(e); });
+    window.addEventListener('mousemove', (e) => { if (isDragging) seek(e); });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    progressContainer.addEventListener('touchstart', (e) => { isDragging = true; seek(e); });
+    window.addEventListener('touchmove', (e) => { if (isDragging) { e.preventDefault(); seek(e); } }, { passive: false });
+    window.addEventListener('touchend', () => { isDragging = false; });
+    
+    function formatTime(seconds) { 
+        if (isNaN(seconds)) return "00:00"; 
+        const m = Math.floor(seconds / 60); 
+        const s = Math.floor(seconds % 60); 
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; 
+    }
+
+    const totalPages = 4;
+
+    const backLink = document.getElementById('back-to-reading-index');
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedPage = parseInt(urlParams.get('page'), 10);
+    const readingSession = ReadingYearSystem.createReadingYearSession({
+        level: ARTICLE_LEVEL,
+        type: ARTICLE_TYPE,
+        examKey: urlParams.get('examKey') || ARTICLE_YEAR,
+        totalPages,
+        indexPath: '../index.html',
+        urlParams
+    });
+    const categorySession = ReadingCategorySystem.createCategorySession({
+        level: ARTICLE_LEVEL,
+        type: ARTICLE_TYPE,
+        categoryId: urlParams.get('category'),
+        practiceMode: urlParams.get('practiceMode'),
+        examKey: urlParams.get('examKey') || ARTICLE_YEAR
+    });
+    const isCategoryPractice = categorySession.isCategoryMode && !readingSession.isReviewMode;
+    const categoryTarget = isCategoryPractice
+        ? categorySession.getInitialTarget(requestedPage)
+        : { empty: false };
+
+    if (isCategoryPractice) {
+        backLink.href = categorySession.buildBackUrl();
+    }
+
+    const reviewModeHasNoPages = readingSession.isReviewMode && readingSession.getReviewPages().length === 0;
+    if (reviewModeHasNoPages) {
+        alert('当前年份还没有错题记录，先去正常练习一轮吧。');
+        readingSession.redirectToIndex();
+    }
+
+    if (isCategoryPractice && categoryTarget.empty) {
+        alert('这个文章分类里还没有可练习的内容。');
+        window.location.href = categorySession.buildBackUrl();
+    }
+
+    if (isCategoryPractice && categoryTarget.redirectUrl) {
+        window.location.href = categoryTarget.redirectUrl;
+    }
+
+    let currentPage = isCategoryPractice && typeof categoryTarget.page === 'number'
+        ? categoryTarget.page
+        : readingSession.getInitialPage(requestedPage);
+
+    function syncHeaderTitles(activePage) {
+        document.querySelectorAll('.header-title').forEach(titleEl => {
+            if (!titleEl.dataset.baseTitle) {
+                titleEl.dataset.baseTitle = titleEl.textContent.replace(/\s*（🐶 復習モード）$/, '').trim();
+            }
+
+            const isActive = Boolean(activePage && activePage.contains(titleEl));
+            titleEl.textContent = isActive && readingSession.isReviewMode
+                ? `${titleEl.dataset.baseTitle}（🐶 復習モード）`
+                : titleEl.dataset.baseTitle;
+        });
+    }
+
+    function showPage(page) {
+        document.querySelectorAll('.page-content').forEach(el => {
+            el.style.display = 'none';
+            el.classList.remove('active');
+        });
+
+        const currentEl = document.getElementById('page-' + page);
+        if (currentEl) {
+            currentEl.style.display = 'block';
+            currentEl.classList.add('active');
+        }
+
+        syncHeaderTitles(currentEl);
+
+        document.querySelectorAll('.qa-section').forEach(section => {
+            section.removeAttribute('data-answered');
+        });
+
+        document.querySelectorAll('.option-item').forEach(item => {
+            item.classList.remove('selected', 'answered-correct', 'answered-wrong', 'expanded');
+        });
+
+        document.querySelectorAll('.key-sentence').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        audio.pause();
+        audio.src = `audio/${AUDIO_PREFIX}-${page}.mp3`;
+        audio.load();
+
+        playBtn.classList.remove('playing');
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        progressBar.style.width = '0%';
+        currentTimeEl.textContent = '00:00';
+        durationEl.textContent = '00:00';
+
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const navState = isCategoryPractice
+            ? categorySession.getNavState(page)
+            : readingSession.getNavState(page);
+
+        prevBtn.classList.toggle('disabled', navState.prevDisabled);
+        nextBtn.classList.toggle('disabled', navState.nextDisabled);
+
+        currentPage = page;
+        if (isCategoryPractice) {
+            categorySession.rememberProgress(page);
+            categorySession.replacePageUrl(page);
+        } else {
+            readingSession.replacePageUrl(page);
+        }
+        window.scrollTo(0, 0);
+    }
+
+    function navigateCategory(direction) {
+        const target = categorySession.getMoveTarget(currentPage, direction);
+
+        if (target.sameExamKey && typeof target.page === 'number') {
+            showPage(target.page);
+            return;
+        }
+
+        if (target.href) {
+            window.location.href = target.href;
+            return;
+        }
+
+        if (target.done) {
+            alert('已经是这个分类的最后一篇了！');
+            return;
+        }
+
+        alert('已经是这个分类的第一篇了！');
+    }
+
+    function navigateReview(direction) {
+        const target = readingSession.getMoveTarget(currentPage, direction);
+
+        if (typeof target.page === 'number') {
+            showPage(target.page);
+            return;
+        }
+
+        if (target.done) {
+            alert('🎉 太棒了！这一年的错题已经复习完毕！');
+            readingSession.redirectToIndex();
+            return;
+        }
+
+        alert('已经是这一年错题的第一题了！');
+    }
+
+    function prevPage() {
+        if (readingSession.isReviewMode) {
+            navigateReview(-1);
+            return;
+        }
+        if (isCategoryPractice) {
+            navigateCategory(-1);
+            return;
+        }
+        if (currentPage > 1) {
+            showPage(currentPage - 1);
+        }
+    }
+
+    function nextPage() {
+        if (readingSession.isReviewMode) {
+            navigateReview(1);
+            return;
+        }
+        if (isCategoryPractice) {
+            navigateCategory(1);
+            return;
+        }
+        if (currentPage < totalPages) {
+            showPage(currentPage + 1);
+        } else {
+            alert('已经是该年份的最后一篇了！');
+        }
+    }
+
+    if (!reviewModeHasNoPages && !(isCategoryPractice && categoryTarget.redirectUrl) && !(isCategoryPractice && categoryTarget.empty)) {
+        showPage(currentPage);
+    }
+</script>
+<script src="../shared/reading-tools.js"></script>
+
+</body>
+</html>
