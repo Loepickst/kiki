@@ -26,6 +26,50 @@
                     examKey: '2011-12',
                     page: 2,
                     label: '2011年12月 / 出荷状況のお知らせ'
+                },
+                {
+                    examKey: '2012-12',
+                    page: 2
+                },
+                {
+                    examKey: '2013-12',
+                    page: 2
+                },
+                {
+                    examKey: '2014-07',
+                    page: 1
+                },
+                {
+                    examKey: '2014-12',
+                    page: 2
+                },
+                {
+                    examKey: '2015-12',
+                    page: 2
+                },
+                {
+                    examKey: '2016-07',
+                    page: 1
+                },
+                {
+                    examKey: '2016-12',
+                    page: 2
+                },
+                {
+                    examKey: '2017-07',
+                    page: 1
+                },
+                {
+                    examKey: '2017-12',
+                    page: 1
+                },
+                {
+                    examKey: '2018-12',
+                    page: 2
+                },
+                {
+                    examKey: '2019-12',
+                    page: 1
                 }
             ]
         }
