@@ -481,7 +481,7 @@ const extraExampleData = {
             "cn": "特地来向您道谢，顺便拜访一下。"
         },
         {
-            "jp": "<ruby>帰郷<rt>きょう</rt></ruby><span style='color:#d64045'>かたがた</span>、<ruby>恩師<rt>おんし</rt></ruby>を<ruby>訪<rt>たず</rt></ruby>ねた。",
+            "jp": "<ruby>帰郷<rt>ききょう</rt></ruby><span style='color:#d64045'>かたがた</span>、<ruby>恩師<rt>おんし</rt></ruby>を<ruby>訪<rt>たず</rt></ruby>ねた。",
             "cn": "借着回乡的机会，顺便拜访了恩师。"
         }
     ],

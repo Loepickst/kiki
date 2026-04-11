@@ -296,7 +296,7 @@ main {
         
         .desc-row { margin-bottom: 8px; font-size: 1rem; line-height: 1.5; color: #333; display: flex; align-items: flex-start; }
         .desc-label { font-weight: bold; min-width: 4em; margin-right: 10px; flex-shrink: 0; }
-        .desc-text { flex: 1; word-wrap: break-word; word-break: normal; }
+        .desc-text { flex: 1; min-width: 0; word-wrap: break-word; word-break: normal; }
         .desc-row.supplement .desc-label { color: var(--supplement-theme); }
         .desc-row.supplement { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc; }
         
@@ -1597,6 +1597,45 @@ select.btn:hover {
             }
         }
 
+        function normalizeDescHtml(rawDesc) {
+            if (!rawDesc || !rawDesc.includes('<div class="desc-row"')) {
+                return rawDesc;
+            }
+
+            const template = document.createElement('template');
+            template.innerHTML = rawDesc.trim();
+
+            template.content.querySelectorAll('.desc-row').forEach(row => {
+                const directChildren = Array.from(row.children);
+                const label = directChildren.find(child => child.classList.contains('desc-label'));
+                const text = directChildren.find(child => child.classList.contains('desc-text'));
+
+                if (text) {
+                    return;
+                }
+
+                const descText = document.createElement('span');
+                descText.className = 'desc-text';
+
+                if (label) {
+                    let currentNode = label.nextSibling;
+                    while (currentNode) {
+                        const nextNode = currentNode.nextSibling;
+                        descText.appendChild(currentNode);
+                        currentNode = nextNode;
+                    }
+                } else {
+                    while (row.firstChild) {
+                        descText.appendChild(row.firstChild);
+                    }
+                }
+
+                row.appendChild(descText);
+            });
+
+            return template.innerHTML;
+        }
+
         function showItem(key) {
             const data = dictData[key];
             if (!data) return;
@@ -1629,8 +1668,8 @@ select.btn:hover {
             const rawDesc = data.desc || '';
             
             // Check if desc already contains HTML structure (to avoid nested desc-row)
-            if (rawDesc.includes('<div class="desc-row">')) {
-                html += rawDesc;
+            if (rawDesc.includes('<div class="desc-row"')) {
+                html += normalizeDescHtml(rawDesc);
             } else {
                 const descParts = rawDesc.replace(/\n/g, '<br>').split('<br>');
                 

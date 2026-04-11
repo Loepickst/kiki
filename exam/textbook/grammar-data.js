@@ -347,19 +347,19 @@ const grammarData = [
   },
   {
     "id": 16,
-    "title": "～てやみない",
+    "title": "～てやまない",
     "romaji": "teyaminai",
-    "kana": "てやみない",
+    "kana": "てやまない",
     "tags": "情感 愿望 强烈 书面语",
     "level": "N1",
     "book": "Try! N1 文法",
     "lesson": "第2課",
     "meaning": "…不已 / 衷心…",
-    "connection": "动词て形 + やみない",
+    "connection": "动词て形 + やまない",
     "desc": "表示<b>某种情感非常强烈，一直持续</b>，不会停止。常用于<b>祈祷、祝愿、敬爱</b>等比较拘谨的场合。",
     "examples": [
       {
-        "jp": "<b><ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>の<ruby>病<rt>びょう</rt></ruby><ruby>気<rt>き</rt></ruby>が<ruby>回<rt>かい</rt></ruby><ruby>復<rt>ふく</rt></ruby>することを<ruby>願<rt>ねが</rt></ruby>っ<span style='color:#d64045'>てやみない</span>。</b>",
+        "jp": "<b><ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>の<ruby>病<rt>びょう</rt></ruby><ruby>気<rt>き</rt></ruby>が<ruby>回<rt>かい</rt></ruby><ruby>復<rt>ふく</rt></ruby>することを<ruby>願<rt>ねが</rt></ruby>っ<span style='color:#d64045'>てやまない</span>。</b>",
         "cn": "衷心祝愿朋友的病能康复。"
       }
     ],
