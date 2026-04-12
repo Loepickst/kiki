@@ -1,14 +1,25 @@
 (function() {
-    const SKIP_SECONDS = 6;
+    const DEFAULT_SKIP_SECONDS = 6;
 
     const playerState = {
         initialized: false,
         playbackSpeed: 1.0,
-        isLooping: false
+        isLooping: false,
+        skipSeconds: DEFAULT_SKIP_SECONDS
     };
 
     const playIcon = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
     const pauseIcon = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+
+    function getSkipIcon(direction, seconds) {
+        const text = String(seconds);
+
+        if (direction === 'rewind') {
+            return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><text x="12" y="16.5" font-size="8.5" font-weight="bold" font-family="sans-serif" stroke-width="0" fill="currentColor" text-anchor="middle">${text}</text></svg>`;
+        }
+
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><text x="12" y="16.5" font-size="8.5" font-weight="bold" font-family="sans-serif" stroke-width="0" fill="currentColor" text-anchor="middle">${text}</text></svg>`;
+    }
 
     function getRefs() {
         return {
@@ -62,6 +73,24 @@
 
         refs.audio.playbackRate = playerState.playbackSpeed;
         refs.speedBtn.textContent = playerState.playbackSpeed === 1.0 ? '1.0x' : '0.75x';
+    }
+
+    function syncSkipButtons(refs) {
+        const skipSeconds = Number.isFinite(playerState.skipSeconds) && playerState.skipSeconds > 0
+            ? playerState.skipSeconds
+            : DEFAULT_SKIP_SECONDS;
+
+        if (refs.rewindBtn) {
+            refs.rewindBtn.title = `${skipSeconds}秒戻る (退回${skipSeconds}秒)`;
+            refs.rewindBtn.setAttribute('aria-label', `${skipSeconds}秒戻る`);
+            refs.rewindBtn.innerHTML = getSkipIcon('rewind', skipSeconds);
+        }
+
+        if (refs.forwardBtn) {
+            refs.forwardBtn.title = `${skipSeconds}秒進む (快进${skipSeconds}秒)`;
+            refs.forwardBtn.setAttribute('aria-label', `${skipSeconds}秒進む`);
+            refs.forwardBtn.innerHTML = getSkipIcon('forward', skipSeconds);
+        }
     }
 
     function resetPlayerUi(refs) {
@@ -123,10 +152,15 @@
         const subtitle = options && typeof options.subtitle === 'string'
             ? options.subtitle
             : document.title.replace(/\s*\((N1|N2|N3)\)\s*$/, '');
+        const requestedSkipSeconds = Number(options && options.skipSeconds);
 
         if (!refs.audio) {
             return;
         }
+
+        playerState.skipSeconds = Number.isFinite(requestedSkipSeconds) && requestedSkipSeconds > 0
+            ? requestedSkipSeconds
+            : DEFAULT_SKIP_SECONDS;
 
         if (refs.trackSubtitle) {
             refs.trackSubtitle.textContent = subtitle;
@@ -135,6 +169,7 @@
         if (playerState.initialized) {
             syncLoopState(refs);
             syncSpeedState(refs);
+            syncSkipButtons(refs);
             return;
         }
 
@@ -142,6 +177,7 @@
         resetPlayerUi(refs);
         syncLoopState(refs);
         syncSpeedState(refs);
+        syncSkipButtons(refs);
 
         if (refs.playBtn) {
             refs.playBtn.addEventListener('click', () => {
@@ -217,14 +253,14 @@
 
         if (refs.rewindBtn) {
             refs.rewindBtn.addEventListener('click', () => {
-                refs.audio.currentTime = Math.max(0, refs.audio.currentTime - SKIP_SECONDS);
+                refs.audio.currentTime = Math.max(0, refs.audio.currentTime - playerState.skipSeconds);
             });
         }
 
         if (refs.forwardBtn) {
             refs.forwardBtn.addEventListener('click', () => {
                 const duration = Number.isFinite(refs.audio.duration) ? refs.audio.duration : 0;
-                refs.audio.currentTime = Math.min(duration, refs.audio.currentTime + SKIP_SECONDS);
+                refs.audio.currentTime = Math.min(duration, refs.audio.currentTime + playerState.skipSeconds);
             });
         }
 
