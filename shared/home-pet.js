@@ -62,7 +62,7 @@
         6: '新的喂肉干回应',
         7: '新的备考鼓劲语',
         8: '新的睡前回应',
-        9: '新的喂可乐彩蛋语',
+        9: '新的惊喜陪学语',
         10: '满级纪念语与图鉴奖励'
     };
     const CAT_LEVEL_UNLOCK_LABELS = {
@@ -144,6 +144,10 @@
     const HEADPAT_EASTER_TRIGGER_CHANCE = 0.28;
     const HEADPAT_EASTER_COOLDOWN_MS = 60 * 1000;
     const HEADPAT_EASTER_STATE_DURATION_MS = 7000;
+    const BALL_POSE_TRIGGER_CHANCE = 0.18;
+    const BALL_POSE_COOLDOWN_MS = 45 * 1000;
+    const BALL_POSE_CHECK_INTERVAL_MS = 12 * 1000;
+    const BALL_POSE_DURATION_MS = 5200;
 
     function frameBlock(strings, ...values) {
         const raw = String.raw({ raw: strings }, ...values).trim();
@@ -320,6 +324,40 @@
         ................................
         ................................
     `;
+    const SHIBA_BALL_FRAME = frameBlock`
+        ................................
+        ................................
+        ................................
+        ..............A..A..............
+        ............ABA..ABA............
+        ...........ABB.AA.BBA...........
+        ..........ABBBBAABBBBA..........
+        .........ABBBBBBBBBBBBA.........
+        ........ABBCCCCDDCCCCBBA........
+        .......ABCCCDDDDDDDDCCCBA.......
+        ......ABCCDDAADDDDAADDCCBA......
+        ......ABCCDDDDDAAADDDDCCBA......
+        ......ABCCDDDDAEADDDDDCCBA......
+        ......ABCCDDDDDADADDDDCCBA......
+        ......ABCCDDDDDDDDDDDDCCBA......
+        .......ABCCDDDDDDDDDDCCBA.......
+        .......ABCCCDDDDDDDDCCCBA.......
+        ........ABBCCCCDDCCCCBBA........
+        ........ABBCCCDDDDCCCBBA........
+        ........ABBCCDDDDDDCCBBA........
+        .........ABCCDDDDDDCCBA.........
+        .........ABCCDDDDDDCCBA.........
+        .........ABCCDAAADDCCBA.........
+        .........ABBCA....ACBBACC.......
+        ..........ABBA....ABBACCC.......
+        ..........ABBA....ABBAACC.......
+        ...........AA......AA..AA.......
+        ................................
+        ................................
+        ................................
+        ................................
+        ................................
+    `;
     const SHIBA_SLEEPY_FRAME = frameBlock`
         ................................
         ................................
@@ -407,6 +445,7 @@
     const SHIBA_PIXEL_FRAMES = {
         idle: SHIBA_IDLE_FRAME,
         blink: SHIBA_BLINK_FRAME,
+        ball: SHIBA_BALL_FRAME,
         hop: SHIBA_HAPPY_SOFT_FRAME,
         sleepy: SHIBA_SLEEPY_FRAME,
         sleep: SHIBA_SLEEP_CURL_FRAME,
@@ -532,7 +571,10 @@
                 colaTreat: [
                     '咕嘟咕嘟……{name}这口气泡水也太快乐了！',
                     '嘶——好凉，{name}尾巴都快摇成风扇啦。',
-                    '今天是可乐限定快乐日，{name}已经有点上头。'
+                    '今天是可乐限定快乐日，{name}已经有点上头。',
+                    '气泡一炸开，{name}连脚步都轻快了不少。',
+                    '这一口下去，{name}感觉自己能陪你再冲一轮。',
+                    '尾巴摇得像小风扇，今天的快乐值真的爆表了。'
                 ],
                 headpat: [
                     '嘿嘿，{name}知道你来啦。',
@@ -623,11 +665,10 @@
                     }
                 },
                 9: {
-                    colaTreatExtras: {
-                        0: ['气泡一炸开，{name}连脚步都轻快了不少。'],
-                        1: ['这一口下去，{name}感觉自己能陪你再冲一轮。'],
-                        2: ['尾巴摇得像小风扇，今天的快乐值真的爆表了。']
-                    }
+                    defaultIdle: [
+                        '{name}最近有点藏不住开心，连坐着发呆都像在等你开工。',
+                        '陪你学到这里之后，{name}连待命都带着一点小雀跃。'
+                    ]
                 },
                 10: {
                     welcome: [
@@ -1967,6 +2008,8 @@
                 sessionSleepWakeCount: 0,
                 lastHeadpatAt: 0,
                 headpatEasterCooldownUntil: 0,
+                ballPoseCooldownUntil: 0,
+                lastBallPoseCheckAt: 0,
                 interactionMode: 'normal',
                 interactionModeUntil: 0,
                 interactionTimer: null,
@@ -2397,6 +2440,9 @@
             if (runtime.interactionMode === 'cola') {
                 return 'cola';
             }
+            if (runtime.interactionMode === 'ballPose') {
+                return 'ball';
+            }
             if (runtime.interactionMode === 'headpatGentle') {
                 return 'blink';
             }
@@ -2411,12 +2457,6 @@
             const levelInfo = getLevelInfo(petState.bondXp, petProfile.levelTitles);
 
             if (petId === 'shiba' && runtime.interactionMode === 'normal') {
-                if (baseMood === 'idle' && levelInfo.level >= 3) {
-                    const blinkCadence = Math.max(4, 10 - levelInfo.level);
-                    if (Number(petState.totalVisits || 0) > 0 && Number(petState.totalVisits || 0) % blinkCadence === 0) {
-                        return 'blink';
-                    }
-                }
                 if ((baseMood === 'curious' || baseMood === 'cheer') && levelInfo.level >= 7) {
                     return 'cheer';
                 }
@@ -2482,6 +2522,30 @@
             bubbleEl.textContent = runtime.currentDialog;
             setAnim(picked.anim || 'idle', petId);
             sync('headpat-easter');
+            return true;
+        }
+
+        function maybeTriggerBallPose(petId, runtime, baseMood) {
+            if (petId !== 'shiba' || runtime.interactionMode !== 'normal' || baseMood !== 'idle') {
+                return false;
+            }
+
+            const now = Date.now();
+            if (runtime.ballPoseCooldownUntil && now < runtime.ballPoseCooldownUntil) {
+                return false;
+            }
+            if (runtime.lastBallPoseCheckAt && (now - runtime.lastBallPoseCheckAt) < BALL_POSE_CHECK_INTERVAL_MS) {
+                return false;
+            }
+
+            runtime.lastBallPoseCheckAt = now;
+            if (Math.random() >= BALL_POSE_TRIGGER_CHANCE) {
+                return false;
+            }
+
+            runtime.ballPoseCooldownUntil = now + BALL_POSE_COOLDOWN_MS;
+            setInteractionMode('ballPose', BALL_POSE_DURATION_MS, petId);
+            setAnim('ball', petId);
             return true;
         }
 
@@ -2691,6 +2755,7 @@
             if (!isExpanded && collectionOpen) {
                 collectionOpen = false;
             }
+            maybeTriggerBallPose(petId, runtime, summary.mood);
             const visualMood = getVisualMood(petId, summary.mood);
             const isColaUnlocked = petId === 'shiba' && isInteractionUnlocked(state, COLA_TREAT_UNLOCK_ID);
 
