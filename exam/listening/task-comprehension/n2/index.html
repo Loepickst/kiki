@@ -205,6 +205,26 @@
             opacity: 1;
         }
 
+        .home-btn {
+            position: absolute;
+            right: 20px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 15px;
+            font-weight: 600;
+            min-height: 34px;
+            display: inline-flex;
+            align-items: center;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .home-btn:hover {
+            opacity: 1;
+        }
+
         @media (max-width: 600px) {
             .year-grid {
                 grid-template-columns: 1fr;
@@ -218,6 +238,7 @@
     <header>
         <a href="../index.html" class="back-btn">← 戻る</a>
         <h1>课题安排💬 (N2)</h1>
+        <a href="../../../../index.html" class="home-btn">ホーム</a>
     </header>
 
     <div class="container">
@@ -234,55 +255,51 @@
         </div>
     </div>
 
+    <script src="../../shared/listening-progress.js"></script>
     <script>
+        const LISTENING_TYPE = 'task-comprehension';
+        const LISTENING_LEVEL = 'n2';
         const startYear = 2016;
         const endYear = 2023;
         const grid = document.getElementById('yearGrid');
-        
-        // Fetch last practice from localStorage
-        const lastPractice = localStorage.getItem('last_n2_practice'); // Format: YYYY-MM
+        const reviewGrid = document.getElementById('reviewGrid');
+        const section = document.getElementById('mistakeReview');
 
-        // --- Load Mistake Review Data ---
+        const fileMap = {
+            '2016': 'years/n2_2016.html',
+        };
+
+        const available = {
+            '2016-07': 'years/n2_2016.html?year=2016-07',
+        };
+
+        const lastPractice = window.ListeningProgress.getLastPractice(LISTENING_TYPE, LISTENING_LEVEL);
+
         function loadMistakes() {
-            const reviewGrid = document.getElementById('reviewGrid');
-            const section = document.getElementById('mistakeReview');
-            let hasMistakes = false;
+            reviewGrid.innerHTML = '';
 
-            // Map year to filename
-            // You can expand this map as you add more files
-            const fileMap = {
-                '2016': 'years/n2_2016.html',
-            };
+            const reviewItems = Object.keys(available)
+                .map((examKey) => {
+                    const year = examKey.split('-')[0];
+                    return {
+                        examKey,
+                        year,
+                        count: window.ListeningProgress.getMistakeIds(
+                            LISTENING_TYPE,
+                            LISTENING_LEVEL,
+                            examKey
+                        ).length
+                    };
+                })
+                .filter((item) => item.count > 0 && fileMap[item.year])
+                .sort((a, b) => b.examKey.localeCompare(a.examKey));
 
-            // Iterate localStorage to find marks
-            let reviewItems = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && key.startsWith('jlpt_marks_')) {
-                    const marks = JSON.parse(localStorage.getItem(key));
-                    
-                    if (marks && marks.length > 0) {
-                        hasMistakes = true;
-                        const examKey = key.replace('jlpt_marks_', ''); // e.g., 2016-07
-                        const year = examKey.split('-')[0]; // 2016
-                        
-                        // Only show if we know the file mapping
-                        if (fileMap[year]) {
-                            reviewItems.push({
-                                examKey: examKey,
-                                year: year,
-                                count: marks.length
-                            });
-                        }
-                    }
-                }
+            if (reviewItems.length === 0) {
+                section.style.display = 'none';
+                return;
             }
 
-            // Sort descending (e.g. 2020-12, 2020-07, 2019-12...)
-            reviewItems.sort((a, b) => b.examKey.localeCompare(a.examKey));
-
-            // Render buttons
-            reviewItems.forEach(item => {
+            reviewItems.forEach((item) => {
                 const btn = document.createElement('a');
                 btn.className = 'review-btn';
                 btn.href = `${fileMap[item.year]}?year=${item.examKey}&mode=review`;
@@ -293,27 +310,17 @@
                 reviewGrid.appendChild(btn);
             });
 
-            // Toggle section visibility
-            if (hasMistakes) {
-                section.style.display = 'block';
-            }
+            section.style.display = 'block';
         }
         loadMistakes();
 
-        // Generate cards in chronological order (oldest first)
         for (let year = startYear; year <= endYear; year++) {
             const card = document.createElement('div');
             card.className = 'year-card';
-            
-            // Define available exams
-            const available = {
-                '2016-07': 'years/n2_2016.html?year=2016-07',
-            };
 
             const julyKey = `${year}-07`;
             const decKey = `${year}-12`;
-            
-            // Check if this year contains the last practice session
+
             let tagHtml = '';
             if (lastPractice === julyKey || lastPractice === decKey) {
                 tagHtml = '<span class="last-practice-tag">前回練習</span>';
@@ -322,11 +329,10 @@
             const getBtnHtml = (key, label) => {
                 if (available[key]) {
                     return `<a href="${available[key]}" class="exam-btn">${label}</a>`;
-                } else {
-                    return `<span class="exam-btn disabled">${label}</span>`;
                 }
+                return `<span class="exam-btn disabled">${label}</span>`;
             };
-            
+
             card.innerHTML = `
                 <div class="year-title">
                     ${year}年
@@ -337,7 +343,7 @@
                     ${getBtnHtml(decKey, '12月')}
                 </div>
             `;
-            
+
             grid.appendChild(card);
         }
     </script>
