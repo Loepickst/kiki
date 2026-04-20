@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>単語暗記 - 能力考核心词汇</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500&display=swap');
+
+        :root {
+            /* --- 统一使用阅读模版的配色 --- */
+            --bg-color: #fdfaf5;       /* 米色背景 */
+            --paper-color: #ffffff;    /* 卡片/纸张背景 */
+            --text-color: #2c2c2c;     /* 深灰文字 */
+            --accent-color: #b33e3e;   /* 茜色点缀 */
+            --sub-color: #787878;      /* 辅助文字颜色 */
+            --shadow: rgba(0,0,0,0.05); /* 柔和阴影 */
+            
+            /* 词性颜色标记 */
+            --noun-color: #4fc3f7;     /* 名词 - 蓝 */
+            --verb-color: #e57373;     /* 动词 - 红 */
+            --adj-color: #fff176;      /* 形容词 - 黄 */
+            --adv-color: #81c784;      /* 副词 - 绿 */
+            --ono-color: #ba68c8;      /* 拟声拟态 - 紫 */
+            
+            /* 级别颜色 */
+            --n1-color: #e57373;
+            --n2-color: #ff8a65;
+        }
+
+        body {
+            font-family: "Hiragino Sans", "Meiryo", "Microsoft YaHei", -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏 */
+        header {
+            width: 100%;
+            padding: 18px 20px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background-color: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            position: sticky; 
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            min-height: 34px;
+            opacity: 0.72;
+            transition: opacity 0.25s, transform 0.25s;
+        }
+        .back-btn:hover {
+            opacity: 1;
+            transform: translateX(-2px);
+        }
+
+
+        h1 {
+            margin: 0;
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        /* 内容容器 */
+        .vocab-container {
+            width: 95%;
+            max-width: 800px;
+            padding: 30px 0;
+            display: flex;
+            flex-direction: column;
+            /* align-items: center;  Removed to allow children to stretch */
+        }
+
+        .view-section {
+            width: 100%; /* Ensure view sections take full width */
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--sub-color);
+            font-weight: normal;
+        }
+
+        /* ================= 参照单词测试页面的排版 ================= */
+        
+
+        /* [目录] 分类列表 (List) */
+        .lesson-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            /* max-width: 500px; Removed for full width */
+            margin: 0 auto;
+        }
+
+        .lesson-item {
+            background: var(--paper-color); 
+            padding: 20px; 
+            border-radius: 12px;
+            cursor: pointer; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+            transition: 0.2s; 
+            border-left: 4px solid transparent;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .lesson-item:hover { 
+            border-left-color: var(--accent-color); 
+            transform: translateX(5px); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* Preparation/Construction Style */
+        .lesson-item.prep {
+            background: transparent;
+            border: 1px dashed #ddd;
+            box-shadow: none;
+            cursor: default;
+            border-left: 1px dashed #ddd; /* Ensure consistent border width/style */
+        }
+        .lesson-item.prep:hover {
+            transform: none;
+            box-shadow: none;
+            border-left-color: #ddd;
+        }
+        .lesson-item.disabled {
+            opacity: 0.62;
+            cursor: not-allowed;
+            pointer-events: none;
+            filter: grayscale(0.18);
+            background: rgba(255,255,255,0.7);
+            border-left-color: #ddd;
+        }
+        .lesson-item.disabled:hover {
+            transform: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left-color: #ddd;
+        }
+        .lesson-item.disabled .lesson-icon {
+            background: #eee !important;
+            color: #aaa !important;
+        }
+        .lesson-item.disabled .lesson-text h3,
+        .lesson-item.disabled .lesson-text p,
+        .lesson-item.disabled .lesson-tag {
+            color: #999 !important;
+        }
+        .lesson-item.prep .lesson-icon {
+            background: #eee !important;
+            color: #aaa !important;
+        }
+        .lesson-item.prep h3 { color: #999; }
+        .lesson-item.prep p { color: #aaa; }
+        
+        .construction-icon {
+            font-size: 24px;
+            opacity: 0.5;
+        }
+
+        .lesson-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .lesson-icon {
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0,0,0,0.03);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .lesson-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lesson-text h3 { margin: 0 0 4px; font-size: 16px; font-weight: bold; }
+        .lesson-text p { margin: 0; font-size: 12px; color: var(--sub-color); }
+
+        .lesson-tag {
+            background: #f5f5f5; 
+            color: #888; 
+            padding: 4px 10px; 
+            border-radius: 20px; 
+            font-size: 12px; 
+            font-weight: bold;
+        }
+
+        .hidden { display: none; }
+        .back-link { 
+            cursor: pointer; 
+            color: var(--text-color); 
+            margin-right: 15px; 
+            font-size: 1.2rem; 
+            text-decoration: none; 
+            display: inline-flex; 
+            vertical-align: middle;
+            
+            /* Button-like style */
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.2s ease;
+        }
+        .back-link:hover { 
+            color: var(--accent-color); 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        
+        /* 动画 */
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 30px;
+            font-size: 12px;
+            opacity: 0.6;
+        }
+    </style>
+    <link rel="stylesheet" href="../../../shared/site-fonts.css">
+</head>
+<body>
+
+    <header>
+        <a href="../index.html" class="back-btn" data-back-nav>← 戻る</a>
+        <h1>N2 の単語</h1>
+    </header>
+
+    <div class="vocab-container">
+        <div class="view-section fade-in">
+            <div class="section-title" style="width: 100%; margin: 0 auto 20px;">N2 の単語</div>
+
+            <div class="lesson-list">
+                <div class="lesson-item disabled">
+                    <div class="lesson-content">
+                        <div class="lesson-icon" style="color: var(--verb-color);">🏃</div>
+                        <div class="lesson-text">
+                            <h3>動詞</h3>
+                            <p>N2 动词目录位已预留，等待词表与练习接入</p>
+                        </div>
+                    </div>
+                    <span class="lesson-tag">Soon</span>
+                </div>
+
+                <div class="lesson-item disabled">
+                    <div class="lesson-content">
+                        <div class="lesson-icon" style="color: var(--adj-color);">✨</div>
+                        <div class="lesson-text">
+                            <h3>形容詞</h3>
+                            <p>N2 形容词目录位已预留，等待词表与练习接入</p>
+                        </div>
+                    </div>
+                    <span class="lesson-tag">Soon</span>
+                </div>
+
+                <div class="lesson-item disabled">
+                    <div class="lesson-content">
+                        <div class="lesson-icon">〰️</div>
+                        <div class="lesson-text">
+                            <h3>副詞</h3>
+                            <p>N2 副词目录位已预留，等待词表与练习接入</p>
+                        </div>
+                    </div>
+                    <span class="lesson-tag">Soon</span>
+                </div>
+
+                <div class="lesson-item disabled">
+                    <div class="lesson-content">
+                        <div class="lesson-icon" style="color: var(--ono-color);">🔊</div>
+                        <div class="lesson-text">
+                            <h3>擬音・擬態語</h3>
+                            <p>N2 拟声拟态目录位已预留，等待词表与练习接入</p>
+                        </div>
+                    </div>
+                    <span class="lesson-tag">Soon</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../shared/back-navigation.js"></script>
+    <script>
+        window.bindHierarchicalBack({
+            selector: "[data-back-nav]",
+            fallback: "../index.html"
+        });
+    </script>
+
+    <footer>
+        © kiki's Japanese Corner
+    </footer>
+
+</body>
+</html>
