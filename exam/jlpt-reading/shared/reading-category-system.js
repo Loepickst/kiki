@@ -1,4 +1,9 @@
 (function() {
+    function normalizeReadingType(value) {
+        const type = String(value || '').trim();
+        return type === 'mid' ? 'middle' : type;
+    }
+
     function normalizeExamKey(value) {
         if (window.ReadingYearSystem && typeof window.ReadingYearSystem.normalizeExamKey === 'function') {
             return window.ReadingYearSystem.normalizeExamKey(value);
@@ -60,8 +65,9 @@
     }
 
     function getCategories(level, type) {
+        const normalizedType = normalizeReadingType(type);
         return getCatalog().filter((category) => {
-            return category && category.level === level && category.type === type;
+            return category && category.level === level && category.type === normalizedType;
         });
     }
 
@@ -80,12 +86,13 @@
     }
 
     function buildArticleBasePath(type, examKey, pathContext) {
+        const normalizedType = normalizeReadingType(type);
         const fileName = buildFileName(examKey);
         if (!fileName) {
             return null;
         }
 
-        if (type === 'short') {
+        if (normalizedType === 'short') {
             if (pathContext === 'year') {
                 return fileName;
             }
@@ -107,7 +114,7 @@
     }
 
     function buildCategoryLastArticleKey(level, type, categoryId) {
-        return `reading_category_last_article::${level}::${type}::${categoryId}`;
+        return `reading_category_last_article::${level}::${normalizeReadingType(type)}::${categoryId}`;
     }
 
     function parseStoredLastArticle(rawValue) {
@@ -205,7 +212,7 @@
 
     function createCategorySession(config) {
         const level = config.level;
-        const type = config.type;
+        const type = normalizeReadingType(config.type);
         const currentExamKey = normalizeExamKey(config.examKey);
         const categoryId = String(config.categoryId || '').trim();
         const practiceMode = String(config.practiceMode || '').trim();
@@ -356,6 +363,7 @@
     }
 
     window.ReadingCategorySystem = {
+        normalizeReadingType,
         normalizeExamKey,
         formatDisplayYear,
         buildFallbackLabel,

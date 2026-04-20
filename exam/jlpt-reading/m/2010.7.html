@@ -1,0 +1,2089 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解 - 2010年07月 中篇</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&family=Noto+Serif+JP:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* 荒野之息 (BotW) 极淡沙漠与太阳调色板：作为不喧宾夺主的背景点缀 */
+            --bg-sun: #fdfaf0;       /* 极淡的晨曦金黄 */
+            --bg-desert: #f7f2ea;    /* 极其柔和的沙地白 */
+            --bg-ruins: #f0e6dd;     /* 淡化的陶土遗迹色 */
+            
+            /* 阅读区域：最高对比度的纯白，确保视野绝对集中于文章 */
+            --paper-color: #ffffff;  
+            --paper-solid: #ffffff;
+            --paper-dim: #faf7f2;    /* 极淡的沙纸色，用于选项或注释背景区分层次 */
+            
+            --text-ink: #362820;     /* 深褐黑字，极高对比度且视觉柔和 */
+            --text-sub: #8c7b70;     /* 辅助信息沙土灰 */
+            
+            /* 旷野之息遗迹点缀色 (Gerudo/Sheikah Tech) 保持高饱和度用于关键提示 */
+            --botw-gerudo: #d35b40;  /* 格鲁德红/陶土红 */
+            --botw-gold: #e6b422;    /* 阳光/三角力量金 */
+            --botw-luminous: #3dd1b8;/* 希卡科技发光青绿 */
+            --botw-leaf: #529e55;    /* 绿洲绿 (用于正确答案，极其醒目) */
+
+            --accent-color: var(--botw-gerudo); 
+            --q-badge-color: var(--botw-gold);
+            
+            --vocab-accent-color: #b66716;
+            --vocab-soft-bg: rgba(230, 180, 34, 0.12);
+            --vocab-soft-bg-strong: rgba(230, 180, 34, 0.22);
+            --recorder-soft-bg: rgba(211, 91, 64, 0.04);
+
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+            --ui-font: 'Noto Sans JP', -apple-system, sans-serif;
+            --underline-color: #362820;
+            
+            --transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            /* 柔和阴影，取代之前过于沉重的阴影 */
+            --card-shadow: 0 12px 36px rgba(102, 67, 43, 0.08);
+        }
+
+        body {
+            /* 极度淡化的沙漠渐变背景 */
+            background: linear-gradient(135deg, var(--bg-sun) 0%, var(--bg-desert) 50%, var(--bg-ruins) 100%);
+            background-attachment: fixed;
+            color: var(--text-ink);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 80px 15px 156px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        body.recorder-expanded {
+            padding-bottom: 340px;
+        }
+
+        /* 塞尔达风格：沙粒与热浪纹理，大幅降低透明度使其若隐若现 */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E"),
+                radial-gradient(rgba(211, 91, 64, 0.06) 1.5px, transparent 1.5px);
+            background-size: 200px 200px, 20px 20px;
+            opacity: 0.4; /* 显著淡化背景噪点 */
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 顶部导航栏，更为通透洁净 */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; 
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(211, 91, 64, 0.1);
+            box-shadow: 0 4px 16px rgba(102, 67, 43, 0.04);
+        }
+
+        #today-date { 
+            font-size: 0.85rem; 
+            color: var(--botw-gerudo); 
+            font-weight: 700; 
+            font-family: var(--ui-font);
+            letter-spacing: 0.05em;
+        }
+        
+        .toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: #fff;
+            border: 1px solid rgba(211, 91, 64, 0.25);
+            color: var(--botw-gerudo);
+            font-size: 0.85rem;
+            font-family: var(--ui-font); 
+            font-weight: 700;
+            cursor: pointer; 
+            transition: var(--transition);
+            letter-spacing: 0.05em;
+        }
+        
+        @media (hover: hover) { 
+            .toggle-btn:hover { 
+                background: var(--botw-gerudo); 
+                color: #fff; 
+                border-color: var(--botw-gerudo);
+                box-shadow: 0 4px 12px rgba(211, 91, 64, 0.2);
+            } 
+        }
+        
+        .toggle-btn.active { 
+            background: var(--botw-gerudo); 
+            color: #fff; 
+            border-color: var(--botw-gerudo);
+            box-shadow: 0 4px 12px rgba(211, 91, 64, 0.2);
+        }
+
+        /* 核心阅读卡片：极致纯白与柔和阴影，确保阅读视线不受干扰 */
+        .container {
+            max-width: 760px;
+            width: 100%;
+            background: var(--paper-color); 
+            padding: 50px 35px;
+            border: 1px solid rgba(211, 91, 64, 0.06);
+            box-shadow: var(--card-shadow);
+            box-sizing: border-box; 
+            border-radius: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .page-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        .header-title { 
+            text-align: center; margin-top: 0; margin-bottom: 40px; 
+            font-size: 1.4rem; color: var(--text-ink); 
+            border-bottom: 1px dashed rgba(140, 123, 112, 0.2); 
+            padding-bottom: 15px;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .paragraph {
+            margin-bottom: 25px;
+            position: relative;
+            transition: var(--transition);
+        }
+        .paragraph-marker {
+            display: none; 
+            position: absolute;
+            left: -1.5em; 
+            font-size: 0.9rem;
+            color: var(--botw-gold);
+            font-family: var(--ui-font);
+            font-weight: 900;
+        }
+        body.show-analysis .paragraph-marker {
+            display: inline-block; 
+        }
+        .paragraph.recorder-focus {
+            background: linear-gradient(180deg, rgba(230, 180, 34, 0.05), rgba(230, 180, 34, 0.01));
+            box-shadow: 0 0 0 2px rgba(230, 180, 34, 0.15);
+            border-radius: 14px;
+        }
+
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.2; 
+            text-align: justify; margin: 0;
+            text-indent: 1em; 
+            color: var(--text-ink);
+        }
+        body.jlpt-practice-short:not(.furigana-hidden) p.japanese {
+            line-height: 2.42;
+        }
+        p.japanese ruby,
+        .question-title ruby,
+        .option-content ruby {
+            line-height: 1;
+        }
+
+        p.japanese rt,
+        .question-title rt,
+        .option-content rt {
+            font-size: 0.55em;
+            color: var(--botw-gerudo);
+            letter-spacing: 0;
+            line-height: 0.72;
+            transform: translateY(0.48em);
+            transform-origin: center bottom;
+            font-family: var(--ui-font);
+            font-weight: 600;
+        }
+
+        .exam-underline {
+            text-decoration: none;
+            position: relative;
+            padding-bottom: 2px;
+            border-bottom: 1.5px solid var(--underline-color);
+            -webkit-box-decoration-break: clone;
+            box-decoration-break: clone;
+        }
+        
+        body.show-analysis .exam-underline {
+            background-color: rgba(211, 91, 64, 0.08); 
+            border-bottom-color: var(--botw-gerudo);
+        }
+
+        .analysis-element { display: none; }
+        body.show-analysis .analysis-element { display: block; }
+
+        .paragraph-analysis {
+            margin-top: 15px;
+            background-color: var(--paper-dim);
+            border-radius: 8px;
+            border: 1px solid rgba(140, 123, 112, 0.15);
+            overflow: hidden;
+            font-family: var(--chinese-font);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .para-role {
+            padding: 12px 18px;
+            background-color: rgba(211, 91, 64, 0.04);
+            border-bottom: 1px dashed rgba(140, 123, 112, 0.15);
+            font-size: 0.9rem;
+            color: var(--text-ink);
+            line-height: 1.6;
+        }
+        .role-title {
+            font-weight: bold;
+            color: var(--botw-gerudo);
+            margin-right: 8px;
+            display: inline-flex;
+            align-items: center;
+        }
+        .para-translation {
+            padding: 15px 18px;
+            font-size: 0.95rem;
+            color: var(--text-sub);
+            line-height: 1.8;
+            text-align: justify;
+        }
+        .trans-title {
+            font-size: 0.75rem;
+            color: var(--botw-gold);
+            font-weight: bold;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .key-sentence { transition: var(--transition); }
+        body.show-analysis .key-sentence { 
+            background-color: rgba(230, 180, 34, 0.08); 
+            border-bottom: 2px dashed var(--botw-gold); 
+            cursor: pointer; border-radius: 3px; padding: 2px 0; 
+        }
+        body.show-analysis .key-sentence:hover { background-color: rgba(230, 180, 34, 0.15); }
+        body.show-analysis .key-sentence.active { 
+            background-color: rgba(211, 91, 64, 0.06); 
+            border-bottom-color: var(--botw-gerudo); 
+        }
+
+        .sentence-badge { display: none; }
+        body.show-analysis .sentence-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            background-color: var(--botw-gerudo); color: white;
+            font-size: 0.75rem; padding: 3px 10px; border-radius: 999px;
+            margin: 0 6px; vertical-align: middle;
+            font-family: var(--chinese-font); font-weight: bold;
+            box-shadow: 0 2px 6px rgba(211, 91, 64, 0.2);
+            transform: translateY(-2px); transition: var(--transition);
+        }
+        body.show-analysis .sentence-badge.q-badge {
+            background-color: var(--q-badge-color);
+            color: #fff;
+        }
+        body.show-analysis .key-sentence:hover .sentence-badge { transform: translateY(-2px) scale(1.05); }
+        body.show-analysis .key-sentence.active .sentence-badge { background-color: var(--botw-gerudo); }
+
+        .inline-note-container {
+            display: none; background-color: var(--paper-dim); border-left: 4px solid var(--botw-gerudo);
+            padding: 15px 20px; margin: 15px 0 15px -1em; 
+            font-size: 0.95rem; color: var(--text-ink); box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            font-family: var(--chinese-font); border-radius: 0 6px 6px 0;
+            text-indent: 0; line-height: 1.8; cursor: text;
+        }
+        .key-sentence.active .inline-note-container { display: block; animation: fadeIn 0.3s ease-out; }
+        .inline-note-title { font-weight: bold; color: var(--botw-gerudo); margin-bottom: 8px; font-size: 1rem; display: flex; align-items: center; }
+
+        .qa-container { margin-top: 50px; border-top: 1px dashed rgba(140, 123, 112, 0.2); padding-top: 40px; }
+        .qa-section { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px dashed rgba(140, 123, 112, 0.15); font-family: var(--chinese-font); }
+        .qa-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        
+        .question-title { 
+            font-size: 1.1rem; color: var(--text-ink); margin-bottom: 20px; 
+            font-weight: bold; font-family: var(--japanese-font); line-height: 1.6; 
+            display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+        }
+        .question-title-main {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            min-width: 0;
+            flex: 1;
+        }
+        .question-title-text {
+            min-width: 0;
+        }
+        .question-num-badge {
+            appearance: none;
+            border: 1px solid rgba(211, 91, 64, 0.15);
+            background-color: var(--botw-gerudo);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            padding: 3px 9px;
+            border-radius: 6px;
+            font-family: var(--ui-font);
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 3px 8px rgba(211, 91, 64, 0.15);
+        }
+        .question-note-btn { line-height: 1; }
+        .question-note-btn:hover {
+            background: #b84c33;
+            transform: translateY(-1px);
+        }
+        .question-note-btn.is-active {
+            background: var(--botw-gold);
+            color: #fff;
+            border-color: var(--botw-gold);
+            box-shadow: 0 4px 12px rgba(230, 180, 34, 0.25);
+        }
+        
+        .option-item {
+            background: var(--paper-solid); 
+            border: 1px solid rgba(140, 123, 112, 0.2); 
+            border-radius: 8px; margin-bottom: 12px;
+            cursor: pointer; transition: var(--transition); overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .option-item:hover { 
+            border-color: var(--botw-gerudo); 
+            box-shadow: 0 4px 12px rgba(211, 91, 64, 0.1); 
+            transform: translateY(-2px);
+        }
+        
+        /* 绿洲正确答案：极其显眼且对比强烈的森林绿/绿洲绿 */
+        body:not(.show-analysis) .option-item.answered-correct { 
+            border-color: var(--botw-leaf); 
+            background-color: rgba(82, 158, 85, 0.08); 
+            box-shadow: 0 4px 12px rgba(82, 158, 85, 0.15);
+        }
+        body:not(.show-analysis) .option-item.answered-wrong { 
+            border-color: var(--botw-gerudo); 
+            background-color: rgba(211, 91, 64, 0.04); 
+        }
+        body:not(.show-analysis) .option-item.answered-correct .option-number::after { 
+            content: " ⭕"; font-size: 1rem; color: var(--botw-leaf); 
+        }
+        body:not(.show-analysis) .option-item.answered-wrong .option-number::after { 
+            content: " ❌"; font-size: 1rem; color: var(--botw-gerudo); 
+        }
+
+        /* 解析模式下的正确答案 */
+        body.show-analysis .option-item.is-correct { 
+            border-color: var(--botw-leaf);
+            border-left: 6px solid var(--botw-leaf); 
+            background-color: rgba(82, 158, 85, 0.04);
+        }
+
+        body:not(.show-analysis) .option-content rt { display: none; }
+
+        .option-content { padding: 15px 20px; display: flex; align-items: flex-start; font-family: var(--japanese-font); }
+        .option-number { font-weight: bold; color: var(--botw-gerudo); margin-right: 15px; font-family: var(--ui-font); white-space: nowrap; font-size: 1.1rem;}
+        .option-text-group { display: flex; flex-direction: column; }
+        .option-translation { display: none; font-size: 0.85rem; color: var(--text-sub); margin-top: 4px; font-family: var(--chinese-font); }
+        body.show-analysis .option-translation { display: block; }
+
+        .option-explanation {
+            display: none; padding: 15px 20px; background: var(--paper-dim); border-top: 1px dashed rgba(140, 123, 112, 0.15);
+            font-size: 0.95rem; color: var(--text-ink); line-height: 1.7;
+        }
+        body.show-analysis .option-item.expanded .option-explanation { display: block; animation: fadeIn 0.3s ease-out; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 8px; font-family: var(--ui-font);}
+        .badge.wrong { background: var(--botw-gerudo); }
+        .badge.correct { background: var(--botw-leaf); color: #ffffff; } /* 使用绿洲绿 */
+
+        .article-navigation { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-top: 40px; padding-top: 30px; border-top: 1px dashed rgba(140, 123, 112, 0.2); }
+        .nav-btn { 
+            display: inline-flex; align-items: center; padding: 10px 24px; 
+            background: var(--paper-solid); color: var(--botw-gerudo); 
+            text-decoration: none; border-radius: 8px; font-size: 0.95rem; 
+            font-family: var(--ui-font); font-weight: 700; transition: var(--transition); 
+            border: 1px solid rgba(211, 91, 64, 0.2); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02); cursor: pointer; 
+        }
+        .nav-btn:hover { background: var(--botw-gerudo); color: white; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(211, 91, 64, 0.25); border-color: var(--botw-gerudo);}
+        .nav-btn.disabled { opacity: 0.5; pointer-events: none; background: rgba(0,0,0,0.02); color: var(--text-sub); border-color: transparent; box-shadow: none; }
+
+        .quick-nav-widget {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(253, 251, 247, 0.85);
+            backdrop-filter: blur(12px);
+            padding: 12px 10px;
+            border-radius: 30px;
+            box-shadow: 0 8px 24px rgba(102, 67, 43, 0.1);
+            border: 1px solid rgba(211, 91, 64, 0.1);
+            z-index: 900;
+        }
+
+        .quick-nav-item {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--paper-dim);
+            color: var(--botw-gerudo);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-family: var(--ui-font);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 700;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid rgba(140, 123, 112, 0.1);
+        }
+
+        .quick-nav-item:hover {
+            background: var(--botw-gerudo);
+            color: white;
+            box-shadow: 0 4px 12px rgba(211, 91, 64, 0.3);
+            transform: translateY(-2px);
+            border-color: var(--botw-gerudo);
+        }
+
+        .nav-group-title {
+            font-size: 0.7rem;
+            color: var(--botw-gold);
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 2px;
+            margin-top: 4px;
+            font-family: var(--ui-font);
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background: rgba(211, 91, 64, 0.15);
+            margin: 4px 0;
+            width: 100%;
+        }
+
+        /* 底部解析录音控制栏 - 沙漠神庙感 */
+        .sentence-recorder-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 2000;
+            padding: 10px 16px 15px;
+            background: transparent;
+            transition: padding 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .sentence-recorder-shell {
+            position: relative;
+            max-width: 860px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .sentence-recorder-base {
+            background: rgba(253, 251, 247, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(211, 91, 64, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 -8px 30px rgba(102, 67, 43, 0.12);
+            overflow: hidden;
+        }
+        .sentence-recorder-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px 10px;
+        }
+        .sentence-recorder-summary {
+            border: none;
+            background: transparent;
+            padding: 0;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            text-align: left;
+            cursor: pointer;
+        }
+        .sentence-recorder-summary:disabled { cursor: default; }
+        .sentence-recorder-summary.is-expanded .sentence-recorder-summary-text { color: var(--botw-gerudo); }
+        .sentence-recorder-summary-label {
+            font-size: 0.75rem;
+            color: var(--botw-gold);
+            font-family: var(--ui-font);
+            font-weight: 700;
+        }
+        .sentence-recorder-summary-text {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--text-ink);
+            font-family: var(--japanese-font);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 600;
+        }
+        .sentence-recorder-summary-expanded { display: none; padding: 0 16px 12px; }
+        .sentence-recorder-summary-expanded.is-open { display: block; animation: fadeIn 0.3s; }
+        .sentence-recorder-summary-fulltext {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: var(--text-ink);
+            font-family: var(--japanese-font);
+            background: var(--paper-dim);
+            border: 1px solid rgba(140, 123, 112, 0.15);
+            border-radius: 8px;
+            padding: 12px 15px;
+            white-space: normal;
+            word-break: break-word;
+        }
+        .sentence-recorder-toggle {
+            border: 1px solid rgba(211, 91, 64, 0.3);
+            background: #fff;
+            color: var(--botw-gerudo);
+            border-radius: 999px;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            font-family: var(--ui-font);
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+        .sentence-recorder-toggle:hover {
+            background: var(--botw-gerudo);
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(211, 91, 64, 0.2);
+        }
+        .recorder-quick-jumps { display: none; }
+        .recorder-quick-jump-group { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+        .recorder-quick-jump-label { flex-shrink: 0; font-size: 0.75rem; color: var(--text-sub); font-family: var(--ui-font); font-weight: 700; }
+        .recorder-quick-jump-track { min-width: 0; flex: 1; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+        .recorder-quick-jump-track::-webkit-scrollbar { display: none; }
+        .recorder-quick-jump-btn,
+        .current-question-note-card {
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            width: fit-content; max-width: 100%;
+            border: 1px solid rgba(211, 91, 64, 0.2);
+            background: #fff; color: var(--text-ink);
+            border-radius: 999px; padding: 6px 12px;
+            font-size: 0.8rem; font-family: var(--ui-font); font-weight: 600;
+            cursor: pointer; transition: var(--transition); text-align: left; white-space: nowrap;
+        }
+        .recorder-quick-jump-btn {
+            min-width: 36px; width: 36px; height: 36px; padding: 0; border-radius: 50%; font-size: 0.95rem; font-weight: 700;
+            background: var(--paper-dim); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+        }
+        .recorder-quick-jump-btn:hover, .current-question-note-card:hover { background: rgba(211, 91, 64, 0.05); }
+        .recorder-quick-jump-btn.is-active {
+            background: var(--botw-gerudo); border-color: var(--botw-gerudo); color: #fff; box-shadow: 0 2px 8px rgba(211, 91, 64, 0.3);
+        }
+        .recorder-quick-jump-btn.is-empty { color: var(--text-sub); cursor: default; width: auto; min-width: 48px; padding: 0 12px; font-size: 0.75rem; }
+        .current-question-note-card { justify-content: flex-start; width: 100%; border-radius: 8px; padding: 10px 14px; line-height: 1.4; }
+        .current-question-note-card.is-hidden { display: none; }
+        .current-question-note-prefix { color: var(--botw-gerudo); font-weight: 700; flex-shrink: 0; }
+        .current-question-note-copy { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--japanese-font); font-weight: 700; }
+        
+        .sentence-recorder-sheet {
+            display: block; position: absolute; left: 0; right: 0; bottom: calc(100% + 12px);
+            padding: 0 4px; opacity: 0; transform: translateY(15px); pointer-events: none;
+            transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: -1;
+        }
+        .sentence-recorder-bar.is-expanded .sentence-recorder-sheet { opacity: 1; transform: translateY(0); pointer-events: auto; z-index: 1; }
+        .sentence-recorder-bar.is-collapsed .sentence-recorder-sheet { display: block; opacity: 0; transform: translateY(15px); pointer-events: none; z-index: -1; }
+        
+        .sentence-recorder-body {
+            display: flex; flex-direction: column; gap: 12px;
+            background: rgba(253, 251, 247, 0.98); backdrop-filter: blur(16px);
+            border: 1px solid rgba(211, 91, 64, 0.2); border-radius: 16px;
+            box-shadow: 0 -12px 40px rgba(102, 67, 43, 0.15); padding: 16px;
+        }
+        .recorder-section-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-start; }
+        .recorder-btn {
+            border: 1px solid rgba(211, 91, 64, 0.3); background: #fff; color: var(--botw-gerudo);
+            border-radius: 999px; padding: 8px 16px; font-size: 0.8rem; font-family: var(--ui-font); font-weight: 700;
+            cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center;
+        }
+        .recorder-btn:hover:not(:disabled) { background: var(--botw-gerudo); color: #fff; box-shadow: 0 4px 10px rgba(211, 91, 64, 0.2); }
+        .recorder-btn.is-active { background: var(--botw-gerudo); color: #fff; border-color: var(--botw-gerudo); box-shadow: 0 4px 10px rgba(211, 91, 64, 0.25);}
+        .recorder-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+        .recorder-color-picker { display: flex; align-items: center; gap: 10px; padding: 0; margin-left: 4px; }
+        .recorder-color-label { font-size: 0.75rem; color: var(--text-sub); font-family: var(--ui-font); font-weight: 700; flex-shrink: 0; }
+        .recorder-color-options { display: flex; align-items: center; gap: 10px; }
+        .recorder-color-chip {
+            width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15); cursor: pointer; transition: var(--transition);
+        }
+        .recorder-color-chip:hover { transform: translateY(-2px) scale(1.1); }
+        .recorder-color-chip.is-active { border-color: var(--text-ink); box-shadow: 0 0 0 2px rgba(255,255,255,0.8), 0 4px 12px rgba(0,0,0,0.2); transform: scale(1.15);}
+        .recorder-color-chip[data-color-key="blue"] { background: var(--botw-luminous); }
+        .recorder-color-chip[data-color-key="red"] { background: var(--botw-gerudo); }
+        .recorder-color-chip[data-color-key="green"] { background: var(--botw-leaf); }
+        
+        .selection-preview {
+            display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+            padding: 12px 16px; border-radius: 8px; background: var(--paper-dim); border: 1px dashed rgba(211, 91, 64, 0.3);
+        }
+        .selection-preview.is-empty { opacity: 0.7; }
+        .selection-preview-main { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+        .selection-preview-label { font-size: 0.75rem; color: var(--botw-gold); font-family: var(--ui-font); font-weight: bold;}
+        .selection-preview-text {
+            font-size: 0.9rem; color: var(--text-ink); line-height: 1.6; font-family: var(--japanese-font); font-weight: 700;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;
+        }
+        .selection-preview-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        
+        .manual-panel {
+            display: none; gap: 12px; align-items: stretch; padding: 12px 16px; border-radius: 8px;
+            background: #fff; border: 1px solid rgba(211, 91, 64, 0.15); box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .manual-panel.is-open { display: flex; animation: fadeIn 0.3s; }
+        .manual-panel textarea {
+            flex: 1; min-height: 54px; resize: none; border: 1px solid rgba(140, 123, 112, 0.3); border-radius: 6px;
+            padding: 10px 14px; font-size: 0.9rem; line-height: 1.6; color: var(--text-ink); font-family: var(--japanese-font); box-sizing: border-box;
+            background: var(--paper-dim);
+        }
+        .manual-panel textarea:focus { outline: none; border-color: var(--botw-gerudo); background: #fff; box-shadow: 0 0 0 3px rgba(211, 91, 64, 0.1); }
+        .manual-panel-side { display: flex; flex-direction: column; justify-content: space-between; gap: 10px; flex-shrink: 0; }
+        .manual-panel-hint { font-size: 0.75rem; line-height: 1.6; color: var(--text-sub); font-family: var(--ui-font); max-width: 180px; }
+        
+        .sentence-recorder-list-wrap {
+            padding: 12px; border-radius: 12px; background: rgba(0,0,0,0.02); border: 1px solid rgba(140, 123, 112, 0.15);
+        }
+        .sentence-recorder-list {
+            display: flex; flex-direction: column; gap: 10px; max-height: 180px; overflow-y: auto; padding-right: 6px; scroll-behavior: smooth;
+        }
+        /* 自定义滚动条 */
+        .sentence-recorder-list::-webkit-scrollbar { width: 6px; }
+        .sentence-recorder-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
+        .sentence-recorder-list::-webkit-scrollbar-thumb { background: var(--botw-gold); border-radius: 4px; }
+
+        .sentence-recorder-empty { padding: 20px 10px; text-align: center; color: var(--text-sub); font-size: 0.85rem; font-family: var(--ui-font); }
+        .sentence-recorder-item { display: flex; align-items: stretch; gap: 10px; opacity: 0.6; transition: var(--transition); }
+        .sentence-recorder-item:hover { opacity: 1; }
+        .sentence-recorder-item.is-active { opacity: 1; transform: translateX(2px); }
+        .sentence-recorder-item-body {
+            flex: 1; display: flex; align-items: flex-start; gap: 12px; width: 100%;
+            background: #fff; border: 1px solid rgba(140, 123, 112, 0.2); border-radius: 8px; padding: 12px 16px;
+            cursor: pointer; text-align: left; transition: var(--transition); box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .sentence-recorder-item.is-active .sentence-recorder-item-body {
+            background: rgba(230, 180, 34, 0.05); border-color: var(--botw-gold); box-shadow: 0 4px 15px rgba(230, 180, 34, 0.15);
+        }
+        .sentence-recorder-item-index {
+            min-width: 28px; height: 28px; border-radius: 50%; background: var(--botw-gold); color: #fff;
+            display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 900; font-family: var(--ui-font); flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(230, 180, 34, 0.4);
+        }
+        .sentence-recorder-item-main { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+        .sentence-recorder-item-text {
+            font-size: 0.95rem; line-height: 1.6; color: var(--text-ink); font-family: var(--japanese-font); font-weight: 700;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;
+        }
+        .sentence-recorder-item.is-active .sentence-recorder-item-text { color: var(--botw-gerudo); -webkit-line-clamp: 4; }
+        .sentence-recorder-item-meta { font-size: 0.75rem; color: var(--text-sub); font-family: var(--ui-font); }
+        .sentence-recorder-delete {
+            width: 38px; border: 1px solid rgba(140, 123, 112, 0.2); background: #fff; border-radius: 8px; color: var(--text-sub);
+            cursor: pointer; font-size: 1.1rem; flex-shrink: 0; transition: var(--transition); display: flex; align-items: center; justify-content: center;
+        }
+        .sentence-recorder-delete:hover { color: #fff; border-color: var(--botw-gerudo); background: var(--botw-gerudo); box-shadow: 0 4px 10px rgba(211, 91, 64, 0.3);}
+
+        @media (max-width: 1000px) {
+            .quick-nav-widget {
+                right: 15px; transform: scale(0.9) translateY(-50%); transform-origin: right center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body { padding-bottom: 140px; }
+            body.recorder-expanded { padding-bottom: 140px; }
+            body.recorder-summary-expanded { padding-bottom: 200px; }
+            body.recorder-expanded.recorder-summary-expanded { padding-bottom: 200px; }
+            .container { padding: 40px 20px 60px; border-radius: 8px;}
+            .top-bar { padding: 0 15px; height: 56px; }
+            .toggle-btn { padding: 6px 14px; font-size: 0.8rem; }
+            .header-title { font-size: 1.2rem; margin-bottom: 25px; }
+            .paragraph-marker { left: 0; position: static; margin-right: 5px; } 
+            p.japanese { font-size: 1rem; line-height: 2.1; letter-spacing: 0.02em; margin-bottom: 25px; text-indent: 0; }
+            p.japanese rt { font-size: 0.55rem; }
+            body.jlpt-practice-short:not(.furigana-hidden) p.japanese { line-height: 2.3; }
+            .inline-note-container { margin: 15px 0 0 0; padding: 15px; font-size: 0.85rem; line-height: 1.6; border-radius: 6px; }
+            .qa-section { margin-top: 0; padding-top: 0; }
+            .question-title { font-size: 1.05rem; flex-direction: row; gap: 10px; margin-bottom: 16px; padding: 0 5px; }
+            .question-title-main { width: 100%; gap: 8px; align-items: baseline; }
+            .question-note-btn { align-self: auto; padding: 3px 8px; font-size: 0.75rem; }
+            .question-num-badge { font-size: 0.75rem; border-radius: 4px;}
+            .option-content { padding: 14px 16px; }
+            .option-text-group span { font-size: 0.95rem; line-height: 1.5; }
+            .option-explanation { padding: 14px 16px; font-size: 0.9rem; }
+            .nav-btn { padding: 10px 20px; font-size: 0.9rem; }
+            .quick-nav-widget { display: none; }
+            
+            .sentence-recorder-bar { padding: 0 12px 10px; }
+            .sentence-recorder-shell { gap: 0; }
+            .sentence-recorder-base { border-radius: 12px; box-shadow: 0 -6px 20px rgba(102, 67, 43, 0.1); }
+            .sentence-recorder-top { gap: 8px; padding: 10px 12px 8px; }
+            .sentence-recorder-summary-label { font-size: 0.7rem; }
+            .sentence-recorder-summary-text { font-size: 0.85rem; line-height: 1.4; }
+            .sentence-recorder-summary-expanded { padding: 0 12px 10px; }
+            .sentence-recorder-summary-fulltext { font-size: 0.85rem; line-height: 1.6; border-radius: 6px; padding: 10px 12px; }
+            .sentence-recorder-toggle { padding: 6px 12px; font-size: 0.75rem; }
+            .recorder-quick-jumps { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 12px 10px; border-top: 1px solid rgba(211, 91, 64, 0.1); overflow: hidden; box-sizing: border-box; }
+            .recorder-quick-jump-group { align-items: center; gap: 6px; }
+            .recorder-quick-jump-label { font-size: 0.7rem; }
+            .recorder-quick-jump-track { align-items: center; gap: 6px; padding-bottom: 0; }
+            .recorder-quick-jump-btn { min-width: 28px; width: 28px; height: 28px; font-size: 0.8rem; border-color: rgba(211, 91, 64, 0.15); }
+            .recorder-quick-jump-btn.is-empty { min-width: 40px; height: 30px; padding: 0 10px; font-size: 0.7rem; }
+            .sentence-recorder-sheet { bottom: calc(100% + 10px); padding: 0; transform: translateY(12px); }
+            .sentence-recorder-body { gap: 10px; max-height: min(45vh, 320px); padding: 12px; border-radius: 12px; }
+            .selection-preview, .manual-panel { flex-direction: column; }
+            .selection-preview-actions, .manual-panel-side { width: 100%; }
+            .manual-panel-side { flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; }
+            .manual-panel-hint { max-width: none; flex: 1; font-size: 0.7rem; line-height: 1.5; }
+            .selection-preview { padding: 10px 12px; }
+            .selection-preview-text, .manual-panel textarea { font-size: 0.85rem; line-height: 1.5; }
+            .selection-preview-actions { justify-content: flex-end; }
+            .selection-preview-actions .recorder-btn { margin-left: auto; }
+            .manual-panel { padding: 10px 12px; }
+            .manual-panel textarea { min-height: 48px; }
+            .sentence-recorder-list-wrap { padding: 8px; border-radius: 8px; }
+            .sentence-recorder-list { gap: 8px; max-height: 140px; }
+            .recorder-section-toolbar { width: 100%; gap: 8px; }
+            .recorder-color-picker { gap: 8px; padding: 2px; }
+            .recorder-color-label { font-size: 0.7rem; }
+            .recorder-color-options { gap: 8px; }
+            .recorder-color-chip { width: 18px; height: 18px; }
+            .recorder-btn { flex: 0 0 auto; justify-content: center; min-height: 36px; padding: 6px 14px; font-size: 0.75rem; }
+            .current-question-note-card { width: 100%; border-radius: 8px; padding: 8px 12px; }
+            .current-question-note-prefix { font-size: 0.7rem; }
+            .current-question-note-copy { font-size: 0.85rem; }
+            .sentence-recorder-item { gap: 8px; }
+            .sentence-recorder-item-body { gap: 10px; padding: 10px 12px; border-radius: 8px; }
+            .sentence-recorder-item-index { min-width: 24px; height: 24px; font-size: 0.75rem; }
+            .sentence-recorder-item-text { font-size: 0.9rem; line-height: 1.5; }
+            .sentence-recorder-item.is-active .sentence-recorder-item-text { font-size: 0.9rem; -webkit-line-clamp: 3; }
+            .sentence-recorder-item-meta { font-size: 0.7rem; }
+            .sentence-recorder-delete { width: 32px; border-radius: 6px; font-size: 1rem; }
+        }
+        
+        .vocab-word {
+            transition: var(--transition);
+        }
+        
+        body.show-analysis .vocab-word {
+            color: #7a4b12;
+            cursor: pointer;
+            position: relative;
+            padding: 0 3px 1px;
+            border-radius: 4px;
+            box-shadow: inset 0 -0.58em 0 var(--vocab-soft-bg);
+            border-bottom: 1px dashed rgba(182, 103, 22, 0.4);
+        }
+        body.show-analysis .vocab-word:hover {
+            background-color: rgba(230, 180, 34, 0.08);
+            box-shadow: inset 0 -0.68em 0 var(--vocab-soft-bg-strong);
+            border-bottom-color: rgba(182, 103, 22, 0.6);
+        }
+        body.show-analysis .vocab-word.is-active {
+            background-color: rgba(230, 180, 34, 0.12);
+            box-shadow: inset 0 -0.72em 0 rgba(230, 180, 34, 0.25);
+            border-bottom-color: var(--botw-gold);
+            color: #8d4f08;
+        }
+        
+        #global-tooltip {
+            position: absolute;
+            background-color: var(--text-ink);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: var(--chinese-font);
+            pointer-events: none;
+            z-index: 2000;
+            display: none;
+            max-width: 280px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            box-shadow: 0 8px 24px rgba(102, 67, 43, 0.2);
+            --arrow-left: 50%;
+        }
+        #global-tooltip.show {
+            display: block;
+            animation: fadeIn 0.2s;
+        }
+        #global-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: var(--arrow-left);
+            margin-left: -6px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: var(--text-ink) transparent transparent transparent;
+        }
+    </style>
+    <link rel="stylesheet" href="../../../shared/site-fonts.css">
+    <link rel="stylesheet" href="../shared/reading-tools.css">
+    <link rel="stylesheet" href="../shared/reading-medium-tools.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a id="back-to-reading-index" href="../index.html?level=N1&type=middle" class="toggle-btn" style="text-decoration: none;">← 戻る</a>
+    <div id="today-date">N1 中篇</div>
+    <div class="top-bar-controls">
+        <button id="analysis-btn" class="toggle-btn" onclick="toggleAnalysis()">解析</button>
+    </div>
+</div>
+
+<div class="container">
+    <div id="page-1" class="page-content active">
+        <h2 class="header-title">2010年07月 中篇（一）</h2>
+
+        <div class="article-content">
+            <!-- 段落 1 -->
+            <div class="paragraph" id="para-1">
+                <p class="japanese">
+                    <span class="paragraph-marker">①</span>
+                    「あの<ruby>人<rt>ひと</rt></ruby>は、<ruby>私<rt>わたし</rt></ruby>が<ruby>話<rt>はな</rt></ruby>し<ruby>始<rt>はじ</rt></ruby>めて<ruby>一<rt>いっ</rt></ruby><ruby>分<rt>ぷん</rt></ruby>とたたないうちに、<ruby>話<rt>わ</rt></ruby><ruby>題<rt>だい</rt></ruby>を<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>に<span class="vocab-word" data-meaning="偷换，掉包">すりかえてしまう</span>」と<ruby>言<rt>い</rt></ruby>われる<ruby>人<rt>ひと</rt></ruby>のなかには、<ruby>決<rt>けっ</rt></ruby>して<ruby>聞<rt>き</rt></ruby>き<ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>ではないけれど、<ruby>不<rt>ふ</rt></ruby><ruby>思<rt>し</rt></ruby><ruby>議<rt>ぎ</rt></ruby>と<ruby>嫌<rt>きら</rt></ruby>われない<ruby>人<rt>ひと</rt></ruby>がいる。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <ruby>話<rt>はなし</rt></ruby>を<ruby>奪<rt>うば</rt></ruby>われた<ruby>人<rt>ひと</rt></ruby>も、「<ruby>私<rt>わたし</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>よりずっとおもしろそう。<ruby>私<rt>わたし</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>が<span class="vocab-word" data-meaning="话说到一半就不知去向了"><ruby>宙<rt>ちゅう</rt></ruby>に<ruby>消<rt>き</rt></ruby>えて</span>もしょうがないか」という<span class="exam-underline"><ruby>寛<rt>かん</rt></ruby><ruby>容<rt>よう</rt></ruby>な<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちになる</span>のだろう。
+                        <span class="sentence-badge q-badge">問1の鍵</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問1：なぜ寛容な気持ちになるのか？</span>
+                            此句紧贴在划线问题之前，直接给出了被抢走话题的人为何还能变得宽容的原因：「私の話よりずっとおもしろそう」（因为觉得对方的话比自己的更有趣）。正因为觉得对方的话题引人入胜，才会觉得自己的话被打断也没关系。
+                        </span>
+                    </span>
+                    もちろん、<ruby>私<rt>わたし</rt></ruby>は「だから、<ruby>話<rt>はなし</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>になればいいんですよ」とは<ruby>言<rt>い</rt></ruby>わない。ただ、「<ruby>聞<rt>き</rt></ruby>き<ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>でないことが<span class="vocab-word" data-meaning="一笔勾销，抵消"><ruby>帳<rt>ちょう</rt></ruby><ruby>消<rt>け</rt></ruby>し</span>になるほど<ruby>話<rt>はなし</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>な<ruby>人<rt>ひと</rt></ruby>のしゃべりは、ちょっと<ruby>研<rt>けん</rt></ruby><ruby>究<rt>きゅう</rt></ruby>してみる<ruby>価<rt>か</rt></ruby><ruby>値<rt>ち</rt></ruby>がありますよ」とご<ruby>提<rt>てい</rt></ruby><ruby>案<rt>あん</rt></ruby>したい。
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        文章开篇引入了一种现象：有些人虽然不善于倾听、爱抢话，但因为说话有趣而不惹人讨厌。作者借此提出了本文的核心议题——这些说话巧妙之人的谈吐方式，是值得我们去研究和学习的。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        在被称为“那个人在我开始说话不到一分钟，就把话题偷换成自己的事”的人当中，虽然绝算不上是善于倾听的人，但不可思议的是，却有不招人讨厌的人。被抢走话题的人，大概也会产生“他的话比我的话有趣得多。我的话中途消失了也没办法”这样宽容的心情吧。当然，我并不会说“所以，只要变得善于说话就好了”。只是想建议：“那些能把不善倾听的缺点抵消掉的、说话巧妙之人的谈吐，是稍微值得研究一下的哦。”
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 2 -->
+            <div class="paragraph" id="para-2">
+                <p class="japanese">
+                    <span class="paragraph-marker">②</span>
+                    <ruby>聞<rt>き</rt></ruby>き<ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>になるための“<span class="vocab-word" data-meaning="学习并掌握"><ruby>修<rt>しゅ</rt></ruby><ruby>業<rt>ぎょう</rt></ruby></span>”をしていると、そのうち<ruby>話<rt>はなし</rt></ruby>の<ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>な<ruby>人<rt>ひと</rt></ruby>の<ruby>特<rt>とく</rt></ruby><ruby>徴<rt>ちょう</rt></ruby>がわかってくると思う。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <ruby>聞<rt>き</rt></ruby>き<ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>から、<ruby>話<rt>はなし</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>でもあるというプラスアルファの<ruby>魅<rt>み</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<ruby>持<rt>も</rt></ruby>つ<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>へと<span class="vocab-word" data-meaning="进步，提升">ステップアップ</span>するには、いつの<ruby>間<rt>ま</rt></ruby>にか<ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>を<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>に<ruby>引<rt>ひ</rt></ruby>きこむのが<ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>な<ruby>人<rt>ひと</rt></ruby>の<ruby>話<rt>はな</rt></ruby>しぶりを、「それはなぜなのか」と<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>なりに<ruby>分<rt>ぶん</rt></ruby><ruby>析<rt>せき</rt></ruby>すると、とても<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>になるのだ。
+                        <span class="sentence-badge q-badge">問2の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問2：話上手になるための方法</span>
+                            此句明确回答了如何提升自己（成为善于说话的人）。作者给出的建议是：去观察那些能把人吸引进话题的巧妙之人的谈吐（「上手な人の話ぶりを」），并自己去分析其中的原因（「『それはなぜなのか』と自分なりに分析する」），这样能学到很多。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        承接上文的建议，具体说明了要如何进行“研究”。作者指出，在练习倾听的同时，如果能去分析那些说话巧妙之人的技巧和原因，将有助于自身魅力的提升。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        在进行成为善于倾听之人的“修行”时，渐渐地就会明白善于说话之人的特征。要从善于倾听，提升为兼具善于说话这一附加魅力的阶段，只要去试着自己分析一下那些不知不觉间就把对方吸引到自己话题中的人的说话方式——“那是为什么呢”，就会学到很多东西。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 3 -->
+            <div class="paragraph" id="para-3">
+                <p class="japanese">
+                    <span class="paragraph-marker">③</span>
+                    <ruby>一<rt>ひと</rt></ruby><ruby>人<rt>り</rt></ruby>で<ruby>分<rt>ぶん</rt></ruby><ruby>析<rt>せき</rt></ruby>するのが<ruby>難<rt>むずか</rt></ruby>しければ、だれかに「あの<ruby>人<rt>ひと</rt></ruby>は<ruby>話<rt>はなし</rt></ruby>が<ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>だよね。どんな<ruby>話<rt>はな</rt></ruby>しぶりに<ruby>惹<rt>ひ</rt></ruby>かれる？」と<ruby>疑<rt>ぎ</rt></ruby><ruby>問<rt>もん</rt></ruby>をぶつけてみるのもいい。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        その<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>の<ruby>成<rt>せい</rt></ruby><ruby>果<rt>か</rt></ruby>は<ruby>必<rt>かなら</rt></ruby>ずや、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>言<rt>げん</rt></ruby><ruby>動<rt>どう</rt></ruby>に<ruby>投<rt>とう</rt></ruby><ruby>影<rt>えい</rt></ruby>されるはずだ。だれだって、<ruby>他<rt>た</rt></ruby><ruby>人<rt>にん</rt></ruby>のいいところは<ruby>真<rt>ま</rt></ruby><ruby>似<rt>まね</rt></ruby>したいと<ruby>思<rt>おも</rt></ruby>うから。
+                        <span class="sentence-badge q-badge">問3の鍵</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問3：筆者の最終的な考え</span>
+                            这段话为全文作结。作者再次重申，通过学习他人优秀的说话技巧（「他人のいいところ」），这些成果最终会体现在自己的言行上。这也呼应了第一段中作者的核心观点：在倾听之外，也值得向善于说话的人学习。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        提供了一种辅助的分析方法（向他人请教），并总结了这种学习研究带来的积极结果——那些别人的优点最终都会转化为自己的言行。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        如果一个人分析比较困难的话，试着向别人抛出疑问：“那个人说话很巧妙呢。你被他的哪种说话方式所吸引？”也可以。那种学习的成果必定会投射到自己的言行上。因为无论谁，都会想要模仿别人优秀的地方。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 多个问题容器 -->
+        <div class="qa-container">
+            <!-- 问题 1 -->
+            <div class="qa-section question-block" data-q-id="1">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="1" aria-pressed="false" title="记题">問1</button>
+                        <span class="question-title-text"><ruby>寛<rt>かん</rt></ruby><ruby>容<rt>よう</rt></ruby>な<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちになるとあるが、なぜそうなるのか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>が<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>よりおもしろくて<ruby>引<rt>ひ</rt></ruby>きこまれてしまうから</span>
+                            <span class="option-translation">因为对方的话比自己的话有趣，从而被吸引进去了。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        回看原文第一段划线句的前方，作者直接点明了心理活动：「私の話よりずっとおもしろそう」（我的话不如他的有趣）。正是因为对方的话题更具有吸引力，所以即使自己的话被打断，也能产生宽容的心情。选项1的逻辑与此合理对应。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>話<rt>はなし</rt></ruby>を<ruby>奪<rt>うば</rt></ruby>ってしまった<ruby>人<rt>ひと</rt></ruby>の<ruby>態<rt>たい</rt></ruby><ruby>度<rt>ど</rt></ruby>が<ruby>堂<rt>どう</rt></ruby><ruby>々<rt>どう</rt></ruby>としていて<ruby>魅<rt>み</rt></ruby><ruby>力<rt>りょく</rt></ruby><ruby>的<rt>てき</rt></ruby>だから</span>
+                            <span class="option-translation">因为抢走话题的人态度堂堂正正，富有魅力。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文中提到被原谅是因为其“说话内容有趣”，并未提及对方的“态度堂堂正正”（「態度が堂々としていて」），属于无中生有。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>代<rt>か</rt></ruby>わりに<ruby>話<rt>はなし</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>な<ruby>人<rt>ひと</rt></ruby>が<ruby>話<rt>はなし</rt></ruby>をしてくれれば<ruby>助<rt>たす</rt></ruby>かるから</span>
+                            <span class="option-translation">如果善于说话的人能代替自己发言的话，就算帮大忙了。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文并没有表述出原听众觉得“代替自己发言能帮大忙”（「代わりに話をしてくれれば助かる」）这种如释重负的情感，而是单纯觉得对方的话题更有趣。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>は<ruby>確<rt>たし</rt></ruby>かに<ruby>話<rt>はなし</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>だけれど、<ruby>聞<rt>き</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>とは<ruby>言<rt>い</rt></ruby>えないから</span>
+                            <span class="option-translation">对方确实善于说话，但算不上善于倾听。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        虽然对方确实不善于倾听，但这属于前文对这个人的客观描述，并不是让人产生“宽容心情”的直接原因。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 问题 2 -->
+            <div class="qa-section question-block" data-q-id="2">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="2" aria-pressed="false" title="记题">問2</button>
+                        <span class="question-title-text"><ruby>話<rt>はなし</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>になるにはどうすればいいと<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>は<ruby>述<rt>の</rt></ruby>べているか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>話<rt>はなし</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>な<ruby>人<rt>ひと</rt></ruby>になぜ<ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>なのかと<ruby>尋<rt>たず</rt></ruby>ねて<ruby>分<rt>ぶん</rt></ruby><ruby>析<rt>せき</rt></ruby>する。</span>
+                            <span class="option-translation">向善于说话的人询问他们为什么这么擅长，并进行分析。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文第三段给出如果一个人难以分析时的解决办法，是去问“其他人”（「だれかに…疑問をぶつけてみるのもいい」），而不是去直接问那个“善于说话的人”（「話上手な人に…尋ねて」）。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span>どんな<ruby>話<rt>わ</rt></ruby><ruby>題<rt>だい</rt></ruby>でも<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>にかえられるようにする。</span>
+                            <span class="option-translation">无论是怎样的话题，都要设法转换为自己的话题。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        将话题偷换成自己的事（「話題を自分の話にすりかえてしまう」）是第一段中举出的某个人的具体特征，但作者的建议是“分析为什么他们能吸引人”，而不是鼓励大家去生硬地抢话题。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>人<rt>ひと</rt></ruby>の<ruby>真<rt>ま</rt></ruby><ruby>似<rt>ね</rt></ruby>をしないで、<ruby>聞<rt>き</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>になるための<ruby>研<rt>けん</rt></ruby><ruby>究<rt>きゅう</rt></ruby>をする。</span>
+                            <span class="option-translation">不去模仿他人，专门研究如何成为一个善于倾听的人。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文末尾明确提到“大家都想模仿别人的优点”（「他人のいいところは真似したいと思うから」），鼓励大家去学习和模仿善于说话的人，选项意图与原文完全相反。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>話<rt>はなし</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>な<ruby>人<rt>ひと</rt></ruby>をよく<ruby>観<rt>かん</rt></ruby><ruby>察<rt>さつ</rt></ruby>して、その<ruby>特<rt>とく</rt></ruby><ruby>徴<rt>ちょう</rt></ruby>を<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>のものにする。</span>
+                            <span class="option-translation">仔细观察善于说话的人，将其特征转化为自己的东西。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        原文第二段明确建议去分析对方的说话方式（「上手な人の話ぶりを…自分なりに分析すると」），并在第三段总结说这种学习最终会投射到自己的言行上（「自分の言動に投影される」），因为大家都想模仿他人的优点。选项4很好地吻合了这一过程。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 问题 3 -->
+            <div class="qa-section question-block" data-q-id="3">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="3" aria-pressed="false" title="记题">問3</button>
+                        <span class="question-title-text"><ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>考<rt>かんが</rt></ruby>えと<ruby>合<rt>あ</rt></ruby>っているのはどれか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>聞<rt>き</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>になるだけでなく、<ruby>話<rt>はなし</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>な<ruby>人<rt>ひと</rt></ruby>にも<ruby>学<rt>まな</rt></ruby>んでみるとよい。</span>
+                            <span class="option-translation">不仅要善于倾听，向善于说话的人学习一下也是好的。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        在全文的第一段末尾，作者提出建议：“善于说话的人的谈吐，值得稍微研究一下”（「話上手な人のしゃべりは、ちょっと研究してみる価値がありますよ」）。随后在第二段又指出，在练习倾听的同时，如果能去分析说话巧妙的人，将是一门很好的学问（「とても勉強になる」）。选项1全面涵盖了作者的这一主张。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>聞<rt>き</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>は<ruby>損<rt>そん</rt></ruby>をすることがあるので、<ruby>話<rt>はなし</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>になったほうがよい。</span>
+                            <span class="option-translation">善于倾听有时会吃亏，所以变得善于说话比较好。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文并没有表述出“善于倾听会吃亏”（「聞き上手は損をする」）的观点，作者只是建议在倾听的基础上，增加说话魅力的提升。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>他<rt>た</rt></ruby><ruby>人<rt>にん</rt></ruby>に<ruby>嫌<rt>きら</rt></ruby>われないように、<ruby>話<rt>はなし</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>より<ruby>聞<rt>き</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>になったほうがよい。</span>
+                            <span class="option-translation">为了不被他人讨厌，比起善于说话，还是善于倾听比较好。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        作者在文中所推崇的观点是去学习研究那些不招人讨厌的“话上手”（善于说话的人），选项所描述的“比起善于说话，还是善于倾听比较好”与作者意图背道而驰。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>聞<rt>き</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>から<ruby>話<rt>はなし</rt></ruby><ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>になるには、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>話<rt>はな</rt></ruby>し<ruby>方<rt>かた</rt></ruby>を<ruby>分<rt>ぶん</rt></ruby><ruby>分<rt>せき</rt></ruby>してみるとよい。</span>
+                            <span class="option-translation">要想从善于倾听转变为善于说话，试着分析一下自己的说话方式比较好。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        根据第二段的内容，作者建议的是去分析“那些善于把对方吸引进来的人的说话方式”（「相手を自分の話に引きこむのが上手な人の話ぶりを…分析する」），即去分析他人，而不是去分析自己。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- PAGE 2: ツバメの渡り -->
+    <div id="page-2" class="page-content">
+        <h2 class="header-title">2010年07月 中篇（二）</h2>
+
+        <div class="article-content">
+            <!-- 段落 1 -->
+            <div class="paragraph" id="page2-para-1">
+                <p class="japanese">
+                    <span class="paragraph-marker">①</span>
+                    ツバメは<ruby>季<rt>き</rt></ruby><ruby>節<rt>せつ</rt></ruby>の<ruby>変<rt>へん</rt></ruby><ruby>化<rt>か</rt></ruby>にあわせて、<ruby>暮<rt>く</rt></ruby>らす<ruby>場<rt>ば</rt></ruby><ruby>所<rt>しょ</rt></ruby>をかえる<ruby>渡<rt>わた</rt></ruby>り<ruby>鳥<rt>どり</rt></ruby>です。<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>が<ruby>冬<rt>ふゆ</rt></ruby>の<ruby>時<rt>じ</rt></ruby><ruby>期<rt>き</rt></ruby>は、<ruby>暖<rt>あたた</rt></ruby>かくてえさの<ruby>豊<rt>ほう</rt></ruby><ruby>富<rt>ふ</rt></ruby>なオーストラリアや<ruby>東<rt>とう</rt></ruby><ruby>南<rt>なん</rt></ruby>アジアで<ruby>暮<rt>く</rt></ruby>らしています。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        たまごを<ruby>産<rt>う</rt></ruby>んでひなを<ruby>育<rt>そだ</rt></ruby>てる<ruby>繁<rt>はん</rt></ruby><ruby>殖<rt>しょく</rt></ruby><ruby>期<rt>き</rt></ruby>が<ruby>近<rt>ちか</rt></ruby>づくと、<ruby>春<rt>はる</rt></ruby>になってえさとなる<ruby>昆<rt>こん</rt></ruby><ruby>虫<rt>ちゅう</rt></ruby>が<ruby>一<rt>いっ</rt></ruby><ruby>気<rt>き</rt></ruby>にふえる<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>へ<ruby>向<rt>む</rt></ruby>けて、いのちがけで<ruby>海<rt>うみ</rt></ruby>を<ruby>渡<rt>わた</rt></ruby>ってきます。
+                        <span class="sentence-badge q-badge">問1の鍵</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問1：なぜ日本へ渡ってくるのか？</span>
+                            本题询问燕子飞往日本的原因。回到原句寻找动机，原文指出：「春になってえさとなる昆虫が一気にふえる日本へ向けて」，即为了前往春季食物（昆虫）大量增加的日本，以便在此繁育后代（「たまごを産んでひなを育てる」）。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        介绍燕子作为候鸟的习性。说明了它们在冬天栖息在温暖的南方，而在繁殖期临近的春天，为了丰富的昆虫食物和繁育后代，会跨海飞往日本。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        燕子是一种会随着季节变化更换栖息地的候鸟。日本进入冬季时，它们会生活在气候温暖、食物充足的澳大利亚和东南亚。等到临近产卵育雏的繁殖期，它们就会冒着生命危险飞越大海，前往春天昆虫大量出现的日本。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 2 -->
+            <div class="paragraph" id="page2-para-2">
+                <p class="japanese">
+                    <span class="paragraph-marker">②</span>
+                    ツバメの<ruby>渡<rt>わた</rt></ruby>りは<ruby>地<rt>ち</rt></ruby><ruby>球<rt>きゅう</rt></ruby>の<ruby>南<rt>みなみ</rt></ruby><ruby>半<rt>はん</rt></ruby><ruby>球<rt>きゅう</rt></ruby>から<ruby>北<rt>きた</rt></ruby><ruby>半<rt>はん</rt></ruby><ruby>球<rt>きゅう</rt></ruby>へと、<ruby>何<rt>なん</rt></ruby><ruby>千<rt>ぜん</rt></ruby>キロメートルにもなります。ツバメがいつ<ruby>渡<rt>わた</rt></ruby>ってきたかで、ツバメが<ruby>暮<rt>く</rt></ruby>らしていた<ruby>地<rt>ち</rt></ruby><ruby>域<rt>いき</rt></ruby>や、<ruby>渡<rt>わた</rt></ruby>りのルートの<ruby>気<rt>き</rt></ruby><ruby>象<rt>しょう</rt></ruby>の<ruby>変<rt>へん</rt></ruby><ruby>化<rt>か</rt></ruby>や<ruby>環<rt>かん</rt></ruby><ruby>境<rt>きょう</rt></ruby>の<ruby>変<rt>へん</rt></ruby><ruby>化<rt>か</rt></ruby>を<span class="vocab-word" data-meaning="推测，揣测"><ruby>推<rt>お</rt></ruby>し<ruby>量<rt>はか</rt></ruby>る</span>ことができます。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        そして、その<ruby>変<rt>へん</rt></ruby><ruby>化<rt>か</rt></ruby>を<ruby>長<rt>ちょう</rt></ruby><ruby>期<rt>き</rt></ruby><ruby>間<rt>かん</rt></ruby>にわたって<ruby>観<rt>かん</rt></ruby><ruby>察<rt>さつ</rt></ruby>をつづけることで、<ruby>地<rt>ち</rt></ruby><ruby>球<rt>きゅう</rt></ruby><ruby>全<rt>ぜん</rt></ruby><ruby>体<rt>たい</rt></ruby>の<ruby>気<rt>き</rt></ruby><ruby>象<rt>しょう</rt></ruby>の<ruby>変<rt>へん</rt></ruby><ruby>化<rt>か</rt></ruby>を<ruby>予<rt>よ</rt></ruby><ruby>測<rt>そく</rt></ruby>する<ruby>手<rt>て</rt></ruby>がかりにもなるので、<ruby>気<rt>き</rt></ruby><ruby>象<rt>しょう</rt></ruby><ruby>庁<rt>ちょう</rt></ruby>では、その<ruby>年<rt>とし</rt></ruby>にはじめてツバメを<ruby>見<rt>み</rt></ruby>た<ruby>日<rt>ひ</rt></ruby>「ツバメの<ruby>初<rt>しょ</rt></ruby><ruby>見<rt>けん</rt></ruby><ruby>日<rt>び</rt></ruby>」を、<ruby>各<rt>かく</rt></ruby><ruby>地<rt>ち</rt></ruby>の<ruby>観<rt>かん</rt></ruby><ruby>察<rt>さつ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>や<ruby>研<rt>けん</rt></ruby><ruby>究<rt>きゅう</rt></ruby><ruby>者<rt>しゃ</rt></ruby>からの<ruby>報<rt>ほう</rt></ruby><ruby>告<rt>こく</rt></ruby>をもとに、<ruby>記<rt>き</rt></ruby><ruby>録<rt>ろく</rt></ruby>をとっているのです。
+                        <span class="sentence-badge q-badge">問2の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問2：記録をとっている目的</span>
+                            本题询问气象厅记录“初见日”的目的。回到原句，作者使用「〜なるので」（因为...所以...）的逻辑关系引出了目的：「地球全体の気象の変化を予測する手がかりにもなるので…記録をとっているのです」。由此明确，记录是为了获得预测和研究全球气候变化的线索。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        解释记录燕子初见日的原因。说明燕子的渡海行为是反映原居地及迁徙路线气候环境变化的一面镜子，持续观察这些变化能为预测全球气候变迁提供线索。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        燕子的迁徙从地球南半球一直延伸到北半球，距离可达数千公里。根据燕子在何时飞来，我们可以推测它们原先生活的地区，以及迁徙路线上的气象和环境变化。而且，如果长期持续观察这些变化，还能把它作为预测全球气候变化的线索。因此，气象厅会根据各地观察者和研究者的报告，记录下当年第一次看到燕子的日期，也就是“燕子初见日”。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 3 -->
+            <div class="paragraph" id="page2-para-3">
+                <p class="japanese">
+                    <span class="paragraph-marker">③</span>
+                    ツバメが<ruby>渡<rt>わた</rt></ruby>りの<ruby>行<rt>こう</rt></ruby><ruby>動<rt>どう</rt></ruby>をおこすのは、<ruby>日<rt>にっ</rt></ruby><ruby>照<rt>しょう</rt></ruby><ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>にかかわりがあるといわれています。（<ruby>中<rt>ちゅう</rt></ruby><ruby>略<rt>りゃく</rt></ruby>）
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        承上启下，引出燕子迁徙行为的触发条件——日照时间。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        据说，燕子之所以会开始迁徙，与日照时间有关。（中略）
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 4 -->
+            <div class="paragraph" id="page2-para-4">
+                <p class="japanese">
+                    <span class="paragraph-marker">④</span>
+                    <ruby>日<rt>にっ</rt></ruby><ruby>照<rt>しょう</rt></ruby><ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>は<ruby>年<rt>とし</rt></ruby>ごとの<ruby>変<rt>へん</rt></ruby><ruby>化<rt>か</rt></ruby>が<ruby>比<rt>ひ</rt></ruby><ruby>較<rt>かく</rt></ruby><ruby>的<rt>てき</rt></ruby><ruby>少<rt>すく</rt></ruby>ないので、<ruby>日<rt>にち</rt></ruby><ruby>時<rt>じ</rt></ruby>がそれほどずれることがありませんでした。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        ところが<ruby>長<rt>なが</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>蓄<rt>ちく</rt></ruby><ruby>積<rt>せき</rt></ruby>された<ruby>記<rt>き</rt></ruby><ruby>録<rt>ろく</rt></ruby>を<ruby>調<rt>しら</rt></ruby>べてみると、<ruby>近<rt>きん</rt></ruby><ruby>年<rt>ねん</rt></ruby>、<ruby>各<rt>かく</rt></ruby><ruby>地<rt>ち</rt></ruby>のツバメの<ruby>初<rt>しょ</rt></ruby><ruby>見<rt>けん</rt></ruby><ruby>日<rt>び</rt></ruby>が<ruby>早<rt>はや</rt></ruby>まってきていることがわかってきました。
+                        <span class="sentence-badge q-badge">問3の鍵（1）</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問3：ツバメの行動の変化</span>
+                            本题探讨“初见日”与“日照时间”的关系。解答的第一步是明确原文指出的客观现象：原本稳定的燕子初见日，近年来出现了「早まってきている」（正在提前）的变化。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        通过过去与现在的对比，提出近年来发现的一个异常变化：原本受日照时间控制而相对稳定的燕子初见日，近年来却开始提前了。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        由于日照时间每年的变化相对较小，燕子飞来的日期原本不会有太大偏差。然而，查看多年积累下来的记录后，人们发现近年来各地燕子的初见日都在逐渐提前。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 5 -->
+            <div class="paragraph" id="page2-para-5">
+                <p class="japanese">
+                    <span class="paragraph-marker">⑤</span>
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        その<ruby>原<rt>げん</rt></ruby><ruby>因<rt>いん</rt></ruby>はまだはっきりとつきとめられてはいませんが、<ruby>地<rt>ち</rt></ruby><ruby>球<rt>きゅう</rt></ruby><ruby>温<rt>おん</rt></ruby><ruby>暖<rt>だん</rt></ruby><ruby>化<rt>か</rt></ruby>によっておこる<ruby>気<rt>き</rt></ruby><ruby>象<rt>しょう</rt></ruby>の<ruby>変<rt>へん</rt></ruby><ruby>化<rt>か</rt></ruby>で、オーストラリアや<ruby>東<rt>とう</rt></ruby><ruby>南<rt>なん</rt></ruby>アジア<ruby>地<rt>ち</rt></ruby><ruby>方<rt>ほう</rt></ruby>の<ruby>晴<rt>せい</rt></ruby><ruby>雨<rt>う</rt></ruby><ruby>天<rt>てん</rt></ruby>のバランスがくずれ、<ruby>日<rt>にっ</rt></ruby><ruby>照<rt>しょう</rt></ruby><ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>にまでくるいがでてきているのかもしれません。
+                        <span class="sentence-badge q-badge">問3の鍵（2）</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問3：変化の根本原因</span>
+                            承接上一处的异常现象，本句给出了导致燕子提前飞来的推测原因：「オーストラリアや東南アジア地方の…日照時間にまでくるいがでてきているのかもしれません」。即将此归因于南半球（如澳大利亚）等地日照时间出现的偏差。两处线索结合即可解题。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        针对上一段提出的异常变化，给出可能的解释。推测是地球变暖导致南方（澳大利亚等地）气候失衡，进而使得日照时间出现偏差。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        其原因目前还没有完全查明，不过也许是全球变暖引发的气候变化，打乱了澳大利亚和东南亚一带晴天与雨天的平衡，连带让日照时间也出现了偏差。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 多个问题容器 -->
+        <div class="qa-container">
+            <!-- 问题 1 -->
+            <div class="qa-section question-block" data-q-id="1">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="1" aria-pressed="false" title="记题">問1</button>
+                        <span class="question-title-text">ツバメが<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>へ<ruby>渡<rt>わた</rt></ruby>ってくるのはなぜか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>南<rt>みなみ</rt></ruby><ruby>半<rt>はん</rt></ruby><ruby>球<rt>きゅう</rt></ruby>でひなが<ruby>育<rt>そだ</rt></ruby>ち、えさとなる<ruby>昆<rt>こん</rt></ruby><ruby>虫<rt>ちゅう</rt></ruby>が<ruby>不<rt>ふ</rt></ruby><ruby>足<rt>そく</rt></ruby>するから</span>
+                            <span class="option-translation">因为在南半球雏鸟长大了，作为食物的昆虫变得不足。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        针对设问，原文第一段给出的是「たまごを産んでひなを育てる繁殖期が近づくと…日本へ向けて」，即燕子是为了飞往日本产卵育雏，并非雏鸟已经在南半球长大了。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>が<ruby>春<rt>はる</rt></ruby>になる<ruby>頃<rt>ころ</rt></ruby>、ひなが<ruby>海<rt>うみ</rt></ruby>を<ruby>渡<rt>わた</rt></ruby>れるようになるから</span>
+                            <span class="option-translation">因为日本到了春天，雏鸟就能渡海了。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        从原文描述可知，渡海的是成年燕子，它们飞到日本的目的是为了养育后代，而不是因为“雏鸟变得能渡海了”。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>が<ruby>暖<rt>あたた</rt></ruby>かくなるとえさがふえ、<ruby>子<rt>こ</rt></ruby><ruby>育<rt>そだ</rt></ruby>てがしやすいから</span>
+                            <span class="option-translation">因为日本变暖后食物增加，容易养育后代。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题询问燕子飞往日本的“原因”。回到第一段寻找表示目的或原因的描述，原文写道：「たまごを産んでひなを育てる繁殖期が近づくと、春になってえさとなる昆虫が一気にふえる日本へ向けて…海を渡ってきます」。由此明确，渡海是为了在食物（昆虫）丰富的春季日本进行繁育后代。选项3“变暖后食物增加，容易养育后代”与原句的因果关系高度一致。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>は<ruby>冬<rt>ふゆ</rt></ruby>になっても、<ruby>他<rt>た</rt></ruby>の<ruby>地<rt>ち</rt></ruby><ruby>域<rt>いき</rt></ruby>より<ruby>暖<rt>あたた</rt></ruby>かくえさが<ruby>豊<rt>ほう</rt></ruby><ruby>富<rt>ふ</rt></ruby>だから</span>
+                            <span class="option-translation">因为日本即使到了冬天，也比其他地区温暖且食物丰富。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文第一段明确提到，在日本是冬天的时期，燕子是生活在「暖かくてえさの豊富なオーストラリアや東南アジア」（温暖且食物丰富的澳大利亚或东南亚），选项的表述与事实相反。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 问题 2 -->
+            <div class="qa-section question-block" data-q-id="2">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="2" aria-pressed="false" title="记题">問2</button>
+                        <span class="question-title-text">「ツバメの<ruby>初<rt>しょ</rt></ruby><ruby>見<rt>けん</rt></ruby><ruby>日<rt>び</rt></ruby>」を<ruby>記<rt>き</rt></ruby><ruby>録<rt>ろく</rt></ruby>しているのは<ruby>何<rt>なん</rt></ruby>のためか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span>ツバメの<ruby>渡<rt>わた</rt></ruby>りのルートを<ruby>解<rt>かい</rt></ruby><ruby>明<rt>めい</rt></ruby>するため</span>
+                            <span class="option-translation">为了解明燕子迁徙的路线。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文确实提到可以通过初见日推测出迁徙路线上的气象变化，但记录的最终目的在于以此作为“预测地球整体气象变化的线索”，并非仅停留在解明路线本身。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>日<rt>にっ</rt></ruby><ruby>照<rt>しょう</rt></ruby><ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>の<ruby>短<rt>たん</rt></ruby><ruby>縮<rt>しゅく</rt></ruby>の<ruby>原<rt>げん</rt></ruby><ruby>因<rt>いん</rt></ruby>を<ruby>究<rt>きゅう</rt></ruby><ruby>明<rt>めい</rt></ruby>するため</span>
+                            <span class="option-translation">为了探明日照时间缩短的原因。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        文章第五段虽然探讨了日照时间发生偏差的原因，但这并不是气象厅记录“初见日”的最初目的。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby>の<ruby>気<rt>き</rt></ruby><ruby>象<rt>しょう</rt></ruby>や<ruby>環<rt>かん</rt></ruby><ruby>境<rt>きょう</rt></ruby>の<ruby>変<rt>へん</rt></ruby><ruby>化<rt>か</rt></ruby>を<ruby>研<rt>けん</rt></ruby><ruby>究<rt>きゅう</rt></ruby>するため</span>
+                            <span class="option-translation">为了研究世界气象及环境的变化。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题询问记录燕子初见日的“目的”。定位到第二段划线部分的前面，文中直接指出了原因：「地球全体の気象の変化を予測する手がかりにもなるので…記録をとっているのです」。即记录的根本目的是以此作为线索，去预测和研究全球气候的变化。选项3“为了研究世界气象及环境的变化”直接对应了原句给出的目的。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>観<rt>かん</rt></ruby><ruby>察<rt>さつ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>や<ruby>研<rt>けん</rt></ruby><ruby>究<rt>きゅう</rt></ruby><ruby>者<rt>しゃ</rt></ruby>に<ruby>気<rt>き</rt></ruby><ruby>象<rt>しょう</rt></ruby><ruby>情<rt>じょう</rt></ruby><ruby>報<rt>ほう</rt></ruby>を<ruby>提<rt>てい</rt></ruby><ruby>供<rt>きょう</rt></ruby>するため</span>
+                            <span class="option-translation">为了向观察者和研究者提供气象信息。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文说的是根据各地观察者和研究者的报告来进行记录，而不是向他们提供气象信息，在逻辑上属于本末倒置。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 问题 3 -->
+            <div class="qa-section question-block" data-q-id="3">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="3" aria-pressed="false" title="记题">問3</button>
+                        <span class="question-title-text"><ruby>最<rt>さい</rt></ruby><ruby>近<rt>きん</rt></ruby>の「ツバメの<ruby>初<rt>しょ</rt></ruby><ruby>見<rt>けん</rt></ruby><ruby>日<rt>び</rt></ruby>」と<ruby>日<rt>にっ</rt></ruby><ruby>照<rt>しょう</rt></ruby><ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>の<ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby>について<ruby>正<rt>ただ</rt></ruby>しいものはどれか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>南<rt>みなみ</rt></ruby><ruby>半<rt>はん</rt></ruby><ruby>球<rt>きゅう</rt></ruby>などで<ruby>日<rt>にっ</rt></ruby><ruby>照<rt>しょう</rt></ruby><ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>に<ruby>変<rt>へん</rt></ruby><ruby>化<rt>か</rt></ruby>がおきてツバメの<ruby>渡<rt>わた</rt></ruby>りが<ruby>早<rt>はや</rt></ruby>まっているのだろう。</span>
+                            <span class="option-translation">南半球等地的日照时间发生变化，导致燕子迁徙提前了吧。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题要求找出“燕子初见日”与“日照时间”之间的正确关系。第四段指出近年的异常现象是「各地のツバメの初見日が早まってきている」（初见日提前了）。第五段则解释了背后的推测原因：「オーストラリアや東南アジア地方の…日照時間にまでくるいがでてきているのかもしれません」（南半球等地的日照时间出现了偏差）。将这两点对应结合，得出的结论正是选项1：南半球等地日照时间的变化，导致了燕子迁徙提前。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>温<rt>おん</rt></ruby><ruby>暖<rt>だん</rt></ruby><ruby>化<rt>か</rt></ruby>で<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>の<ruby>日<rt>にっ</rt></ruby><ruby>照<rt>しょう</rt></ruby><ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>が<ruby>長<rt>なが</rt></ruby>くなり、ツバメの<ruby>渡<rt>わた</rt></ruby>りが<ruby>遅<rt>おく</rt></ruby>れてきているようだ。</span>
+                            <span class="option-translation">因为变暖导致日本日照时间变长，燕子的迁徙似乎变晚了。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文中明确表示近年来燕子的初见日“提前了”（「早まってきている」），选项中说“迟到了”（「遅れてきている」），与文中的事实表述相悖。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span>ツバメは<ruby>毎<rt>まい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>日<rt>にっ</rt></ruby><ruby>照<rt>しょう</rt></ruby><ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>と<ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby>なく<ruby>渡<rt>わた</rt></ruby>りを<ruby>始<rt>はじ</rt></ruby>めるようになったのかもしれない。</span>
+                            <span class="option-translation">燕子可能变成每年不顾日照时间就开始迁徙了。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        根据原文第三段，燕子产生迁徙行动，明确是与日照时间有关的（「日照時間にかかわりがあるといわれています」）。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>の<ruby>日<rt>にっ</rt></ruby><ruby>照<rt>しょう</rt></ruby><ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>にくるいがでたために、ツバメが<ruby>早<rt>はや</rt></ruby>く<ruby>渡<rt>わた</rt></ruby>ってくるようになった。</span>
+                            <span class="option-translation">由于日本的日照时间出现偏差，燕子便早早地飞来了。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        基于第五段的内容，导致燕子早早飞来的推测原因是「オーストラリアや東南アジア地方…の…日照时间」出现偏差，并不是“日本的”日照时间出了问题。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+        <!-- PAGE 3: 消費のイメージ -->
+    <div id="page-3" class="page-content">
+        <h2 class="header-title">2010年07月 中篇（三）</h2>
+
+        <div class="article-content">
+            <!-- 段落 1 -->
+            <div class="paragraph" id="page3-para-1">
+                <p class="japanese">
+                    <span class="paragraph-marker">①</span>
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <ruby>消<rt>け</rt></ruby>して<ruby>費<rt>ついや</rt></ruby>やしてしまう、<ruby>使<rt>つか</rt></ruby>って<ruby>無<rt>な</rt></ruby>くしてしまうーーどうも<ruby>消<rt>しょう</rt></ruby><ruby>費<rt>ひ</rt></ruby>という<ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>のイメージは<ruby>前<rt>まえ</rt></ruby><ruby>向<rt>む</rt></ruby>きではないですね。<ruby>消<rt>しょう</rt></ruby><ruby>費<rt>ひ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>という<ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>も、そう。<ruby>生<rt>せい</rt></ruby><ruby>産<rt>さん</rt></ruby><ruby>者<rt>しゃ</rt></ruby>と<ruby>対<rt>たい</rt></ruby><ruby>比<rt>ひ</rt></ruby>して、<ruby>消<rt>しょう</rt></ruby><ruby>極<rt>きょく</rt></ruby><ruby>的<rt>てき</rt></ruby>イメージがつきまとう。<ruby>消<rt>しょう</rt></ruby><ruby>費<rt>ひ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>という<ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>は、<ruby>経<rt>けい</rt></ruby><ruby>済<rt>ざい</rt></ruby><ruby>用<rt>よう</rt></ruby><ruby>語<rt>ご</rt></ruby>のなかでもっとも<ruby>不<rt>ふ</rt></ruby><ruby>適<rt>てき</rt></ruby><ruby>切<rt>せつ</rt></ruby>な<ruby>一<rt>ひと</rt></ruby>つだと<ruby>私<rt>わたし</rt></ruby>は<ruby>思<rt>おも</rt></ruby>います。<span class="exam-underline"><ruby>行<rt>こう</rt></ruby><ruby>為<rt>い</rt></ruby>の<ruby>中<rt>なか</rt></ruby><ruby>身<rt>み</rt></ruby>からひどくズレています</span>。
+                        <span class="sentence-badge q-badge">問3の鍵</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問3：なぜ不適切と考えているか？</span>
+                            本题询问作者为何认为“消费”这个词不恰当。本句直接指出了原因：因为“消费”这个词带有消极的印象（抹去、消耗掉），这与该行为的实际内容（实质）产生了严重的偏差（「行為の中身からひどくズレています」）。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        提出本文的核心观点：作者认为“消费者”这一带有消极色彩的词汇，是经济用语中最不妥当的一个，因为它严重偏离了这一行为的真实内涵。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        一说到“消费”，总让人联想到“用掉”“耗尽”“把东西用到消失为止”，这个词本身就不太给人积极的感觉。“消费者”也是一样。和“生产者”相对时，它总带着一种消极色彩。我甚至觉得，“消费者”是经济用语里最不恰当的词之一，因为它和这种行为真正的内涵严重脱节。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 2 -->
+            <div class="paragraph" id="page3-para-2">
+                <p class="japanese">
+                    <span class="paragraph-marker">②</span>
+                    <ruby>消<rt>しょう</rt></ruby><ruby>費<rt>ひ</rt></ruby>と<ruby>呼<rt>よ</rt></ruby>ばれている<ruby>行<rt>こう</rt></ruby><ruby>為<rt>い</rt></ruby>は、その<ruby>中<rt>なか</rt></ruby><ruby>身<rt>み</rt></ruby>から<ruby>言<rt>い</rt></ruby>えば、<ruby>生<rt>い</rt></ruby>きていくのに<ruby>必<rt>ひつ</rt></ruby><ruby>要<rt>よう</rt></ruby>なものを<ruby>使<rt>つか</rt></ruby>ことですね。<ruby>私<rt>わたし</rt></ruby>たちは<ruby>衣<rt>い</rt></ruby><ruby>食<rt>しょく</rt></ruby><ruby>住<rt>じゅう</rt></ruby>その<ruby>他<rt>た</rt></ruby>に、さまざまなものを<ruby>使<rt>つか</rt></ruby>います。しかし、そのことを「<ruby>消<rt>しょう</rt></ruby><ruby>費<rt>ひ</rt></ruby>」と<ruby>呼<rt>よ</rt></ruby>ぶのは<ruby>正<rt>ただ</rt></ruby>しいか。<ruby>正<rt>ただ</rt></ruby>しくないと、<ruby>言<rt>い</rt></ruby>うべきです。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        なぜなら、<ruby>人<rt>ひと</rt></ruby>は<ruby>食<rt>た</rt></ruby>べ<ruby>物<rt>もの</rt></ruby>を<ruby>食<rt>た</rt></ruby>べることによって、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>身<rt>しん</rt></ruby><ruby>体<rt>たい</rt></ruby>を<ruby>生<rt>せい</rt></ruby><ruby>産<rt>さん</rt></ruby>しているのです。なるほど、<ruby>食<rt>た</rt></ruby>べ<ruby>物<rt>もの</rt></ruby>の<ruby>形<rt>かたち</rt></ruby>は<ruby>消<rt>き</rt></ruby>えてしまいます。しかし、それは<ruby>私<rt>わたし</rt></ruby>たちの<ruby>生<rt>せい</rt></ruby><ruby>命<rt>めい</rt></ruby>としてよみがえっているのです。
+                        <span class="sentence-badge q-badge">問1の鍵</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問1：行為の中身とは何か？</span>
+                            本题探讨作者对“消费行为实质”的解释。此处作者以食物为例，说明我们吃掉食物（使用物品）虽然让物品形状消失了，但实际上是在“生产出自己的身体”（「自分の身体を生産しているのです」）。
+                        </span>
+                    </span>
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <ruby>衣<rt>い</rt></ruby><ruby>服<rt>ふく</rt></ruby>を<ruby>身<rt>み</rt></ruby>につけることはどうか。それは<ruby>体<rt>たい</rt></ruby><ruby>温<rt>おん</rt></ruby>を<ruby>維<rt>い</rt></ruby><ruby>持<rt>じ</rt></ruby>させることによって<ruby>命<rt>いのち</rt></ruby>をつくり<ruby>出<rt>だ</rt></ruby>すだけでなく、<ruby>他<rt>た</rt></ruby><ruby>人<rt>にん</rt></ruby>にあたえる<ruby>私<rt>わたし</rt></ruby>たちの<ruby>印<rt>いん</rt></ruby><ruby>象<rt>しょう</rt></ruby>を<ruby>生<rt>せい</rt></ruby><ruby>産<rt>さん</rt></ruby>しています。
+                        <span class="sentence-badge q-badge">問2の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問2：衣服の役割とは？</span>
+                            本题直接询问衣服的作用。原句对此有清晰的并列说明：一是通过维持体温来创造生命（「体温を維持させることによって命をつくり出す」），二是生产给他人留下的印象（「他人にあたえる私たちの印象を生産しています」）。结合这两点即可得出正确选项。
+                        </span>
+                    </span>
+                    このように、<ruby>消<rt>しょう</rt></ruby><ruby>費<rt>ひ</rt></ruby>と<ruby>呼<rt>よ</rt></ruby>ばれている<ruby>行<rt>こう</rt></ruby><ruby>為<rt>い</rt></ruby>は、<ruby>私<rt>わたし</rt></ruby>たちの<ruby>命<rt>いのち</rt></ruby>と<ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>を、そして<ruby>次<rt>つぎ</rt></ruby>の<ruby>世<rt>せ</rt></ruby><ruby>代<rt>だい</rt></ruby>の<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>を<ruby>生<rt>せい</rt></ruby><ruby>産<rt>さん</rt></ruby>する<ruby>行<rt>こう</rt></ruby><ruby>為<rt>い</rt></ruby>です。それなのにそれを<ruby>消<rt>しょう</rt></ruby><ruby>費<rt>ひ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>と<ruby>呼<rt>よ</rt></ruby>ぶのは、<ruby>物<rt>もの</rt></ruby>の<ruby>生<rt>せい</rt></ruby><ruby>産<rt>さん</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>側<rt>がわ</rt></ruby>から<ruby>見<rt>み</rt></ruby>た<ruby>言<rt>い</rt></ruby>い<ruby>方<rt>かた</rt></ruby>にすぎません。
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        具体阐述“消费行为”的真正内涵。通过吃饭和穿衣的例子，论证了消费不仅是物品形状的消亡，更是生产我们的生命、生活甚至是下一代的积极行为。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        所谓“消费”，如果从行为本身来看，其实就是使用维持生活所必需的东西。除了衣食住之外，我们还会使用各种各样的物品。可把这种行为叫作“消费”，真的合适吗？我认为并不合适。因为人吃下食物，其实是在生成自己的身体。没错，食物原本的形态确实消失了，但它会以我们的生命重新存在。穿衣服也是一样。它不仅通过维持体温来支撑生命，也在塑造别人对我们的印象。也就是说，被称为“消费”的行为，其实是在生产我们的生命、生活，甚至下一代的人类。可如果把这样的人称为“消费者”，那不过是站在物品生产者一方的说法而已。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="qa-container">
+            <!-- 问题 1 -->
+            <div class="qa-section question-block" data-q-id="1">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="1" aria-pressed="false" title="记题">問1</button>
+                        <span class="question-title-text"><span class="exam-underline"><ruby>行<rt>こう</rt></ruby><ruby>為<rt>い</rt></ruby>の<ruby>中<rt>なか</rt></ruby><ruby>身<rt>み</rt></ruby>からひどくズレています</span>とあるが、<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>は<ruby>行<rt>こう</rt></ruby><ruby>為<rt>い</rt></ruby>の<ruby>中<rt>なか</rt></ruby><ruby>身<rt>み</rt></ruby>をどのように<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>しているか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>生<rt>せい</rt></ruby><ruby>産<rt>さん</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>立<rt>たち</rt></ruby><ruby>場<rt>ば</rt></ruby>に<ruby>立<rt>た</rt></ruby>って<ruby>経<rt>けい</rt></ruby><ruby>済<rt>ざい</rt></ruby>を<ruby>支<rt>ささ</rt></ruby>えること</span>
+                            <span class="option-translation">站在生产者的立场来支撑经济。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文并没有表述消费者是为了“支撑经济”（「経済を支える」）才去消费的，属于过度解读。
+                    </div>
+                </div>
+
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span>ものを<ruby>使<rt>つか</rt></ruby>うことで、<ruby>何<rt>なに</rt></ruby>かをつくり<ruby>出<rt>だ</rt></ruby>すこと</span>
+                            <span class="option-translation">通过使用物品，创造出某种东西。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        回到第二段，作者对“消费行为实质（中身）”进行了详细说明。通过吃饭（吃掉食物）能“生产出自己的身体”，通过穿衣能“创造出生命和印象”，最终得出结论：消费其实是「私たちの命と生活を…生産する行為です」（生产我们生命和生活的行为）。选项2“通过使用物品，创造出某种东西”恰当且合理地概括了这一观点。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>生<rt>せい</rt></ruby><ruby>産<rt>さん</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>活<rt>かつ</rt></ruby><ruby>動<rt>どう</rt></ruby>に<ruby>従<rt>じゅう</rt></ruby><ruby>事<rt>じ</rt></ruby>して<ruby>一<rt>いち</rt></ruby><ruby>日<rt>にち</rt></ruby>を<ruby>終<rt>お</rt></ruby>えること</span>
+                            <span class="option-translation">从事生产性活动并以此结束一天。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        虽然文中强调了“生产”这一概念，但并不是说要去从事某个具体的“生产性活动”（「生産的な活動に従事して」）度过每一天，偏离了对“消费”实质的探讨。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span>ものを<ruby>使<rt>つか</rt></ruby>って、その<ruby>形<rt>かたち</rt></ruby>を<ruby>消<rt>け</rt></ruby>してしまうこと</span>
+                            <span class="option-translation">使用物品并使其形状消失。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        这正是作者在第一段中所反对的、带有消极色彩的“表面现象”，而不是作者主张的消费行为真正的“实质（中身）”。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 问题 2 -->
+            <div class="qa-section question-block" data-q-id="2">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="2" aria-pressed="false" title="记题">問2</button>
+                        <span class="question-title-text"><ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>は<ruby>衣<rt>い</rt></ruby><ruby>服<rt>ふく</rt></ruby>にどのような<ruby>役<rt>やく</rt></ruby><ruby>割<rt>わり</rt></ruby>があると<ruby>述<rt>の</rt></ruby>べているか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>体<rt>たい</rt></ruby><ruby>温<rt>おん</rt></ruby>を<ruby>一<rt>いっ</rt></ruby><ruby>定<rt>てい</rt></ruby>に<ruby>保<rt>たも</rt></ruby>つだけでなく、<ruby>着<rt>き</rt></ruby>る<ruby>人<rt>ひと</rt></ruby>に<ruby>満<rt>まん</rt></ruby><ruby>足<rt>ぞく</rt></ruby><ruby>感<rt>かん</rt></ruby>をあたえる。</span>
+                            <span class="option-translation">不仅保持体温恒定，还给穿着者带来满足感。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        虽然前半部分符合原文，但原文并未提及衣服能给穿着者带来“满足感”（「満足感をあたえる」）。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>次<rt>つぎ</rt></ruby>々に<ruby>新<rt>あら</rt></ruby>たな<ruby>流<rt>りゅう</rt></ruby><ruby>行<rt>こう</rt></ruby>を<ruby>生<rt>う</rt></ruby>み<ruby>出<rt>だ</rt></ruby>し、<ruby>人<rt>ひと</rt></ruby>々の<ruby>消<rt>しょう</rt></ruby><ruby>費<rt>ひ</rt></ruby><ruby>行<rt>こう</rt></ruby><ruby>動<rt>どう</rt></ruby>を<ruby>促<rt>そく</rt></ruby><ruby>進<rt>しん</rt></ruby>する。</span>
+                            <span class="option-translation">不断催生新的流行，促进人们的消费行为。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        文中探讨的是衣服本质上的作用，并没有涉及“产生新流行”（「新たな流行を生み出し」）这样的社会现象。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>着<rt>き</rt></ruby>る<ruby>人<rt>ひと</rt></ruby>の<ruby>人<rt>ひと</rt></ruby><ruby>柄<rt>がら</rt></ruby>や<ruby>個<rt>こ</rt></ruby><ruby>性<rt>せい</rt></ruby>を<ruby>引<rt>ひ</rt></ruby><ruby>出<rt>だ</rt></ruby>すことで、<ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>をより<ruby>充<rt>じゅう</rt></ruby><ruby>充<rt>じつ</rt></ruby>させる。</span>
+                            <span class="option-translation">通过引出穿着者的人品和个性，让生活更加充实。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        虽然提及了给他人留下的“印象”，但这与引出自身的“人品或个性”（「人柄や個性を引き出す」）并不是完全等同的概念，且前半部分漏掉了维持体温这一重要作用。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>生<rt>せい</rt></ruby><ruby>命<rt>めい</rt></ruby>を<ruby>守<rt>まも</rt></ruby>るだけでなく、<ruby>他<rt>た</rt></ruby><ruby>者<rt>しゃ</rt></ruby>に<ruby>対<rt>たい</rt></ruby>する<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>のイメージを<ruby>創<rt>そう</rt></ruby><ruby>造<rt>ぞう</rt></ruby>する。</span>
+                            <span class="option-translation">不仅保护生命，还创造自己在他人眼中的形象。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        带着本题定位到第二段：「体温を維持させることによって命をつくり出すだけでなく、他人にあたえる私たちの印象を生産しています」。原句清晰地点明了衣服的两个作用：一是维持体温创造生命，二是生产给别人留下的印象。选项4“保护生命+创造他者眼中的形象”完美重现了这一逻辑。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 问题 3 -->
+            <div class="qa-section question-block" data-q-id="3">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="3" aria-pressed="false" title="记题">問3</button>
+                        <span class="question-title-text"><ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>が<ruby>消<rt>しょう</rt></ruby><ruby>費<rt>ひ</rt></ruby>という<ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>を<ruby>不<rt>ふ</rt></ruby><ruby>適<rt>てき</rt></ruby><ruby>切<rt>せつ</rt></ruby>と<ruby>考<rt>かんが</rt></ruby>えているのはなぜか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>のイメージが<ruby>一<rt>いっ</rt></ruby><ruby>般<rt>ぱん</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>用<rt>もち</rt></ruby>い<ruby>方<rt>かた</rt></ruby>と<ruby>合<rt>あ</rt></ruby>わないから</span>
+                            <span class="option-translation">因为词语的印象与一般的用法不符。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        人们通常就是用带有消耗意味的方式在使用“消费”这个词（这正是其一般的用法），作者认为不妥的是这个词无法体现行为的真实内涵，而非其与“一般用法”不符。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>生<rt>せい</rt></ruby><ruby>産<rt>さん</rt></ruby>との<ruby>対<rt>たい</rt></ruby><ruby>立<rt>りつ</rt></ruby>が<ruby>十<rt>じゅう</rt></ruby><ruby>分<rt>ぶん</rt></ruby>に<ruby>示<rt>しめ</rt></ruby>されていない<ruby>言<rt>い</rt></ruby>い<ruby>方<rt>かた</rt></ruby>だから</span>
+                            <span class="option-translation">因为它是没有充分显示出与生产相对立的说法。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文提到“消费”这个词正好是与“生产者”相对比（「生産者と対比して」）才产生消极印象的。它已经显示出了对立，只不过作者认为这种对立是表面且不恰当的。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>物<rt>もの</rt></ruby>を<ruby>使<rt>つか</rt></ruby>って<ruby>無<rt>な</rt></ruby>くす<ruby>行<rt>こう</rt></ruby><ruby>為<rt>い</rt></ruby>を<ruby>消<rt>しょう</rt></ruby><ruby>極<rt>きょく</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>示<rt>しめ</rt></ruby>した<ruby>言<rt>い</rt></ruby>い<ruby>方<rt>かた</rt></ruby>だから</span>
+                            <span class="option-translation">因为它是将使用并使物品消失的行为消极地表示出来的说法。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        虽然该词带有消极意味，但作者反对的根本原因是：人们根本不是单纯在“消耗使其消失”，而是在进行“生产”，所以这个词偏离了实质。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>のイメージがその<ruby>行<rt>こう</rt></ruby><ruby>為<rt>い</rt></ruby>の<ruby>実<rt>じっ</rt></ruby><ruby>態<rt>たい</rt></ruby>を<ruby>示<rt>しめ</rt></ruby>していないから</span>
+                            <span class="option-translation">因为词语的印象没有反映该行为的实际情况。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        在第一段末尾，作者明确指出该词不恰当的原因是「行為の中身からひどくズレています」（与行为的内容发生了严重的偏差）。结合第二段，行为的实际情况（実態）是“创造和生产”，而该词汇却给人带来“消耗”的错觉。选项4精确地总结了这种表层印象与实际内涵不符的情况。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- Navigation -->
+    <div class="article-navigation">
+        <button id="prev-btn" class="nav-btn disabled" onclick="prevPage()">← 上一篇</button> 
+        <button id="next-btn" class="nav-btn disabled" onclick="nextPage()">下一篇 →</button>
+    </div>
+</div>
+
+<script src="../shared/reading-medium-tools.js"></script>
+<script>
+    function toggleAnalysis() {
+        const btn = document.getElementById('analysis-btn');
+        btn.classList.toggle('active');
+        document.body.classList.toggle('show-analysis');
+        
+        if (!document.body.classList.contains('show-analysis')) {
+            document.querySelectorAll('.option-item.expanded').forEach(item => item.classList.remove('expanded'));
+            document.querySelectorAll('.key-sentence.active').forEach(item => item.classList.remove('active'));
+            if (typeof hideGlobalTooltip === 'function') hideGlobalTooltip();
+            if (typeof clearActiveVocabWords === 'function') clearActiveVocabWords();
+        }
+    }
+
+    function toggleInlineNote(event, element) {
+        if (!document.body.classList.contains('show-analysis')) return;
+        if (event.target.closest('.inline-note-container')) return;
+        // 点击词汇时，直接返回，不触发父级句子的折叠/展开
+        if (event.target.closest('.vocab-word')) return; 
+        element.classList.toggle('active');
+    }
+</script>
+
+<script src="../shared/reading-year-system.js"></script>
+<script src="../categories/index.js"></script>
+<script src="../shared/reading-category-system.js"></script>
+<script>
+    const ARTICLE_LEVEL = 'N1';
+    const ARTICLE_TYPE = 'middle';
+    const ARTICLE_YEAR = '2010.07';
+    const ARTICLE_ID = 'n1-2010-07-mid';
+    const ARTICLE_LINK = 's/2010.07.html';
+    const totalPages = 3;
+    
+    // エラー回避用フォールバック（外部スクリプト未読み込み時）
+    let readingSession = {
+        isReviewMode: false,
+        getReviewPages: () => [],
+        recordAnswer: () => {},
+        redirectToIndex: () => {},
+        getInitialPage: (p) => p || 1,
+        getNavState: (p) => ({ prevDisabled: p <= 1, nextDisabled: p >= totalPages }),
+        replacePageUrl: () => {},
+        getMoveTarget: () => ({})
+    };
+
+    let categorySession = {
+        isCategoryMode: false,
+        getInitialTarget: () => ({ empty: false }),
+        buildBackUrl: () => '../index.html',
+        getNavState: (p) => ({ prevDisabled: p <= 1, nextDisabled: p >= totalPages }),
+        rememberProgress: () => {},
+        replacePageUrl: () => {},
+        getMoveTarget: () => ({})
+    };
+
+    const backLink = document.getElementById('back-to-reading-index');
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedPage = parseInt(urlParams.get('page'), 10);
+
+    try {
+        if (typeof ReadingYearSystem !== 'undefined') {
+            readingSession = ReadingYearSystem.createReadingYearSession({
+                level: ARTICLE_LEVEL,
+                type: ARTICLE_TYPE,
+                examKey: urlParams.get('examKey') || ARTICLE_YEAR,
+                totalPages,
+                indexPath: '../index.html',
+                urlParams
+            });
+        }
+        
+        if (typeof ReadingCategorySystem !== 'undefined') {
+            categorySession = ReadingCategorySystem.createCategorySession({
+                level: ARTICLE_LEVEL,
+                type: ARTICLE_TYPE,
+                categoryId: urlParams.get('category'),
+                practiceMode: urlParams.get('practiceMode'),
+                examKey: urlParams.get('examKey') || ARTICLE_YEAR
+            });
+        }
+    } catch (e) {
+        console.warn("External systems not loaded properly. Using fallbacks.", e);
+    }
+
+    function toggleOption(element) {
+        if (document.body.classList.contains('show-analysis')) {
+            element.classList.toggle('expanded');
+            return;
+        }
+        
+        const qaSection = element.closest('.qa-section');
+        if (qaSection.hasAttribute('data-answered')) return;
+        
+        const isCorrect = element.classList.contains('is-correct');
+        element.classList.add('selected');
+        
+        if (isCorrect) {
+            element.classList.add('answered-correct');
+        } else {
+            element.classList.add('answered-wrong');
+            const correctOpt = qaSection.querySelector('.is-correct');
+            if (correctOpt) correctOpt.classList.add('answered-correct');
+        }
+
+        qaSection.setAttribute('data-answered', 'true');
+        recordAnswer(isCorrect);
+        checkAllAnsweredOnPage();
+    }
+
+    function checkAllAnsweredOnPage() {
+        const totalQuestions = document.querySelectorAll('.page-content.active .qa-section').length;
+        const answeredQuestions = document.querySelectorAll('.page-content.active .qa-section[data-answered="true"]').length;
+        
+        if (totalQuestions > 0 && totalQuestions === answeredQuestions) {
+            console.log("当前文章的所有题目已作答完毕。");
+        }
+    }
+
+    function handleReviewCompletionIfNeeded(isCorrect) {
+        if (!readingSession.isReviewMode || !isCorrect) {
+            return;
+        }
+
+        if (readingSession.getReviewPages().length === 0) {
+            window.setTimeout(() => {
+                alert('🎉 太棒了！这一年的错题已经复习完毕！');
+                readingSession.redirectToIndex();
+            }, 160);
+        }
+    }
+
+    function recordAnswer(isCorrect) {
+        readingSession.recordAnswer(currentPage, isCorrect);
+        handleReviewCompletionIfNeeded(isCorrect);
+    }
+
+    const isCategoryPractice = categorySession.isCategoryMode && !readingSession.isReviewMode;
+    const categoryTarget = isCategoryPractice
+        ? categorySession.getInitialTarget(requestedPage)
+        : { empty: false };
+
+    if (isCategoryPractice) {
+        backLink.href = categorySession.buildBackUrl();
+    }
+
+    const reviewModeHasNoPages = readingSession.isReviewMode && readingSession.getReviewPages().length === 0;
+    if (reviewModeHasNoPages) {
+        alert('当前年份还没有错题记录，先去正常练习一轮吧。');
+        readingSession.redirectToIndex();
+    }
+
+    if (isCategoryPractice && categoryTarget.empty) {
+        alert('这个文章分类里还没有可练习的内容。');
+        window.location.href = categorySession.buildBackUrl();
+    }
+
+    if (isCategoryPractice && categoryTarget.redirectUrl) {
+        window.location.href = categoryTarget.redirectUrl;
+    }
+
+    let currentPage = isCategoryPractice && typeof categoryTarget.page === 'number'
+        ? categoryTarget.page
+        : readingSession.getInitialPage(requestedPage);
+    window.currentPage = currentPage;
+    window.totalPages = totalPages;
+
+    function syncHeaderTitles(activePage) {
+        document.querySelectorAll('.header-title').forEach(titleEl => {
+            if (!titleEl.dataset.baseTitle) {
+                titleEl.dataset.baseTitle = titleEl.textContent.replace(/\s*（🐶 復習モード）$/, '').trim();
+            }
+
+            const isActive = Boolean(activePage && activePage.contains(titleEl));
+            titleEl.textContent = isActive && readingSession.isReviewMode
+                ? `${titleEl.dataset.baseTitle}（🐶 復習モード）`
+                : titleEl.dataset.baseTitle;
+        });
+    }
+
+    function showPage(page) {
+        document.querySelectorAll('.page-content').forEach(el => {
+            el.style.display = 'none';
+            el.classList.remove('active');
+        });
+
+        const currentEl = document.getElementById('page-' + page);
+        if (currentEl) {
+            currentEl.style.display = 'block';
+            currentEl.classList.add('active');
+        }
+
+        syncHeaderTitles(currentEl);
+
+        document.querySelectorAll('.qa-section').forEach(section => {
+            section.removeAttribute('data-answered');
+        });
+
+        document.querySelectorAll('.option-item').forEach(item => {
+            item.classList.remove('selected', 'answered-correct', 'answered-wrong', 'expanded');
+        });
+
+        document.querySelectorAll('.key-sentence').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelectorAll('.paragraph.recorder-focus').forEach(paragraph => {
+            paragraph.classList.remove('recorder-focus');
+        });
+        if (typeof hideGlobalTooltip === 'function') hideGlobalTooltip();
+        if (typeof clearActiveVocabWords === 'function') clearActiveVocabWords();
+        if (typeof window.clearDraftSelection === 'function') {
+            window.clearDraftSelection(true);
+        }
+
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const navState = isCategoryPractice
+            ? categorySession.getNavState(page)
+            : readingSession.getNavState(page);
+
+        prevBtn.classList.toggle('disabled', navState.prevDisabled);
+        nextBtn.classList.toggle('disabled', navState.nextDisabled);
+
+        currentPage = page;
+        window.currentPage = currentPage;
+        if (isCategoryPractice) {
+            categorySession.rememberProgress(page);
+            categorySession.replacePageUrl(page);
+        } else {
+            readingSession.replacePageUrl(page);
+        }
+        if (typeof window.renderSentenceRecorder === 'function') {
+            window.renderSentenceRecorder();
+        }
+        if (typeof window.renderMediumQuickNav === 'function') {
+            window.renderMediumQuickNav();
+        }
+        window.scrollTo(0, 0);
+    }
+
+    window.showPage = showPage;
+
+    function navigateCategory(direction) {
+        const target = categorySession.getMoveTarget(currentPage, direction);
+
+        if (target.sameExamKey && typeof target.page === 'number') {
+            showPage(target.page);
+            return;
+        }
+
+        if (target.href) {
+            window.location.href = target.href;
+            return;
+        }
+
+        if (target.done) {
+            alert('已经是这个分类的最后一篇了！');
+            return;
+        }
+
+        alert('已经是这个分类的第一篇了！');
+    }
+
+    function navigateReview(direction) {
+        const target = readingSession.getMoveTarget(currentPage, direction);
+
+        if (typeof target.page === 'number') {
+            showPage(target.page);
+            return;
+        }
+
+        if (target.done) {
+            alert('🎉 太棒了！这一年的错题已经复习完毕！');
+            readingSession.redirectToIndex();
+            return;
+        }
+
+        alert('已经是这一年错题的第一题了！');
+    }
+
+    function prevPage() {
+        if (readingSession.isReviewMode) {
+            navigateReview(-1);
+            return;
+        }
+        if (isCategoryPractice) {
+            navigateCategory(-1);
+            return;
+        }
+        if (currentPage > 1) {
+            showPage(currentPage - 1);
+        }
+    }
+
+    function nextPage() {
+        if (readingSession.isReviewMode) {
+            navigateReview(1);
+            return;
+        }
+        if (isCategoryPractice) {
+            navigateCategory(1);
+            return;
+        }
+        if (currentPage < totalPages) {
+            showPage(currentPage + 1);
+        } else {
+            alert('已经是该年份的最后一篇了！');
+        }
+    }
+
+    if (!reviewModeHasNoPages && !(isCategoryPractice && categoryTarget.redirectUrl) && !(isCategoryPractice && categoryTarget.empty)) {
+        showPage(currentPage);
+    }
+</script>
+<script>
+    window.readingMediumToolsConfig = {
+        manageVocabTooltip: false
+    };
+</script>
+<script src="../../../shared/study-quest-test-runtime.js"></script>
+<script src="../../../shared/study-quest-test-boot.js"></script>
+<script src="../shared/reading-medium-tools.js"></script>
+<script src="../shared/reading-tools.js"></script>
+<script src="../shared/reading-medium-runtime.js"></script>
+
+</body>
+</html>

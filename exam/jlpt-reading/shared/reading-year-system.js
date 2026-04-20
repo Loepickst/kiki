@@ -1,4 +1,9 @@
 (function() {
+    function normalizeReadingType(value) {
+        const type = String(value || '').trim();
+        return type === 'mid' ? 'middle' : type;
+    }
+
     function normalizeExamKey(value) {
         const text = String(value || '').trim();
         if (!text) {
@@ -19,11 +24,11 @@
     }
 
     function buildReadingMarksKey(level, type, examKey) {
-        return `reading_marks::${level}::${type}::${examKey}`;
+        return `reading_marks::${level}::${normalizeReadingType(type)}::${examKey}`;
     }
 
     function buildReadingLastPracticeKey(level, type) {
-        return `reading_last_practice::${level}::${type}`;
+        return `reading_last_practice::${level}::${normalizeReadingType(type)}`;
     }
 
     function parseNumberArray(rawValue) {
@@ -44,7 +49,14 @@
     }
 
     function getReadingMarks(level, type, examKey) {
-        return parseNumberArray(localStorage.getItem(buildReadingMarksKey(level, type, examKey)));
+        const normalizedExamKey = normalizeExamKey(examKey);
+        const normalizedType = normalizeReadingType(type);
+        const marks = parseNumberArray(localStorage.getItem(buildReadingMarksKey(level, normalizedType, normalizedExamKey)));
+        if (marks.length > 0 || normalizedType !== 'middle') {
+            return marks;
+        }
+
+        return parseNumberArray(localStorage.getItem(`reading_marks::${level}::mid::${normalizedExamKey}`));
     }
 
     function saveReadingMarks(level, type, examKey, marks) {
@@ -54,31 +66,56 @@
                 .filter((item) => Number.isInteger(item) && item > 0)
         )).sort((a, b) => a - b);
 
-        const key = buildReadingMarksKey(level, type, examKey);
+        const normalizedExamKey = normalizeExamKey(examKey);
+        const normalizedType = normalizeReadingType(type);
+        const key = buildReadingMarksKey(level, normalizedType, normalizedExamKey);
+        const legacyMiddleKey = normalizedType === 'middle'
+            ? `reading_marks::${level}::mid::${normalizedExamKey}`
+            : null;
         if (normalized.length === 0) {
             localStorage.removeItem(key);
+            if (legacyMiddleKey) {
+                localStorage.removeItem(legacyMiddleKey);
+            }
             return;
         }
 
         localStorage.setItem(key, JSON.stringify(normalized));
+        if (legacyMiddleKey && legacyMiddleKey !== key) {
+            localStorage.removeItem(legacyMiddleKey);
+        }
     }
 
     function collectReadingReviewItems(level, type) {
-        const prefix = `reading_marks::${level}::${type}::`;
         const items = [];
+        const normalizedType = normalizeReadingType(type);
+        const prefixes = [`reading_marks::${level}::${normalizedType}::`];
+        if (normalizedType === 'middle') {
+            prefixes.push(`reading_marks::${level}::mid::`);
+        }
+        const seenExamKeys = new Set();
 
         for (let index = 0; index < localStorage.length; index++) {
             const key = localStorage.key(index);
-            if (!key || !key.startsWith(prefix)) {
+            if (!key) {
                 continue;
             }
 
-            const examKey = key.slice(prefix.length);
+            const matchedPrefix = prefixes.find((prefix) => key.startsWith(prefix));
+            if (!matchedPrefix) {
+                continue;
+            }
+
+            const examKey = key.slice(matchedPrefix.length);
+            if (seenExamKeys.has(examKey)) {
+                continue;
+            }
             const marks = parseNumberArray(localStorage.getItem(key));
             if (marks.length === 0) {
                 continue;
             }
 
+            seenExamKeys.add(examKey);
             items.push({
                 examKey,
                 count: marks.length
@@ -91,12 +128,13 @@
 
     function createReadingYearSession(config) {
         const level = config.level;
-        const type = config.type;
+        const type = normalizeReadingType(config.type);
         const examKey = normalizeExamKey(config.examKey);
         const totalPages = Number.parseInt(config.totalPages, 10);
         const indexPath = config.indexPath || '../index.html';
         const params = config.urlParams || new URLSearchParams(window.location.search);
         const mode = params.get('mode');
+        const readingMode = params.get('readingMode');
         const isReviewMode = mode === 'review' || mode === 'mistake';
 
         localStorage.setItem(buildReadingLastPracticeKey(level, type), examKey);
@@ -143,6 +181,8 @@
             nextParams.set('examKey', examKey);
             if (isReviewMode) {
                 nextParams.set('mode', 'review');
+            } else if (readingMode) {
+                nextParams.set('readingMode', readingMode);
             }
             return `${window.location.pathname}?${nextParams.toString()}`;
         }
@@ -214,6 +254,7 @@
             const nextParams = new URLSearchParams();
             nextParams.set('level', level);
             nextParams.set('type', type);
+            nextParams.set('browse', 'year');
             return `${indexPath}?${nextParams.toString()}`;
         }
 
@@ -239,6 +280,7 @@
     }
 
     window.ReadingYearSystem = {
+        normalizeReadingType,
         normalizeExamKey,
         buildReadingMarksKey,
         buildReadingLastPracticeKey,

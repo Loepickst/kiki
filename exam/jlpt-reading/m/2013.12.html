@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解 - 2013年12月 中長文</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #3b5998; 
+            --sub-color: #787878;
+            --note-bg: #f4f6f9; 
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+            --underline-color: #2c2c2c;
+            --q-badge-color: #e67e22; 
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 80px 15px 120px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) { .toggle-btn:hover { background: var(--accent-color); color: white; } }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        .container {
+            max-width: 760px;
+            width: 100%;
+            background: var(--paper-color); padding: 50px 35px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box; border-radius: 8px;
+        }
+
+        .page-content { display: none; animation: fadeIn 0.35s ease-out; }
+        .page-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .header-title { 
+            text-align: center; margin-top: 0; margin-bottom: 40px; 
+            font-size: 1.3rem; color: var(--text-color); border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .paragraph {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.2; 
+            text-align: justify; margin: 0 0 10px 0;
+            text-indent: 1em; 
+        }
+        p.japanese:last-of-type {
+            margin-bottom: 0;
+        }
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        .exam-underline {
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            text-decoration-thickness: 1.5px;
+            text-decoration-color: var(--underline-color);
+            position: relative;
+            padding-bottom: 2px;
+        }
+        
+        body.show-analysis .exam-underline {
+            background-color: rgba(231, 76, 60, 0.1); 
+            text-decoration-color: #e74c3c;
+        }
+
+        .analysis-element { display: none; }
+        body.show-analysis .analysis-element { display: block; }
+
+        .paragraph-analysis {
+            margin-top: 15px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            font-family: var(--chinese-font);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .para-role {
+            padding: 12px 18px;
+            background-color: rgba(59, 89, 152, 0.05);
+            border-bottom: 1px dashed #cbd5e1;
+            font-size: 0.9rem;
+            color: #334155;
+            line-height: 1.6;
+        }
+        .role-title {
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-right: 8px;
+            display: inline-flex;
+            align-items: center;
+        }
+        .para-translation {
+            padding: 15px 18px;
+            font-size: 0.95rem;
+            color: #475569;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        .trans-title {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: bold;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .key-sentence { transition: 0.3s ease; }
+        body.show-analysis .key-sentence { background-color: rgba(59, 89, 152, 0.06); border-bottom: 2px dashed #baccf1; cursor: pointer; border-radius: 3px; padding: 2px 0; }
+        body.show-analysis .key-sentence:hover { background-color: rgba(59, 89, 152, 0.12); }
+        body.show-analysis .key-sentence.active { background-color: rgba(216, 67, 21, 0.08); border-bottom-color: #e74c3c; }
+
+        .sentence-badge { display: none; }
+        body.show-analysis .sentence-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            background-color: var(--accent-color); color: white;
+            font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;
+            margin: 0 6px; vertical-align: middle;
+            font-family: var(--chinese-font); font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateY(-2px); transition: 0.3s;
+        }
+        body.show-analysis .sentence-badge.q-badge {
+            background-color: var(--q-badge-color);
+        }
+        body.show-analysis .key-sentence:hover .sentence-badge { transform: translateY(-2px) scale(1.05); }
+        body.show-analysis .key-sentence.active .sentence-badge { background-color: #e74c3c; }
+
+        .inline-note-container {
+            display: none; background-color: #fff; border-left: 4px solid #e74c3c;
+            padding: 15px 20px; margin: 15px 0 15px -1em; 
+            font-size: 0.95rem; color: #444; box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            font-family: var(--chinese-font); border-radius: 0 6px 6px 0;
+            text-indent: 0; line-height: 1.8; cursor: text;
+        }
+        .key-sentence.active .inline-note-container { display: block; }
+        .inline-note-title { font-weight: bold; color: #e74c3c; margin-bottom: 8px; font-size: 1rem; display: flex; align-items: center; }
+
+        .qa-container { margin-top: 50px; border-top: 2px solid #f0f0f0; padding-top: 20px; }
+        .qa-section { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px dashed #e2e8f0; font-family: var(--chinese-font); }
+        .qa-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        
+        .question-title { 
+            font-size: 1.1rem; color: var(--text-color); margin-bottom: 20px; 
+            font-weight: bold; font-family: var(--japanese-font); line-height: 1.8; 
+        }
+        .question-num-badge {
+            background-color: var(--accent-color); color: white;
+            font-size: 0.8rem; padding: 2px 8px; border-radius: 4px;
+            margin-right: 8px; font-family: var(--chinese-font);
+            white-space: nowrap; 
+            display: inline-block;
+            vertical-align: baseline;
+            position: relative;
+            top: -2px; 
+        }
+        
+        .option-item {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px;
+            cursor: pointer; transition: 0.2s; overflow: hidden;
+        }
+        .option-item:hover { border-color: var(--accent-color); box-shadow: 0 2px 10px rgba(59, 89, 152, 0.1); }
+        
+        body:not(.show-analysis) .option-item.answered-correct { border-color: #38a169; background-color: rgba(56, 161, 105, 0.05); }
+        body:not(.show-analysis) .option-item.answered-wrong { border-color: #e53e3e; background-color: rgba(229, 62, 62, 0.05); }
+        body:not(.show-analysis) .option-item.answered-correct .option-number::after { content: " ⭕"; font-size: 1rem; color: #38a169; }
+        body:not(.show-analysis) .option-item.answered-wrong .option-number::after { content: " ❌"; font-size: 1rem; color: #e53e3e; }
+        body.show-analysis .option-item.is-correct { border-left: 4px solid #38a169; }
+        body:not(.show-analysis) .option-content rt { display: none; }
+
+        /* 選択肢の番号とテキストが揃うように修正 */
+        .option-content { padding: 15px 20px; display: flex; align-items: flex-start; font-family: var(--japanese-font); line-height: 1.6; }
+        .option-number { font-weight: bold; color: var(--accent-color); margin-right: 15px; font-family: var(--chinese-font); white-space: nowrap; flex-shrink: 0; line-height: 1.6; }
+        .option-text-group { display: flex; flex-direction: column; line-height: 1.6; }
+        
+        .option-translation { display: none; font-size: 0.85rem; color: #718096; margin-top: 4px; font-family: var(--chinese-font); }
+        body.show-analysis .option-translation { display: block; }
+
+        .option-explanation {
+            display: none; padding: 15px 20px; background: #f8fafc; border-top: 1px dashed #e2e8f0;
+            font-size: 0.95rem; color: #4a5568; line-height: 1.7;
+        }
+        body.show-analysis .option-item.expanded .option-explanation { display: block; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 8px; }
+        .badge.wrong { background: #e53e3e; }
+        .badge.correct { background: #38a169; }
+
+        .article-navigation { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 30px; border-top: 2px dashed #f0f0f0; }
+        .nav-btn { display: inline-flex; align-items: center; padding: 10px 20px; background: #ffffff; color: var(--accent-color); text-decoration: none; border-radius: 8px; font-size: 0.95rem; font-family: var(--chinese-font); font-weight: bold; transition: all 0.3s ease; border: 1px solid #d0dcf2; box-shadow: 0 2px 4px rgba(59, 89, 152, 0.05); cursor: pointer; }
+        .nav-btn:hover { background: var(--accent-color); color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(59, 89, 152, 0.15); }
+        .nav-btn.disabled { opacity: 0.5; pointer-events: none; background: #f8fafc; color: #a0aec0; border-color: #e2e8f0; box-shadow: none; }
+
+        .quick-nav-widget {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(6px);
+            padding: 12px 10px;
+            border-radius: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(59, 89, 152, 0.1);
+            z-index: 900;
+        }
+
+        .quick-nav-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--note-bg);
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-family: var(--chinese-font);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .quick-nav-item:hover {
+            background: var(--accent-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(59, 89, 152, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-group-title {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 2px;
+            margin-top: 4px;
+            font-family: var(--chinese-font);
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background: rgba(59, 89, 152, 0.15);
+            margin: 4px 0;
+            width: 100%;
+        }
+
+        .audio-wrapper { position: fixed; bottom: 0; left: 0; right: 0; z-index: 2000; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 15px 20px 25px 20px; display: flex; justify-content: center; border-top: 1px solid rgba(0,0,0,0.05); box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+        .audio-player { display: flex; align-items: center; width: 100%; max-width: 600px; }
+        .play-btn { width: 36px; height: 36px; border-radius: 50%; background-color: var(--accent-color); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 12px; flex-shrink: 0; transition: transform 0.2s; padding: 0; }
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+        .progress-container { flex-grow: 1; height: 20px; display: flex; align-items: center; margin-right: 12px; cursor: pointer; position: relative; }
+        .progress-bg { width: 100%; height: 4px; background-color: #f0f0f0; border-radius: 2px; position: relative; }
+        .progress-bar { height: 100%; background-color: var(--accent-color); width: 0%; border-radius: 2px; position: relative; }
+        .progress-bar::after { content: ""; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background-color: white; border: 2px solid var(--accent-color); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .time-display { font-size: 0.7rem; color: #999; width: 70px; text-align: right; font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
+        .loop-btn { background: none; border: none; cursor: pointer; padding: 8px; margin-left: 8px; opacity: 0.5; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .loop-btn.active { opacity: 1; color: var(--accent-color); }
+        .loop-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        .speed-btn {
+            background: none; border: 1px solid #ccc; border-radius: 4px;
+            cursor: pointer; padding: 2px 6px; margin-left: 8px;
+            font-size: 0.75rem; color: #787878; transition: all 0.2s;
+            font-family: var(--chinese-font); font-variant-numeric: tabular-nums;
+            font-weight: 500;
+        }
+        .speed-btn.active {
+            color: var(--accent-color); border-color: var(--accent-color); background: rgba(59, 89, 152, 0.05);
+        }
+
+        @media (max-width: 1000px) {
+            .quick-nav-widget {
+                right: 15px;
+                transform: scale(0.85) translateY(-50%);
+                transform-origin: right center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 30px 20px 90px; }
+            p.japanese { text-indent: 0; } 
+            
+            .quick-nav-widget {
+                display: none;
+            }
+        }
+        
+        /* =========================================
+           1. 試験の公式注釈（解析モードオフ時に目立つ）
+           ========================================= */
+        body:not(.show-analysis) .exam-note {
+            border-bottom: 1px dashed #e74c3c;
+            cursor: help;
+            position: relative;
+            color: inherit;
+            transition: background-color 0.2s;
+            border-radius: 2px;
+            padding: 0 2px;
+        }
+        body:not(.show-analysis) .exam-note:hover {
+            background-color: rgba(231, 76, 60, 0.08);
+        }
+        body:not(.show-analysis) .exam-note::after {
+            content: '*注';
+            font-size: 0.65rem;
+            color: #e74c3c;
+            vertical-align: super;
+            margin-left: 2px;
+            font-weight: bold;
+            font-family: var(--chinese-font);
+        }
+        /* 解析モード時は公式注釈の強調を控えめに（同化させる） */
+        body.show-analysis .exam-note {
+            border-bottom: none;
+            cursor: text;
+        }
+        body.show-analysis .exam-note::after {
+            display: none;
+        }
+
+        /* =========================================
+           2. N1語彙解説（解析モード時のみ表示）
+           ========================================= */
+        .vocab-word {
+            transition: all 0.2s ease;
+        }
+        body.show-analysis .vocab-word {
+            background-color: rgba(16, 185, 129, 0.15); 
+            color: #059669; 
+            font-weight: bold; 
+            border-bottom: 2px dashed #10b981; 
+            cursor: help; 
+            position: relative;
+            padding: 2px 4px;
+            margin: 0 2px;
+            border-radius: 4px;
+            text-decoration: none; 
+        }
+        body.show-analysis .vocab-word:hover {
+            background-color: rgba(16, 185, 129, 0.25);
+            border-bottom-style: solid;
+        }
+        
+        /* ツールチップ（気泡）スタイル */
+        #global-tooltip {
+            position: fixed;
+            background-color: rgba(44, 44, 44, 0.95);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: var(--chinese-font);
+            pointer-events: none;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.2s ease, margin-top 0.2s ease;
+            transform: translate(-50%, -100%);
+            margin-top: 0;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        #global-tooltip.show {
+            opacity: 1;
+            margin-top: -8px;
+        }
+        #global-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -6px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: rgba(44, 44, 44, 0.95) transparent transparent transparent;
+        }
+        /* 注釈エリア */
+        .article-notes {
+            margin-top: 30px;
+            padding: 15px 20px;
+            background-color: #fcfcfc;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #555;
+            font-family: var(--japanese-font);
+            border: 1px solid #eee;
+        }
+        .article-notes .note-item {
+            margin-bottom: 5px;
+            line-height: 1.6;
+        }
+        .article-notes .note-mark {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+    </style>
+    <link rel="stylesheet" href="../../../shared/site-fonts.css">
+    <link rel="stylesheet" href="../shared/reading-tools.css">
+    <link rel="stylesheet" href="../shared/reading-medium-tools.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a id="back-to-reading-index" href="../index.html?level=N1&type=middle" class="toggle-btn" style="text-decoration: none;">← 戻る</a>
+    <div id="today-date">N1 中篇</div>
+    <div class="top-bar-controls">
+        <button id="analysis-btn" class="toggle-btn" onclick="toggleAnalysis()">解析</button>
+    </div>
+</div>
+
+<div class="container">
+    <!-- PAGE 1: 筆の止めどころ -->
+    <div id="page-1" class="page-content active">
+        <h2 class="header-title">2013年12月 中篇（一）</h2>
+
+        <div class="article-content">
+            <!-- 段落 1 -->
+            <div class="paragraph" id="page1-para-1" data-para-id="1">
+                <p class="japanese">
+                    <ruby>十<rt>じゅう</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>絵<rt>え</rt></ruby>を<ruby>描<rt>か</rt></ruby>いてきて、<ruby>最<rt>さい</rt></ruby><ruby>近<rt>きん</rt></ruby>になってようやく<ruby>筆<rt>ふで</rt></ruby>の<ruby>止<rt>と</rt></ruby>めどころが、わかってきたかな、と<ruby>思<rt>おも</rt></ruby>います。<ruby>描<rt>か</rt></ruby>きすぎずに<ruby>筆<rt>ふで</rt></ruby>を<ruby>置<rt>お</rt></ruby>くコツが<ruby>少<rt>すこ</rt></ruby>しずつわかってきた。
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        引入主题。作者表示画了十年画，最近终于渐渐明白了“应该在哪里停笔”，掌握了不过度刻画的诀窍。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        画了十年画，我想最近终于渐渐明白该在何处停笔了吧。我也一点点掌握了不过度刻画、适时停笔的诀窍。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 2 -->
+            <div class="paragraph" id="page1-para-2" data-para-id="2">
+                <p class="japanese">
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <ruby>最<rt>さい</rt></ruby><ruby>初<rt>しょ</rt></ruby>のうちは、<ruby>筆<rt>ふで</rt></ruby>が<ruby>多<rt>おお</rt></ruby>くなるものなんです。<ruby>描<rt>か</rt></ruby>きたいという<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちが<ruby>強<rt>つよ</rt></ruby>いだけに、まだ、<ruby>足<rt>た</rt></ruby>りない。まだ、<ruby>足<rt>た</rt></ruby>りないという<ruby>気<rt>き</rt></ruby>になって、どんどん、<ruby>描<rt>か</rt></ruby>き<ruby>出<rt>だ</rt></ruby>してしまう。
+                        <span class="sentence-badge q-badge">問1の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問1：描き始めた時、どのように描いていたか？</span>
+                            本题询问作者刚开始画画时是怎样画的。定位到本段，作者提到：“最初阶段笔触往往会变多。正因为想画的心情很强烈，总觉得‘还不够、还不够’，就不停地画出来。”这说明作者在最初是顺从着自己强烈的作画欲望去不断添笔的。选项4“任由想画的感情去画出来”恰好符合这一状态。
+                        </span>
+                    </span>
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        だけど、それを<ruby>無<rt>む</rt></ruby><ruby>理<rt>り</rt></ruby>して、<span class="vocab-word" data-meaning="控制，节制">セーブする</span>ことはないと<ruby>思<rt>おも</rt></ruby>います。やっぱり、①<span class="exam-underline"><span class="vocab-word" data-meaning="到底，彻底"><ruby>とことん</rt></ruby></span><span class="vocab-word" data-meaning="走到尽头，做到底"><ruby>行<rt>い</rt></ruby>ききっちゃった</span>ほうがいいんですよ</span>。<ruby>何<rt>なに</rt></ruby><ruby>事<rt>ごと</rt></ruby>も。
+                        <span class="sentence-badge q-badge">問2の鍵</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問2：「行ききっちゃったほうがいい」とは？</span>
+                            设问探讨为什么作者认为“索性走到尽头（彻底画过头）比较好”。这段提出主张，下一段紧接着通过举例给出了具体的理由。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        描述初期作画的状态并提出主张。初学者往往因为创作欲旺盛而画得太多，但作者认为没有必要勉强去控制，索性彻底“画过头”一次反而更好。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        在最初的阶段，笔触往往会变多。正因为想画的心情很强烈，总觉得“还不够、还不够”，就不停地画出来。但是，我认为没必要勉强去控制这种情绪。毕竟，索性走到尽头（彻底做到底）比较好哟。任何事情都是如此。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 3 -->
+            <div class="paragraph" id="page1-para-3" data-para-id="3">
+                <p class="japanese">
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        たとえば、<ruby>空<rt>くう</rt></ruby><ruby>腹<rt>ふく</rt></ruby>のときに<ruby>腹<rt>はら</rt></ruby>いっぱい<ruby>食<rt>た</rt></ruby>べて<ruby>満<rt>まん</rt></ruby><ruby>腹<rt>ぷく</rt></ruby><ruby>感<rt>かん</rt></ruby>というものを<ruby>味<rt>あじ</rt></ruby>わっておかないと、<span class="vocab-word" data-meaning="程度，分寸"><ruby>加<rt>か</rt></ruby><ruby>減<rt>げん</rt></ruby></span>というものが、わかりません。<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>、<ruby>満<rt>まん</rt></ruby><ruby>腹<rt>ぷく</rt></ruby>のことを<ruby>知<rt>し</rt></ruby>っているから、これはまだ<ruby>五<rt>ご</rt></ruby><ruby>分<rt>ぶ</rt></ruby><span class="exam-note" data-meaning="【注】全体の50パーセント">（注1）</span><ruby>腹<rt>はら</rt></ruby><ruby>八<rt>はち</rt></ruby><ruby>分<rt>ぶ</rt></ruby>といったら、この<ruby>程<rt>てい</rt></ruby><ruby>度<rt>ど</rt></ruby>だという<ruby>加<rt>か</rt></ruby><ruby>減<rt>げん</rt></ruby>がわかる。<ruby>一<rt>いっ</rt></ruby><ruby>回<rt>かい</rt></ruby>とことんやってみることで、<ruby>抑<rt>おさ</rt></ruby>えることや、<ruby>行<rt>い</rt></ruby>き<ruby>過<rt>す</rt></ruby>ぎないことの<ruby>良<rt>よ</rt></ruby>さが<ruby>初<rt>はじ</rt></ruby>めてわかるものですからね。
+                        <span class="sentence-badge q-badge">問2の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問2：行ききるのがいい理由</span>
+                            这段通过“吃饱”的例子给出了解释：“只有彻底体验过一次（吃饱），才能初次明白克制和不过度的好处（懂得分寸）”。也就是说，只有彻底画过头了，才能理解适可而止（不画过头）的重要性。选项3合理地概括了这个因果逻辑。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        通过吃饭的比喻解释上一段的主张。只有真正体会过“过头”（吃撑）的状态，才能懂得拿捏“分寸”（克制）。画画同理。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        比如，如果在肚子饿的时候没有吃到饱、去体会一下所谓的“饱腹感”，那就不会明白什么叫“分寸”。人啊，正是因为知道什么是吃饱，所以才能明白“这还只是五分饱、如果要说八分饱的话大概是这个程度”的分寸。因为只有彻底去体验过一次，才能初次明白克制以及不过度的好处啊。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 4 -->
+            <div class="paragraph" id="page1-para-4" data-para-id="4">
+                <p class="japanese">
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        （<ruby>中<rt>ちゅう</rt></ruby><ruby>略<rt>りゃく</rt></ruby>）<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>が<ruby>描<rt>か</rt></ruby>きたいモチーフそのものと<span class="vocab-word" data-meaning="对峙，面对"><ruby>対<rt>たい</rt></ruby><ruby>峙<rt>じ</rt></ruby></span><span class="exam-note" data-meaning="【注】向き合う">（注2）</span>して、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>感<rt>かん</rt></ruby>じたところで、<span class="vocab-word" data-meaning="动笔，继续画"><ruby>筆<rt>ふで</rt></ruby>を<ruby>進<rt>すす</rt></ruby>めている</span><ruby>分<rt>ぶん</rt></ruby>には、いいんですが、<ruby>客<rt>きゃっ</rt></ruby><ruby>観<rt>かん</rt></ruby><ruby>的<rt>てき</rt></ruby>にそれを<ruby>見<rt>み</rt></ruby>て、ここが<ruby>足<rt>た</rt></ruby>りない。あそこが、<ruby>足<rt>た</rt></ruby>りないと<ruby>思<rt>おも</rt></ruby>って<ruby>描<rt>か</rt></ruby>き<ruby>出<rt>だ</rt></ruby>してしまうと、やめどころが、わからなくなってしまいます。それは、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>が、どう<ruby>見<rt>み</rt></ruby>て、どう<ruby>感<rt>かん</rt></ruby>じたかという<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちを<span class="vocab-word" data-meaning="坦率地，原原本本地"><ruby>素<rt>す</rt></ruby><ruby>直<rt>なお</rt></ruby>に</span><ruby>絵<rt>え</rt></ruby>にするということとは、<ruby>違<rt>ちが</rt></ruby>ってくる。②<span class="exam-underline"><ruby>絵<rt>え</rt></ruby>を<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>してしまう</span>ことになる。そうすると、<ruby>絵<rt>え</rt></ruby>が、<span class="vocab-word" data-meaning="变得繁杂，变得罗嗦">うるさくなります</span>。
+                        <span class="sentence-badge q-badge">問3の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問3：「絵を説明してしまう」とは？</span>
+                            题目询问作者对“对画作进行说明”是怎么看的。作者指出，如果用客观的眼光去看，觉得“这里不够、那里不够”而不断添笔，就会变成“对画作进行说明”，而这与“把自己的感受坦率地画出来”是相违背的。也就是说，过度客观地添笔，反而会使得原本的真实感受无法被表达出来。选项4妥切地总结了这一观点。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        解释什么是“给画作做说明”。过度客观地审视画作并不断添补缺失的部分，会让人迷失停笔的时机，这偏离了坦率表达内心感受的初衷，只会让画面变得繁杂罗嗦。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        （中略）仅仅是面对自己想画的主题本身，顺着自己的感受去动笔，这倒还好；但如果客观看待它，觉得这里不够、那里不够，从而不断地画出来的话，就会变得不知道该在哪里停笔了。这与把“自己如何看待、如何感受”的心情坦率地画在画上，就变得不一样了。这就变成了在给画作做说明。这样一来，画就会变得繁杂啰嗦。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 5 -->
+            <div class="paragraph" id="page1-para-5" data-para-id="5">
+                <p class="japanese">
+                    <ruby>客<rt>きゃっ</rt></ruby><ruby>観<rt>かん</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>目<rt>め</rt></ruby>を<ruby>持<rt>も</rt></ruby>つことも、<ruby>確<rt>たし</rt></ruby>かに<ruby>大<rt>だい</rt></ruby><ruby>事<rt>じ</rt></ruby>なことではあるんですが、<ruby>見<rt>み</rt></ruby>たまま<ruby>感<rt>かん</rt></ruby>じたままの<span class="vocab-word" data-meaning="直率的，直接的">ストレートな</span><ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちを<ruby>解<rt>かい</rt></ruby><ruby>説<rt>せつ</rt></ruby>してはいけないと<ruby>思<rt>おも</rt></ruby>うんですよ。
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        总结全文主旨。虽然客观的眼光很重要，但画画不应该去“解说”那些直观的感受。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        拥有客观的眼光确实也是一件重要的事情，但我认为不应该去解说那些原汁原味、直截了当的心情。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 注釈セクション（解析モードオフでも見られる用） -->
+            <div class="article-notes">
+                <div class="note-item"><span class="note-mark">（注1）五分（ごぶ）：</span>全体の50パーセント</div>
+                <div class="note-item"><span class="note-mark">（注2）対峙（たいじ）する：</span>向き合う</div>
+            </div>
+        </div>
+
+        <!-- 多个问题容器 -->
+        <div class="qa-container">
+            <!-- 问题 1 -->
+            <div class="qa-section question-block" data-q-id="1">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="1" aria-pressed="false" title="记题">問1</button>
+                        <span class="question-title-text"><ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>は、<ruby>絵<rt>え</rt></ruby>を<ruby>描<rt>か</rt></ruby>き<ruby>始<rt>はじ</rt></ruby>めた<ruby>時<rt>とき</rt></ruby>、どのように<ruby>描<rt>か</rt></ruby>いていたか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>筆<rt>ふで</rt></ruby>の<ruby>進<rt>すす</rt></ruby>め<ruby>方<rt>かた</rt></ruby>を<ruby>身<rt>み</rt></ruby>につけようと<ruby>思<rt>おも</rt></ruby>って<ruby>描<rt>か</rt></ruby>いていた。</span>
+                            <span class="option-translation">想着要掌握运笔的方法去画。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文并没有提到初期作画是为了“掌握运笔方法（筆の進め方を身につけようと）”。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>筆<rt>ふで</rt></ruby>を<ruby>進<rt>すす</rt></ruby>めすぎないように<ruby>心<rt>こころ</rt></ruby>がけて<ruby>描<rt>か</rt></ruby>いていた。</span>
+                            <span class="option-translation">留心不要画得过度去画。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        “不要画得过度”是作者“最近才渐渐明白”的道理，在刚开始画的时候他反而是不断画出来的。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>描<rt>か</rt></ruby>きたい<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちを<ruby>抑<rt>おさ</rt></ruby>えながらも、<ruby>描<rt>か</rt></ruby>き<ruby>出<rt>だ</rt></ruby>していた。</span>
+                            <span class="option-translation">一边压抑着想画的心情，一边画出来。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文第二段说初学者没有必要勉强去控制（「無理して、セーブすることはない」），作者初期也是顺应作画欲望的，并没有“压抑（抑えながら）”。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>描<rt>か</rt></ruby>きたいという<ruby>感<rt>かん</rt></ruby><ruby>情<rt>じょう</rt></ruby>に<ruby>任<rt>まか</rt></ruby>せて<ruby>描<rt>か</rt></ruby>き<ruby>出<rt>だ</rt></ruby>していた。</span>
+                            <span class="option-translation">任由想画的感情去画出来。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        题目询问作者刚开始画画时是怎样画的。定位到第二段，作者提到：“最初阶段笔触往往会变多。正因为想画的心情很强烈，总觉得‘还不够、还不够’，就不停地画出来。”这说明作者在最初是顺从着自己强烈的作画欲望去不断添笔的。选项4“任由想画的感情去画出来”恰好符合这一状态。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 问题 2 -->
+            <div class="qa-section question-block" data-q-id="2">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="2" aria-pressed="false" title="记题">問2</button>
+                        <span class="question-title-text">①<span class="exam-underline">とことん<ruby>行<rt>い</rt></ruby>ききっちゃったほうがいいんですよ</span>とあるが、なぜか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>描<rt>か</rt></ruby>きたい<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちがどのくらいかがわかるから。</span>
+                            <span class="option-translation">因为能明白想画的心情有多少。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文并没有说画到底是为了“了解自己想画的心情有多大（どのくらいかがわかる）”。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>描<rt>か</rt></ruby>きたいものが<ruby>何<rt>なに</rt></ruby>なのかがわかるから。</span>
+                            <span class="option-translation">因为能明白想画的东西到底是什么。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        画到底并不是为了“弄清楚自己想画什么”。想画什么（动机）一开始就是存在的。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>描<rt>か</rt></ruby>きすぎないことの<ruby>大<rt>たい</rt></ruby><ruby>切<rt>せつ</rt></ruby>さがわかるから。</span>
+                            <span class="option-translation">因为能明白不过度刻画（不画过头）的重要性。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        题目探讨为什么作者认为“索性走到尽头（彻底画过头）比较好”。这句话后面的段落通过“吃饱”的例子给出了解释：“只有彻底体验过一次，才能初次明白克制和不过度的好处（一回とことんやってみることで、抑えることや、行き過ぎないことの良さが初めてわかる）”。也就是说，只有画过头了，才能理解适可而止（不画过头）的重要性。选项3合理地概括了这个因果逻辑。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>描<rt>か</rt></ruby>きくわえることの<ruby>楽<rt>たの</rt></ruby>しさが、わかるから。</span>
+                            <span class="option-translation">因为能明白不断添笔的乐趣。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        画到底是为体会克制的重要性，而不是为了体验“不断添加的乐趣（描きくわえることの楽しさ）”。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 问题 3 -->
+            <div class="qa-section question-block" data-q-id="3">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="3" aria-pressed="false" title="记题">問3</button>
+                        <span class="question-title-text">②<span class="exam-underline"><ruby>絵<rt>え</rt></ruby>を<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>してしまう</span>ことについて、<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>は、どのように<ruby>考<rt>かんが</rt></ruby>えているか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>絵<rt>え</rt></ruby>を<ruby>思<rt>おも</rt></ruby>いのままに、<ruby>描<rt>か</rt></ruby>き<ruby>出<rt>だ</rt></ruby>しすぎるので、<ruby>絵<rt>え</rt></ruby>に<ruby>面<rt>おも</rt></ruby><ruby>白<rt>しろ</rt></ruby>みがなくなる。</span>
+                            <span class="option-translation">随心所欲地画得过多，画作会失去趣味。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        “对画作进行说明”是因为“客观审视（客観的にそれを見て）”后添笔，而不是“随心所欲（思いのままに）”。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>絵<rt>え</rt></ruby>を<ruby>描<rt>か</rt></ruby>きたいという<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちを<ruby>抑<rt>おさ</rt></ruby>えるので、<ruby>表<rt>ひょう</rt></ruby><ruby>現<rt>げん</rt></ruby>が<ruby>素<rt>す</rt></ruby><ruby>直<rt>なお</rt></ruby>でなくなる。</span>
+                            <span class="option-translation">因为压抑了想画画的心情，表现会变得不够坦率。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文是因为总觉得“不够”而不停添笔（画得过多），并非“压抑了想画的心情（気持ちを抑える）”。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>絵<rt>え</rt></ruby>を<ruby>客<rt>きゃっ</rt></ruby><ruby>観<rt>かん</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>で<ruby>描<rt>か</rt></ruby>くので、<ruby>見<rt>み</rt></ruby>る<ruby>人<rt>ひと</rt></ruby>にあまり<ruby>感<rt>かん</rt></ruby><ruby>動<rt>どう</rt></ruby>を<ruby>与<rt>あた</rt></ruby>えられなくなる。</span>
+                            <span class="option-translation">用客观的视角去画，就无法带给观者太多感动。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        虽然提到了“客观”，但作者关注的是“自己的感受未能传达”，而不是直接谈及“能否带给观者感动（感動を与えられなくなる）”。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>絵<rt>え</rt></ruby>を<ruby>客<rt>きゃっ</rt></ruby><ruby>観<rt>かん</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>見<rt>み</rt></ruby>て<ruby>描<rt>か</rt></ruby>きだしすぎるので、<ruby>感<rt>かん</rt></ruby>じたままの<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちが<ruby>表<rt>ひょう</rt></ruby><ruby>現<rt>げん</rt></ruby>されなくなる。</span>
+                            <span class="option-translation">客观地看待画作并画得过多，导致原本的感受无法被表现出来。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        题目询问作者对“对画作进行说明”是怎么看的。作者指出，如果用客观的眼光去看，觉得“这里不够、那里不够”而不断添笔，就会变成“对画作进行说明”，而这与“把自己的感受坦率地画出来”是相违背的。也就是说，过度客观地添笔，反而会使得原本的真实感受无法被表达出来。选项4妥切地总结了这一观点。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- PAGE 2: 科学の起点と創意工夫 -->
+    <div id="page-2" class="page-content">
+        <h2 class="header-title">2013年12月 中篇（二）</h2>
+
+        <div class="article-content">
+            <!-- 段落 1 -->
+            <div class="paragraph" id="page2-para-1" data-para-id="1">
+                <p class="japanese">
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <ruby>大<rt>おお</rt></ruby><ruby>方<rt>かた</rt></ruby>の<ruby>予<rt>よ</rt></ruby><ruby>想<rt>そう</rt></ruby>に<ruby>反<rt>はん</rt></ruby>して、<ruby>科<rt>か</rt></ruby><ruby>学<rt>がく</rt></ruby>が<ruby>飛<rt>ひ</rt></ruby><ruby>躍<rt>やく</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>成<rt>せい</rt></ruby><ruby>果<rt>か</rt></ruby>を<span class="vocab-word" data-meaning="带来">もたらす</span><ruby>現<rt>げん</rt></ruby><ruby>場<rt>ば</rt></ruby>では、<ruby>誰<rt>だれ</rt></ruby>もが<ruby>実<rt>じつ</rt></ruby><ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>の<ruby>中<rt>なか</rt></ruby>で、<ruby>体<rt>たい</rt></ruby><ruby>験<rt>けん</rt></ruby>する<ruby>新<rt>しん</rt></ruby><ruby>鮮<rt>せん</rt></ruby>な<ruby>驚<rt>おどろ</rt></ruby>きや、<span class="exam-note" data-meaning="【注】小さな">たわいのない</span>、<ruby>思<rt>おも</rt></ruby>いつきの<ruby>類<rt>たぐい</rt></ruby>が<span class="exam-underline">①その<ruby>起<rt>き</rt></ruby><ruby>点<rt>てん</rt></ruby></span>となっている。むしろ、<ruby>科<rt>か</rt></ruby><ruby>学<rt>がく</rt></ruby>の<ruby>画<rt>かっ</rt></ruby><ruby>期<rt>き</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>発<rt>はつ</rt></ruby><ruby>明<rt>めい</rt></ruby><ruby>発<rt>はっ</rt></ruby><ruby>見<rt>けん</rt></ruby>など、<ruby>限<rt>かぎ</rt></ruby>りなく<ruby>日<rt>にち</rt></ruby><ruby>常<rt>じょう</rt></ruby><ruby>的<rt>てき</rt></ruby>で<ruby>具<rt>ぐ</rt></ruby><ruby>体<rt>たい</rt></ruby><ruby>的<rt>てき</rt></ruby>なものごとが<ruby>元<rt>もと</rt></ruby>になっているのである。（<ruby>中<rt>ちゅう</rt></ruby><ruby>略<rt>りゃく</rt></ruby>）
+                        <span class="sentence-badge q-badge">問1の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問1：何の起点か？</span>
+                            本题询问“这一起点”指的是什么的起点。指示代词“その（这/那）”指代前文。回到原文第一句：“与一般人的预想相反，在科学带来飞跃性成果的现场……日常生活中的这些新鲜的惊讶或微不足道的灵感成为了‘其起点（その起点）’”。这意味着，日常的灵感是“科学带来飞跃性成果（即重大发明或发现）”的起点。下一句“倒不如说，科学上划时代的发明发现等，都是以极其日常且具体的事物为基础的”也印证了这一点。选项1准确概括了这一因果联系。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        提出文章核心前提：科学上的重大发现并不是高高在上的，而是源于每个人在日常生活中都会经历的新鲜的惊讶或微小的灵感。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        与一般人的预想相反，在科学带来飞跃性成果的现场，任何人都会在日常生活中体验到的新鲜的惊讶，或是微不足道的灵感之类，成为了其起点。倒不如说，科学上划时代的发明与发现等，都是以极其日常且具体的事物为基础的。（中略）
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 2 -->
+            <div class="paragraph" id="page2-para-2" data-para-id="2">
+                <p class="japanese">
+                    しかし、<ruby>日<rt>ひ</rt></ruby>ごろの<ruby>思<rt>おも</rt></ruby>いつきや<ruby>驚<rt>おどろ</rt></ruby>きと<ruby>違<rt>ちが</rt></ruby>って、<ruby>思<rt>おも</rt></ruby>いついて<ruby>終<rt>お</rt></ruby>わり、<ruby>驚<rt>おどろ</rt></ruby>いただけ、ということにならないところが、<span class="vocab-word" data-meaning="总之，简而言之"><ruby>要<rt>よう</rt></ruby>するに</span><ruby>科<rt>か</rt></ruby><ruby>学<rt>がく</rt></ruby>の<ruby>特<rt>とく</rt></ruby><ruby>徴<rt>ちょう</rt></ruby>である。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <span class="exam-underline">②<ruby>思<rt>おも</rt></ruby>いつきや<ruby>驚<rt>おどろ</rt></ruby>き</span>は、<ruby>新<rt>あたら</rt></ruby>しい<ruby>確<rt>たし</rt></ruby>かな「ものの<ruby>見<rt>み</rt></ruby><ruby>方<rt>かた</rt></ruby>」へのきっかけでしかなく、<ruby>科<rt>か</rt></ruby><ruby>学<rt>がく</rt></ruby>とは、それらをとことん<ruby>洗<rt>せん</rt></ruby><ruby>練<rt>れん</rt></ruby>する<ruby>創<rt>そう</rt></ruby><ruby>意<rt>い</rt></ruby><ruby>工<rt>く</rt></ruby><ruby>夫<rt>ふう</rt></ruby>の<span class="vocab-word" data-meaning="行为，营生"><ruby>営<rt>いとな</rt></ruby>み</span>に<span class="vocab-word" data-meaning="正是，无非是"><ruby>ほかならない</rt></ruby></span>。
+                        <span class="sentence-badge q-badge">問2の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問2：思いつきや驚きとはどのようなものか？</span>
+                            本题探讨作者如何看待科学中的“灵感和惊讶”。原句明确指出：「思いつきや驚きは、新しい確かな『ものの見方』へのきっかけでしかなく…」（灵感和惊讶，只不过是通向全新的、确切的“看待事物方式”的契机而已）。“看待事物的方式（ものの見方）”也就是视角，“契机（きっかけ）”即选项中的“契機”。选项3“成为获得与平常不同视角的契机的东西”完美还原了这一论述。
+                        </span>
+                    </span>
+                    <ruby>実<rt>じつ</rt></ruby>は、<ruby>創<rt>そう</rt></ruby><ruby>意<rt>い</rt></ruby><ruby>工<rt>く</rt></ruby><ruby>夫<rt>ふう</rt></ruby>こそが、<ruby>歴<rt>れき</rt></ruby><ruby>史<rt>し</rt></ruby><ruby>上<rt>じょう</rt></ruby>も、<span class="vocab-word" data-meaning="屈指可数的，著名的"><ruby>有<rt>ゆう</rt></ruby><ruby>数<rt>すう</rt></ruby>な</span><ruby>科<rt>か</rt></ruby><ruby>学<rt>がく</rt></ruby><ruby>者<rt>しゃ</rt></ruby>たちにみられる、かなり<ruby>一<rt>いっ</rt></ruby><ruby>貫<rt>かん</rt></ruby>した<ruby>姿<rt>し</rt></ruby><ruby>勢<rt>せい</rt></ruby>なのである。
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        解释科学与日常的区别。日常的灵感往往转瞬即逝，而在科学中，灵感只是通往新视角的契机。科学的本质是对这些灵感进行彻底洗练的“创意工夫”，这也是伟大科学家的一贯姿态。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        但是，与平常的灵感和惊讶不同，不会停留在“想到了就结束”、“只是惊讶了一下”的程度，这总之就是科学的特征。②灵感和惊讶，只不过是通向全新的、确切的“看待事物方式”的契机而已，而科学，无非就是将它们彻底洗练的创意工夫的营生。实际上，这种创意工夫，正是历史上那些屈指可数的著名科学家们身上所能见到的、相当一贯的姿态。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 3 -->
+            <div class="paragraph" id="page2-para-3" data-para-id="3">
+                <p class="japanese">
+                    <ruby>何<rt>なに</rt></ruby>かに<ruby>驚<rt>おどろ</rt></ruby>いて、それまでは、<ruby>当<rt>とう</rt></ruby><ruby>然<rt>ぜん</rt></ruby>だと<ruby>思<rt>おも</rt></ruby>っていたことに、<ruby>少<rt>すこ</rt></ruby>し<ruby>違<rt>ちが</rt></ruby>った<ruby>角<rt>かく</rt></ruby><ruby>度<rt>ど</rt></ruby>から<span class="vocab-word" data-meaning="倾注目光"><ruby>眼<rt>まな</rt></ruby><ruby>差<rt>ざ</rt></ruby>しをむけて</span>みる。それだけでなく、<ruby>違<rt>ちが</rt></ruby>った<ruby>角<rt>かく</rt></ruby><ruby>度<rt>ど</rt></ruby>から<ruby>見<rt>み</rt></ruby>えてきたことを<span class="exam-note" data-meaning="【注】始めから終わりまで、一貫しているようにする"><ruby>首<rt>しゅ</rt></ruby><ruby>尾<rt>び</rt></ruby><ruby>一<rt>いっ</rt></ruby><ruby>貫<rt>かん</rt></ruby></span>させ、<ruby>確<rt>たし</rt></ruby>かなものにすると、<ruby>求<rt>もと</rt></ruby>めても<ruby>無<rt>む</rt></ruby><ruby>駄<rt>だ</rt></ruby>な<ruby>望<rt>のぞ</rt></ruby>みだと<span class="vocab-word" data-meaning="主观认定，一口咬定"><ruby>決<rt>き</rt></ruby>めつけて</span>いたことが、<span class="vocab-word" data-meaning="干脆地，轻易地">あっさりと</span><ruby>実<rt>じつ</rt></ruby><ruby>現<rt>げん</rt></ruby>できることに<ruby>気<rt>き</rt></ruby>づく。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <ruby>新<rt>しん</rt></ruby><ruby>鮮<rt>せん</rt></ruby>な<ruby>驚<rt>おどろ</rt></ruby>き、<span class="vocab-word" data-meaning="些许的，微小的"><ruby>些<rt>さ</rt></ruby><ruby>細<rt>さい</rt></ruby>な</span><ruby>思<rt>おも</rt></ruby>いつき、そして、ちょっとした<ruby>理<rt>り</rt></ruby><ruby>解<rt>かい</rt></ruby>の<ruby>修<rt>しゅう</rt></ruby><ruby>正<rt>せい</rt></ruby>をきっかけに、<ruby>常<rt>じょう</rt></ruby><ruby>識<rt>しき</rt></ruby>とは、<ruby>少<rt>すこ</rt></ruby>し<ruby>違<rt>ちが</rt></ruby>った「ものの<ruby>見<rt>み</rt></ruby><ruby>方<rt>かた</rt></ruby>」をしたとき、どこか<ruby>一<rt>いち</rt></ruby><ruby>面<rt>めん</rt></ruby><ruby>化<rt>か</rt></ruby>していた<ruby>常<rt>じょう</rt></ruby><ruby>識<rt>しき</rt></ruby>そのものがより<ruby>豊<rt>ゆた</rt></ruby>かなものにならないか<ruby>考<rt>かんが</rt></ruby>えてみる。<span class="exam-underline">③これが、<ruby>科<rt>か</rt></ruby><ruby>学<rt>がく</rt></ruby>を<ruby>本<rt>ほん</rt></ruby><ruby>当<rt>とう</rt></ruby>に<ruby>発<rt>はっ</rt></ruby><ruby>展<rt>てん</rt></ruby>させた<ruby>人<rt>ひと</rt></ruby><ruby>々<rt>びと</rt></ruby>に<ruby>共<rt>きょう</rt></ruby><ruby>通<rt>つう</rt></ruby>した<ruby>姿<rt>し</rt></ruby><ruby>勢<rt>せい</rt></ruby>である</span>。
+                        <span class="sentence-badge q-badge">問3の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問3：共通している姿勢とは何か？</span>
+                            本题询问使科学发展的人们共同的姿态是什么。定位到最后一段的总结部分：在因新鲜的惊讶或些许灵感而对事物产生了与常识稍有不同的看法时，不去止步于此，而是去思考能否让原本片面化的常识本身变得更加丰富（「どこか一面化していた常識そのものがより豊かなものにならないか考えてみる」）。选项1“不让灵感和惊讶停留在原点，而是试图去寻找与常识不同的看法”，准确总结了这种不断深化探索、寻求新视角的科学姿态。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        总结与升华。说明科学发展正是源于以日常灵感为契机，带着“稍微不同的视角”去重新审视理所当然的常识。这种不断探索、试图让原本片面的常识变得更加丰富的姿态，正是所有伟大科学家的共同点。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        因某事感到惊讶，从而试着从稍微不同的角度，去注视那些原本认为理所当然的事物。不仅如此，如果将从不同角度看到的东西贯穿始终并使其确凿，就会发现那些原本被断定为强求也白费的愿望，竟然能轻易实现。以新鲜的惊讶、微不足道的灵感，以及对理解的少许修正为契机，当对事物有了与常识稍有不同的“看法”时，试着去思考能否让那些在某处变得片面化的常识本身变得更加丰富。这就是让科学得到真正发展的人们所共同拥有的姿态。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 注釈セクション（解析モードオフでも見られる用） -->
+            <div class="article-notes">
+                <div class="note-item"><span class="note-mark">（注1）たわいのない：</span>ここでは、小さな</div>
+                <div class="note-item"><span class="note-mark">（注2）首尾一貫（しゅびいっかん）させる：</span>始めから終わりまで、一貫しているようにする。</div>
+            </div>
+        </div>
+
+        <!-- 多个问题容器 -->
+        <div class="qa-container">
+            <!-- 问题 1 -->
+            <div class="qa-section question-block" data-q-id="1">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="1" aria-pressed="false" title="记题">問1</button>
+                        <span class="question-title-text">①<span class="exam-underline">その<ruby>起<rt>き</rt></ruby><ruby>点<rt>てん</rt></ruby></span>とあるが、<ruby>何<rt>なに</rt></ruby>の<ruby>起<rt>き</rt></ruby><ruby>点<rt>てん</rt></ruby>か。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>科<rt>か</rt></ruby><ruby>学<rt>がく</rt></ruby>における<ruby>大<rt>おお</rt></ruby>きな<ruby>発<rt>はつ</rt></ruby><ruby>明<rt>めい</rt></ruby>や<ruby>発<rt>はっ</rt></ruby><ruby>見<rt>けん</rt></ruby></span>
+                            <span class="option-translation">科学上的重大发明和发现。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题询问“这一起点”指的是什么的起点。指示代词“その（这/那）”指代前文。回到原文第一句：“与一般人的预想相反，在科学带来飞跃性成果的现场……日常生活中的这些新鲜的惊讶或微不足道的灵感成为了‘其起点（その起点）’”。这意味着，日常的灵感是“科学带来飞跃性成果（即重大发明或发现）”的起点。下一句“倒不如说，科学上划时代的发明发现等，都是以极其日常且具体的事物为基础的”也印证了这一点。选项1准确概括了这一因果联系。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>日<rt>にち</rt></ruby><ruby>常<rt>じょう</rt></ruby>のなかでの<ruby>新<rt>しん</rt></ruby><ruby>鮮<rt>せん</rt></ruby>な<ruby>発<rt>はっ</rt></ruby><ruby>想<rt>そう</rt></ruby></span>
+                            <span class="option-translation">日常生活中的新鲜想法。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        “日常生活中的新鲜想法”正是“起点”本身（即主语），设问问的是它是“什么事物”的起点，即它导致了什么结果。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>の<ruby>中<rt>なか</rt></ruby>の<ruby>科<rt>か</rt></ruby><ruby>学<rt>がく</rt></ruby><ruby>的<rt>てき</rt></ruby><ruby>体<rt>たい</rt></ruby><ruby>験<rt>けん</rt></ruby></span>
+                            <span class="option-translation">生活中的科学体验。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文说的是在实生活中体验到的“惊讶和灵感（驚きや思いつき）”，并没有说这些体验本身就是“科学的”。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>実<rt>じつ</rt></ruby><ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>に<ruby>役<rt>やく</rt></ruby><ruby>立<rt>だ</rt></ruby>つ<ruby>科<rt>か</rt></ruby><ruby>学<rt>がく</rt></ruby></span>
+                            <span class="option-translation">对实际生活有用的科学。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文探讨的是“科学取得飞跃性成果的源头是日常生活”，而不是“科学如何反过来对实际生活有用”。方向相反。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 问题 2 -->
+            <div class="qa-section question-block" data-q-id="2">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="2" aria-pressed="false" title="记题">問2</button>
+                        <span class="question-title-text"><ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>は<ruby>科<rt>か</rt></ruby><ruby>学<rt>がく</rt></ruby>における②<span class="exam-underline"><ruby>思<rt>おも</rt></ruby>いつきや<ruby>驚<rt>おどろ</rt></ruby>き</span>を、どのようなものと<ruby>考<rt>かんが</rt></ruby>えているか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>科<rt>か</rt></ruby><ruby>学<rt>がく</rt></ruby><ruby>的<rt>てき</rt></ruby>な「ものの<ruby>見<rt>み</rt></ruby><ruby>方<rt>かた</rt></ruby>」の<ruby>本<rt>ほん</rt></ruby><ruby>質<rt>しつ</rt></ruby>を<ruby>形<rt>かたち</rt></ruby>づくるもの</span>
+                            <span class="option-translation">塑造科学“看待事物方式”的本质的东西。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文说的是“灵感和惊讶，只不过是通向新视角的契机（きっかけでしかなく）”。它们本身并不是本质，科学的本质（特征）是去“彻底洗练（とことん洗練する）”这些灵感的过程。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>科<rt>か</rt></ruby><ruby>学<rt>がく</rt></ruby>の<ruby>理<rt>り</rt></ruby><ruby>論<rt>ろん</rt></ruby>を<ruby>日<rt>にち</rt></ruby><ruby>常<rt>じょう</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>出<rt>で</rt></ruby><ruby>来<rt>き</rt></ruby><ruby>事<rt>ごと</rt></ruby>に<ruby>関<rt>かん</rt></ruby><ruby>連<rt>れん</rt></ruby>づけるもの</span>
+                            <span class="option-translation">将科学理论与日常事件关联起来的东西。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文强调的是从日常事件中“产生出”科学发现的契机，而不是先把理论准备好再去和日常事件“关联（関連づける）”。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span>いつもとは<ruby>違<rt>ちが</rt></ruby>う<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>を<ruby>得<rt>え</rt></ruby>る<ruby>契<rt>けい</rt></ruby><ruby>機<rt>き</rt></ruby>となるもの</span>
+                            <span class="option-translation">成为获得与平常不同视角的契机的东西。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题探讨作者如何看待科学中的“灵感和惊讶”。定位到第二段，作者明确指出：「思いつきや驚きは、新しい確かな『ものの見方』へのきっかけでしかなく…」（灵感和惊讶，只不过是通向全新的、确切的“看待事物方式”的契机而已）。“看待事物的方式（ものの見方）”也就是视角，“契机（きっかけ）”即选项中的“契機”。选项3“成为获得与平常不同视角的契机的东西”完美还原了这一论述。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>創<rt>そう</rt></ruby><ruby>意<rt>い</rt></ruby><ruby>工<rt>く</rt></ruby><ruby>夫<rt>ふう</rt></ruby>をする<ruby>過<rt>か</rt></ruby><ruby>程<rt>てい</rt></ruby>で<ruby>生<rt>う</rt></ruby>まれてくるもの</span>
+                            <span class="option-translation">在进行创意工夫的过程中产生的东西。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        逻辑顺序倒置了。是先有了“灵感和惊讶”，然后再对它们进行“创意工夫（洗练）”，而不是在创意工夫的过程中才产生灵感。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 问题 3 -->
+            <div class="qa-section question-block" data-q-id="3">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="3" aria-pressed="false" title="记题">問3</button>
+                        <span class="question-title-text"><ruby>科<rt>か</rt></ruby><ruby>学<rt>がく</rt></ruby>を<ruby>発<rt>はっ</rt></ruby><ruby>展<rt>てん</rt></ruby>させた<ruby>人<rt>ひと</rt></ruby><ruby>々<rt>びと</rt></ruby>に③<span class="exam-underline"><ruby>共<rt>きょう</rt></ruby><ruby>通<rt>つう</rt></ruby>している<ruby>姿<rt>し</rt></ruby><ruby>勢<rt>せい</rt></ruby></span>は、<ruby>何<rt>なに</rt></ruby>か。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>思<rt>おも</rt></ruby>いつきや<ruby>驚<rt>おどろ</rt></ruby>きをそのままにせず、<ruby>常<rt>じょう</rt></ruby><ruby>識<rt>しき</rt></ruby>とは<ruby>違<rt>ちが</rt></ruby>う<ruby>見<rt>み</rt></ruby><ruby>方<rt>かた</rt></ruby>をしようとする。</span>
+                            <span class="option-translation">不让灵感和惊讶停留在原点，而是试图去寻找与常识不同的看法。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题询问使科学发展的人们共同的姿态是什么。定位到文章最后一段，作者在结尾总结了这种姿态：在因新鲜的惊讶或些许灵感而对事物产生了与常识稍有不同的看法时，不去止步于此，而是去思考能否让原本片面化的常识本身变得更加丰富（「どこか一面化していた常識そのものがより豊かなものにならないか考えてみる」）。选项1“不让灵感和惊讶停留在原点，而是试图去寻找与常识不同的看法”，准确总结了这种不断深化探索、寻求新视角的科学姿态。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>思<rt>おも</rt></ruby>い<ruby>付<rt>つ</rt></ruby>きや<ruby>驚<rt>おどろ</rt></ruby>きをこれまでの<ruby>科<rt>か</rt></ruby><ruby>学<rt>がく</rt></ruby><ruby>的<rt>てき</rt></ruby><ruby>知<rt>ち</rt></ruby><ruby>識<rt>しき</rt></ruby>で、<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>しようとする。</span>
+                            <span class="option-translation">试图用至今为止的科学知识去解释灵感和惊讶。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        如果是用“至今为止的科学知识（常识）”去解释，那就没有打破原有的视角，无法取得划时代的发明发现。这与文章主旨背道而驰。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>発<rt>はっ</rt></ruby><ruby>想<rt>そう</rt></ruby>の<ruby>転<rt>てん</rt></ruby><ruby>換<rt>かん</rt></ruby>を<ruby>通<rt>とお</rt></ruby>して、<ruby>独<rt>どく</rt></ruby><ruby>創<rt>そう</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>考<rt>かんが</rt></ruby>え<ruby>方<rt>かた</rt></ruby>を<ruby>身<rt>み</rt></ruby>につけようとする。</span>
+                            <span class="option-translation">试图通过思维转换，掌握独创的思考方式。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文强调的是“改变看事物的角度并使其更加丰富确凿”，而不是单纯强调要掌握某种“独创的（独創的な）”个人思考方式。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>発<rt>はっ</rt></ruby><ruby>想<rt>そう</rt></ruby>の<ruby>転<rt>てん</rt></ruby><ruby>換<rt>かん</rt></ruby>をすることで、<ruby>常<rt>じょう</rt></ruby><ruby>識<rt>しき</rt></ruby><ruby>的<rt>てき</rt></ruby>な「ものの<ruby>見<rt>み</rt></ruby><ruby>方<rt>かた</rt></ruby>」を<ruby>否<rt>ひ</rt></ruby><ruby>定<rt>てい</rt></ruby>しようとする。</span>
+                            <span class="option-translation">试图通过思维转换，来否定常识性的“看待事物方式”。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文最后一句明确说明，是为了让常识“变得更加丰富（より豊かなものにならないか）”，而不是为了完全“否定（否定しようとする）”常识。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div id="page-3" class="page-content active">
+        <h2 class="header-title">2013年12月 中篇（三）</h2>
+
+        <div class="article-content">
+            <!-- 段落 1 -->
+            <div class="paragraph" id="page3-para-1" data-para-id="1">
+                <p class="japanese">
+                    <ruby>多<rt>おお</rt></ruby>くの<ruby>人<rt>ひと</rt></ruby>は、<ruby>個<rt>こ</rt></ruby><ruby>性<rt>せい</rt></ruby>の<ruby>持<rt>も</rt></ruby>ち<ruby>主<rt>ぬし</rt></ruby>にあこがれて、できれば<ruby>見<rt>み</rt></ruby><ruby>習<rt>なら</rt></ruby>いたいものだと<ruby>思<rt>おも</rt></ruby>いながら、<ruby>実<rt>じつ</rt></ruby>は、<ruby>一<rt>いっ</rt></ruby><ruby>方<rt>ぽう</rt></ruby>で「<ruby>人<rt>ひと</rt></ruby><ruby>並<rt>な</rt></ruby>み」であることを<span class="vocab-word" data-meaning="暗自，悄悄地"><ruby>ひそかに</rt></ruby></span><ruby>求<rt>もと</rt></ruby>めてもいる。「ひと」からはずれていたり<ruby>遅<rt>おく</rt></ruby>れていたりすることは、<ruby>彼<rt>かれ</rt></ruby>らを<ruby>極<rt>きょく</rt></ruby><ruby>度<rt>ど</rt></ruby>に<ruby>不<rt>ふ</rt></ruby><ruby>安<rt>あん</rt></ruby>にする。「<ruby>同<rt>おな</rt></ruby>じ」<ruby>思<rt>おも</rt></ruby>いを<ruby>抱<rt>いだ</rt></ruby>いていたことを<ruby>発<rt>はっ</rt></ruby><ruby>見<rt>けん</rt></ruby>することは、<ruby>大<rt>おお</rt></ruby>きな<ruby>安<rt>あん</rt></ruby><ruby>心<rt>しん</rt></ruby>を<ruby>与<rt>あた</rt></ruby>えるはずであるから。「<ruby>同<rt>おな</rt></ruby>じ」<ruby>思<rt>おも</rt></ruby>いの<ruby>通<rt>つう</rt></ruby>ずる<ruby>仲<rt>なか</rt></ruby><ruby>間<rt>ま</rt></ruby>が<ruby>見<rt>み</rt></ruby>つかると、すぐにでも<ruby>群<rt>む</rt></ruby>れようとする。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <span class="exam-underline">①そういう<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>の<ruby>傾<rt>けい</rt></ruby><ruby>向<rt>こう</rt></ruby></span>は、<ruby>別<rt>べつ</rt></ruby>に、<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>人<rt>じん</rt></ruby>にだけ<ruby>備<rt>そな</rt></ruby>わったものというわけでもなく、ほとんど、<ruby>本<rt>ほん</rt></ruby><ruby>能<rt>のう</rt></ruby><ruby>的<rt>てき</rt></ruby>なものとして、<ruby>多<rt>おお</rt></ruby>かれ<ruby>少<rt>すく</rt></ruby>なかれ<ruby>誰<rt>だれ</rt></ruby>もが、<ruby>抱<rt>かか</rt></ruby>えている<ruby>要<rt>よう</rt></ruby><ruby>素<rt>そ</rt></ruby>であるといってよい。
+                        <span class="sentence-badge q-badge">問1の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問1：そういう人間の傾向とは？</span>
+                            本题探讨“这种人类的倾向”是指怎样的倾向。定位到第一段，划线部分前的句子解释了这种倾向的具体表现：人们虽然憧憬有个性的人，但同时又“暗自追求和常人一样（『人並み』であることをひそかに求めてもいる）”，并且“一旦找到有相同想法的同伴，就会想要群聚在一起以求安心（『同じ』思いの通ずる仲間が見つかると、すぐにでも群れようとする）”。也就是说，虽然心里渴望个性，但实际上还是倾向于和自己想法相同的人待在一起以获得安心感。选项3准确地概括了这种矛盾又真实的心理倾向。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        提出人类的一种本能倾向：虽然内心憧憬个性，但实际上更害怕偏离群体，暗自追求“和常人一样”，一旦找到想法相同的人就会群聚以获得安心。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        很多人一边憧憬着有个性的人，心想如果可能的话也想效仿他们，但实际上，另一方面也在暗自追求着“与常人一样”。偏离“常人”或者落后于人，会让他们感到极度不安。因为发现别人和自己抱有“相同”的想法，应该会给人带来巨大的安心感。一旦找到能产生“相同”共鸣的同伴，就会立刻想要群聚在一起。这种人类的倾向，并非仅仅是日本人所独有的，可以说这几乎是一种本能，是或多或少每个人都抱有的要素。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 2 -->
+            <div class="paragraph" id="page3-para-2" data-para-id="2">
+                <p class="japanese">
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        にもかかわらず<ruby>凡<rt>ぼん</rt></ruby><ruby>庸<rt>よう</rt></ruby>さ<span class="exam-note" data-meaning="【注】人並み、平凡であること">（注1）</span>は、<ruby>表<rt>おもて</rt></ruby><ruby>向<rt>む</rt></ruby>き、なぜこれほど<ruby>忌<rt>い</rt></ruby>み<ruby>嫌<rt>きら</rt></ruby>われる<span class="exam-note" data-meaning="【注】ひどく嫌う">（注2）</span>のか。それは、おそらく、<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>というものの<ruby>大<rt>だい</rt></ruby><ruby>多<rt>た</rt></ruby><ruby>数<rt>すう</rt></ruby>が<ruby>凡<rt>ぼん</rt></ruby><ruby>庸<rt>よう</rt></ruby>な<ruby>生<rt>せい</rt></ruby>を<ruby>生<rt>い</rt></ruby>きるほかなく、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>未<rt>み</rt></ruby><ruby>来<rt>らい</rt></ruby>もまたその<ruby>限<rt>げん</rt></ruby><ruby>界<rt>かい</rt></ruby>のなかにあることを<span class="vocab-word" data-meaning="隐隐约约地"><ruby>うすうす</rt></ruby></span><ruby>知<rt>し</rt></ruby>っているのだが、そのことをそう<ruby>決<rt>き</rt></ruby>め<ruby>付<rt>つ</rt></ruby>けられることは、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>生<rt>せい</rt></ruby>を<ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby>のない<ruby>確<rt>かく</rt></ruby><ruby>定<rt>てい</rt></ruby><ruby>的<rt>てき</rt></ruby>なイメージに<ruby>塗<rt>ぬ</rt></ruby>り<ruby>込<rt>こ</rt></ruby>めてしまうことであり、それは②<span class="exam-underline"><ruby>個<rt>こ</rt></ruby>としての<ruby>価<rt>か</rt></ruby><ruby>値<rt>ち</rt></ruby>を<ruby>否<rt>ひ</rt></ruby><ruby>定<rt>てい</rt></ruby>されてしまうことにつながる</span>と<ruby>感<rt>かん</rt></ruby>じられるからである。
+                        <span class="sentence-badge q-badge">問2の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問2：何が価値の否定につながるのか？</span>
+                            本题考查句子的因果关系。定位到第二段，划线部分前有“那是（それは）”指代。原句指出：“如果被人那样一口断定（平庸），就等同于把自己的生活涂抹成没有希望的定局，这会让人觉得导致了作为个体的价值被否定（そのことをそう決め付けられることは…個としての価値を否定されてしまうことにつながると感じられるからである）”。“那样一口断定”指代的是前文的“知道自己的未来也在平庸的局限之中（自分の未来もまたその限界のなかにあること）”。因此，被断定或被迫认清自己的平庸与局限，就是导致价值被否定的原因。选项2合理地传达了这一逻辑。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        解释平庸为何在表面上受人厌恶。因为大多数人潜意识里知道自己未来也是平庸且有局限的，如果被直接指出这点，就等同于失去了对未来的希望，会让人觉得作为个体的价值被否定了。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        尽管如此，为什么平庸在表面上会如此受人厌恶呢。这恐怕是因为，绝大多数的人都只能过着平庸的一生，虽然自己隐隐约约也知道自己的未来也处于这种局限之中，但如果被人那样一口断定，就等同于把自己的生活涂抹成了一副没有希望的、确定了的画面，因为人们会觉得，这会导致作为个体的价值被否定。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 3 -->
+            <div class="paragraph" id="page3-para-3" data-para-id="3">
+                <p class="japanese">
+                    <ruby>生<rt>い</rt></ruby>きる<ruby>意<rt>い</rt></ruby><ruby>欲<rt>よく</rt></ruby>が<ruby>現<rt>げん</rt></ruby>にあるのに、お<ruby>前<rt>まえ</rt></ruby>の<ruby>未<rt>み</rt></ruby><ruby>来<rt>らい</rt></ruby>はこのとおり<ruby>当<rt>あ</rt></ruby>たり<ruby>前<rt>まえ</rt></ruby>のものしかないと<ruby>規<rt>き</rt></ruby><ruby>定<rt>てい</rt></ruby>されることは、<ruby>未<rt>み</rt></ruby><ruby>来<rt>らい</rt></ruby>に<ruby>向<rt>む</rt></ruby>かうものとしてある「<ruby>生<rt>せい</rt></ruby>の<ruby>意<rt>い</rt></ruby><ruby>欲<rt>よく</rt></ruby>」の<ruby>本<rt>ほん</rt></ruby><ruby>質<rt>しつ</rt></ruby><ruby>的<rt>てき</rt></ruby><ruby>条<rt>じょう</rt></ruby><ruby>件<rt>けん</rt></ruby>を<span class="vocab-word" data-meaning="连根拔起"><ruby>根<rt>ね</rt></ruby>こそぎ</span>にしてしまう。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <ruby>自<rt>みずか</rt></ruby>らが、<ruby>有<rt>ゆう</rt></ruby><ruby>限<rt>げん</rt></ruby>な<ruby>存<rt>ぞん</rt></ruby><ruby>在<rt>ざい</rt></ruby>であることを<ruby>大<rt>おお</rt></ruby><ruby>筋<rt>すじ</rt></ruby>では<span class="vocab-word" data-meaning="辨别，清楚，懂得分寸"><ruby>わきまえ</rt></ruby>つつ</span>、しかもその<ruby>範<rt>はん</rt></ruby><ruby>囲<rt>い</rt></ruby><ruby>内<rt>ない</rt></ruby>に<ruby>未<rt>み</rt></ruby><ruby>知<rt>ち</rt></ruby>の<ruby>部<rt>ぶ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>を<ruby>必<rt>かなら</rt></ruby>ずいくらかは<ruby>残<rt>のこ</rt></ruby>しておく。そこに<ruby>自<rt>みずか</rt></ruby>らが、<ruby>個<rt>こ</rt></ruby>であることの<ruby>確<rt>かく</rt></ruby><ruby>証<rt>しょう</rt></ruby>を<span class="vocab-word" data-meaning="勉强地，好不容易才"><ruby>かろうじて</rt></ruby></span><ruby>求<rt>もと</rt></ruby>めようとするのだ。
+                        <span class="sentence-badge q-badge">問3の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問3：筆者の考えに合っているもの</span>
+                            这是一道主旨题。文章探讨了人们在追求平庸以求安心的同时，又厌恶被断定为平庸的矛盾心理。第三段给出了总结：人们虽然在总体上清楚自己的局限性（有限的存在），但依然要在这种局限内“留下一些未知的部分（未知の部分を必ずいくらかは残しておく）”，以此来探求作为个体的确证（即保持生存的意欲）。换言之，人类需要给自己留有希望的余地，以此来维持生存的意欲。选项3“人类给自己留下希望的余地，从而保持生存的意欲”完美地契合了作者的核心观点。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        总结全文。为了维持生存的意欲，人们即使知道自身的局限，也需要在这种平庸中强行保留一些“未知的部分”（希望的余地），借此来证明自己作为独立个体的价值。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        明明现在拥有生存的意欲，却被规定“你的未来就像这样只有理所当然的平庸”，这会将作为朝向未来而存在的“生存意欲”的本质条件连根拔起。人们在总体上清楚自己是有限存在的同时，又在那个范围内多少留下一些未知的部分。人们就是试图在那个未知的部分中，勉强地去探求自己作为个体的确证。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 注釈セクション（解析モードオフでも見られる用） -->
+            <div class="article-notes">
+                <div class="note-item"><span class="note-mark">（注1）凡庸さ：</span>ここでは、人並み、平凡であること。</div>
+                <div class="note-item"><span class="note-mark">（注2）忌み嫌われる：</span>ひどく嫌う。</div>
+            </div>
+        </div>
+
+        <!-- 多个问题容器 -->
+        <div class="qa-container">
+            <!-- 问题 1 -->
+            <div class="qa-section question-block" data-q-id="1">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="1" aria-pressed="false" title="记题">問1</button>
+                        <span class="question-title-text">①<span class="exam-underline">そういう<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>の<ruby>傾<rt>けい</rt></ruby><ruby>向<rt>こう</rt></ruby></span>とあるが、どのような<ruby>傾<rt>けい</rt></ruby><ruby>向<rt>こう</rt></ruby>か。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>個<rt>こ</rt></ruby><ruby>性<rt>せい</rt></ruby>の<ruby>持<rt>も</rt></ruby>ち<ruby>主<rt>ぬし</rt></ruby>に<ruby>表<rt>ひょう</rt></ruby><ruby>面<rt>めん</rt></ruby><ruby>的<rt>てき</rt></ruby>には<ruby>感<rt>かん</rt></ruby><ruby>心<rt>しん</rt></ruby>しつつも、<ruby>内<rt>ない</rt></ruby><ruby>心<rt>しん</rt></ruby>ではそれほど<ruby>認<rt>みと</rt></ruby>めない。</span>
+                            <span class="option-translation">虽然表面上对有个性的人感到钦佩，但内心里并没有那么认可。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文第一句说的是“想要效仿（見習いたいものだと思いながら）”，并没有说内心不认可。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>個<rt>こ</rt></ruby><ruby>性<rt>せい</rt></ruby>を<ruby>重<rt>じゅう</rt></ruby><ruby>視<rt>し</rt></ruby>し、<ruby>意<rt>い</rt></ruby><ruby>識<rt>しき</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>と<ruby>似<rt>に</rt></ruby>た<ruby>個<rt>こ</rt></ruby><ruby>性<rt>せい</rt></ruby>を<ruby>持<rt>も</rt></ruby>つ<ruby>人<rt>ひと</rt></ruby>としか<ruby>群<rt>む</rt></ruby>れようとしない。</span>
+                            <span class="option-translation">重视个性，并且有意识地只和与自己拥有相似个性的人群聚。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        人类聚集的原因是为了避免偏离“常人”所带来的不安，这其实是在追求平庸（「人並み」であることを求めている），而不是为了“重视个性”。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>個<rt>こ</rt></ruby><ruby>性<rt>せい</rt></ruby><ruby>的<rt>てき</rt></ruby>でありたいと<ruby>願<rt>ねが</rt></ruby>いながらも、<ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>と<ruby>思<rt>おも</rt></ruby>いが<ruby>同<rt>おな</rt></ruby>じ<ruby>人<rt>ひと</rt></ruby>と<ruby>群<rt>む</rt></ruby>れて<ruby>安<rt>あん</rt></ruby><ruby>心<rt>しん</rt></ruby>する。</span>
+                            <span class="option-translation">虽然渴望自己有个性，但还是会和与自己想法相同的人群聚以获得安心。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        定位到第一段。划线部分前的句子解释了这种倾向的具体表现：人们虽然憧憬有个性的人，但同时又“暗自追求和常人一样（『人並み』であることをひそかに求めてもいる）”，并且“一旦找到有相同想法的同伴，就会想要群聚在一起以求安心（『同じ』思いの通ずる仲間が見つかると、すぐにでも群れようとする）”。也就是说，虽然心里渴望个性，但实际上还是倾向于和自己想法相同的人待在一起以获得安心感。选项3准确地概括了这种矛盾又真实的心理倾向。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>個<rt>こ</rt></ruby><ruby>性<rt>せい</rt></ruby><ruby>的<rt>てき</rt></ruby>であることを<ruby>切<rt>せつ</rt></ruby><ruby>望<rt>ぼう</rt></ruby>し、<ruby>個<rt>こ</rt></ruby><ruby>性<rt>せい</rt></ruby>が<ruby>強<rt>つよ</rt></ruby>い<ruby>人<rt>ひと</rt></ruby>と<ruby>集<rt>あつ</rt></ruby>まって<ruby>安<rt>あん</rt></ruby><ruby>心<rt>しん</rt></ruby><ruby>感<rt>かん</rt></ruby>を<ruby>得<rt>え</rt></ruby>る。</span>
+                            <span class="option-translation">极度渴望成为有个性的人，通过和个性强的人聚在一起来获得安心感。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        人们聚集是为了找到和自己“想法相同（『同じ』思いの通ずる仲間）”的人，而不是为了和“个性强的人”聚在一起。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 问题 2 -->
+            <div class="qa-section question-block" data-q-id="2">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="2" aria-pressed="false" title="记题">問2</button>
+                        <span class="question-title-text"><ruby>何<rt>なに</rt></ruby>が②<span class="exam-underline"><ruby>個<rt>こ</rt></ruby>としての<ruby>価<rt>か</rt></ruby><ruby>値<rt>ち</rt></ruby>を<ruby>否<rt>ひ</rt></ruby><ruby>定<rt>てい</rt></ruby>されてしまうことにつながる</span>のか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>の<ruby>限<rt>げん</rt></ruby><ruby>界<rt>かい</rt></ruby>を<ruby>示<rt>しめ</rt></ruby>され、<ruby>将<rt>しょう</rt></ruby><ruby>来<rt>らい</rt></ruby>に<ruby>不<rt>ふ</rt></ruby><ruby>安<rt>あん</rt></ruby>を<ruby>感<rt>かん</rt></ruby>じること</span>
+                            <span class="option-translation">被指出自身的局限，对将来感到不安。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文说的是被迫涂抹成“没有希望的确定性画面（希望のない確定的なイメージ）”，产生的是对价值被否定的失落感，而不只是单纯的“不安（不安を感じる）”。
+                    </div>
+                </div>
+
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>の<ruby>平<rt>へい</rt></ruby><ruby>凡<rt>ぼん</rt></ruby>さを<ruby>思<rt>おも</rt></ruby>い<ruby>知<rt>し</rt></ruby>らされ、<ruby>限<rt>げん</rt></ruby><ruby>界<rt>かい</rt></ruby>を<ruby>自<rt>じ</rt></ruby><ruby>覚<rt>かく</rt></ruby>すること</span>
+                            <span class="option-translation">被迫认清自己的平凡，自觉到局限。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题考查句子的因果关系。定位到第二段，划线部分前有“那是（それは）”指代。原句指出：“如果被人那样一口断定（平庸），就等同于把自己的生活涂抹成没有希望的定局，这会让人觉得导致了作为个体的价值被否定”。“那样一口断定”指代的是前文的“知道自己的未来也在平庸的局限之中（自分の未来もまたその限界のなかにあること）”。因此，被断定或被迫认清自己的平庸与局限，就是导致价值被否定的原因。选项2合理地传达了这一逻辑。（※注：選択肢原文の誤植「白身」は「自身」に修正済み）
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>の<ruby>平<rt>へい</rt></ruby><ruby>凡<rt>ぼん</rt></ruby>さを<ruby>指<rt>し</rt></ruby><ruby>摘<rt>てき</rt></ruby>され、<ruby>生<rt>い</rt></ruby>きる<ruby>意<rt>い</rt></ruby><ruby>欲<rt>よく</rt></ruby>をなくすこと</span>
+                            <span class="option-translation">被指出自身的平凡，从而失去生存的意欲。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        虽然这种断定会触及生存意欲的本质条件，但并不是说人们真的因此“完全失去生存意欲（生きる意欲をなくす）”，他们依然勉强探求着确证。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>の<ruby>無<rt>む</rt></ruby><ruby>能<rt>のう</rt></ruby>さに<ruby>気<rt>き</rt></ruby>づかされ、<ruby>自<rt>じ</rt></ruby><ruby>己<rt>こ</rt></ruby>の<ruby>存<rt>ぞん</rt></ruby><ruby>在<rt>ざい</rt></ruby>に<ruby>不<rt>ふ</rt></ruby><ruby>安<rt>あん</rt></ruby>を<ruby>感<rt>かん</rt></ruby>じること</span>
+                            <span class="option-translation">被提醒自身的无能，对自我的存在感到不安。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文使用的是“凡庸（平庸、和常人一样）”，而平庸并不等同于“无能（無能さ）”。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 问题 3 -->
+            <div class="qa-section question-block" data-q-id="3">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="3" aria-pressed="false" title="记题">問3</button>
+                        <span class="question-title-text"><ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>考<rt>かんが</rt></ruby>えに<ruby>合<rt>あ</rt></ruby>っているのはどれか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>は<ruby>自<rt>みずか</rt></ruby>らの<ruby>可<rt>か</rt></ruby><ruby>能<rt>のう</rt></ruby><ruby>性<rt>せい</rt></ruby>を<ruby>広<rt>ひろ</rt></ruby>げ、<ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>の<ruby>価<rt>か</rt></ruby><ruby>値<rt>ち</rt></ruby>を<ruby>高<rt>たか</rt></ruby>める。</span>
+                            <span class="option-translation">人类会扩大自身的可能性，从而提高自身的价值。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        虽然人类留下了未知的部分，但这并非直接为了“扩大可能性去提高价值”，而是为了获得作为个体的微小确认感。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>は<ruby>個<rt>こ</rt></ruby>であることの<ruby>確<rt>かく</rt></ruby><ruby>証<rt>しょう</rt></ruby>を<ruby>得<rt>え</rt></ruby>て、<ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>の<ruby>価<rt>か</rt></ruby><ruby>値<rt>ち</rt></ruby>を<ruby>高<rt>たか</rt></ruby>める。</span>
+                            <span class="option-translation">人类通过获得作为个体的确证，从而提高自身的价值。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文说的是人们试图去“探求（求めようとする）”这种确证，并非说他们真的能轻易获得并以此“提高自身价值（価値を高める）”。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>は<ruby>自<rt>みずか</rt></ruby>らに<ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby>の<ruby>余<rt>よ</rt></ruby><ruby>地<rt>ち</rt></ruby>を<ruby>残<rt>のこ</rt></ruby>し、<ruby>生<rt>い</rt></ruby>きる<ruby>意<rt>い</rt></ruby><ruby>欲<rt>よく</rt></ruby>を<ruby>保<rt>たも</rt></ruby>つ。</span>
+                            <span class="option-translation">人类给自己留下希望的余地，从而保持生存的意欲。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        这是一道主旨题。文章探讨了人们在追求平庸以求安心的同时，又厌恶被断定为平庸的矛盾心理。第三段给出了总结：人们虽然在总体上清楚自己的局限性（有限的存在），但依然要在这种局限内“留下一些未知的部分（未知の部分を必ずいくらかは残しておく）”，以此来探求作为个体的确证（即保持生存的意欲）。换言之，人类需要给自己留有希望的余地，以此来维持生存的意欲。选项3完美地契合了作者的核心观点。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>は<ruby>常<rt>つね</rt></ruby>に<ruby>新<rt>あたら</rt></ruby>たな<ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby>を<ruby>探<rt>さが</rt></ruby>しながら、<ruby>生<rt>い</rt></ruby>きる<ruby>意<rt>い</rt></ruby><ruby>欲<rt>よく</rt></ruby>を<ruby>保<rt>たも</rt></ruby>つ。</span>
+                            <span class="option-translation">人类在不断寻找新希望的同时，保持生存的意欲。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文是指在自身平庸的局限内保留“未知的部分”，而不是积极地去“寻找全新的希望（新たな希望を探しながら）”。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="article-navigation">
+        <button id="prev-btn" class="nav-btn disabled" onclick="prevPage()">← 上一篇</button> 
+        <button id="next-btn" class="nav-btn disabled" onclick="nextPage()">下一篇 →</button>
+    </div>
+</div>
+
+<div id="global-tooltip"></div>
+
+<script>
+    function toggleAnalysis() {
+        const btn = document.getElementById('analysis-btn');
+        btn.classList.toggle('active');
+        document.body.classList.toggle('show-analysis');
+        
+        if (!document.body.classList.contains('show-analysis')) {
+            document.querySelectorAll('.option-item.expanded').forEach(item => item.classList.remove('expanded'));
+            document.querySelectorAll('.key-sentence.active').forEach(item => item.classList.remove('active'));
+            const tooltip = document.getElementById('global-tooltip');
+            if (tooltip) tooltip.classList.remove('show');
+        }
+    }
+
+    function toggleInlineNote(event, element) {
+        if (!document.body.classList.contains('show-analysis')) return;
+        if (event.target.closest('.inline-note-container')) return;
+        
+        // 注釈や語彙をクリックした場合は、文の展開を妨げる
+        if (event.target.closest('.vocab-word') || event.target.closest('.exam-note')) return; 
+        
+        element.classList.toggle('active');
+    }
+
+    document.addEventListener('click', function(e) {
+        const tooltip = document.getElementById('global-tooltip');
+        if (!tooltip) return;
+
+        // 公式の注釈（exam-note）は解析モードのオンオフに関わらず動作する
+        const examNote = e.target.closest('.exam-note');
+        
+        // 独自の語彙（vocab-word）は解析モードがオンの時だけ動作する
+        const vocabWord = e.target.closest('.vocab-word');
+        const isAnalysisMode = document.body.classList.contains('show-analysis');
+
+        let targetWord = null;
+        if (!isAnalysisMode && examNote) {
+            targetWord = examNote;
+        } else if (isAnalysisMode && vocabWord) {
+            targetWord = vocabWord;
+        } else if (isAnalysisMode && examNote) {
+            // 解析モードでは公式注釈は一般テキストと同化するため動作しない
+            targetWord = null;
+        }
+
+        if (targetWord) {
+            const meaning = targetWord.getAttribute('data-meaning');
+            tooltip.innerHTML = meaning; 
+            
+            const rect = targetWord.getBoundingClientRect();
+            let left = rect.left + (rect.width / 2);
+            let top = rect.top;
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.classList.add('show');
+            e.stopPropagation();
+        } else {
+            tooltip.classList.remove('show');
+        }
+    });
+
+    window.addEventListener('scroll', () => {
+        const tooltip = document.getElementById('global-tooltip');
+        if (tooltip) tooltip.classList.remove('show');
+    });
+
+    function scrollToElement(selector) {
+        const element = document.querySelector(selector);
+        if (element) {
+            const topBarOffset = 80; 
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.scrollY - topBarOffset;
+            
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
+    }
+</script>
+
+<script src="../shared/reading-year-system.js"></script>
+<script src="../categories/index.js"></script>
+<script src="../shared/reading-category-system.js"></script>
+<script>
+    const ARTICLE_LEVEL = 'N1';
+    const ARTICLE_TYPE = 'middle';
+    const ARTICLE_YEAR = '2013.12';
+    const ARTICLE_ID = 'n1-2013-12-middle';
+    const ARTICLE_LINK = 's/2013.12.html';
+    const totalPages = 3; // 記事数を更新
+    
+    let readingSession = {
+        isReviewMode: false,
+        getReviewPages: () => [],
+        recordAnswer: () => {},
+        redirectToIndex: () => {},
+        getInitialPage: (p) => p || 1,
+        getNavState: (p) => ({ prevDisabled: p <= 1, nextDisabled: p >= totalPages }),
+        replacePageUrl: () => {},
+        getMoveTarget: () => ({})
+    };
+
+    let categorySession = {
+        isCategoryMode: false,
+        getInitialTarget: () => ({ empty: false }),
+        buildBackUrl: () => '../index.html',
+        getNavState: (p) => ({ prevDisabled: p <= 1, nextDisabled: p >= totalPages }),
+        rememberProgress: () => {},
+        replacePageUrl: () => {},
+        getMoveTarget: () => ({})
+    };
+
+    const backLink = document.getElementById('back-to-reading-index');
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedPage = parseInt(urlParams.get('page'), 10);
+
+    try {
+        if (typeof ReadingYearSystem !== 'undefined') {
+            readingSession = ReadingYearSystem.createReadingYearSession({
+                level: ARTICLE_LEVEL,
+                type: ARTICLE_TYPE,
+                examKey: urlParams.get('examKey') || ARTICLE_YEAR,
+                totalPages,
+                indexPath: '../index.html',
+                urlParams
+            });
+        }
+        
+        if (typeof ReadingCategorySystem !== 'undefined') {
+            categorySession = ReadingCategorySystem.createCategorySession({
+                level: ARTICLE_LEVEL,
+                type: ARTICLE_TYPE,
+                categoryId: urlParams.get('category'),
+                practiceMode: urlParams.get('practiceMode'),
+                examKey: urlParams.get('examKey') || ARTICLE_YEAR
+            });
+        }
+    } catch (e) {
+        console.warn("External systems not loaded properly. Using fallbacks.", e);
+    }
+
+    function toggleOption(element) {
+        if (document.body.classList.contains('show-analysis')) {
+            element.classList.toggle('expanded');
+            return;
+        }
+        
+        const qaSection = element.closest('.qa-section');
+        if (qaSection.hasAttribute('data-answered')) return;
+        
+        const isCorrect = element.classList.contains('is-correct');
+        element.classList.add('selected');
+        
+        if (isCorrect) {
+            element.classList.add('answered-correct');
+        } else {
+            element.classList.add('answered-wrong');
+            const correctOpt = qaSection.querySelector('.is-correct');
+            if (correctOpt) correctOpt.classList.add('answered-correct');
+        }
+
+        qaSection.setAttribute('data-answered', 'true');
+        recordAnswer(isCorrect);
+        checkAllAnsweredOnPage();
+    }
+
+    function checkAllAnsweredOnPage() {
+        const totalQuestions = document.querySelectorAll('.page-content.active .qa-section').length;
+        const answeredQuestions = document.querySelectorAll('.page-content.active .qa-section[data-answered="true"]').length;
+        
+        if (totalQuestions > 0 && totalQuestions === answeredQuestions) {
+            console.log("当前文章的所有题目已作答完毕。");
+        }
+    }
+
+    function handleReviewCompletionIfNeeded(isCorrect) {
+        if (!readingSession.isReviewMode || !isCorrect) {
+            return;
+        }
+
+        if (readingSession.getReviewPages().length === 0) {
+            window.setTimeout(() => {
+                alert('🎉 太棒了！这一年の錯題（間違えた問題）は復習完了です！');
+                readingSession.redirectToIndex();
+            }, 160);
+        }
+    }
+
+    function recordAnswer(isCorrect) {
+        readingSession.recordAnswer(currentPage, isCorrect);
+        handleReviewCompletionIfNeeded(isCorrect);
+    }
+
+    const isCategoryPractice = categorySession.isCategoryMode && !readingSession.isReviewMode;
+    const categoryTarget = isCategoryPractice
+        ? categorySession.getInitialTarget(requestedPage)
+        : { empty: false };
+
+    if (isCategoryPractice) {
+        backLink.href = categorySession.buildBackUrl();
+    }
+
+    const reviewModeHasNoPages = readingSession.isReviewMode && readingSession.getReviewPages().length === 0;
+    if (reviewModeHasNoPages) {
+        alert('当前年份还没有错题记录，先去正常练习一轮吧。');
+        readingSession.redirectToIndex();
+    }
+
+    if (isCategoryPractice && categoryTarget.empty) {
+        alert('这个文章分类里还没有可练习的内容。');
+        window.location.href = categorySession.buildBackUrl();
+    }
+
+    if (isCategoryPractice && categoryTarget.redirectUrl) {
+        window.location.href = categoryTarget.redirectUrl;
+    }
+
+    let currentPage = isCategoryPractice && typeof categoryTarget.page === 'number'
+        ? categoryTarget.page
+        : readingSession.getInitialPage(requestedPage);
+    window.currentPage = currentPage;
+    window.totalPages = totalPages;
+
+    function syncHeaderTitles(activePage) {
+        document.querySelectorAll('.header-title').forEach(titleEl => {
+            if (!titleEl.dataset.baseTitle) {
+                titleEl.dataset.baseTitle = titleEl.textContent.replace(/\s*（🐶 復習モード）$/, '').trim();
+            }
+
+            const isActive = Boolean(activePage && activePage.contains(titleEl));
+            titleEl.textContent = isActive && readingSession.isReviewMode
+                ? `${titleEl.dataset.baseTitle}（🐶 復習モード）`
+                : titleEl.dataset.baseTitle;
+        });
+    }
+
+    function showPage(page) {
+        document.querySelectorAll('.page-content').forEach(el => {
+            el.style.display = 'none';
+            el.classList.remove('active');
+        });
+
+        const currentEl = document.getElementById('page-' + page);
+        if (currentEl) {
+            currentEl.style.display = 'block';
+            currentEl.classList.add('active');
+        }
+
+        syncHeaderTitles(currentEl);
+
+        document.querySelectorAll('.qa-section').forEach(section => {
+            section.removeAttribute('data-answered');
+        });
+
+        document.querySelectorAll('.option-item').forEach(item => {
+            item.classList.remove('selected', 'answered-correct', 'answered-wrong', 'expanded');
+        });
+
+        document.querySelectorAll('.key-sentence').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelectorAll('.paragraph.recorder-focus').forEach(paragraph => {
+            paragraph.classList.remove('recorder-focus');
+        });
+        if (typeof window.hideGlobalTooltip === 'function') {
+            window.hideGlobalTooltip();
+        } else {
+            const tooltip = document.getElementById('global-tooltip');
+            if (tooltip) {
+                tooltip.classList.remove('show');
+            }
+        }
+        if (typeof window.clearActiveVocabWords === 'function') {
+            window.clearActiveVocabWords();
+        }
+        if (typeof window.clearDraftSelection === 'function') {
+            window.clearDraftSelection(true);
+        }
+
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const navState = isCategoryPractice
+            ? categorySession.getNavState(page)
+            : readingSession.getNavState(page);
+
+        prevBtn.classList.toggle('disabled', navState.prevDisabled);
+        nextBtn.classList.toggle('disabled', navState.nextDisabled);
+
+        currentPage = page;
+        window.currentPage = currentPage;
+        if (isCategoryPractice) {
+            categorySession.rememberProgress(page);
+            categorySession.replacePageUrl(page);
+        } else {
+            readingSession.replacePageUrl(page);
+        }
+        if (typeof window.renderSentenceRecorder === 'function') {
+            window.renderSentenceRecorder();
+        }
+        if (typeof window.renderMediumQuickNav === 'function') {
+            window.renderMediumQuickNav();
+        }
+        window.scrollTo(0, 0);
+    }
+
+    window.showPage = showPage;
+
+    function navigateCategory(direction) {
+        const target = categorySession.getMoveTarget(currentPage, direction);
+
+        if (target.sameExamKey && typeof target.page === 'number') {
+            showPage(target.page);
+            return;
+        }
+
+        if (target.href) {
+            window.location.href = target.href;
+            return;
+        }
+
+        if (target.done) {
+            alert('已经是这个分类的最后一篇了！');
+            return;
+        }
+
+        alert('已经是这个分类的第一篇了！');
+    }
+
+    function navigateReview(direction) {
+        const target = readingSession.getMoveTarget(currentPage, direction);
+
+        if (typeof target.page === 'number') {
+            showPage(target.page);
+            return;
+        }
+
+        if (target.done) {
+            alert('🎉 太棒了！这一年の錯題（間違えた問題）は復習完了です！');
+            readingSession.redirectToIndex();
+            return;
+        }
+
+        alert('已经是这一年错题的第一题了！');
+    }
+
+    function prevPage() {
+        if (readingSession.isReviewMode) {
+            navigateReview(-1);
+            return;
+        }
+        if (isCategoryPractice) {
+            navigateCategory(-1);
+            return;
+        }
+        if (currentPage > 1) {
+            showPage(currentPage - 1);
+        }
+    }
+
+    function nextPage() {
+        if (readingSession.isReviewMode) {
+            navigateReview(1);
+            return;
+        }
+        if (isCategoryPractice) {
+            navigateCategory(1);
+            return;
+        }
+        if (currentPage < totalPages) {
+            showPage(currentPage + 1);
+        } else {
+            alert('已经是該年份の最后一篇了！');
+        }
+    }
+
+    if (!reviewModeHasNoPages && !(isCategoryPractice && categoryTarget.redirectUrl) && !(isCategoryPractice && categoryTarget.empty)) {
+        showPage(currentPage);
+    }
+</script>
+<script>
+    window.readingMediumToolsConfig = {
+        manageVocabTooltip: false
+    };
+</script>
+<script src="../../../shared/study-quest-test-runtime.js"></script>
+<script src="../../../shared/study-quest-test-boot.js"></script>
+<script src="../shared/reading-medium-tools.js"></script>
+<script src="../shared/reading-tools.js"></script>
+<script src="../shared/reading-medium-runtime.js"></script>
+
+</body>
+</html>

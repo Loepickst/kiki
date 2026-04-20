@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解 - 2012年12月 中長文</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #3b5998; 
+            --sub-color: #787878;
+            --note-bg: #f4f6f9; 
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+            --underline-color: #2c2c2c;
+            --q-badge-color: #e67e22; 
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 80px 15px 120px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) { .toggle-btn:hover { background: var(--accent-color); color: white; } }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        .container {
+            max-width: 760px;
+            width: 100%;
+            background: var(--paper-color); padding: 50px 35px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box; border-radius: 8px;
+        }
+
+        .page-content { display: none; animation: fadeIn 0.35s ease-out; }
+        .page-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .header-title { 
+            text-align: center; margin-top: 0; margin-bottom: 40px; 
+            font-size: 1.3rem; color: var(--text-color); border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .paragraph {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.2; 
+            text-align: justify; margin: 0 0 10px 0;
+            text-indent: 1em; 
+        }
+        p.japanese:last-of-type {
+            margin-bottom: 0;
+        }
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        .exam-underline {
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            text-decoration-thickness: 1.5px;
+            text-decoration-color: var(--underline-color);
+            position: relative;
+            padding-bottom: 2px;
+        }
+        
+        body.show-analysis .exam-underline {
+            background-color: rgba(231, 76, 60, 0.1); 
+            text-decoration-color: #e74c3c;
+        }
+
+        .analysis-element { display: none; }
+        body.show-analysis .analysis-element { display: block; }
+
+        .paragraph-analysis {
+            margin-top: 15px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            font-family: var(--chinese-font);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .para-role {
+            padding: 12px 18px;
+            background-color: rgba(59, 89, 152, 0.05);
+            border-bottom: 1px dashed #cbd5e1;
+            font-size: 0.9rem;
+            color: #334155;
+            line-height: 1.6;
+        }
+        .role-title {
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-right: 8px;
+            display: inline-flex;
+            align-items: center;
+        }
+        .para-translation {
+            padding: 15px 18px;
+            font-size: 0.95rem;
+            color: #475569;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        .trans-title {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: bold;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .key-sentence { transition: 0.3s ease; }
+        body.show-analysis .key-sentence { background-color: rgba(59, 89, 152, 0.06); border-bottom: 2px dashed #baccf1; cursor: pointer; border-radius: 3px; padding: 2px 0; }
+        body.show-analysis .key-sentence:hover { background-color: rgba(59, 89, 152, 0.12); }
+        body.show-analysis .key-sentence.active { background-color: rgba(216, 67, 21, 0.08); border-bottom-color: #e74c3c; }
+
+        .sentence-badge { display: none; }
+        body.show-analysis .sentence-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            background-color: var(--accent-color); color: white;
+            font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;
+            margin: 0 6px; vertical-align: middle;
+            font-family: var(--chinese-font); font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateY(-2px); transition: 0.3s;
+        }
+        body.show-analysis .sentence-badge.q-badge {
+            background-color: var(--q-badge-color);
+        }
+        body.show-analysis .key-sentence:hover .sentence-badge { transform: translateY(-2px) scale(1.05); }
+        body.show-analysis .key-sentence.active .sentence-badge { background-color: #e74c3c; }
+
+        .inline-note-container {
+            display: none; background-color: #fff; border-left: 4px solid #e74c3c;
+            padding: 15px 20px; margin: 15px 0 15px -1em; 
+            font-size: 0.95rem; color: #444; box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            font-family: var(--chinese-font); border-radius: 0 6px 6px 0;
+            text-indent: 0; line-height: 1.8; cursor: text;
+        }
+        .key-sentence.active .inline-note-container { display: block; }
+        .inline-note-title { font-weight: bold; color: #e74c3c; margin-bottom: 8px; font-size: 1rem; display: flex; align-items: center; }
+
+        .qa-container { margin-top: 50px; border-top: 2px solid #f0f0f0; padding-top: 20px; }
+        .qa-section { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px dashed #e2e8f0; font-family: var(--chinese-font); }
+        .qa-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        
+        .question-title { 
+            font-size: 1.1rem; color: var(--text-color); margin-bottom: 20px; 
+            font-weight: bold; font-family: var(--japanese-font); line-height: 1.8; 
+        }
+        .question-num-badge {
+            background-color: var(--accent-color); color: white;
+            font-size: 0.8rem; padding: 2px 8px; border-radius: 4px;
+            margin-right: 8px; font-family: var(--chinese-font);
+            white-space: nowrap; 
+            display: inline-block;
+            vertical-align: baseline;
+            position: relative;
+            top: -2px; 
+        }
+        
+        .option-item {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px;
+            cursor: pointer; transition: 0.2s; overflow: hidden;
+        }
+        .option-item:hover { border-color: var(--accent-color); box-shadow: 0 2px 10px rgba(59, 89, 152, 0.1); }
+        
+        body:not(.show-analysis) .option-item.answered-correct { border-color: #38a169; background-color: rgba(56, 161, 105, 0.05); }
+        body:not(.show-analysis) .option-item.answered-wrong { border-color: #e53e3e; background-color: rgba(229, 62, 62, 0.05); }
+        body:not(.show-analysis) .option-item.answered-correct .option-number::after { content: " ⭕"; font-size: 1rem; color: #38a169; }
+        body:not(.show-analysis) .option-item.answered-wrong .option-number::after { content: " ❌"; font-size: 1rem; color: #e53e3e; }
+        body.show-analysis .option-item.is-correct { border-left: 4px solid #38a169; }
+        body:not(.show-analysis) .option-content rt { display: none; }
+
+        /* 選択肢の番号とテキストが揃うように修正 */
+        .option-content { padding: 15px 20px; display: flex; align-items: flex-start; font-family: var(--japanese-font); line-height: 1.6; }
+        .option-number { font-weight: bold; color: var(--accent-color); margin-right: 15px; font-family: var(--chinese-font); white-space: nowrap; flex-shrink: 0; line-height: 1.6; }
+        .option-text-group { display: flex; flex-direction: column; line-height: 1.6; }
+        
+        .option-translation { display: none; font-size: 0.85rem; color: #718096; margin-top: 4px; font-family: var(--chinese-font); }
+        body.show-analysis .option-translation { display: block; }
+
+        .option-explanation {
+            display: none; padding: 15px 20px; background: #f8fafc; border-top: 1px dashed #e2e8f0;
+            font-size: 0.95rem; color: #4a5568; line-height: 1.7;
+        }
+        body.show-analysis .option-item.expanded .option-explanation { display: block; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 8px; }
+        .badge.wrong { background: #e53e3e; }
+        .badge.correct { background: #38a169; }
+
+        .article-navigation { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 30px; border-top: 2px dashed #f0f0f0; }
+        .nav-btn { display: inline-flex; align-items: center; padding: 10px 20px; background: #ffffff; color: var(--accent-color); text-decoration: none; border-radius: 8px; font-size: 0.95rem; font-family: var(--chinese-font); font-weight: bold; transition: all 0.3s ease; border: 1px solid #d0dcf2; box-shadow: 0 2px 4px rgba(59, 89, 152, 0.05); cursor: pointer; }
+        .nav-btn:hover { background: var(--accent-color); color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(59, 89, 152, 0.15); }
+        .nav-btn.disabled { opacity: 0.5; pointer-events: none; background: #f8fafc; color: #a0aec0; border-color: #e2e8f0; box-shadow: none; }
+
+        .quick-nav-widget {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(6px);
+            padding: 12px 10px;
+            border-radius: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(59, 89, 152, 0.1);
+            z-index: 900;
+        }
+
+        .quick-nav-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--note-bg);
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-family: var(--chinese-font);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .quick-nav-item:hover {
+            background: var(--accent-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(59, 89, 152, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-group-title {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 2px;
+            margin-top: 4px;
+            font-family: var(--chinese-font);
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background: rgba(59, 89, 152, 0.15);
+            margin: 4px 0;
+            width: 100%;
+        }
+
+        .audio-wrapper { position: fixed; bottom: 0; left: 0; right: 0; z-index: 2000; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 15px 20px 25px 20px; display: flex; justify-content: center; border-top: 1px solid rgba(0,0,0,0.05); box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+        .audio-player { display: flex; align-items: center; width: 100%; max-width: 600px; }
+        .play-btn { width: 36px; height: 36px; border-radius: 50%; background-color: var(--accent-color); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 12px; flex-shrink: 0; transition: transform 0.2s; padding: 0; }
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+        .progress-container { flex-grow: 1; height: 20px; display: flex; align-items: center; margin-right: 12px; cursor: pointer; position: relative; }
+        .progress-bg { width: 100%; height: 4px; background-color: #f0f0f0; border-radius: 2px; position: relative; }
+        .progress-bar { height: 100%; background-color: var(--accent-color); width: 0%; border-radius: 2px; position: relative; }
+        .progress-bar::after { content: ""; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background-color: white; border: 2px solid var(--accent-color); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .time-display { font-size: 0.7rem; color: #999; width: 70px; text-align: right; font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
+        .loop-btn { background: none; border: none; cursor: pointer; padding: 8px; margin-left: 8px; opacity: 0.5; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .loop-btn.active { opacity: 1; color: var(--accent-color); }
+        .loop-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        .speed-btn {
+            background: none; border: 1px solid #ccc; border-radius: 4px;
+            cursor: pointer; padding: 2px 6px; margin-left: 8px;
+            font-size: 0.75rem; color: #787878; transition: all 0.2s;
+            font-family: var(--chinese-font); font-variant-numeric: tabular-nums;
+            font-weight: 500;
+        }
+        .speed-btn.active {
+            color: var(--accent-color); border-color: var(--accent-color); background: rgba(59, 89, 152, 0.05);
+        }
+
+        @media (max-width: 1000px) {
+            .quick-nav-widget {
+                right: 15px;
+                transform: scale(0.85) translateY(-50%);
+                transform-origin: right center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 30px 20px 90px; }
+            p.japanese { text-indent: 0; } 
+            
+            .quick-nav-widget {
+                display: none;
+            }
+        }
+        
+        /* =========================================
+           1. 試験の公式注釈（解析モードオフ時に目立つ）
+           ========================================= */
+        body:not(.show-analysis) .exam-note {
+            border-bottom: 1px dashed #e74c3c;
+            cursor: help;
+            position: relative;
+            color: inherit;
+            transition: background-color 0.2s;
+            border-radius: 2px;
+            padding: 0 2px;
+        }
+        body:not(.show-analysis) .exam-note:hover {
+            background-color: rgba(231, 76, 60, 0.08);
+        }
+        body:not(.show-analysis) .exam-note::after {
+            content: '*注';
+            font-size: 0.65rem;
+            color: #e74c3c;
+            vertical-align: super;
+            margin-left: 2px;
+            font-weight: bold;
+            font-family: var(--chinese-font);
+        }
+        /* 解析モード時は公式注釈の強調を控えめに（同化させる） */
+        body.show-analysis .exam-note {
+            border-bottom: none;
+            cursor: text;
+        }
+        body.show-analysis .exam-note::after {
+            display: none;
+        }
+
+        /* =========================================
+           2. N1語彙解説（解析モード時のみ表示）
+           ========================================= */
+        .vocab-word {
+            transition: all 0.2s ease;
+        }
+        body.show-analysis .vocab-word {
+            background-color: rgba(16, 185, 129, 0.15); 
+            color: #059669; 
+            font-weight: bold; 
+            border-bottom: 2px dashed #10b981; 
+            cursor: help; 
+            position: relative;
+            padding: 2px 4px;
+            margin: 0 2px;
+            border-radius: 4px;
+            text-decoration: none; 
+        }
+        body.show-analysis .vocab-word:hover {
+            background-color: rgba(16, 185, 129, 0.25);
+            border-bottom-style: solid;
+        }
+        
+        /* ツールチップ（気泡）スタイル */
+        #global-tooltip {
+            position: fixed;
+            background-color: rgba(44, 44, 44, 0.95);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: var(--chinese-font);
+            pointer-events: none;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.2s ease, margin-top 0.2s ease;
+            transform: translate(-50%, -100%);
+            margin-top: 0;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        #global-tooltip.show {
+            opacity: 1;
+            margin-top: -8px;
+        }
+        #global-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -6px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: rgba(44, 44, 44, 0.95) transparent transparent transparent;
+        }
+        /* 注釈エリア */
+        .article-notes {
+            margin-top: 30px;
+            padding: 15px 20px;
+            background-color: #fcfcfc;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #555;
+            font-family: var(--japanese-font);
+            border: 1px solid #eee;
+        }
+        .article-notes .note-item {
+            margin-bottom: 5px;
+            line-height: 1.6;
+        }
+        .article-notes .note-mark {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+    </style>
+    <link rel="stylesheet" href="../../../shared/site-fonts.css">
+    <link rel="stylesheet" href="../shared/reading-tools.css">
+    <link rel="stylesheet" href="../shared/reading-medium-tools.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a id="back-to-reading-index" href="../index.html?level=N1&type=middle" class="toggle-btn" style="text-decoration: none;">← 戻る</a>
+    <div id="today-date">N1 中篇</div>
+    <div class="top-bar-controls">
+        <button id="analysis-btn" class="toggle-btn" onclick="toggleAnalysis()">解析</button>
+    </div>
+</div>
+
+<div class="container">
+    <!-- PAGE 1: わかりやすさの勉強法 -->
+    <div id="page-1" class="page-content active">
+        <h2 class="header-title">2012年12月 中篇（一）</h2>
+
+        <div class="article-content">
+            <!-- 段落 1: 問題提起・兼ね合いの難しさ -->
+            <div class="paragraph" id="page1-para-1" data-para-id="1">
+                <p class="japanese">
+                    <ruby>私<rt>わたし</rt></ruby>は、「どうしたらわかりやすく<ruby>伝<rt>つた</rt></ruby>えられるか」ということを<ruby>常<rt>つね</rt></ruby>に<ruby>考<rt>かんが</rt></ruby>えています。
+                </p>
+                <p class="japanese">
+                    その<ruby>一<rt>いっ</rt></ruby><ruby>方<rt>ぽう</rt></ruby>で、「<ruby>話<rt>はなし</rt></ruby>を<ruby>単<rt>たん</rt></ruby><ruby>純<rt>じゅん</rt></ruby><ruby>化<rt>か</rt></ruby>しすぎてはいけない」ということも<span class="exam-note" data-meaning="【注】決して忘れないようにする"><ruby>肝<rt>きも</rt></ruby>に<ruby>銘<rt>めい</rt></ruby>じ</span>ています。
+                </p>
+                <p class="japanese">
+                    この<span class="vocab-word" data-meaning="平衡，兼顾"><ruby>兼<rt>か</rt></ruby>ね<ruby>合<rt>あ</rt></ruby>い</span>が、<ruby>結<rt>けっ</rt></ruby><ruby>構<rt>こう</rt></ruby><ruby>難<rt>むずか</rt></ruby>しいのです。<ruby>扱<rt>あつか</rt></ruby>うテーマに<ruby>関<rt>かん</rt></ruby>して<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>を<span class="vocab-word" data-meaning="积累"><ruby>積<rt>つ</rt></ruby>み<ruby>重<rt>かさ</rt></ruby>ね</span>、<ruby>知<rt>ち</rt></ruby><ruby>識<rt>しき</rt></ruby>が<ruby>増<rt>ふ</rt></ruby>えるほど、<ruby>難<rt>むずか</rt></ruby>しくなります。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <span class="exam-note" data-meaning="【注】中途半端"><ruby>生<rt>なま</rt></ruby><ruby>半<rt>はん</rt></ruby><ruby>可<rt>か</rt></ruby></span>にしか<ruby>知<rt>し</rt></ruby>らないときのほうが、<ruby>簡<rt>かん</rt></ruby><ruby>単<rt>たん</rt></ruby>に<span class="exam-note" data-meaning="【注】大まかに、粗く">ざっくり</span><ruby>単<rt>たん</rt></ruby><ruby>純<rt>じゅん</rt></ruby><ruby>化<rt>か</rt></ruby>できたりします。でも、そのために<ruby>結<rt>けっ</rt></ruby><ruby>果<rt>か</rt></ruby>として、<ruby>全<rt>ぜん</rt></ruby><ruby>体<rt>たい</rt></ruby><ruby>像<rt>ぞう</rt></ruby>が<ruby>見<rt>み</rt></ruby>えずに<span class="vocab-word" data-meaning="扭曲的"><ruby>歪<rt>ゆが</rt></ruby>んだ</span><ruby>像<rt>ぞう</rt></ruby>を<ruby>示<rt>しめ</rt></ruby>したり、<ruby>事<rt>じ</rt></ruby><ruby>実<rt>じつ</rt></ruby>とニュアンスが<ruby>違<rt>ちが</rt></ruby>ってきてしまったりすることにもつながります。これはとても<span class="exam-underline">①<ruby>怖<rt>こわ</rt></ruby>いこと</span>です。
+                        <span class="sentence-badge q-badge">問1の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問1：①怖いこととは何か？</span>
+                            本题考查“可怕的事情”具体指什么。指示代词“这（これ）”指代的是前文的结果。根据前一句：“因为一知半解地去简单粗暴地简化，结果导致看不清全貌而展示出扭曲的图像，或者与事实的细微差别产生偏差”。简单来说，就是因为知识不足而去简化，导致传达的内容变得不准确。选项1合理地总结了这一逻辑因果。
+                        </span>
+                    </span>
+                </p>
+                <p class="japanese">
+                    それを<ruby>防<rt>ふせ</rt></ruby>ぐには、どうしたらいいか。（<ruby>中<rt>ちゅう</rt></ruby><ruby>略<rt>りゃく</rt></ruby>）
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        提出“浅显易懂”与“不过度简化”之间的两难。作者指出，知识越少反而越容易简化，但这样往往会导致内容失真和扭曲，这是非常可怕的。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        我经常在思考“如何才能传达得浅显易懂”。<br>
+                        但另一方面，我也牢记着“不能把话过度简化”这一点。<br>
+                        这两者之间的平衡相当困难。关于所探讨的主题，学习积累得越多，知识增加得越多，反而越难。在一知半解的时候，反而能简单粗暴地将其简化。但是，正因为如此，结果会导致看不清全貌而展示出扭曲的图像，或者变得与事实的细微差别产生出入。这是非常可怕的事情。<br>
+                        为了防范这种情况，该怎么做才好呢。（中略）
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 2: スランプの発生 -->
+            <div class="paragraph" id="page1-para-2" data-para-id="2">
+                <p class="japanese">
+                    まず、<ruby>調<rt>しら</rt></ruby>べたいことを<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>して、<ruby>誰<rt>だれ</rt></ruby>かに<ruby>話<rt>はな</rt></ruby>してみます。<ruby>簡<rt>かん</rt></ruby><ruby>単<rt>たん</rt></ruby>に<ruby>話<rt>はなし</rt></ruby>ができたなら、<ruby>要<rt>よう</rt></ruby><ruby>注<rt>ちゅう</rt></ruby><ruby>意<rt>い</rt></ruby>。<ruby>学<rt>がく</rt></ruby><ruby>部<rt>ぶ</rt></ruby><ruby>生<rt>せい</rt></ruby>レベルである<ruby>可<rt>か</rt></ruby><ruby>能<rt>のう</rt></ruby><ruby>性<rt>せい</rt></ruby>が<ruby>高<rt>たか</rt></ruby>いからです。そこで<ruby>満<rt>まん</rt></ruby><ruby>足<rt>ぞく</rt></ruby>せずに、さらに<ruby>深<rt>ふか</rt></ruby>い<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>をしてみましょう。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        すると、あら<ruby>不<rt>ふ</rt></ruby><ruby>思<rt>し</rt></ruby><ruby>議<rt>ぎ</rt></ruby>。<ruby>急<rt>きゅう</rt></ruby>に<ruby>話<rt>はなし</rt></ruby>が<ruby>難<rt>むずか</rt></ruby>しくなります。これが<ruby>大<rt>だい</rt></ruby><ruby>学<rt>がく</rt></ruby><ruby>院<rt>いん</rt></ruby><ruby>生<rt>せい</rt></ruby>レベルです。いわば<span class="exam-underline">②「わかりやすい<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>」に<ruby>至<rt>いた</rt></ruby>るスランプ</span>のようなものです。
+                        <span class="sentence-badge q-badge">問2の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問2：スランプとはどのような状態か？</span>
+                            本题探讨“通往浅显易懂的说明之路上的瓶颈（スランプ）”是指什么状态。根据前文逻辑：“进一步深入学习吧。于是，真不可思议。突然间话就变得难讲了”。这意味着：明明通过深入学习增加了知识，结果却反而变得无法进行浅显易懂的说明了。这正是学习深入过程中的一种停滞感（瓶颈）。选项2准确对应了这一情况。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        解释深入学习过程中必经的“瓶颈（スランプ）”阶段。当不再满足于肤浅的简单化而深入学习后，知识的增加反而会让说明变得困难。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        首先，把想调查的事情学习一下，试着讲给别人听。如果能简单地讲出来，那就要注意了。因为这很可能只是本科生水平。不要满足于此，试着做更深入的学习吧。于是，真不可思议。突然间话就变得难讲了。这就是研究生水平。可以说，这就是通往“浅显易懂的说明”之路上的类似瓶颈期的东西。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 3: スランプの突破と結論 -->
+            <div class="paragraph" id="page1-para-3" data-para-id="3">
+                <p class="japanese">
+                    そこで<ruby>挫<rt>ざ</rt></ruby><ruby>折<rt>せつ</rt></ruby>せず、さらに<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>を<ruby>深<rt>ふか</rt></ruby>め、「この<ruby>話<rt>はなし</rt></ruby>の<span class="exam-note" data-meaning="【注】最も大事なところ">キモ</span>は<ruby>何<rt>なに</rt></ruby>なのか」を<ruby>考<rt>かんが</rt></ruby>え<ruby>抜<rt>ぬ</rt></ruby>きましょう。すると、ある<ruby>日<rt>ひ</rt></ruby><ruby>突<rt>とつ</rt></ruby><ruby>然<rt>ぜん</rt></ruby>、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>でも<ruby>驚<rt>おどろ</rt></ruby>くほど、わかりやすい<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>ができていることに<ruby>気<rt>き</rt></ruby>づくはずです。あなたは、その<ruby>分<rt>ぶん</rt></ruby><ruby>野<rt>や</rt></ruby>で、<span class="vocab-word" data-meaning="公明正大，堂堂正正"><ruby>晴<rt>は</rt></ruby>れて</span>「<ruby>指<rt>し</rt></ruby><ruby>導<rt>どう</rt></ruby><ruby>教<rt>きょう</rt></ruby><ruby>授<rt>じゅ</rt></ruby>」の<ruby>立<rt>たち</rt></ruby><ruby>場<rt>ば</rt></ruby>まで<ruby>成<rt>せい</rt></ruby><ruby>長<rt>ちょう</rt></ruby>したのです。<ruby>学<rt>がく</rt></ruby><ruby>部<rt>ぶ</rt></ruby><ruby>生<rt>せい</rt></ruby>レベルの<ruby>人<rt>ひと</rt></ruby>の<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>の<ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>いを<ruby>訂<rt>てい</rt></ruby><ruby>正<rt>せい</rt></ruby>してあげることもできるようになっていることでしょう。
+                </p>
+                <p class="japanese">
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <ruby>最<rt>さい</rt></ruby><ruby>初<rt>しょ</rt></ruby>の<ruby>単<rt>たん</rt></ruby><ruby>純<rt>じゅん</rt></ruby><ruby>化<rt>か</rt></ruby>で<ruby>満<rt>まん</rt></ruby><ruby>足<rt>ぞく</rt></ruby>せず、さらに<ruby>高<rt>たか</rt></ruby>みを<ruby>目<rt>め</rt></ruby><ruby>指<rt>ざ</rt></ruby>すとスランプに<span class="vocab-word" data-meaning="陷入"><ruby>陥<rt>おちい</rt></ruby>る</span>。そこを<ruby>突<rt>とっ</rt></ruby><ruby>破<rt>ぱ</rt></ruby>すると、「わかりやすい<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>」が<ruby>可<rt>か</rt></ruby><ruby>能<rt>のう</rt></ruby>になる。このプロセスが、キモなのです。
+                        <span class="sentence-badge q-badge">問3の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問3：スランプを突破する方法</span>
+                            本题询问作者认为应该如何突破瓶颈（スランプ）。结合前一句的具体做法（“不要受挫，进一步加深学习，彻底思考这个话题的核心是什么”）以及这里的总结概括（“突破那里，就能实现‘浅显易懂的说明’”）。这表明，突破的方法是不放弃地深化知识，并彻底追问事物的本质。选项2恰当地提炼了这一做法。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        提出突破瓶颈的方案与结果。不放弃地继续深挖，彻底思考问题的“核心（キモ）”，最终就会迎来豁然开朗的瞬间。这也是全文的核心结论。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        在这个阶段不要受挫放弃，要进一步加深学习，彻底思考“这个话题的核心是什么”。于是，在某天突然，你应该会发现自己能够做出连自己都惊讶的浅显易懂的说明了。你在这个领域，已经光明正大地成长到了“指导教授”的地位。想必你也变得能够去纠正那些本科生水平的人在说明上的错误了吧。<br>
+                        不满足于最初的单纯化，进一步以更高层次为目标就会陷入瓶颈。突破那里，就能实现“浅显易懂的说明”。这个过程，才是最关键的。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 注釈セクション（解析モードオフでも見られる用） -->
+            <div class="article-notes">
+                <div class="note-item"><span class="note-mark">（注1）肝（きも）に銘（めい）じる：</span>決して忘れないようにする</div>
+                <div class="note-item"><span class="note-mark">（注2）生半可（なまはんか）：</span>中途半端</div>
+                <div class="note-item"><span class="note-mark">（注3）ざっくり：</span>大まかに、粗く</div>
+                <div class="note-item"><span class="note-mark">（注4）キモ：</span>最も大事なところ</div>
+            </div>
+        </div>
+
+        <!-- 多个问题容器 -->
+        <div class="qa-container">
+            <!-- 问题 1 -->
+            <div class="qa-section question-block" data-q-id="1">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="1" aria-pressed="false" title="记题">問1</button>
+                        <span class="question-title-text">①<span class="exam-underline"><ruby>怖<rt>こわ</rt></ruby>いこと</span>とは<ruby>何<rt>なに</rt></ruby>か。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>不<rt>ふ</rt></ruby><ruby>十<rt>じゅう</rt></ruby><ruby>分<rt>ぶん</rt></ruby>な<ruby>知<rt>ち</rt></ruby><ruby>識<rt>しき</rt></ruby>で<ruby>話<rt>はなし</rt></ruby>を<ruby>単<rt>たん</rt></ruby><ruby>純<rt>じゅん</rt></ruby><ruby>化<rt>か</rt></ruby>したため、<ruby>内<rt>ない</rt></ruby><ruby>容<rt>よう</rt></ruby>が<ruby>正<rt>せい</rt></ruby><ruby>確<rt>かく</rt></ruby>でなくなること</span>
+                            <span class="option-translation">因为用不充分的知识把话简化了，导致内容变得不准确。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        设问考查“可怕的事情”具体指什么。指示代词“这（これ）”指代的是前文说明的结果。定位到第一段：「生半可にしか知らないときのほうが、簡単にざっくり単純化できたりします。でも、そのために結果として、全体像が見えずに歪んだ像を示したり、事実とニュアンスが違ってきてしまったりする…これはとても怖いことです」。简单来说，就是因为知识一知半解（不充分）而去粗暴地简化，导致传达的内容扭曲、与事实产生偏差（变得不准确）。选项1合理地总结了这一逻辑因果。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>話<rt>はなし</rt></ruby>が<ruby>曖<rt>あい</rt></ruby><ruby>昧<rt>まい</rt></ruby>になり、<ruby>情<rt>じょう</rt></ruby><ruby>報<rt>ほう</rt></ruby>を<ruby>断<rt>だん</rt></ruby><ruby>片<rt>ぺん</rt></ruby><ruby>的<rt>てき</rt></ruby>にしか<ruby>伝<rt>つた</rt></ruby>えられなくなること</span>
+                            <span class="option-translation">导致话语变得模糊暧昧，只能碎片化地传达信息。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文强调的是“内容变得扭曲、与事实不符（歪んだ像を示す、事実と違ってくる）”，而不是单纯的“暧昧”和“碎片化”。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>事<rt>じ</rt></ruby><ruby>実<rt>じつ</rt></ruby>に<ruby>関<rt>かん</rt></ruby>する<ruby>知<rt>ち</rt></ruby><ruby>識<rt>しき</rt></ruby>が<ruby>不<rt>ふ</rt></ruby><ruby>十<rt>じゅう</rt></ruby><ruby>分<rt>ぶん</rt></ruby>なせいで、<ruby>話<rt>はなし</rt></ruby>が<ruby>単<rt>たん</rt></ruby><ruby>純<rt>じゅん</rt></ruby><ruby>化<rt>か</rt></ruby>しづらいこと</span>
+                            <span class="option-translation">因为关于事实的知识不够充分，导致话很难被简化。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文恰恰相反。正因为知识不充分（一知半解），所以“反而能简单粗暴地简化（簡単にざっくり単純化できたりします）”。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>扱<rt>あつか</rt></ruby>うテーマに<ruby>関<rt>かん</rt></ruby>して<ruby>知<rt>ち</rt></ruby><ruby>識<rt>しき</rt></ruby>が<ruby>増<rt>ふ</rt></ruby>えるほど、<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>が<ruby>難<rt>むずか</rt></ruby>しくなること</span>
+                            <span class="option-translation">关于所探讨的主题知识增加得越多，说明就变得越困难。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        这描述的是后续产生“瓶颈（スランプ）”的现象，而不是第一段中所说的由于不恰当的简化而导致事实失真的“可怕的事情”。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 问题 2 -->
+            <div class="qa-section question-block" data-q-id="2">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="2" aria-pressed="false" title="记题">問2</button>
+                        <span class="question-title-text">②<span class="exam-underline">「わかりやすい<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>」に<ruby>至<rt>いた</rt></ruby>るスランプ</span>とあるが、どのような<ruby>状<rt>じょう</rt></ruby><ruby>態<rt>たい</rt></ruby>か。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>知<rt>ち</rt></ruby><ruby>識<rt>しき</rt></ruby>が<ruby>増<rt>ふ</rt></ruby>えたにもかかわらず、<ruby>深<rt>ふか</rt></ruby>みのある<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>ができない<ruby>状<rt>じょう</rt></ruby><ruby>態<rt>たい</rt></ruby></span>
+                            <span class="option-translation">尽管知识增加了，却无法做出有深度的说明的状态。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        在“研究生水平（大学院生レベル）”时，由于知识深入，说明反而是有深度的，问题出在“很难让别人懂（話が難しくなります）”，而不是“做不出有深度的说明”。
+                    </div>
+                </div>
+
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>知<rt>ち</rt></ruby><ruby>識<rt>しき</rt></ruby>が<ruby>増<rt>ふ</rt></ruby>えたために、かえってわかりやすい<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>ができない<ruby>状<rt>じょう</rt></ruby><ruby>態<rt>たい</rt></ruby></span>
+                            <span class="option-translation">因为知识增加了，反而无法进行浅显易懂的说明的状态。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题探讨“通往浅显易懂的说明之路上的瓶颈（スランプ）”是指什么状态。根据第二段的描述：“不要满足于此，试着做更深入的学习吧。于是，真不可思议。突然间话就变得难讲了（急に話が難しくなります）”。这意味着：明明通过深入学习增加了知识，结果却反而变得难以进行浅显易懂的说明了。这正是学习深入过程中的一种停滞感（瓶颈）。选项2准确对应了这一情况。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>簡<rt>かん</rt></ruby><ruby>単<rt>たん</rt></ruby>なことにもかかわらず、どう<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>すればいいかわからない<ruby>状<rt>じょう</rt></ruby><ruby>態<rt>たい</rt></ruby></span>
+                            <span class="option-translation">虽然是简单的事情，却不知道该如何说明的状态。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        出现瓶颈是因为通过学习增加了知识，探讨的内容已经不再是“简单的事情”了，选项表述的情境不符。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>話<rt>はなし</rt></ruby>を<ruby>簡<rt>かん</rt></ruby><ruby>単<rt>たん</rt></ruby>にしすぎるために、かえって<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>を<ruby>理<rt>り</rt></ruby><ruby>解<rt>かい</rt></ruby>してもらえない<ruby>状<rt>じょう</rt></ruby><ruby>態<rt>たい</rt></ruby></span>
+                            <span class="option-translation">因为把话简化得过头了，反而无法让别人理解说明的状态。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        “简化过头”是第一段提到的“本科生水平”或是知识一知半解时的状态，而瓶颈（スランプ）指的是知识增加后话变得“难讲了”的状态。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 问题 3 -->
+            <div class="qa-section question-block" data-q-id="3">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="3" aria-pressed="false" title="记题">問3</button>
+                        <span class="question-title-text"><ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>は、スランプを<ruby>突<rt>とっ</rt></ruby><ruby>破<rt>ぱ</rt></ruby>するにはどうすればいいと<ruby>述<rt>の</rt></ruby>べているか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>簡<rt>かん</rt></ruby><ruby>単<rt>たん</rt></ruby>にあきらめずに、なぜスランプになったかをよく<ruby>考<rt>かんが</rt></ruby>える。</span>
+                            <span class="option-translation">不轻易放弃，去好好思考为什么会陷入瓶颈。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文建议去思考的不是“为什么陷入瓶颈（なぜスランプになったか）”，而是要去思考“这个话题的核心是什么（この話のキモは何なのか）”。
+                    </div>
+                </div>
+
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span>あきらめずに<ruby>知<rt>ち</rt></ruby><ruby>識<rt>しき</rt></ruby>をさらに<ruby>深<rt>ふか</rt></ruby>め、<ruby>本<rt>ほん</rt></ruby><ruby>質<rt>しつ</rt></ruby>は<ruby>何<rt>なに</rt></ruby>かを<ruby>徹<rt>てっ</rt></ruby><ruby>底<rt>てい</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>考<rt>かんが</rt></ruby>える。</span>
+                            <span class="option-translation">不放弃地进一步加深知识，彻底去思考本质是什么。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题询问作者认为应该如何突破瓶颈（スランプ）。结合第三段给出的具体做法：「そこで挫折せず、さらに勉強を深め、『この話のキモは何なのか』を考え抜き（ましょう）」（在这个阶段不要受挫放弃，要进一步加深学习，彻底思考“这个话题的核心是什么”），并在最后一段总结“突破那里，就能实现浅显易懂的说明”。这表明，突破的方法是不放弃地深化知识，并彻底追问事物的核心（本质）。选项2中的「本質」是对「キモ」的合理替换，完全契合原文主旨。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>単<rt>たん</rt></ruby><ruby>純<rt>じゅん</rt></ruby><ruby>化<rt>か</rt></ruby>できた<ruby>話<rt>はなし</rt></ruby>を<ruby>振<rt>ふ</rt></ruby><ruby>返<rt>かえ</rt></ruby>り、わかりやすい<ruby>説<rt>せつ</rt></ruby><ruby>明<rt>めい</rt></ruby>とは<ruby>何<rt>なに</rt></ruby>かを<ruby>考<rt>かんが</rt></ruby>え<ruby>抜<rt>ぬ</rt></ruby>く。</span>
+                            <span class="option-translation">回顾能够简化的话题，彻底思考什么是浅显易懂的说明。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文强调的是要突破瓶颈，就不能满足于最初的单纯化（「最初の単純化で満足せず」），去回顾它并不是解决问题的方法。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>十<rt>じゅう</rt></ruby><ruby>分<rt>ぶん</rt></ruby>に<ruby>知<rt>ち</rt></ruby><ruby>識<rt>しき</rt></ruby>を<ruby>深<rt>ふか</rt></ruby>めたうえで、<ruby>単<rt>たん</rt></ruby><ruby>純<rt>じゅん</rt></ruby><ruby>化<rt>か</rt></ruby>するにはどうすればいいか<ruby>考<rt>かんが</rt></ruby>える。</span>
+                            <span class="option-translation">在充分加深知识的基础上，去思考如何才能使其简化。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        作者在最后一段说的是通过突破瓶颈来实现“浅显易懂的说明（わかりやすい説明）”，而不是单纯退回到“去思考如何简化”。作者认为追求真正的核心才是关键，而不是刻意去简化。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- PAGE 2: 児童文学と視点 -->
+    <div id="page-2" class="page-content">
+        <h2 class="header-title">2012年12月 中篇（二）</h2>
+
+        <div class="article-content">
+            <!-- 段落 1: 児童文学の視点と大人の読み方 -->
+            <div class="paragraph" id="page2-para-1" data-para-id="1">
+                <p class="japanese">
+                    <ruby>児<rt>じ</rt></ruby><ruby>童<rt>どう</rt></ruby><ruby>文<rt>ぶん</rt></ruby><ruby>学<rt>がく</rt></ruby>の<ruby>多<rt>おお</rt></ruby>くは、<ruby>子<rt>こ</rt></ruby>どもの<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>で<ruby>書<rt>か</rt></ruby>かれています。もちろん<ruby>作<rt>さく</rt></ruby><ruby>者<rt>しゃ</rt></ruby>は<ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>なのですが、<ruby>子<rt>こ</rt></ruby>どもの<ruby>考<rt>かんが</rt></ruby>え<ruby>方<rt>かた</rt></ruby>や、<ruby>子<rt>こ</rt></ruby>どもの<ruby>目<rt>め</rt></ruby>の<ruby>高<rt>たか</rt></ruby>さから<ruby>見<rt>み</rt></ruby>える<ruby>風<rt>ふう</rt></ruby><ruby>景<rt>けい</rt></ruby>を<ruby>描<rt>えが</rt></ruby>いています。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <ruby>当<rt>とう</rt></ruby><ruby>然<rt>ぜん</rt></ruby>のことながら<ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>が<ruby>読<rt>よ</rt></ruby>む<ruby>場<rt>ば</rt></ruby><ruby>合<rt>あい</rt></ruby>、そこにどうしても<span class="exam-underline">①<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>のズレが<ruby>生<rt>しょう</rt></ruby>じます</span>。
+                        <span class="sentence-badge q-badge">問1の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問1：なぜ視点のズレが生じるのか？</span>
+                            本题探讨为什么会产生“视角的偏差”。回到前文可知：“儿童文学大多是以儿童的视角写成的”。而当成年人去阅读时，因为读者是以“成年人的视角”，去阅读从“儿童视角”写成的东西，视角的读写主体不一致，自然就会产生偏差。选项4“因为是从成年人的视角去阅读以儿童视角写成的东西”合理地概括了这一因果关系。
+                        </span>
+                    </span>
+                </p>
+                <p class="japanese">
+                    けれど<ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>はみな、<ruby>昔<rt>むかし</rt></ruby>、<ruby>子<rt>こ</rt></ruby>どもでした。<ruby>子<rt>こ</rt></ruby>どもを<ruby>卒<rt>そつ</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>して<ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>になったと<ruby>思<rt>おも</rt></ruby>っているのか、<ruby>子<rt>こ</rt></ruby>どもだった<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>を<span class="vocab-word" data-meaning="带着，怀抱"><ruby>抱<rt>かか</rt></ruby>えたまま</span><ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>になったと<ruby>思<rt>おも</rt></ruby>っているのかは<ruby>人<rt>ひと</rt></ruby>それぞれでしょうが、<ruby>少<rt>すく</rt></ruby>なくとも、だれもが<ruby>子<rt>こ</rt></ruby>ども<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>を<ruby>過<rt>す</rt></ruby>ごしてきています。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>の<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>で<ruby>読<rt>よ</rt></ruby>みながら、<ruby>子<rt>こ</rt></ruby>どもの<ruby>頃<rt>ころ</rt></ruby>の<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>を<ruby>思<rt>おも</rt></ruby>い<ruby>出<rt>だ</rt></ruby>すことは<ruby>可<rt>か</rt></ruby><ruby>能<rt>のう</rt></ruby>です。<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>中<rt>なか</rt></ruby>の<ruby>子<rt>こ</rt></ruby>どもに<span class="vocab-word" data-meaning="贴近，依偎"><ruby>寄<rt>よ</rt></ruby>り<ruby>添<rt>そ</rt></ruby>って</span>、<ruby>一<rt>いっ</rt></ruby><ruby>緒<rt>しょ</rt></ruby>に<ruby>読<rt>よ</rt></ruby>むとでも<ruby>言<rt>い</rt></ruby>えばいいでしょうか。
+                        <span class="sentence-badge q-badge">問2の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問2：視点のズレを解消するためにできることは？</span>
+                            本题询问作者认为为了消除视角的偏差可以做些什么。这里直接给出了建议：“在以成年人视角阅读的同时，回想起儿童时代的视角是可能的。或者说，就是贴近自己内心的那个儿童，一起阅读”。这意味着消除偏差的方法就是一边阅读，一边唤醒自己儿童时代的视角。选项3准确传达了这一做法。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        指出成人阅读儿童文学时产生视角偏差的原因，并提出解决方法：成年人可以唤醒内心深处曾经的那个自己，一边回想童年的视角一边阅读。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        儿童文学大多是以儿童的视角写成的。当然作者是成年人，但他们描绘的是儿童的想法，以及从儿童视平线看出去的风景。理所当然地，当成年人去阅读时，由于身份的差异，必然会产生视角的偏差。<br>
+                        但是成年人曾经也都是孩子。是从孩童时代毕业变成了成年人，还是带着曾经那个孩童的自己变成了成年人，这因人而异，但至少，谁都经历过孩童时代。在以成年人的视角阅读的同时，回想起孩童时代的视角是可能的。这或许可以说成是，贴近自己内心的那个孩子，和他一起阅读吧。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 2: 再読の意義と自己反省 -->
+            <div class="paragraph" id="page2-para-2" data-para-id="2">
+                <p class="japanese">
+                    <ruby>子<rt>こ</rt></ruby>ども<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>に<ruby>読<rt>よ</rt></ruby>んだ<ruby>本<rt>ほん</rt></ruby>を<ruby>再<rt>さい</rt></ruby><ruby>読<rt>どく</rt></ruby>すると、<ruby>同<rt>おな</rt></ruby>じ<ruby>場<rt>ば</rt></ruby><ruby>面<rt>めん</rt></ruby>なのに、<ruby>子<rt>こ</rt></ruby>どもの<ruby>頃<rt>ころ</rt></ruby>の<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>と<ruby>今<rt>いま</rt></ruby>の<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>とでは、<ruby>感<rt>かん</rt></ruby>じ<ruby>方<rt>かた</rt></ruby>や<ruby>受<rt>う</rt></ruby>け<ruby>取<rt>と</rt></ruby>り<ruby>方<rt>かた</rt></ruby>がちがうのに<ruby>気<rt>き</rt></ruby>づくことがあります。それは<ruby>今<rt>いま</rt></ruby>の<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>が、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>心<rt>こころ</rt></ruby>の<ruby>中<rt>なか</rt></ruby>にいる<ruby>子<rt>こ</rt></ruby>どもと<span class="vocab-word" data-meaning="面对"><ruby>向<rt>む</rt></ruby>かいあう</span><ruby>一<rt>いっ</rt></ruby><ruby>瞬<rt>しゅん</rt></ruby>です。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        そうした<ruby>機<rt>き</rt></ruby><ruby>会<rt>かい</rt></ruby>に、<ruby>今<rt>いま</rt></ruby>の<ruby>子<rt>こ</rt></ruby>どもたちへの<span class="vocab-word" data-meaning="眼光，视线">まなざし</span>を<ruby>新<rt>あら</rt></ruby>たにすることもあるでしょう。たとえば、「<ruby>近<rt>ちか</rt></ruby><ruby>頃<rt>ごろ</rt></ruby>の<ruby>子<rt>こ</rt></ruby>どもにはこまったものだ」と<ruby>文<rt>もん</rt></ruby><ruby>句<rt>く</rt></ruby>を<ruby>言<rt>い</rt></ruby>っていたけれど、<ruby>子<rt>こ</rt></ruby>どもの<ruby>頃<rt>ころ</rt></ruby>の<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>はどうだったのか？と<span class="vocab-word" data-meaning="重新质问，重新审视"><ruby>問<rt>と</rt></ruby>い<ruby>直<rt>なお</rt></ruby>す</span>。<ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>であることに<span class="exam-note" data-meaning="【注】何の疑問も感じずにいた">あぐらをかいていた</span><ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>を<span class="vocab-word" data-meaning="反省"><ruby>省<rt>かえり</rt></ruby>みる</span>。そんなことが<ruby>起<rt>お</rt></ruby>こるかもしれません。<br>
+                        <span class="exam-underline">②どうぞ、「<ruby>子<rt>こ</rt></ruby>どもの<ruby>本<rt>ほん</rt></ruby>」を<ruby>開<rt>ひら</rt></ruby>いてみてください。</span>
+                        <span class="sentence-badge q-badge">問3の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問3：なぜそのように述べているのか？</span>
+                            本题探讨作者为什么呼吁大家“去翻开儿童的书吧”。定位到本段，作者解释了重温儿童书籍的意义：这会让你面对内心的那个儿童；在这样的契机下，你可能会用新的眼光看待现在的孩子（「まなざしを新たにする」），也会反省自己作为成年人是否过于理所当然（「自分を省みる」）。简单来说，就是通过察觉内心儿童的存在，从而改变或更新自己以往看待事物的观念。选项2妥切地总结了这一逻辑。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        阐述阅读儿童文学的深层意义并发出呼吁。重温童年书籍能让现在的自己与内心的孩童对话，这不仅能更新我们看待当今孩子的眼光，也能促使我们反省作为成年人的傲慢。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        重读孩童时代读过的书时，即使是同一个场景，有时也会发现自己孩童时期和现在的感受与理解方式有所不同。这是现在的自己，与存在于内心的那个孩童面对面的一瞬间。在这样的契机下，有时也会更新我们对当今孩子们的眼光吧。比如，虽然嘴上抱怨着“最近的孩子真让人头疼”，但自己小时候又是什么样子的呢？不禁这样重新叩问自己。去反省那个对“身为成年人”这套标准习以为常的自己。也许会发生这样的事情。<br>
+                        所以，请试着翻开“儿童的书”看看吧。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 注釈セクション（解析モードオフでも見られる用） -->
+            <div class="article-notes">
+                <div class="note-item"><span class="note-mark">（注）あぐらをかいていた：</span>ここでは、何の疑問も感じずにいた</div>
+            </div>
+        </div>
+
+        <!-- 多个问题容器 -->
+        <div class="qa-container">
+            <!-- 问题 1 -->
+            <div class="qa-section question-block" data-q-id="1">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="1" aria-pressed="false" title="记题">問1</button>
+                        <span class="question-title-text">①<span class="exam-underline"><ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>のズレが<ruby>生<rt>しょう</rt></ruby>じます</span>とあるが、なぜそうなるのか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>は<ruby>子<rt>こ</rt></ruby>どもの<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby>がよく<ruby>理<rt>り</rt></ruby><ruby>理<rt>り</rt></ruby><ruby>解<rt>かい</rt></ruby>できないから</span>
+                            <span class="option-translation">因为成年人不能很好地理解儿童的世界。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文并没有说成年人“无法理解”儿童世界（相反作者认为可以回想起来），偏差的根本原因是读写双方视角的错位。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>は<ruby>子<rt>こ</rt></ruby>どもの<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>に<ruby>合<rt>あ</rt></ruby>わせて<ruby>読<rt>よ</rt></ruby>もうとするから</span>
+                            <span class="option-translation">因为成年人试图迎合儿童的视角去阅读。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        成年人如果真的能“迎合儿童视角去阅读”，那应该能消除偏差，而不是产生偏差。产生偏差是因为他们是用“成年人的视角去读”。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>の<ruby>見<rt>み</rt></ruby>てきた<ruby>風<rt>ふう</rt></ruby><ruby>景<rt>けい</rt></ruby>と<ruby>子<rt>こ</rt></ruby>どもの<ruby>見<rt>み</rt></ruby>ている<ruby>風<rt>ふう</rt></ruby><ruby>景<rt>けい</rt></ruby>はちがうから</span>
+                            <span class="option-translation">因为成年人看过的风景和儿童正在看的风景不同。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        虽然风景不同，但这并非“阅读儿童文学”时产生偏差的最直接原因。偏差是因为书是以儿童视角写的，而读者是成年人。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>の<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>から<ruby>子<rt>こ</rt></ruby>どもの<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>で<ruby>書<rt>か</rt></ruby>かれたものを<ruby>読<rt>よ</rt></ruby>むから</span>
+                            <span class="option-translation">因为是从成年人的视角去阅读以儿童的视角写成的东西。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        设问探讨为什么会产生“视角的偏差”。回到第一段，前面说明了“儿童文学大多是以儿童的视角写成的”。而当成年人去阅读时，由于读者是以“成年人的视角”，去阅读从“儿童视角”写成的东西，视角的读写主体不一致，自然就会产生偏差。选项4合理地概括了这一因果关系。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 问题 2 -->
+            <div class="qa-section question-block" data-q-id="2">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="2" aria-pressed="false" title="记题">問2</button>
+                        <span class="question-title-text"><ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>によると、<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>のズレを<ruby>解<rt>かい</rt></ruby><ruby>消<rt>しょう</rt></ruby>するためにできることは<ruby>何<rt>なに</rt></ruby>か。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>の<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>で<ruby>今<rt>いま</rt></ruby>の<ruby>子<rt>こ</rt></ruby>どもたちの<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちを<ruby>考<rt>かんが</rt></ruby>えて<ruby>読<rt>よ</rt></ruby>む。</span>
+                            <span class="option-translation">以成年人的视角去思考如今孩子们的感受来阅读。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        如果是“以成年人的视角”去读，就会继续产生偏差。作者提倡的是找回自己过去的视角。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>の<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>と<ruby>子<rt>こ</rt></ruby>ども<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>の<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>を<ruby>比<rt>くら</rt></ruby>べながら<ruby>読<rt>よ</rt></ruby>む。</span>
+                            <span class="option-translation">一边比较成年的自己和儿童时代的自己一边阅读。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文强调的是“贴近内心的那个儿童一起阅读（寄り添って一緒に読む）”，而不是去进行两者的“对比（比べる）”。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>子<rt>こ</rt></ruby>ども<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>の<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>を<ruby>思<rt>おも</rt></ruby>い<ruby>出<rt>だ</rt></ruby>しながら<ruby>読<rt>よ</rt></ruby>む。</span>
+                            <span class="option-translation">一边回想起儿童时代自己的视角一边阅读。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题询问作者认为为了消除视角的偏差可以做些什么。在第一段后半部分，作者指出：“在以成年人视角阅读的同时，回想起儿童时代的视角是可能的。或者说，就是贴近自己内心的那个儿童，一起阅读”。这意味着消除偏差的方法就是一边阅读，一边唤醒自己儿童时代的视角。选项3“一边回想自己儿童时代的视角一边阅读”准确传达了这一做法。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>子<rt>こ</rt></ruby>どもに<ruby>読<rt>よ</rt></ruby>んでやるような<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちで<ruby>読<rt>よ</rt></ruby>む。</span>
+                            <span class="option-translation">以想要读给孩子听的心情去阅读。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文并没有说要用“读给孩子听（読んでやる）”的心态，这是与文本无关的联想。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 问题 3 -->
+            <div class="qa-section question-block" data-q-id="3">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="3" aria-pressed="false" title="记题">問3</button>
+                        <span class="question-title-text">②<span class="exam-underline">どうぞ、「<ruby>子<rt>こ</rt></ruby>どもの<ruby>本<rt>ほん</rt></ruby>」を<ruby>開<rt>ひら</rt></ruby>いてみてください</span>とあるが、<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>はなぜそのように<ruby>述<rt>の</rt></ruby>べていると<ruby>考<rt>かんが</rt></ruby>えられるか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>今<rt>いま</rt></ruby>の<ruby>子<rt>こ</rt></ruby>どもの<ruby>考<rt>かんが</rt></ruby>え<ruby>方<rt>かた</rt></ruby>を<ruby>知<rt>し</rt></ruby>ることで、<ruby>大<rt>おと</rt></ruby><ruby>人<rt>な</rt></ruby>である<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>を<ruby>省<rt>かえり</rt></ruby>みることもあるから</span>
+                            <span class="option-translation">因为通过了解如今孩子们的想法，有时也能反省作为成年人的自己。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        阅读儿童文学并不是为了了解“如今孩子们的想法（今の子どもの考え方）”，而是为了面对自己内心的那个曾经的孩童。
+                    </div>
+                </div>
+
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>心<rt>こころ</rt></ruby>の<ruby>中<rt>なか</rt></ruby>にいる<ruby>子<rt>こ</rt></ruby>どもの<ruby>頃<rt>ころ</rt></ruby>の<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>に<ruby>気<rt>き</rt></ruby>づくことで、これまでの<ruby>見<rt>み</rt></ruby><ruby>方<rt>かた</rt></ruby>が<ruby>変<rt>か</rt></ruby>わることもあるから</span>
+                            <span class="option-translation">因为通过注意到存在于心中的孩童时代的自己，以往的看法有时也会改变。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题探讨作者为什么呼吁大家“去翻开儿童的书吧”。定位到第二段，作者解释了重温儿童书籍的意义：这会让你面对内心的那个儿童；在这样的契机下，你可能会用新的眼光看待现在的孩子（「まなざしを新たにする」），也会重新叩问并反省自己作为成年人是否过于自大（「自分を省みる」）。简单来说，就是通过察觉内心儿童的存在，从而改变或更新自己以往看待事物的观念（改变成见、反省自我）。选项2妥切地总结了这一逻辑。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>児<rt>じ</rt></ruby><ruby>童<rt>どう</rt></ruby><ruby>文<rt>ぶん</rt></ruby><ruby>学<rt>がく</rt></ruby>をよく<ruby>理<rt>り</rt></ruby><ruby>解<rt>かい</rt></ruby>することで、<ruby>近<rt>ちか</rt></ruby><ruby>頃<rt>ごろ</rt></ruby>の<ruby>子<rt>こ</rt></ruby>どもの<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby><ruby>点<rt>てん</rt></ruby>を<ruby>発<rt>はっ</rt></ruby><ruby>見<rt>けん</rt></ruby>できるかもしれないから</span>
+                            <span class="option-translation">因为通过更好地理解儿童文学，或许能发现如今孩子们身上的问题。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文中提到“最近的孩子真让人头疼”只是一种世俗抱怨的例子，并不是作者希望大家去“发现孩子们的问题点”。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>子<rt>こ</rt></ruby>ども<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>の<ruby>本<rt>ほん</rt></ruby>を<ruby>再<rt>さい</rt></ruby><ruby>読<rt>どく</rt></ruby>することで、これまでの<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>のことがよく<ruby>分<rt>わ</rt></ruby>かるかもしれないから</span>
+                            <span class="option-translation">因为通过重读儿童时代的书，或许能更好地了解一直以来的自己。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        重读的目的并不是了解“一直以来的自己（これまでの自分のこと）”，而是通过唤醒“内心深处的儿童视角”来反省现在习以为常的成人思维。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    
+    <div id="page-3" class="page-content">
+        <h2 class="header-title">2012年12月 中篇（三）</h2>
+
+        <div class="article-content">
+            <!-- 段落 1: ファースト・フード拡大の背景 -->
+            <div class="paragraph" id="page3-para-1" data-para-id="1">
+                <p class="japanese">
+                    ファースト・フードが<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby><ruby>中<rt>じゅう</rt></ruby>にひろがったのは、<ruby>文<rt>ぶん</rt></ruby><ruby>化<rt>か</rt></ruby>や<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>の<ruby>集<rt>しゅう</rt></ruby><ruby>合<rt>ごう</rt></ruby><ruby>状<rt>じょう</rt></ruby><ruby>態<rt>たい</rt></ruby>に<ruby>変<rt>へん</rt></ruby><ruby>化<rt>か</rt></ruby>が<ruby>起<rt>お</rt></ruby>こっていたからである。<ruby>家<rt>か</rt></ruby><ruby>族<rt>ぞく</rt></ruby>はこれまでほど<ruby>安<rt>あん</rt></ruby><ruby>定<rt>てい</rt></ruby>したものではなくなったし、<ruby>私<rt>し</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>、<ruby>労<rt>ろう</rt></ruby><ruby>働<rt>どう</rt></ruby>や<ruby>遊<rt>あそ</rt></ruby>びのパターンも<ruby>個<rt>こ</rt></ruby><ruby>人<rt>じん</rt></ruby><ruby>的<rt>てき</rt></ruby>かつ<ruby>多<rt>た</rt></ruby><ruby>様<rt>よう</rt></ruby>になっていたのである。<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>の<ruby>接<rt>せっ</rt></ruby><ruby>触<rt>しょく</rt></ruby>が<span class="vocab-word" data-meaning="繁琐的，麻烦的"><ruby>煩<rt>わずら</rt></ruby>わしい</span>ものに<ruby>感<rt>かん</rt></ruby>じる<ruby>傾<rt>けい</rt></ruby><ruby>向<rt>こう</rt></ruby>も<ruby>増<rt>ぞう</rt></ruby><ruby>大<rt>だい</rt></ruby>した。<ruby>食<rt>しょく</rt></ruby><ruby>事<rt>じ</rt></ruby>がもつ<ruby>楽<rt>たの</rt></ruby>しみは<ruby>感<rt>かん</rt></ruby><ruby>覚<rt>かく</rt></ruby>と<ruby>社<rt>しゃ</rt></ruby><ruby>交<rt>こう</rt></ruby>の<ruby>至<rt>し</rt></ruby><ruby>上<rt>じょう</rt></ruby>の<ruby>快<rt>かい</rt></ruby><ruby>楽<rt>らく</rt></ruby>ではなくなった。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        それは<ruby>他<rt>た</rt></ruby>の<ruby>行<rt>こう</rt></ruby><ruby>為<rt>い</rt></ruby>の<span class="vocab-word" data-meaning="空闲，间隙">あいま</span>に<ruby>挿<rt>そう</rt></ruby><ruby>入<rt>にゅう</rt></ruby>されるものとなることが<ruby>多<rt>おお</rt></ruby>かったし、それと<ruby>平<rt>へい</rt></ruby><ruby>行<rt>こう</rt></ruby>して<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>は<ruby>食<rt>しょく</rt></ruby><ruby>事<rt>じ</rt></ruby>を<span class="vocab-word" data-meaning="简便地打发/解决"><ruby>簡<rt>かん</rt></ruby><ruby>便<rt>べん</rt></ruby>に<ruby>済<rt>す</rt></ruby>ませる</span>ことを<ruby>望<rt>のぞ</rt></ruby>んだこととも<ruby>考<rt>こう</rt></ruby><ruby>慮<rt>りょ</rt></ruby>すべきであろう。
+                        <span class="sentence-badge q-badge">問1の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問1：ファースト・フードが広まった理由</span>
+                            本题询问快餐普及的原因。这段开头点明了总原因：“文化和人类群居状态发生了变化”。随后列举了具体的表现：家庭不再稳定，生活、工作和游玩的模式变得个人化且多样化；人们觉得人际接触变得烦琐；由于希望更简便地解决进食问题，进餐的乐趣不再是社交至上的快乐，而成了插在其他行为空闲间隙的东西。综合来看，正是“人与人的联系（人际关系）以及生活方式的改变”促使了快餐的普及。选项3合理地概括了这一点。
+                        </span>
+                    </span>
+                </p>
+                <p class="japanese">
+                    （<ruby>中<rt>ちゅう</rt></ruby><ruby>略<rt>りゃく</rt></ruby>）
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        阐述快餐普及的时代背景与原因。指出随着家庭结构的不稳定、个人生活方式的多样化，以及人们对人际交往感到繁琐，进餐的社交意义被削弱，人们转而追求在事物间隙中简便地解决饮食问题。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        快餐之所以能在世界范围内普及，是因为文化和人类的群居状态发生了变化。家庭不再像以前那样稳定，私人生活、劳动和游玩的模式也变得个人化且多样化了。人们觉得人际接触变得烦琐的倾向也增大了。进餐所带来的乐趣已不再是感官与社交至上的快乐。它很多时候变成了穿插在其他行为空闲间隙的东西，与此平行，人们希望更简便地解决吃饭问题这一点，想必也是应该考虑在内的。（中略）
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 2: 兆候的現象 -->
+            <div class="paragraph" id="page3-para-2" data-para-id="2">
+                <p class="japanese">
+                    もちろん<ruby>都<rt>と</rt></ruby><ruby>市<rt>し</rt></ruby>の<ruby>食<rt>しょく</rt></ruby><ruby>文<rt>ぶん</rt></ruby><ruby>化<rt>か</rt></ruby>にとってファースト・フードが<ruby>占<rt>し</rt></ruby>める<ruby>位<rt>い</rt></ruby><ruby>置<rt>ち</rt></ruby>は、コンビニが<ruby>買<rt>か</rt></ruby>い<ruby>物<rt>もの</rt></ruby><ruby>行<rt>こう</rt></ruby><ruby>動<rt>どう</rt></ruby>にたいして<ruby>占<rt>し</rt></ruby>める<ruby>位<rt>い</rt></ruby><ruby>置<rt>ち</rt></ruby>と<ruby>同<rt>どう</rt></ruby><ruby>様<rt>よう</rt></ruby>、<ruby>全<rt>ぜん</rt></ruby><ruby>面<rt>めん</rt></ruby><ruby>的<rt>てき</rt></ruby>ではない。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        しかし<ruby>多<rt>た</rt></ruby><ruby>種<rt>しゅ</rt></ruby><ruby>多<rt>た</rt></ruby><ruby>様<rt>よう</rt></ruby>なレストランがいたるところに<span class="exam-note" data-meaning="【注】多くできる"><ruby>叢<rt>そう</rt></ruby><ruby>生<rt>せい</rt></ruby></span>してくるなかに、ひとつの<ruby>均<rt>きん</rt></ruby><ruby>質<rt>しつ</rt></ruby><ruby>化<rt>か</rt></ruby>する<ruby>力<rt>ちから</rt></ruby>として<span class="vocab-word" data-meaning="插进，挤进"><ruby>割<rt>わ</rt></ruby>り<ruby>込<rt>こ</rt></ruby>み</span>、かつローカルな<ruby>都<rt>と</rt></ruby><ruby>市<rt>し</rt></ruby>を<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>規<rt>き</rt></ruby><ruby>模<rt>ぼ</rt></ruby>にまでひろがった<ruby>同<rt>どう</rt></ruby><ruby>一<rt>いつ</rt></ruby>の<ruby>網<rt>あみ</rt></ruby><ruby>目<rt>め</rt></ruby>に<span class="vocab-word" data-meaning="编入，纳入"><ruby>組<rt>く</rt></ruby>み<ruby>込<rt>こ</rt></ruby>む</span>ことは、<ruby>無<rt>む</rt></ruby><ruby>視<rt>し</rt></ruby>できない<ruby>力<rt>ちから</rt></ruby>の<span class="exam-underline"><ruby>兆<rt>ちょう</rt></ruby><ruby>候<rt>こう</rt></ruby><ruby>的<rt>てき</rt></ruby><ruby>現<rt>げん</rt></ruby><ruby>象<rt>しょう</rt></ruby></span>なのである。
+                        <span class="sentence-badge q-badge">問2の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問2：「兆候的現象」とは？</span>
+                            本题考察“兆候性现象”具体指代什么。定位到划线部分的前文，作者指出，在各种各样餐厅丛生的地方，快餐作为一种均质化的力量“挤了进去（割り込み）”，并且将各地本土的城市“纳入了扩大到世界规模的同一网络中（同一の網目に組み込む）”。也就是说，快餐正在渗透进各个本土城市的饮食文化中，使其被纳入全球统一的网络。选项1“在各个城市的饮食文化中，快餐正在渗入其中”准确传达了这一现象的本质。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        阐述快餐所代表的均质化力量。快餐虽然没有全面占领饮食文化，但它渗透进本土城市中，将其编织进全球统一的网络，这是一种不容忽视的兆候现象。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        当然，对于城市的饮食文化而言，快餐所占据的地位，就像便利店对于购物行为所占据的地位一样，并非是全面性的。但是，在多种多样的餐厅于各处丛生的情况下，它作为一种均质化的力量挤了进去，并且把本土的城市纳入了扩大至世界规模的同一网络之中，这是一种不容忽视的力量的兆候性现象。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 3: 意識されない影響 -->
+            <div class="paragraph" id="page3-para-3" data-para-id="3">
+                <p class="japanese">
+                    おそらくこうしたファースト・フードの<ruby>経<rt>けい</rt></ruby><ruby>験<rt>けん</rt></ruby>は、<ruby>意<rt>い</rt></ruby><ruby>識<rt>しき</rt></ruby>されていることがら<ruby>以<rt>い</rt></ruby><ruby>上<rt>じょう</rt></ruby>に、ほとんど<ruby>意<rt>い</rt></ruby><ruby>識<rt>しき</rt></ruby>されない<ruby>感<rt>かん</rt></ruby><ruby>覚<rt>かく</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>影<rt>えい</rt></ruby><ruby>響<rt>きょう</rt></ruby>の<ruby>方<rt>ほう</rt></ruby>が<ruby>大<rt>おお</rt></ruby>きいだろう。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        かつての<ruby>食<rt>しょく</rt></ruby>の<ruby>内<rt>ない</rt></ruby><ruby>容<rt>よう</rt></ruby>からみると、<ruby>貧<rt>ひん</rt></ruby><ruby>困<rt>こん</rt></ruby>としかいいようのないメニューに<ruby>慣<rt>な</rt></ruby>れること、<span class="vocab-word" data-meaning="硬是，特意">あえて</span><ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby>を<ruby>破<rt>は</rt></ruby><ruby>壊<rt>かい</rt></ruby>しようとしないでも、<ruby>人<rt>ひと</rt></ruby>びとはファースト・フードの<ruby>利<rt>り</rt></ruby><ruby>用<rt>よう</rt></ruby>によって、いつのまにか<ruby>都<rt>と</rt></ruby><ruby>市<rt>し</rt></ruby>の<span class="exam-note" data-meaning="【注】社会的な関係をもたない人"><ruby>遊<rt>ゆう</rt></ruby><ruby>民<rt>みん</rt></ruby></span>になっていくこと、そしてこの<ruby>食<rt>しょく</rt></ruby><ruby>形<rt>けい</rt></ruby><ruby>式<rt>しき</rt></ruby>の<ruby>共<rt>きょう</rt></ruby><ruby>有<rt>ゆう</rt></ruby>によってわれわれは<ruby>奇<rt>き</rt></ruby><ruby>妙<rt>みょう</rt></ruby>なかたちで、われわれ<ruby>自<rt>じ</rt></ruby><ruby>身<rt>しん</rt></ruby>をいつのまにか<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby><ruby>化<rt>か</rt></ruby>していること、などである。
+                        <span class="sentence-badge q-badge">問3の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問3：ファースト・フードが与える影響</span>
+                            本题探讨快餐的普及给人们带来的影响。定位到文章最后一段，作者列举了三种“几乎未被意识到的感官影响”：第一，习惯了看似贫乏的菜单（对饮食的关注变淡）；第二，不知不觉变成了没有社会关系的“城市游民”（人与人的纽带变弱）；第三，通过共享这种饮食形式，不知不觉将我们自身“世界化”了（习惯了全球统一的饮食形式）。选项3精确地涵盖了这三点不知不觉间产生的影响。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        总结快餐带来的深层影响。快餐在潜移默化中让人习惯贫乏的菜单、切断社会关系成为“城市游民”，并让人们在全球统一的饮食形式下实现了自我“世界化”。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        恐怕这种快餐的经验，比起被意识到的事情，其几乎未被意识到的感官上的影响要大得多。从以往的饮食内容来看，不仅习惯了只能称之为贫乏的菜单，而且即使不特意去破坏社会关系，人们也会因为利用快餐，在不知不觉中变成城市的游民；同时，通过共享这种饮食形式，我们以一种奇妙的方式，在不知不觉中将我们自身“世界化”了，等等。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 注釈セクション（解析モードオフでも見られる用） -->
+            <div class="article-notes">
+                <div class="note-item"><span class="note-mark">（注1）叢生（そうせい）する：</span>ここでは、多くできる</div>
+                <div class="note-item"><span class="note-mark">（注2）遊民：</span>ここでは、社会的な関係をもたない人</div>
+            </div>
+        </div>
+
+        <!-- 多个问题容器 -->
+        <div class="qa-container">
+            <!-- 问题 1 -->
+            <div class="qa-section question-block" data-q-id="1">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="1" aria-pressed="false" title="记题">問1</button>
+                        <span class="question-title-text"><ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>によると、ファースト・フードがひろまった<ruby>理<rt>り</rt></ruby><ruby>由<rt>ゆう</rt></ruby>は<ruby>何<rt>なに</rt></ruby>か。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>人<rt>ひと</rt></ruby>びとが<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby><ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby>や<ruby>食<rt>た</rt></ruby>べることに<ruby>無<rt>む</rt></ruby><ruby>関<rt>かん</rt></ruby><ruby>心<rt>しん</rt></ruby>になったこと</span>
+                            <span class="option-translation">人们对人际关系和吃东西变得毫不关心。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        第一段提到人际接触变得“烦琐”，吃东西不再是“至上的快乐”，但这不代表人们对吃和人际关系完全“毫不关心（無関心になった）”，这种说法过于绝对。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>新<rt>あたら</rt></ruby>しい<ruby>食<rt>しょく</rt></ruby>のスタイルが<ruby>人<rt>ひと</rt></ruby>びとの<ruby>好<rt>この</rt></ruby>みに<ruby>合<rt>あ</rt></ruby>ったこと</span>
+                            <span class="option-translation">新的饮食风格迎合了人们的喜好。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        快餐普及的根本原因是生活方式和人际关系的改变（需要简便），而不是单纯因为这种新风格“迎合了口味（好みに合った）”。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>人<rt>ひと</rt></ruby>とのつながりや<ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>スタイルが<ruby>変<rt>へん</rt></ruby><ruby>化<rt>か</rt></ruby>したこと</span>
+                            <span class="option-translation">人与人的联系以及生活方式发生了变化。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题询问快餐普及的原因。定位到第一段，作者开篇指出总原因：“文化和人类群居状态发生了变化”。随后列举了具体的表现：生活、工作和游玩的模式变得个人化且多样化（生活方式的变化）；人们觉得人际接触变得烦琐，进餐的社交意义下降（人际关系的变化），人们转而希望更简便地解决进食问题。综合来看，正是“人与人的联系（人际关系）以及生活方式的改变”促使了快餐的普及。选项3合理地概括了这一因果关系。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>食<rt>しょく</rt></ruby>にたいする<ruby>人<rt>ひと</rt></ruby>びとの<ruby>嗜<rt>し</rt></ruby><ruby>好<rt>こう</rt></ruby>が<ruby>似<rt>に</rt></ruby>てきたこと</span>
+                            <span class="option-translation">人们对饮食的喜好变得相似了。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        文章并没有说在快餐普及“之前”人们口味变得相似；相反，是快餐普及后，作为一种均质化的力量将人们纳入了同一网络中。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 问题 2 -->
+            <div class="qa-section question-block" data-q-id="2">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="2" aria-pressed="false" title="记题">問2</button>
+                        <span class="question-title-text"><span class="exam-underline"><ruby>兆<rt>ちょう</rt></ruby><ruby>候<rt>こう</rt></ruby><ruby>的<rt>てき</rt></ruby><ruby>現<rt>げん</rt></ruby><ruby>象<rt>しょう</rt></ruby></span>とあるが、それはどのような<ruby>現<rt>げん</rt></ruby><ruby>象<rt>しょう</rt></ruby>か。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>個<rt>こ</rt></ruby><ruby>々<rt>ご</rt></ruby>の<ruby>都<rt>と</rt></ruby><ruby>市<rt>し</rt></ruby>の<ruby>食<rt>しょく</rt></ruby><ruby>文<rt>ぶん</rt></ruby><ruby>化<rt>か</rt></ruby>のなかに、ファースト・フードが<ruby>入<rt>はい</rt></ruby>り<ruby>込<rt>こ</rt></ruby>んでいる。</span>
+                            <span class="option-translation">在各个城市的饮食文化中，快餐正在渗入其中。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题考察“兆候性现象”具体指代什么。定位到第二段划线部分的前文，作者指出，在各种各样餐厅丛生的地方，快餐作为一种均质化的力量“挤了进去（割り込み）”，并且将各地本土的城市“纳入了扩大到世界规模的同一网络中（同一の網目に組み込む）”。也就是说，快餐正在渗透进各个本土城市的饮食文化中。选项1“在各个城市的饮食文化中，快餐正在渗入其中”准确传达了这一现象的本质。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span>ファースト・フードの<ruby>店<rt>てん</rt></ruby><ruby>舗<rt>ぽ</rt></ruby><ruby>数<rt>すう</rt></ruby>が、レストランのように<ruby>増<rt>ふ</rt></ruby>えている。</span>
+                            <span class="option-translation">快餐的店铺数量，正在像餐厅一样增加。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文说的是在各种餐厅丛生的情况下，快餐“挤了进去”，但并未指出快餐的数量增加得“像餐厅一样多”。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span>ファースト・フードが、<ruby>都<rt>と</rt></ruby><ruby>市<rt>し</rt></ruby>ごとの<ruby>多<rt>た</rt></ruby><ruby>様<rt>よう</rt></ruby>な<ruby>食<rt>しょく</rt></ruby><ruby>形<rt>けい</rt></ruby><ruby>式<rt>しき</rt></ruby>を<ruby>壊<rt>こわ</rt></ruby>そうとしている。</span>
+                            <span class="option-translation">快餐正试图破坏每个城市多样的饮食形式。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文说的是快餐作为一种均质化的力量“挤入”并在网络中将其编织进去，但并没有说到要“破坏（壊そうとしている）”其他饮食形式。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span>ローカルな<ruby>都<rt>と</rt></ruby><ruby>市<rt>し</rt></ruby>のレストランにファースト・フードの<ruby>簡<rt>かん</rt></ruby><ruby>便<rt>べん</rt></ruby>さを<ruby>取<rt>と</rt></ruby>り<ruby>入<rt>い</rt></ruby>れている。</span>
+                            <span class="option-translation">在本土城市的餐厅中引入了快餐的简便性。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        并非是本土城市的餐厅去“引入（取り入れている）”快餐的简便性，而是快餐直接挤进了本土城市中。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 问题 3 -->
+            <div class="qa-section question-block" data-q-id="3">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="3" aria-pressed="false" title="记题">問3</button>
+                        <span class="question-title-text">ファースト・フードのひろがりが<ruby>人<rt>ひと</rt></ruby>びとに<ruby>与<rt>あた</rt></ruby>える<ruby>影<rt>えい</rt></ruby><ruby>響<rt>きょう</rt></ruby>を、<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>はどのように<ruby>考<rt>かんが</rt></ruby>えているか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>食<rt>しょく</rt></ruby><ruby>事<rt>じ</rt></ruby>や<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby><ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby>への<ruby>興<rt>きょう</rt></ruby><ruby>味<rt>み</rt></ruby>を<ruby>失<rt>うしな</rt></ruby>い、<ruby>人<rt>ひと</rt></ruby>びとは<ruby>簡<rt>かん</rt></ruby><ruby>便<rt>べん</rt></ruby>な<ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>スタイルを<ruby>求<rt>もと</rt></ruby>めるようになる。</span>
+                            <span class="option-translation">对饮食和人际关系失去兴趣，人们开始追求简便的生活方式。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        因果倒置。第一段提到，正是因为人们希望生活简便（简便地解决饮食），才导致了快餐的普及，这是“原因”而不是快餐普及带来的“影响”。此外，文中也没有说“完全失去兴趣”。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby><ruby>同<rt>どう</rt></ruby><ruby>士<rt>し</rt></ruby>の<ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby>を<ruby>弱<rt>よわ</rt></ruby>めることになり、<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>や<ruby>遊<rt>あそ</rt></ruby>びに<ruby>熱<rt>ねっ</rt></ruby><ruby>中<rt>ちゅう</rt></ruby>する<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>が<ruby>増<rt>ふ</rt></ruby>える<ruby>傾<rt>けい</rt></ruby><ruby>向<rt>こう</rt></ruby>が<ruby>強<rt>つよ</rt></ruby>まる。</span>
+                            <span class="option-translation">导致人与人之间的关系变弱，热衷于工作和游玩的人增加的倾向变强。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        文中第三段阐述了影响之一是“变成城市游民”，但这并不是为了“热衷于工作和游玩”，选项后半部分的推导缺乏文本依据。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>知<rt>し</rt></ruby>らないうちに<ruby>人<rt>ひと</rt></ruby>との<ruby>絆<rt>きずな</rt></ruby>や<ruby>食<rt>しょく</rt></ruby>への<ruby>関<rt>かん</rt></ruby><ruby>心<rt>しん</rt></ruby>を<ruby>薄<rt>うす</rt></ruby>め、<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby><ruby>同<rt>どう</rt></ruby><ruby>一<rt>いつ</rt></ruby>の<ruby>食<rt>しょく</rt></ruby><ruby>形<rt>けい</rt></ruby><ruby>式<rt>しき</rt></ruby>に<ruby>慣<rt>な</rt></ruby>れ<ruby>切<rt>き</rt></ruby>った<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>を<ruby>増<rt>ふ</rt></ruby>やす。</span>
+                            <span class="option-translation">在不知不觉中淡化了人与人的羁绊和对饮食的关心，增加了习惯于世界同一饮食形式的人。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题探讨快餐的普及给人们带来的影响。定位到文章最后一段，作者列举了三种“几乎未被意识到的（不知不觉的）感官影响”：第一，习惯了看似贫乏的菜单（对饮食的关注变淡）；第二，不知不觉变成了没有社会关系的“城市游民”（人与人的纽带变弱）；第三，通过共享这种饮食形式，不知不觉将我们自身“世界化”了（习惯了全球统一的饮食形式）。选项3精确地涵盖了这三点不知不觉间产生的影响。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>同<rt>おな</rt></ruby>じメニューに<ruby>慣<rt>な</rt></ruby>れることで、<ruby>人<rt>ひと</rt></ruby>びとはいつのまにか<ruby>多<rt>た</rt></ruby><ruby>種<rt>しゅ</rt></ruby><ruby>多<rt>た</rt></ruby><ruby>様<rt>よう</rt></ruby>な<ruby>食<rt>しょく</rt></ruby><ruby>文<rt>ぶん</rt></ruby><ruby>化<rt>か</rt></ruby>に<ruby>興<rt>きょう</rt></ruby><ruby>味<rt>み</rt></ruby>を<ruby>持<rt>も</rt></ruby>たなくなる。</span>
+                            <span class="option-translation">因为习惯了相同的菜单，人们在不知不觉中会对多种多样的饮食文化失去兴趣。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文并没有直接表述出“失去对多种多样的饮食文化的兴趣”这一结果，而是强调“自身被世界化”以及“社会关系的破坏（游民化）”。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="article-navigation">
+        <button id="prev-btn" class="nav-btn disabled" onclick="prevPage()">← 上一篇</button> 
+        <button id="next-btn" class="nav-btn disabled" onclick="nextPage()">下一篇 →</button>
+    </div>
+</div>
+
+<div id="global-tooltip"></div>
+
+<script>
+    function toggleAnalysis() {
+        const btn = document.getElementById('analysis-btn');
+        btn.classList.toggle('active');
+        document.body.classList.toggle('show-analysis');
+        
+        if (!document.body.classList.contains('show-analysis')) {
+            document.querySelectorAll('.option-item.expanded').forEach(item => item.classList.remove('expanded'));
+            document.querySelectorAll('.key-sentence.active').forEach(item => item.classList.remove('active'));
+            const tooltip = document.getElementById('global-tooltip');
+            if (tooltip) tooltip.classList.remove('show');
+        }
+    }
+
+    function toggleInlineNote(event, element) {
+        if (!document.body.classList.contains('show-analysis')) return;
+        if (event.target.closest('.inline-note-container')) return;
+        
+        // 注釈や語彙をクリックした場合は、文の展開を妨げる
+        if (event.target.closest('.vocab-word') || event.target.closest('.exam-note')) return; 
+        
+        element.classList.toggle('active');
+    }
+
+    document.addEventListener('click', function(e) {
+        const tooltip = document.getElementById('global-tooltip');
+        if (!tooltip) return;
+
+        // 公式の注釈（exam-note）は解析モードのオンオフに関わらず動作する
+        const examNote = e.target.closest('.exam-note');
+        
+        // 独自の語彙（vocab-word）は解析モードがオンの時だけ動作する
+        const vocabWord = e.target.closest('.vocab-word');
+        const isAnalysisMode = document.body.classList.contains('show-analysis');
+
+        let targetWord = null;
+        if (!isAnalysisMode && examNote) {
+            targetWord = examNote;
+        } else if (isAnalysisMode && vocabWord) {
+            targetWord = vocabWord;
+        } else if (isAnalysisMode && examNote) {
+            // 解析モードでは公式注釈は一般テキストと同化するため動作しない
+            targetWord = null;
+        }
+
+        if (targetWord) {
+            const meaning = targetWord.getAttribute('data-meaning');
+            tooltip.innerHTML = meaning; 
+            
+            const rect = targetWord.getBoundingClientRect();
+            let left = rect.left + (rect.width / 2);
+            let top = rect.top;
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.classList.add('show');
+            e.stopPropagation();
+        } else {
+            tooltip.classList.remove('show');
+        }
+    });
+
+    window.addEventListener('scroll', () => {
+        const tooltip = document.getElementById('global-tooltip');
+        if (tooltip) tooltip.classList.remove('show');
+    });
+
+    function scrollToElement(selector) {
+        const element = document.querySelector(selector);
+        if (element) {
+            const topBarOffset = 80; 
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.scrollY - topBarOffset;
+            
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
+    }
+</script>
+
+<script src="../shared/reading-year-system.js"></script>
+<script src="../categories/index.js"></script>
+<script src="../shared/reading-category-system.js"></script>
+<script>
+    const ARTICLE_LEVEL = 'N1';
+    const ARTICLE_TYPE = 'middle';
+    const ARTICLE_YEAR = '2012.12';
+    const ARTICLE_ID = 'n1-2012-12-middle';
+    const ARTICLE_LINK = 's/2012.12.html';
+    const totalPages = 3; 
+    
+    let readingSession = {
+        isReviewMode: false,
+        getReviewPages: () => [],
+        recordAnswer: () => {},
+        redirectToIndex: () => {},
+        getInitialPage: (p) => p || 1,
+        getNavState: (p) => ({ prevDisabled: p <= 1, nextDisabled: p >= totalPages }),
+        replacePageUrl: () => {},
+        getMoveTarget: () => ({})
+    };
+
+    let categorySession = {
+        isCategoryMode: false,
+        getInitialTarget: () => ({ empty: false }),
+        buildBackUrl: () => '../index.html',
+        getNavState: (p) => ({ prevDisabled: p <= 1, nextDisabled: p >= totalPages }),
+        rememberProgress: () => {},
+        replacePageUrl: () => {},
+        getMoveTarget: () => ({})
+    };
+
+    const backLink = document.getElementById('back-to-reading-index');
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedPage = parseInt(urlParams.get('page'), 10);
+
+    try {
+        if (typeof ReadingYearSystem !== 'undefined') {
+            readingSession = ReadingYearSystem.createReadingYearSession({
+                level: ARTICLE_LEVEL,
+                type: ARTICLE_TYPE,
+                examKey: urlParams.get('examKey') || ARTICLE_YEAR,
+                totalPages,
+                indexPath: '../index.html',
+                urlParams
+            });
+        }
+        
+        if (typeof ReadingCategorySystem !== 'undefined') {
+            categorySession = ReadingCategorySystem.createCategorySession({
+                level: ARTICLE_LEVEL,
+                type: ARTICLE_TYPE,
+                categoryId: urlParams.get('category'),
+                practiceMode: urlParams.get('practiceMode'),
+                examKey: urlParams.get('examKey') || ARTICLE_YEAR
+            });
+        }
+    } catch (e) {
+        console.warn("External systems not loaded properly. Using fallbacks.", e);
+    }
+
+    function toggleOption(element) {
+        if (document.body.classList.contains('show-analysis')) {
+            element.classList.toggle('expanded');
+            return;
+        }
+        
+        const qaSection = element.closest('.qa-section');
+        if (qaSection.hasAttribute('data-answered')) return;
+        
+        const isCorrect = element.classList.contains('is-correct');
+        element.classList.add('selected');
+        
+        if (isCorrect) {
+            element.classList.add('answered-correct');
+        } else {
+            element.classList.add('answered-wrong');
+            const correctOpt = qaSection.querySelector('.is-correct');
+            if (correctOpt) correctOpt.classList.add('answered-correct');
+        }
+
+        qaSection.setAttribute('data-answered', 'true');
+        recordAnswer(isCorrect);
+        checkAllAnsweredOnPage();
+    }
+
+    function checkAllAnsweredOnPage() {
+        const totalQuestions = document.querySelectorAll('.page-content.active .qa-section').length;
+        const answeredQuestions = document.querySelectorAll('.page-content.active .qa-section[data-answered="true"]').length;
+        
+        if (totalQuestions > 0 && totalQuestions === answeredQuestions) {
+            console.log("当前文章的所有题目已作答完毕。");
+        }
+    }
+
+    function handleReviewCompletionIfNeeded(isCorrect) {
+        if (!readingSession.isReviewMode || !isCorrect) {
+            return;
+        }
+
+        if (readingSession.getReviewPages().length === 0) {
+            window.setTimeout(() => {
+                alert('🎉 太棒了！这一年の錯題（間違えた問題）は復習完了です！');
+                readingSession.redirectToIndex();
+            }, 160);
+        }
+    }
+
+    function recordAnswer(isCorrect) {
+        readingSession.recordAnswer(currentPage, isCorrect);
+        handleReviewCompletionIfNeeded(isCorrect);
+    }
+
+    const isCategoryPractice = categorySession.isCategoryMode && !readingSession.isReviewMode;
+    const categoryTarget = isCategoryPractice
+        ? categorySession.getInitialTarget(requestedPage)
+        : { empty: false };
+
+    if (isCategoryPractice) {
+        backLink.href = categorySession.buildBackUrl();
+    }
+
+    const reviewModeHasNoPages = readingSession.isReviewMode && readingSession.getReviewPages().length === 0;
+    if (reviewModeHasNoPages) {
+        alert('当前年份还没有错题记录，先去正常练习一轮吧。');
+        readingSession.redirectToIndex();
+    }
+
+    if (isCategoryPractice && categoryTarget.empty) {
+        alert('这个文章分类里还没有可练习的内容。');
+        window.location.href = categorySession.buildBackUrl();
+    }
+
+    if (isCategoryPractice && categoryTarget.redirectUrl) {
+        window.location.href = categoryTarget.redirectUrl;
+    }
+
+    let currentPage = isCategoryPractice && typeof categoryTarget.page === 'number'
+        ? categoryTarget.page
+        : readingSession.getInitialPage(requestedPage);
+    window.currentPage = currentPage;
+    window.totalPages = totalPages;
+
+    function syncHeaderTitles(activePage) {
+        document.querySelectorAll('.header-title').forEach(titleEl => {
+            if (!titleEl.dataset.baseTitle) {
+                titleEl.dataset.baseTitle = titleEl.textContent.replace(/\s*（🐶 復習モード）$/, '').trim();
+            }
+
+            const isActive = Boolean(activePage && activePage.contains(titleEl));
+            titleEl.textContent = isActive && readingSession.isReviewMode
+                ? `${titleEl.dataset.baseTitle}（🐶 復習モード）`
+                : titleEl.dataset.baseTitle;
+        });
+    }
+
+    function showPage(page) {
+        document.querySelectorAll('.page-content').forEach(el => {
+            el.style.display = 'none';
+            el.classList.remove('active');
+        });
+
+        const currentEl = document.getElementById('page-' + page);
+        if (currentEl) {
+            currentEl.style.display = 'block';
+            currentEl.classList.add('active');
+        }
+
+        syncHeaderTitles(currentEl);
+
+        document.querySelectorAll('.qa-section').forEach(section => {
+            section.removeAttribute('data-answered');
+        });
+
+        document.querySelectorAll('.option-item').forEach(item => {
+            item.classList.remove('selected', 'answered-correct', 'answered-wrong', 'expanded');
+        });
+
+        document.querySelectorAll('.key-sentence').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelectorAll('.paragraph.recorder-focus').forEach(paragraph => {
+            paragraph.classList.remove('recorder-focus');
+        });
+        if (typeof window.hideGlobalTooltip === 'function') {
+            window.hideGlobalTooltip();
+        } else {
+            const tooltip = document.getElementById('global-tooltip');
+            if (tooltip) {
+                tooltip.classList.remove('show');
+            }
+        }
+        if (typeof window.clearActiveVocabWords === 'function') {
+            window.clearActiveVocabWords();
+        }
+        if (typeof window.clearDraftSelection === 'function') {
+            window.clearDraftSelection(true);
+        }
+
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const navState = isCategoryPractice
+            ? categorySession.getNavState(page)
+            : readingSession.getNavState(page);
+
+        prevBtn.classList.toggle('disabled', navState.prevDisabled);
+        nextBtn.classList.toggle('disabled', navState.nextDisabled);
+
+        currentPage = page;
+        window.currentPage = currentPage;
+        if (isCategoryPractice) {
+            categorySession.rememberProgress(page);
+            categorySession.replacePageUrl(page);
+        } else {
+            readingSession.replacePageUrl(page);
+        }
+        if (typeof window.renderSentenceRecorder === 'function') {
+            window.renderSentenceRecorder();
+        }
+        if (typeof window.renderMediumQuickNav === 'function') {
+            window.renderMediumQuickNav();
+        }
+        window.scrollTo(0, 0);
+    }
+
+    window.showPage = showPage;
+
+    function navigateCategory(direction) {
+        const target = categorySession.getMoveTarget(currentPage, direction);
+
+        if (target.sameExamKey && typeof target.page === 'number') {
+            showPage(target.page);
+            return;
+        }
+
+        if (target.href) {
+            window.location.href = target.href;
+            return;
+        }
+
+        if (target.done) {
+            alert('已经是这个分类的最后一篇了！');
+            return;
+        }
+
+        alert('已经是这个分类的第一篇了！');
+    }
+
+    function navigateReview(direction) {
+        const target = readingSession.getMoveTarget(currentPage, direction);
+
+        if (typeof target.page === 'number') {
+            showPage(target.page);
+            return;
+        }
+
+        if (target.done) {
+            alert('🎉 太棒了！这一年の錯題（間違えた問題）は復習完了です！');
+            readingSession.redirectToIndex();
+            return;
+        }
+
+        alert('已经是这一年错题的第一题了！');
+    }
+
+    function prevPage() {
+        if (readingSession.isReviewMode) {
+            navigateReview(-1);
+            return;
+        }
+        if (isCategoryPractice) {
+            navigateCategory(-1);
+            return;
+        }
+        if (currentPage > 1) {
+            showPage(currentPage - 1);
+        }
+    }
+
+    function nextPage() {
+        if (readingSession.isReviewMode) {
+            navigateReview(1);
+            return;
+        }
+        if (isCategoryPractice) {
+            navigateCategory(1);
+            return;
+        }
+        if (currentPage < totalPages) {
+            showPage(currentPage + 1);
+        } else {
+            alert('已经是該年份の最后一篇了！');
+        }
+    }
+
+    if (!reviewModeHasNoPages && !(isCategoryPractice && categoryTarget.redirectUrl) && !(isCategoryPractice && categoryTarget.empty)) {
+        showPage(currentPage);
+    }
+</script>
+<script>
+    window.readingMediumToolsConfig = {
+        manageVocabTooltip: false
+    };
+</script>
+<script src="../../../shared/study-quest-test-runtime.js"></script>
+<script src="../../../shared/study-quest-test-boot.js"></script>
+<script src="../shared/reading-medium-tools.js"></script>
+<script src="../shared/reading-tools.js"></script>
+<script src="../shared/reading-medium-runtime.js"></script>
+
+</body>
+</html>
