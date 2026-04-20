@@ -7,6 +7,162 @@
         isLooping: false,
         skipSeconds: DEFAULT_SKIP_SECONDS
     };
+    let practicePetController = null;
+    let listeningPetAssetsPromise = null;
+    let listeningPetHooksInstalled = false;
+
+    function detectListeningPracticeSubType() {
+        const path = String(window.location.pathname || '').toLowerCase();
+        if (path.includes('/immediate-response/')) return 'immediate';
+        if (path.includes('/task-comprehension/')) return 'task';
+        if (path.includes('/summary-comprehension/')) return 'summary';
+        if (path.includes('/point-comprehension/')) return 'point';
+        if (path.includes('/integrated-comprehension/')) return 'integrated';
+        return 'listening';
+    }
+
+    function ensureListeningPetAssets() {
+        if (window.HomePetSystem) {
+            return Promise.resolve(window.HomePetSystem);
+        }
+
+        if (listeningPetAssetsPromise) {
+            return listeningPetAssetsPromise;
+        }
+
+        listeningPetAssetsPromise = new Promise((resolve, reject) => {
+            const cssHref = new URL('../../../../../shared/home-pet.css', document.baseURI).href;
+            const scriptSrc = new URL('../../../../../shared/home-pet.js', document.baseURI).href;
+
+            if (!document.querySelector(`link[data-listening-pet-css="true"][href="${cssHref}"]`)) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = cssHref;
+                link.dataset.listeningPetCss = 'true';
+                document.head.appendChild(link);
+            }
+
+            const existingScript = document.querySelector(`script[data-listening-pet-js="true"][src="${scriptSrc}"]`);
+            if (existingScript) {
+                existingScript.addEventListener('load', () => resolve(window.HomePetSystem), { once: true });
+                existingScript.addEventListener('error', reject, { once: true });
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = scriptSrc;
+            script.dataset.listeningPetJs = 'true';
+            script.addEventListener('load', () => resolve(window.HomePetSystem), { once: true });
+            script.addEventListener('error', reject, { once: true });
+            document.head.appendChild(script);
+        });
+
+        return listeningPetAssetsPromise;
+    }
+
+    function ensureListeningPetMounted() {
+        return ensureListeningPetAssets()
+            .then((petSystem) => {
+                if (!petSystem || practicePetController) {
+                    return practicePetController;
+                }
+
+                practicePetController = petSystem.initNonHomeSurface({
+                    mountSelector: '#home-pet-root',
+                    pageShellSelector: '.practice-container, .card-shell, .question-block, .container, body',
+                    surfaceType: 'practice',
+                    activeSection: 'exam',
+                    practiceDetail: {
+                        module: 'listening',
+                        subType: detectListeningPracticeSubType()
+                    }
+                });
+                return practicePetController;
+            })
+            .catch((error) => {
+                console.warn('Listening pet init failed:', error);
+                return null;
+            });
+    }
+
+    function reactListeningPet(phase, extra = {}) {
+        if (!practicePetController || typeof practicePetController.reactToPractice !== 'function') {
+            return;
+        }
+
+        practicePetController.reactToPractice({
+            module: 'listening',
+            subType: detectListeningPracticeSubType(),
+            phase,
+            ...extra
+        });
+    }
+
+    function installListeningPracticeHooks() {
+        if (listeningPetHooksInstalled) {
+            return;
+        }
+
+        const wrapFunction = (name, handler) => {
+            if (typeof window[name] !== 'function') {
+                return;
+            }
+
+            const original = window[name];
+            window[name] = function(...args) {
+                return handler.call(this, original, args);
+            };
+        };
+
+        wrapFunction('renderQuestion', function(original, args) {
+            const result = original.apply(this, args);
+            const questionIndex = Number(window.currentQuestionIndex || 0) + 1;
+            window.setTimeout(() => {
+                reactListeningPet('enter', { questionIndex });
+            }, 0);
+            return result;
+        });
+
+        wrapFunction('checkAnswer', function(original, args) {
+            let isCorrect = false;
+            let hasSelection = false;
+            try {
+                const examKey = window.currentExamKey;
+                const questionIndex = Number(window.currentQuestionIndex || 0);
+                const question = window.examData && examKey && window.examData[examKey]
+                    ? window.examData[examKey].questions[questionIndex]
+                    : null;
+                const selected = document.querySelector('#appContainer .options-list li.selected');
+                if (question && selected) {
+                    hasSelection = true;
+                    const optionIndex = Number.parseInt(selected.getAttribute('data-index') || '-1', 10);
+                    isCorrect = Boolean(question.options[optionIndex] && question.options[optionIndex].correct);
+                }
+            } catch (error) {
+                console.warn('Listening pet answer inspection failed:', error);
+            }
+
+            const result = original.apply(this, args);
+            const questionIndex = Number(window.currentQuestionIndex || 0) + 1;
+
+            if (hasSelection) {
+                reactListeningPet(isCorrect ? 'answer_correct' : 'answer_wrong', { questionIndex });
+                const examKey = window.currentExamKey;
+                const total = window.examData && examKey && window.examData[examKey]
+                    ? window.examData[examKey].questions.length
+                    : 0;
+                if (total > 0 && questionIndex === total) {
+                    window.setTimeout(() => {
+                        reactListeningPet('clear', { questionIndex });
+                    }, 1050);
+                }
+            }
+
+            return result;
+        });
+
+        listeningPetHooksInstalled = true;
+    }
 
     const playIcon = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
     const pauseIcon = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
@@ -326,4 +482,10 @@
         syncLoopState(refs);
         syncSpeedState(refs);
     };
+
+    window.addEventListener('DOMContentLoaded', () => {
+        ensureListeningPetMounted().then(() => {
+            installListeningPracticeHooks();
+        });
+    });
 })();

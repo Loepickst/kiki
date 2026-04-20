@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>听力随机考试</title>
+    <link rel="stylesheet" href="../../../shared/site-fonts.css">
+    <link rel="stylesheet" href="listening-header.css">
+    <style>
+        :root {
+            --bg: #fdfaf5;
+            --text: #1c1c1c;
+            --sub: #5d5048;
+            --line: #1c1c1c;
+            --pink: #ff6b9e;
+            --blue: #42c8f5;
+            --gold: #ffd54f;
+            --green: #4aa55d;
+            --danger: #d64045;
+            --card: #fff;
+            --shadow-sm: 4px 4px 0 #1c1c1c;
+            --shadow-md: 8px 8px 0 #1c1c1c;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Noto Sans JP", "Noto Sans SC", "M PLUS Rounded 1c", -apple-system, sans-serif;
+            color: var(--text);
+            background: linear-gradient(180deg, #fffdf9 0%, #f8f4ee 100%);
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px 20px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 2px solid var(--line);
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 900;
+            font-size: 14px;
+            padding: 8px 14px;
+            background: #fff;
+            border: 2px solid var(--line);
+            border-radius: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .page-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 0.04em;
+        }
+
+        .page-title span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: var(--pink);
+            color: #fff;
+            border: 3px solid var(--line);
+            box-shadow: 2px 2px 0 var(--line);
+            font-size: 12px;
+        }
+
+        .container {
+            width: min(100%, 860px);
+            margin: 0 auto;
+            padding: 24px 14px 56px;
+        }
+
+        .meta-card,
+        .question-card,
+        .summary-card,
+        .analysis-card,
+        .error-card {
+            background: var(--card);
+            border: 3px solid var(--line);
+            border-radius: 18px;
+            box-shadow: 6px 6px 0 var(--line);
+        }
+
+        .meta-card {
+            padding: 16px 18px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .meta-card > :first-child {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100%;
+        }
+
+        .meta-title {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .meta-copy {
+            margin: 8px 0 0;
+            color: var(--sub);
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.65;
+        }
+
+        .meta-copy:empty,
+        .question-copy:empty,
+        .summary-copy:empty,
+        .analysis-copy:empty {
+            display: none;
+        }
+
+        .meta-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .meta-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 2px solid var(--line);
+            box-shadow: var(--shadow-sm);
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            background: #fff;
+        }
+
+        .meta-badge.is-gold { background: var(--gold); }
+        .meta-badge.is-blue { background: var(--blue); }
+
+        .question-card,
+        .analysis-card,
+        .summary-card,
+        .error-card {
+            padding: 20px 20px 22px;
+        }
+
+        .question-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .question-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 3px solid var(--line);
+            box-shadow: var(--shadow-sm);
+            background: #fff;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+        }
+
+        .question-chip.is-source {
+            background: #fff3d6;
+        }
+
+        .question-chip.is-count {
+            background: #e8f7ff;
+        }
+
+        .question-title {
+            margin: 0 0 6px;
+            font-size: 22px;
+            font-weight: 900;
+            line-height: 1.45;
+        }
+
+        .question-copy {
+            margin: 0 0 10px;
+            font-size: 14px;
+            line-height: 1.75;
+            color: var(--sub);
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }
+
+        .scene-image {
+            display: none !important;
+        }
+
+        .audio-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .audio-shell audio {
+            width: 100%;
+        }
+
+        .status-banner {
+            padding: 10px 12px;
+            border-radius: 14px;
+            border: 2px solid var(--line);
+            background: #fff7e8;
+            box-shadow: 2px 2px 0 var(--line);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.55;
+        }
+
+        .status-banner.is-ready {
+            background: #e8f7ff;
+        }
+
+        .status-banner.is-recorded {
+            background: #eef8ef;
+        }
+
+        .status-banner.is-danger {
+            background: #ffe8ea;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .options-list.is-choice-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .option-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            padding: 12px 14px;
+            border: 2px solid var(--line);
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            background: #fff;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        .option-item:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .option-item.is-selected {
+            background: #ecf8ff;
+        }
+
+        .option-item.is-choice-only {
+            justify-content: center;
+            align-items: center;
+            min-height: 84px;
+            padding: 10px;
+        }
+
+        .option-item.is-choice-only .option-index {
+            width: 56px;
+            height: 56px;
+            flex: 0 0 56px;
+            font-size: 22px;
+            border-radius: 16px;
+            background: #fffaf0;
+        }
+
+        .option-item.is-locked {
+            cursor: default;
+        }
+
+        .option-item.is-correct {
+            background: #ecf8ef;
+            border-color: var(--green);
+        }
+
+        .option-item.is-choice-wrong {
+            background: #ffe8ea;
+            border-color: var(--danger);
+        }
+
+        .option-index {
+            width: 30px;
+            height: 30px;
+            flex: 0 0 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--line);
+            border-radius: 10px;
+            background: #fff;
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        .option-body {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .option-text {
+            font-size: 16px;
+            font-weight: 800;
+            line-height: 1.65;
+        }
+
+        .option-translation {
+            color: var(--sub);
+            font-size: 13px;
+            line-height: 1.7;
+            font-weight: 700;
+        }
+
+        .question-actions,
+        .analysis-actions,
+        .summary-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .action-btn {
+            appearance: none;
+            border: 2px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+            color: var(--text);
+            box-shadow: var(--shadow-sm);
+            padding: 11px 16px;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .action-btn.is-primary {
+            background: var(--pink);
+            color: #fff;
+        }
+
+        .action-btn.is-blue {
+            background: var(--blue);
+        }
+
+        .action-btn[disabled] {
+            background: #f3f4f6;
+            color: #9ca3af;
+            border-style: dashed;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .summary-title,
+        .analysis-title,
+        .error-title {
+            margin: 0 0 8px;
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        .summary-copy,
+        .analysis-copy,
+        .error-copy {
+            margin: 0 0 12px;
+            color: var(--sub);
+            font-size: 13px;
+            line-height: 1.6;
+            font-weight: 700;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .summary-stat {
+            border: 2px solid var(--line);
+            border-radius: 16px;
+            padding: 14px 10px;
+            background: #faf8f4;
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+        }
+
+        .summary-stat-label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 12px;
+            font-weight: 900;
+            color: var(--sub);
+            letter-spacing: 0.05em;
+        }
+
+        .summary-stat-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--text);
+        }
+
+        .analysis-transcript,
+        .analysis-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .analysis-block {
+            border: 2px solid var(--line);
+            border-radius: 16px;
+            background: #fff;
+            padding: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .analysis-block h3 {
+            margin: 0 0 8px;
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .analysis-line {
+            margin-bottom: 10px;
+            line-height: 1.9;
+        }
+
+        .analysis-speaker {
+            font-weight: 900;
+            margin-right: 8px;
+        }
+
+        .analysis-translation {
+            margin-top: 4px;
+            color: var(--sub);
+            font-size: 12px;
+            line-height: 1.7;
+            font-weight: 700;
+        }
+
+        .analysis-note {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 2px solid var(--line);
+            box-shadow: var(--shadow-sm);
+            background: #fff;
+            font-size: 12px;
+            font-weight: 900;
+            margin-bottom: 14px;
+        }
+
+        .analysis-note.is-correct {
+            background: #ecf8ef;
+            color: #256d36;
+        }
+
+        .analysis-note.is-wrong {
+            background: #ffe8ea;
+            color: #a1232a;
+        }
+
+        .analysis-note.is-empty {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .tooltip {
+            position: absolute;
+            z-index: 40;
+            min-width: 220px;
+            max-width: min(88vw, 340px);
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 3px solid var(--line);
+            background: #fffef8;
+            box-shadow: var(--shadow-md);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.7;
+            display: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .keyword {
+            cursor: pointer;
+            color: #1d6fd8;
+            font-weight: 900;
+        }
+
+        @media (max-width: 720px) {
+            header {
+                gap: 10px;
+                padding: 10px 12px;
+            }
+
+            .nav-btn {
+                gap: 6px;
+                padding: 7px 10px;
+                border-width: 2px;
+                border-radius: 9px;
+                box-shadow: 3px 3px 0 #1c1c1c;
+                font-size: 12px;
+            }
+
+            .page-title {
+                font-size: 16px;
+            }
+
+            .page-title span {
+                margin-left: 6px;
+                padding: 2px 8px;
+                border-width: 2px;
+                box-shadow: 2px 2px 0 var(--line);
+                font-size: 10px;
+            }
+
+            .container {
+                padding: 16px 10px 40px;
+            }
+
+            .meta-card,
+            .question-card,
+            .summary-card,
+            .analysis-card,
+            .error-card {
+                border-width: 2px;
+                border-radius: 16px;
+                padding: 14px 14px 16px;
+                box-shadow: 4px 4px 0 #1c1c1c;
+            }
+
+            .meta-card {
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 12px;
+            }
+
+            .meta-title {
+                font-size: 14px;
+            }
+
+            .meta-copy {
+                margin-top: 6px;
+                font-size: 12px;
+                line-height: 1.55;
+            }
+
+            .meta-badges {
+                gap: 8px;
+                justify-content: flex-start;
+            }
+
+            .meta-badge {
+                padding: 6px 10px;
+                border-width: 2px;
+                box-shadow: 2px 2px 0 #1c1c1c;
+                font-size: 11px;
+            }
+
+            .question-top {
+                gap: 8px;
+                margin-bottom: 12px;
+            }
+
+            .question-chip {
+                padding: 5px 10px;
+                border-width: 2px;
+                box-shadow: 2px 2px 0 #1c1c1c;
+                font-size: 11px;
+            }
+
+            .question-title {
+                margin-bottom: 4px;
+                font-size: 18px;
+                line-height: 1.45;
+            }
+
+            .question-copy {
+                margin-bottom: 8px;
+                font-size: 12px;
+                line-height: 1.65;
+            }
+
+            .audio-shell {
+                gap: 6px;
+                margin-bottom: 12px;
+            }
+
+            .status-banner {
+                padding: 8px 10px;
+                border-width: 2px;
+                border-radius: 12px;
+                box-shadow: 2px 2px 0 #1c1c1c;
+                font-size: 12px;
+                line-height: 1.45;
+            }
+
+            .options-list {
+                gap: 8px;
+            }
+
+            .options-list.is-choice-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .option-item {
+                gap: 8px;
+                padding: 10px 11px;
+                border-width: 2px;
+                border-radius: 14px;
+                box-shadow: 3px 3px 0 #1c1c1c;
+            }
+
+            .option-item:hover {
+                transform: translate(-1px, -1px);
+                box-shadow: 4px 4px 0 #1c1c1c;
+            }
+
+            .option-item.is-choice-only {
+                min-height: 72px;
+                padding: 8px;
+            }
+
+            .option-item.is-choice-only .option-index {
+                width: 48px;
+                height: 48px;
+                flex-basis: 48px;
+                font-size: 20px;
+                border-radius: 14px;
+            }
+
+            .option-index {
+                width: 26px;
+                height: 26px;
+                flex-basis: 26px;
+                border-width: 2px;
+                border-radius: 8px;
+                font-size: 12px;
+            }
+
+            .option-text {
+                font-size: 14px;
+                line-height: 1.55;
+            }
+
+            .option-translation {
+                font-size: 12px;
+                line-height: 1.55;
+            }
+
+            .question-actions,
+            .analysis-actions,
+            .summary-actions {
+                gap: 8px;
+                margin-top: 12px;
+            }
+
+            .action-btn {
+                border-width: 2px;
+                border-radius: 10px;
+                box-shadow: 3px 3px 0 #1c1c1c;
+                padding: 9px 12px;
+                font-size: 12px;
+            }
+
+            .summary-title,
+            .analysis-title,
+            .error-title {
+                margin-bottom: 6px;
+                font-size: 20px;
+            }
+
+            .summary-copy,
+            .analysis-copy,
+            .error-copy {
+                margin-bottom: 10px;
+                font-size: 12px;
+                line-height: 1.5;
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+                margin-bottom: 12px;
+            }
+
+            .summary-stat {
+                border-width: 2px;
+                border-radius: 14px;
+                padding: 12px 8px;
+                box-shadow: 3px 3px 0 #1c1c1c;
+            }
+
+            .summary-stat-label {
+                margin-bottom: 4px;
+                font-size: 11px;
+            }
+
+            .summary-stat-value {
+                font-size: 21px;
+            }
+
+            .analysis-transcript,
+            .analysis-options {
+                gap: 10px;
+            }
+
+            .analysis-block {
+                border-width: 2px;
+                border-radius: 14px;
+                padding: 12px;
+                box-shadow: 3px 3px 0 #1c1c1c;
+            }
+
+            .analysis-block h3 {
+                margin-bottom: 6px;
+                font-size: 14px;
+            }
+
+            .analysis-line {
+                margin-bottom: 8px;
+                line-height: 1.75;
+                font-size: 13px;
+            }
+
+            .analysis-translation {
+                margin-top: 3px;
+                font-size: 11px;
+                line-height: 1.55;
+            }
+
+            .analysis-note {
+                padding: 5px 10px;
+                border-width: 2px;
+                box-shadow: 2px 2px 0 #1c1c1c;
+                font-size: 11px;
+                margin-bottom: 12px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            header {
+                gap: 8px;
+                padding: 8px 10px;
+            }
+
+            .nav-btn {
+                padding: 6px 8px;
+                border-radius: 8px;
+                box-shadow: 2px 2px 0 #1c1c1c;
+                font-size: 11px;
+            }
+
+            .page-title {
+                font-size: 14px;
+                letter-spacing: 0.02em;
+            }
+
+            .page-title span {
+                padding: 2px 7px;
+                font-size: 9px;
+            }
+
+            .container {
+                padding: 14px 8px 32px;
+            }
+
+            .meta-card,
+            .question-card,
+            .summary-card,
+            .analysis-card,
+            .error-card {
+                border-radius: 14px;
+                padding: 12px 12px 14px;
+                box-shadow: 3px 3px 0 #1c1c1c;
+            }
+
+            .meta-title {
+                font-size: 13px;
+            }
+
+            .meta-card > :first-child {
+                justify-content: center;
+            }
+
+            .meta-badge {
+                padding: 5px 8px;
+                font-size: 10px;
+            }
+
+            .question-chip {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+
+            .question-title {
+                font-size: 16px;
+            }
+
+            .status-banner {
+                padding: 7px 9px;
+                font-size: 11px;
+            }
+
+            .options-list {
+                gap: 7px;
+            }
+
+            .options-list.is-choice-grid {
+                gap: 8px;
+            }
+
+            .option-item {
+                padding: 9px 10px;
+                border-radius: 12px;
+                box-shadow: 2px 2px 0 #1c1c1c;
+            }
+
+            .option-item.is-choice-only {
+                min-height: 62px;
+                padding: 7px;
+            }
+
+            .option-item.is-choice-only .option-index {
+                width: 42px;
+                height: 42px;
+                flex-basis: 42px;
+                font-size: 18px;
+                border-radius: 12px;
+            }
+
+            .option-index {
+                width: 24px;
+                height: 24px;
+                flex-basis: 24px;
+                font-size: 11px;
+            }
+
+            .option-text {
+                font-size: 13px;
+            }
+
+            .action-btn {
+                padding: 8px 11px;
+                font-size: 11px;
+            }
+
+            .summary-title,
+            .analysis-title,
+            .error-title {
+                font-size: 18px;
+            }
+
+            .summary-grid {
+                gap: 7px;
+            }
+
+            .summary-stat {
+                padding: 10px 7px;
+            }
+
+            .summary-stat-label {
+                font-size: 10px;
+            }
+
+            .summary-stat-value {
+                font-size: 18px;
+            }
+
+            .analysis-block {
+                padding: 10px;
+            }
+
+            .analysis-block h3 {
+                font-size: 13px;
+            }
+
+            .analysis-line {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a class="nav-btn" id="backBtn" href="../index.html">← 返回题型页</a>
+        <h1 class="page-title">随机考试 <span id="pageTitleCount">题组</span></h1>
+        <a class="nav-btn" href="../../../index.html">主页</a>
+    </header>
+
+    <main class="container">
+        <section class="meta-card" id="metaCard">
+            <div>
+                <h2 class="meta-title" id="metaTitle">听力随机考试</h2>
+                <p class="meta-copy" id="metaCopy">正在准备本次随机考试题组。</p>
+            </div>
+            <div class="meta-badges">
+                <span class="meta-badge is-gold" id="rangeBadge">年份范围 -</span>
+                <span class="meta-badge is-blue" id="countBadge">题数组 -</span>
+            </div>
+        </section>
+
+        <section class="question-card" id="practiceView">
+            <div class="question-top">
+                <span class="question-chip is-count" id="questionCounter">第 1 / 0 题</span>
+                <span class="question-chip is-source" id="questionSource">来源 -</span>
+            </div>
+            <h2 class="question-title" id="questionTitle">请听音频后作答</h2>
+            <p class="question-copy" id="questionCopy"></p>
+            <img class="scene-image hidden" id="sceneImage" alt="题目场景图">
+            <div class="audio-shell">
+                <audio id="audioElement" controls preload="metadata"></audio>
+                <div class="status-banner is-ready" id="statusBanner">播放音频后作答。</div>
+            </div>
+            <ol class="options-list" id="optionsList"></ol>
+            <div class="question-actions">
+                <button class="action-btn is-primary" id="confirmBtn" type="button" disabled>确认答案</button>
+            </div>
+        </section>
+
+        <section class="summary-card hidden" id="summaryView">
+            <h2 class="summary-title">随机考试完成</h2>
+            <p class="summary-copy" id="summaryCopy">先查看成绩，再决定是否回看解析。</p>
+            <div class="summary-grid">
+                <div class="summary-stat">
+                    <span class="summary-stat-label">正确</span>
+                    <span class="summary-stat-value" id="summaryCorrect">0</span>
+                </div>
+                <div class="summary-stat">
+                    <span class="summary-stat-label">错误</span>
+                    <span class="summary-stat-value" id="summaryWrong">0</span>
+                </div>
+                <div class="summary-stat">
+                    <span class="summary-stat-label">未答</span>
+                    <span class="summary-stat-value" id="summaryEmpty">0</span>
+                </div>
+                <div class="summary-stat">
+                    <span class="summary-stat-label">正确率</span>
+                    <span class="summary-stat-value" id="summaryAccuracy">0%</span>
+                </div>
+            </div>
+            <div id="drawArea"></div>
+            <div class="summary-actions">
+                <button class="action-btn" id="viewAnalysisBtn" type="button">查看解析</button>
+                <button class="action-btn is-blue" id="retryBtn" type="button">再来一轮</button>
+                <a class="action-btn" id="summaryBackBtn" href="../index.html">返回题型页</a>
+            </div>
+        </section>
+
+        <section class="analysis-card hidden" id="analysisView">
+            <div class="question-top">
+                <span class="question-chip is-count" id="analysisCounter">解析 1 / 0</span>
+                <span class="question-chip is-source" id="analysisSource">来源 -</span>
+            </div>
+            <h2 class="analysis-title" id="analysisTitle">题目解析</h2>
+            <p class="analysis-copy" id="analysisCopy"></p>
+            <div class="analysis-note" id="analysisResultNote">已记录</div>
+            <img class="scene-image hidden" id="analysisImage" alt="题目场景图">
+            <div class="audio-shell">
+                <audio id="analysisAudio" controls preload="metadata"></audio>
+            </div>
+            <div class="analysis-transcript" id="analysisTranscript"></div>
+            <div class="analysis-options" id="analysisOptions"></div>
+            <div class="analysis-actions">
+                <button class="action-btn" id="analysisPrevBtn" type="button">上一题</button>
+                <button class="action-btn" id="analysisNextBtn" type="button">下一题</button>
+                <button class="action-btn is-blue" id="analysisBackBtn" type="button">回到成绩页</button>
+            </div>
+        </section>
+
+        <section class="error-card hidden" id="errorView">
+            <h2 class="error-title">暂时无法开始随机考试</h2>
+            <p class="error-copy" id="errorCopy">当前条件下没有足够题量，请返回题型页重新选择年份范围。</p>
+            <div class="summary-actions">
+                <a class="action-btn is-blue" id="errorBackBtn" href="../index.html">返回题型页</a>
+            </div>
+        </section>
+    </main>
+
+    <div class="tooltip" id="keywordTooltip"></div>
+
+    <script src="../../../shared/study-quest-test-runtime.js"></script>
+    <script src="../../../shared/study-quest-test-boot.js"></script>
+    <script src="./listening-question-pools.js"></script>
+    <script>
+        window.__LISTENING_RANDOM_EXAM__ = true;
+
+        const params = new URLSearchParams(window.location.search);
+        const type = String(params.get('type') || '').trim().toLowerCase();
+        const level = String(params.get('level') || '').trim().toUpperCase();
+        const fromYear = Number.parseInt(params.get('fromYear'), 10);
+        const toYear = Number.parseInt(params.get('toYear'), 10);
+        const pageTitleCount = document.getElementById('pageTitleCount');
+        const randomExamDefaults = (() => {
+            if (type === 'task_comprehension') {
+                return { questionCount: 6, autoAdvanceSeconds: 5 };
+            }
+            return { questionCount: 11, autoAdvanceSeconds: 3 };
+        })();
+        const parsedQuestionCount = Number.parseInt(params.get('count'), 10);
+        const QUESTION_COUNT = Number.isFinite(parsedQuestionCount) && parsedQuestionCount > 0
+            ? parsedQuestionCount
+            : randomExamDefaults.questionCount;
+        const parsedAutoAdvanceSeconds = Number.parseInt(params.get('autoAdvanceSeconds'), 10);
+        const AUTO_ADVANCE_SECONDS = Number.isFinite(parsedAutoAdvanceSeconds) && parsedAutoAdvanceSeconds > 0
+            ? parsedAutoAdvanceSeconds
+            : randomExamDefaults.autoAdvanceSeconds;
+        const state = {
+            questions: [],
+            index: 0,
+            answers: [],
+            selectedIndex: -1,
+            submitted: false,
+            audioEnded: false,
+            countdownTimer: null,
+            countdownInterval: null,
+            runMeta: null,
+            rewardResult: null,
+            analysisUnlocked: false,
+            summaryVisible: false
+        };
+
+        const viewNodes = {
+            practice: document.getElementById('practiceView'),
+            summary: document.getElementById('summaryView'),
+            analysis: document.getElementById('analysisView'),
+            error: document.getElementById('errorView')
+        };
+
+        const ui = {
+            backBtn: document.getElementById('backBtn'),
+            pageTitleCount,
+            summaryBackBtn: document.getElementById('summaryBackBtn'),
+            errorBackBtn: document.getElementById('errorBackBtn'),
+            metaTitle: document.getElementById('metaTitle'),
+            metaCopy: document.getElementById('metaCopy'),
+            rangeBadge: document.getElementById('rangeBadge'),
+            countBadge: document.getElementById('countBadge'),
+            counter: document.getElementById('questionCounter'),
+            source: document.getElementById('questionSource'),
+            title: document.getElementById('questionTitle'),
+            copy: document.getElementById('questionCopy'),
+            image: document.getElementById('sceneImage'),
+            audio: document.getElementById('audioElement'),
+            status: document.getElementById('statusBanner'),
+            options: document.getElementById('optionsList'),
+            confirm: document.getElementById('confirmBtn'),
+            drawArea: document.getElementById('drawArea'),
+            summaryCopy: document.getElementById('summaryCopy'),
+            summaryCorrect: document.getElementById('summaryCorrect'),
+            summaryWrong: document.getElementById('summaryWrong'),
+            summaryEmpty: document.getElementById('summaryEmpty'),
+            summaryAccuracy: document.getElementById('summaryAccuracy'),
+            viewAnalysis: document.getElementById('viewAnalysisBtn'),
+            retry: document.getElementById('retryBtn'),
+            analysisCounter: document.getElementById('analysisCounter'),
+            analysisSource: document.getElementById('analysisSource'),
+            analysisTitle: document.getElementById('analysisTitle'),
+            analysisCopy: document.getElementById('analysisCopy'),
+            analysisNote: document.getElementById('analysisResultNote'),
+            analysisImage: document.getElementById('analysisImage'),
+            analysisAudio: document.getElementById('analysisAudio'),
+            analysisTranscript: document.getElementById('analysisTranscript'),
+            analysisOptions: document.getElementById('analysisOptions'),
+            analysisPrev: document.getElementById('analysisPrevBtn'),
+            analysisNext: document.getElementById('analysisNextBtn'),
+            analysisBack: document.getElementById('analysisBackBtn'),
+            errorCopy: document.getElementById('errorCopy'),
+            tooltip: document.getElementById('keywordTooltip')
+        };
+
+        function htmlEscape(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function normalizeTypeLabel(value) {
+            return value === 'task_comprehension' ? '课题理解' : '即时应答';
+        }
+
+        function buildIndexHref() {
+            const folder = type === 'task_comprehension' ? 'task-comprehension' : 'immediate-response';
+            return `../${folder}/${level.toLowerCase()}/index.html`;
+        }
+
+        function setHidden(node, hidden) {
+            node.classList.toggle('hidden', hidden);
+        }
+
+        function showView(name) {
+            setHidden(viewNodes.practice, name !== 'practice');
+            setHidden(viewNodes.summary, name !== 'summary');
+            setHidden(viewNodes.analysis, name !== 'analysis');
+            setHidden(viewNodes.error, name !== 'error');
+        }
+
+        function stripHighlightHtml(html) {
+            if (!html) return '';
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = html;
+            wrapper.querySelectorAll('.opt-tag').forEach((node) => node.remove());
+            ['highlight-correct', 'highlight-wrong', 'explain-wrong'].forEach((className) => {
+                wrapper.querySelectorAll(`.${className}`).forEach((node) => {
+                    const parent = node.parentNode;
+                    if (!parent) return;
+                    while (node.firstChild) {
+                        parent.insertBefore(node.firstChild, node);
+                    }
+                    parent.removeChild(node);
+                });
+            });
+            wrapper.querySelectorAll('[class]').forEach((node) => {
+                node.classList.remove('highlight-correct', 'highlight-wrong', 'explain-wrong');
+                if (!node.className.trim()) {
+                    node.removeAttribute('class');
+                }
+            });
+            return wrapper.innerHTML;
+        }
+
+        function sanitizeExamHtml(html) {
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = stripHighlightHtml(html);
+            wrapper.querySelectorAll('[onclick]').forEach((node) => node.removeAttribute('onclick'));
+            wrapper.querySelectorAll('.keyword').forEach((node) => {
+                node.classList.remove('keyword');
+                if (!node.className.trim()) {
+                    node.removeAttribute('class');
+                }
+            });
+            return wrapper.innerHTML;
+        }
+
+        function getQuestionPrompt(question) {
+            if (type === 'task_comprehension' && question.script) {
+                const rawPrompt = question.script.question || '音频播放后作答。';
+                return {
+                    title: sanitizeExamHtml(rawPrompt),
+                    copy: ''
+                };
+            }
+            return {
+                title: '请听音频并选择最合适的回答。',
+                copy: ''
+            };
+        }
+
+        function getCurrentQuestion() {
+            return state.questions[state.index] || null;
+        }
+
+        function isImmediateResponseExam() {
+            return type === 'immediate_response';
+        }
+
+        function getAnswerRecord(index) {
+            return state.answers[index] || {
+                selectedIndex: -1,
+                submitted: false,
+                isCorrect: false,
+                unanswered: false
+            };
+        }
+
+        function createSourceLabel(question) {
+            return `${question.sourceLabel} · 第 ${question.questionId} 题`;
+        }
+
+        function clearCountdown() {
+            if (state.countdownTimer) {
+                window.clearTimeout(state.countdownTimer);
+                state.countdownTimer = null;
+            }
+            if (state.countdownInterval) {
+                window.clearInterval(state.countdownInterval);
+                state.countdownInterval = null;
+            }
+        }
+
+        function updateStatus(text, tone) {
+            ui.status.textContent = text;
+            ui.status.className = 'status-banner';
+            if (tone) {
+                ui.status.classList.add(tone);
+            }
+        }
+
+        function dispatchPhase(phase, stats) {
+            if (!window.StudyQuestTestUi || typeof window.StudyQuestTestUi.dispatchPracticeState !== 'function') {
+                return;
+            }
+            window.StudyQuestTestUi.dispatchPracticeState({
+                module: 'listening',
+                subType: type,
+                mode: 'challenge',
+                phase,
+                questionIndex: stats.total,
+                questionCount: stats.total,
+                accuracy: stats.total > 0 ? stats.correct / stats.total : 0,
+                streak: stats.correct
+            });
+        }
+
+        function computeStats() {
+            const total = state.questions.length;
+            let correct = 0;
+            let answered = 0;
+            let empty = 0;
+            state.answers.forEach((answer) => {
+                if (!answer || !answer.submitted) {
+                    empty += 1;
+                    return;
+                }
+                answered += 1;
+                if (answer.isCorrect) {
+                    correct += 1;
+                }
+            });
+            const wrong = Math.max(0, answered - correct);
+            const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+            return { total, correct, wrong, empty, accuracy };
+        }
+
+        function showTooltip(event, text) {
+            event.stopPropagation();
+            ui.tooltip.textContent = text;
+            ui.tooltip.style.display = 'block';
+            const rect = event.target.getBoundingClientRect();
+            const top = rect.top + window.scrollY - ui.tooltip.offsetHeight - 12;
+            let left = rect.left + window.scrollX + rect.width / 2 - ui.tooltip.offsetWidth / 2;
+            if (left < 10) left = 10;
+            if (left + ui.tooltip.offsetWidth > window.innerWidth - 10) {
+                left = window.innerWidth - ui.tooltip.offsetWidth - 10;
+            }
+            ui.tooltip.style.top = `${Math.max(10, top)}px`;
+            ui.tooltip.style.left = `${left}px`;
+        }
+
+        window.showTooltip = showTooltip;
+        document.addEventListener('click', () => {
+            ui.tooltip.style.display = 'none';
+        });
+
+        function renderOptions(options, mode) {
+            return options.map((option, index) => {
+                const answer = getAnswerRecord(state.index);
+                const classes = ['option-item'];
+                const choiceOnly = mode === 'practice' && isImmediateResponseExam();
+                if (mode === 'practice') {
+                    if (answer.selectedIndex === index) classes.push('is-selected');
+                    if (answer.submitted && !choiceOnly) classes.push('is-locked');
+                    if (choiceOnly) classes.push('is-choice-only');
+                } else {
+                    const userPicked = answer.selectedIndex === index;
+                    if (option.correct) classes.push('is-correct');
+                    if (userPicked && !option.correct) classes.push('is-choice-wrong');
+                }
+                const optionBody = choiceOnly
+                    ? ''
+                    : `
+                        <div class="option-body">
+                            <div class="option-text">${mode === 'practice' ? sanitizeExamHtml(option.text) : option.text}</div>
+                            ${mode === 'analysis' && option.translation ? `<div class="option-translation">${htmlEscape(option.translation)}</div>` : ''}
+                        </div>
+                    `;
+                return `
+                    <li class="${classes.join(' ')}" data-option-index="${index}">
+                        <span class="option-index">${index + 1}</span>
+                        ${optionBody}
+                    </li>
+                `;
+            }).join('');
+        }
+
+        function bindOptionEvents() {
+            const answer = getAnswerRecord(state.index);
+            ui.options.querySelectorAll('.option-item').forEach((item) => {
+                item.addEventListener('click', () => {
+                    if (answer.submitted) return;
+                    state.selectedIndex = Number(item.dataset.optionIndex);
+                    answer.selectedIndex = state.selectedIndex;
+                    if (!isImmediateResponseExam()) {
+                        ui.confirm.disabled = false;
+                    }
+                    ui.options.querySelectorAll('.option-item').forEach((node) => node.classList.remove('is-selected'));
+                    item.classList.add('is-selected');
+                    if (isImmediateResponseExam()) {
+                        updateStatus(
+                            state.audioEnded ? '已选择，可在切题前重新选择。' : '已选择答案，可在音频结束前反复修改。',
+                            'is-ready'
+                        );
+                    } else {
+                        updateStatus('已选择答案。点击“确认答案”后，本题会被锁定。', 'is-ready');
+                    }
+                });
+            });
+        }
+
+        function tryAutoplayCurrentAudio() {
+            if (!isImmediateResponseExam() || state.index <= 0 || !ui.audio.src) {
+                return;
+            }
+            window.setTimeout(() => {
+                const playPromise = ui.audio.play();
+                if (playPromise && typeof playPromise.catch === 'function') {
+                    playPromise.catch(() => {});
+                }
+            }, 120);
+        }
+
+        function renderPracticeQuestion() {
+            const question = getCurrentQuestion();
+            if (!question) {
+                showSummary();
+                return;
+            }
+
+            clearCountdown();
+            state.submitted = false;
+            state.audioEnded = false;
+            state.selectedIndex = -1;
+
+            const answer = getAnswerRecord(state.index);
+            if (answer.submitted) {
+                state.submitted = true;
+                state.selectedIndex = answer.selectedIndex;
+            }
+
+            const prompt = getQuestionPrompt(question);
+            ui.counter.textContent = `第 ${state.index + 1} / ${state.questions.length} 题`;
+            ui.source.textContent = createSourceLabel(question);
+            ui.title.innerHTML = prompt.title;
+            ui.copy.textContent = prompt.copy;
+            ui.audio.src = question.audio || '';
+            ui.audio.currentTime = 0;
+            ui.image.src = '';
+            ui.image.classList.add('hidden');
+            ui.options.classList.toggle('is-choice-grid', isImmediateResponseExam());
+            ui.options.innerHTML = renderOptions(question.options, 'practice');
+            bindOptionEvents();
+            ui.confirm.classList.toggle('hidden', isImmediateResponseExam());
+            ui.confirm.disabled = state.selectedIndex < 0 || answer.submitted;
+            updateStatus(
+                isImmediateResponseExam()
+                    ? '播放音频后，从 1 / 2 / 3 中选择答案。'
+                    : '播放音频后作答。',
+                'is-ready'
+            );
+            tryAutoplayCurrentAudio();
+        }
+
+        function recordCurrentAnswer(forceEmpty = false) {
+            const question = getCurrentQuestion();
+            if (!question) return;
+            const answer = getAnswerRecord(state.index);
+            if (answer.submitted) {
+                return;
+            }
+
+            let selectedIndex = Number(state.selectedIndex);
+            if (forceEmpty || !Number.isInteger(selectedIndex) || selectedIndex < 0) {
+                answer.selectedIndex = -1;
+                answer.submitted = true;
+                answer.unanswered = true;
+                answer.isCorrect = false;
+            } else {
+                answer.selectedIndex = selectedIndex;
+                answer.submitted = true;
+                answer.unanswered = false;
+                answer.isCorrect = Boolean(question.options[selectedIndex] && question.options[selectedIndex].correct);
+            }
+            state.answers[state.index] = answer;
+            state.submitted = true;
+
+            if (!answer.isCorrect) {
+                if (window.ListeningProgress && typeof window.ListeningProgress.setMistakeIds === 'function') {
+                    const ids = window.ListeningProgress.getMistakeIds(type.replace(/_/g, '-'), level.toLowerCase(), question.sourceExamKey) || [];
+                    if (!ids.includes(question.questionId)) {
+                        ids.push(question.questionId);
+                        window.ListeningProgress.setMistakeIds(type.replace(/_/g, '-'), level.toLowerCase(), question.sourceExamKey, ids);
+                    }
+                }
+            }
+        }
+
+        function startCountdown() {
+            if (state.countdownTimer) return;
+            let remaining = AUTO_ADVANCE_SECONDS;
+            updateStatus(
+                isImmediateResponseExam()
+                    ? `${remaining} 秒后自动进入下一题，可继续改选。`
+                    : `${remaining} 秒后自动进入下一题。`,
+                'is-recorded'
+            );
+            state.countdownInterval = window.setInterval(() => {
+                remaining -= 1;
+                if (remaining > 0) {
+                    updateStatus(
+                        isImmediateResponseExam()
+                            ? `${remaining} 秒后自动进入下一题，可继续改选。`
+                            : `${remaining} 秒后自动进入下一题。`,
+                        'is-recorded'
+                    );
+                }
+            }, 1000);
+            state.countdownTimer = window.setTimeout(() => {
+                clearCountdown();
+                advanceQuestion();
+            }, AUTO_ADVANCE_SECONDS * 1000);
+        }
+
+        function advanceQuestion() {
+            recordCurrentAnswer(state.selectedIndex < 0);
+            if (state.index >= state.questions.length - 1) {
+                showSummary();
+                return;
+            }
+            state.index += 1;
+            renderPracticeQuestion();
+        }
+
+        function onAudioEnded() {
+            state.audioEnded = true;
+            startCountdown();
+        }
+
+        function onConfirmAnswer() {
+            if (isImmediateResponseExam()) {
+                return;
+            }
+            if (state.selectedIndex < 0) {
+                return;
+            }
+            recordCurrentAnswer(false);
+            ui.confirm.disabled = true;
+            ui.options.innerHTML = renderOptions(getCurrentQuestion().options, 'practice');
+            bindOptionEvents();
+            if (state.audioEnded) {
+                updateStatus('已记录，等待切题。', 'is-recorded');
+                startCountdown();
+            } else {
+                updateStatus('已记录，音频结束后自动切题。', 'is-recorded');
+            }
+        }
+
+        function buildDrawMarkup(runKey) {
+            if (!window.StudyQuestTestUi || typeof window.StudyQuestTestUi.getDrawAffordanceMarkup !== 'function') {
+                return '';
+            }
+            return window.StudyQuestTestUi.getDrawAffordanceMarkup(runKey);
+        }
+
+        function showSummary() {
+            clearCountdown();
+            const stats = computeStats();
+            showView('summary');
+            ui.summaryCorrect.textContent = String(stats.correct);
+            ui.summaryWrong.textContent = String(stats.wrong);
+            ui.summaryEmpty.textContent = String(stats.empty);
+            ui.summaryAccuracy.textContent = `${stats.accuracy}%`;
+            ui.summaryCopy.textContent = '成绩已生成。';
+
+            if (!state.rewardResult && state.runMeta && window.StudyQuestTestServer && typeof window.StudyQuestTestServer.completeRun === 'function') {
+                state.rewardResult = window.StudyQuestTestServer.completeRun({
+                    runKey: state.runMeta.runKey,
+                    module: 'listening',
+                    subType: type,
+                    mode: 'challenge',
+                    scopeKey: `random-${fromYear}-${toYear}-${QUESTION_COUNT}`,
+                    questionCount: stats.total,
+                    answeredCount: stats.total - stats.empty,
+                    correctCount: stats.correct,
+                    accuracy: stats.total > 0 ? stats.correct / stats.total : 0,
+                    cleared: true,
+                    sourcePage: window.location.pathname
+                });
+            }
+
+            ui.drawArea.innerHTML = state.rewardResult && state.rewardResult.accepted
+                ? buildDrawMarkup(state.rewardResult.drawOffer && state.rewardResult.drawOffer.runKey || (state.runMeta && state.runMeta.runKey))
+                : '';
+
+            dispatchPhase(stats.accuracy === 100 ? 'perfect_clear' : 'clear', {
+                total: stats.total,
+                correct: stats.correct
+            });
+        }
+
+        function renderImmediateAnalysis(question) {
+            return `
+                <div class="analysis-block">
+                    <h3>对话原文</h3>
+                    <div class="analysis-line">${question.dialogueHtml || '（本题暂未整理原文）'}</div>
+                    ${question.translation ? `<div class="analysis-translation">${htmlEscape(question.translation)}</div>` : ''}
+                </div>
+            `;
+        }
+
+        function renderTaskAnalysis(question) {
+            const script = question.script || {};
+            const promptHtml = script.question ? `<div class="analysis-line">${script.question}</div>` : '';
+            const promptTrans = script.questionTrans ? `<div class="analysis-translation">${htmlEscape(script.questionTrans)}</div>` : '';
+            const dialogue = Array.isArray(script.dialogue) ? script.dialogue.map((line) => `
+                <div class="analysis-line">
+                    <span class="analysis-speaker">${htmlEscape(line.speaker)}：</span>${line.text}
+                    ${line.trans ? `<div class="analysis-translation">${htmlEscape(line.trans)}</div>` : ''}
+                </div>
+            `).join('') : '（本题暂未整理对话原文）';
+            return `
+                <div class="analysis-block">
+                    <h3>题目原文</h3>
+                    ${promptHtml}
+                    ${promptTrans}
+                    ${dialogue}
+                </div>
+            `;
+        }
+
+        function renderAnalysis() {
+            const question = getCurrentQuestion();
+            const answer = getAnswerRecord(state.index);
+            if (!question) return;
+
+            ui.analysisCounter.textContent = `解析 ${state.index + 1} / ${state.questions.length}`;
+            ui.analysisSource.textContent = createSourceLabel(question);
+            ui.analysisTitle.textContent = type === 'task_comprehension' ? '课题理解解析' : '即时应答解析';
+            ui.analysisCopy.textContent = '';
+
+            ui.analysisAudio.src = question.audio || '';
+            ui.analysisImage.src = '';
+            ui.analysisImage.classList.add('hidden');
+
+            if (!answer.submitted || answer.unanswered) {
+                ui.analysisResultNote.textContent = '本题未作答';
+                ui.analysisResultNote.className = 'analysis-note is-empty';
+            } else if (answer.isCorrect) {
+                ui.analysisResultNote.textContent = '本题答对了';
+                ui.analysisResultNote.className = 'analysis-note is-correct';
+            } else {
+                ui.analysisResultNote.textContent = '本题答错了';
+                ui.analysisResultNote.className = 'analysis-note is-wrong';
+            }
+
+            ui.analysisTranscript.innerHTML = type === 'task_comprehension'
+                ? renderTaskAnalysis(question)
+                : renderImmediateAnalysis(question);
+            ui.analysisOptions.innerHTML = `
+                <div class="analysis-block">
+                    <h3>选项解析</h3>
+                    <ol class="options-list">${renderOptions(question.options, 'analysis')}</ol>
+                </div>
+            `;
+
+            ui.analysisPrev.disabled = state.index === 0;
+            ui.analysisNext.disabled = state.index >= state.questions.length - 1;
+        }
+
+        function showAnalysis() {
+            state.analysisUnlocked = true;
+            state.index = 0;
+            showView('analysis');
+            renderAnalysis();
+        }
+
+        function showError(message) {
+            showView('error');
+            ui.errorCopy.textContent = message;
+        }
+
+        function initializeMeta() {
+            const indexHref = buildIndexHref();
+            ui.backBtn.href = indexHref;
+            ui.summaryBackBtn.href = indexHref;
+            ui.errorBackBtn.href = indexHref;
+            ui.metaTitle.textContent = `${normalizeTypeLabel(type)} · ${level} 随机考试`;
+            ui.metaCopy.textContent = '';
+            ui.rangeBadge.textContent = `${fromYear} - ${toYear}`;
+            ui.countBadge.textContent = `${QUESTION_COUNT} 题挑战`;
+            if (ui.pageTitleCount) {
+                ui.pageTitleCount.textContent = `${QUESTION_COUNT}题`;
+            }
+        }
+
+        function initializeQuestions() {
+            if (!window.ListeningQuestionPools) {
+                showError('听力共享题池未加载成功，请返回题型页后重试。');
+                return false;
+            }
+
+            const count = window.ListeningQuestionPools.countQuestionsInRange(type, level, fromYear, toYear);
+            if (!count || count < QUESTION_COUNT) {
+                showError(`当前年份范围题量不足 ${QUESTION_COUNT} 题，请返回题型页扩大年份范围后再开始随机考试。`);
+                return false;
+            }
+
+            state.questions = window.ListeningQuestionPools.sampleQuestions(type, level, fromYear, toYear, QUESTION_COUNT).map((question, index) => ({
+                ...question,
+                uid: `${question.sourceExamKey}-${question.questionId}-${index}`
+            }));
+            state.answers = state.questions.map(() => ({
+                selectedIndex: -1,
+                submitted: false,
+                isCorrect: false,
+                unanswered: false
+            }));
+            return true;
+        }
+
+        function initializeRewardRun() {
+            if (!window.StudyQuestTestServer || typeof window.StudyQuestTestServer.startRun !== 'function') {
+                return;
+            }
+            state.runMeta = window.StudyQuestTestServer.startRun({
+                module: 'listening',
+                subType: type,
+                mode: 'challenge',
+                scopeKey: `random-${fromYear}-${toYear}-${QUESTION_COUNT}`,
+                level
+            });
+        }
+
+        ui.confirm.addEventListener('click', onConfirmAnswer);
+        ui.audio.addEventListener('ended', onAudioEnded);
+        ui.viewAnalysis.addEventListener('click', showAnalysis);
+        ui.retry.addEventListener('click', () => window.location.reload());
+        ui.analysisPrev.addEventListener('click', () => {
+            if (state.index <= 0) return;
+            state.index -= 1;
+            renderAnalysis();
+        });
+        ui.analysisNext.addEventListener('click', () => {
+            if (state.index >= state.questions.length - 1) return;
+            state.index += 1;
+            renderAnalysis();
+        });
+        ui.analysisBack.addEventListener('click', () => showView('summary'));
+
+        initializeMeta();
+        if (initializeQuestions()) {
+            initializeRewardRun();
+            showView('practice');
+            renderPracticeQuestion();
+        }
+    </script>
+</body>
+</html>
