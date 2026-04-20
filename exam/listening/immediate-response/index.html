@@ -3,197 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>听力练习 - 等级选择</title>
+    <title>即時応答 - レベル選択</title>
+    <!-- 引入全字重的中日文无衬线体及圆体，彻底解决粗细不一的问题 -->
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #fdfaf5;
-            --text-color: #2c2c2c;
-            --accent-color: #b33e3e;
-            --card-bg: #ffffff;
-            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --bg-color: #FFFFFF;        
+            --card-bg: #FFFFFF;         
+            
+            --text-main: #1C1C1C;       
+            --text-sub: #4B5563;        
+            
+            --border-strong: #1C1C1C;   
+            
+            /* 等级强调色 (对应不同难度的打歌舞台) */
+            --color-level1: #FBCFE8; /* N1 粉色 (Expert) */
+            --color-level1-bg: #FCE7F3;
+            
+            --color-level2: #BAE6FD; /* N2 蓝色 (Hard) */
+            --color-level2-bg: #E0F2FE;
+            
+            --color-level3: #E9D5FF; /* N3 紫色 (Normal) */
+            --color-level3-bg: #F3E8FF;
+
+            --color-locked-tag: #FEF08A; /* 准备中标签黄 */
+            
+            --disabled-bg: #F3F4F6;
+            --disabled-border: #D1D5DB;
+            --disabled-text: #9CA3AF;
+            
+            /* 硬直阴影 (Neo-Brutalism) */
+            --shadow-sm: 2px 2px 0px var(--border-strong);
+            --shadow-md: 4px 4px 0px var(--border-strong);
+            --shadow-lg: 8px 8px 0px var(--border-strong);
+            --shadow-locked: 8px 8px 0px var(--disabled-border);
+            
+            --transition: 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         body {
-            font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Meiryo", sans-serif;
+            font-family: 'Noto Sans JP', 'Noto Sans SC', 'M PLUS Rounded 1c', -apple-system, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: var(--text-main);
             margin: 0;
             padding: 0;
             min-height: 100vh;
-        }
-
-        /* Header */
-        header {
-            width: 100%;
-            padding: 18px 20px;
-            box-sizing: border-box;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background-color: rgba(253, 250, 245, 0.95);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            margin-bottom: 34px;
+            /* 灰白波点背景 */
+            background-image: radial-gradient(#E5E7EB 2px, transparent 2px);
+            background-size: 20px 20px;
         }
 
-        .back-btn {
-            position: absolute;
-            left: 20px;
-            display: inline-flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-color);
-            font-size: 15px;
-            font-weight: 600;
-            min-height: 34px;
-            opacity: 0.72;
-            transition: opacity 0.25s, transform 0.25s;
-            z-index: 2;
-        }
-        .back-btn:hover {
-            opacity: 1;
-            transform: translateX(-2px);
-        }
-
-        .home-btn {
-            position: absolute;
-            right: 20px;
-            text-decoration: none;
-            color: var(--text-color);
-            font-size: 15px;
-            font-weight: 600;
+        .vocab-container {
+            width: 95%;
+            max-width: 860px;
+            padding: 40px 0;
             display: flex;
-            align-items: center;
-            min-height: 34px;
-            opacity: 0.72;
-            transition: opacity 0.25s, transform 0.25s;
+            flex-direction: column;
+            flex: 1;
         }
 
-        .home-btn:hover {
-            opacity: 1;
-            transform: translateX(2px);
+        /* 提示说明块 */
+        .intro-box {
+            text-align: center;
+            margin-bottom: 32px;
+            animation: fadeIn 0.4s ease-out;
         }
-
-        h1 {
+        
+        .intro-box p {
+            color: var(--text-main);
+            font-size: 16px;
+            font-weight: 900;
             margin: 0;
-            font-size: 19px;
-            font-weight: 700;
-            color: var(--text-color);
-            letter-spacing: 0.02em;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0 20px 40px 20px;
+            background: #FFF;
+            border: 3px solid var(--border-strong);
+            display: inline-block;
+            padding: 10px 24px;
+            border-radius: 999px;
+            box-shadow: var(--shadow-md);
+            letter-spacing: 0.05em;
         }
 
         .level-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ================= 等级卡片 ================= */
         .level-card {
             background: var(--card-bg);
             border-radius: 16px;
-            padding: 30px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
+            padding: 24px;
+            border: 4px solid var(--border-strong);
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition);
             text-decoration: none;
-            color: var(--text-color);
-            border: 2px solid transparent;
+            color: var(--text-main);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            position: relative;
         }
 
-        .level-card:hover:not(.disabled) {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            border-color: var(--accent-color);
+        .level-card:hover:not(.locked) {
+            transform: translate(-2px, -2px);
+            box-shadow: 10px 10px 0px var(--border-strong);
+            background-color: #FAFAFA;
+        }
+        
+        .level-card:active:not(.locked) {
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 var(--border-strong);
         }
 
-        .level-card.disabled {
-            opacity: 0.6;
+        /* 锁定的卡片状态 */
+        .level-card.locked {
+            background: var(--disabled-bg);
+            border-color: var(--disabled-border);
+            box-shadow: var(--shadow-locked);
             cursor: not-allowed;
-            background-color: #f9f9f9;
+        }
+        
+        .level-card.locked:hover {
+            transform: none;
+        }
+
+        .level-info {
+            flex: 1;
+            padding-right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         .level-info h2 {
-            margin: 0 0 5px 0;
-            font-size: 24px;
-            color: var(--accent-color);
+            margin: 0 0 12px 0;
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        /* 难度标签 */
+        .lesson-tag {
+            font-size: 12px;
+            font-weight: 900;
+            color: var(--text-main);
+            padding: 2px 10px;
+            border-radius: 999px;
+            border: 2px solid var(--border-strong);
+            letter-spacing: 0.05em;
+        }
+
+        .level-card:nth-child(1) .lesson-tag { background: var(--color-level1); }
+        .level-card:nth-child(2) .lesson-tag { background: var(--color-level2); }
+        .level-card:nth-child(3) .lesson-tag { background: var(--color-level3); color: var(--text-main); }
+        
+        .level-card.locked .lesson-tag {
+            background: var(--color-locked-tag);
+            border-color: transparent;
+            color: var(--text-sub);
         }
 
         .level-info p {
-            margin: 0;
-            font-size: 13px;
-            color: #888;
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            color: var(--text-sub);
+            line-height: 1.6;
+            font-weight: 700;
         }
 
+        .level-info .hint-text {
+            font-size: 12px;
+            color: var(--text-sub);
+            font-weight: 900;
+            padding: 6px 12px;
+            border-radius: 999px;
+            display: inline-block;
+            border: 2px dashed var(--border-strong);
+        }
+
+        .level-card.locked .level-info h2 { color: var(--disabled-text); }
+        .level-card.locked .level-info p { color: var(--disabled-text); }
+        .level-card.locked .level-info .hint-text {
+            border-color: var(--disabled-text);
+            color: var(--disabled-text);
+        }
+
+        /* 右侧图标 */
         .level-icon {
             font-size: 32px;
-            opacity: 0.8;
+            width: 72px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            flex-shrink: 0;
+            border: 4px solid var(--border-strong);
+            background: #FFF;
+        }
+
+        .level-card:nth-child(1) .level-icon { background: var(--color-level1-bg); }
+        .level-card:nth-child(2) .level-icon { background: var(--color-level2-bg); }
+        .level-card:nth-child(3) .level-icon { background: var(--color-level3-bg); }
+
+        .level-card.locked .level-icon { 
+            background: #FFF; 
+            border-color: var(--disabled-border); 
+            filter: grayscale(100%);
+            opacity: 0.7;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 30px;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--disabled-text);
         }
 
         @media (max-width: 600px) {
-            .level-grid {
-                grid-template-columns: 1fr;
+            .level-grid { grid-template-columns: 1fr; }
+            .level-card { padding: 20px; }
+            .level-info h2 { font-size: 22px; }
+            .level-icon { width: 64px; height: 64px; font-size: 28px; }
+            .intro-box p { font-size: 14px; padding: 8px 20px; }
+        }
+    
+        /* CODEX listening mobile density: brutal root */
+        @media (max-width: 720px) {
+            body { background-size: 16px 16px; }
+            .vocab-container, .container {
+                width: calc(100% - 20px) !important;
+                max-width: none !important;
+                padding: 20px 0 32px !important;
+            }
+            .intro-box { margin-bottom: 20px !important; }
+            .intro-box p, .intro {
+                font-size: 12px !important;
+                line-height: 1.6 !important;
+                padding: 8px 16px !important;
+            }
+            .type-grid, .level-grid { grid-template-columns: 1fr !important; gap: 14px !important; }
+            .type-card, .level-card {
+                padding: 18px !important;
+                border-width: 3px !important;
+                border-radius: 14px !important;
+                box-shadow: 6px 6px 0 #1c1c1c !important;
+            }
+            .type-info, .level-info { padding-right: 14px !important; }
+            .type-info h2, .level-info h2 { font-size: 18px !important; margin-bottom: 8px !important; }
+            .type-info p, .level-info p { font-size: 12px !important; line-height: 1.5 !important; }
+            .type-icon, .level-icon {
+                width: 52px !important;
+                height: 52px !important;
+                font-size: 22px !important;
             }
         }
+        @media (max-width: 520px) {
+            body { background-size: 14px 14px; }
+            .vocab-container, .container { width: calc(100% - 16px) !important; padding: 16px 0 24px !important; }
+            .intro-box p, .intro { font-size: 11px !important; padding: 7px 12px !important; }
+            .type-grid, .level-grid { gap: 10px !important; }
+            .type-card, .level-card {
+                padding: 14px !important;
+                border-radius: 12px !important;
+                box-shadow: 4px 4px 0 #1c1c1c !important;
+            }
+            .type-info, .level-info { padding-right: 10px !important; }
+            .type-info h2, .level-info h2 { font-size: 16px !important; }
+            .type-info p, .level-info p { font-size: 11px !important; }
+            .type-icon, .level-icon {
+                width: 44px !important;
+                height: 44px !important;
+                font-size: 19px !important;
+            }
+        }
+
     </style>
     <link rel="stylesheet" href="../../../shared/site-fonts.css">
+    <link rel="stylesheet" href="../shared/listening-header.css">
 </head>
 <body>
 
     <header>
-        <a href="../index.html" class="back-btn">← 戻る</a>
-        <h1>JLPT 聴解練習</h1>
-        <a href="../../../index.html" class="home-btn">ホーム</a>
+        <a href="../index.html" class="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            戻る
+        </a>
+        <h1>即時応答 <span>LEVEL</span></h1>
+        <a href="../../../index.html" class="home-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            ホーム
+        </a>
     </header>
 
-    <div class="container">
+    <div class="vocab-container">
+        <div class="intro-box">
+            <p>💬 挑戦するレベルを選択してください</p>
+        </div>
+
         <div class="level-grid">
             <!-- N1 -->
             <a href="n1/index.html" class="level-card">
                 <div class="level-info">
-                    <h2>N1</h2>
+                    <h2>N1 <span class="lesson-tag">上級</span></h2>
                     <p>即時応答 / 過去問演習</p>
+                    <span class="hint-text">※ 高速レスポンス</span>
                 </div>
-                <div class="level-icon">🗻</div>
+                <div class="level-icon">🎤</div>
             </a>
 
             <!-- N2 -->
             <a href="n2/index.html" class="level-card">
                 <div class="level-info">
-                    <h2>N2</h2>
+                    <h2>N2 <span class="lesson-tag">中上級</span></h2>
                     <p>即時応答 / 過去問演習</p>
+                    <span class="hint-text">※ 基礎レスポンス</span>
                 </div>
-                <div class="level-icon">⛩️</div>
+                <div class="level-icon">🎸</div>
             </a>
 
             <!-- N3 -->
-            <a href="n3/index.html" class="level-card">
+            <div class="level-card locked" aria-disabled="true">
                 <div class="level-info">
-                    <h2>N3</h2>
-                    <p>中級レベル</p>
+                    <h2>N3 <span class="lesson-tag">中級</span></h2>
+                    <p>後日改造予定</p>
+                    <span class="hint-text">※ 入口已锁定</span>
                 </div>
-                <div class="level-icon">🍱</div>
-            </a>
-
-            <!-- N4 -->
-            <a href="#" class="level-card disabled" onclick="return false;">
-                <div class="level-info">
-                    <h2>N4</h2>
-                    <p>初級レベル（完善中）</p>
-                </div>
-                <div class="level-icon">🍙</div>
-            </a>
+                <div class="level-icon">🎧</div>
+            </div>
         </div>
     </div>
+
+    <footer>
+        © キキの日本語コーナー
+    </footer>
+
 </body>
 </html>
