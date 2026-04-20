@@ -4254,6 +4254,60 @@ const extraExampleData = {
             "jp": "<ruby>進<rt>しん</rt></ruby><ruby>学<rt>がく</rt></ruby>する<span style='color:#d64045'>にせよ</span><ruby>就<rt>しゅう</rt></ruby><ruby>職<rt>しょく</rt></ruby>する<span style='color:#d64045'>にせよ</span>、<ruby>最<rt>さい</rt></ruby><ruby>終<rt>しゅう</rt></ruby><ruby>的<rt>てき</rt></ruby>には<ruby>本<rt>ほん</rt></ruby><ruby>人<rt>にん</rt></ruby>が<ruby>決<rt>き</rt></ruby>めることだ。",
             "cn": "无论是继续升学还是直接就业，说到底还是得看他自己怎么定。"
         }
+    ],
+    "238": [
+        {
+            "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>来<rt>らい</rt></ruby><ruby>月<rt>げつ</rt></ruby><ruby>結<rt>けっ</rt></ruby><ruby>婚<rt>こん</rt></ruby>する<span style='color:#d64045'>とか</span>。",
+            "cn": "听说他下个月就要结婚了。"
+        },
+        {
+            "jp": "<ruby>彼<rt>かれ</rt></ruby>はもう<ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby>を<ruby>辞<rt>や</rt></ruby>めた<span style='color:#d64045'>とか</span>。",
+            "cn": "听说他已经从公司辞职不干了。"
+        },
+        {
+            "jp": "さっき、<ruby>田<rt>た</rt></ruby><ruby>中<rt>なか</rt></ruby>さん<span style='color:#d64045'>とかいう</span><ruby>人<rt>ひと</rt></ruby>から<ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby>がありましたよ。",
+            "cn": "刚才有个叫什么田中的人给您打过电话来。"
+        },
+        {
+            "jp": "この、<ruby>納<rt>なっ</rt></ruby><ruby>豆<rt>とう</rt></ruby><span style='color:#d64045'>とかいう</span><ruby>食<rt>た</rt></ruby>べ<ruby>物<rt>もの</rt></ruby>は<ruby>体<rt>からだ</rt></ruby>にいいらしい。",
+            "cn": "听说吃这个叫什么纳豆的玩意儿对身体挺好。"
+        }
+    ],
+    "239": [
+        {
+            "jp": "この<ruby>川<rt>かわ</rt></ruby><span style='color:#d64045'>に<ruby>沿<rt>そ</rt></ruby>って</span>まっすぐ<ruby>歩<rt>ある</rt></ruby>いてください。",
+            "cn": "请顺着这条河一直往前走。"
+        },
+        {
+            "jp": "<ruby>計<rt>けい</rt></ruby><ruby>画<rt>かく</rt></ruby><span style='color:#d64045'>に<ruby>沿<rt>そ</rt></ruby>って</span>、プロジェクトを<ruby>進<rt>すす</rt></ruby>める。",
+            "cn": "我们会严格按照原定计划来推进这个项目。"
+        },
+        {
+            "jp": "お<ruby>客<rt>きゃく</rt></ruby><ruby>様<rt>さま</rt></ruby>のご<ruby>要<rt>よう</rt></ruby><ruby>望<rt>ぼう</rt></ruby><span style='color:#d64045'>に<ruby>沿<rt>そ</rt></ruby>い</span>、デザインを<ruby>修<rt>しゅう</rt></ruby><ruby>正<rt>せい</rt></ruby>いたしました。",
+            "cn": "我们已经按照客户的诉求对设计方案进行了修改。"
+        },
+        {
+            "jp": "マニュアル<span style='color:#d64045'>に<ruby>沿<rt>そ</rt></ruby>って</span><ruby>操<rt>そう</rt></ruby><ruby>作<rt>さ</rt></ruby>してください。",
+            "cn": "请大家务必严格按照操作手册来执行。"
+        }
+    ],
+    "240": [
+        {
+            "jp": "<ruby>歌<rt>うた</rt></ruby>を<ruby>歌<rt>うた</rt></ruby>うこと<span style='color:#d64045'>にかけては</span>、<ruby>彼<rt>かれ</rt></ruby>は<ruby>誰<rt>だれ</rt></ruby>にも<ruby>負<rt>ま</rt></ruby>けない。",
+            "cn": "论唱歌这块儿，他可绝对不会输给任何人。"
+        },
+        {
+            "jp": "<ruby>料<rt>りょう</rt></ruby><ruby>理<rt>り</rt></ruby>を<ruby>作<rt>つく</rt></ruby>ること<span style='color:#d64045'>にかけては</span>、かなり<ruby>自<rt>じ</rt></ruby><ruby>信<rt>しん</rt></ruby>がある。",
+            "cn": "要说起做菜的话，我可是相当有自信的。"
+        },
+        {
+            "jp": "<ruby>節<rt>せつ</rt></ruby><ruby>約<rt>やく</rt></ruby><span style='color:#d64045'>にかけては</span>、<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>の<ruby>右<rt>みぎ</rt></ruby>に<ruby>出<rt>で</rt></ruby>る<ruby>者<rt>もの</rt></ruby>はない。",
+            "cn": "论勤俭节约，恐怕根本找不出能比得过她的人。"
+        },
+        {
+            "jp": "<ruby>機<rt>き</rt></ruby><ruby>械<rt>かい</rt></ruby>の<ruby>修<rt>しゅう</rt></ruby><ruby>理<rt>り</rt></ruby><span style='color:#d64045'>にかけては</span>、<ruby>彼<rt>かれ</rt></ruby>に<ruby>任<rt>まか</rt></ruby>せておけば<ruby>安<rt>あん</rt></ruby><ruby>心<rt>しん</rt></ruby>だ。",
+            "cn": "只要是修理机器方面的活儿，交给他办就放一百个心吧。"
+        }
     ]
 
 };
