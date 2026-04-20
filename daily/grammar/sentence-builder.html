@@ -684,6 +684,8 @@
             const storageKey = "kikiSentenceBuilderMistakes";
             const data = window.sentenceBuilderData;
             const appContainer = document.getElementById("app-container");
+            let practicePetController = null;
+            let petAssetsPromise = null;
 
             if (!data || !Array.isArray(data.topics) || data.topics.length === 0) {
                 appContainer.innerHTML = '<div class="panel"><div class="empty-box"><h3 class="empty-title">题库加载失败</h3><p>未读取到造句训练数据，请检查 sentence-builder-data.js 是否正常加载。</p></div></div>';
@@ -710,6 +712,77 @@
                 sessionWrong: 0,
                 completed: false
             };
+
+            function ensurePetAssets() {
+                if (window.HomePetSystem) return Promise.resolve(window.HomePetSystem);
+                if (petAssetsPromise) return petAssetsPromise;
+
+                petAssetsPromise = new Promise((resolve, reject) => {
+                    const cssHref = "../../shared/home-pet.css";
+                    const jsSrc = "../../shared/home-pet.js";
+
+                    if (!document.querySelector(`link[href="${cssHref}"]`)) {
+                        const link = document.createElement("link");
+                        link.rel = "stylesheet";
+                        link.href = cssHref;
+                        document.head.appendChild(link);
+                    }
+
+                    const existingScript = document.querySelector(`script[src="${jsSrc}"]`);
+                    if (existingScript) {
+                        if (window.HomePetSystem) {
+                            resolve(window.HomePetSystem);
+                        } else {
+                            existingScript.addEventListener("load", () => resolve(window.HomePetSystem), { once: true });
+                            existingScript.addEventListener("error", reject, { once: true });
+                        }
+                        return;
+                    }
+
+                    const script = document.createElement("script");
+                    script.src = jsSrc;
+                    script.onload = () => resolve(window.HomePetSystem);
+                    script.onerror = reject;
+                    document.body.appendChild(script);
+                });
+
+                return petAssetsPromise;
+            }
+
+            function ensurePetMounted() {
+                return ensurePetAssets()
+                    .then((petSystem) => {
+                        if (!petSystem || practicePetController) return practicePetController;
+                        practicePetController = petSystem.initNonHomeSurface({
+                            mountSelector: "#home-pet-root",
+                            pageShellSelector: ".page-shell, .panel, body",
+                            surfaceType: "practice",
+                            activeSection: "daily",
+                            practiceDetail: {
+                                module: "grammar",
+                                subType: "sentence-builder"
+                            }
+                        });
+                        return practicePetController;
+                    })
+                    .catch((error) => {
+                        console.warn("Sentence builder pet mount failed:", error);
+                        return null;
+                    });
+            }
+
+            function reactPet(phase, extra = {}) {
+                if (!practicePetController || typeof practicePetController.reactToPractice !== "function") return;
+                practicePetController.reactToPractice({
+                    module: "grammar",
+                    subType: "sentence-builder",
+                    phase,
+                    topic: state.currentTopic,
+                    mode: state.currentMode,
+                    questionIndex: state.currentIndex,
+                    ...extra
+                });
+            }
 
             function loadMistakes() {
                 try {
@@ -1078,6 +1151,11 @@
                 }
 
                 saveMistakes();
+                reactPet(correct ? "answer_correct" : "answer_wrong", {
+                    questionId: state.currentQuestion.id,
+                    questionLabel: state.currentQuestion.grammarFocus,
+                    isCorrect: correct
+                });
                 render();
             }
 
@@ -1085,6 +1163,11 @@
                 if (!state.judged) return;
 
                 if (state.currentIndex >= state.sessionQuestions.length - 1) {
+                    reactPet(state.sessionWrong === 0 ? "perfect_clear" : "clear", {
+                        totalQuestions: state.sessionQuestions.length,
+                        correctCount: state.sessionCorrect,
+                        wrongCount: state.sessionWrong
+                    });
                     state.completed = true;
                     render();
                     return;
@@ -1092,6 +1175,10 @@
 
                 state.currentIndex += 1;
                 prepareQuestion();
+                reactPet("enter", {
+                    questionId: state.currentQuestion && state.currentQuestion.id,
+                    questionLabel: state.currentQuestion && state.currentQuestion.grammarFocus
+                });
                 render();
             }
 
@@ -1131,6 +1218,10 @@
                             buildSession();
                             state.currentView = "practice";
                             render();
+                            reactPet("enter", {
+                                questionId: state.currentQuestion && state.currentQuestion.id,
+                                questionLabel: state.currentQuestion && state.currentQuestion.grammarFocus
+                            });
                             break;
                         case "quit-session":
                             state.currentView = "setup";
@@ -1171,6 +1262,7 @@
             });
 
             // 初期レンダリング
+            ensurePetMounted();
             render();
         })();
     </script>

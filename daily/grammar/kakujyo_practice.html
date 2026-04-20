@@ -834,6 +834,8 @@
             const DAMAGE = 4;
             const CHALLENGE_HINT_LIMIT = 3;
             const EMPTY_BANK = { mcq: [], fill: [] };
+            let practicePetController = null;
+            let petAssetsPromise = null;
 
             // グローバル状態管理
             let wrongBank = { ...EMPTY_BANK };
@@ -846,6 +848,77 @@
             const $ = (id) => document.getElementById(id);
 
             document.addEventListener('DOMContentLoaded', init);
+
+            function ensurePetAssets() {
+                if (window.HomePetSystem) return Promise.resolve(window.HomePetSystem);
+                if (petAssetsPromise) return petAssetsPromise;
+
+                petAssetsPromise = new Promise((resolve, reject) => {
+                    const cssHref = '../../shared/home-pet.css';
+                    const jsSrc = '../../shared/home-pet.js';
+
+                    if (!document.querySelector(`link[href="${cssHref}"]`)) {
+                        const link = document.createElement('link');
+                        link.rel = 'stylesheet';
+                        link.href = cssHref;
+                        document.head.appendChild(link);
+                    }
+
+                    const existingScript = document.querySelector(`script[src="${jsSrc}"]`);
+                    if (existingScript) {
+                        if (window.HomePetSystem) {
+                            resolve(window.HomePetSystem);
+                        } else {
+                            existingScript.addEventListener('load', () => resolve(window.HomePetSystem), { once: true });
+                            existingScript.addEventListener('error', reject, { once: true });
+                        }
+                        return;
+                    }
+
+                    const script = document.createElement('script');
+                    script.src = jsSrc;
+                    script.onload = () => resolve(window.HomePetSystem);
+                    script.onerror = reject;
+                    document.body.appendChild(script);
+                });
+
+                return petAssetsPromise;
+            }
+
+            function ensurePetMounted() {
+                return ensurePetAssets()
+                    .then((petSystem) => {
+                        if (!petSystem || practicePetController) return practicePetController;
+                        practicePetController = petSystem.initNonHomeSurface({
+                            mountSelector: '#home-pet-root',
+                            pageShellSelector: '.page-shell, .view-section.active, .panel, body',
+                            surfaceType: 'practice',
+                            activeSection: 'daily',
+                            practiceDetail: {
+                                module: 'grammar',
+                                subType: 'kakujyo'
+                            }
+                        });
+                        return practicePetController;
+                    })
+                    .catch((error) => {
+                        console.warn('Kakujyo pet mount failed:', error);
+                        return null;
+                    });
+            }
+
+            function reactPet(phase, extra = {}) {
+                if (!practicePetController || typeof practicePetController.reactToPractice !== 'function') return;
+                practicePetController.reactToPractice({
+                    module: 'grammar',
+                    subType: 'kakujyo',
+                    phase,
+                    mode: session.mode,
+                    questionIndex: session.answered,
+                    questionType: session.type,
+                    ...extra
+                });
+            }
 
             function init() {
                 if (!BANK.questions || BANK.questions.length === 0) {
@@ -864,6 +937,7 @@
                 // ホーム画面の初期レンダリング
                 renderHomeStats();
                 switchView('home');
+                ensurePetMounted();
                 runSelfTests();
             }
 
@@ -1086,6 +1160,10 @@
                 switchView('practice');
                 resetPracticeShell();
                 nextQuestion();
+                reactPet('enter', {
+                    questionId: currentQ && currentQ.id,
+                    questionLabel: currentQ && currentQ.focusLabel
+                });
             }
 
             function resetPracticeShell() {
@@ -1386,6 +1464,10 @@
                         feedback.innerHTML = buildCompactFeedback('見事（正确）', selectedAnswer, true);
                         updateTopbar(false);
                         updateProgress();
+                        reactPet('answer_correct', {
+                            questionId: currentQ.id,
+                            questionLabel: currentQ.focusLabel
+                        });
                         setTimeout(nextQuestion, 850);
                         return;
                     }
@@ -1393,6 +1475,10 @@
                     feedback.className = 'border border-[#d7ead9] bg-white rounded-md p-4 md:p-5 text-left fade-enter mb-5';
                     feedback.innerHTML = buildDetailedFeedback(true, selectedAnswer);
                     $('practice-next-btn').classList.remove('hidden');
+                    reactPet('answer_correct', {
+                        questionId: currentQ.id,
+                        questionLabel: currentQ.focusLabel
+                    });
                 } else {
                     session.wrong += 1;
 
@@ -1421,6 +1507,10 @@
                     if (session.mode === 'challenge') {
                         updateTopbar(tookDamage);
                         updateProgress();
+                        reactPet('answer_wrong', {
+                            questionId: currentQ.id,
+                            questionLabel: currentQ.focusLabel
+                        });
 
                         if (session.hp <= 0) {
                             showGameOver(feedback);
@@ -1432,6 +1522,10 @@
                     }
 
                     $('practice-next-btn').classList.remove('hidden');
+                    reactPet('answer_wrong', {
+                        questionId: currentQ.id,
+                        questionLabel: currentQ.focusLabel
+                    });
                 }
 
                 updateTopbar(tookDamage);
@@ -1520,6 +1614,12 @@
                     </div>
                 `;
 
+                reactPet('review', {
+                    totalQuestions: session.total,
+                    correctCount: session.correct,
+                    wrongCount: session.wrong
+                });
+
                 $('retry-challenge-btn').addEventListener('click', () => startQuiz(session.type, 'challenge'));
                 $('back-hall-btn').addEventListener('click', () => goToSetup(session.type));
             }
@@ -1551,6 +1651,11 @@
                     </p>
                 `;
                 feedback.classList.remove('hidden');
+                reactPet(session.wrong === 0 ? 'perfect_clear' : 'clear', {
+                    totalQuestions: session.total,
+                    correctCount: session.correct,
+                    wrongCount: session.wrong
+                });
 
                 $('practice-back-btn').classList.remove('hidden');
                 updateProgress();
@@ -1572,6 +1677,11 @@
 
                 $('practice-feedback').classList.add('hidden');
                 $('practice-back-btn').classList.remove('hidden');
+                reactPet(session.wrong === 0 ? 'perfect_clear' : 'clear', {
+                    totalQuestions: session.total,
+                    correctCount: session.correct,
+                    wrongCount: session.wrong
+                });
                 updateProgress();
             }
 
