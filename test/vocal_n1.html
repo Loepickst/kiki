@@ -1,0 +1,2557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Slay the Vocab - N1版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0fdf4; 
+            background-image: linear-gradient(135deg, #e0f2fe 0%, #dcfce7 100%);
+            color: #334155; 
+            font-family: 'Noto Sans JP', sans-serif;
+            overflow: hidden; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .map-node {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 10;
+        }
+        .active-node {
+            animation: pulse-ring 2s infinite;
+            transform: scale(1.1);
+        }
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.5); border-color: #7dd3fc; }
+            70% { box-shadow: 0 0 0 12px rgba(56, 189, 248, 0); border-color: #38bdf8; }
+            100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); border-color: #7dd3fc; }
+        }
+
+        .shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(3px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-5px, 0, 0); }
+            40%, 60% { transform: translate3d(5px, 0, 0); }
+        }
+        
+        .damage-text {
+            position: absolute;
+            font-weight: 900;
+            font-size: 2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            animation: floatUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            20% { transform: translateY(-15px) scale(1.1); }
+            100% { opacity: 0; transform: translateY(-50px) scale(1); }
+        }
+
+        ruby {
+            ruby-align: center;
+        }
+        rt {
+            font-size: 0.5em;
+            color: #64748b;
+            font-weight: bold;
+            transform: translateY(-0.1em);
+        }
+
+        .map-line {
+            stroke: #bae6fd;
+            stroke-dasharray: 6;
+            animation: dash 15s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: 1000; }
+        }
+
+        .battle-dialogue-box {
+            background-color: #ffffff;
+            border: 3px solid #bae6fd; 
+            border-radius: 1.25rem;
+            min-height: 180px;
+            box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.1);
+            position: relative;
+            padding: 1.5rem;
+            transition: border-color 0.3s;
+        }
+
+        .typewriter-text {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: #334155; 
+            font-weight: bold;
+        }
+
+        .blinking-cursor::after {
+            content: '▎';
+            color: #38bdf8;
+            animation: blink 1s step-end infinite;
+            margin-left: 2px;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .options-fade-in {
+            animation: fadeIn 0.4s ease forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .action-option {
+            background: transparent;
+            color: #64748b; 
+            text-align: left;
+            padding: 0.75rem 1rem 0.75rem 2.25rem;
+            font-size: 1rem;
+            font-weight: 700;
+            position: relative;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        
+        .action-option::before {
+            content: '👉';
+            position: absolute;
+            left: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            font-size: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        .ui-interactive,
+        .action-option,
+        .map-node {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ui-interactive:focus,
+        .action-option:focus,
+        .map-node:focus {
+            outline: none;
+        }
+
+        .ui-interactive:focus-visible,
+        .action-option:focus-visible,
+        .map-node:focus-visible {
+            outline: 3px solid rgba(125, 211, 252, 0.7);
+            outline-offset: 3px;
+        }
+
+        .action-option:focus-visible:not(:disabled) {
+            color: #0ea5e9;
+            background-color: #f0f9ff;
+        }
+        .action-option:focus-visible::before {
+            opacity: 1;
+        }
+
+        .ui-primary-lift,
+        .ui-primary-soft,
+        .ui-secondary-outline,
+        .ui-icon-muted,
+        .ui-rest-heal,
+        .ui-rest-review,
+        .ui-rest-heal-icon,
+        .ui-rest-review-icon {
+            transition: all 0.2s ease;
+        }
+        
+        .action-option.correct-ans {
+            color: #059669; 
+            background-color: #d1fae5; 
+        }
+        .action-option.correct-ans::before {
+            content: '✅';
+            opacity: 1;
+        }
+        .action-option.wrong-ans {
+            color: #e11d48; 
+            background-color: #ffe4e6; 
+        }
+        .action-option.wrong-ans::before {
+            content: '❌';
+            opacity: 1;
+        }
+
+        .timer-progress {
+            transition: width 0.1s linear, background-color 0.3s;
+        }
+        .timer-urgent {
+            background-color: #ef4444 !important; 
+            animation: pulse-timer 0.5s infinite alternate;
+        }
+        @keyframes pulse-timer {
+            from { opacity: 1; }
+            to { opacity: 0.6; }
+        }
+
+        .animal-float {
+            animation: floatUpDown 3s ease-in-out infinite;
+        }
+        @keyframes floatUpDown {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .result-enter {
+            animation: slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 漫画风浮动气泡样式 */
+        .comic-bubble {
+            position: absolute;
+            background: white;
+            border: 2px solid #bae6fd; 
+            border-radius: 1rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: bold;
+            color: #0284c7; 
+            box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.15);
+            pointer-events: none;
+            z-index: 30;
+            opacity: 0;
+            animation: bubble-pop 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            max-width: 16rem;
+            text-align: center;
+        }
+        .comic-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -7px;
+            border-width: 7px 7px 0;
+            border-style: solid;
+            border-color: #bae6fd transparent transparent transparent;
+        }
+        .comic-bubble.left-side::after {
+            left: 20%;
+        }
+        .comic-bubble.right-side::after {
+            right: 20%;
+        }
+        @keyframes bubble-pop {
+            0% { opacity: 0; transform: scale(0.8) translateY(10px); }
+            10% { opacity: 1; transform: scale(1.1) translateY(-5px); }
+            20% { opacity: 1; transform: scale(1) translateY(0); }
+            80% { opacity: 1; transform: scale(1) translateY(-10px); }
+            100% { opacity: 0; transform: scale(0.8) translateY(-20px); }
+        }
+
+        .bounce-gentle {
+            animation: bounce-gentle 2s infinite;
+        }
+        @keyframes bounce-gentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .action-option:hover:not(:disabled) {
+                color: #0ea5e9;
+                background-color: #f0f9ff;
+                cursor: pointer;
+            }
+            .action-option:hover:not(:disabled)::before {
+                opacity: 1;
+            }
+
+            .ui-primary-lift:hover {
+                background-color: #38bdf8;
+                transform: translateY(-4px);
+            }
+
+            .ui-primary-soft:hover {
+                background-color: #38bdf8;
+            }
+
+            .ui-secondary-outline:hover {
+                border-color: #7dd3fc;
+            }
+
+            .ui-icon-muted:hover {
+                color: #475569;
+            }
+
+            .ui-rest-heal:hover {
+                border-color: #2dd4bf;
+                background-color: #f0fdfa;
+            }
+            .ui-rest-heal:hover .ui-rest-heal-icon {
+                background-color: #99f6e4;
+            }
+
+            .ui-rest-review:hover {
+                border-color: #38bdf8;
+                background-color: #f0f9ff;
+            }
+            .ui-rest-review:hover .ui-rest-review-icon {
+                background-color: #bae6fd;
+            }
+        }
+
+        @media (hover: none), (pointer: coarse) {
+            .action-option:hover:not(:disabled)::before {
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 767px) {
+            #dialogue-text.typewriter-text {
+                font-size: 1rem;
+                line-height: 1.65;
+            }
+
+            .action-option {
+                font-size: 0.92rem;
+                line-height: 1.55;
+            }
+
+            .action-option::before {
+                font-size: 0.92rem;
+            }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] w-screen relative overflow-hidden flex flex-col">
+
+    <div id="top-bar" class="hidden absolute top-0 left-0 w-full flex justify-center items-center p-3 md:p-4 bg-white/70 backdrop-blur-md border-b border-sky-100 z-50">
+        <div class="flex justify-between items-center w-full max-w-3xl">
+            <div class="flex items-center space-x-3 md:space-x-4">
+                <div class="text-amber-500 font-bold flex items-center text-base md:text-lg">
+                    <i class="fas fa-lightbulb mr-2 text-amber-400"></i>
+                    <span class="mr-2 font-bold text-slate-500 text-sm hidden md:inline">集中力</span>
+                    <span id="player-hp-text">20/20</span>
+                </div>
+                <div class="w-32 md:w-48 h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                    <div id="player-hp-bar" class="h-full bg-amber-400 transition-all duration-300" style="width: 100%"></div>
+                </div>
+            </div>
+            <div class="text-sky-600 font-bold text-sm md:text-base bg-sky-50 px-3 py-1 rounded-full border border-sky-100">
+                <span id="current-phase-text" class="text-sky-700">N1</span> - ステージ <span id="current-floor-text" class="ml-1 text-sky-700">1</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 开始界面 -->
+    <div id="screen-start" class="flex flex-col items-center justify-center w-full h-full relative z-10 px-4">
+        <div class="w-24 h-24 bg-white rounded-3xl shadow-lg flex items-center justify-center mb-6 text-sky-400 relative">
+            <i class="fas fa-leaf text-5xl"></i>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-black text-slate-700 mb-4 tracking-widest text-center">
+            言葉の森
+        </h1>
+        <h2 class="text-sm md:text-base text-sky-500 tracking-[0.2em] mb-10 font-bold text-center">VOCABULARY FOREST N1</h2>
+        <p class="text-slate-500 mb-10 max-w-md text-center leading-relaxed text-sm md:text-base font-medium bg-white/50 p-4 rounded-xl backdrop-blur-sm">
+            N1 語彙の問題を解きながら、<br>森の奥の「柴犬ボス」を目指そう！
+        </p>
+        <div class="flex flex-col space-y-4 w-full max-w-xs">
+            <button onclick="startGame()" class="ui-interactive ui-primary-lift w-full px-8 py-4 bg-sky-500 text-white text-lg font-bold rounded-2xl shadow-lg shadow-sky-200 transition-all transform">
+                出発する (スタート)
+            </button>
+            <button onclick="showHistory()" class="ui-interactive ui-secondary-outline w-full px-8 py-3 bg-white border-2 border-sky-200 text-sky-600 text-base font-bold rounded-2xl shadow-sm transition-all">
+                <i class="fas fa-history mr-2"></i>成績履歴
+            </button>
+        </div>
+    </div>
+
+    <!-- 历史记录面板 -->
+    <div id="modal-history" class="hidden absolute inset-0 bg-slate-900/40 z-[100] flex items-center justify-center backdrop-blur-sm px-4">
+        <div class="bg-white rounded-3xl shadow-2xl relative overflow-hidden w-full max-w-md max-h-[80vh] flex flex-col">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h2 class="text-xl font-black text-slate-700"><i class="fas fa-medal text-amber-400 mr-2"></i>過去の成績</h2>
+                <button onclick="hideHistory()" class="ui-interactive ui-icon-muted text-slate-400 p-2"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div id="history-list" class="p-6 overflow-y-auto flex-1 flex flex-col space-y-3">
+            </div>
+        </div>
+    </div>
+
+    <!-- 地图界面 -->
+    <div id="screen-map" class="hidden absolute inset-0 w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar scroll-smooth bg-gradient-to-b from-[#e0f2fe] to-[#dcfce7] z-10">
+        <div class="fixed top-[4rem] left-0 w-full text-center z-40 pointer-events-none mt-2">
+            <span class="text-sky-600 font-bold text-sm tracking-widest drop-shadow-md bg-white/70 px-6 py-2 rounded-full backdrop-blur-md border border-white/50">
+                次のルートを選択してください
+            </span>
+        </div>
+        <div id="map-inner-wrapper" class="relative w-full max-w-2xl mx-auto min-h-full flex flex-col pt-36 pb-48 px-4">
+            <svg id="map-lines-container" class="absolute top-0 left-0 w-full h-full pointer-events-none z-10"></svg>
+            <div id="map-container" class="mt-auto mb-16 flex flex-col w-full space-y-12 md:space-y-16 z-20 relative"></div>
+        </div>
+    </div>
+
+    <!-- 战斗界面 -->
+    <div id="screen-combat" class="hidden absolute inset-0 w-full h-full overflow-y-auto no-scrollbar flex-col items-center justify-between pt-20 pb-6 px-4 md:pt-24 md:pb-8 bg-gradient-to-b from-[#e0f2fe] to-[#dcfce7] z-10">
+        <div class="w-full max-w-3xl mx-auto flex flex-col items-center justify-between min-h-full">
+            <div id="enemy-container" class="flex flex-col items-center mt-6 md:mt-10 relative w-full flex-shrink-0 animal-float">
+                <div class="relative mb-4 md:mb-6 flex justify-center items-center w-32 h-32 md:w-40 md:h-40 bg-white rounded-full shadow-lg border-4 border-white">
+                    <div id="enemy-icon-wrapper" class="text-6xl md:text-7xl transform transition-transform duration-300">
+                        <i id="enemy-icon" class="fas fa-cat text-amber-400"></i>
+                    </div>
+                </div>
+                <div class="text-center bg-white px-4 py-1.5 rounded-full shadow-sm border border-slate-100 mb-4">
+                    <h2 id="enemy-name" class="text-sm md:text-base font-bold text-slate-600 tracking-wider">名詞ネコ</h2>
+                </div>
+                <div class="flex flex-col items-center space-y-1 w-40 md:w-48">
+                    <div class="flex justify-between w-full text-[10px] md:text-xs font-bold text-slate-400 px-1">
+                        <span>達成度</span>
+                        <span id="enemy-hp-text">30/30</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-slate-200 rounded-full relative overflow-hidden">
+                        <div id="enemy-hp-bar" class="h-full bg-sky-400 transition-all duration-300" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 min-h-[2rem]"></div>
+
+            <div class="w-full max-w-2xl flex-shrink-0">
+                <div id="timer-container" class="w-full h-1.5 bg-slate-200 rounded-t-xl hidden overflow-hidden shadow-inner">
+                    <div id="timer-bar" class="h-full bg-sky-400 timer-progress" style="width: 100%"></div>
+                </div>
+                <div id="battle-dialogue" class="battle-dialogue-box flex flex-col">
+                    <div id="dialogue-text" class="typewriter-text flex-1 min-h-[4.5rem]"></div>
+                    <div id="options-container" class="hidden grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 mt-4 md:mt-6 border-t border-slate-100 pt-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 营地界面 -->
+    <div id="screen-rest" class="hidden absolute inset-0 w-full h-full overflow-y-auto no-scrollbar flex-col items-center justify-center pt-16 px-4 bg-gradient-to-b from-[#e0f2fe] to-[#dcfce7] z-10">
+        <div class="w-24 h-24 bg-teal-50 border-4 border-white rounded-full flex items-center justify-center mb-6 shadow-md animal-float">
+            <i class="fas fa-paw text-5xl text-teal-400"></i>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-black mb-4 tracking-widest text-slate-700">休憩の木陰</h2>
+        <p class="text-slate-500 mb-8 md:mb-12 text-center max-w-md leading-relaxed text-sm md:text-base">
+            静かな木陰で少し休みましょう。<br>集中力を回復するか、次の問題を予習できます。
+        </p>
+        <div class="flex flex-col space-y-4 w-full max-w-md">
+            <button onclick="restAction('heal')" class="ui-interactive ui-rest-heal flex items-center p-4 md:p-5 bg-white border border-slate-200 rounded-2xl transition-all shadow-sm text-left">
+                <div class="ui-rest-heal-icon w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mr-4 transition-colors">
+                    <i class="fas fa-seedling text-xl text-teal-500"></i>
+                </div>
+                <div>
+                    <div class="font-bold text-slate-700 text-lg">深呼吸をする</div>
+                    <div class="text-xs text-slate-500 mt-1">集中力を 30% 回復します</div>
+                </div>
+            </button>
+            <button onclick="restAction('review')" class="ui-interactive ui-rest-review flex items-center p-4 md:p-5 bg-white border border-slate-200 rounded-2xl transition-all shadow-sm text-left">
+                <div class="ui-rest-review-icon w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center mr-4 transition-colors">
+                    <i class="fas fa-book-open text-xl text-sky-500"></i>
+                </div>
+                <div>
+                    <div class="font-bold text-slate-700 text-lg">ノートを見る</div>
+                    <div class="text-xs text-slate-500 mt-1">次の単語を安全に確認します</div>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <!-- 小弹窗 -->
+    <div id="modal-overlay" class="hidden absolute inset-0 bg-slate-900/40 z-[100] flex items-center justify-center backdrop-blur-sm px-4">
+        <div class="bg-white p-8 md:p-10 text-center max-w-sm w-full rounded-3xl shadow-2xl relative overflow-hidden">
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i id="modal-icon" class="fas fa-flag text-3xl"></i>
+            </div>
+            <h2 id="modal-title" class="text-2xl md:text-3xl font-black mb-3 text-slate-700 tracking-wide">ステージクリア！</h2>
+            <p id="modal-desc" class="text-slate-500 mb-8 leading-relaxed text-sm md:text-base">見事に試練を突破しました！<br>次のルートを選びましょう。</p>
+            <button id="modal-btn" onclick="returnToMap()" class="ui-interactive ui-primary-soft w-full py-3.5 bg-sky-500 text-white font-bold rounded-xl transition-all shadow-md">
+                続ける
+            </button>
+        </div>
+    </div>
+
+    <!-- 结算面板 -->
+    <div id="screen-result" class="hidden absolute inset-0 w-full h-full overflow-y-auto bg-gradient-to-b from-slate-800 to-slate-900 z-[110] flex-col items-center justify-center px-4 py-8">
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden result-enter">
+            <div id="result-header" class="py-8 text-center bg-sky-50 border-b border-slate-100">
+                <h2 id="result-title" class="text-2xl font-black text-slate-700 tracking-widest mb-1">森の試練 完了</h2>
+                <p id="result-subtitle" class="text-sm font-bold text-sky-500">お疲れ様でした！</p>
+            </div>
+            
+            <div class="px-6 py-8 flex flex-col items-center">
+                <div class="text-slate-400 text-sm font-bold mb-2 tracking-widest">総合評価</div>
+                <div id="result-rank" class="text-8xl font-black text-amber-400 drop-shadow-md mb-6 transform scale-110">S</div>
+                
+                <div class="w-full bg-slate-50 rounded-2xl p-4 space-y-3 border border-slate-100">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-500 font-bold"><i class="fas fa-check-circle text-emerald-400 mr-2"></i>正解数</span>
+                        <span id="result-correct" class="font-black text-slate-700">12</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-500 font-bold"><i class="fas fa-times-circle text-rose-400 mr-2"></i>ミス数</span>
+                        <span id="result-wrong" class="font-black text-slate-700">2</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-500 font-bold"><i class="fas fa-lightbulb text-amber-400 mr-2"></i>残り集中力</span>
+                        <span id="result-hp" class="font-black text-slate-700">15</span>
+                    </div>
+                    <div class="border-t border-slate-200 pt-3 mt-1 flex justify-between items-center">
+                        <span class="text-slate-600 font-black">トータルスコア</span>
+                        <span id="result-score" class="font-black text-xl text-sky-600">1500</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 bg-slate-50 border-t border-slate-100">
+                <button onclick="returnToHomeFromResult()" class="ui-interactive ui-primary-soft w-full py-4 bg-sky-500 text-white text-lg font-bold rounded-xl shadow-md transition-all">
+                    ホームに戻る
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 词库数据 (分层 N3 -> N2 -> N1)，增加了 kana 字段用于支持选汉字题 ---
+        const examVerbImports = [
+            { word: "潤う", display: "<ruby>潤<rt>うるお</rt></ruby>う", kana: "うるおう", meaning: "湿润、滋润；受惠、受益", level: 3 },
+            { word: "備える", display: "<ruby>備<rt>そな</rt></ruby>える", kana: "そなえる", meaning: "防备、准备；设置、配备；具备、具有", level: 3 },
+            { word: "凭れる", display: "<ruby>凭<rt>もた</rt></ruby>れる", kana: "もたれる", meaning: "靠、倚靠；(胃)不消化、积食；依赖、仰仗", level: 3 },
+            { word: "崩す", display: "<ruby>崩<rt>くず</rt></ruby>す", kana: "くずす", meaning: "拆毁、弄乱；放松、弄坏；换零钱", level: 3 },
+            { word: "費やす", display: "<ruby>費<rt>つい</rt></ruby>やす", kana: "ついやす", meaning: "花费、耗费", level: 3 },
+            { word: "携わる", display: "<ruby>携<rt>たずさ</rt></ruby>わる", kana: "たずさわる", meaning: "从事、参与", level: 3 },
+            { word: "背く", display: "<ruby>背<rt>そむ</rt></ruby>く", kana: "そむく", meaning: "背过脸去；违背、违反；背叛、背离", level: 3 },
+            { word: "唆る", display: "<ruby>唆<rt>そそ</rt></ruby>る", kana: "そそる", meaning: "引起、勾起", level: 3 },
+            { word: "懐く", display: "<ruby>懐<rt>なつ</rt></ruby>く", kana: "なつく", meaning: "亲近、依恋", level: 3 },
+            { word: "賑わう", display: "<ruby>賑<rt>にぎ</rt></ruby>わう", kana: "にぎわう", meaning: "热闹、繁华；兴旺", level: 3 },
+            { word: "寂れる", display: "<ruby>寂<rt>さび</rt></ruby>れる", kana: "さびれる", meaning: "荒凉、衰败；衰落、萧条", level: 3 },
+            { word: "築く", display: "<ruby>築<rt>きず</rt></ruby>く", kana: "きずく", meaning: "修筑、建造；建立、构筑", level: 3 },
+            { word: "育む", display: "<ruby>育<rt>はぐく</rt></ruby>む", kana: "はぐくむ", meaning: "抚育、养育；培育、孕育", level: 3 },
+            { word: "集る", display: "<ruby>集<rt>たか</rt></ruby>る", kana: "たかる", meaning: "聚集、群集；敲诈、勒索", level: 3 },
+            { word: "群がる", display: "<ruby>群<rt>むら</rt></ruby>がる", kana: "むらがる", meaning: "聚集、群集", level: 3 },
+            { word: "掘る", display: "<ruby>掘<rt>ほ</rt></ruby>る", kana: "ほる", meaning: "挖掘、刨；发掘、探究", level: 3 },
+            { word: "励む", display: "<ruby>励<rt>はげ</rt></ruby>む", kana: "はげむ", meaning: "刻苦、奋发", level: 3 },
+            { word: "努める", display: "<ruby>努<rt>つと</rt></ruby>める", kana: "つとめる", meaning: "努力、以此尽力", level: 3 },
+            { word: "刈る", display: "<ruby>刈<rt>か</rt></ruby>る", kana: "かる", meaning: "割、剪、修剪", level: 3 },
+            { word: "解ける", display: "<ruby>解<rt>ほど</rt></ruby>ける", kana: "ほどける", meaning: "松开、散开；缓解、放松", level: 3 },
+            { word: "裂ける", display: "<ruby>裂<rt>さ</rt></ruby>ける", kana: "さける", meaning: "裂开、破裂；决裂", level: 3 },
+            { word: "和らぐ", display: "<ruby>和<rt>やわ</rt></ruby>らぐ", kana: "やわらぐ", meaning: "变缓和、减轻；平静、温和", level: 3 },
+            { word: "占める", display: "<ruby>占<rt>し</rt></ruby>める", kana: "しめる", meaning: "占、占据；占(比例)", level: 3 },
+            { word: "授ける", display: "<ruby>授<rt>さず</rt></ruby>ける", kana: "さずける", meaning: "授予、颁发；传授", level: 3 },
+            { word: "妨げる", display: "<ruby>妨<rt>さまた</rt></ruby>げる", kana: "さまたげる", meaning: "妨碍、阻碍；遮挡", level: 3 },
+            { word: "止す", display: "<ruby>止<rt>よ</rt></ruby>す", kana: "よす", meaning: "停止、作罢", level: 3 },
+            { word: "熟す", display: "<ruby>熟<rt>こな</rt></ruby>す", kana: "こなす", meaning: "运用自如、掌握；消化、弄碎；完成、处理", level: 3 },
+            { word: "離れる", display: "<ruby>離<rt>はな</rt></ruby>れる", kana: "はなれる", meaning: "离开、远离；脱离；相隔、差距", level: 3 },
+            { word: "逸れる", display: "<ruby>逸<rt>そ</rt></ruby>れる", kana: "それる", meaning: "偏离、岔开；(话题)跑偏", level: 3 },
+            { word: "外れる", display: "<ruby>外<rt>はず</rt></ruby>れる", kana: "はずれる", meaning: "脱落、掉下；不中、落空；被排除", level: 3 },
+            { word: "歪む", display: "<ruby>歪<rt>ひず</rt></ruby>む", kana: "ひずむ", meaning: "翘曲、走样；(关系)产生裂痕/紧张", level: 3 },
+            { word: "舞う", display: "<ruby>舞<rt>ま</rt></ruby>う", kana: "まう", meaning: "飞舞、飘舞；跳舞", level: 3 },
+            { word: "捲る", display: "<ruby>捲<rt>めく</rt></ruby>る", kana: "めくる", meaning: "翻、翻开", level: 3 },
+            { word: "掬う", display: "<ruby>掬<rt>すく</rt></ruby>う", kana: "すくう", meaning: "捞、舀", level: 3 },
+            { word: "被る", display: "<ruby>被<rt>かぶ</rt></ruby>る", kana: "かぶる", meaning: "戴、盖；蒙受、承担；重叠、雷同", level: 3 },
+            { word: "弾く", display: "<ruby>弾<rt>はじ</rt></ruby>く", kana: "はじく", meaning: "弹、拨；排斥、不沾", level: 3 },
+            { word: "響く", display: "<ruby>響<rt>ひび</rt></ruby>く", kana: "ひびく", meaning: "回响、回荡；打动(人心)；产生(坏)影响", level: 3 },
+            { word: "敵う", display: "<ruby>敵<rt>かな</rt></ruby>う", kana: "かなう", meaning: "敌得过、比得上；受得了、忍受", level: 3 },
+            { word: "遂げる", display: "<ruby>遂<rt>と</rt></ruby>げる", kana: "とげる", meaning: "完成、实现", level: 3 },
+            { word: "凌ぐ", display: "<ruby>凌<rt>しの</rt></ruby>ぐ", kana: "しのぐ", meaning: "忍耐、以此度过；超越、胜过", level: 3 },
+            { word: "補う", display: "<ruby>補<rt>おぎな</rt></ruby>う", kana: "おぎなう", meaning: "弥补、补充；赔偿", level: 3 },
+            { word: "堪える", display: "<ruby>堪<rt>こら</rt></ruby>える", kana: "こらえる", meaning: "忍住、控制", level: 3 },
+            { word: "冴える", display: "<ruby>冴<rt>さ</rt></ruby>える", kana: "さえる", meaning: "清澈、鲜明；清醒、敏锐；精湛、出色", level: 3 },
+            { word: "目論む", display: "<ruby>目<rt>もく</rt></ruby><ruby>論<rt>ろ</rt></ruby>む", kana: "もくろむ", meaning: "计划、策划", level: 3 },
+            { word: "逆らう", display: "<ruby>逆<rt>さか</rt></ruby>らう", kana: "さからう", meaning: "逆、违背；违抗、反抗", level: 3 },
+            { word: "弱る", display: "<ruby>弱<rt>よわ</rt></ruby>る", kana: "よわる", meaning: "衰弱、虚弱；为难、困扰", level: 3 },
+            { word: "怠ける", display: "<ruby>怠<rt>なま</rt></ruby>ける", kana: "なまける", meaning: "偷懒、懈怠", level: 3 },
+            { word: "ぼやける", display: "ぼやける", kana: "ぼやける", meaning: "模糊、看不清；含糊、暧昧", level: 3 },
+            { word: "透ける", display: "<ruby>透<rt>す</rt></ruby>ける", kana: "すける", meaning: "透明、透视；看穿、显露", level: 3 },
+            { word: "滲む", display: "<ruby>滲<rt>にじ</rt></ruby>む", kana: "にじむ", meaning: "晕开、洇；渗出、涌出；流露", level: 3 },
+            { word: "冷やす", display: "<ruby>冷<rt>ひ</rt></ruby>やす", kana: "ひやす", meaning: "冰镇、使变凉；使(头脑)冷静；惊出冷汗", level: 3 },
+            { word: "秘める", display: "<ruby>秘<rt>ひ</rt></ruby>める", kana: "ひめる", meaning: "秘藏、藏在心里；蕴藏", level: 3 },
+            { word: "寛ぐ", display: "<ruby>寛<rt>くつろ</rt></ruby>ぐ", kana: "くつろぐ", meaning: "放松、舒服", level: 3 },
+            { word: "貫く", display: "<ruby>貫<rt>つらぬ</rt></ruby>く", kana: "つらぬく", meaning: "贯穿、穿透；贯彻、坚持", level: 3 },
+            { word: "帯びる", display: "<ruby>帯<rt>お</rt></ruby>びる", kana: "おびる", meaning: "佩戴；带有、呈...色；肩负、负有", level: 3 },
+            { word: "危ぶむ", display: "<ruby>危<rt>あや</rt></ruby>ぶむ", kana: "あやぶむ", meaning: "担心(结果)、怀疑", level: 3 },
+            { word: "宥める", display: "<ruby>宥<rt>なだ</rt></ruby>める", kana: "なだめる", meaning: "安抚、劝解", level: 3 },
+            { word: "躊躇う", display: "<ruby>躊躇<rt>ためら</rt></ruby>う", kana: "ためらう", meaning: "犹豫、踌躇", level: 3 },
+            { word: "まごつく", display: "まごつく", kana: "まごつく", meaning: "手忙脚乱、不知所措", level: 3 },
+            { word: "煩う", display: "<ruby>煩<rt>わずら</rt></ruby>う", kana: "わずらう", meaning: "苦恼、烦恼", level: 3 },
+            { word: "慕う", display: "<ruby>慕<rt>した</rt></ruby>う", kana: "したう", meaning: "爱戴、依恋；思念、怀念", level: 3 },
+            { word: "敬う", display: "<ruby>敬<rt>うやま</rt></ruby>う", kana: "うやまう", meaning: "尊敬、恭敬", level: 3 },
+            { word: "長ける", display: "<ruby>長<rt>た</rt></ruby>ける", kana: "たける", meaning: "擅长、精通", level: 3 },
+            { word: "伝う", display: "<ruby>伝<rt>つた</rt></ruby>う", kana: "つたう", meaning: "沿着、顺着", level: 3 },
+            { word: "なぞる", display: "なぞる", kana: "なぞる", meaning: "描、临摹；模仿、追寻", level: 3 },
+            { word: "剥がす", display: "<ruby>剥<rt>は</rt></ruby>がす", kana: "はがす", meaning: "剥下、撕下", level: 3 },
+            { word: "挑む", display: "<ruby>挑<rt>いど</rt></ruby>む", kana: "いどむ", meaning: "挑战", level: 3 },
+            { word: "営む", display: "<ruby>営<rt>いとな</rt></ruby>む", kana: "いとなむ", meaning: "经营；营(生)、过(生活)；举办、操办", level: 3 },
+            { word: "讃える", display: "<ruby>讃<rt>たた</rt></ruby>える", kana: "たたえる", meaning: "称赞、赞颂", level: 3 },
+            { word: "諭す", display: "<ruby>諭<rt>さと</rt></ruby>す", kana: "さとす", meaning: "教导、晓谕", level: 3 },
+            { word: "騙す", display: "<ruby>騙<rt>だま</rt></ruby>す", kana: "だます", meaning: "欺骗、诱骗", level: 3 },
+            { word: "戒める", display: "<ruby>戒<rt>いまし</rt></ruby>める", kana: "いましめる", meaning: "告诫、劝诫；自律", level: 3 },
+            { word: "せがむ", display: "せがむ", kana: "せがむ", meaning: "死乞白赖、纠缠", level: 3 },
+            { word: "痺れる", display: "<ruby>痺<rt>しび</rt></ruby>れる", kana: "しびれる", meaning: "麻木、发麻；陶醉、销魂", level: 3 },
+            { word: "怯える", display: "<ruby>怯<rt>おび</rt></ruby>える", kana: "おびえる", meaning: "害怕、胆怯", level: 3 },
+            { word: "注ぐ", display: "<ruby>注<rt>そそ</rt></ruby>ぐ", kana: "そそぐ", meaning: "注入、倒入；倾注", level: 3 },
+            { word: "項垂れる", display: "<ruby>項<rt>うな</rt></ruby><ruby>垂<rt>だ</rt></ruby>れる", kana: "うなだれる", meaning: "垂头丧气", level: 3 },
+            { word: "漂う", display: "<ruby>漂<rt>ただよ</rt></ruby>う", kana: "ただよう", meaning: "漂浮；弥漫、充满；流浪", level: 3 },
+            { word: "滅びる", display: "<ruby>滅<rt>ほろ</rt></ruby>びる", kana: "ほろびる", meaning: "灭亡、绝种", level: 3 },
+            { word: "蘇る", display: "<ruby>蘇<rt>よみがえ</rt></ruby>る", kana: "よみがえる", meaning: "复苏、复活；重现、唤起", level: 3 },
+            { word: "廃れる", display: "<ruby>廃<rt>すた</rt></ruby>れる", kana: "すたれる", meaning: "过时、衰退", level: 3 },
+            { word: "下す", display: "<ruby>下<rt>くだ</rt></ruby>す", kana: "くだす", meaning: "下达(判断/命令)；打败", level: 3 },
+            { word: "しくじる", display: "しくじる", kana: "しくじる", meaning: "搞砸、失败", level: 3 },
+            { word: "屈する", display: "<ruby>屈<rt>くっ</rt></ruby>する", kana: "くっする", meaning: "屈服、认输；弯曲", level: 3 },
+            { word: "燃える", display: "<ruby>燃<rt>も</rt></ruby>える", kana: "もえる", meaning: "燃烧；热情高涨", level: 3 },
+            { word: "装う", display: "<ruby>装<rt>よそお</rt></ruby>う", kana: "よそおう", meaning: "打扮、穿戴；假装、伪装", level: 3 },
+            { word: "拗れる", display: "<ruby>拗<rt>こじ</rt></ruby>れる", kana: "こじれる", meaning: "恶化、变复杂；(病情)加重、拖延", level: 3 },
+            { word: "唸る", display: "<ruby>唸<rt>うな</rt></ruby>る", kana: "うなる", meaning: "呻吟；轰鸣、低吼；赞叹、叫好", level: 3 },
+            { word: "罵る", display: "<ruby>罵<rt>ののし</rt></ruby>る", kana: "ののしる", meaning: "谩骂、辱骂", level: 3 },
+            { word: "憤る", display: "<ruby>憤<rt>いきどお</rt></ruby>る", kana: "いきどおる", meaning: "愤慨、激愤", level: 3 },
+            { word: "拗ねる", display: "<ruby>拗<rt>す</rt></ruby>ねる", kana: "すねる", meaning: "闹别扭、生闷气", level: 3 },
+            { word: "交える", display: "<ruby>交<rt>まじ</rt></ruby>える", kana: "まじえる", meaning: "掺杂、夹杂；交换", level: 3 },
+            { word: "紛れる", display: "<ruby>紛<rt>まぎ</rt></ruby>れる", kana: "まぎれる", meaning: "混淆、混入；忘却、分散", level: 3 },
+            { word: "足掻く", display: "<ruby>足<rt>あ</rt></ruby><ruby>掻<rt>が</rt></ruby>く", kana: "あがく", meaning: "挣扎；拼命挣扎", level: 3 },
+            { word: "踏まえる", display: "<ruby>踏<rt>ふ</rt></ruby>まえる", kana: "ふまえる", meaning: "踩、踏；立足于、根据", level: 3 },
+            { word: "収まる", display: "<ruby>収<rt>おさ</rt></ruby>まる", kana: "おさまる", meaning: "容纳、装入；就任、安定；平息、解决", level: 3 },
+            { word: "弁える", display: "<ruby>弁<rt>わきま</rt></ruby>える", kana: "わきまえる", meaning: "辨别、明辨；懂得、知晓", level: 3 },
+            { word: "暮れる", display: "<ruby>暮<rt>く</rt></ruby>れる", kana: "くれる", meaning: "(时间)将尽、结束；沉浸在", level: 3 },
+            { word: "暴れる", display: "<ruby>暴<rt>あば</rt></ruby>れる", kana: "あばれる", meaning: "胡闹、施暴；大显身手、异常活跃", level: 3 },
+            { word: "紡ぐ", display: "<ruby>紡<rt>つむ</rt></ruby>ぐ", kana: "つむぐ", meaning: "纺；编织、组织", level: 3 },
+        ];
+
+        const examAdjectiveImports = [
+            { word: "細い", display: "<ruby>細<rt>ほそ</rt></ruby>い", kana: "ほそい", meaning: "纤细、细；微弱", level: 3 },
+            { word: "鈍い", display: "<ruby>鈍<rt>にぶ</rt></ruby>い", kana: "にぶい", meaning: "不锋利、钝；迟钝；黯淡、微弱", level: 3 },
+            { word: "脆い", display: "<ruby>脆<rt>もろ</rt></ruby>い", kana: "もろい", meaning: "易碎、脆弱；脆弱、动摇", level: 3 },
+            { word: "淡い", display: "<ruby>淡<rt>あわ</rt></ruby>い", kana: "あわい", meaning: "浅、淡；淡淡的、微弱", level: 3 },
+            { word: "浅い", display: "<ruby>浅<rt>あさ</rt></ruby>い", kana: "あさい", meaning: "浅；浅薄、不久；浅", level: 3 },
+            { word: "まずい", display: "まずい", kana: "まずい", meaning: "难吃；不妙、糟糕；笨拙", level: 3 },
+            { word: "怠い", display: "<ruby>怠<rt>だる</rt></ruby>い", kana: "だるい", meaning: "懒散、乏力；麻烦、烦人", level: 3 },
+            { word: "疎い", display: "<ruby>疎<rt>うと</rt></ruby>い", kana: "うとい", meaning: "生疏、不熟悉；疏远", level: 3 },
+            { word: "華々しい", display: "<ruby>華<rt>はな</rt></ruby><ruby>々<rt>ばな</rt></ruby>しい", kana: "はなばなしい", meaning: "华丽、辉煌", level: 3 },
+            { word: "物々しい", display: "<ruby>物<rt>もの</rt></ruby><ruby>々<rt>もの</rt></ruby>しい", kana: "ものものしい", meaning: "戒备森严；夸张、煞有介事", level: 3 },
+            { word: "馴れ馴れしい", display: "<ruby>馴<rt>な</rt></ruby>れ<ruby>馴<rt>な</rt></ruby>れしい", kana: "なれなれしい", meaning: "过分亲昵、熟不拘礼", level: 3 },
+            { word: "清々しい", display: "<ruby>清<rt>すが</rt></ruby><ruby>々<rt>すが</rt></ruby>しい", kana: "すがすがしい", meaning: "清爽、爽快", level: 3 },
+            { word: "馬鹿馬鹿しい", display: "<ruby>馬<rt>ば</rt></ruby><ruby>鹿<rt>か</rt></ruby><ruby>馬<rt>ば</rt></ruby><ruby>鹿<rt>か</rt></ruby>しい", kana: "ばかばかしい", meaning: "愚蠢、无聊；荒谬、极其不合理", level: 3 },
+            { word: "心地よい", display: "<ruby>心<rt>ここ</rt></ruby><ruby>地<rt>ち</rt></ruby>よい", kana: "ここちよい", meaning: "舒服、舒适", level: 3 },
+            { word: "尤もらしい", display: "<ruby>尤<rt>もっと</rt></ruby>もらしい", kana: "もっともらしい", meaning: "煞有介事、冠冕堂皇", level: 3 },
+            { word: "ぎこちない", display: "ぎこちない", kana: "ぎこちない", meaning: "笨拙、生硬", level: 3 },
+            { word: "柔らか", display: "<ruby>柔<rt>やわ</rt></ruby>らか", kana: "やわらか", meaning: "柔软、柔和；灵活", level: 3 },
+            { word: "大らか", display: "<ruby>大<rt>おお</rt></ruby>らか", kana: "おおらか", meaning: "豁达、大方；心胸宽广", level: 3 },
+            { word: "望ましい", display: "<ruby>望<rt>のぞ</rt></ruby>ましい", kana: "のぞましい", meaning: "期望的、理想的", level: 3 },
+            { word: "めでたい", display: "めでたい", kana: "めでたい", meaning: "可喜可贺的、值得庆祝的；天真的、缺心眼的", level: 3 },
+            { word: "容易い", display: "<ruby>容易<rt>たやす</rt></ruby>い", kana: "たやすい", meaning: "容易的、轻易的", level: 3 },
+            { word: "慌ただしい", display: "<ruby>慌<rt>あわ</rt></ruby>ただしい", kana: "あわただしい", meaning: "慌张、匆忙；不稳、动荡", level: 3 },
+            { word: "凄まじい", display: "<ruby>凄<rt>すさ</rt></ruby>まじい", kana: "すさまじい", meaning: "惊人、可怕", level: 3 },
+            { word: "芳しい", display: "<ruby>芳<rt>かんば</rt></ruby>しい", kana: "かんばしい", meaning: "芬芳、芳香；出色、令人满意", level: 3 },
+            { word: "心強い", display: "<ruby>心<rt>こころ</rt></ruby><ruby>強<rt>づよ</rt></ruby>い", kana: "こころづよい", meaning: "受鼓舞、有信心", level: 3 },
+            { word: "目まぐるしい", display: "<ruby>目<rt>め</rt></ruby>まぐるしい", kana: "めまぐるしい", meaning: "眼花缭乱、瞬息万变", level: 3 },
+            { word: "目ぼしい", display: "<ruby>目<rt>め</rt></ruby>ぼしい", kana: "めぼしい", meaning: "显著的、有价值的", level: 3 },
+            { word: "手強い", display: "<ruby>手<rt>て</rt></ruby><ruby>強<rt>ごわ</rt></ruby>い", kana: "てごわい", meaning: "难对付、强劲", level: 3 },
+            { word: "手荒い", display: "<ruby>手<rt>て</rt></ruby><ruby>荒<rt>あら</rt></ruby>い", kana: "てあらい", meaning: "粗鲁、粗暴", level: 3 },
+            { word: "疑わしい", display: "<ruby>疑<rt>うたが</rt></ruby>わしい", kana: "うたがわしい", meaning: "可疑的、有疑问的", level: 3 },
+            { word: "物足りない", display: "<ruby>物<rt>もの</rt></ruby><ruby>足<rt>た</rt></ruby>りない", kana: "ものたりない", meaning: "美中不足的、不够完善的", level: 3 },
+            { word: "切ない", display: "<ruby>切<rt>せつ</rt></ruby>ない", kana: "せつない", meaning: "难受、哀伤", level: 3 },
+            { word: "後ろめたい", display: "<ruby>後<rt>うし</rt></ruby>ろめたい", kana: "うしろめたい", meaning: "内疚、心里不安", level: 3 },
+            { word: "きまり悪い", display: "きまり<ruby>悪<rt>わる</rt></ruby>い", kana: "きまりわるい", meaning: "难为情、不好意思", level: 3 },
+            { word: "名高い", display: "<ruby>名<rt>な</rt></ruby><ruby>高<rt>だか</rt></ruby>い", kana: "なだかい", meaning: "有名的、著名的", level: 3 },
+            { word: "情けない", display: "<ruby>情<rt>なさ</rt></ruby>けない", kana: "なさけない", meaning: "没出息、可耻；可怜、凄惨", level: 3 },
+            { word: "何気ない", display: "<ruby>何<rt>なに</rt></ruby><ruby>気<rt>げ</rt></ruby>ない", kana: "なにげない", meaning: "无心、无意；若无其事、平静", level: 3 },
+            { word: "穢らわしい", display: "<ruby>穢<rt>けが</rt></ruby>らわしい", kana: "けがらわしい", meaning: "肮脏、恶心", level: 3 },
+            { word: "微笑ましい", display: "<ruby>微<rt>ほほ</rt></ruby><ruby>笑<rt>え</rt></ruby>ましい", kana: "ほほえましい", meaning: "令人微笑、欣慰", level: 3 },
+            { word: "朗らか", display: "<ruby>朗<rt>ほが</rt></ruby>らか", kana: "ほがらか", meaning: "开朗、愉快；清脆、晴朗", level: 3 },
+            { word: "ささやか", display: "ささやか", kana: "ささやか", meaning: "微薄、琐小", level: 3 },
+            { word: "鮮やか", display: "<ruby>鮮<rt>あざ</rt></ruby>やか", kana: "あざやか", meaning: "鲜艳、鲜明；熟练、出色；清晰、深刻", level: 3 },
+            { word: "淑やか", display: "<ruby>淑<rt>しと</rt></ruby>やか", kana: "しとやか", meaning: "端庄、优雅", level: 3 },
+            { word: "緩やか", display: "<ruby>緩<rt>ゆる</rt></ruby>やか", kana: "ゆるやか", meaning: "平缓、缓慢；宽松、不严；宽松、宽大", level: 3 },
+            { word: "円やか", display: "<ruby>円<rt>まろ</rt></ruby>やか", kana: "まろやか", meaning: "醇厚、圆润；柔和、温和", level: 3 },
+            { word: "厳か", display: "<ruby>厳<rt>おごそ</rt></ruby>か", kana: "おごそか", meaning: "庄严、肃穆", level: 3 },
+            { word: "愚か", display: "<ruby>愚<rt>おろ</rt></ruby>か", kana: "おろか", meaning: "愚蠢、糊涂", level: 3 },
+            { word: "密か", display: "<ruby>密<rt>ひそ</rt></ruby>か", kana: "ひそか", meaning: "秘密、暗中", level: 3 },
+            { word: "壮大", display: "<ruby>壮<rt>そう</rt></ruby><ruby>大<rt>だい</rt></ruby>", kana: "そうだい", meaning: "宏大、雄伟", level: 3 },
+            { word: "強大", display: "<ruby>強<rt>きょう</rt></ruby><ruby>大<rt>だい</rt></ruby>", kana: "きょうだい", meaning: "强大、强有力", level: 3 },
+            { word: "寛大", display: "<ruby>寛<rt>かん</rt></ruby><ruby>大<rt>だい</rt></ruby>", kana: "かんだい", meaning: "宽大、宽厚", level: 3 },
+            { word: "膨大", display: "<ruby>膨<rt>ぼう</rt></ruby><ruby>大<rt>だい</rt></ruby>", kana: "ぼうだい", meaning: "庞大、巨额", level: 3 },
+            { word: "勇敢", display: "<ruby>勇<rt>ゆう</rt></ruby><ruby>敢<rt>かん</rt></ruby>", kana: "ゆうかん", meaning: "勇敢、果敢", level: 3 },
+            { word: "痛烈", display: "<ruby>痛<rt>つう</rt></ruby><ruby>烈<rt>れつ</rt></ruby>", kana: "つうれつ", meaning: "痛烈、严厉", level: 3 },
+            { word: "厳正", display: "<ruby>厳<rt>げん</rt></ruby><ruby>正<rt>せい</rt></ruby>", kana: "げんせい", meaning: "严正、公正", level: 3 },
+            { word: "均等", display: "<ruby>均<rt>きん</rt></ruby><ruby>等<rt>とう</rt></ruby>", kana: "きんとう", meaning: "均等、平等", level: 3 },
+            { word: "気軽", display: "<ruby>気<rt>き</rt></ruby><ruby>軽<rt>がる</rt></ruby>", kana: "きがる", meaning: "随意、轻松", level: 3 },
+            { word: "贅沢", display: "<ruby>贅<rt>ぜい</rt></ruby><ruby>沢<rt>たく</rt></ruby>", kana: "ぜいたく", meaning: "奢侈、华贵；挑剔、奢求", level: 3 },
+            { word: "素朴", display: "<ruby>素<rt>そ</rt></ruby><ruby>朴<rt>ぼく</rt></ruby>", kana: "そぼく", meaning: "淳朴、朴实；单纯、简单", level: 3 },
+            { word: "上品", display: "<ruby>上<rt>じょう</rt></ruby><ruby>品<rt>ひん</rt></ruby>", kana: "じょうひん", meaning: "优雅、高尚", level: 3 },
+            { word: "円滑", display: "<ruby>円<rt>えん</rt></ruby><ruby>滑<rt>かつ</rt></ruby>", kana: "えんかつ", meaning: "圆滑、顺利", level: 3 },
+            { word: "漠然", display: "<ruby>漠<rt>ばく</rt></ruby><ruby>然<rt>ぜん</rt></ruby>", kana: "ばくぜん", meaning: "漠然、模糊", level: 3 },
+            { word: "克明", display: "<ruby>克<rt>こく</rt></ruby><ruby>明<rt>めい</rt></ruby>", kana: "こくめい", meaning: "详细、细致", level: 3 },
+            { word: "切実", display: "<ruby>切<rt>せつ</rt></ruby><ruby>実<rt>じつ</rt></ruby>", kana: "せつじつ", meaning: "深有感触、刻骨铭心；迫切、严重", level: 3 },
+            { word: "雑", display: "<ruby>雑<rt>ざつ</rt></ruby>", kana: "ざつ", meaning: "草率、粗心；粗糙、劣质", level: 3 },
+            { word: "直向き", display: "<ruby>直<rt>ひた</rt></ruby><ruby>向<rt>む</rt></ruby>き", kana: "ひたむき", meaning: "一心一意、专心致志", level: 3 },
+            { word: "頑な", display: "<ruby>頑<rt>かたく</rt></ruby>な", kana: "かたくな", meaning: "顽固、固执", level: 3 },
+            { word: "一途", display: "<ruby>一<rt>いち</rt></ruby><ruby>途<rt>ず</rt></ruby>", kana: "いちず", meaning: "一心一意、专心致志", level: 3 },
+            { word: "安静", display: "<ruby>安<rt>あん</rt></ruby><ruby>静<rt>せい</rt></ruby>", kana: "あんせい", meaning: "安静、静养", level: 3 },
+            { word: "巧み", display: "<ruby>巧<rt>たく</rt></ruby>み", kana: "たくみ", meaning: "巧妙、高明", level: 3 },
+            { word: "綿密", display: "<ruby>綿<rt>めん</rt></ruby><ruby>密<rt>みつ</rt></ruby>", kana: "めんみつ", meaning: "周密、详尽", level: 3 },
+            { word: "濃密", display: "<ruby>濃<rt>のう</rt></ruby><ruby>密<rt>みつ</rt></ruby>", kana: "のうみつ", meaning: "浓烈、浓厚；紧凑、丰富", level: 3 },
+            { word: "閑静", display: "<ruby>閑<rt>かん</rt></ruby><ruby>静<rt>せい</rt></ruby>", kana: "かんせい", meaning: "幽静、恬静", level: 3 },
+            { word: "丁寧", display: "<ruby>丁<rt>てい</rt></ruby><ruby>寧<rt>ねい</rt></ruby>", kana: "ていねい", meaning: "礼貌、恭敬；仔细、细致", level: 3 },
+            { word: "強引", display: "<ruby>強<rt>ごう</rt></ruby><ruby>引<rt>いん</rt></ruby>", kana: "ごういん", meaning: "强硬、霸道", level: 3 },
+            { word: "月並み", display: "<ruby>月<rt>つき</rt></ruby><ruby>並<rt>な</rt></ruby>み", kana: "つきなみ", meaning: "老套、平凡", level: 3 },
+            { word: "奔放", display: "<ruby>奔<rt>ほん</rt></ruby><ruby>放<rt>ぽう</rt></ruby>", kana: "ほんぽう", meaning: "奔放、自由", level: 3 },
+            { word: "性急", display: "<ruby>性<rt>せい</rt></ruby><ruby>急<rt>きゅう</rt></ruby>", kana: "せいきゅう", meaning: "性急、急躁", level: 3 },
+            { word: "有数", display: "<ruby>有<rt>ゆう</rt></ruby><ruby>数<rt>すう</rt></ruby>", kana: "ゆうすう", meaning: "屈指可数、杰出", level: 3 },
+            { word: "零細", display: "<ruby>零<rt>れい</rt></ruby><ruby>細<rt>さい</rt></ruby>", kana: "れいさい", meaning: "规模极小、微薄", level: 3 },
+            { word: "端的", display: "<ruby>端<rt>たん</rt></ruby><ruby>的<rt>てき</rt></ruby>", kana: "たんてき", meaning: "直截了当、开门见山；明白、清楚", level: 3 },
+            { word: "明白", display: "<ruby>明<rt>めい</rt></ruby><ruby>白<rt>はく</rt></ruby>", kana: "めいはく", meaning: "明白、明显", level: 3 },
+            { word: "着実", display: "<ruby>着<rt>ちゃく</rt></ruby><ruby>実<rt>じつ</rt></ruby>", kana: "ちゃくじつ", meaning: "踏实、稳步", level: 3 },
+            { word: "抜群", display: "<ruby>抜<rt>ばつ</rt></ruby><ruby>群<rt>ぐん</rt></ruby>", kana: "ばつぐん", meaning: "出众、超群", level: 3 },
+            { word: "画一的", display: "<ruby>画<rt>かく</rt></ruby><ruby>一<rt>いつ</rt></ruby><ruby>的<rt>てき</rt></ruby>", kana: "かくいつてき", meaning: "统一、刻板", level: 3 },
+            { word: "区区", display: "<ruby>区<rt>まち</rt></ruby><ruby>区<rt>まち</rt></ruby>", kana: "まちまち", meaning: "形形色色、参差不齐", level: 3 },
+            { word: "無闇", display: "<ruby>無<rt>む</rt></ruby><ruby>闇<rt>やみ</rt></ruby>", kana: "むやみ", meaning: "胡乱、盲目；过度、无节制", level: 3 },
+            { word: "不審", display: "<ruby>不<rt>ふ</rt></ruby><ruby>審<rt>しん</rt></ruby>", kana: "ふしん", meaning: "可疑、疑问", level: 3 },
+            { word: "不用意", display: "<ruby>不<rt>ふ</rt></ruby><ruby>用<rt>よう</rt></ruby><ruby>意<rt>い</rt></ruby>", kana: "ふようい", meaning: "不经意、不小心", level: 3 },
+            { word: "惨め", display: "<ruby>惨<rt>みじ</rt></ruby>め", kana: "みじめ", meaning: "凄惨、悲惨", level: 3 },
+            { word: "ひっきりなし", display: "ひっきりなし", kana: "ひっきりなし", meaning: "接连不断、连续不断", level: 3 },
+            { word: "皮肉", display: "<ruby>皮<rt>ひ</rt></ruby><ruby>肉<rt>にく</rt></ruby>", kana: "ひにく", meaning: "讽刺、挖苦；事与愿违", level: 3 },
+            { word: "平気", display: "<ruby>平<rt>へい</rt></ruby><ruby>気<rt>き</rt></ruby>", kana: "へいき", meaning: "满不在乎、毫不在意；没事、没关系", level: 3 },
+        ];
+
+        const KANJI_CHAR_RE = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF々]/u;
+
+        function isKanjiCharacter(char) {
+            return KANJI_CHAR_RE.test(char);
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        // 根据词形和读音自动生成 ruby，避免大批量名词录入时手写注音错位。
+        function buildRubyDisplay(word, kana) {
+            if (!word) return '';
+            if (!kana || word === kana) return escapeHtml(word);
+
+            let display = '';
+            let kanaIndex = 0;
+
+            for (let i = 0; i < word.length; ) {
+                const char = word[i];
+
+                if (!isKanjiCharacter(char)) {
+                    display += escapeHtml(char);
+                    if (kana.slice(kanaIndex).startsWith(char)) {
+                        kanaIndex += char.length;
+                    }
+                    i += char.length;
+                    continue;
+                }
+
+                let kanjiEnd = i;
+                while (kanjiEnd < word.length && isKanjiCharacter(word[kanjiEnd])) {
+                    kanjiEnd += 1;
+                }
+
+                const kanjiChunk = word.slice(i, kanjiEnd);
+                let nextLiteral = '';
+                let scanIndex = kanjiEnd;
+
+                while (scanIndex < word.length && !isKanjiCharacter(word[scanIndex])) {
+                    nextLiteral += word[scanIndex];
+                    scanIndex += 1;
+                }
+
+                let reading = kana.slice(kanaIndex);
+                if (nextLiteral) {
+                    const nextLiteralIndex = kana.indexOf(nextLiteral, kanaIndex);
+                    if (nextLiteralIndex !== -1) {
+                        reading = kana.slice(kanaIndex, nextLiteralIndex);
+                    } else {
+                        reading = kana.slice(kanaIndex, Math.max(kanaIndex + 1, kana.length - nextLiteral.length));
+                    }
+                }
+
+                display += `<ruby>${escapeHtml(kanjiChunk)}<rt>${escapeHtml(reading)}</rt></ruby>`;
+                kanaIndex += reading.length;
+                i = kanjiEnd;
+            }
+
+            return display;
+        }
+
+        const examNounImportRows = [
+            ['愛想', 'あいそ', '待人亲切，和蔼'],
+            ['間柄', 'あいだがら', '关系，交情'],
+            ['合間', 'あいま', '空闲，间歇'],
+            ['垢', 'あか', '污垢'],
+            ['証', 'あかし', '证明，证据'],
+            ['赤字', 'あかじ', '赤字，亏本'],
+            ['上がり', 'あがり', '完成，收益，终点'],
+            ['諦め', 'あきらめ', '死心，放弃'],
+            ['悪', 'あく', '恶，坏事'],
+            ['顎', 'あご', '下巴'],
+            ['憧れ', 'あこがれ', '憧憬，向往'],
+            ['麻', 'あさ', '大麻，麻布'],
+            ['痣', 'あざ', '痣，淤青'],
+            ['味わい', 'あじわい', '味道，韵味，趣味'],
+            ['値', 'あたい', '价格，价值，数值'],
+            ['当たり', 'あたり', '命中，中奖，猜测，头绪'],
+            ['悪化', 'あっか', '恶化'],
+            ['扱い', 'あつかい', '对待，处理'],
+            ['斡旋', 'あっせん', '斡旋，调停，介绍'],
+            ['圧倒', 'あっとう', '压倒，压制'],
+            ['圧迫', 'あっぱく', '压迫'],
+            ['圧力', 'あつりょく', '压力'],
+            ['当て', 'あて', '目的，指望，期待'],
+            ['宛', 'あて', '收件人，寄给…'],
+            ['当て字', 'あてじ', '借用字，假借字'],
+            ['跡地', 'あとち', '旧址，空地'],
+            ['跡継ぎ', 'あとつぎ', '继承人，接班人'],
+            ['後回し', 'あとまわし', '推迟，往后推'],
+            ['油絵', 'あぶらえ', '油画'],
+            ['雨具', 'あまぐ', '雨具'],
+            ['網', 'あみ', '网'],
+            ['過ち', 'あやまち', '过错，错误'],
+            ['歩み', 'あゆみ', '步行，步调，历程'],
+            ['争い', 'あらそい', '争吵，争夺，纠纷'],
+            ['霰', 'あられ', '冰雹，雪珠'],
+            ['有様', 'ありさま', '状态，情况'],
+            ['ありのまま', 'ありのまま', '如实，实事求是'],
+            ['合わせ', 'あわせ', '合并，配合，双层衣服'],
+            ['暗殺', 'あんさつ', '暗杀'],
+            ['暗算', 'あんざん', '心算'],
+            ['暗示', 'あんじ', '暗示'],
+            ['言い訳', 'いいわけ', '借口，辩解'],
+            ['医院', 'いいん', '医院，诊所'],
+            ['家出', 'いえで', '离家出走'],
+            ['怒り', 'いかり', '愤怒'],
+            ['異議', 'いぎ', '异议'],
+            ['生き甲斐', 'いきがい', '生存的意义，人生的价值'],
+            ['行き違い', 'いきちがい', '错过，分歧，误会'],
+            ['憤り', 'いきどおり', '愤慨，愤怒'],
+            ['育成', 'いくせい', '培育，培养'],
+            ['異見', 'いけん', '不同意见，异议'],
+            ['憩い', 'いこい', '休息，休憩'],
+            ['意向', 'いこう', '意向，打算'],
+            ['移行', 'いこう', '转移，过渡'],
+            ['意地', 'いじ', '倔强，好胜心，心术'],
+            ['移住', 'いじゅう', '移居，移民'],
+            ['衣装', 'いしょう', '服装，戏装'],
+            ['異性', 'いせい', '异性'],
+            ['遺跡', 'いせき', '遗迹，遗址'],
+            ['依存', 'いぞん', '依赖，依存'],
+            ['委託', 'いたく', '委托'],
+            ['いただき', 'いただき', '顶峰，顶点'],
+            ['市', 'いち', '集市，市场'],
+            ['一同', 'いちどう', '全体，大家'],
+            ['一部分', 'いちぶぶん', '一部分'],
+            ['一別', 'いちべつ', '分别，分别之后'],
+            ['一面', 'いちめん', '一面，一方面，整个表面'],
+            ['一目', 'いちもく', '看一眼，乍一看'],
+            ['一連', 'いちれん', '一连串，一系列'],
+            ['一括', 'いっかつ', '一揽子，汇总'],
+            ['一見', 'いっけん', '看一次，乍一看'],
+            ['一帯', 'いったい', '一带，一片地区'],
+            ['一変', 'いっぺん', '骤变，完全改变'],
+            ['意図', 'いと', '意图，企图'],
+            ['異動', 'いどう', '人事调动'],
+            ['稲光', 'いなびかり', '闪电'],
+            ['祈り', 'いのり', '祈祷'],
+            ['鼾', 'いびき', '打呼噜，鼾声'],
+            ['移民', 'いみん', '移民'],
+            ['嫌み', 'いやみ', '挖苦，令人讨厌的言行'],
+            ['意欲', 'いよく', '意愿，干劲，热情'],
+            ['衣料', 'いりょう', '衣料，服装'],
+            ['威力', 'いりょく', '威力'],
+            ['衣類', 'いるい', '衣类，衣服'],
+            ['異論', 'いろん', '异议，不同的意见'],
+            ['印鑑', 'いんかん', '印鉴，印章'],
+            ['隠居', 'いんきょ', '隐居，退休'],
+            ['受け入れ', 'うけいれ', '接收，接纳'],
+            ['受身', 'うけみ', '被动，防守'],
+            ['受け持ち', 'うけもち', '担任，负责的内容'],
+            ['動き', 'うごき', '动作，动向，变化'],
+            ['渦', 'うず', '漩涡'],
+            ['嘘つき', 'うそつき', '说谎的人，骗子'],
+            ['転寝', 'うたたね', '打盹，假寐'],
+            ['打ち消し', 'うちけし', '否定，否认'],
+            ['団扇', 'うちわ', '团扇'],
+            ['内訳', 'うちわけ', '明细'],
+            ['写し', 'うつし', '副本，抄件，复印件'],
+            ['訴え', 'うったえ', '诉讼，呼吁，诉求'],
+            ['器', 'うつわ', '容器，器量，才能'],
+            ['腕前', 'うでまえ', '本领，手艺'],
+            ['雨天', 'うてん', '雨天'],
+        ];
+
+        const examNounImports = examNounImportRows.map(([word, kana, meaning]) => ({
+            word,
+            display: buildRubyDisplay(word, kana),
+            kana,
+            meaning,
+            level: 3
+        }));
+
+        const baseNounWords = new Set([
+            '約束',
+            '経験',
+            '準備',
+            '影響',
+            '感情',
+            '条件',
+            '現象',
+            '評価',
+            '資源',
+            '背景',
+            '理由',
+            '結果',
+            '目的',
+            '知識',
+            '環境',
+            '軌道',
+            '枠組み',
+            '核心',
+            '愛着',
+            '葛藤',
+        ]);
+
+        const examAdverbImportRows = [
+            ['敢えて', 'あえて', '敢于、硬要'],
+            ['あくまでも', 'あくまでも', '到底、彻底'],
+            ['あっさり', 'あっさり', '清淡、干脆'],
+            ['予め', 'あらかじめ', '预先、事先'],
+            ['案の定', 'あんのじょう', '果然、不出所料'],
+            ['いかに', 'いかに', '如何、怎样'],
+            ['いかにも', 'いかにも', '确实、的确'],
+            ['依然', 'いぜん', '依然、仍旧'],
+            ['至って', 'いたって', '极其、非常'],
+            ['一概に', 'いちがいに', '一概、一律'],
+            ['一気に', 'いっきに', '一口气、一下子'],
+            ['一挙に', 'いっきょに', '一举、一下子'],
+            ['一切', 'いっさい', '一切、全部'],
+            ['一心に', 'いっしんに', '一心一意地'],
+            ['いっそ', 'いっそ', '索性、干脆'],
+            ['今更', 'いまさら', '事到如今'],
+            ['未だに', 'いまだに', '至今、仍然'],
+            ['嫌々', 'いやいや', '勉强、不情愿地'],
+            ['いやに', 'いやに', '异常地、出奇地'],
+            ['うんざり', 'うんざり', '厌烦、腻烦'],
+            ['大方', 'おおかた', '大概、大约'],
+            ['おおむね', 'おおむね', '大致、大体'],
+            ['遅くとも', 'おそくとも', '最晚、最迟'],
+            ['おどおど', 'おどおど', '提心吊胆、战战兢兢'],
+            ['自ずから', 'おのずから', '自然而然地'],
+            ['およそ', 'およそ', '大约、大概'],
+            ['がさがさ', 'がさがさ', '粗糙、干巴巴'],
+            ['がっくり', 'がっくり', '颓丧、灰心'],
+            ['がっしり', 'がっしり', '结实、粗壮'],
+            ['がっちり', 'がっちり', '坚固、精明'],
+            ['かつて', 'かつて', '曾经、以前'],
+            ['かねて', 'かねて', '早就、以前'],
+            ['からっと', 'からっと', '爽朗、干爽'],
+            ['仮に', 'かりに', '假设、姑且'],
+            ['辛うじて', 'かろうじて', '好不容易才、勉强'],
+            ['代わる代わる', 'かわるがわる', '轮流、交替'],
+            ['元来', 'がんらい', '原来、本来'],
+            ['きちっと', 'きちっと', '整齐地、准确地'],
+            ['きっかり', 'きっかり', '正好、恰好'],
+            ['きっちり', 'きっちり', '紧紧地、正合适'],
+            ['きっぱり', 'きっぱり', '断然、干脆'],
+            ['極力', 'きょくりょく', '极力、尽力'],
+            ['極めて', 'きわめて', '极其、非常'],
+            ['くっきり', 'くっきり', '清楚、显眼'],
+            ['ぐっすり', 'ぐっすり', '熟睡、酣睡'],
+            ['ぐっと', 'ぐっと', '更加、用力'],
+            ['げっそり', 'げっそり', '急剧消瘦、灰心'],
+            ['煌々と', 'こうこうと', '辉煌、明亮'],
+            ['ことごとく', 'ことごとく', '全部、所有'],
+            ['ことに', 'ことに', '特别、尤其'],
+            ['ことによると', 'ことによると', '也许、说不定'],
+            ['さぞ', 'さぞ', '想必'],
+            ['さっと', 'さっと', '迅速地、一下子'],
+            ['さほど', 'さほど', '并不那么'],
+            ['さも', 'さも', '好像、仿佛'],
+            ['強いて', 'しいて', '强迫、勉强'],
+            ['じっくり', 'じっくり', '仔细地、慢慢地'],
+            ['しっとり', 'しっとり', '潮湿、润泽'],
+            ['じめじめ', 'じめじめ', '潮湿、阴郁'],
+            ['しょっちゅう', 'しょっちゅう', '经常、总是'],
+            ['しんなり', 'しんなり', '柔软、柔顺'],
+            ['ずばり', 'ずばり', '一语道破、直截了当'],
+            ['ずらっと', 'ずらっと', '一大排、一溜儿'],
+            ['ずるずる', 'ずるずる', '拖延、拖拉'],
+            ['すんなり', 'すんなり', '顺利、苗条'],
+            ['総じて', 'そうじて', '总的来说、总而言之'],
+            ['即座に', 'そくざに', '立刻、马上'],
+            ['そこら', 'そこら', '大约、左右'],
+            ['そわそわ', 'そわそわ', '心神不定、坐立不安'],
+            ['だぶだぶ', 'だぶだぶ', '肥大、宽松'],
+            ['断然', 'だんぜん', '绝对、断然'],
+            ['ちやほや', 'ちやほや', '溺爱、奉承'],
+            ['ちょくちょく', 'ちょくちょく', '经常、时常'],
+            ['ちらっと', 'ちらっと', '稍微、一闪'],
+            ['つくづく', 'つくづく', '深深地、仔细地'],
+            ['努めて', 'つとめて', '尽量、极力'],
+            ['てっきり', 'てっきり', '必定、无疑'],
+            ['てんで', 'てんで', '根本、完全'],
+            ['到底', 'とうてい', '到底、无论如何也'],
+            ['どうにか', 'どうにか', '总算、设法'],
+            ['どうやら', 'どうやら', '仿佛、似乎'],
+            ['とかく', 'とかく', '动辄、动不动就'],
+            ['時折', 'ときおり', '有时、偶尔'],
+            ['とっさに', 'とっさに', '瞬间、立刻'],
+            ['突如として', 'とつじょとして', '突然'],
+            ['とりあえず', 'とりあえず', '首先、暂且'],
+            ['とりわけ', 'とりわけ', '特别、尤其'],
+            ['とんだ', 'とんだ', '意外的、意想不到的'],
+            ['どんより', 'どんより', '阴沉、浑浊'],
+            ['なおさら', 'なおさら', '更加、越发'],
+            ['長々', 'ながなが', '长久、冗长'],
+            ['なにとぞ', 'なにとぞ', '务必、请'],
+            ['何より', 'なにより', '比什么都好、最好'],
+            ['なるたけ', 'なるたけ', '尽量'],
+            ['何だか', 'なんだか', '总觉得、总有些'],
+            ['なんだかんだ', 'なんだかんだ', '这样那样、种种'],
+            ['なんと', 'なんと', '多么、何等'],
+            ['なんとか', 'なんとか', '设法、总算'],
+            ['なんなりと', 'なんなりと', '无论什么'],
+            ['軒並に', 'のきなみに', '挨家挨户、全都'],
+            ['のなんのって', 'のなんのって', '非常、极其'],
+            ['甚だ', 'はなはだ', '非常、极其'],
+            ['はらはら', 'はらはら', '担心、捏一把汗'],
+            ['ひいては', 'ひいては', '进而、甚至'],
+            ['ひたすら', 'ひたすら', '一味地、只管'],
+            ['びっしょり', 'びっしょり', '湿透'],
+            ['ひょっと', 'ひょっと', '也许、万一'],
+            ['ひんやり', 'ひんやり', '凉爽、微凉'],
+            ['ぶかぶか', 'ぶかぶか', '肥大、宽松'],
+            ['ふらふら', 'ふらふら', '摇晃、蹒跚'],
+            ['ふんだんに', 'ふんだんに', '大量、丰富'],
+            ['ぺこぺこ', 'ぺこぺこ', '肚子饿、点头哈腰'],
+            ['ほっと', 'ほっと', '松了一口气、放心'],
+            ['ぼつぼつ', 'ぼつぼつ', '渐渐、一点一点地'],
+            ['前もって', 'まえもって', '事先、预先'],
+            ['誠に', 'まことに', '实在、确实'],
+            ['正しく', 'まさしく', '确实、正是'],
+            ['丸ごと', 'まるごと', '整个、整个儿'],
+            ['まるっきり', 'まるっきり', '完全、简直'],
+            ['丸々', 'まるまる', '胖乎乎、完全'],
+            ['無性に', 'むしょうに', '非常、特别'],
+            ['無論', 'むろん', '当然、不用说'],
+            ['めきめき', 'めきめき', '显著地、迅速地'],
+            ['めそめそ', 'めそめそ', '抽泣、啜泣'],
+            ['もしかして', 'もしかして', '难道、也许'],
+            ['専ら', 'もっぱら', '专门、主要'],
+            ['もはや', 'もはや', '已经、早就'],
+            ['もろに', 'もろに', '彻底、完全'],
+            ['やけに', 'やけに', '极其、非常'],
+            ['やたらに', 'やたらに', '胡乱、随便'],
+            ['やむをえず', 'やむをえず', '不得已、无可奈何'],
+            ['やんわり', 'やんわり', '委婉地、柔和地'],
+            ['余程', 'よほど', '相当、很'],
+            ['ろくに', 'ろくに', '很好地、正经地（后接否定）'],
+        ];
+
+        const examAdverbImports = examAdverbImportRows.map(([word, kana, meaning]) => ({
+            word,
+            display: buildRubyDisplay(word, kana),
+            kana,
+            meaning,
+            level: 3
+        }));
+
+        const baseAdverbKanaSet = new Set([
+            'あんがい',
+            'いちだんと',
+            'おもいきって',
+            'けっして',
+            'じつに',
+            'いっきょに',
+            'ばくぜんと',
+            'だんぜん',
+            'もはや',
+            'かろうじて',
+        ]);
+
+        const examMimeticImportRows = [
+            ['からっと', '干透，晴朗；开朗'],
+            ['ざっと', '粗略地，大概'],
+            ['さらっと', '干脆，轻描淡写；清爽，顺滑'],
+            ['スッと', '迅速顺畅，轻快；神清气爽'],
+            ['ちらっと', '一瞥，稍微'],
+            ['ぼうっと', '发呆，精神恍惚；模糊不清'],
+            ['ほっと', '松了一口气，安心'],
+            ['むっと', '突然生气；闷热，气闷'],
+            ['あっさり', '清淡；干脆，轻易'],
+            ['うっとり', '入神，陶醉'],
+            ['こってり', '浓郁，油腻；严厉地'],
+            ['がらりと', '突然改变'],
+            ['ぎっしり', '满满地'],
+            ['きっぱり', '断然，斩钉截铁'],
+            ['ぐったり', '精疲力竭'],
+            ['ばったり', '偶然相遇；突然倒下，突然中断'],
+            ['がっくり', '颓丧，灰心；突然无力'],
+            ['けろり', '若无其事；全好了'],
+            ['げっそり', '暴瘦，消瘦；灰心丧气，大失所望'],
+            ['こっそり', '偷偷地'],
+            ['しっかり', '牢固地，紧紧地；可靠，稳重；充分地'],
+            ['じっくり', '仔细地，踏实地'],
+            ['しっとり', '滋润，湿润；宁静，雅致'],
+            ['すっきり', '舒畅，痛快；整洁，简洁'],
+            ['ずっしり', '沉甸甸；沉重'],
+            ['ずらり', '一排排，成列'],
+            ['ずばり', '正中要害；直截了当'],
+            ['ちらり', '一瞥，稍微'],
+            ['てっきり', '原以为，断定'],
+            ['どっさり', '很多，堆积如山'],
+            ['はっきり', '清晰，分明；明确'],
+            ['ひっそり', '静悄悄；隐秘，悄然'],
+            ['うんざり', '厌烦，腻烦'],
+            ['しょんぼり', '垂头丧气，无精打采'],
+            ['しんなり', '变软，发蔫'],
+            ['すんなり', '顺利，轻易；苗条，纤细'],
+            ['どんより', '阴沉，浑浊'],
+            ['びっしょり', '湿透'],
+            ['ひんやり', '微凉，清凉'],
+            ['ふんわり', '松软，柔软；轻飘飘，轻柔'],
+            ['ぼんやり', '发呆，心不在焉；模糊，隐约'],
+            ['やんわり', '委婉，柔和'],
+            ['うろうろ', '徘徊，转来转去'],
+            ['うろちょろ', '转来转去，到处乱逛'],
+            ['がさがさ', '沙沙作响；粗糙，干燥'],
+            ['がやがや', '喧闹，吵嚷'],
+            ['からから', '干巴巴，干透；空空如也'],
+            ['ぎくしゃく', '生疏，别扭'],
+            ['ぐずぐず', '磨蹭，拖拉'],
+            ['ぐちゃぐちゃ', '软塌塌，烂糊糊；乱七八糟'],
+            ['ぐらぐら', '摇晃，不稳定；犹豫，摇摆不定'],
+            ['ごちゃごちゃ', '杂乱，乱七八糟；啰嗦，抱怨'],
+            ['ごつごつ', '粗糙，凹凸不平'],
+            ['ごろごろ', '无所事事；隆隆作响，滚动；到处都有'],
+            ['さらさら', '潺潺，沙沙；顺滑，清爽'],
+            ['ざらざら', '粗糙，不光滑'],
+            ['じめじめ', '潮湿；阴郁'],
+            ['じわじわ', '慢慢地，逐渐地'],
+            ['せかせか', '急急忙忙，慌张'],
+            ['もやもや', '模糊，烟雾弥漫；心烦意乱，郁闷'],
+            ['だらだら', '滴滴答答；拖拖拉拉，冗长；懒散，无所事事'],
+            ['てきぱき', '麻利，利落'],
+            ['どきどき', '扑通扑通，紧张'],
+            ['どろどろ', '黏糊糊，融化貌；泥泞不堪；错综复杂，阴暗'],
+            ['ぬるぬる', '滑溜溜，黏滑'],
+            ['ねばねば', '黏糊糊，拉丝'],
+            ['すいすい', '轻快地；顺利地'],
+            ['すくすく', '茁壮成长'],
+            ['すべすべ', '光滑，滑润'],
+            ['はきはき', '干脆，爽快'],
+            ['のろのろ', '慢吞吞，迟缓'],
+            ['ふらふら', '头晕，摇晃；漫无目的地，不知不觉地'],
+            ['ぶらぶら', '溜达，闲逛；无所事事；摇晃，下垂'],
+            ['べたべた', '黏糊糊；贴满，涂满；黏人，腻歪'],
+            ['へとへと', '精疲力竭'],
+            ['めきめき', '显著地，迅速地'],
+            ['めそめそ', '抽泣，动辄哭泣'],
+            ['めちゃめちゃ', '非常，极其；乱七八糟，一塌糊涂'],
+            ['ずけずけ', '毫不客气地，直言不讳'],
+            ['ぼそぼそ', '小声嘟囔，窃窃私语；干巴巴'],
+            ['いらいら', '焦躁，急躁'],
+            ['はらはら', '飘落，簌簌地落；提心吊胆，捏一把汗'],
+            ['びくびく', '提心吊胆，战战兢兢'],
+            ['おどおど', '提心吊胆，战战兢兢'],
+            ['まごまご', '不知所措，手忙脚乱'],
+            ['そわそわ', '心神不定，坐立不安'],
+            ['ひしひし', '深切地，深刻地'],
+            ['うすうす', '隐隐约约，稍微'],
+            ['うずうず', '跃跃欲试，按捺不住'],
+            ['くよくよ', '烦恼，愁眉不展'],
+        ];
+
+        const examMimeticImports = examMimeticImportRows.map(([word, meaning]) => ({
+            word,
+            display: word,
+            kana: word,
+            meaning,
+            level: 3
+        }));
+
+        const mimeticAdverbOverlapKanaSet = new Set([
+            'からっと',
+            'ちらっと',
+            'ほっと',
+            'あっさり',
+            'きっぱり',
+            'がっくり',
+            'げっそり',
+            'じっくり',
+            'しっとり',
+            'ずばり',
+            'てっきり',
+            'うんざり',
+            'しんなり',
+            'すんなり',
+            'どんより',
+            'びっしょり',
+            'ひんやり',
+            'やんわり',
+            'がさがさ',
+            'じめじめ',
+            'ふらふら',
+            'めきめき',
+            'めそめそ',
+            'はらはら',
+            'おどおど',
+            'そわそわ',
+        ]);
+
+        const legacyOnomatopoeiaExtras = [
+            { word: 'たっぷり', display: 'たっぷり', kana: 'たっぷり', meaning: '充分，足够', level: 3 },
+            { word: 'ばっちり', display: 'ばっちり', kana: 'ばっちり', meaning: '恰好，合适', level: 3 },
+            { word: 'めっきり', display: 'めっきり', kana: 'めっきり', meaning: '显著，急剧', level: 3 },
+            { word: 'わくわく', display: 'わくわく', kana: 'わくわく', meaning: '欢欣雀跃', level: 3 }
+        ];
+
+        const examLoanwordImportRows = [
+            ['アップ', '提高，上升，特写'],
+            ['アピール', '呼吁，吸引，展现'],
+            ['アマチュア', '业余（爱好者）'],
+            ['アンケート', '问卷调查'],
+            ['アンコール', '安可，要求重演（唱）'],
+            ['イラスト', '插图，图解'],
+            ['インスピレーション', '灵感'],
+            ['インセンティブ', '奖励，激励机制'],
+            ['インターナショナル', '国际的'],
+            ['インターフォン', '对讲机'],
+            ['インテリ', '知识分子'],
+            ['インパクト', '冲击力，影响力'],
+            ['インフレ', '通货膨胀'],
+            ['ウイルス', '病毒'],
+            ['エレガント', '优雅的，高雅的'],
+            ['オーケー', 'OK，好的'],
+            ['オフ', '休息，打折，关闭'],
+            ['オリエンテーション', '新生（新员工）说明会，方向指导'],
+            ['オンライン', '在线，联网'],
+            ['ガイドブック', '旅游指南，指南手册'],
+            ['カクテル', '鸡尾酒'],
+            ['カメラマン', '摄影师'],
+            ['カルテ', '病历'],
+            ['ガレージ', '车库'],
+            ['カンニング', '作弊'],
+            ['キープ', '保持，保留'],
+            ['キーワード', '关键词'],
+            ['キャッチ', '抓住，捕捉（信息）'],
+            ['キャラクター', '角色，性格'],
+            ['キャリア', '职业生涯，经历'],
+            ['クイズ', '测验，智力竞赛'],
+            ['クレーン', '起重机，吊车'],
+            ['クロゼット', '壁橱，衣橱'],
+            ['コーディネート', '协调，搭配（服装等）'],
+            ['コストダウン', '降低成本'],
+            ['コマーシャル', '商业广告 (CM)'],
+            ['コメント', '评论，留言'],
+            ['コンクール', '比赛，竞赛（艺术、文学等）'],
+            ['コンサルタント', '顾问'],
+            ['コンタクト', '隐形眼镜，联络'],
+            ['コンテスト', '比赛，竞赛'],
+            ['コンテンツ', '内容（数字、媒体等）'],
+            ['コントラスト', '对比，反差'],
+            ['コントロール', '控制，调节'],
+            ['サイクル', '周期，循环'],
+            ['サンキュー', '谢谢'],
+            ['サンタクロース', '圣诞老人'],
+            ['ジーパン', '牛仔裤'],
+            ['シック', '别致，雅致，潇洒'],
+            ['シナリオ', '剧本，脚本'],
+            ['ジャンパー', '夹克衫'],
+            ['ジャンプ', '跳跃'],
+            ['ジャンル', '体裁，种类，领域'],
+            ['ショー', '演出，表演'],
+            ['ショック', '冲击，打击，休克'],
+            ['シンポジウム', '研讨会，讨论会'],
+            ['スタジオ', '工作室，演播室，录音室'],
+            ['ステータス', '地位，身份，状态'],
+            ['ストック', '库存，储备'],
+            ['ストレス', '压力'],
+            ['スプリング', '弹簧，春天'],
+            ['スペース', '空间，空地'],
+            ['セクション', '部门，科室'],
+            ['セレモニー', '仪式，典礼'],
+            ['センス', '品味，感觉，判断力'],
+            ['ソース', '来源，酱汁'],
+            ['タイトル', '标题，头衔'],
+            ['タイマー', '定时器，秒表'],
+            ['タイミング', '时机'],
+            ['タイム', '时间'],
+            ['ダウン', '下降，倒下，羽绒'],
+            ['タレント', '艺人，才能'],
+            ['ダンプ', '翻斗车'],
+            ['チームワーク', '团队合作'],
+            ['チェンジ', '改变，更换'],
+            ['チャイム', '门铃，钟声'],
+            ['チャンネル', '频道'],
+            ['トータル', '总计，全部'],
+            ['トーン', '音调，色调，语调'],
+            ['ドライ', '干燥的，干脆的，理性的'],
+            ['ドライバー', '司机，螺丝刀'],
+            ['トラブル', '麻烦，纠纷'],
+            ['ナンセンス', '废话，毫无意义的'],
+            ['ニュアンス', '微妙的差异，语感'],
+            ['ネガ', '底片，负面的'],
+            ['バー', '酒吧'],
+            ['バス', '巴士，公共汽车，洗澡'],
+            ['パチンコ', '弹珠机'],
+            ['バッジ', '徽章'],
+            ['バッテリー', '电池，电瓶'],
+            ['バット', '球棒'],
+            ['パンク', '爆胎，朋克'],
+            ['パンフレット', '小册子'],
+            ['ビジネス', '商业，生意'],
+            ['ビジネスマナー', '商务礼仪'],
+            ['ヒット曲', '热门歌曲'],
+            ['ヒント', '提示，启发'],
+            ['ファイト', '战斗，斗志，加油'],
+            ['ファクト', '事实'],
+            ['ファーストフード', '快餐'],
+            ['フォーム', '姿势，格式，表格'],
+            ['フォロー', '跟进，关注，协助'],
+            ['ブザー', '蜂鸣器，警报器'],
+            ['フルーツ', '水果'],
+            ['ブランク', '空白，空白期'],
+            ['プロジェクト', '项目，计划'],
+            ['プロセス', '过程，工序'],
+            ['ベース', '基础，基地，底座'],
+            ['ベランダ', '阳台'],
+            ['ヘルシー', '健康的'],
+            ['ポーズ', '姿势，摆姿势，暂停'],
+            ['ポジション', '位置，立场，职位'],
+            ['マーク', '标志，记号，标记'],
+            ['マーケティング', '市场营销'],
+            ['マイホーム', '属于自己的房子'],
+            ['マスコミ', '大众媒体'],
+            ['マッサージ', '按摩'],
+            ['マッチ', '匹配，比赛，火柴'],
+            ['マッチポイント', '赛点'],
+            ['ミス', '失误，错误'],
+            ['ミュージック', '音乐'],
+            ['ムード', '气氛，情绪'],
+            ['メーカー', '制造商，厂家'],
+            ['メカニズム', '机制，原理，机械装置'],
+            ['メディア', '媒体'],
+            ['メリット', '优点，好处'],
+            ['メロディー', '旋律，曲调'],
+            ['メンテナンス', '维护，保养'],
+            ['モーテル', '汽车旅馆'],
+            ['モニター', '显示器，监视器，监督员'],
+            ['ヤング', '年轻人'],
+            ['ユニーク', '独特的，唯一的'],
+            ['ユニフォーム', '制服，队服'],
+            ['ライバル', '竞争对手'],
+            ['ライフスタイル', '生活方式'],
+            ['ラブレター', '情书'],
+            ['ラベル', '标签'],
+            ['ランプ', '灯'],
+            ['リーダーシップ', '领导力'],
+            ['リード', '引导，领先，线索'],
+            ['リスク', '风险'],
+            ['リハビリ', '康复训练'],
+            ['リラックス', '放松'],
+            ['ルーズ', '松懈，散漫'],
+            ['ルール', '规则'],
+            ['レース', '比赛，蕾丝'],
+            ['レギュラー', '正规的，正式队员，常规的'],
+            ['レバー', '杠杆，操纵杆，肝脏'],
+            ['レンジ', '微波炉，范围'],
+            ['ロジカル', '逻辑的'],
+            ['ロジック', '逻辑'],
+            ['ロマンチック', '浪漫的'],
+        ];
+
+        const examLoanwordImports = examLoanwordImportRows.map(([word, meaning]) => ({
+            word,
+            display: word,
+            kana: word,
+            meaning,
+            level: 3
+        }));
+
+        const vocabularyDB = {
+            verbs: [
+                { word: '食べる', display: '<ruby>食<rt>た</rt></ruby>べる', kana: 'たべる', meaning: '吃', level: 1 },
+                { word: '行く', display: '<ruby>行<rt>い</rt></ruby>く', kana: 'いく', meaning: '去', level: 1 },
+                { word: '覚える', display: '<ruby>覚<rt>おぼ</rt></ruby>える', kana: 'おぼえる', meaning: '记住，感觉', level: 1 },
+                { word: '働く', display: '<ruby>働<rt>はたら</rt></ruby>く', kana: 'はたらく', meaning: '工作', level: 1 },
+                { word: '諦める', display: '<ruby>諦<rt>あきら</rt></ruby>める', kana: 'あきらめる', meaning: '放弃', level: 1 },
+                { word: '始める', display: '<ruby>始<rt>はじ</rt></ruby>める', kana: 'はじめる', meaning: '开始', level: 1 },
+                { word: '終わる', display: '<ruby>終<rt>お</rt></ruby>わる', kana: 'おわる', meaning: '结束', level: 1 },
+                { word: '考える', display: '<ruby>考<rt>かんが</rt></ruby>える', kana: 'かんがえる', meaning: '思考', level: 1 },
+                { word: '忘れる', display: '<ruby>忘<rt>わす</rt></ruby>れる', kana: 'わすれる', meaning: '忘记', level: 1 },
+                { word: '頑張る', display: '<ruby>頑<rt>がん</rt></ruby><ruby>張<rt>ば</rt></ruby>る', kana: 'がんばる', meaning: '努力', level: 1 },
+                { word: '余る', display: '<ruby>余<rt>あま</rt></ruby>る', kana: 'あまる', meaning: '剩余', level: 2 },
+                { word: '抱える', display: '<ruby>抱<rt>かか</rt></ruby>える', kana: 'かかえる', meaning: '承担，抱', level: 2 },
+                { word: '越える', display: '<ruby>越<rt>こ</rt></ruby>える', kana: 'こえる', meaning: '越过', level: 2 },
+                { word: '支える', display: '<ruby>支<rt>ささ</rt></ruby>える', kana: 'ささえる', meaning: '支撑', level: 2 },
+                { word: '削る', display: '<ruby>削<rt>けず</rt></ruby>る', kana: 'けずる', meaning: '削减', level: 2 },
+                { word: '促す', display: '<ruby>促<rt>うなが</rt></ruby>す', kana: 'うながす', meaning: '促使，催促', level: 3 },
+                { word: '阻む', display: '<ruby>阻<rt>はば</rt></ruby>む', kana: 'はばむ', meaning: '阻挡', level: 3 },
+                { word: '企てる', display: '<ruby>企<rt>くわだ</rt></ruby>てる', kana: 'くわだてる', meaning: '企图，策划', level: 3 },
+                { word: '損なう', display: '<ruby>損<rt>そこ</rt></ruby>なう', kana: 'そこなう', meaning: '损害', level: 3 },
+                { word: '欺く', display: '<ruby>欺<rt>あざむ</rt></ruby>く', kana: 'あざむく', meaning: '欺骗', level: 3 },
+                ...examVerbImports
+            ],
+            nouns: [
+                { word: '約束', display: '<ruby>約<rt>やく</rt></ruby><ruby>束<rt>そく</rt></ruby>', kana: 'やくそく', meaning: '约定', level: 1 },
+                { word: '経験', display: '<ruby>経<rt>けい</rt></ruby><ruby>験<rt>けん</rt></ruby>', kana: 'けいけん', meaning: '经验', level: 1 },
+                { word: '準備', display: '<ruby>準<rt>じゅん</rt></ruby><ruby>備<rt>び</rt></ruby>', kana: 'じゅんび', meaning: '准备', level: 1 },
+                { word: '影響', display: '<ruby>影<rt>えい</rt></ruby><ruby>響<rt>きょう</rt></ruby>', kana: 'えいきょう', meaning: '影响', level: 1 },
+                { word: '感情', display: '<ruby>感<rt>かん</rt></ruby><ruby>情<rt>じょう</rt></ruby>', kana: 'かんじょう', meaning: '感情，情绪', level: 1 },
+                { word: '条件', display: '<ruby>条<rt>じょう</rt></ruby><ruby>件<rt>けん</rt></ruby>', kana: 'じょうけん', meaning: '条件', level: 2 },
+                { word: '現象', display: '<ruby>現<rt>げん</rt></ruby><ruby>象<rt>しょう</rt></ruby>', kana: 'げんしょう', meaning: '现象', level: 2 },
+                { word: '評価', display: '<ruby>評<rt>ひょう</rt></ruby><ruby>価<rt>か</rt></ruby>', kana: 'ひょうか', meaning: '评价', level: 2 },
+                { word: '資源', display: '<ruby>資<rt>し</rt></ruby><ruby>源<rt>げん</rt></ruby>', kana: 'しげん', meaning: '资源', level: 2 },
+                { word: '背景', display: '<ruby>背<rt>はい</rt></ruby><ruby>景<rt>けい</rt></ruby>', kana: 'はいけい', meaning: '背景', level: 2 },
+                { word: '理由', display: '<ruby>理<rt>り</rt></ruby><ruby>由<rt>ゆう</rt></ruby>', kana: 'りゆう', meaning: '理由', level: 1 },
+                { word: '結果', display: '<ruby>結<rt>けっ</rt></ruby><ruby>果<rt>か</rt></ruby>', kana: 'けっか', meaning: '结果', level: 1 },
+                { word: '目的', display: '<ruby>目<rt>もく</rt></ruby><ruby>的<rt>てき</rt></ruby>', kana: 'もくてき', meaning: '目的', level: 1 },
+                { word: '知識', display: '<ruby>知<rt>ち</rt></ruby><ruby>識<rt>しき</rt></ruby>', kana: 'ちしき', meaning: '知识', level: 1 },
+                { word: '環境', display: '<ruby>環<rt>かん</rt></ruby><ruby>境<rt>きょう</rt></ruby>', kana: 'かんきょう', meaning: '环境', level: 1 },
+                { word: '軌道', display: '<ruby>軌<rt>き</rt></ruby><ruby>道<rt>どう</rt></ruby>', kana: 'きどう', meaning: '轨道', level: 3 },
+                { word: '枠組み', display: '<ruby>枠<rt>わく</rt></ruby><ruby>組<rt>ぐ</rt></ruby>み', kana: 'わくぐみ', meaning: '框架', level: 3 },
+                { word: '核心', display: '<ruby>核<rt>かく</rt></ruby><ruby>心<rt>しん</rt></ruby>', kana: 'かくしん', meaning: '核心', level: 3 },
+                { word: '愛着', display: '<ruby>愛<rt>あい</rt></ruby><ruby>着<rt>ちゃく</rt></ruby>', kana: 'あいちゃく', meaning: '留恋，眷恋', level: 3 },
+                { word: '葛藤', display: '<ruby>葛<rt>かっ</rt></ruby><ruby>藤<rt>とう</rt></ruby>', kana: 'かっとう', meaning: '纠葛，矛盾', level: 3 },
+                ...examNounImports.filter(({ word }) => !baseNounWords.has(word))
+            ],
+            adjectives: [
+                { word: '厳しい', display: '<ruby>厳<rt>きび</rt></ruby>しい', kana: 'きびしい', meaning: '严格的', level: 1 },
+                { word: '珍しい', display: '<ruby>珍<rt>めずら</rt></ruby>しい', kana: 'めずらしい', meaning: '罕见的', level: 1 },
+                { word: '詳しい', display: '<ruby>詳<rt>くわ</rt></ruby>しい', kana: 'くわしい', meaning: '详细的', level: 1 },
+                { word: '懐かしい', display: '<ruby>懐<rt>なつ</rt></ruby>かしい', kana: 'なつかしい', meaning: '怀念的', level: 1 },
+                { word: '悔しい', display: '<ruby>悔<rt>くや</rt></ruby>しい', kana: 'くやしい', meaning: '懊悔的', level: 1 },
+                { word: '等しい', display: '<ruby>等<rt>ひと</rt></ruby>しい', kana: 'ひとしい', meaning: '相等的', level: 2 },
+                { word: '貧しい', display: '<ruby>貧<rt>まず</rt></ruby>しい', kana: 'まずしい', meaning: '贫穷的', level: 2 },
+                { word: '惜しい', display: '<ruby>惜<rt>お</rt></ruby>しい', kana: 'おしい', meaning: '惋惜的', level: 2 },
+                { word: '怪しい', display: '<ruby>怪<rt>あや</rt></ruby>しい', kana: 'あやしい', meaning: '可疑的', level: 2 },
+                { word: '険しい', display: '<ruby>険<rt>けわ</rt></ruby>しい', kana: 'けわしい', meaning: '险峻的', level: 2 },
+                { word: '素晴らしい', display: '<ruby>素<rt>す</rt></ruby><ruby>晴<rt>ば</rt></ruby>らしい', kana: 'すばらしい', meaning: '极好的/出色的', level: 1 },
+                { word: '恐ろしい', display: '<ruby>恐<rt>おそ</rt></ruby>ろしい', kana: 'おそろしい', meaning: '可怕的', level: 1 },
+                { word: '激しい', display: '<ruby>激<rt>はげ</rt></ruby>しい', kana: 'はげしい', meaning: '激烈的/剧烈的', level: 1 },
+                { word: '柔らかい', display: '<ruby>柔<rt>やわ</rt></ruby>らかい', kana: 'やわらかい', meaning: '柔软的', level: 1 },
+                { word: '鋭い', display: '<ruby>鋭<rt>するど</rt></ruby>い', kana: 'するどい', meaning: '尖锐的/敏锐的', level: 1 },
+                { word: '著しい', display: '<ruby>著<rt>いちじる</rt></ruby>しい', kana: 'いちじるしい', meaning: '显著的', level: 3 },
+                { word: '空しい', display: '<ruby>空<rt>むな</rt></ruby>しい', kana: 'むなしい', meaning: '空虚的', level: 3 },
+                { word: '悩ましい', display: '<ruby>悩<rt>なや</rt></ruby>ましい', kana: 'なやましい', meaning: '苦恼的', level: 3 },
+                { word: '煩わしい', display: '<ruby>煩<rt>わずら</rt></ruby>わしい', kana: 'わずらわしい', meaning: '繁琐的', level: 3 },
+                { word: '紛らわしい', display: '<ruby>紛<rt>まぎ</rt></ruby>らわしい', kana: 'まぎらわしい', meaning: '易混淆的', level: 3 },
+                ...examAdjectiveImports
+            ],
+            loanwords: [...examLoanwordImports],
+            adverbs: [
+                { word: '案外', display: '<ruby>案<rt>あん</rt></ruby><ruby>外<rt>がい</rt></ruby>', kana: 'あんがい', meaning: '意外地', level: 2 },
+                { word: '一段と', display: '<ruby>一<rt>いっ</rt></ruby><ruby>段<rt>だん</rt></ruby>と', kana: 'いちだんと', meaning: '更加', level: 2 },
+                { word: '思い切って', display: '<ruby>思<rt>おも</rt></ruby>い<ruby>切<rt>き</rt></ruby>って', kana: 'おもいきって', meaning: '下决心', level: 2 },
+                { word: '決して', display: '<ruby>決<rt>けっ</rt></ruby>して', kana: 'けっして', meaning: '决不', level: 2 },
+                { word: '実に', display: '<ruby>実<rt>じつ</rt></ruby>に', kana: 'じつに', meaning: '实在，确实', level: 2 },
+                { word: '一挙に', display: '<ruby>一<rt>いっ</rt></ruby><ruby>挙<rt>きょ</rt></ruby>に', kana: 'いっきょに', meaning: '一举，一下子', level: 3 },
+                { word: '漠然と', display: '<ruby>漠<rt>ばく</rt></ruby><ruby>然<rt>ぜん</rt></ruby>と', kana: 'ばくぜんと', meaning: '含糊地', level: 3 },
+                { word: '断然', display: '<ruby>断<rt>だん</rt></ruby><ruby>然<rt>ぜん</rt></ruby>', kana: 'だんぜん', meaning: '绝对，断然', level: 3 },
+                { word: 'もはや', display: 'もはや', kana: 'もはや', meaning: '已经、早就', level: 3 },
+                { word: '辛うじて', display: '<ruby>辛<rt>かろ</rt></ruby>うじて', kana: 'かろうじて', meaning: '好不容易才、勉强', level: 3 },
+                ...examAdverbImports.filter(({ kana }) => !baseAdverbKanaSet.has(kana) && !mimeticAdverbOverlapKanaSet.has(kana))
+            ],
+            onomatopoeia: [
+                ...legacyOnomatopoeiaExtras,
+                ...examMimeticImports
+            ],
+            boss: [
+                { word: '挑戦', display: '<ruby>挑<rt>ちょう</rt></ruby><ruby>戦<rt>せん</rt></ruby>', kana: 'ちょうせん', meaning: '挑战', level: 1 },
+                { word: '努力', display: '<ruby>努<rt>ど</rt></ruby><ruby>力<rt>りょく</rt></ruby>', kana: 'どりょく', meaning: '努力', level: 1 },
+                { word: '成功', display: '<ruby>成<rt>せい</rt></ruby><ruby>功<rt>こう</rt></ruby>', kana: 'せいこう', meaning: '成功', level: 1 },
+                { word: '失敗', display: '<ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>', kana: 'しっぱい', meaning: '失败', level: 1 },
+                { word: '希望', display: '<ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby>', kana: 'きぼう', meaning: '希望', level: 1 },
+                { word: '矛盾', display: '<ruby>矛<rt>む</rt></ruby><ruby>盾<rt>じゅん</rt></ruby>', kana: 'むじゅん', meaning: '矛盾', level: 2 },
+                { word: '妥協', display: '<ruby>妥<rt>だ</rt></ruby><ruby>協<rt>きょう</rt></ruby>', kana: 'だきょう', meaning: '妥协', level: 2 },
+                { word: '曖昧', display: '<ruby>曖<rt>あい</rt></ruby><ruby>昧<rt>まい</rt></ruby>', kana: 'あいまい', meaning: '含糊', level: 2 },
+                { word: '克服', display: '<ruby>克<rt>こく</rt></ruby><ruby>服<rt>ふく</rt></ruby>', kana: 'こくふく', meaning: '克服', level: 2 },
+                { word: '慎重', display: '<ruby>慎<rt>しん</rt></ruby><ruby>重<rt>ちょう</rt></ruby>', kana: 'しんちょう', meaning: '慎重', level: 2 },
+                { word: '崩壊', display: '<ruby>崩<rt>ほう</rt></ruby><ruby>壊<rt>かい</rt></ruby>', kana: 'ほうかい', meaning: '崩溃', level: 3 },
+                { word: '飛躍', display: '<ruby>飛<rt>ひ</rt></ruby><ruby>躍<rt>やく</rt></ruby>', kana: 'ひやく', meaning: '飞跃', level: 3 },
+                { word: '錯誤', display: '<ruby>錯<rt>さく</rt></ruby><ruby>誤<rt>ご</rt></ruby>', kana: 'さくご', meaning: '错误', level: 3 },
+                { word: '懸念', display: '<ruby>懸<rt>け</rt></ruby><ruby>念<rt>ねん</rt></ruby>', kana: 'けねん', meaning: '担忧', level: 3 },
+                { word: '促進', display: '<ruby>促<rt>そく</rt></ruby><ruby>進<rt>しん</rt></ruby>', kana: 'そくしん', meaning: '促进', level: 3 }
+            ]
+        };
+
+        const N1_LEVEL = 3;
+        const N1_STAGE_LABEL = 'N1';
+        const HISTORY_STORAGE_KEY = 'vocab_history_n1_v1';
+
+        // --- 漫画风气泡语录库 ---
+        const bubbleMessages = [
+            "頑張って！(加油)",
+            "焦らないでね！(别着急)",
+            "基礎が大事だよ(基础很重要)",
+            "深呼吸しよう(深呼吸)",
+            "柴犬ボスが待ってるよ🐶",
+            "ナイス！(Nice!)",
+            "その調子！(就保持这个节奏)",
+            "ファイト！(Fight!)",
+            "一歩ずつ進もう(一步一步来)",
+            "休むのも大事だよ☕(休息也很重要哦)",
+            "語彙力アップ！(词汇量UP！)",
+            "道に迷ったら深呼吸！(迷路的话就深呼吸！)",
+            "ネコ先生は口が悪いから注意🐱(猫老师嘴巴很毒要注意哦)",
+            "カバ長官の時間は短いよ⏰(河马长官给的时间很短哦)",
+            "君ならできるよ！(你的话没问题的！)",
+            "キツネ先輩はイケてる🦊(狐狸学长很时髦)",
+            "フクロウ博士の話は長い🦉(猫头鹰博士话很多)"
+        ];
+
+        // --- 台词数据系统 (新增选汉字专属台词) ---
+        const dialogueDB = {
+            combat_verbs: { 
+                intro: ["冷静下来，让我们开始动词的修行。", "一步一个脚印，基础最重要。准备好了吗？", "心如止水，方能看破词汇的真谛。"],
+                ask_meaning: ["告诉我，{word} 的真意是？", "沉住气，选出正确的解释：{word}。", "{word} ...做出你的选择吧。"],
+                ask_kanji: ["看假名识汉字，{word} 写作哪个？", "回想一下，{word} 的汉字形体是？", "假名 {word} 背后隐藏的是哪个汉字？"],
+                correct: ["不错，基本功很扎实。", "就是这样，保持这个节奏。", "很好，继续保持，前进吧。"],
+                wrong: ["太心急了。正解是「{correct}」。", "步伐乱了哦。记住，应当是「{correct}」。", "静心...正确的答案是「{correct}」。"],
+                timeout: ["犹豫太久了，答案是「{correct}」。", "在战场上迟疑就会失败。是「{correct}」。"]
+            },
+            combat_nouns: { 
+                intro: ["连这种基础都要来找我？真麻烦喵。", "哼，别以为你能轻易从我这里及格喵。", "又是没带脑子来的人类吗？快点开始吧喵。"],
+                ask_meaning: ["这都不知道的话就干脆重修吧，{word} 是什么意思喵？", "别浪费我时间，{word} 的意思是哪个？"],
+                ask_kanji: ["假名 {word} 对应的汉字是什么，猜不出来吧喵？", "汉字都认不全吗？{word} 选哪个喵？"],
+                correct: ["切，算你蒙对了一次喵。", "勉强算个及格吧，别得意忘形喵。", "偶尔脑子也还算灵光嘛喵。"],
+                wrong: ["哈？居然选错，太丢猫脸了！是「{correct}」喵！", "你到底有没有在学啊？答案是「{correct}」喵！", "连「{correct}」都不知道，赶紧回家洗洗睡吧喵。"],
+                timeout: ["慢死了！我都要睡着了喵！答案是「{correct}」！", "脑子卡壳了吗？是「{correct}」，快点喵！"]
+            },
+            combat_adjectives: { 
+                intro: ["咕咕~ 今天天气真好啊。随便做两道题吧~", "飞累了，歇会儿顺便考考你咕~", "慢慢来，不用着急咕。"],
+                ask_meaning: ["{word} 嘛...你觉得是啥意思？", "随便选一个吧，{word} 大概是这个意思？"],
+                ask_kanji: ["{word} 的汉字是哪个来着，我忘了咕...", "这个假名 {word}，对应的汉字随便猜一个吧咕。"],
+                correct: ["喔，挺厉害的咕。", "还挺懂的嘛，咕咕。", "顺利答对了呢，咕~"],
+                wrong: ["哎呀，猜错了咕。其实是「{correct}」。", "没关系没关系，下次记住是「{correct}」就行了咕。"],
+                timeout: ["咕？睡着了吗？答案是「{correct}」哦。", "随便猜一个也行嘛咕。是「{correct}」。"]
+            },
+            combat_mix: {
+                intro: ["呱呱！综合测试开始啦！", "不仅要会一种，全方位发展才是好学生呱！", "跳跃思维的时间到了呱！"],
+                ask_meaning: ["这题考考你，{word} 是什么意思呱？", "呱？{word} 的意思选哪个好呢？"],
+                ask_kanji: ["跳跃思维！{word} 对应的汉字是哪个呱！", "看假名选汉字，{word} 是哪个呱？"],
+                correct: ["呱！跳得挺高嘛！", "完全正确呱！", "呱呱，表现不错！"],
+                wrong: ["呱！掉进池塘了！正确的是「{correct}」。", "滑了一跤呱！记住是「{correct}」。"],
+                timeout: ["呱？睡着了呱？答案是「{correct}」。", "时间像水一样流走啦！是「{correct}」呱！"]
+            },
+            combat_loanwords: {
+                intro: ["Hey！准备好迎接外来语的 challenge 了吗？🦊", "Let's start！不要让我失望哦！", "语言的 mix 才是最 cool 的！🦊"],
+                ask_meaning: ["{word} 的 meaning，你 get 到了吗？", "Show me your answer！{word} 是什么？"],
+                correct: ["Perfect！干得漂亮！", "Good job！就是这个节奏！", "Nice！完全正确！🦊"],
+                wrong: ["Oh no！大错特错！是「{correct}」啦！", "You missed it！正确答案是「{correct}」！"],
+                timeout: ["Time's up！太慢啦，答案是「{correct}」。", "Wake up！时间到了，是「{correct}」！"]
+            },
+            combat_onomatopoeia: {
+                intro: ["吱吱！拟声拟态词可是很有趣的哦！🐭", "感觉世界都在动呢！来猜猜看吧吱！", "吱！竖起耳朵仔细感受这些词的画面吧！"],
+                ask_meaning: ["{word} 是什么感觉？吱吱！", "猜猜看，{word} 的意思是什么吱？"],
+                correct: ["吱！完全猜中啦！", "对对对！就是这个感觉吱！", "吱吱！你很懂嘛！"],
+                wrong: ["吱哇！不对不对，是「{correct}」！", "哎呀，完全搞混了吱。是「{correct}」哦！"],
+                timeout: ["吱...睡着了吗？是「{correct}」啦！", "时间溜走啦吱！答案是「{correct}」。"]
+            },
+            combat_adverbs: {
+                intro: ["咕咕...副词能让句子的程度更加精准。🦉", "语言的细节，往往决定了成败。", "来吧，展现你对词汇深度的理解。🦉"],
+                ask_meaning: ["{word}，此副词的准确含义为何？", "请仔细辨别 {word} 的细微差别。"],
+                ask_kanji: ["只听其音 {word}，你能否写出其形？🦉", "此假名 {word} 对应的汉字，请作答。"],
+                correct: ["十分准确，理解得很透彻。", "咕咕...明察秋毫。", "正解，你对细节的把握很不错。"],
+                wrong: ["失之毫厘。正确的答案应是「{correct}」。", "咕...还是不够严谨。是「{correct}」。"],
+                timeout: ["思虑过久了。答案为「{correct}」。", "时间不会等你。正解是「{correct}」。🦉"]
+            },
+            elite: { 
+                intro: ["吼！！进入我的领地，就得守我的规矩！", "没时间给你慢慢想了！接招！", "弱者没有通过这里的资格！！"],
+                ask_meaning: ["快回答！！{word} 是什么意思！！", "倒计时开始！别发呆！看招：{word} ！"],
+                ask_kanji: ["接招！！假名 {word} 的汉字写成什么！！", "别退缩！{word} 对应的汉字选哪个！！"],
+                correct: ["切！有点本事！", "算你躲过一劫！下一题！", "还算凑合！继续！！"],
+                wrong: ["太弱了！！答案是「{correct}」！接我一击！", "破绽百出！！记好了是「{correct}」！"],
+                timeout: ["太慢了！！！发什么呆，答案是「{correct}」！！", "磨磨蹭蹭的，找死！！是「{correct}」！"]
+            },
+            boss_playful: { 
+                intro: ["汪！我是最终关卡的守门犬！来陪我大闹一场吧！", "好耶，有挑战者来了！汪！"],
+                ask_meaning: ["接飞盘咯！{word} 的意思是哪个？", "考验你的时刻到了，{word} 选什么意思？"],
+                ask_kanji: ["找汉字游戏！{word} 藏在哪个选项里汪！", "假名 {word} 的汉字是哪个？快选快选！"],
+                correct: ["干得漂亮！再来！", "好球！汪！", "反应真不错呢！"],
+                wrong: ["哎呀，没接住呢！正确的是「{correct}」。", "稍微差了一点汪！是「{correct}」！"],
+                timeout: ["你在发呆吗？骨头都被我吃掉啦！是「{correct}」！", "再不选我就扑过去啦！是「{correct}」汪！"]
+            },
+            boss_serious: { 
+                intro: ["...呜...看来得拿出真本事了。", "眼神变了呢...那就让我看看你的觉悟！"], 
+                ask_meaning: ["别以为能轻易通关。看破 {word} 吧！", "这就是最终的试炼，选出 {word} 的真意！"],
+                ask_kanji: ["透过表音看本质，{word} 的本体是哪个汉字！", "假名的伪装下，{word} 对应的汉字是哪一个！"],
+                correct: ["唔...确实有两下子。", "被你看穿了吗...", "还能跟上我的速度吗！"],
+                wrong: ["天真！这就是你的极限了！答案是「{correct}」。", "一瞬的破绽就是致命的！是「{correct}」！"],
+                timeout: ["战场上可没有时间给你犹豫！是「{correct}」！", "破绽！！答案是「{correct}」！"]
+            }
+        };
+
+        function getDialogue(encounterType, situation, options = {}) {
+            let dbKey = encounterType;
+            if (encounterType === 'boss') {
+                const hpPercent = (combatState.enemyHp / combatState.enemyMaxHp) * 100;
+                dbKey = hpPercent > 50 ? 'boss_playful' : 'boss_serious';
+            }
+            
+            // 容错处理：如果请求了 ask_kanji 但没有，退回到 ask_meaning
+            let lines = dialogueDB[dbKey][situation];
+            if (!lines && situation === 'ask_kanji') {
+                lines = dialogueDB[dbKey]['ask_meaning'];
+            }
+
+            let line = lines[Math.floor(Math.random() * lines.length)];
+            if (options.correct) {
+                line = line.replace('{correct}', options.correct);
+            }
+            return line;
+        }
+
+        // 节点类型配置
+        const nodeTypes = {
+            'combat_verbs': { iconType: 'fa', icon: 'fa-horse', color: 'text-sky-400', name: 'ウマ先生', label: '動詞', type: 'combat', vocab: 'verbs', baseQ: 3, sound: 'ブルルル！', soundWrong: 'ヒヒーン！' },
+            'combat_nouns': { iconType: 'fa', icon: 'fa-cat', color: 'text-amber-400', name: 'ネコ先生', label: '名詞', type: 'combat', vocab: 'nouns', baseQ: 3, sound: 'ニャー！', soundWrong: 'シャーッ！' },
+            'combat_adjectives': { iconType: 'fa', icon: 'fa-dove', color: 'text-fuchsia-400', name: 'ハト先生', label: '形容詞', type: 'combat', vocab: 'adjectives', baseQ: 3, sound: 'クルックー！', soundWrong: 'バサバサッ！' },
+            'combat_mix': { iconType: 'fa', icon: 'fa-frog', color: 'text-indigo-400', name: 'カエル先生', label: '総合', type: 'combat', vocab: 'mix', baseQ: 3, sound: 'ケロ！', soundWrong: 'ゲコゲコ！' },
+            'combat_loanwords': { iconType: 'emoji', icon: '🦊', color: 'text-orange-500', name: 'キツネ先輩', label: '外来語', type: 'combat', vocab: 'loanwords', baseQ: 3, sound: 'コン！', soundWrong: 'コンコン！' },
+            'combat_onomatopoeia': { iconType: 'emoji', icon: '🐭', color: 'text-stone-500', name: 'ネズミ君', label: 'オノマトペ', type: 'combat', vocab: 'onomatopoeia', baseQ: 3, sound: 'チュー！', soundWrong: 'チチッ！' },
+            'combat_adverbs': { iconType: 'emoji', icon: '🦉', color: 'text-amber-700', name: 'フクロウ博士', label: '副詞', type: 'combat', vocab: 'adverbs', baseQ: 3, sound: 'ホー！', soundWrong: 'ホッホ！' },
+            'elite': { iconType: 'fa', icon: 'fa-hippo', color: 'text-rose-400', name: 'カバ長官', label: '総合 (時間制限)', type: 'combat', vocab: 'mix', baseQ: 4, timeLimit: 12, sound: 'グオオ！', soundWrong: 'ドスドス！' }, 
+            'rest': { iconType: 'fa', icon: 'fa-paw', color: 'text-teal-400', name: '休憩', label: '休憩所', type: 'rest' },
+            'boss': { iconType: 'emoji', icon: '🐶', color: 'text-orange-400', name: '柴犬ボス', label: '最終テスト', type: 'combat', vocab: 'boss', baseQ: 6, timeLimit: 8, sound: 'ワン！', soundWrong: 'グルルル...！' } 
+        };
+
+        // --- 游戏状态 ---
+        let player = { 
+            hp: 20, maxHp: 20, currentFloor: -1, currentPhase: 1, damage: 10,
+            stats: { correct: 0, wrong: 0 }
+        };
+        let mapData = [];
+        let currentEncounter = null;
+        let combatState = { 
+            enemyHp: 0, enemyMaxHp: 0, wordsQueue: [], currentWord: null, currentQType: 'meaning', currentCorrectAnswer: '',
+            isTyping: false, isWaitingAnswer: false, timerInterval: null, bossPhaseShifted: false
+        };
+        let bubbleInterval = null;
+
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+        function clearInteractiveFocus() {
+            const activeElement = document.activeElement;
+            if (activeElement && activeElement !== document.body && typeof activeElement.blur === 'function') {
+                activeElement.blur();
+            }
+        }
+
+        // --- 初始化与流程控制 ---
+        function startGame() {
+            player.hp = player.maxHp;
+            player.currentFloor = 0;
+            player.currentPhase = 1;
+            player.stats = { correct: 0, wrong: 0 };
+            updatePlayerUI();
+            generateMap();
+            renderMap();
+            switchScreen('screen-map');
+            document.getElementById('top-bar').classList.remove('hidden');
+            window.addEventListener('resize', drawMapLines);
+        }
+
+        function switchScreen(screenId) {
+            ['screen-start', 'screen-map', 'screen-combat', 'screen-rest', 'screen-result'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+                document.getElementById(id).classList.remove('flex');
+            });
+            const target = document.getElementById(screenId);
+            target.classList.remove('hidden');
+            if(screenId === 'screen-result') target.classList.add('flex'); 
+            else target.classList.add('flex');
+            
+            if(screenId === 'screen-map') {
+                setTimeout(() => {
+                    const mapContainer = document.getElementById('map-inner-wrapper');
+                    document.getElementById('screen-map').scrollTop = mapContainer.scrollHeight;
+                    drawMapLines();
+                    startBubbleSpawning(); 
+                }, 50); 
+            } else {
+                stopBubbleSpawning(); 
+            }
+        }
+
+        function nextPhase() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+            player.currentFloor = 0;
+            player.hp = Math.min(player.maxHp, player.hp + 5);
+            updatePlayerUI();
+            generateMap();
+            renderMap();
+            switchScreen('screen-map');
+        }
+
+        // --- 地图气泡系统 ---
+        function startBubbleSpawning() {
+            stopBubbleSpawning();
+            bubbleInterval = setInterval(spawnBubble, 3000 + Math.random() * 2000); 
+        }
+
+        function stopBubbleSpawning() {
+            if (bubbleInterval) {
+                clearInterval(bubbleInterval);
+                bubbleInterval = null;
+            }
+        }
+
+        function spawnBubble() {
+            const mapScreen = document.getElementById('screen-map');
+            if (mapScreen.classList.contains('hidden')) return;
+
+            const bubble = document.createElement('div');
+            const isLeft = Math.random() > 0.5;
+            
+            bubble.className = `comic-bubble ${isLeft ? 'left-side' : 'right-side'}`;
+            bubble.innerText = bubbleMessages[Math.floor(Math.random() * bubbleMessages.length)];
+            
+            const scrollTop = mapScreen.scrollTop;
+            const viewportHeight = mapScreen.clientHeight;
+            const randomY = scrollTop + (viewportHeight * 0.15) + Math.random() * (viewportHeight * 0.6); 
+            
+            bubble.style.top = `${randomY}px`;
+            
+            if (isLeft) {
+                bubble.style.left = `${5 + Math.random() * 10}%`;
+            } else {
+                bubble.style.right = `${5 + Math.random() * 10}%`;
+            }
+
+            setTimeout(() => {
+                if(bubble.parentNode) bubble.remove();
+            }, 4000);
+
+            mapScreen.appendChild(bubble);
+        }
+
+        // --- 地图系统 ---
+        function generateMap() {
+            const normalTypes = ['combat_verbs', 'combat_nouns', 'combat_adjectives', 'combat_mix', 'combat_loanwords', 'combat_adverbs', 'combat_onomatopoeia'];
+            const getRandomNormal = () => normalTypes[Math.floor(Math.random() * normalTypes.length)];
+
+            mapData = [
+                [{ id: 'f0-0', type: 'combat_verbs' }, { id: 'f0-1', type: 'combat_nouns' }, { id: 'f0-2', type: 'combat_adjectives' }],
+                [{ id: 'f1-0', type: getRandomNormal() }, { id: 'f1-1', type: getRandomNormal() }],
+                [{ id: 'f2-0', type: getRandomNormal() }, { id: 'f2-1', type: 'rest' }, { id: 'f2-2', type: getRandomNormal() }],
+                [{ id: 'f3-0', type: 'elite' }, { id: 'f3-1', type: getRandomNormal() }],
+                [{ id: 'f4-0', type: getRandomNormal() }, { id: 'f4-1', type: 'combat_mix' }, { id: 'f4-2', type: getRandomNormal() }],
+                [{ id: 'f5-0', type: 'rest' }, { id: 'f5-1', type: getRandomNormal() }],
+                [{ id: 'f6-0', type: 'elite' }, { id: 'f6-1', type: 'combat_mix' }],
+                [{ id: 'f7-0', type: 'rest' }],
+                [{ id: 'f8-0', type: 'boss' }]
+            ];
+
+            mapData.forEach(floor => {
+                if (floor.length > 1) {
+                    floor.sort(() => Math.random() - 0.5);
+                }
+            });
+        }
+
+        function renderMap() {
+            const container = document.getElementById('map-container');
+            container.innerHTML = '';
+            
+            for (let floorIndex = mapData.length - 1; floorIndex >= 0; floorIndex--) {
+                const floorNodes = mapData[floorIndex];
+                const floorDiv = document.createElement('div');
+                floorDiv.className = 'flex justify-center space-x-6 md:space-x-10 relative w-full layer-row';
+                floorDiv.dataset.floor = floorIndex;
+
+                floorNodes.forEach(node => {
+                    const nodeConfig = nodeTypes[node.type];
+                    const btn = document.createElement('button');
+                    const isActive = floorIndex === player.currentFloor;
+                    const isPassed = floorIndex < player.currentFloor;
+
+                    let baseClasses = 'map-node flex flex-col items-center justify-center w-[72px] h-[72px] md:w-[84px] md:h-[84px] bg-white rounded-2xl border-2 shadow-sm ';
+                    if (isActive) {
+                        baseClasses += 'border-sky-300 active-node cursor-pointer z-20';
+                    } else if (isPassed) {
+                        baseClasses += 'border-emerald-200 bg-emerald-50 opacity-70 cursor-not-allowed';
+                    } else {
+                        baseClasses += 'border-slate-100 bg-slate-50 opacity-50 cursor-not-allowed';
+                    }
+
+                    btn.className = baseClasses;
+                    btn.id = `node-${node.id}`;
+                    
+                    let iconColor = isPassed ? 'text-emerald-400' : (isActive ? nodeConfig.color : 'text-slate-300');
+                    let iconHtml = nodeConfig.iconType === 'emoji' 
+                                 ? `<span class="text-3xl filter ${isPassed ? 'grayscale opacity-50' : ''}">${nodeConfig.icon}</span>` 
+                                 : `<i class="fas ${nodeConfig.icon} text-2xl md:text-3xl ${iconColor}"></i>`;
+
+                    btn.innerHTML = `
+                        ${iconHtml}
+                        <span class="text-[10px] md:text-xs font-bold mt-1 ${isPassed ? 'text-emerald-500' : 'text-slate-500'}">${nodeConfig.label}</span>
+                    `;
+                    
+                    if (isActive) {
+                        btn.onclick = () => handleNodeClick(node, nodeConfig);
+                        btn.title = nodeConfig.name;
+                    }
+
+                    floorDiv.appendChild(btn);
+                });
+                
+                container.appendChild(floorDiv);
+            }
+            
+            const startPrompt = document.createElement('div');
+            startPrompt.className = 'w-full flex justify-center mt-6 md:mt-10 relative z-20';
+            startPrompt.innerHTML = `
+                <div class="text-sky-500 font-bold text-xs md:text-sm tracking-widest bounce-gentle flex flex-col items-center drop-shadow-sm">
+                    <div class="flex space-x-2 mb-2 text-sky-400">
+                        <i class="fas fa-chevron-up"></i>
+                        <i class="fas fa-chevron-up"></i>
+                        <i class="fas fa-chevron-up"></i>
+                    </div>
+                    <span class="bg-white/90 px-5 py-2 rounded-full shadow-sm border border-sky-200/50">
+                        <i class="fas fa-hand-pointer mr-2"></i>試練をタップ
+                    </span>
+                </div>
+            `;
+            container.appendChild(startPrompt);
+
+            document.getElementById('current-phase-text').innerText = N1_STAGE_LABEL;
+            document.getElementById('current-floor-text').innerText = player.currentFloor + 1;
+            setTimeout(drawMapLines, 100);
+        }
+
+        function drawMapLines() {
+            const svg = document.getElementById('map-lines-container');
+            const wrapper = document.getElementById('map-inner-wrapper');
+            const mapScreen = document.getElementById('screen-map');
+            
+            svg.innerHTML = '';
+            if(mapScreen.classList.contains('hidden')) return;
+            
+            svg.style.height = wrapper.scrollHeight + 'px';
+            const wrapperRect = wrapper.getBoundingClientRect();
+            
+            for (let i = 0; i < mapData.length - 1; i++) {
+                const currentFloorNodes = mapData[i];
+                const nextFloorNodes = mapData[i+1];
+                const isPassedEdge = i < player.currentFloor;
+                const isActiveEdge = i === player.currentFloor;
+
+                currentFloorNodes.forEach(currNode => {
+                    nextFloorNodes.forEach(nextNode => {
+                        const el1 = document.getElementById(`node-${currNode.id}`);
+                        const el2 = document.getElementById(`node-${nextNode.id}`);
+                        
+                        if(el1 && el2) {
+                            const rect1 = el1.getBoundingClientRect();
+                            const rect2 = el2.getBoundingClientRect();
+                            
+                            const x1 = rect1.left + rect1.width / 2 - wrapperRect.left;
+                            const y1 = rect1.top + rect1.height / 2 - wrapperRect.top;
+                            const x2 = rect2.left + rect2.width / 2 - wrapperRect.left;
+                            const y2 = rect2.top + rect2.height / 2 - wrapperRect.top;
+
+                            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                            line.setAttribute('x1', x1);
+                            line.setAttribute('y1', y1);
+                            line.setAttribute('x2', x2);
+                            line.setAttribute('y2', y2);
+                            
+                            if (isPassedEdge) {
+                                line.setAttribute('stroke', '#a7f3d0'); 
+                                line.setAttribute('stroke-width', '3');
+                            } else if (isActiveEdge) {
+                                line.setAttribute('stroke', '#7dd3fc'); 
+                                line.setAttribute('stroke-width', '3');
+                                line.classList.add('map-line'); 
+                            } else {
+                                line.setAttribute('stroke', '#e2e8f0'); 
+                                line.setAttribute('stroke-width', '2');
+                            }
+                            
+                            svg.appendChild(line);
+                        }
+                    });
+                });
+            }
+        }
+
+        function handleNodeClick(nodeData, config) {
+            currentEncounter = { ...nodeData, ...config, originalType: nodeData.type };
+            if (config.type === 'combat') {
+                startCombat(config);
+            } else if (config.type === 'rest') {
+                startRest();
+            }
+        }
+
+        // --- 计时器系统 ---
+        function startTimer(seconds) {
+            const timerContainer = document.getElementById('timer-container');
+            const timerBar = document.getElementById('timer-bar');
+            timerContainer.classList.remove('hidden');
+            
+            timerBar.classList.remove('timer-urgent');
+            timerBar.style.backgroundColor = '#38bdf8'; 
+            timerBar.style.width = '100%';
+            
+            let totalTime = seconds * 1000;
+            let remainingTime = totalTime;
+            let updateInterval = 50;
+
+            combatState.timerInterval = setInterval(() => {
+                remainingTime -= updateInterval;
+                let percent = (remainingTime / totalTime) * 100;
+                timerBar.style.width = percent + '%';
+
+                if (percent <= 30 && !timerBar.classList.contains('timer-urgent')) {
+                    timerBar.classList.add('timer-urgent');
+                }
+
+                if (remainingTime <= 0) {
+                    stopTimer();
+                    handleTimeout();
+                }
+            }, updateInterval);
+        }
+
+        function stopTimer() {
+            if (combatState.timerInterval) {
+                clearInterval(combatState.timerInterval);
+                combatState.timerInterval = null;
+            }
+            document.getElementById('timer-container').classList.add('hidden');
+        }
+
+        // --- 战斗系统与打字机逻辑 ---
+
+        async function runDialogueEffect(prefix, htmlBlock, suffix, speed = 35) {
+            combatState.isTyping = true;
+            const textEl = document.getElementById('dialogue-text');
+            textEl.innerHTML = '';
+            textEl.classList.add('blinking-cursor');
+
+            for (let i = 0; i < prefix.length; i++) {
+                textEl.innerHTML = prefix.substring(0, i + 1);
+                await sleep(speed);
+            }
+
+            let currentHTML = prefix + `<span class="text-sky-500 font-black mx-1 text-2xl md:text-3xl">${htmlBlock}</span>`;
+            textEl.innerHTML = currentHTML;
+            await sleep(speed * 3); 
+
+            for (let i = 0; i < suffix.length; i++) {
+                currentHTML += suffix[i];
+                textEl.innerHTML = currentHTML;
+                await sleep(speed);
+            }
+
+            textEl.classList.remove('blinking-cursor'); 
+            combatState.isTyping = false;
+        }
+
+        async function runSystemFeedback(text, speed = 30) {
+            combatState.isTyping = true;
+            const textEl = document.getElementById('dialogue-text');
+            textEl.innerHTML = '';
+            textEl.classList.add('blinking-cursor');
+
+            for (let i = 0; i < text.length; i++) {
+                textEl.innerHTML = text.substring(0, i + 1);
+                await sleep(speed);
+            }
+            
+            textEl.classList.remove('blinking-cursor');
+            combatState.isTyping = false;
+        }
+
+        function getWordsPoolForEncounter(encounter) {
+            let pool = [];
+            if (encounter.vocab === 'mix') {
+                pool = [
+                    ...vocabularyDB.verbs,
+                    ...vocabularyDB.nouns,
+                    ...vocabularyDB.adjectives,
+                    ...vocabularyDB.loanwords,
+                    ...vocabularyDB.adverbs,
+                    ...vocabularyDB.onomatopoeia
+                ];
+            } else {
+                pool = [...vocabularyDB[encounter.vocab]];
+            }
+            return pool.filter(w => w.level === N1_LEVEL).sort(() => Math.random() - 0.5);
+        }
+
+        function getKanjiSurfaceType(word) {
+            const hasKanji = /[一-龯々]/.test(word);
+            const hasKana = /[ぁ-ゖァ-ヺー]/.test(word);
+            return hasKanji && hasKana ? 'mixed' : 'kanji_only';
+        }
+
+        function getGlobalKanjiPool() {
+            return [
+                ...vocabularyDB.verbs,
+                ...vocabularyDB.nouns,
+                ...vocabularyDB.adjectives,
+                ...vocabularyDB.adverbs
+            ].filter(w => w.level === N1_LEVEL && w.word !== w.kana);
+        }
+
+        function getSharedKanaTailLength(baseKana, candidateKana) {
+            const maxTail = Math.min(3, baseKana.length, candidateKana.length);
+            for (let len = maxTail; len >= 1; len--) {
+                if (baseKana.slice(-len) === candidateKana.slice(-len)) {
+                    return len;
+                }
+            }
+            return 0;
+        }
+
+        function scoreKanjiCandidate(targetWord, candidateWord, currentPoolWords) {
+            let score = 0;
+            if (getKanjiSurfaceType(targetWord.word) === getKanjiSurfaceType(candidateWord.word)) {
+                score += 100;
+            }
+
+            const tailMatchLength = getSharedKanaTailLength(targetWord.kana, candidateWord.kana);
+            if (tailMatchLength === 3) score += 30;
+            else if (tailMatchLength === 2) score += 20;
+            else if (tailMatchLength === 1) score += 10;
+
+            if (targetWord.kana.length === candidateWord.kana.length) {
+                score += 5;
+            }
+
+            if (targetWord.kana[0] === candidateWord.kana[0]) {
+                score += 2;
+            }
+
+            if (currentPoolWords.has(candidateWord.word)) {
+                score += 1;
+            }
+
+            return score;
+        }
+
+        function buildKanjiOptions(wordObj, currentPool) {
+            const correct = wordObj.word;
+            const surfaceType = getKanjiSurfaceType(correct);
+            const currentPoolWords = new Set(currentPool.map(w => w.word));
+
+            const currentPoolKanji = currentPool.filter(w => w.word !== w.kana && w.word !== correct);
+            const globalKanji = getGlobalKanjiPool().filter(w => w.word !== correct);
+
+            const groupedCandidates = [
+                currentPoolKanji.filter(w => getKanjiSurfaceType(w.word) === surfaceType),
+                globalKanji.filter(w => getKanjiSurfaceType(w.word) === surfaceType),
+                globalKanji
+            ];
+
+            const combinedCandidates = [];
+            const seenWords = new Set();
+            groupedCandidates.forEach(group => {
+                group.forEach(candidate => {
+                    if (seenWords.has(candidate.word)) return;
+                    seenWords.add(candidate.word);
+                    combinedCandidates.push(candidate);
+                });
+            });
+
+            const rankedCandidates = combinedCandidates.sort((a, b) => {
+                const scoreDiff = scoreKanjiCandidate(wordObj, b, currentPoolWords) - scoreKanjiCandidate(wordObj, a, currentPoolWords);
+                if (scoreDiff !== 0) return scoreDiff;
+
+                const lengthDiff = Math.abs(a.kana.length - wordObj.kana.length) - Math.abs(b.kana.length - wordObj.kana.length);
+                if (lengthDiff !== 0) return lengthDiff;
+
+                return a.word.localeCompare(b.word, 'ja');
+            });
+
+            const wrongOptions = rankedCandidates.slice(0, 3).map(candidate => candidate.word);
+            if (wrongOptions.length < 3) {
+                return null;
+            }
+
+            return {
+                correct,
+                options: [correct, ...wrongOptions].sort(() => Math.random() - 0.5)
+            };
+        }
+
+        async function startCombat(config) {
+            switchScreen('screen-combat');
+            clearInteractiveFocus();
+            
+            document.getElementById('enemy-name').innerText = config.name;
+            const iconWrapper = document.getElementById('enemy-icon-wrapper');
+            if(config.iconType === 'emoji') {
+                iconWrapper.innerHTML = `<span class="text-7xl md:text-8xl">${config.icon}</span>`;
+            } else {
+                iconWrapper.innerHTML = `<i id="enemy-icon" class="fas ${config.icon} ${config.color}"></i>`;
+            }
+
+            let barColorClass = config.color.replace('text-', 'bg-');
+            if(!barColorClass.includes('bg-')) barColorClass = 'bg-sky-400';
+            document.getElementById('enemy-hp-bar').className = `h-full transition-all duration-300 ${barColorClass}`;
+            
+            const requiredQuestions = config.baseQ + player.currentFloor;
+            combatState.enemyMaxHp = requiredQuestions * player.damage;
+            combatState.enemyHp = combatState.enemyMaxHp;
+            combatState.bossPhaseShifted = false; 
+            updateEnemyHpUI();
+            stopTimer();
+
+            document.getElementById('options-container').classList.add('hidden');
+            document.getElementById('options-container').classList.remove('options-fade-in');
+
+            combatState.wordsQueue = getWordsPoolForEncounter(config);
+
+            document.getElementById('battle-dialogue').style.borderColor = '#bae6fd';
+            
+            const introStr = getDialogue(currentEncounter.originalType, 'intro');
+            await runSystemFeedback(`* 「${introStr}」`);
+            await sleep(800);
+
+            nextTurn();
+        }
+
+        async function nextTurn() {
+            if (combatState.enemyHp <= 0) {
+                winCombat();
+                return;
+            }
+            
+            combatState.isWaitingAnswer = false;
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.classList.add('hidden');
+            optionsContainer.classList.remove('options-fade-in');
+
+            if (combatState.wordsQueue.length === 0) {
+                combatState.wordsQueue = getWordsPoolForEncounter(currentEncounter);
+            }
+
+            const wordObj = combatState.wordsQueue.pop();
+            combatState.currentWord = wordObj;
+
+            // 决定题型：看汉字选意思，还是看假名选汉字 (外来语和拟声拟态只能选意思)
+            const hasKanji = wordObj.word !== wordObj.kana;
+            const isMeaningOnly = currentEncounter.vocab === 'loanwords' || currentEncounter.vocab === 'onomatopoeia';
+            
+            let qType = 'meaning';
+            if (hasKanji && !isMeaningOnly && Math.random() > 0.5) {
+                qType = 'kanji';
+            }
+
+            let correct, options = [];
+            let currentPool = getWordsPoolForEncounter(currentEncounter);
+
+            if (qType === 'kanji') {
+                const kanjiQuestion = buildKanjiOptions(wordObj, currentPool);
+                if (kanjiQuestion) {
+                    correct = kanjiQuestion.correct;
+                    options = kanjiQuestion.options;
+                } else {
+                    qType = 'meaning';
+                }
+            }
+
+            if (qType === 'meaning') {
+                correct = wordObj.meaning;
+                let otherOptions = [...new Set(currentPool.map(w => w.meaning).filter(m => m !== correct))];
+                otherOptions.sort(() => Math.random() - 0.5);
+                let wrongOptions = otherOptions.slice(0, 3);
+                options = [correct, ...wrongOptions].sort(() => Math.random() - 0.5);
+            }
+
+            combatState.currentQType = qType;
+            combatState.currentCorrectAnswer = correct;
+            optionsContainer.innerHTML = '';
+            
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'ui-interactive action-option border border-slate-100 bg-slate-50 md:border-transparent md:bg-transparent';
+                btn.dataset.answer = opt;
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(opt, correct, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            clearInteractiveFocus();
+
+            document.getElementById('battle-dialogue').style.borderColor = '#bae6fd';
+
+            // 动态选择提问台词
+            const askKey = qType === 'kanji' ? 'ask_kanji' : 'ask_meaning';
+            const rawAskLine = getDialogue(currentEncounter.originalType, askKey) || getDialogue(currentEncounter.originalType, 'ask_meaning');
+            
+            const parts = rawAskLine.split('{word}');
+            const prefix = `* 「${parts[0]}`;
+            const suffix = `${parts[1] || ''}」`;
+            
+            const displayTarget = qType === 'kanji' ? wordObj.kana : wordObj.display;
+            await runDialogueEffect(prefix, displayTarget, suffix);
+
+            optionsContainer.classList.remove('hidden');
+            optionsContainer.classList.add('options-fade-in');
+            clearInteractiveFocus();
+            combatState.isWaitingAnswer = true;
+
+            if (currentEncounter.timeLimit) {
+                startTimer(currentEncounter.timeLimit);
+            }
+        }
+
+        async function handleAnswer(selected, correct, btnElement) {
+            if(!combatState.isWaitingAnswer || combatState.isTyping) return; 
+            combatState.isWaitingAnswer = false;
+            stopTimer(); 
+
+            const buttons = document.querySelectorAll('.action-option');
+            buttons.forEach(b => b.disabled = true);
+            const optionsContainer = document.getElementById('options-container');
+
+            if (selected === correct) {
+                player.stats.correct++; 
+                
+                btnElement.classList.add('correct-ans');
+                document.getElementById('battle-dialogue').style.borderColor = '#34d399'; 
+                
+                await sleep(300);
+                optionsContainer.classList.add('hidden');
+                
+                const correctLine = getDialogue(currentEncounter.originalType, 'correct');
+                await runSystemFeedback(`* 「${correctLine}」`);
+                
+                combatState.enemyHp -= player.damage;
+                showFloatingText('-' + player.damage, 'enemy-container', '#10b981');
+                
+                const wrapper = document.getElementById('enemy-icon-wrapper');
+                wrapper.classList.add('shake');
+                setTimeout(() => wrapper.classList.remove('shake'), 400);
+
+                updateEnemyHpUI();
+                await sleep(800);
+
+                if (currentEncounter.originalType === 'boss' && !combatState.bossPhaseShifted) {
+                    const hpPercent = (combatState.enemyHp / combatState.enemyMaxHp) * 100;
+                    if (hpPercent <= 50) {
+                        combatState.bossPhaseShifted = true;
+                        document.getElementById('battle-dialogue').style.borderColor = '#fb7185';
+                        await runSystemFeedback(`* 柴犬的眼神突然变得异常犀利...`);
+                        await sleep(1500);
+                        const phaseShiftLine = getDialogue('boss_serious', 'intro');
+                        await runSystemFeedback(`* 「${phaseShiftLine}」`);
+                        await sleep(1500);
+                    }
+                }
+
+                nextTurn();
+
+            } else {
+                player.stats.wrong++; 
+                
+                btnElement.classList.add('wrong-ans');
+                document.getElementById('battle-dialogue').style.borderColor = '#fb7185'; 
+                
+                buttons.forEach(b => {
+                    if(b.dataset.answer === correct) {
+                        b.classList.add('correct-ans');
+                    }
+                });
+
+                await sleep(800); 
+                optionsContainer.classList.add('hidden');
+
+                let damageTaken = 1;
+                if (currentEncounter.originalType === 'elite') {
+                    damageTaken = 2;
+                } else if (currentEncounter.originalType === 'boss') {
+                    // Boss 的伤害动态化判定：根据当前问的词是字数长的还是短的
+                    const checkLength = combatState.currentQType === 'kanji' ? combatState.currentWord.kana.length : combatState.currentWord.word.length;
+                    damageTaken = checkLength >= 3 ? 3 : 2;
+                }
+                player.hp -= damageTaken;
+                
+                const wrongLine = getDialogue(currentEncounter.originalType, 'wrong', { correct: correct });
+                await runSystemFeedback(`* 「${wrongLine}」`);
+                
+                showFloatingText('-' + damageTaken, 'top-bar', '#ef4444');
+                updatePlayerUI();
+
+                document.body.classList.add('shake');
+                setTimeout(() => document.body.classList.remove('shake'), 400);
+
+                await sleep(1500);
+
+                if (player.hp <= 0) {
+                    await runSystemFeedback(`* 集中力涣散，似乎到了极限...`);
+                    await sleep(1000);
+                    gameOver();
+                } else {
+                    nextTurn();
+                }
+            }
+        }
+
+        async function handleTimeout() {
+            if(!combatState.isWaitingAnswer) return;
+            combatState.isWaitingAnswer = false;
+            player.stats.wrong++; 
+            
+            const optionsContainer = document.getElementById('options-container');
+            const buttons = document.querySelectorAll('.action-option');
+            buttons.forEach(b => b.disabled = true);
+            
+            const correct = combatState.currentCorrectAnswer;
+            buttons.forEach(b => {
+                if(b.dataset.answer === correct) {
+                    b.classList.add('correct-ans');
+                }
+            });
+
+            document.getElementById('battle-dialogue').style.borderColor = '#fb7185';
+            await sleep(600); 
+            optionsContainer.classList.add('hidden');
+
+            let damageTaken = 1;
+            if (currentEncounter.originalType === 'elite') {
+                damageTaken = 2;
+            } else if (currentEncounter.originalType === 'boss') {
+                const checkLength = combatState.currentQType === 'kanji' ? combatState.currentWord.kana.length : combatState.currentWord.word.length;
+                damageTaken = checkLength >= 3 ? 3 : 2;
+            }
+            player.hp -= damageTaken;
+            
+            const timeoutLine = getDialogue(currentEncounter.originalType, 'timeout', { correct: correct });
+            await runSystemFeedback(`* 「${timeoutLine}」`);
+            
+            showFloatingText('-' + damageTaken, 'top-bar', '#ef4444');
+            updatePlayerUI();
+
+            document.body.classList.add('shake');
+            setTimeout(() => document.body.classList.remove('shake'), 400);
+
+            await sleep(1500);
+
+            if (player.hp <= 0) {
+                await runSystemFeedback(`* 集中力涣散，似乎到了极限...`);
+                await sleep(1000);
+                gameOver();
+            } else {
+                nextTurn();
+            }
+        }
+
+        function updateEnemyHpUI() {
+            const hpPercent = Math.max(0, (combatState.enemyHp / combatState.enemyMaxHp) * 100);
+            document.getElementById('enemy-hp-bar').style.width = `${hpPercent}%`;
+            
+            const remainingQ = Math.ceil(combatState.enemyHp / player.damage);
+            const totalQ = Math.ceil(combatState.enemyMaxHp / player.damage);
+            document.getElementById('enemy-hp-text').innerText = `${Math.max(0, remainingQ)}/${totalQ}`;
+        }
+
+        function updatePlayerUI() {
+            const hpPercent = Math.max(0, (player.hp / player.maxHp) * 100);
+            document.getElementById('player-hp-bar').style.width = `${hpPercent}%`;
+            document.getElementById('player-hp-text').innerText = `${Math.max(0, player.hp)}/${player.maxHp}`;
+        }
+
+        function showFloatingText(text, containerId, color) {
+            const container = document.getElementById(containerId);
+            const el = document.createElement('div');
+            el.className = 'damage-text';
+            el.innerText = text;
+            el.style.color = color;
+            el.style.left = `calc(50% + ${(Math.random() - 0.5) * 40}px)`;
+            
+            if(containerId === 'top-bar') {
+                el.style.top = '50px';
+                el.style.left = '20px';
+            } else {
+                el.style.top = '10%';
+            }
+            container.appendChild(el);
+            setTimeout(() => el.remove(), 1000);
+        }
+
+        // --- 营地系统 ---
+        function startRest() {
+            switchScreen('screen-rest');
+        }
+
+        function restAction(type) {
+            if (type === 'heal') {
+                const healAmount = Math.floor(player.maxHp * 0.3); 
+                player.hp = Math.min(player.maxHp, player.hp + healAmount);
+                updatePlayerUI();
+                
+                document.getElementById('modal-icon').className = 'fas fa-apple-whole text-3xl';
+                showModal('回復完了', `集中力が ${healAmount} ポイント回復しました。`);
+            } else if (type === 'review') {
+                let pool = getWordsPoolForEncounter({vocab: 'mix'});
+                let words = pool.slice(0, 3).map(w => `<span class="text-sky-500 font-bold">${w.word}</span> : ${w.meaning}`).join('<br>');
+                
+                document.getElementById('modal-icon').className = 'fas fa-book-open text-3xl';
+                showModal('記憶の整理', `<div class="text-left text-sm mt-4 leading-loose bg-slate-50 p-4 rounded-xl border border-slate-100">${words}<br>...</div>`);
+            }
+        }
+
+        // --- 结算与流转 ---
+        function winCombat() {
+            stopTimer(); 
+            if (currentEncounter.originalType === 'boss') {
+                showResultScreen(true);
+            } else {
+                document.getElementById('modal-icon').className = 'fas fa-flag text-3xl text-emerald-500';
+                showModal('ステージクリア！', '見事に試練を突破しました！<br>次のルートを選びましょう。');
+            }
+        }
+
+        function gameOver() {
+            showResultScreen(false);
+        }
+
+        function showModal(title, desc, isEndGame = false, isPhaseClear = false) {
+            document.getElementById('modal-title').innerHTML = title;
+            document.getElementById('modal-desc').innerHTML = desc; 
+            
+            const btn = document.getElementById('modal-btn');
+            if (isEndGame) {
+                btn.innerText = 'ホームへ';
+                btn.onclick = returnToHomeFromResult;
+            } else if (isPhaseClear) {
+                btn.innerText = '次の階層へ進む';
+                btn.onclick = nextPhase;
+            } else {
+                btn.innerText = '進む';
+                btn.onclick = returnToMap;
+            }
+            
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        }
+
+        function returnToMap() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+            player.currentFloor++;
+            renderMap();
+            switchScreen('screen-map');
+        }
+
+        // ==================== 评分与历史记录系统 ====================
+
+        function calculateScore() {
+            const base = player.stats.correct * 100;
+            const penalty = player.stats.wrong * 30;
+            const hpBonus = player.hp * 20;
+            let total = Math.max(0, base - penalty + hpBonus);
+
+            let rank = 'C';
+            const totalQuestions = player.stats.correct + player.stats.wrong;
+            const accuracy = totalQuestions > 0 ? (player.stats.correct / totalQuestions) : 0;
+            
+            if (accuracy >= 0.9 && player.hp >= 12) rank = 'S';
+            else if (accuracy >= 0.75) rank = 'A';
+            else if (accuracy >= 0.5) rank = 'B';
+
+            return { score: total, rank, accuracy };
+        }
+
+        function showResultScreen(isWin) {
+            document.getElementById('top-bar').classList.add('hidden');
+            const resultData = calculateScore();
+            
+            document.getElementById('result-title').innerText = isWin ? '森の試練 完了' : '森の試練 失敗';
+            document.getElementById('result-subtitle').innerText = isWin ? '素晴らしい成績です！' : '次回は頑張りましょう。';
+            
+            const rankEl = document.getElementById('result-rank');
+            rankEl.innerText = resultData.rank;
+            rankEl.className = 'text-8xl font-black drop-shadow-md mb-6 transform scale-110 ';
+            if(resultData.rank === 'S') rankEl.className += 'text-amber-400';
+            else if(resultData.rank === 'A') rankEl.className += 'text-emerald-400';
+            else if(resultData.rank === 'B') rankEl.className += 'text-sky-400';
+            else rankEl.className += 'text-slate-400';
+
+            document.getElementById('result-correct').innerText = player.stats.correct;
+            document.getElementById('result-wrong').innerText = player.stats.wrong;
+            document.getElementById('result-hp').innerText = player.hp;
+            document.getElementById('result-score').innerText = resultData.score;
+
+            saveHistory({
+                date: new Date().toLocaleString('ja-JP', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
+                score: resultData.score,
+                rank: resultData.rank,
+                isWin: isWin
+            });
+
+            switchScreen('screen-result');
+        }
+
+        function saveHistory(record) {
+            let history = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY)) || [];
+            history.unshift(record); 
+            if(history.length > 20) history.pop(); 
+            localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+        }
+
+        function showHistory() {
+            const historyList = document.getElementById('history-list');
+            let history = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY)) || [];
+            
+            historyList.innerHTML = '';
+            if(history.length === 0) {
+                historyList.innerHTML = '<p class="text-center text-slate-400 mt-4 text-sm font-bold">まだ記録がありません</p>';
+            } else {
+                history.forEach(record => {
+                    let statusHtml = record.isWin ? `<span class="text-emerald-500"><i class="fas fa-check-circle mr-1"></i>クリア</span>` : `<span class="text-slate-400"><i class="fas fa-times-circle mr-1"></i>失敗</span>`;
+                    let rankColor = record.rank === 'S' ? 'text-amber-400' : (record.rank === 'A' ? 'text-emerald-400' : (record.rank === 'B' ? 'text-sky-400' : 'text-slate-400'));
+                    
+                    historyList.innerHTML += `
+                        <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <div>
+                                <div class="text-sm font-bold text-slate-700">${statusHtml}</div>
+                                <div class="text-xs text-slate-400 mt-1">${record.date}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-black ${rankColor} leading-none">${record.rank}</div>
+                                <div class="text-[10px] text-slate-500 font-bold mt-1">${record.score} pts</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('modal-history').classList.remove('hidden');
+        }
+
+        function hideHistory() {
+            document.getElementById('modal-history').classList.add('hidden');
+        }
+
+        function returnToHomeFromResult() {
+            switchScreen('screen-start');
+        }
+
+    </script>
+</body>
+</html>

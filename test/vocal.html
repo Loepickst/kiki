@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Slay the Vocab - フレッシュ版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0fdf4; 
+            background-image: linear-gradient(135deg, #e0f2fe 0%, #dcfce7 100%);
+            color: #334155; 
+            font-family: 'Noto Sans JP', sans-serif;
+            overflow: hidden; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .map-node {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 10;
+        }
+        .active-node {
+            animation: pulse-ring 2s infinite;
+            transform: scale(1.1);
+        }
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.5); border-color: #7dd3fc; }
+            70% { box-shadow: 0 0 0 12px rgba(56, 189, 248, 0); border-color: #38bdf8; }
+            100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); border-color: #7dd3fc; }
+        }
+
+        .shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(3px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-5px, 0, 0); }
+            40%, 60% { transform: translate3d(5px, 0, 0); }
+        }
+        
+        .damage-text {
+            position: absolute;
+            font-weight: 900;
+            font-size: 2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            animation: floatUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            20% { transform: translateY(-15px) scale(1.1); }
+            100% { opacity: 0; transform: translateY(-50px) scale(1); }
+        }
+
+        ruby {
+            ruby-align: center;
+        }
+        rt {
+            font-size: 0.5em;
+            color: #64748b;
+            font-weight: bold;
+            transform: translateY(-0.1em);
+        }
+
+        .map-line {
+            stroke: #bae6fd;
+            stroke-dasharray: 6;
+            animation: dash 15s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: 1000; }
+        }
+
+        .battle-dialogue-box {
+            background-color: #ffffff;
+            border: 3px solid #bae6fd; 
+            border-radius: 1.25rem;
+            min-height: 180px;
+            box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.1);
+            position: relative;
+            padding: 1.5rem;
+            transition: border-color 0.3s;
+        }
+
+        .typewriter-text {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: #334155; 
+            font-weight: bold;
+        }
+
+        .blinking-cursor::after {
+            content: '▎';
+            color: #38bdf8;
+            animation: blink 1s step-end infinite;
+            margin-left: 2px;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .options-fade-in {
+            animation: fadeIn 0.4s ease forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .action-option {
+            background: transparent;
+            color: #64748b; 
+            text-align: left;
+            padding: 0.75rem 1rem 0.75rem 2.25rem;
+            font-size: 1rem;
+            font-weight: 700;
+            position: relative;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        
+        .action-option::before {
+            content: '👉';
+            position: absolute;
+            left: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            font-size: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        .action-option:hover:not(:disabled) {
+            color: #0ea5e9; 
+            background-color: #f0f9ff; 
+            cursor: pointer;
+        }
+        .action-option:hover:not(:disabled)::before {
+            opacity: 1;
+        }
+        
+        .action-option.correct-ans {
+            color: #059669; 
+            background-color: #d1fae5; 
+        }
+        .action-option.correct-ans::before {
+            content: '✅';
+            opacity: 1;
+        }
+        .action-option.wrong-ans {
+            color: #e11d48; 
+            background-color: #ffe4e6; 
+        }
+        .action-option.wrong-ans::before {
+            content: '❌';
+            opacity: 1;
+        }
+
+        .timer-progress {
+            transition: width 0.1s linear, background-color 0.3s;
+        }
+        .timer-urgent {
+            background-color: #ef4444 !important; 
+            animation: pulse-timer 0.5s infinite alternate;
+        }
+        @keyframes pulse-timer {
+            from { opacity: 1; }
+            to { opacity: 0.6; }
+        }
+
+        .animal-float {
+            animation: floatUpDown 3s ease-in-out infinite;
+        }
+        @keyframes floatUpDown {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .result-enter {
+            animation: slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 漫画风浮动气泡样式 */
+        .comic-bubble {
+            position: absolute;
+            background: white;
+            border: 2px solid #bae6fd; 
+            border-radius: 1rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: bold;
+            color: #0284c7; 
+            box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.15);
+            pointer-events: none;
+            z-index: 30;
+            opacity: 0;
+            animation: bubble-pop 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            max-width: 16rem;
+            text-align: center;
+        }
+        .comic-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -7px;
+            border-width: 7px 7px 0;
+            border-style: solid;
+            border-color: #bae6fd transparent transparent transparent;
+        }
+        .comic-bubble.left-side::after {
+            left: 20%;
+        }
+        .comic-bubble.right-side::after {
+            right: 20%;
+        }
+        @keyframes bubble-pop {
+            0% { opacity: 0; transform: scale(0.8) translateY(10px); }
+            10% { opacity: 1; transform: scale(1.1) translateY(-5px); }
+            20% { opacity: 1; transform: scale(1) translateY(0); }
+            80% { opacity: 1; transform: scale(1) translateY(-10px); }
+            100% { opacity: 0; transform: scale(0.8) translateY(-20px); }
+        }
+
+        .bounce-gentle {
+            animation: bounce-gentle 2s infinite;
+        }
+        @keyframes bounce-gentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] w-screen relative overflow-hidden flex flex-col">
+
+    <div id="top-bar" class="hidden absolute top-0 left-0 w-full flex justify-center items-center p-3 md:p-4 bg-white/70 backdrop-blur-md border-b border-sky-100 z-50">
+        <div class="flex justify-between items-center w-full max-w-3xl">
+            <div class="flex items-center space-x-3 md:space-x-4">
+                <div class="text-amber-500 font-bold flex items-center text-base md:text-lg">
+                    <i class="fas fa-lightbulb mr-2 text-amber-400"></i>
+                    <span class="mr-2 font-bold text-slate-500 text-sm hidden md:inline">集中力</span>
+                    <span id="player-hp-text">20/20</span>
+                </div>
+                <div class="w-32 md:w-48 h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                    <div id="player-hp-bar" class="h-full bg-amber-400 transition-all duration-300" style="width: 100%"></div>
+                </div>
+            </div>
+            <div class="text-sky-600 font-bold text-sm md:text-base bg-sky-50 px-3 py-1 rounded-full border border-sky-100">
+                第 <span id="current-phase-text" class="text-sky-700">1</span> 階層 - ステージ <span id="current-floor-text" class="ml-1 text-sky-700">1</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 开始界面 -->
+    <div id="screen-start" class="flex flex-col items-center justify-center w-full h-full relative z-10 px-4">
+        <div class="w-24 h-24 bg-white rounded-3xl shadow-lg flex items-center justify-center mb-6 text-sky-400 relative">
+            <i class="fas fa-leaf text-5xl"></i>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-black text-slate-700 mb-4 tracking-widest text-center">
+            言葉の森
+        </h1>
+        <h2 class="text-sm md:text-base text-sky-500 tracking-[0.2em] mb-10 font-bold text-center">VOCABULARY FOREST</h2>
+        <p class="text-slate-500 mb-10 max-w-md text-center leading-relaxed text-sm md:text-base font-medium bg-white/50 p-4 rounded-xl backdrop-blur-sm">
+            動物たちから出題される問題を解きながら、<br>森の奥の「柴犬ボス」を目指そう！
+        </p>
+        <div class="flex flex-col space-y-4 w-full max-w-xs">
+            <button onclick="startGame()" class="w-full px-8 py-4 bg-sky-500 hover:bg-sky-400 text-white text-lg font-bold rounded-2xl shadow-lg shadow-sky-200 transition-all transform hover:-translate-y-1">
+                出発する (スタート)
+            </button>
+            <button onclick="showHistory()" class="w-full px-8 py-3 bg-white border-2 border-sky-200 hover:border-sky-300 text-sky-600 text-base font-bold rounded-2xl shadow-sm transition-all">
+                <i class="fas fa-history mr-2"></i>成績履歴
+            </button>
+        </div>
+    </div>
+
+    <!-- 历史记录面板 -->
+    <div id="modal-history" class="hidden absolute inset-0 bg-slate-900/40 z-[100] flex items-center justify-center backdrop-blur-sm px-4">
+        <div class="bg-white rounded-3xl shadow-2xl relative overflow-hidden w-full max-w-md max-h-[80vh] flex flex-col">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h2 class="text-xl font-black text-slate-700"><i class="fas fa-medal text-amber-400 mr-2"></i>過去の成績</h2>
+                <button onclick="hideHistory()" class="text-slate-400 hover:text-slate-600 p-2"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div id="history-list" class="p-6 overflow-y-auto flex-1 flex flex-col space-y-3">
+            </div>
+        </div>
+    </div>
+
+    <!-- 地图界面 -->
+    <div id="screen-map" class="hidden absolute inset-0 w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar scroll-smooth bg-gradient-to-b from-[#e0f2fe] to-[#dcfce7] z-10">
+        <div class="fixed top-[4rem] left-0 w-full text-center z-40 pointer-events-none mt-2">
+            <span class="text-sky-600 font-bold text-sm tracking-widest drop-shadow-md bg-white/70 px-6 py-2 rounded-full backdrop-blur-md border border-white/50">
+                次のルートを選択してください
+            </span>
+        </div>
+        <div id="map-inner-wrapper" class="relative w-full max-w-2xl mx-auto min-h-full flex flex-col pt-36 pb-48 px-4">
+            <svg id="map-lines-container" class="absolute top-0 left-0 w-full h-full pointer-events-none z-10"></svg>
+            <div id="map-container" class="mt-auto mb-16 flex flex-col w-full space-y-12 md:space-y-16 z-20 relative"></div>
+        </div>
+    </div>
+
+    <!-- 战斗界面 -->
+    <div id="screen-combat" class="hidden absolute inset-0 w-full h-full overflow-y-auto no-scrollbar flex-col items-center justify-between pt-20 pb-6 px-4 md:pt-24 md:pb-8 bg-gradient-to-b from-[#e0f2fe] to-[#dcfce7] z-10">
+        <div class="w-full max-w-3xl mx-auto flex flex-col items-center justify-between min-h-full">
+            <div id="enemy-container" class="flex flex-col items-center mt-6 md:mt-10 relative w-full flex-shrink-0 animal-float">
+                <div class="relative mb-4 md:mb-6 flex justify-center items-center w-32 h-32 md:w-40 md:h-40 bg-white rounded-full shadow-lg border-4 border-white">
+                    <div id="enemy-icon-wrapper" class="text-6xl md:text-7xl transform transition-transform duration-300">
+                        <i id="enemy-icon" class="fas fa-cat text-amber-400"></i>
+                    </div>
+                </div>
+                <div class="text-center bg-white px-4 py-1.5 rounded-full shadow-sm border border-slate-100 mb-4">
+                    <h2 id="enemy-name" class="text-sm md:text-base font-bold text-slate-600 tracking-wider">名詞ネコ</h2>
+                </div>
+                <div class="flex flex-col items-center space-y-1 w-40 md:w-48">
+                    <div class="flex justify-between w-full text-[10px] md:text-xs font-bold text-slate-400 px-1">
+                        <span>達成度</span>
+                        <span id="enemy-hp-text">30/30</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-slate-200 rounded-full relative overflow-hidden">
+                        <div id="enemy-hp-bar" class="h-full bg-sky-400 transition-all duration-300" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 min-h-[2rem]"></div>
+
+            <div class="w-full max-w-2xl flex-shrink-0">
+                <div id="timer-container" class="w-full h-1.5 bg-slate-200 rounded-t-xl hidden overflow-hidden shadow-inner">
+                    <div id="timer-bar" class="h-full bg-sky-400 timer-progress" style="width: 100%"></div>
+                </div>
+                <div id="battle-dialogue" class="battle-dialogue-box flex flex-col">
+                    <div id="dialogue-text" class="typewriter-text flex-1 min-h-[4.5rem]"></div>
+                    <div id="options-container" class="hidden grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 mt-4 md:mt-6 border-t border-slate-100 pt-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 营地界面 -->
+    <div id="screen-rest" class="hidden absolute inset-0 w-full h-full overflow-y-auto no-scrollbar flex-col items-center justify-center pt-16 px-4 bg-gradient-to-b from-[#e0f2fe] to-[#dcfce7] z-10">
+        <div class="w-24 h-24 bg-teal-50 border-4 border-white rounded-full flex items-center justify-center mb-6 shadow-md animal-float">
+            <i class="fas fa-paw text-5xl text-teal-400"></i>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-black mb-4 tracking-widest text-slate-700">休憩の木陰</h2>
+        <p class="text-slate-500 mb-8 md:mb-12 text-center max-w-md leading-relaxed text-sm md:text-base">
+            静かな木陰で少し休みましょう。<br>集中力を回復するか、次の問題を予習できます。
+        </p>
+        <div class="flex flex-col space-y-4 w-full max-w-md">
+            <button onclick="restAction('heal')" class="flex items-center p-4 md:p-5 bg-white border border-slate-200 rounded-2xl hover:border-teal-400 hover:bg-teal-50 transition-all shadow-sm group text-left">
+                <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mr-4 group-hover:bg-teal-200 transition-colors">
+                    <i class="fas fa-seedling text-xl text-teal-500"></i>
+                </div>
+                <div>
+                    <div class="font-bold text-slate-700 text-lg">深呼吸をする</div>
+                    <div class="text-xs text-slate-500 mt-1">集中力を 30% 回復します</div>
+                </div>
+            </button>
+            <button onclick="restAction('review')" class="flex items-center p-4 md:p-5 bg-white border border-slate-200 rounded-2xl hover:border-sky-400 hover:bg-sky-50 transition-all shadow-sm group text-left">
+                <div class="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center mr-4 group-hover:bg-sky-200 transition-colors">
+                    <i class="fas fa-book-open text-xl text-sky-500"></i>
+                </div>
+                <div>
+                    <div class="font-bold text-slate-700 text-lg">ノートを見る</div>
+                    <div class="text-xs text-slate-500 mt-1">次の単語を安全に確認します</div>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <!-- 小弹窗 -->
+    <div id="modal-overlay" class="hidden absolute inset-0 bg-slate-900/40 z-[100] flex items-center justify-center backdrop-blur-sm px-4">
+        <div class="bg-white p-8 md:p-10 text-center max-w-sm w-full rounded-3xl shadow-2xl relative overflow-hidden">
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i id="modal-icon" class="fas fa-flag text-3xl"></i>
+            </div>
+            <h2 id="modal-title" class="text-2xl md:text-3xl font-black mb-3 text-slate-700 tracking-wide">ステージクリア！</h2>
+            <p id="modal-desc" class="text-slate-500 mb-8 leading-relaxed text-sm md:text-base">見事に試練を突破しました！<br>次のルートを選びましょう。</p>
+            <button id="modal-btn" onclick="returnToMap()" class="w-full py-3.5 bg-sky-500 hover:bg-sky-400 text-white font-bold rounded-xl transition-all shadow-md">
+                続ける
+            </button>
+        </div>
+    </div>
+
+    <!-- 结算面板 -->
+    <div id="screen-result" class="hidden absolute inset-0 w-full h-full overflow-y-auto bg-gradient-to-b from-slate-800 to-slate-900 z-[110] flex-col items-center justify-center px-4 py-8">
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden result-enter">
+            <div id="result-header" class="py-8 text-center bg-sky-50 border-b border-slate-100">
+                <h2 id="result-title" class="text-2xl font-black text-slate-700 tracking-widest mb-1">森の試練 完了</h2>
+                <p id="result-subtitle" class="text-sm font-bold text-sky-500">お疲れ様でした！</p>
+            </div>
+            
+            <div class="px-6 py-8 flex flex-col items-center">
+                <div class="text-slate-400 text-sm font-bold mb-2 tracking-widest">総合評価</div>
+                <div id="result-rank" class="text-8xl font-black text-amber-400 drop-shadow-md mb-6 transform scale-110">S</div>
+                
+                <div class="w-full bg-slate-50 rounded-2xl p-4 space-y-3 border border-slate-100">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-500 font-bold"><i class="fas fa-check-circle text-emerald-400 mr-2"></i>正解数</span>
+                        <span id="result-correct" class="font-black text-slate-700">12</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-500 font-bold"><i class="fas fa-times-circle text-rose-400 mr-2"></i>ミス数</span>
+                        <span id="result-wrong" class="font-black text-slate-700">2</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-500 font-bold"><i class="fas fa-lightbulb text-amber-400 mr-2"></i>残り集中力</span>
+                        <span id="result-hp" class="font-black text-slate-700">15</span>
+                    </div>
+                    <div class="border-t border-slate-200 pt-3 mt-1 flex justify-between items-center">
+                        <span class="text-slate-600 font-black">トータルスコア</span>
+                        <span id="result-score" class="font-black text-xl text-sky-600">1500</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 bg-slate-50 border-t border-slate-100">
+                <button onclick="returnToHomeFromResult()" class="w-full py-4 bg-sky-500 hover:bg-sky-400 text-white text-lg font-bold rounded-xl shadow-md transition-all">
+                    ホームに戻る
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 词库数据 (分层 N3 -> N2 -> N1)，增加了 kana 字段用于支持选汉字题 ---
+        const vocabularyDB = {
+            verbs: [
+                { word: '食べる', display: '<ruby>食<rt>た</rt></ruby>べる', kana: 'たべる', meaning: '吃', level: 1 },
+                { word: '行く', display: '<ruby>行<rt>い</rt></ruby>く', kana: 'いく', meaning: '去', level: 1 },
+                { word: '覚える', display: '<ruby>覚<rt>おぼ</rt></ruby>える', kana: 'おぼえる', meaning: '记住，感觉', level: 1 },
+                { word: '働く', display: '<ruby>働<rt>はたら</rt></ruby>く', kana: 'はたらく', meaning: '工作', level: 1 },
+                { word: '諦める', display: '<ruby>諦<rt>あきら</rt></ruby>める', kana: 'あきらめる', meaning: '放弃', level: 1 },
+                { word: '始める', display: '<ruby>始<rt>はじ</rt></ruby>める', kana: 'はじめる', meaning: '开始', level: 1 },
+                { word: '終わる', display: '<ruby>終<rt>お</rt></ruby>わる', kana: 'おわる', meaning: '结束', level: 1 },
+                { word: '考える', display: '<ruby>考<rt>かんが</rt></ruby>える', kana: 'かんがえる', meaning: '思考', level: 1 },
+                { word: '忘れる', display: '<ruby>忘<rt>わす</rt></ruby>れる', kana: 'わすれる', meaning: '忘记', level: 1 },
+                { word: '頑張る', display: '<ruby>頑<rt>がん</rt></ruby><ruby>張<rt>ば</rt></ruby>る', kana: 'がんばる', meaning: '努力', level: 1 },
+                { word: '余る', display: '<ruby>余<rt>あま</rt></ruby>る', kana: 'あまる', meaning: '剩余', level: 2 },
+                { word: '抱える', display: '<ruby>抱<rt>かか</rt></ruby>える', kana: 'かかえる', meaning: '承担，抱', level: 2 },
+                { word: '越える', display: '<ruby>越<rt>こ</rt></ruby>える', kana: 'こえる', meaning: '越过', level: 2 },
+                { word: '支える', display: '<ruby>支<rt>ささ</rt></ruby>える', kana: 'ささえる', meaning: '支撑', level: 2 },
+                { word: '削る', display: '<ruby>削<rt>けず</rt></ruby>る', kana: 'けずる', meaning: '削减', level: 2 },
+                { word: '促す', display: '<ruby>促<rt>うなが</rt></ruby>す', kana: 'うながす', meaning: '促使，催促', level: 3 },
+                { word: '阻む', display: '<ruby>阻<rt>はば</rt></ruby>む', kana: 'はばむ', meaning: '阻挡', level: 3 },
+                { word: '企てる', display: '<ruby>企<rt>くわだ</rt></ruby>てる', kana: 'くわだてる', meaning: '企图，策划', level: 3 },
+                { word: '損なう', display: '<ruby>損<rt>そこ</rt></ruby>なう', kana: 'そこなう', meaning: '损害', level: 3 },
+                { word: '欺く', display: '<ruby>欺<rt>あざむ</rt></ruby>く', kana: 'あざむく', meaning: '欺骗', level: 3 }
+            ],
+            nouns: [
+                { word: '約束', display: '<ruby>約<rt>やく</rt></ruby><ruby>束<rt>そく</rt></ruby>', kana: 'やくそく', meaning: '约定', level: 1 },
+                { word: '経験', display: '<ruby>経<rt>けい</rt></ruby><ruby>験<rt>けん</rt></ruby>', kana: 'けいけん', meaning: '经验', level: 1 },
+                { word: '準備', display: '<ruby>準<rt>じゅん</rt></ruby><ruby>備<rt>び</rt></ruby>', kana: 'じゅんび', meaning: '准备', level: 1 },
+                { word: '影響', display: '<ruby>影<rt>えい</rt></ruby><ruby>響<rt>きょう</rt></ruby>', kana: 'えいきょう', meaning: '影响', level: 1 },
+                { word: '感情', display: '<ruby>感<rt>かん</rt></ruby><ruby>情<rt>じょう</rt></ruby>', kana: 'かんじょう', meaning: '感情，情绪', level: 1 },
+                { word: '条件', display: '<ruby>条<rt>じょう</rt></ruby><ruby>件<rt>けん</rt></ruby>', kana: 'じょうけん', meaning: '条件', level: 2 },
+                { word: '現象', display: '<ruby>現<rt>げん</rt></ruby><ruby>象<rt>しょう</rt></ruby>', kana: 'げんしょう', meaning: '现象', level: 2 },
+                { word: '評価', display: '<ruby>評<rt>ひょう</rt></ruby><ruby>価<rt>か</rt></ruby>', kana: 'ひょうか', meaning: '评价', level: 2 },
+                { word: '資源', display: '<ruby>資<rt>し</rt></ruby><ruby>源<rt>げん</rt></ruby>', kana: 'しげん', meaning: '资源', level: 2 },
+                { word: '背景', display: '<ruby>背<rt>はい</rt></ruby><ruby>景<rt>けい</rt></ruby>', kana: 'はいけい', meaning: '背景', level: 2 },
+                { word: '理由', display: '<ruby>理<rt>り</rt></ruby><ruby>由<rt>ゆう</rt></ruby>', kana: 'りゆう', meaning: '理由', level: 1 },
+                { word: '結果', display: '<ruby>結<rt>けっ</rt></ruby><ruby>果<rt>か</rt></ruby>', kana: 'けっか', meaning: '结果', level: 1 },
+                { word: '目的', display: '<ruby>目<rt>もく</rt></ruby><ruby>的<rt>てき</rt></ruby>', kana: 'もくてき', meaning: '目的', level: 1 },
+                { word: '知識', display: '<ruby>知<rt>ち</rt></ruby><ruby>識<rt>しき</rt></ruby>', kana: 'ちしき', meaning: '知识', level: 1 },
+                { word: '環境', display: '<ruby>環<rt>かん</rt></ruby><ruby>境<rt>きょう</rt></ruby>', kana: 'かんきょう', meaning: '环境', level: 1 },
+                { word: '軌道', display: '<ruby>軌<rt>き</rt></ruby><ruby>道<rt>どう</rt></ruby>', kana: 'きどう', meaning: '轨道', level: 3 },
+                { word: '枠組み', display: '<ruby>枠<rt>わく</rt></ruby><ruby>組<rt>ぐ</rt></ruby>み', kana: 'わくぐみ', meaning: '框架', level: 3 },
+                { word: '核心', display: '<ruby>核<rt>かく</rt></ruby><ruby>心<rt>しん</rt></ruby>', kana: 'かくしん', meaning: '核心', level: 3 },
+                { word: '愛着', display: '<ruby>愛<rt>あい</rt></ruby><ruby>着<rt>ちゃく</rt></ruby>', kana: 'あいちゃく', meaning: '留恋，眷恋', level: 3 },
+                { word: '葛藤', display: '<ruby>葛<rt>かっ</rt></ruby><ruby>藤<rt>とう</rt></ruby>', kana: 'かっとう', meaning: '纠葛，矛盾', level: 3 }
+            ],
+            adjectives: [
+                { word: '厳しい', display: '<ruby>厳<rt>きび</rt></ruby>しい', kana: 'きびしい', meaning: '严格的', level: 1 },
+                { word: '珍しい', display: '<ruby>珍<rt>めずら</rt></ruby>しい', kana: 'めずらしい', meaning: '罕见的', level: 1 },
+                { word: '詳しい', display: '<ruby>詳<rt>くわ</rt></ruby>しい', kana: 'くわしい', meaning: '详细的', level: 1 },
+                { word: '懐かしい', display: '<ruby>懐<rt>なつ</rt></ruby>かしい', kana: 'なつかしい', meaning: '怀念的', level: 1 },
+                { word: '悔しい', display: '<ruby>悔<rt>くや</rt></ruby>しい', kana: 'くやしい', meaning: '懊悔的', level: 1 },
+                { word: '等しい', display: '<ruby>等<rt>ひと</rt></ruby>しい', kana: 'ひとしい', meaning: '相等的', level: 2 },
+                { word: '貧しい', display: '<ruby>貧<rt>まず</rt></ruby>しい', kana: 'まずしい', meaning: '贫穷的', level: 2 },
+                { word: '惜しい', display: '<ruby>惜<rt>お</rt></ruby>しい', kana: 'おしい', meaning: '惋惜的', level: 2 },
+                { word: '怪しい', display: '<ruby>怪<rt>あや</rt></ruby>しい', kana: 'あやしい', meaning: '可疑的', level: 2 },
+                { word: '険しい', display: '<ruby>険<rt>けわ</rt></ruby>しい', kana: 'けわしい', meaning: '险峻的', level: 2 },
+                { word: '素晴らしい', display: '<ruby>素<rt>す</rt></ruby><ruby>晴<rt>ば</rt></ruby>らしい', kana: 'すばらしい', meaning: '极好的/出色的', level: 1 },
+                { word: '恐ろしい', display: '<ruby>恐<rt>おそ</rt></ruby>ろしい', kana: 'おそろしい', meaning: '可怕的', level: 1 },
+                { word: '激しい', display: '<ruby>激<rt>はげ</rt></ruby>しい', kana: 'はげしい', meaning: '激烈的/剧烈的', level: 1 },
+                { word: '柔らかい', display: '<ruby>柔<rt>やわ</rt></ruby>らかい', kana: 'やわらかい', meaning: '柔软的', level: 1 },
+                { word: '鋭い', display: '<ruby>鋭<rt>するど</rt></ruby>い', kana: 'するどい', meaning: '尖锐的/敏锐的', level: 1 },
+                { word: '著しい', display: '<ruby>著<rt>いちじる</rt></ruby>しい', kana: 'いちじるしい', meaning: '显著的', level: 3 },
+                { word: '空しい', display: '<ruby>空<rt>むな</rt></ruby>しい', kana: 'むなしい', meaning: '空虚的', level: 3 },
+                { word: '悩ましい', display: '<ruby>悩<rt>なや</rt></ruby>ましい', kana: 'なやましい', meaning: '苦恼的', level: 3 },
+                { word: '煩わしい', display: '<ruby>煩<rt>わずら</rt></ruby>わしい', kana: 'わずらわしい', meaning: '繁琐的', level: 3 },
+                { word: '紛らわしい', display: '<ruby>紛<rt>まぎ</rt></ruby>らわしい', kana: 'まぎらわしい', meaning: '易混淆的', level: 3 }
+            ],
+            loanwords: [
+                { word: 'アプローチ', display: 'アプローチ', kana: 'アプローチ', meaning: '接近，方法', level: 2 },
+                { word: 'クレーム', display: 'クレーム', kana: 'クレーム', meaning: '投诉', level: 2 },
+                { word: 'ジャンル', display: 'ジャンル', kana: 'ジャンル', meaning: '种类，体裁', level: 2 },
+                { word: 'ストック', display: 'ストック', kana: 'ストック', meaning: '库存，储备', level: 2 },
+                { word: 'ダメージ', display: 'ダメージ', kana: 'ダメージ', meaning: '损害，伤害', level: 2 },
+                { word: 'ポテンシャル', display: 'ポテンシャル', kana: 'ポテンシャル', meaning: '潜力', level: 3 },
+                { word: 'インフラ', display: 'インフラ', kana: 'インフラ', meaning: '基础设施', level: 3 },
+                { word: 'メカニズム', display: 'メカニズム', kana: 'メカニズム', meaning: '机制', level: 3 },
+                { word: 'パラダイム', display: 'パラダイム', kana: 'パラダイム', meaning: '范式', level: 3 },
+                { word: 'ジレンマ', display: 'ジレンマ', kana: 'ジレンマ', meaning: '进退两难', level: 3 }
+            ],
+            adverbs: [
+                { word: '案外', display: '<ruby>案<rt>あん</rt></ruby><ruby>外<rt>がい</rt></ruby>', kana: 'あんがい', meaning: '意外地', level: 2 },
+                { word: '一段と', display: '<ruby>一<rt>いっ</rt></ruby><ruby>段<rt>だん</rt></ruby>と', kana: 'いちだんと', meaning: '更加', level: 2 },
+                { word: '思い切って', display: '<ruby>思<rt>おも</rt></ruby>い<ruby>切<rt>き</rt></ruby>って', kana: 'おもいきって', meaning: '下决心', level: 2 },
+                { word: '決して', display: '<ruby>決<rt>けっ</rt></ruby>して', kana: 'けっして', meaning: '决不', level: 2 },
+                { word: '実に', display: '<ruby>実<rt>じつ</rt></ruby>に', kana: 'じつに', meaning: '实在，确实', level: 2 },
+                { word: '一挙に', display: '<ruby>一<rt>いっ</rt></ruby><ruby>挙<rt>きょ</rt></ruby>に', kana: 'いっきょに', meaning: '一举，一下子', level: 3 },
+                { word: '漠然と', display: '<ruby>漠<rt>ばく</rt></ruby><ruby>然<rt>ぜん</rt></ruby>と', kana: 'ばくぜんと', meaning: '含糊地', level: 3 },
+                { word: '断然', display: '<ruby>断<rt>だん</rt></ruby><ruby>然<rt>ぜん</rt></ruby>', kana: 'だんぜん', meaning: '绝对，断然', level: 3 },
+                { word: 'もはや', display: 'もはや', kana: 'もはや', meaning: '事到如今，已经', level: 3 },
+                { word: '辛うじて', display: '<ruby>辛<rt>かろ</rt></ruby>うじて', kana: 'かろうじて', meaning: '好不容易才', level: 3 }
+            ],
+            onomatopoeia: [
+                { word: 'うろうろ', display: 'うろうろ', kana: 'うろうろ', meaning: '徘徊，转来转去', level: 3 },
+                { word: 'ぎっしり', display: 'ぎっしり', kana: 'ぎっしり', meaning: '满满地', level: 3 },
+                { word: 'こっそり', display: 'こっそり', kana: 'こっそり', meaning: '悄悄地', level: 3 },
+                { word: 'すっきり', display: 'すっきり', kana: 'すっきり', meaning: '清爽，舒畅', level: 3 },
+                { word: 'たっぷり', display: 'たっぷり', kana: 'たっぷり', meaning: '充分，足够', level: 3 },
+                { word: 'のろのろ', display: 'のろのろ', kana: 'のろのろ', meaning: '迟缓，慢吞吞', level: 3 },
+                { word: 'ばっちり', display: 'ばっちり', kana: 'ばっちり', meaning: '恰好，合适', level: 3 },
+                { word: 'ぼんやり', display: 'ぼんやり', kana: 'ぼんやり', meaning: '发呆，模糊', level: 3 },
+                { word: 'めっきり', display: 'めっきり', kana: 'めっきり', meaning: '显著，急剧', level: 3 },
+                { word: 'わくわく', display: 'わくわく', kana: 'わくわく', meaning: '欢欣雀跃', level: 3 }
+            ],
+            boss: [
+                { word: '挑戦', display: '<ruby>挑<rt>ちょう</rt></ruby><ruby>戦<rt>せん</rt></ruby>', kana: 'ちょうせん', meaning: '挑战', level: 1 },
+                { word: '努力', display: '<ruby>努<rt>ど</rt></ruby><ruby>力<rt>りょく</rt></ruby>', kana: 'どりょく', meaning: '努力', level: 1 },
+                { word: '成功', display: '<ruby>成<rt>せい</rt></ruby><ruby>功<rt>こう</rt></ruby>', kana: 'せいこう', meaning: '成功', level: 1 },
+                { word: '失敗', display: '<ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>', kana: 'しっぱい', meaning: '失败', level: 1 },
+                { word: '希望', display: '<ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby>', kana: 'きぼう', meaning: '希望', level: 1 },
+                { word: '矛盾', display: '<ruby>矛<rt>む</rt></ruby><ruby>盾<rt>じゅん</rt></ruby>', kana: 'むじゅん', meaning: '矛盾', level: 2 },
+                { word: '妥協', display: '<ruby>妥<rt>だ</rt></ruby><ruby>協<rt>きょう</rt></ruby>', kana: 'だきょう', meaning: '妥协', level: 2 },
+                { word: '曖昧', display: '<ruby>曖<rt>あい</rt></ruby><ruby>昧<rt>まい</rt></ruby>', kana: 'あいまい', meaning: '含糊', level: 2 },
+                { word: '克服', display: '<ruby>克<rt>こく</rt></ruby><ruby>服<rt>ふく</rt></ruby>', kana: 'こくふく', meaning: '克服', level: 2 },
+                { word: '慎重', display: '<ruby>慎<rt>しん</rt></ruby><ruby>重<rt>ちょう</rt></ruby>', kana: 'しんちょう', meaning: '慎重', level: 2 },
+                { word: '崩壊', display: '<ruby>崩<rt>ほう</rt></ruby><ruby>壊<rt>かい</rt></ruby>', kana: 'ほうかい', meaning: '崩溃', level: 3 },
+                { word: '飛躍', display: '<ruby>飛<rt>ひ</rt></ruby><ruby>躍<rt>やく</rt></ruby>', kana: 'ひやく', meaning: '飞跃', level: 3 },
+                { word: '錯誤', display: '<ruby>錯<rt>さく</rt></ruby><ruby>誤<rt>ご</rt></ruby>', kana: 'さくご', meaning: '错误', level: 3 },
+                { word: '懸念', display: '<ruby>懸<rt>け</rt></ruby><ruby>念<rt>ねん</rt></ruby>', kana: 'けねん', meaning: '担忧', level: 3 },
+                { word: '促進', display: '<ruby>促<rt>そく</rt></ruby><ruby>進<rt>しん</rt></ruby>', kana: 'そくしん', meaning: '促进', level: 3 }
+            ]
+        };
+
+        // --- 漫画风气泡语录库 ---
+        const bubbleMessages = [
+            "頑張って！(加油)",
+            "焦らないでね！(别着急)",
+            "基礎が大事だよ(基础很重要)",
+            "深呼吸しよう(深呼吸)",
+            "柴犬ボスが待ってるよ🐶",
+            "ナイス！(Nice!)",
+            "その調子！(就保持这个节奏)",
+            "ファイト！(Fight!)",
+            "一歩ずつ進もう(一步一步来)",
+            "休むのも大事だよ☕(休息也很重要哦)",
+            "語彙力アップ！(词汇量UP！)",
+            "道に迷ったら深呼吸！(迷路的话就深呼吸！)",
+            "ネコ先生は口が悪いから注意🐱(猫老师嘴巴很毒要注意哦)",
+            "カバ長官の時間は短いよ⏰(河马长官给的时间很短哦)",
+            "君ならできるよ！(你的话没问题的！)",
+            "キツネ先輩はイケてる🦊(狐狸学长很时髦)",
+            "フクロウ博士の話は長い🦉(猫头鹰博士话很多)"
+        ];
+
+        // --- 台词数据系统 (新增选汉字专属台词) ---
+        const dialogueDB = {
+            combat_verbs: { 
+                intro: ["冷静下来，让我们开始动词的修行。", "一步一个脚印，基础最重要。准备好了吗？", "心如止水，方能看破词汇的真谛。"],
+                ask_meaning: ["告诉我，{word} 的真意是？", "沉住气，选出正确的解释：{word}。", "{word} ...做出你的选择吧。"],
+                ask_kanji: ["看假名识汉字，{word} 写作哪个？", "回想一下，{word} 的汉字形体是？", "假名 {word} 背后隐藏的是哪个汉字？"],
+                correct: ["不错，基本功很扎实。", "就是这样，保持这个节奏。", "很好，继续保持，前进吧。"],
+                wrong: ["太心急了。正解是「{correct}」。", "步伐乱了哦。记住，应当是「{correct}」。", "静心...正确的答案是「{correct}」。"],
+                timeout: ["犹豫太久了，答案是「{correct}」。", "在战场上迟疑就会失败。是「{correct}」。"]
+            },
+            combat_nouns: { 
+                intro: ["连这种基础都要来找我？真麻烦喵。", "哼，别以为你能轻易从我这里及格喵。", "又是没带脑子来的人类吗？快点开始吧喵。"],
+                ask_meaning: ["这都不知道的话就干脆重修吧，{word} 是什么意思喵？", "别浪费我时间，{word} 的意思是哪个？"],
+                ask_kanji: ["假名 {word} 对应的汉字是什么，猜不出来吧喵？", "汉字都认不全吗？{word} 选哪个喵？"],
+                correct: ["切，算你蒙对了一次喵。", "勉强算个及格吧，别得意忘形喵。", "偶尔脑子也还算灵光嘛喵。"],
+                wrong: ["哈？居然选错，太丢猫脸了！是「{correct}」喵！", "你到底有没有在学啊？答案是「{correct}」喵！", "连「{correct}」都不知道，赶紧回家洗洗睡吧喵。"],
+                timeout: ["慢死了！我都要睡着了喵！答案是「{correct}」！", "脑子卡壳了吗？是「{correct}」，快点喵！"]
+            },
+            combat_adjectives: { 
+                intro: ["咕咕~ 今天天气真好啊。随便做两道题吧~", "飞累了，歇会儿顺便考考你咕~", "慢慢来，不用着急咕。"],
+                ask_meaning: ["{word} 嘛...你觉得是啥意思？", "随便选一个吧，{word} 大概是这个意思？"],
+                ask_kanji: ["{word} 的汉字是哪个来着，我忘了咕...", "这个假名 {word}，对应的汉字随便猜一个吧咕。"],
+                correct: ["喔，挺厉害的咕。", "还挺懂的嘛，咕咕。", "顺利答对了呢，咕~"],
+                wrong: ["哎呀，猜错了咕。其实是「{correct}」。", "没关系没关系，下次记住是「{correct}」就行了咕。"],
+                timeout: ["咕？睡着了吗？答案是「{correct}」哦。", "随便猜一个也行嘛咕。是「{correct}」。"]
+            },
+            combat_mix: {
+                intro: ["呱呱！综合测试开始啦！", "不仅要会一种，全方位发展才是好学生呱！", "跳跃思维的时间到了呱！"],
+                ask_meaning: ["这题考考你，{word} 是什么意思呱？", "呱？{word} 的意思选哪个好呢？"],
+                ask_kanji: ["跳跃思维！{word} 对应的汉字是哪个呱！", "看假名选汉字，{word} 是哪个呱？"],
+                correct: ["呱！跳得挺高嘛！", "完全正确呱！", "呱呱，表现不错！"],
+                wrong: ["呱！掉进池塘了！正确的是「{correct}」。", "滑了一跤呱！记住是「{correct}」。"],
+                timeout: ["呱？睡着了呱？答案是「{correct}」。", "时间像水一样流走啦！是「{correct}」呱！"]
+            },
+            combat_loanwords: {
+                intro: ["Hey！准备好迎接外来语的 challenge 了吗？🦊", "Let's start！不要让我失望哦！", "语言的 mix 才是最 cool 的！🦊"],
+                ask_meaning: ["{word} 的 meaning，你 get 到了吗？", "Show me your answer！{word} 是什么？"],
+                correct: ["Perfect！干得漂亮！", "Good job！就是这个节奏！", "Nice！完全正确！🦊"],
+                wrong: ["Oh no！大错特错！是「{correct}」啦！", "You missed it！正确答案是「{correct}」！"],
+                timeout: ["Time's up！太慢啦，答案是「{correct}」。", "Wake up！时间到了，是「{correct}」！"]
+            },
+            combat_onomatopoeia: {
+                intro: ["吱吱！拟声拟态词可是很有趣的哦！🐭", "感觉世界都在动呢！来猜猜看吧吱！", "吱！竖起耳朵仔细感受这些词的画面吧！"],
+                ask_meaning: ["{word} 是什么感觉？吱吱！", "猜猜看，{word} 的意思是什么吱？"],
+                correct: ["吱！完全猜中啦！", "对对对！就是这个感觉吱！", "吱吱！你很懂嘛！"],
+                wrong: ["吱哇！不对不对，是「{correct}」！", "哎呀，完全搞混了吱。是「{correct}」哦！"],
+                timeout: ["吱...睡着了吗？是「{correct}」啦！", "时间溜走啦吱！答案是「{correct}」。"]
+            },
+            combat_adverbs: {
+                intro: ["咕咕...副词能让句子的程度更加精准。🦉", "语言的细节，往往决定了成败。", "来吧，展现你对词汇深度的理解。🦉"],
+                ask_meaning: ["{word}，此副词的准确含义为何？", "请仔细辨别 {word} 的细微差别。"],
+                ask_kanji: ["只听其音 {word}，你能否写出其形？🦉", "此假名 {word} 对应的汉字，请作答。"],
+                correct: ["十分准确，理解得很透彻。", "咕咕...明察秋毫。", "正解，你对细节的把握很不错。"],
+                wrong: ["失之毫厘。正确的答案应是「{correct}」。", "咕...还是不够严谨。是「{correct}」。"],
+                timeout: ["思虑过久了。答案为「{correct}」。", "时间不会等你。正解是「{correct}」。🦉"]
+            },
+            elite: { 
+                intro: ["吼！！进入我的领地，就得守我的规矩！", "没时间给你慢慢想了！接招！", "弱者没有通过这里的资格！！"],
+                ask_meaning: ["快回答！！{word} 是什么意思！！", "倒计时开始！别发呆！看招：{word} ！"],
+                ask_kanji: ["接招！！假名 {word} 的汉字写成什么！！", "别退缩！{word} 对应的汉字选哪个！！"],
+                correct: ["切！有点本事！", "算你躲过一劫！下一题！", "还算凑合！继续！！"],
+                wrong: ["太弱了！！答案是「{correct}」！接我一击！", "破绽百出！！记好了是「{correct}」！"],
+                timeout: ["太慢了！！！发什么呆，答案是「{correct}」！！", "磨磨蹭蹭的，找死！！是「{correct}」！"]
+            },
+            boss_playful: { 
+                intro: ["汪！我是最终关卡的守门犬！来陪我大闹一场吧！", "好耶，有挑战者来了！汪！"],
+                ask_meaning: ["接飞盘咯！{word} 的意思是哪个？", "考验你的时刻到了，{word} 选什么意思？"],
+                ask_kanji: ["找汉字游戏！{word} 藏在哪个选项里汪！", "假名 {word} 的汉字是哪个？快选快选！"],
+                correct: ["干得漂亮！再来！", "好球！汪！", "反应真不错呢！"],
+                wrong: ["哎呀，没接住呢！正确的是「{correct}」。", "稍微差了一点汪！是「{correct}」！"],
+                timeout: ["你在发呆吗？骨头都被我吃掉啦！是「{correct}」！", "再不选我就扑过去啦！是「{correct}」汪！"]
+            },
+            boss_serious: { 
+                intro: ["...呜...看来得拿出真本事了。", "眼神变了呢...那就让我看看你的觉悟！"], 
+                ask_meaning: ["别以为能轻易通关。看破 {word} 吧！", "这就是最终的试炼，选出 {word} 的真意！"],
+                ask_kanji: ["透过表音看本质，{word} 的本体是哪个汉字！", "假名的伪装下，{word} 对应的汉字是哪一个！"],
+                correct: ["唔...确实有两下子。", "被你看穿了吗...", "还能跟上我的速度吗！"],
+                wrong: ["天真！这就是你的极限了！答案是「{correct}」。", "一瞬的破绽就是致命的！是「{correct}」！"],
+                timeout: ["战场上可没有时间给你犹豫！是「{correct}」！", "破绽！！答案是「{correct}」！"]
+            }
+        };
+
+        function getDialogue(encounterType, situation, options = {}) {
+            let dbKey = encounterType;
+            if (encounterType === 'boss') {
+                const hpPercent = (combatState.enemyHp / combatState.enemyMaxHp) * 100;
+                dbKey = hpPercent > 50 ? 'boss_playful' : 'boss_serious';
+            }
+            
+            // 容错处理：如果请求了 ask_kanji 但没有，退回到 ask_meaning
+            let lines = dialogueDB[dbKey][situation];
+            if (!lines && situation === 'ask_kanji') {
+                lines = dialogueDB[dbKey]['ask_meaning'];
+            }
+
+            let line = lines[Math.floor(Math.random() * lines.length)];
+            if (options.correct) {
+                line = line.replace('{correct}', options.correct);
+            }
+            return line;
+        }
+
+        // 节点类型配置
+        const nodeTypes = {
+            'combat_verbs': { iconType: 'fa', icon: 'fa-horse', color: 'text-sky-400', name: 'ウマ先生', label: '動詞', type: 'combat', vocab: 'verbs', baseQ: 3, sound: 'ブルルル！', soundWrong: 'ヒヒーン！' },
+            'combat_nouns': { iconType: 'fa', icon: 'fa-cat', color: 'text-amber-400', name: 'ネコ先生', label: '名詞', type: 'combat', vocab: 'nouns', baseQ: 3, sound: 'ニャー！', soundWrong: 'シャーッ！' },
+            'combat_adjectives': { iconType: 'fa', icon: 'fa-dove', color: 'text-fuchsia-400', name: 'ハト先生', label: '形容詞', type: 'combat', vocab: 'adjectives', baseQ: 3, sound: 'クルックー！', soundWrong: 'バサバサッ！' },
+            'combat_mix': { iconType: 'fa', icon: 'fa-frog', color: 'text-indigo-400', name: 'カエル先生', label: '総合', type: 'combat', vocab: 'mix', baseQ: 3, sound: 'ケロ！', soundWrong: 'ゲコゲコ！' },
+            'combat_loanwords': { iconType: 'emoji', icon: '🦊', color: 'text-orange-500', name: 'キツネ先輩', label: '外来語', type: 'combat', vocab: 'loanwords', baseQ: 3, sound: 'コン！', soundWrong: 'コンコン！' },
+            'combat_onomatopoeia': { iconType: 'emoji', icon: '🐭', color: 'text-stone-500', name: 'ネズミ君', label: 'オノマトペ', type: 'combat', vocab: 'onomatopoeia', baseQ: 3, sound: 'チュー！', soundWrong: 'チチッ！' },
+            'combat_adverbs': { iconType: 'emoji', icon: '🦉', color: 'text-amber-700', name: 'フクロウ博士', label: '副詞', type: 'combat', vocab: 'adverbs', baseQ: 3, sound: 'ホー！', soundWrong: 'ホッホ！' },
+            'elite': { iconType: 'fa', icon: 'fa-hippo', color: 'text-rose-400', name: 'カバ長官', label: '総合 (時間制限)', type: 'combat', vocab: 'mix', baseQ: 4, timeLimit: 12, sound: 'グオオ！', soundWrong: 'ドスドス！' }, 
+            'rest': { iconType: 'fa', icon: 'fa-paw', color: 'text-teal-400', name: '休憩', label: '休憩所', type: 'rest' },
+            'boss': { iconType: 'emoji', icon: '🐶', color: 'text-orange-400', name: '柴犬ボス', label: '最終テスト', type: 'combat', vocab: 'boss', baseQ: 6, timeLimit: 8, sound: 'ワン！', soundWrong: 'グルルル...！' } 
+        };
+
+        // --- 游戏状态 ---
+        let player = { 
+            hp: 20, maxHp: 20, currentFloor: -1, currentPhase: 1, damage: 10,
+            stats: { correct: 0, wrong: 0 }
+        };
+        let mapData = [];
+        let currentEncounter = null;
+        let combatState = { 
+            enemyHp: 0, enemyMaxHp: 0, wordsQueue: [], currentWord: null, currentQType: 'meaning', currentCorrectAnswer: '',
+            isTyping: false, isWaitingAnswer: false, timerInterval: null, bossPhaseShifted: false
+        };
+        let bubbleInterval = null;
+
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+        // --- 初始化与流程控制 ---
+        function startGame() {
+            player.hp = player.maxHp;
+            player.currentFloor = 0;
+            player.currentPhase = 1;
+            player.stats = { correct: 0, wrong: 0 };
+            updatePlayerUI();
+            generateMap();
+            renderMap();
+            switchScreen('screen-map');
+            document.getElementById('top-bar').classList.remove('hidden');
+            window.addEventListener('resize', drawMapLines);
+        }
+
+        function switchScreen(screenId) {
+            ['screen-start', 'screen-map', 'screen-combat', 'screen-rest', 'screen-result'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+                document.getElementById(id).classList.remove('flex');
+            });
+            const target = document.getElementById(screenId);
+            target.classList.remove('hidden');
+            if(screenId === 'screen-result') target.classList.add('flex'); 
+            else target.classList.add('flex');
+            
+            if(screenId === 'screen-map') {
+                setTimeout(() => {
+                    const mapContainer = document.getElementById('map-inner-wrapper');
+                    document.getElementById('screen-map').scrollTop = mapContainer.scrollHeight;
+                    drawMapLines();
+                    startBubbleSpawning(); 
+                }, 50); 
+            } else {
+                stopBubbleSpawning(); 
+            }
+        }
+
+        function nextPhase() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+            player.currentPhase++;
+            player.currentFloor = 0;
+            player.hp = Math.min(player.maxHp, player.hp + 5);
+            updatePlayerUI();
+            generateMap();
+            renderMap();
+            switchScreen('screen-map');
+        }
+
+        // --- 地图气泡系统 ---
+        function startBubbleSpawning() {
+            stopBubbleSpawning();
+            bubbleInterval = setInterval(spawnBubble, 3000 + Math.random() * 2000); 
+        }
+
+        function stopBubbleSpawning() {
+            if (bubbleInterval) {
+                clearInterval(bubbleInterval);
+                bubbleInterval = null;
+            }
+        }
+
+        function spawnBubble() {
+            const mapScreen = document.getElementById('screen-map');
+            if (mapScreen.classList.contains('hidden')) return;
+
+            const bubble = document.createElement('div');
+            const isLeft = Math.random() > 0.5;
+            
+            bubble.className = `comic-bubble ${isLeft ? 'left-side' : 'right-side'}`;
+            bubble.innerText = bubbleMessages[Math.floor(Math.random() * bubbleMessages.length)];
+            
+            const scrollTop = mapScreen.scrollTop;
+            const viewportHeight = mapScreen.clientHeight;
+            const randomY = scrollTop + (viewportHeight * 0.15) + Math.random() * (viewportHeight * 0.6); 
+            
+            bubble.style.top = `${randomY}px`;
+            
+            if (isLeft) {
+                bubble.style.left = `${5 + Math.random() * 10}%`;
+            } else {
+                bubble.style.right = `${5 + Math.random() * 10}%`;
+            }
+
+            setTimeout(() => {
+                if(bubble.parentNode) bubble.remove();
+            }, 4000);
+
+            mapScreen.appendChild(bubble);
+        }
+
+        // --- 地图系统 ---
+        function generateMap() {
+            const normalTypes = ['combat_verbs', 'combat_nouns', 'combat_adjectives', 'combat_mix'];
+            if (player.currentPhase >= 2) {
+                normalTypes.push('combat_loanwords', 'combat_adverbs');
+            }
+            if (player.currentPhase >= 3) {
+                normalTypes.push('combat_onomatopoeia');
+            }
+            const getRandomNormal = () => normalTypes[Math.floor(Math.random() * normalTypes.length)];
+
+            mapData = [
+                [{ id: 'f0-0', type: 'combat_verbs' }, { id: 'f0-1', type: 'combat_nouns' }, { id: 'f0-2', type: 'combat_adjectives' }],
+                [{ id: 'f1-0', type: getRandomNormal() }, { id: 'f1-1', type: getRandomNormal() }],
+                [{ id: 'f2-0', type: getRandomNormal() }, { id: 'f2-1', type: 'rest' }, { id: 'f2-2', type: getRandomNormal() }],
+                [{ id: 'f3-0', type: 'elite' }, { id: 'f3-1', type: getRandomNormal() }],
+                [{ id: 'f4-0', type: getRandomNormal() }, { id: 'f4-1', type: 'combat_mix' }, { id: 'f4-2', type: getRandomNormal() }],
+                [{ id: 'f5-0', type: 'rest' }, { id: 'f5-1', type: getRandomNormal() }],
+                [{ id: 'f6-0', type: 'elite' }, { id: 'f6-1', type: 'combat_mix' }],
+                [{ id: 'f7-0', type: 'rest' }],
+                [{ id: 'f8-0', type: 'boss' }]
+            ];
+
+            mapData.forEach(floor => {
+                if (floor.length > 1) {
+                    floor.sort(() => Math.random() - 0.5);
+                }
+            });
+        }
+
+        function renderMap() {
+            const container = document.getElementById('map-container');
+            container.innerHTML = '';
+            
+            for (let floorIndex = mapData.length - 1; floorIndex >= 0; floorIndex--) {
+                const floorNodes = mapData[floorIndex];
+                const floorDiv = document.createElement('div');
+                floorDiv.className = 'flex justify-center space-x-6 md:space-x-10 relative w-full layer-row';
+                floorDiv.dataset.floor = floorIndex;
+
+                floorNodes.forEach(node => {
+                    const nodeConfig = nodeTypes[node.type];
+                    const btn = document.createElement('button');
+                    const isActive = floorIndex === player.currentFloor;
+                    const isPassed = floorIndex < player.currentFloor;
+
+                    let baseClasses = 'map-node flex flex-col items-center justify-center w-[72px] h-[72px] md:w-[84px] md:h-[84px] bg-white rounded-2xl border-2 shadow-sm ';
+                    if (isActive) {
+                        baseClasses += 'border-sky-300 active-node cursor-pointer z-20';
+                    } else if (isPassed) {
+                        baseClasses += 'border-emerald-200 bg-emerald-50 opacity-70 cursor-not-allowed';
+                    } else {
+                        baseClasses += 'border-slate-100 bg-slate-50 opacity-50 cursor-not-allowed';
+                    }
+
+                    btn.className = baseClasses;
+                    btn.id = `node-${node.id}`;
+                    
+                    let iconColor = isPassed ? 'text-emerald-400' : (isActive ? nodeConfig.color : 'text-slate-300');
+                    let iconHtml = nodeConfig.iconType === 'emoji' 
+                                 ? `<span class="text-3xl filter ${isPassed ? 'grayscale opacity-50' : ''}">${nodeConfig.icon}</span>` 
+                                 : `<i class="fas ${nodeConfig.icon} text-2xl md:text-3xl ${iconColor}"></i>`;
+
+                    btn.innerHTML = `
+                        ${iconHtml}
+                        <span class="text-[10px] md:text-xs font-bold mt-1 ${isPassed ? 'text-emerald-500' : 'text-slate-500'}">${nodeConfig.label}</span>
+                    `;
+                    
+                    if (isActive) {
+                        btn.onclick = () => handleNodeClick(node, nodeConfig);
+                        btn.title = nodeConfig.name;
+                    }
+
+                    floorDiv.appendChild(btn);
+                });
+                
+                container.appendChild(floorDiv);
+            }
+            
+            const startPrompt = document.createElement('div');
+            startPrompt.className = 'w-full flex justify-center mt-6 md:mt-10 relative z-20';
+            startPrompt.innerHTML = `
+                <div class="text-sky-500 font-bold text-xs md:text-sm tracking-widest bounce-gentle flex flex-col items-center drop-shadow-sm">
+                    <div class="flex space-x-2 mb-2 text-sky-400">
+                        <i class="fas fa-chevron-up"></i>
+                        <i class="fas fa-chevron-up"></i>
+                        <i class="fas fa-chevron-up"></i>
+                    </div>
+                    <span class="bg-white/90 px-5 py-2 rounded-full shadow-sm border border-sky-200/50">
+                        <i class="fas fa-hand-pointer mr-2"></i>試練をタップ
+                    </span>
+                </div>
+            `;
+            container.appendChild(startPrompt);
+
+            document.getElementById('current-phase-text').innerText = player.currentPhase;
+            document.getElementById('current-floor-text').innerText = player.currentFloor + 1;
+            setTimeout(drawMapLines, 100);
+        }
+
+        function drawMapLines() {
+            const svg = document.getElementById('map-lines-container');
+            const wrapper = document.getElementById('map-inner-wrapper');
+            const mapScreen = document.getElementById('screen-map');
+            
+            svg.innerHTML = '';
+            if(mapScreen.classList.contains('hidden')) return;
+            
+            svg.style.height = wrapper.scrollHeight + 'px';
+            const wrapperRect = wrapper.getBoundingClientRect();
+            
+            for (let i = 0; i < mapData.length - 1; i++) {
+                const currentFloorNodes = mapData[i];
+                const nextFloorNodes = mapData[i+1];
+                const isPassedEdge = i < player.currentFloor;
+                const isActiveEdge = i === player.currentFloor;
+
+                currentFloorNodes.forEach(currNode => {
+                    nextFloorNodes.forEach(nextNode => {
+                        const el1 = document.getElementById(`node-${currNode.id}`);
+                        const el2 = document.getElementById(`node-${nextNode.id}`);
+                        
+                        if(el1 && el2) {
+                            const rect1 = el1.getBoundingClientRect();
+                            const rect2 = el2.getBoundingClientRect();
+                            
+                            const x1 = rect1.left + rect1.width / 2 - wrapperRect.left;
+                            const y1 = rect1.top + rect1.height / 2 - wrapperRect.top;
+                            const x2 = rect2.left + rect2.width / 2 - wrapperRect.left;
+                            const y2 = rect2.top + rect2.height / 2 - wrapperRect.top;
+
+                            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                            line.setAttribute('x1', x1);
+                            line.setAttribute('y1', y1);
+                            line.setAttribute('x2', x2);
+                            line.setAttribute('y2', y2);
+                            
+                            if (isPassedEdge) {
+                                line.setAttribute('stroke', '#a7f3d0'); 
+                                line.setAttribute('stroke-width', '3');
+                            } else if (isActiveEdge) {
+                                line.setAttribute('stroke', '#7dd3fc'); 
+                                line.setAttribute('stroke-width', '3');
+                                line.classList.add('map-line'); 
+                            } else {
+                                line.setAttribute('stroke', '#e2e8f0'); 
+                                line.setAttribute('stroke-width', '2');
+                            }
+                            
+                            svg.appendChild(line);
+                        }
+                    });
+                });
+            }
+        }
+
+        function handleNodeClick(nodeData, config) {
+            currentEncounter = { ...nodeData, ...config, originalType: nodeData.type };
+            if (config.type === 'combat') {
+                startCombat(config);
+            } else if (config.type === 'rest') {
+                startRest();
+            }
+        }
+
+        // --- 计时器系统 ---
+        function startTimer(seconds) {
+            const timerContainer = document.getElementById('timer-container');
+            const timerBar = document.getElementById('timer-bar');
+            timerContainer.classList.remove('hidden');
+            
+            timerBar.classList.remove('timer-urgent');
+            timerBar.style.backgroundColor = '#38bdf8'; 
+            timerBar.style.width = '100%';
+            
+            let totalTime = seconds * 1000;
+            let remainingTime = totalTime;
+            let updateInterval = 50;
+
+            combatState.timerInterval = setInterval(() => {
+                remainingTime -= updateInterval;
+                let percent = (remainingTime / totalTime) * 100;
+                timerBar.style.width = percent + '%';
+
+                if (percent <= 30 && !timerBar.classList.contains('timer-urgent')) {
+                    timerBar.classList.add('timer-urgent');
+                }
+
+                if (remainingTime <= 0) {
+                    stopTimer();
+                    handleTimeout();
+                }
+            }, updateInterval);
+        }
+
+        function stopTimer() {
+            if (combatState.timerInterval) {
+                clearInterval(combatState.timerInterval);
+                combatState.timerInterval = null;
+            }
+            document.getElementById('timer-container').classList.add('hidden');
+        }
+
+        // --- 战斗系统与打字机逻辑 ---
+
+        async function runDialogueEffect(prefix, htmlBlock, suffix, speed = 35) {
+            combatState.isTyping = true;
+            const textEl = document.getElementById('dialogue-text');
+            textEl.innerHTML = '';
+            textEl.classList.add('blinking-cursor');
+
+            for (let i = 0; i < prefix.length; i++) {
+                textEl.innerHTML = prefix.substring(0, i + 1);
+                await sleep(speed);
+            }
+
+            let currentHTML = prefix + `<span class="text-sky-500 font-black mx-1 text-2xl md:text-3xl">${htmlBlock}</span>`;
+            textEl.innerHTML = currentHTML;
+            await sleep(speed * 3); 
+
+            for (let i = 0; i < suffix.length; i++) {
+                currentHTML += suffix[i];
+                textEl.innerHTML = currentHTML;
+                await sleep(speed);
+            }
+
+            textEl.classList.remove('blinking-cursor'); 
+            combatState.isTyping = false;
+        }
+
+        async function runSystemFeedback(text, speed = 30) {
+            combatState.isTyping = true;
+            const textEl = document.getElementById('dialogue-text');
+            textEl.innerHTML = '';
+            textEl.classList.add('blinking-cursor');
+
+            for (let i = 0; i < text.length; i++) {
+                textEl.innerHTML = text.substring(0, i + 1);
+                await sleep(speed);
+            }
+            
+            textEl.classList.remove('blinking-cursor');
+            combatState.isTyping = false;
+        }
+
+        function getWordsPoolForEncounter(encounter, phase) {
+            let pool = [];
+            if (encounter.vocab === 'mix') {
+                pool = [...vocabularyDB.verbs, ...vocabularyDB.nouns, ...vocabularyDB.adjectives];
+                if (phase >= 2) pool.push(...vocabularyDB.loanwords, ...vocabularyDB.adverbs);
+                if (phase >= 3) pool.push(...vocabularyDB.onomatopoeia);
+            } else {
+                pool = [...vocabularyDB[encounter.vocab]];
+            }
+            return pool.filter(w => w.level === phase).sort(() => Math.random() - 0.5);
+        }
+
+        async function startCombat(config) {
+            switchScreen('screen-combat');
+            
+            document.getElementById('enemy-name').innerText = config.name;
+            const iconWrapper = document.getElementById('enemy-icon-wrapper');
+            if(config.iconType === 'emoji') {
+                iconWrapper.innerHTML = `<span class="text-7xl md:text-8xl">${config.icon}</span>`;
+            } else {
+                iconWrapper.innerHTML = `<i id="enemy-icon" class="fas ${config.icon} ${config.color}"></i>`;
+            }
+
+            let barColorClass = config.color.replace('text-', 'bg-');
+            if(!barColorClass.includes('bg-')) barColorClass = 'bg-sky-400';
+            document.getElementById('enemy-hp-bar').className = `h-full transition-all duration-300 ${barColorClass}`;
+            
+            const phaseBonus = (player.currentPhase - 1) * 2;
+            const requiredQuestions = config.baseQ + player.currentFloor + phaseBonus;
+            combatState.enemyMaxHp = requiredQuestions * player.damage;
+            combatState.enemyHp = combatState.enemyMaxHp;
+            combatState.bossPhaseShifted = false; 
+            updateEnemyHpUI();
+            stopTimer();
+
+            document.getElementById('options-container').classList.add('hidden');
+            document.getElementById('options-container').classList.remove('options-fade-in');
+
+            combatState.wordsQueue = getWordsPoolForEncounter(config, player.currentPhase);
+
+            document.getElementById('battle-dialogue').style.borderColor = '#bae6fd';
+            
+            const introStr = getDialogue(currentEncounter.originalType, 'intro');
+            await runSystemFeedback(`* 「${introStr}」`);
+            await sleep(800);
+
+            nextTurn();
+        }
+
+        async function nextTurn() {
+            if (combatState.enemyHp <= 0) {
+                winCombat();
+                return;
+            }
+            
+            combatState.isWaitingAnswer = false;
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.classList.add('hidden');
+            optionsContainer.classList.remove('options-fade-in');
+
+            if (combatState.wordsQueue.length === 0) {
+                combatState.wordsQueue = getWordsPoolForEncounter(currentEncounter, player.currentPhase);
+            }
+
+            const wordObj = combatState.wordsQueue.pop();
+            combatState.currentWord = wordObj;
+
+            // 决定题型：看汉字选意思，还是看假名选汉字 (外来语和拟声拟态只能选意思)
+            const hasKanji = wordObj.word !== wordObj.kana;
+            const isMeaningOnly = currentEncounter.vocab === 'loanwords' || currentEncounter.vocab === 'onomatopoeia';
+            
+            let qType = 'meaning';
+            if (hasKanji && !isMeaningOnly && Math.random() > 0.5) {
+                qType = 'kanji';
+            }
+            combatState.currentQType = qType;
+
+            let correct, options = [];
+            let currentPool = getWordsPoolForEncounter(currentEncounter, player.currentPhase);
+
+            if (qType === 'kanji') {
+                correct = wordObj.word;
+                // 筛选出有汉字的词作为干扰项
+                let poolWithKanji = currentPool.filter(w => w.word !== w.kana);
+                let otherOptions = [...new Set(poolWithKanji.map(w => w.word).filter(w => w !== correct))];
+                otherOptions.sort(() => Math.random() - 0.5);
+                let wrongOptions = otherOptions.slice(0, 3);
+                options = [correct, ...wrongOptions].sort(() => Math.random() - 0.5);
+            } else {
+                correct = wordObj.meaning;
+                let otherOptions = [...new Set(currentPool.map(w => w.meaning).filter(m => m !== correct))];
+                otherOptions.sort(() => Math.random() - 0.5);
+                let wrongOptions = otherOptions.slice(0, 3);
+                options = [correct, ...wrongOptions].sort(() => Math.random() - 0.5);
+            }
+            
+            combatState.currentCorrectAnswer = correct;
+            optionsContainer.innerHTML = '';
+            
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'action-option border border-slate-100 bg-slate-50 md:border-transparent md:bg-transparent';
+                btn.dataset.answer = opt;
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(opt, correct, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('battle-dialogue').style.borderColor = '#bae6fd';
+
+            // 动态选择提问台词
+            const askKey = qType === 'kanji' ? 'ask_kanji' : 'ask_meaning';
+            const rawAskLine = getDialogue(currentEncounter.originalType, askKey) || getDialogue(currentEncounter.originalType, 'ask_meaning');
+            
+            const parts = rawAskLine.split('{word}');
+            const prefix = `* 「${parts[0]}`;
+            const suffix = `${parts[1] || ''}」`;
+            
+            const displayTarget = qType === 'kanji' ? wordObj.kana : wordObj.display;
+            await runDialogueEffect(prefix, displayTarget, suffix);
+
+            optionsContainer.classList.remove('hidden');
+            optionsContainer.classList.add('options-fade-in');
+            combatState.isWaitingAnswer = true;
+
+            if (currentEncounter.timeLimit) {
+                startTimer(currentEncounter.timeLimit);
+            }
+        }
+
+        async function handleAnswer(selected, correct, btnElement) {
+            if(!combatState.isWaitingAnswer || combatState.isTyping) return; 
+            combatState.isWaitingAnswer = false;
+            stopTimer(); 
+
+            const buttons = document.querySelectorAll('.action-option');
+            buttons.forEach(b => b.disabled = true);
+            const optionsContainer = document.getElementById('options-container');
+
+            if (selected === correct) {
+                player.stats.correct++; 
+                
+                btnElement.classList.add('correct-ans');
+                document.getElementById('battle-dialogue').style.borderColor = '#34d399'; 
+                
+                await sleep(300);
+                optionsContainer.classList.add('hidden');
+                
+                const correctLine = getDialogue(currentEncounter.originalType, 'correct');
+                await runSystemFeedback(`* 「${correctLine}」`);
+                
+                combatState.enemyHp -= player.damage;
+                showFloatingText('-' + player.damage, 'enemy-container', '#10b981');
+                
+                const wrapper = document.getElementById('enemy-icon-wrapper');
+                wrapper.classList.add('shake');
+                setTimeout(() => wrapper.classList.remove('shake'), 400);
+
+                updateEnemyHpUI();
+                await sleep(800);
+
+                if (currentEncounter.originalType === 'boss' && !combatState.bossPhaseShifted) {
+                    const hpPercent = (combatState.enemyHp / combatState.enemyMaxHp) * 100;
+                    if (hpPercent <= 50) {
+                        combatState.bossPhaseShifted = true;
+                        document.getElementById('battle-dialogue').style.borderColor = '#fb7185';
+                        await runSystemFeedback(`* 柴犬的眼神突然变得异常犀利...`);
+                        await sleep(1500);
+                        const phaseShiftLine = getDialogue('boss_serious', 'intro');
+                        await runSystemFeedback(`* 「${phaseShiftLine}」`);
+                        await sleep(1500);
+                    }
+                }
+
+                nextTurn();
+
+            } else {
+                player.stats.wrong++; 
+                
+                btnElement.classList.add('wrong-ans');
+                document.getElementById('battle-dialogue').style.borderColor = '#fb7185'; 
+                
+                buttons.forEach(b => {
+                    if(b.dataset.answer === correct) {
+                        b.classList.add('correct-ans');
+                    }
+                });
+
+                await sleep(800); 
+                optionsContainer.classList.add('hidden');
+
+                let damageTaken = 1;
+                if (currentEncounter.originalType === 'elite') {
+                    damageTaken = 2;
+                } else if (currentEncounter.originalType === 'boss') {
+                    // Boss 的伤害动态化判定：根据当前问的词是字数长的还是短的
+                    const checkLength = combatState.currentQType === 'kanji' ? combatState.currentWord.kana.length : combatState.currentWord.word.length;
+                    damageTaken = checkLength >= 3 ? 3 : 2;
+                }
+                player.hp -= damageTaken;
+                
+                const wrongLine = getDialogue(currentEncounter.originalType, 'wrong', { correct: correct });
+                await runSystemFeedback(`* 「${wrongLine}」`);
+                
+                showFloatingText('-' + damageTaken, 'top-bar', '#ef4444');
+                updatePlayerUI();
+
+                document.body.classList.add('shake');
+                setTimeout(() => document.body.classList.remove('shake'), 400);
+
+                await sleep(1500);
+
+                if (player.hp <= 0) {
+                    await runSystemFeedback(`* 集中力涣散，似乎到了极限...`);
+                    await sleep(1000);
+                    gameOver();
+                } else {
+                    nextTurn();
+                }
+            }
+        }
+
+        async function handleTimeout() {
+            if(!combatState.isWaitingAnswer) return;
+            combatState.isWaitingAnswer = false;
+            player.stats.wrong++; 
+            
+            const optionsContainer = document.getElementById('options-container');
+            const buttons = document.querySelectorAll('.action-option');
+            buttons.forEach(b => b.disabled = true);
+            
+            const correct = combatState.currentCorrectAnswer;
+            buttons.forEach(b => {
+                if(b.dataset.answer === correct) {
+                    b.classList.add('correct-ans');
+                }
+            });
+
+            document.getElementById('battle-dialogue').style.borderColor = '#fb7185';
+            await sleep(600); 
+            optionsContainer.classList.add('hidden');
+
+            let damageTaken = 1;
+            if (currentEncounter.originalType === 'elite') {
+                damageTaken = 2;
+            } else if (currentEncounter.originalType === 'boss') {
+                const checkLength = combatState.currentQType === 'kanji' ? combatState.currentWord.kana.length : combatState.currentWord.word.length;
+                damageTaken = checkLength >= 3 ? 3 : 2;
+            }
+            player.hp -= damageTaken;
+            
+            const timeoutLine = getDialogue(currentEncounter.originalType, 'timeout', { correct: correct });
+            await runSystemFeedback(`* 「${timeoutLine}」`);
+            
+            showFloatingText('-' + damageTaken, 'top-bar', '#ef4444');
+            updatePlayerUI();
+
+            document.body.classList.add('shake');
+            setTimeout(() => document.body.classList.remove('shake'), 400);
+
+            await sleep(1500);
+
+            if (player.hp <= 0) {
+                await runSystemFeedback(`* 集中力涣散，似乎到了极限...`);
+                await sleep(1000);
+                gameOver();
+            } else {
+                nextTurn();
+            }
+        }
+
+        function updateEnemyHpUI() {
+            const hpPercent = Math.max(0, (combatState.enemyHp / combatState.enemyMaxHp) * 100);
+            document.getElementById('enemy-hp-bar').style.width = `${hpPercent}%`;
+            
+            const remainingQ = Math.ceil(combatState.enemyHp / player.damage);
+            const totalQ = Math.ceil(combatState.enemyMaxHp / player.damage);
+            document.getElementById('enemy-hp-text').innerText = `${Math.max(0, remainingQ)}/${totalQ}`;
+        }
+
+        function updatePlayerUI() {
+            const hpPercent = Math.max(0, (player.hp / player.maxHp) * 100);
+            document.getElementById('player-hp-bar').style.width = `${hpPercent}%`;
+            document.getElementById('player-hp-text').innerText = `${Math.max(0, player.hp)}/${player.maxHp}`;
+        }
+
+        function showFloatingText(text, containerId, color) {
+            const container = document.getElementById(containerId);
+            const el = document.createElement('div');
+            el.className = 'damage-text';
+            el.innerText = text;
+            el.style.color = color;
+            el.style.left = `calc(50% + ${(Math.random() - 0.5) * 40}px)`;
+            
+            if(containerId === 'top-bar') {
+                el.style.top = '50px';
+                el.style.left = '20px';
+            } else {
+                el.style.top = '10%';
+            }
+            container.appendChild(el);
+            setTimeout(() => el.remove(), 1000);
+        }
+
+        // --- 营地系统 ---
+        function startRest() {
+            switchScreen('screen-rest');
+        }
+
+        function restAction(type) {
+            if (type === 'heal') {
+                const healAmount = Math.floor(player.maxHp * 0.3); 
+                player.hp = Math.min(player.maxHp, player.hp + healAmount);
+                updatePlayerUI();
+                
+                document.getElementById('modal-icon').className = 'fas fa-apple-whole text-3xl';
+                showModal('回復完了', `集中力が ${healAmount} ポイント回復しました。`);
+            } else if (type === 'review') {
+                let pool = getWordsPoolForEncounter({vocab: 'mix'}, player.currentPhase);
+                let words = pool.slice(0, 3).map(w => `<span class="text-sky-500 font-bold">${w.word}</span> : ${w.meaning}`).join('<br>');
+                
+                document.getElementById('modal-icon').className = 'fas fa-book-open text-3xl';
+                showModal('記憶の整理', `<div class="text-left text-sm mt-4 leading-loose bg-slate-50 p-4 rounded-xl border border-slate-100">${words}<br>...</div>`);
+            }
+        }
+
+        // --- 结算与流转 ---
+        function winCombat() {
+            stopTimer(); 
+            if (currentEncounter.originalType === 'boss') {
+                if (player.currentPhase < 3) {
+                    document.getElementById('modal-icon').className = 'fas fa-crown text-3xl text-amber-500';
+                    showModal('階層クリア！', `第 ${player.currentPhase} 階層を突破しました！<br>次の階層へ進みましょう。`, false, true);
+                } else {
+                    showResultScreen(true);
+                }
+            } else {
+                document.getElementById('modal-icon').className = 'fas fa-flag text-3xl text-emerald-500';
+                showModal('ステージクリア！', '見事に試練を突破しました！<br>次のルートを選びましょう。');
+            }
+        }
+
+        function gameOver() {
+            showResultScreen(false);
+        }
+
+        function showModal(title, desc, isEndGame = false, isPhaseClear = false) {
+            document.getElementById('modal-title').innerHTML = title;
+            document.getElementById('modal-desc').innerHTML = desc; 
+            
+            const btn = document.getElementById('modal-btn');
+            if (isEndGame) {
+                btn.innerText = 'ホームへ';
+                btn.onclick = returnToHomeFromResult;
+            } else if (isPhaseClear) {
+                btn.innerText = '次の階層へ進む';
+                btn.onclick = nextPhase;
+            } else {
+                btn.innerText = '進む';
+                btn.onclick = returnToMap;
+            }
+            
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        }
+
+        function returnToMap() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+            player.currentFloor++;
+            renderMap();
+            switchScreen('screen-map');
+        }
+
+        // ==================== 评分与历史记录系统 ====================
+
+        function calculateScore() {
+            const base = player.stats.correct * 100;
+            const penalty = player.stats.wrong * 30;
+            const hpBonus = player.hp * 20;
+            let total = Math.max(0, base - penalty + hpBonus);
+
+            let rank = 'C';
+            const totalQuestions = player.stats.correct + player.stats.wrong;
+            const accuracy = totalQuestions > 0 ? (player.stats.correct / totalQuestions) : 0;
+            
+            if (accuracy >= 0.9 && player.hp >= 12) rank = 'S';
+            else if (accuracy >= 0.75) rank = 'A';
+            else if (accuracy >= 0.5) rank = 'B';
+
+            return { score: total, rank, accuracy };
+        }
+
+        function showResultScreen(isWin) {
+            document.getElementById('top-bar').classList.add('hidden');
+            const resultData = calculateScore();
+            
+            document.getElementById('result-title').innerText = isWin ? '森の試練 完了' : '森の試練 失敗';
+            document.getElementById('result-subtitle').innerText = isWin ? '素晴らしい成績です！' : '次回は頑張りましょう。';
+            
+            const rankEl = document.getElementById('result-rank');
+            rankEl.innerText = resultData.rank;
+            rankEl.className = 'text-8xl font-black drop-shadow-md mb-6 transform scale-110 ';
+            if(resultData.rank === 'S') rankEl.className += 'text-amber-400';
+            else if(resultData.rank === 'A') rankEl.className += 'text-emerald-400';
+            else if(resultData.rank === 'B') rankEl.className += 'text-sky-400';
+            else rankEl.className += 'text-slate-400';
+
+            document.getElementById('result-correct').innerText = player.stats.correct;
+            document.getElementById('result-wrong').innerText = player.stats.wrong;
+            document.getElementById('result-hp').innerText = player.hp;
+            document.getElementById('result-score').innerText = resultData.score;
+
+            saveHistory({
+                date: new Date().toLocaleString('ja-JP', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
+                score: resultData.score,
+                rank: resultData.rank,
+                isWin: isWin
+            });
+
+            switchScreen('screen-result');
+        }
+
+        function saveHistory(record) {
+            let history = JSON.parse(localStorage.getItem('vocab_history_v2')) || [];
+            history.unshift(record); 
+            if(history.length > 20) history.pop(); 
+            localStorage.setItem('vocab_history_v2', JSON.stringify(history));
+        }
+
+        function showHistory() {
+            const historyList = document.getElementById('history-list');
+            let history = JSON.parse(localStorage.getItem('vocab_history_v2')) || [];
+            
+            historyList.innerHTML = '';
+            if(history.length === 0) {
+                historyList.innerHTML = '<p class="text-center text-slate-400 mt-4 text-sm font-bold">まだ記録がありません</p>';
+            } else {
+                history.forEach(record => {
+                    let statusHtml = record.isWin ? `<span class="text-emerald-500"><i class="fas fa-check-circle mr-1"></i>クリア</span>` : `<span class="text-slate-400"><i class="fas fa-times-circle mr-1"></i>失敗</span>`;
+                    let rankColor = record.rank === 'S' ? 'text-amber-400' : (record.rank === 'A' ? 'text-emerald-400' : (record.rank === 'B' ? 'text-sky-400' : 'text-slate-400'));
+                    
+                    historyList.innerHTML += `
+                        <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <div>
+                                <div class="text-sm font-bold text-slate-700">${statusHtml}</div>
+                                <div class="text-xs text-slate-400 mt-1">${record.date}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-black ${rankColor} leading-none">${record.rank}</div>
+                                <div class="text-[10px] text-slate-500 font-bold mt-1">${record.score} pts</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('modal-history').classList.remove('hidden');
+        }
+
+        function hideHistory() {
+            document.getElementById('modal-history').classList.add('hidden');
+        }
+
+        function returnToHomeFromResult() {
+            switchScreen('screen-start');
+        }
+
+    </script>
+</body>
+</html>

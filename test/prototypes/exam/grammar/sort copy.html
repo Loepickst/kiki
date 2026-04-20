@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLPT 鹫先生的弓道场 - 排序练习</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['"Noto Sans SC"', '"Noto Sans JP"', 'sans-serif'],
+                        'serif-jp': ['"Noto Serif SC"', '"Noto Serif JP"', '"Songti SC"', '"SimSun"', 'serif'],
+                        'serif-sc': ['"Noto Serif SC"', '"Noto Serif JP"', '"Songti SC"', '"SimSun"', 'serif'],
+                    },
+                    colors: {
+                        kyudoNavy: '#2c363f',  // 墨色/深靛蓝
+                        kyudoRed: '#993333',   // 薄朱/传统的暗红
+                        kyudoGold: '#c1a173',  // 朽叶/雅致的金棕色
+                        bgMain: '#f7f6f2',     // 和纸的底色
+                        bgCard: '#ffffff',     // 纯白
+                        textMain: '#2c2c2a',   // 柔和的黑
+                        textSub: '#73736e',    // 偏暖的灰
+                        textMuted: '#aba9a4',
+                        borderMain: '#e6e4df',
+                        borderDark: '#d4d2cc',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 基础道场环境设定：极简和纸质感 */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-color: #f7f6f2;
+            color: #2c2c2a;
+            position: relative;
+            /* 极其微弱的宣纸纹理感 */
+            background-image: radial-gradient(#e6e4df 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* 老鹰家纹背景水印 (极其微妙) */
+        body::before {
+            content: '';
+            position: fixed;
+            bottom: -5vh; right: -5vh;
+            width: 45vmin; height: 45vmin;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%232c363f" opacity="0.02" d="M50 10 C20 10, 10 30, 20 60 C35 50, 65 50, 80 60 C90 30, 80 10, 50 10 Z M50 90 L35 65 L65 65 Z"/></svg>') no-repeat center center;
+            background-size: contain;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .font-title-unified {
+            font-family: "Noto Serif SC", "Noto Serif JP", "Songti SC", "SimSun", serif;
+            letter-spacing: 0.05em;
+            /* 移除了导致特定字体扭曲的 palt 属性，保持标准渲染 */
+        }
+
+        /* 视图切换动画 */
+        .view-section { display: none; animation: fadeIn 0.4s ease-out; }
+        .view-section.active { display: block; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 导航栏：极简和风 */
+        .page-header {
+            width: 100%;
+            padding: 12px 20px;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            color: #2c363f;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #e6e4df;
+            display: flex;
+            align-items: center;
+        }
+        .back-btn, .home-btn {
+            color: #73736e;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+            letter-spacing: 0.05em;
+        }
+        .back-btn:hover, .home-btn:hover { color: #2c363f; }
+
+        /* 卡片基础样式：去粗糙感，追求纤细 */
+        .refined-card {
+            background-color: #ffffff;
+            border: 1px solid #e6e4df;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.015);
+            transition: all 0.25s ease;
+        }
+        .refined-card-hover:hover {
+            border-color: #d4d2cc;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            transform: translateY(-1px);
+        }
+
+        /* 选项按钮：精致木牌风 */
+        .sort-option-btn {
+            background: #ffffff;
+            border: 1px solid #e6e4df;
+            position: relative;
+            overflow: hidden;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        .sort-option-btn:hover:not(.option-used) {
+            border-color: #2c363f;
+            background: #faf9f7;
+            cursor: pointer;
+        }
+        /* 细微的左侧装饰线代替大块颜色 */
+        .sort-option-btn::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0; width: 2px;
+            background: #e6e4df;
+            transition: background 0.2s;
+        }
+        .sort-option-btn:hover:not(.option-used)::before { background: #2c363f; }
+        .option-used { 
+            opacity: 0.3; 
+            background: #f7f6f2; 
+            border-color: #e6e4df;
+            box-shadow: none;
+        }
+
+        /* 填空槽：纤细的弓弦/靶台 */
+        .sort-slot {
+            border-bottom: 1px solid #d4d2cc;
+            min-width: 22px;
+            padding: 0 2px;
+            margin: 0 2px;
+            position: relative;
+            background: transparent;
+            transition: all 0.2s;
+        }
+        .sort-slot:hover { border-bottom-color: #2c363f; }
+        .slot-filled {
+            border-bottom-color: #2c363f !important;
+            color: #2c363f !important;
+        }
+        .slot-star-filled {
+            border-bottom-color: #993333 !important;
+            color: #993333 !important;
+        }
+        /* 搭箭动画（轻盈） */
+        .sort-slot.slot-filled .slot-text, .sort-slot.slot-star-filled .slot-text {
+            display: inline-block;
+            animation: nockArrow 0.2s ease-out;
+        }
+        @keyframes nockArrow {
+            0% { transform: translateY(-3px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        /* 提交按钮：克制而优雅 */
+        .submit-btn-kyudo {
+            background-color: #2c363f;
+            color: white;
+            border: 1px solid #2c363f;
+            transition: all 0.2s;
+            border-radius: 3px;
+        }
+        .submit-btn-kyudo:not(:disabled):hover {
+            background-color: #1f262c;
+            box-shadow: 0 2px 6px rgba(44, 54, 63, 0.15);
+        }
+        .submit-btn-kyudo:disabled {
+            background-color: #f0eee9;
+            border-color: #e6e4df;
+            color: #aba9a4;
+        }
+
+        /* 判卷印章 (精致小巧的 Hanko) */
+        .hanko-stamp {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: "Noto Serif JP", serif;
+            letter-spacing: 1px;
+            transform: rotate(-10deg);
+            opacity: 0;
+            animation: stampDown 0.3s cubic-bezier(0.2, 1.5, 0.4, 1) forwards;
+            text-indent: 1px;
+            border: 1.5px solid;
+        }
+        .hanko-correct {
+            color: #993333;
+            border-color: #993333;
+            background: rgba(153, 51, 51, 0.03);
+        }
+        .hanko-incorrect {
+            color: #73736e;
+            border-color: #73736e;
+            border-style: dashed;
+        }
+        @keyframes stampDown {
+            0% { transform: scale(1.3) rotate(0deg); opacity: 0; }
+            100% { transform: scale(1) rotate(-10deg); opacity: 0.85; }
+        }
+
+        /* 工具栏样式复写 */
+        .practice-toolbar-main { background: rgba(255, 255, 255, 0.95); border-top: 1px solid #e6e4df; }
+        .timer-status-dot { background: #d4d2cc; box-shadow: none; }
+        .practice-toolbar-main[data-timer-status="running"] .timer-status-dot { background: #993333; }
+        .timer-toolbar-btn.is-primary { background: #2c363f; border-color: #2c363f; }
+        .timer-toolbar-btn { border-color: #e6e4df; color: #73736e; }
+
+        /* 使用 vh 动态调整视觉高度，让内容不过于贴顶 */
+        .selection-view-hero {
+            margin-top: 8vh;
+        }
+        .selection-view-standard {
+            margin-top: 6vh;
+        }
+        @media (min-width: 768px) {
+            .page-shell { padding: 40px 32px 56px; }
+            .selection-view-hero { margin-top: 12vh; }
+            .selection-view-standard { margin-top: 8vh; }
+            #view-practice.has-bottom-toolbar #practice-question-container { padding-bottom: 196px; }
+            .practice-bottom-toolbar { padding-left: 20px; padding-right: 20px; }
+            .practice-toolbar-main { border-radius: 18px 18px 0 0; min-height: 76px; padding: 14px 18px; }
+        }
+        @media (max-width: 767px) {
+            .practice-toolbar-main { flex-wrap: wrap; gap: 10px; padding: 12px 12px 14px; }
+            .practice-toolbar-meta { width: calc(50% - 6px); }
+            .practice-toolbar-time { width: calc(50% - 6px); text-align: right; font-size: 1.08rem; }
+            .timer-action-group { width: 100%; justify-content: space-between; }
+            .timer-toolbar-btn, .random-target-btn { flex: 1; justify-content: center; }
+            .timer-drawer { left: 0; right: 0; width: auto; bottom: calc(100% + 10px); border-radius: 18px; }
+            .random-toolbar-main { flex-wrap: wrap; gap: 10px; padding: 12px 12px 14px; }
+            .random-toolbar-summary { width: calc(50% - 6px); justify-content: flex-start; gap: 10px; }
+            .random-toolbar-metric { min-width: 64px; align-items: flex-start; }
+            .random-target-group { width: calc(50% - 6px); justify-content: flex-end; }
+        }
+    </style>
+    <link rel="stylesheet" href="../../shared/site-fonts.css">
+</head>
+<body class="font-sans antialiased min-h-screen text-sm">
+
+    <header class="page-header justify-between">
+        <button type="button" id="page-back-btn" class="back-btn flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+            道場を出る
+        </button>
+        <!-- 极简老鹰 Logo -->
+        <div class="flex items-center gap-1.5 pointer-events-none opacity-80">
+            <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-kyudoNavy" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 3c-1.5 0-3 1-3 2.5V8c0 2-1 3.5-2.5 4.5A4.5 4.5 0 0 0 4 16.5c0 1.5 1 2.5 2.5 2.5H12" stroke-linecap="round"/>
+                <path d="M12 3c1.5 0 3 1 3 2.5V8c0 2 1 3.5 2.5 4.5A4.5 4.5 0 0 1 20 16.5c0 1.5-1 2.5-2.5 2.5H12" stroke-linecap="round"/>
+                <path d="M12 22V10" stroke-linecap="round"/>
+            </svg>
+            <span class="font-serif-jp text-[10px] font-bold tracking-[0.2em] text-kyudoNavy">鷲先生の弓道場</span>
+        </div>
+        <a href="../../index.html" class="home-btn flex items-center gap-1">
+            本陣へ
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        </a>
+    </header>
+
+    <div class="page-shell">
+    <!-- 将 max-w 缩小为 xl (576px)，让页面更加紧凑精致 -->
+    <div class="max-w-xl mx-auto">
+        
+        <!-- ================= 1. 引导页 - 选择级别 ================= -->
+        <div id="view-level-select" class="view-section active selection-view-shell selection-view-hero">
+            
+            <div class="text-center mb-8 flex flex-col items-center">
+                <!-- 带有老鹰老师的精致标题区域 -->
+                <div class="flex items-center justify-center gap-3 mb-1">
+                    <div class="w-9 h-9 rounded-full border border-[#dcd6cc] bg-white flex items-center justify-center shrink-0 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
+                        <svg viewBox="0 0 100 100" class="w-5 h-5 text-kyudoNavy">
+                            <path d="M 20 80 C 20 30, 40 10, 80 10 C 90 30, 80 50, 70 60 C 90 70, 80 90, 60 90 C 40 90, 20 100, 20 80 Z" fill="currentColor"/><path d="M 80 10 C 95 15, 100 30, 85 45 C 75 40, 70 30, 80 10 Z" fill="#c1a173"/><circle cx="60" cy="35" r="10" fill="none" stroke="#c1a173" stroke-width="2"/><circle cx="62" cy="35" r="2" fill="#fff"/><line x1="50" y1="35" x2="35" y2="30" stroke="#c1a173" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-title-unified font-bold text-textMain tracking-widest">排序练习</h1>
+                </div>
+                <p class="text-[10px] text-textSub tracking-[0.2em] font-serif-jp mt-2 opacity-80">请选择挑战段位</p>
+            </div>
+
+            <div class="flex justify-center gap-3 mb-4">
+                <button onclick="app.selectLevel('N1')" class="flex-1 refined-card refined-card-hover focus:outline-none flex flex-col items-center py-4 px-2 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 bg-kyudoRed text-white text-[9px] font-bold px-1.5 py-0.5 rounded-bl tracking-widest z-10 opacity-90">推荐</div>
+                    <span class="text-2xl font-bold font-serif-jp text-kyudoNavy mb-1">N1</span>
+                    <span class="text-[10px] text-textSub tracking-widest">高级段位</span>
+                </button>
+                <button onclick="app.selectLevel('N2')" class="flex-1 refined-card refined-card-hover focus:outline-none flex flex-col items-center py-4 px-2 group">
+                    <span class="text-2xl font-bold font-serif-jp text-kyudoNavy mb-1">N2</span>
+                    <span class="text-[10px] text-textSub tracking-widest">中高级段位</span>
+                </button>
+                <button onclick="app.selectLevel('N3')" class="flex-1 refined-card refined-card-hover focus:outline-none flex flex-col items-center py-4 px-2 group">
+                    <span class="text-2xl font-bold font-serif-jp text-kyudoNavy mb-1">N3</span>
+                    <span class="text-[10px] text-textSub tracking-widest">中级段位</span>
+                </button>
+            </div>
+
+            <div class="mt-4">
+                <button onclick="app.startGlobalRandomPractice()" class="w-full refined-card refined-card-hover focus:outline-none flex items-center justify-between p-3 px-4 group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-7 h-7 border border-borderDark rounded-full flex items-center justify-center text-kyudoNavy transition-colors bg-bgMain group-hover:bg-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-3.5 h-3.5"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+                        </div>
+                        <div class="text-left">
+                            <h3 class="text-[13px] font-title-unified font-bold text-textMain tracking-widest">全段位・乱射特訓</h3>
+                            <p class="text-[10px] text-textSub mt-0.5 tracking-wider">在 N1~N3 所有靶标中随机抽取</p>
+                        </div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4 text-textMuted group-hover:text-kyudoNavy transition-colors"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= 2. 引导页 - 选择模式 ================= -->
+        <div id="view-mode-select" class="view-section selection-view-shell selection-view-standard">
+            <div class="mb-6 text-center">
+                <h2 class="text-base font-bold font-serif-jp text-textMain tracking-widest flex items-center justify-center gap-2">
+                    <span id="display-selected-level" class="text-kyudoNavy">N?</span> 修行模式
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button onclick="app.showYearList()" class="refined-card refined-card-hover text-left p-4 focus:outline-none flex flex-col items-start group">
+                    <div class="w-8 h-8 border border-borderDark bg-bgMain group-hover:bg-white rounded-full flex items-center justify-center mb-3 shrink-0 text-kyudoNavy transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+                    </div>
+                    <h3 class="text-sm font-bold font-serif-jp text-textMain mb-1.5 tracking-widest">历年试炼</h3>
+                    <p class="text-[11px] text-textSub leading-relaxed opacity-90">历年真题分类。适合考前冲刺，一年一年稳扎稳打地进行套卷试炼。</p>
+                </button>
+
+                <button onclick="app.startRandomPractice()" class="refined-card refined-card-hover text-left p-4 focus:outline-none flex flex-col items-start group">
+                    <div class="w-8 h-8 border border-kyudoRed bg-red-50 rounded-full flex items-center justify-center mb-3 shrink-0 text-kyudoRed transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+                    </div>
+                    <h3 class="text-sm font-bold font-serif-jp text-kyudoRed mb-1.5 tracking-widest">随机立射</h3>
+                    <p class="text-[11px] text-textSub leading-relaxed opacity-90">随机抽取靶标。适合日常碎片化时间查漏补缺，保持拉弓手感。</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= 3. 引导页 - 选择年份真题 ================= -->
+        <div id="view-year-select" class="view-section selection-view-shell selection-view-standard">
+            <div id="year-review-section" class="hidden mb-4 refined-card bg-[#fffdfa] px-4 py-3 border-l-2 border-l-kyudoRed">
+                <div class="flex items-center gap-1.5 border-b border-borderMain pb-2">
+                    <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-kyudoRed" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <div class="text-xs font-serif-jp font-bold text-kyudoRed tracking-widest">脱的（错题）回顾</div>
+                </div>
+                <div id="year-review-grid" class="mt-2.5 flex flex-wrap gap-2">
+                    <!-- JS 动态注入错题年份按钮 -->
+                </div>
+            </div>
+
+            <div id="year-list-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <!-- JS 动态注入年份卡片 -->
+            </div>
+        </div>
+
+        <!-- ================= 4. 练习界面 (核心做题区) ================= -->
+        <div id="view-practice" class="view-section">
+            <header class="mb-5 flex flex-col md:flex-row md:items-end justify-between border-b border-borderMain pb-2">
+                <div>
+                    <h1 id="practice-title" class="text-base font-serif-jp font-bold text-kyudoNavy tracking-widest">排序练习</h1>
+                    <p class="text-[10px] text-textSub mt-1 tracking-widest opacity-80">搭箭（点击选项），卸下（点击横线），放箭（提交）</p>
+                </div>
+            </header>
+            
+            <!-- 题目容器 -->
+            <div id="practice-question-container" class="space-y-6 mb-16 relative">
+                <!-- JS 动态注入 -->
+            </div>
+
+            <!-- Toolbar (保持功能，微调样式使其更柔和) -->
+            <div id="practice-bottom-toolbar" class="practice-bottom-toolbar" aria-live="polite">
+                <div id="practice-toolbar-backdrop" class="practice-toolbar-backdrop" hidden></div>
+                <div class="practice-bottom-toolbar__inner">
+                    <div id="timer-tool-slot" class="practice-toolbar-slot">
+                        <div id="timer-drawer" class="timer-drawer" hidden>
+                            <div class="timer-drawer-header">
+                                <div class="timer-drawer-title font-serif-jp text-xs">沙漏设定</div>
+                                <button type="button" class="timer-drawer-close" id="timer-drawer-close-btn" aria-label="关闭">×</button>
+                            </div>
+                            <div id="timer-drawer-display" class="timer-drawer-display">00:00</div>
+                            <div class="timer-drawer-section">
+                                <div class="timer-drawer-label">模式</div>
+                                <div class="timer-chip-row">
+                                    <button type="button" class="timer-chip-btn is-selected" data-timer-mode="countup">顺时计</button>
+                                    <button type="button" class="timer-chip-btn" data-timer-mode="countdown">逆时计</button>
+                                </div>
+                            </div>
+                            <div class="timer-drawer-section">
+                                <div class="timer-drawer-label">预设时长</div>
+                                <div class="timer-chip-row">
+                                    <button type="button" class="timer-chip-btn is-selected" data-timer-preset="5">5分</button>
+                                    <button type="button" class="timer-chip-btn" data-timer-preset="10">10分</button>
+                                    <button type="button" class="timer-chip-btn" data-timer-preset="15">15分</button>
+                                    <label class="timer-custom-wrap">
+                                        <input type="number" min="1" max="180" step="1" class="timer-custom-input" id="timer-custom-input" value="5">
+                                        分
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="timer-drawer-section">
+                                <div class="timer-drawer-label">控制</div>
+                                <div class="timer-control-row">
+                                    <button type="button" class="timer-control-btn is-primary" id="timer-drawer-start-btn">开始</button>
+                                    <button type="button" class="timer-control-btn" id="timer-drawer-pause-btn">暂停</button>
+                                    <button type="button" class="timer-control-btn" id="timer-drawer-reset-btn">重置</button>
+                                    <button type="button" class="timer-hide-btn" id="timer-hide-btn">隐藏</button>
+                                </div>
+                            </div>
+                            <div id="timer-status-text" class="timer-status-text"></div>
+                        </div>
+
+                        <div id="timer-toolbar-main" class="practice-toolbar-main" data-timer-status="idle">
+                            <div class="practice-toolbar-meta">
+                                <span class="timer-status-dot" aria-hidden="true"></span>
+                                <span class="practice-toolbar-label font-serif-jp text-[11px]">计时</span>
+                            </div>
+                            <div id="timer-toolbar-display" class="practice-toolbar-time text-base">00:00</div>
+                            <div class="timer-action-group">
+                                <button type="button" class="timer-toolbar-btn is-primary text-[11px] py-1.5 px-2.5" id="timer-toolbar-toggle-btn">开始</button>
+                                <button type="button" class="timer-toolbar-btn text-[11px] py-1.5 px-2.5" id="timer-toolbar-reset-btn">重置</button>
+                                <button type="button" class="timer-toolbar-btn text-[11px] py-1.5 px-2.5" id="timer-toolbar-settings-btn">设置</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="random-tool-slot" class="practice-toolbar-slot" hidden>
+                        <div id="random-toolbar-main" class="practice-toolbar-main random-toolbar-main">
+                            <div class="practice-toolbar-meta">
+                                <span class="timer-status-dot" aria-hidden="true"></span>
+                                <span class="practice-toolbar-label font-serif-jp text-[11px]">节奏</span>
+                            </div>
+                            <div class="random-toolbar-summary">
+                                <div class="random-toolbar-metric">
+                                    <span class="random-toolbar-metric-label text-[10px]">已射</span>
+                                    <span id="random-toolbar-progress" class="random-toolbar-metric-value text-sm">0/10</span>
+                                </div>
+                                <div class="random-toolbar-metric">
+                                    <span class="random-toolbar-metric-label text-[10px]">连中</span>
+                                    <span id="random-toolbar-streak" class="random-toolbar-metric-value text-sm">0</span>
+                                </div>
+                            </div>
+                            <div class="random-target-group">
+                                <button type="button" class="timer-toolbar-btn random-target-btn text-[11px] py-1.5 px-2" data-random-target="5">5靶</button>
+                                <button type="button" class="timer-toolbar-btn random-target-btn is-primary text-[11px] py-1.5 px-2" data-random-target="10">10靶</button>
+                                <button type="button" class="timer-toolbar-btn random-target-btn text-[11px] py-1.5 px-2" data-random-target="20">20靶</button>
+                                <button type="button" class="timer-toolbar-btn text-[11px] py-1.5 px-2.5" id="random-toolbar-end-btn">纳弓</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+
+    <script src="./data-sort-n1.js"></script>
+    <script src="./data-sort-n2.js"></script>
+    <script src="./data-sort-n3.js"></script>
+
+    <!-- 题目数据与核心逻辑 -->
+    <script>
+        // --- 1. 结构化题库 (带级别和年份元数据) ---
+        const sortQuestionBanks = window.sortQuestionBanks || {};
+        const questionDatabase = [
+            ...(sortQuestionBanks.N1 || []),
+            ...(sortQuestionBanks.N2 || []),
+            ...(sortQuestionBanks.N3 || [])
+        ];
+
+        const TIMER_PRESETS = [5, 10, 15];
+        const RANDOM_TARGET_PRESETS = [5, 10, 20];
+
+        function clampTimerMinutes(value) {
+            const numeric = Number(value);
+            if (!Number.isFinite(numeric)) return TIMER_PRESETS[0];
+            return Math.min(180, Math.max(1, Math.round(numeric)));
+        }
+
+        function formatTimerClock(totalSeconds) {
+            const safeSeconds = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+            const minutes = Math.floor(safeSeconds / 60);
+            const seconds = safeSeconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function shuffleQuestions(items) {
+            const shuffled = [...items];
+            for (let index = shuffled.length - 1; index > 0; index--) {
+                const swapIndex = Math.floor(Math.random() * (index + 1));
+                [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+            }
+            return shuffled;
+        }
+
+        function getIconSvg(name, className = '') {
+            const icons = {
+                shuffle: '<path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/>',
+                'chevron-right': '<path d="m9 18 6-6-6-6"/>',
+                'arrow-left': '<path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>',
+                list: '<path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/>',
+                'check-circle': '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>', // 精致的小靶子
+                'arrow-right': '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+                calendar: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>'
+            };
+            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="${className}" aria-hidden="true" focusable="false">${icons[name] || ''}</svg>`;
+        }
+
+        function getGrammarSortMarksKey(level, year) {
+            return `grammar_sort_marks::${level}::${year}`;
+        }
+
+        function getGrammarSortLastPracticeKey(level) {
+            return `grammar_sort_last_practice::${level}`;
+        }
+
+        function parseStoredIdList(rawValue) {
+            try {
+                const parsed = JSON.parse(rawValue || '[]');
+                if (!Array.isArray(parsed)) return [];
+                return Array.from(new Set(parsed.map(item => String(item || '').trim()).filter(Boolean)));
+            } catch (error) { return []; }
+        }
+
+        function getYearMistakes(level, year) {
+            return parseStoredIdList(localStorage.getItem(getGrammarSortMarksKey(level, year)));
+        }
+
+        function saveYearMistakes(level, year, ids) {
+            const normalized = Array.from(new Set((ids || []).map(item => String(item || '').trim()).filter(Boolean)));
+            const key = getGrammarSortMarksKey(level, year);
+            if (normalized.length === 0) {
+                localStorage.removeItem(key);
+                return;
+            }
+            localStorage.setItem(key, JSON.stringify(normalized));
+        }
+
+        function getYearSortValue(year) {
+            const match = String(year || '').match(/^(\d{4})年(\d{1,2})月$/);
+            if (!match) return 0;
+            return Number(match[1]) * 100 + Number(match[2]);
+        }
+
+        function collectYearReviewItems(level) {
+            const prefix = `grammar_sort_marks::${level}::`;
+            const items = [];
+            for (let index = 0; index < localStorage.length; index++) {
+                const key = localStorage.key(index);
+                if (!key || !key.startsWith(prefix)) continue;
+                const year = key.slice(prefix.length);
+                const ids = getYearMistakes(level, year);
+                if (ids.length === 0) continue;
+                items.push({ year, count: ids.length });
+            }
+            items.sort((left, right) => getYearSortValue(right.year) - getYearSortValue(left.year));
+            return items;
+        }
+
+        function replaceAppUrl(params) {
+            const nextParams = new URLSearchParams();
+            Object.entries(params || {}).forEach(([key, value]) => {
+                if (value) nextParams.set(key, value);
+            });
+            const nextUrl = nextParams.toString() ? `${window.location.pathname}?${nextParams.toString()}` : window.location.pathname;
+            try { window.history.replaceState({ path: nextUrl }, '', nextUrl); } 
+            catch (error) { console.warn('History API is restricted in this environment.'); }
+        }
+
+        // --- 2. 核心应用状态与逻辑 ---
+        const app = {
+            currentLevel: null,
+            practiceMode: null, 
+            currentYear: null,
+            questionQueue: [], 
+            currentIndex: 0,
+            stats: { correct: 0, incorrect: 0 }, 
+            randomTargetCount: RANDOM_TARGET_PRESETS[1],
+            randomRoundTarget: RANDOM_TARGET_PRESETS[1],
+            randomAnsweredCount: 0,
+            randomStreak: 0,
+            randomBestStreak: 0,
+            timer: {
+                mode: 'countup', status: 'idle', elapsedSeconds: 0, remainingSeconds: TIMER_PRESETS[0] * 60,
+                selectedMinutes: TIMER_PRESETS[0], totalSeconds: TIMER_PRESETS[0] * 60,
+                timerId: null, drawerOpen: false, displayHidden: false, hasStarted: false,
+                timeoutTriggered: false, resultHasRun: false, resultSeconds: 0, resultTimeout: false
+            },
+
+            init() {
+                const params = new URLSearchParams(window.location.search);
+                const level = params.get('level');
+                const year = params.get('year');
+                const mode = params.get('mode');
+
+                if (!['N1', 'N2', 'N3'].includes(level)) {
+                    replaceAppUrl({});
+                    return;
+                }
+                this.currentLevel = level;
+                document.getElementById('display-selected-level').textContent = level;
+
+                const hasYear = year && questionDatabase.some(q => q.level === level && q.year === year);
+                if (hasYear) {
+                    if (mode === 'review') this.startMistakePractice(year, { updateUrl: false, fromInit: true });
+                    else this.startYearPractice(year, { updateUrl: false });
+                    return;
+                }
+                replaceAppUrl({ level });
+                this.showYearList({ updateUrl: false });
+            },
+
+            getActiveViewId() { return document.querySelector('.view-section.active')?.id || 'view-level-select'; },
+
+            handleHeaderBack() {
+                const activeViewId = this.getActiveViewId();
+                if (activeViewId === 'view-level-select') { window.location.href = 'index.html'; return; }
+                if (activeViewId === 'view-mode-select') { this.goHome(); return; }
+                if (activeViewId === 'view-year-select') { this.backToModeSelect(); return; }
+                if (activeViewId === 'view-practice') { this.handleBackFromPractice(); return; }
+                window.location.href = 'index.html';
+            },
+
+            isPracticeInProgress() { return this.questionQueue.length > 0 && this.currentIndex < this.questionQueue.length; },
+
+            getActiveToolbarMode() {
+                const practiceView = document.getElementById('view-practice');
+                if (!practiceView?.classList.contains('active') || !this.isPracticeInProgress()) return null;
+                if (this.practiceMode === 'year') return 'timer';
+                if (this.practiceMode === 'random') return 'random';
+                return null;
+            },
+
+            setPracticeToolbarMode(mode) {
+                const toolbar = document.getElementById('practice-bottom-toolbar');
+                const practiceView = document.getElementById('view-practice');
+                const visible = Boolean(mode);
+                if (!toolbar || !practiceView) return;
+
+                toolbar.hidden = !visible;
+                toolbar.classList.toggle('is-visible', visible);
+                practiceView.classList.toggle('has-bottom-toolbar', visible);
+
+                const timerSlot = document.getElementById('timer-tool-slot');
+                const randomSlot = document.getElementById('random-tool-slot');
+                if (timerSlot) timerSlot.hidden = mode !== 'timer';
+                if (randomSlot) randomSlot.hidden = mode !== 'random';
+
+                if (mode !== 'timer') {
+                    this.timer.drawerOpen = false;
+                    toolbar.classList.remove('drawer-open');
+                    const backdrop = document.getElementById('practice-toolbar-backdrop');
+                    const drawer = document.getElementById('timer-drawer');
+                    if (backdrop) backdrop.hidden = true;
+                    if (drawer) drawer.hidden = true;
+                }
+            },
+
+            getRandomQuestionPool() {
+                if (this.currentLevel === 'ALL') return [...questionDatabase];
+                return questionDatabase.filter(q => q.level === this.currentLevel);
+            },
+
+            getEffectiveRandomTarget(poolLength) {
+                const desiredTarget = RANDOM_TARGET_PRESETS.includes(Number(this.randomTargetCount)) ? Number(this.randomTargetCount) : RANDOM_TARGET_PRESETS[1];
+                return poolLength ? Math.min(desiredTarget, poolLength) : desiredTarget;
+            },
+
+            prepareRandomRound(pool) {
+                const effectiveTarget = this.getEffectiveRandomTarget(pool.length);
+                this.randomRoundTarget = effectiveTarget;
+                this.randomAnsweredCount = 0;
+                this.randomStreak = 0;
+                this.randomBestStreak = 0;
+                this.questionQueue = shuffleQuestions(pool).slice(0, effectiveTarget);
+                this.currentIndex = 0;
+            },
+
+            setRandomTargetCount(value) {
+                this.randomTargetCount = RANDOM_TARGET_PRESETS.includes(Number(value)) ? Number(value) : RANDOM_TARGET_PRESETS[1];
+                if (this.practiceMode === 'random') {
+                    if (this.currentLevel === 'ALL') this.startGlobalRandomPractice();
+                    else this.startRandomPractice();
+                    return;
+                }
+                this.updateTimerUI();
+            },
+
+            updateRandomProgressAfterAnswer(isStarCorrect) {
+                if (this.practiceMode !== 'random') return;
+                this.randomAnsweredCount = Math.min(this.randomRoundTarget, this.randomAnsweredCount + 1);
+                if (isStarCorrect) {
+                    this.randomStreak += 1;
+                    if (this.randomStreak > this.randomBestStreak) this.randomBestStreak = this.randomStreak;
+                } else {
+                    this.randomStreak = 0;
+                }
+            },
+
+            finishRandomRound() {
+                if (this.practiceMode !== 'random') return;
+                this.currentIndex = this.questionQueue.length;
+                this.renderPracticeQuestion();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            stopTimer() { if (this.timer.timerId) { window.clearInterval(this.timer.timerId); this.timer.timerId = null; } },
+            getTimerClockText() { return this.timer.mode === 'countdown' ? formatTimerClock(this.timer.remainingSeconds) : formatTimerClock(this.timer.elapsedSeconds); },
+            getTimerUsedSeconds() {
+                if (!this.timer.hasStarted) return 0;
+                return this.timer.mode === 'countdown' ? Math.max(0, this.timer.totalSeconds - this.timer.remainingSeconds) : this.timer.elapsedSeconds;
+            },
+            getResultTimerText() { return this.timer.resultHasRun ? formatTimerClock(this.timer.resultSeconds) : '未开启'; },
+            getTimerStatusMeta() {
+                const timer = this.timer;
+                if (timer.resultTimeout || timer.status === 'timeout') return { text: '时间结束，本轮试炼已结束。', tone: 'danger' };
+                if (timer.status === 'running') return timer.mode === 'countdown' ? { text: '逆时计进行中，时间到会直接结算。', tone: 'warning' } : { text: '正在记录本轮用时。', tone: '' };
+                if (timer.status === 'paused') return { text: '沙漏已暂停。', tone: '' };
+                if (timer.mode === 'countdown') return { text: `逆时计将从 ${timer.selectedMinutes} 分开始。`, tone: 'warning' };
+                return { text: '手动开始后会记录本轮试炼时间。', tone: '' };
+            },
+            closeTimerDrawer(options = {}) {
+                this.timer.drawerOpen = false;
+                if (!options.skipUpdate) this.updateTimerUI();
+            },
+            openTimerDrawer() {
+                if (!this.isPracticeInProgress() || this.practiceMode !== 'year') return;
+                this.timer.drawerOpen = true; this.updateTimerUI();
+            },
+            toggleTimerDrawer() {
+                if (!this.isPracticeInProgress() || this.practiceMode !== 'year') return;
+                this.timer.drawerOpen = !this.timer.drawerOpen; this.updateTimerUI();
+            },
+            resetTimerForPractice() {
+                this.stopTimer();
+                this.timer = { ...this.timer, status: 'idle', elapsedSeconds: 0, totalSeconds: clampTimerMinutes(this.timer.selectedMinutes) * 60, hasStarted: false, timeoutTriggered: false, resultHasRun: false, resultSeconds: 0, resultTimeout: false };
+                this.timer.remainingSeconds = this.timer.totalSeconds;
+                this.closeTimerDrawer({ skipUpdate: true }); this.updateTimerUI();
+            },
+            finalizeTimerForResult(options = {}) {
+                if (!this.timer.resultTimeout && !this.timer.resultHasRun) {
+                    this.timer.resultHasRun = this.timer.hasStarted;
+                    this.timer.resultSeconds = this.getTimerUsedSeconds();
+                }
+                this.timer.resultTimeout = this.timer.resultTimeout || options.timedOut;
+                this.stopTimer();
+                if (options.timedOut) { this.timer.status = 'timeout'; this.timer.remainingSeconds = 0; } 
+                else if (this.timer.hasStarted) this.timer.status = 'finished';
+                else this.timer.status = 'idle';
+                this.setPracticeToolbarMode(null); this.updateTimerUI();
+            },
+            setTimerMode(mode) {
+                if (!['countup', 'countdown'].includes(mode) || this.timer.mode === mode) return;
+                this.resetTimerForPractice(); this.timer.mode = mode; this.updateTimerUI();
+            },
+            setTimerSelectedMinutes(value) {
+                const minutes = clampTimerMinutes(value);
+                this.timer.selectedMinutes = minutes; this.timer.totalSeconds = minutes * 60;
+                if (this.timer.mode === 'countdown') this.resetTimerForPractice();
+                this.updateTimerUI();
+            },
+            toggleTimerDisplayVisibility() { this.timer.displayHidden = !this.timer.displayHidden; this.updateTimerUI(); },
+            startTimer() {
+                if (!this.isPracticeInProgress()) return;
+                const timer = this.timer; this.stopTimer();
+                if (timer.mode === 'countdown') {
+                    timer.totalSeconds = clampTimerMinutes(timer.selectedMinutes) * 60;
+                    if (!timer.hasStarted || timer.status === 'idle' || timer.status === 'finished' || timer.status === 'timeout') timer.remainingSeconds = timer.totalSeconds;
+                } else if (!timer.hasStarted || timer.status === 'finished' || timer.status === 'timeout') timer.elapsedSeconds = 0;
+
+                timer.hasStarted = true; timer.timeoutTriggered = false; timer.resultHasRun = false; timer.resultSeconds = 0; timer.resultTimeout = false; timer.status = 'running';
+                timer.timerId = window.setInterval(() => {
+                    if (timer.mode === 'countup') { timer.elapsedSeconds += 1; this.updateTimerUI(); return; }
+                    timer.remainingSeconds = Math.max(0, timer.remainingSeconds - 1);
+                    if (timer.remainingSeconds === 0) { this.finishCountdown(); return; }
+                    this.updateTimerUI();
+                }, 1000);
+                this.updateTimerUI();
+            },
+            pauseTimer() { if (this.timer.status !== 'running') return; this.stopTimer(); this.timer.status = this.timer.hasStarted ? 'paused' : 'idle'; this.updateTimerUI(); },
+            toggleTimerRun() { if (this.timer.status === 'running') this.pauseTimer(); else this.startTimer(); },
+            resetTimer() { this.resetTimerForPractice(); },
+            finishCountdown() {
+                if (!this.isPracticeInProgress() || this.timer.timeoutTriggered) return;
+                this.stopTimer(); this.timer.remainingSeconds = 0; this.timer.status = 'timeout'; this.timer.timeoutTriggered = true;
+                this.currentIndex = this.questionQueue.length; this.renderPracticeQuestion();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            updateTimerUI() {
+                const timer = this.timer;
+                const toolbar = document.getElementById('practice-bottom-toolbar');
+                const toolbarDisplay = document.getElementById('timer-toolbar-display');
+                const drawerDisplay = document.getElementById('timer-drawer-display');
+                const toolbarMain = document.getElementById('timer-toolbar-main');
+                if (!toolbar || !toolbarDisplay || !drawerDisplay || !toolbarMain) return;
+
+                const activeToolbarMode = this.getActiveToolbarMode();
+                this.setPracticeToolbarMode(activeToolbarMode);
+
+                const realTime = this.getTimerClockText();
+                toolbarDisplay.textContent = timer.displayHidden ? '--:--' : realTime;
+                toolbarDisplay.classList.toggle('is-concealed', timer.displayHidden);
+                drawerDisplay.textContent = realTime;
+                toolbarMain.dataset.timerStatus = timer.status;
+
+                const toggleBtn = document.getElementById('timer-toolbar-toggle-btn');
+                if (toggleBtn) toggleBtn.textContent = timer.status === 'running' ? '暂停' : (timer.status === 'paused' ? '继续' : '开始');
+                
+                const resetBtn = document.getElementById('timer-toolbar-reset-btn');
+                if (resetBtn) resetBtn.disabled = !timer.hasStarted && timer.status === 'idle';
+
+                const hideBtn = document.getElementById('timer-hide-btn');
+                if (hideBtn) { hideBtn.classList.toggle('is-selected', timer.displayHidden); hideBtn.textContent = timer.displayHidden ? '显示时间' : '隐藏时间'; }
+
+                const statusText = document.getElementById('timer-status-text');
+                if (statusText) {
+                    const statusMeta = this.getTimerStatusMeta();
+                    statusText.textContent = statusMeta.text;
+                    statusText.className = 'timer-status-text text-xs';
+                    if (statusMeta.tone) statusText.classList.add(`is-${statusMeta.tone}`);
+                }
+
+                // Update Random UI
+                const randomProgress = document.getElementById('random-toolbar-progress');
+                if (randomProgress) randomProgress.textContent = `${Math.min(this.randomAnsweredCount, this.randomRoundTarget)}/${this.randomRoundTarget}`;
+                const randomStreak = document.getElementById('random-toolbar-streak');
+                if (randomStreak) randomStreak.textContent = String(this.randomStreak);
+                
+                document.querySelectorAll('[data-random-target]').forEach(button => {
+                    button.classList.toggle('is-primary', Number(button.dataset.randomTarget) === this.randomTargetCount);
+                });
+            },
+
+            // 视图控制器
+            switchView(viewId) {
+                document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+                document.getElementById(viewId).classList.add('active');
+                if (viewId !== 'view-practice') { this.setPracticeToolbarMode(null); this.closeTimerDrawer({ skipUpdate: true }); } 
+                else this.updateTimerUI();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+            goHome() { this.resetTimerForPractice(); this.setPracticeToolbarMode(null); this.currentLevel = null; this.practiceMode = null; this.currentYear = null; replaceAppUrl({}); this.switchView('view-level-select'); },
+            handleBackFromPractice() {
+                this.resetTimerForPractice(); this.setPracticeToolbarMode(null);
+                if (this.currentLevel === 'ALL') { this.goHome(); return; }
+                if (this.practiceMode === 'year' || this.practiceMode === 'mistake') this.showYearList();
+                else { replaceAppUrl({ level: this.currentLevel }); this.switchView('view-mode-select'); }
+            },
+            backToModeSelect() { this.resetTimerForPractice(); this.setPracticeToolbarMode(null); this.practiceMode = null; replaceAppUrl({ level: this.currentLevel }); this.switchView('view-mode-select'); },
+
+            // 导航操作
+            selectLevel(level) { this.currentLevel = level; document.getElementById('display-selected-level').textContent = level; replaceAppUrl({ level }); this.switchView('view-mode-select'); },
+            showYearList(options = {}) {
+                if (options.updateUrl !== false) replaceAppUrl({ level: this.currentLevel });
+                this.practiceMode = 'year';
+                
+                const availableYears = [...new Set(questionDatabase.filter(q => q.level === this.currentLevel).map(q => q.year))].sort((left, right) => getYearSortValue(right) - getYearSortValue(left));
+                const container = document.getElementById('year-list-container');
+                const reviewSection = document.getElementById('year-review-section');
+                const reviewGrid = document.getElementById('year-review-grid');
+                container.innerHTML = ''; reviewGrid.innerHTML = '';
+
+                const reviewItems = collectYearReviewItems(this.currentLevel);
+                if (reviewItems.length > 0) {
+                    reviewGrid.innerHTML = reviewItems.map(item => `
+                        <button onclick="app.startMistakePractice('${item.year}')" class="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded border border-kyudoRed bg-white text-kyudoRed text-[11px] font-bold tracking-wider hover:bg-kyudoRed hover:text-white transition-colors">
+                            <span>${item.year}</span>
+                            <span class="text-[9px] px-1 py-0.5 rounded bg-red-50 text-kyudoRed group-hover:bg-white/20">${item.count}靶</span>
+                        </button>
+                    `).join('');
+                    reviewSection.classList.remove('hidden');
+                } else { reviewSection.classList.add('hidden'); }
+
+                const lastPractice = localStorage.getItem(getGrammarSortLastPracticeKey(this.currentLevel)) || '';
+
+                if (availableYears.length === 0) {
+                    container.innerHTML = `<div class="col-span-full text-center py-8 text-[11px] text-textMuted border border-dashed border-borderMain rounded">该级别暂无靶标</div>`;
+                } else {
+                    container.innerHTML = availableYears.map(year => {
+                        const qCount = questionDatabase.filter(q => q.level === this.currentLevel && q.year === year).length;
+                        const isLastPractice = year === lastPractice;
+                        return `
+                            <button onclick="app.startYearPractice('${year}')" class="refined-card refined-card-hover focus:outline-none text-left p-3 flex items-center justify-between group">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1 h-5 bg-borderDark group-hover:bg-kyudoNavy transition-colors rounded-sm"></div>
+                                    <div class="font-bold text-sm font-serif-jp text-textMain tracking-wider">${year}</div>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    ${isLastPractice ? '<span class="text-[9px] font-bold tracking-[0.1em] text-kyudoNavy border border-kyudoNavy rounded px-1 py-0.5">前回</span>' : ''}
+                                    <div class="text-[10px] text-textSub bg-bgMain px-2 py-0.5 rounded border border-borderMain group-hover:bg-kyudoNavy group-hover:text-white transition-colors">
+                                        共 ${qCount} 靶
+                                    </div>
+                                </div>
+                            </button>
+                        `;
+                    }).join('');
+                }
+                this.switchView('view-year-select');
+            },
+
+            startRandomPractice() {
+                this.practiceMode = 'random'; this.currentYear = '随机抽取'; this.stats = { correct: 0, incorrect: 0 }; replaceAppUrl({ level: this.currentLevel });
+                const pool = this.getRandomQuestionPool();
+                if(pool.length === 0) { alert('该级别暂无靶标'); return; }
+                this.prepareRandomRound(pool); this.resetTimerForPractice(); this.renderPracticeQuestion(); this.switchView('view-practice');
+            },
+            startGlobalRandomPractice() {
+                this.currentLevel = 'ALL'; this.practiceMode = 'random'; this.currentYear = '全段位乱射'; this.stats = { correct: 0, incorrect: 0 }; replaceAppUrl({});
+                const pool = this.getRandomQuestionPool();
+                if(pool.length === 0) { alert('道场暂无靶标'); return; }
+                this.prepareRandomRound(pool); this.resetTimerForPractice(); this.renderPracticeQuestion(); this.switchView('view-practice');
+            },
+            startMistakePractice(year, options = {}) {
+                this.practiceMode = 'mistake'; this.currentYear = year; this.stats = { correct: 0, incorrect: 0 };
+                const mistakeIds = getYearMistakes(this.currentLevel, year);
+                let pool = questionDatabase.filter(q => q.level === this.currentLevel && q.year === year && mistakeIds.includes(q.id));
+                if (pool.length === 0) {
+                    alert('お見事！这个年份当前没有脱靶（错题）记录。');
+                    if (options.fromInit) replaceAppUrl({ level: this.currentLevel });
+                    this.showYearList({ updateUrl: options.updateUrl !== false }); return;
+                }
+                localStorage.setItem(getGrammarSortLastPracticeKey(this.currentLevel), year);
+                this.questionQueue = pool; this.currentIndex = 0; this.resetTimerForPractice();
+                if (options.updateUrl !== false) replaceAppUrl({ level: this.currentLevel, year, mode: 'review' });
+                this.renderPracticeQuestion(); this.switchView('view-practice');
+            },
+            startYearPractice(year, options = {}) {
+                this.practiceMode = 'year'; this.currentYear = year; this.stats = { correct: 0, incorrect: 0 };
+                localStorage.setItem(getGrammarSortLastPracticeKey(this.currentLevel), year);
+                this.questionQueue = questionDatabase.filter(q => q.level === this.currentLevel && q.year === year);
+                this.currentIndex = 0; this.resetTimerForPractice();
+                if (options.updateUrl !== false) replaceAppUrl({ level: this.currentLevel, year });
+                this.renderPracticeQuestion(); this.switchView('view-practice');
+            },
+
+            // 渲染做题界面
+            renderPracticeQuestion() {
+                const container = document.getElementById('practice-question-container');
+                container.innerHTML = ''; 
+                
+                const headerTitle = this.currentLevel === 'ALL'
+                    ? '全段位・乱射特訓'
+                    : `[${this.currentLevel}] ${this.currentYear}${this.practiceMode === 'mistake' ? '（脱的復習）' : ''}`;
+                document.getElementById('practice-title').textContent = headerTitle;
+
+                if (this.currentIndex >= this.questionQueue.length) {
+                    if (this.practiceMode === 'year') this.finalizeTimerForResult({ timedOut: this.timer.timeoutTriggered });
+                    else { this.stopTimer(); this.setPracticeToolbarMode(null); this.closeTimerDrawer({ skipUpdate: true }); }
+                    
+                    let restartAction = 'app.startRandomPractice()';
+                    if (this.practiceMode === 'year') restartAction = `app.startYearPractice('${this.currentYear}')`;
+                    if (this.practiceMode === 'mistake') restartAction = `app.startMistakePractice('${this.currentYear}')`;
+                    if (this.currentLevel === 'ALL') restartAction = `app.startGlobalRandomPractice()`;
+
+                    const totalQ = this.stats.correct + this.stats.incorrect;
+                    let completeMsg = '';
+                    if (this.practiceMode === 'year') completeMsg = `完成了 <strong class="text-kyudoNavy">${headerTitle}</strong> 的 ${totalQ} 次射击。<br>非全中的靶子已自动收录进【脱的（错题）回顾】。`;
+                    else if (this.practiceMode === 'mistake') completeMsg = `完成了 <strong class="text-kyudoNavy">[${this.currentLevel}] ${this.currentYear}</strong> 的脱的重修。<br>全中的靶子已自动移出这一年的脱的库。`;
+                    else completeMsg = `完成了 <strong class="text-kyudoNavy">${headerTitle}</strong> 的 ${totalQ} 次射击。<br><span class="text-[10px] text-textMuted">（注：随机乱射不收录脱的靶标）</span>`;
+
+                    const timerSummaryHtml = this.practiceMode === 'year' ? `
+                        <div class="max-w-[160px] mx-auto mb-5 bg-bgMain border border-borderMain rounded p-2">
+                            <div class="text-[10px] font-bold tracking-widest text-textSub">本次用时</div>
+                            <div class="mt-1 text-lg font-bold text-kyudoNavy font-sans">${this.getResultTimerText()}</div>
+                        </div>
+                    ` : '';
+
+                    const randomSummaryHtml = this.practiceMode === 'random' ? `
+                        <div class="max-w-[220px] mx-auto mb-5 bg-bgMain border border-borderMain rounded p-2">
+                            <div class="grid grid-cols-2 gap-3 text-center">
+                                <div>
+                                    <div class="text-[10px] font-bold tracking-widest text-textSub">本轮靶数</div>
+                                    <div class="mt-1 text-lg font-bold text-kyudoNavy font-sans">${this.randomRoundTarget}</div>
+                                </div>
+                                <div>
+                                    <div class="text-[10px] font-bold tracking-widest text-textSub">最高连中</div>
+                                    <div class="mt-1 text-lg font-bold text-kyudoNavy font-sans">${this.randomBestStreak}</div>
+                                </div>
+                            </div>
+                        </div>
+                    ` : '';
+
+                    container.innerHTML = `
+                        <div class="text-center refined-card p-6 md:p-8 fade-in">
+                            <div class="w-10 h-10 rounded-full border border-borderDark flex items-center justify-center mx-auto mb-3">
+                                ${getIconSvg('check-circle', 'w-5 h-5 text-kyudoNavy')}
+                            </div>
+                            <h2 class="text-base font-bold font-serif-jp text-textMain mb-5 tracking-widest">修练完成</h2>
+                            
+                            <div class="flex justify-center gap-5 mb-5 border-y border-borderMain py-3 max-w-[200px] mx-auto">
+                                <div class="text-center w-16">
+                                    <div class="text-xl font-bold text-kyudoRed mb-1 font-sans">${this.stats.correct}</div>
+                                    <div class="text-[9px] text-kyudoRed tracking-widest font-bold">靶心的中</div>
+                                </div>
+                                <div class="text-center w-16">
+                                    <div class="text-xl font-bold text-textSub mb-1 font-sans">${this.stats.incorrect}</div>
+                                    <div class="text-[9px] text-textSub tracking-widest font-bold">脱的/偏离</div>
+                                </div>
+                            </div>
+
+                            ${timerSummaryHtml}
+                            ${randomSummaryHtml}
+
+                            <!-- 鹫先生的结语 -->
+                            <div class="bg-[#faf9f6] border border-borderMain rounded flex p-3 gap-2.5 items-start max-w-sm mx-auto mb-6 text-left">
+                                <div class="w-7 h-7 rounded-full border border-borderDark bg-white flex items-center justify-center shrink-0">
+                                    <svg viewBox="0 0 100 100" class="w-4 h-4 text-kyudoNavy"><path d="M 20 80 C 20 30, 40 10, 80 10 C 90 30, 80 50, 70 60 C 90 70, 80 90, 60 90 C 40 90, 20 100, 20 80 Z" fill="currentColor"/><path d="M 80 10 C 95 15, 100 30, 85 45 C 75 40, 70 30, 80 10 Z" fill="#c1a173"/><circle cx="60" cy="35" r="10" fill="none" stroke="#c1a173" stroke-width="2"/><circle cx="62" cy="35" r="2" fill="#fff"/><line x1="50" y1="35" x2="35" y2="30" stroke="#c1a173" stroke-width="2"/></svg>
+                                </div>
+                                <p class="text-textSub text-[11px] leading-relaxed font-serif-jp flex-1">${completeMsg}</p>
+                            </div>
+                            
+                            <div class="flex justify-center">
+                                <button onclick="${restartAction}" class="submit-btn-kyudo px-4 py-1.5 text-[11px] tracking-widest font-bold font-serif-jp">もう一回 (再练一轮)</button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 渲染当前题目
+                const q = this.questionQueue[this.currentIndex];
+                container.innerHTML = this.generateQuestionHTML(q, this.currentIndex, this.questionQueue.length);
+                this.updateTimerUI();
+            },
+
+            generateQuestionHTML(q, index, total) {
+                let slotsHtml = '';
+                for(let i=0; i<4; i++) {
+                    if (i === q.starIndex) {
+                        slotsHtml += `
+                            <button class="sort-slot star-slot text-[13px] font-bold font-sans text-kyudoRed hover:border-kyudoRed focus:outline-none" data-index="${i}">
+                                <span class="slot-text h-5 inline-block leading-5"></span>
+                                <span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[8px] text-kyudoRed">◎</span>
+                            </button>
+                        `;
+                    } else {
+                        slotsHtml += `
+                            <button class="sort-slot text-[13px] font-bold font-sans text-textMuted focus:outline-none" data-index="${i}">
+                                <span class="slot-text h-5 inline-block leading-5"></span>
+                            </button>
+                        `;
+                    }
+                }
+
+                let optionsHtml = '';
+                q.options.forEach(opt => {
+                    optionsHtml += `
+                        <button class="sort-option-btn flex items-center py-1.5 px-3 focus:outline-none text-left w-full" data-id="${opt.id}">
+                            <span class="option-letter font-sans font-bold mr-2.5 text-textMuted text-xs">${opt.id}</span>
+                            <span class="leading-relaxed text-textMain text-[13px]">${opt.text}</span>
+                        </button>
+                    `;
+                });
+
+                let correctOrderStrHtml = '';
+                q.correctOrder.forEach((id, idx) => {
+                    const optText = q.options.find(o => o.id === id).text; 
+                    if(idx === q.starIndex) {
+                        correctOrderStrHtml += `<span class="inline-block border border-kyudoRed px-1 py-[1px] rounded text-[9px] mr-1 text-kyudoRed font-sans font-bold align-middle leading-none">◎ ${id}</span><strong class="text-kyudoRed align-middle">${optText}</strong>`;
+                    } else {
+                        correctOrderStrHtml += `<span class="inline-block border border-borderDark px-1 py-[1px] bg-bgMain rounded text-[9px] mr-1 text-textSub font-sans align-middle leading-none">${id}</span><span class="align-middle">${optText}</span>`;
+                    }
+                    if(idx < 3) correctOrderStrHtml += ` <span class="inline-block text-borderDark mx-1 align-middle text-[9px] font-sans">▶</span> `;
+                });
+
+                let qLabel = '';
+                if (this.practiceMode === 'year') qLabel = q.label;
+                else if (this.practiceMode === 'mistake') qLabel = `[${q.year}] ${q.label}`;
+                else if (this.currentLevel === 'ALL') qLabel = `[${q.level}] 靶${index + 1}`;
+                else qLabel = `靶${index + 1}`;
+
+                return `
+                <div class="flex flex-col gap-2.5 question-block mb-6 fade-in relative" data-correct-order="${q.correctOrder.join(',')}" data-star-index="${q.starIndex}">
+                    <div class="refined-card p-4 md:p-5">
+                        <div class="flex items-center justify-between mb-4 border-b border-borderMain pb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[9px] font-bold text-white bg-kyudoNavy px-1.5 py-[1px] rounded font-sans tracking-widest">${qLabel}</span>
+                                <span class="text-[9px] text-textMuted font-sans tracking-widest font-bold">(${index + 1}/${total})</span>
+                            </div>
+                            <span class="status-badge hidden"></span>
+                        </div>
+                        
+                        <div class="text-textMain font-serif-jp text-sm mb-5 leading-loose">
+                            ${q.prefix}
+                            <span class="inline-flex items-end gap-1 mx-1 align-middle">
+                                ${slotsHtml}
+                            </span>
+                            ${q.suffix}
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2.5 gap-x-3 font-serif-jp mb-5">
+                            ${optionsHtml}
+                        </div>
+
+                        <div class="flex justify-end pt-2 action-area border-t border-dashed border-borderMain">
+                            <button class="submit-btn submit-btn-kyudo px-4 py-1.5 text-[11px] tracking-widest font-bold font-serif-jp disabled:opacity-50 disabled:cursor-not-allowed" disabled>放つ (提交)</button>
+                        </div>
+                    </div>
+
+                    <!-- 解析区域 (默认隐藏) -->
+                    <div class="explanation-area hidden flex-col">
+                        <div class="bg-[#faf9f6] border border-[#e6e4df] rounded flex p-3 md:p-4 gap-2.5 items-start relative">
+                            <!-- 鹫先生头像 -->
+                            <div class="w-8 h-8 rounded-full border border-[#dcd6cc] bg-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                                <svg viewBox="0 0 100 100" class="w-5 h-5 text-kyudoNavy"><path d="M 20 80 C 20 30, 40 10, 80 10 C 90 30, 80 50, 70 60 C 90 70, 80 90, 60 90 C 40 90, 20 100, 20 80 Z" fill="currentColor"/><path d="M 80 10 C 95 15, 100 30, 85 45 C 75 40, 70 30, 80 10 Z" fill="#c1a173"/><circle cx="60" cy="35" r="10" fill="none" stroke="#c1a173" stroke-width="2"/><circle cx="62" cy="35" r="2" fill="#fff"/><line x1="50" y1="35" x2="35" y2="30" stroke="#c1a173" stroke-width="2"/></svg>
+                            </div>
+                            <div class="flex-1 space-y-3">
+                                <div class="text-[10px] font-bold text-kyudoGold tracking-widest mb-0.5 font-serif-jp">鷲先生の教え</div>
+                                <div>
+                                    <h4 class="text-[10px] text-textMuted font-bold tracking-widest mb-1.5 font-serif-jp">【正的排布】</h4>
+                                    <p class="text-textMain text-[13px] font-serif-jp tracking-wider leading-relaxed bg-white p-1.5 border border-borderMain rounded">
+                                        ${correctOrderStrHtml}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 class="text-[10px] text-textMuted font-bold tracking-widest mb-1.5 font-serif-jp">【弓理拆解】</h4>
+                                    <div class="space-y-1.5 text-[13px] text-textSub leading-relaxed font-serif-jp">
+                                        ${q.explanation}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }
+        };
+
+        window.app = app;
+        app.init();
+        app.updateTimerUI();
+
+        // 事件监听
+        document.getElementById('page-back-btn')?.addEventListener('click', () => app.handleHeaderBack());
+        document.getElementById('timer-toolbar-toggle-btn')?.addEventListener('click', () => app.toggleTimerRun());
+        document.getElementById('timer-toolbar-reset-btn')?.addEventListener('click', () => app.resetTimer());
+        document.getElementById('timer-toolbar-settings-btn')?.addEventListener('click', () => app.toggleTimerDrawer());
+        document.getElementById('timer-drawer-close-btn')?.addEventListener('click', () => app.closeTimerDrawer());
+        document.getElementById('practice-toolbar-backdrop')?.addEventListener('click', () => app.closeTimerDrawer());
+        document.querySelectorAll('[data-timer-mode]').forEach(b => b.addEventListener('click', () => app.setTimerMode(b.dataset.timerMode)));
+        document.querySelectorAll('[data-timer-preset]').forEach(b => b.addEventListener('click', () => app.setTimerSelectedMinutes(b.dataset.timerPreset)));
+        document.getElementById('timer-custom-input')?.addEventListener('input', (e) => app.setTimerSelectedMinutes(e.target.value));
+        document.getElementById('timer-custom-input')?.addEventListener('change', (e) => app.setTimerSelectedMinutes(e.target.value));
+        document.getElementById('timer-drawer-start-btn')?.addEventListener('click', () => app.startTimer());
+        document.getElementById('timer-drawer-pause-btn')?.addEventListener('click', () => app.pauseTimer());
+        document.getElementById('timer-drawer-reset-btn')?.addEventListener('click', () => app.resetTimer());
+        document.getElementById('timer-hide-btn')?.addEventListener('click', () => app.toggleTimerDisplayVisibility());
+        document.querySelectorAll('[data-random-target]').forEach(b => b.addEventListener('click', () => app.setRandomTargetCount(b.dataset.randomTarget)));
+        document.getElementById('random-toolbar-end-btn')?.addEventListener('click', () => app.finishRandomRound());
+        window.addEventListener('keydown', (event) => { if (event.key === 'Escape' && app.timer.drawerOpen) app.closeTimerDrawer(); });
+
+        // 全局事件委托 (交互)
+        document.addEventListener('click', (e) => {
+            const block = e.target.closest('.question-block');
+            if (!block) return;
+
+            const nextQuestionBtn = e.target.closest('.next-question-btn');
+            if (nextQuestionBtn) {
+                app.currentIndex++;
+                app.renderPracticeQuestion();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            const slots = Array.from(block.querySelectorAll('.sort-slot'));
+            const options = Array.from(block.querySelectorAll('.sort-option-btn'));
+            const submitBtn = block.querySelector('.submit-btn');
+            if(!submitBtn) return; 
+
+            // 1. 点击选项 -> 搭箭
+            const optBtn = e.target.closest('.sort-option-btn');
+            if (optBtn && !optBtn.classList.contains('option-used') && submitBtn.textContent.includes('放つ')) {
+                const val = optBtn.dataset.id;
+                const emptySlot = slots.find(s => !s.dataset.val);
+                if (emptySlot) {
+                    emptySlot.dataset.val = val;
+                    emptySlot.querySelector('.slot-text').textContent = val;
+                    emptySlot.classList.add(emptySlot.classList.contains('star-slot') ? 'slot-star-filled' : 'slot-filled');
+                    optBtn.classList.add('option-used');
+                    submitBtn.disabled = !slots.every(slot => slot.dataset.val);
+                }
+                return;
+            }
+
+            // 2. 点击横线 -> 卸下
+            const slotBtn = e.target.closest('.sort-slot');
+            if (slotBtn && slotBtn.dataset.val && submitBtn.textContent.includes('放つ')) {
+                const val = slotBtn.dataset.val;
+                slotBtn.removeAttribute('data-val');
+                slotBtn.querySelector('.slot-text').textContent = '';
+                slotBtn.classList.remove('slot-filled', 'slot-star-filled');
+                const targetOpt = options.find(o => o.dataset.id === val);
+                if (targetOpt) targetOpt.classList.remove('option-used');
+                submitBtn.disabled = true;
+                return;
+            }
+
+            // 3. 点击提交按钮 -> 放箭
+            if (e.target === submitBtn) {
+                submitBtn.disabled = true;
+
+                const currentOrder = slots.map(slot => slot.dataset.val);
+                const correctOrder = block.dataset.correctOrder.split(',');
+                const starIndex = parseInt(block.dataset.starIndex);
+                const isStarCorrect = currentOrder[starIndex] === correctOrder[starIndex];
+                const isAllCorrect = currentOrder.join(',') === correctOrder.join(',');
+                const currentQuestion = app.questionQueue[app.currentIndex];
+
+                if (isStarCorrect) app.stats.correct++;
+                else app.stats.incorrect++;
+
+                if (app.practiceMode === 'year' || app.practiceMode === 'mistake') {
+                    let yearMistakes = getYearMistakes(app.currentLevel, app.currentYear);
+                    if (!isAllCorrect) {
+                        if (!yearMistakes.includes(currentQuestion.id)) {
+                            yearMistakes.push(currentQuestion.id);
+                            saveYearMistakes(app.currentLevel, app.currentYear, yearMistakes);
+                        }
+                    } else {
+                        yearMistakes = yearMistakes.filter(id => id !== currentQuestion.id);
+                        saveYearMistakes(app.currentLevel, app.currentYear, yearMistakes);
+                    }
+                }
+
+                app.updateRandomProgressAfterAnswer(isStarCorrect);
+
+                // 显示印章
+                const statusBadge = block.querySelector('.status-badge');
+                statusBadge.classList.remove('hidden');
+                
+                if (isAllCorrect) {
+                    statusBadge.textContent = '的中';
+                    statusBadge.className = 'status-badge hanko-stamp hanko-correct';
+                    slots.forEach(slot => slot.classList.add('bg-green-50', 'border-green-600', 'text-green-700'));
+                } else if (isStarCorrect) {
+                    statusBadge.textContent = '惜中';
+                    statusBadge.className = 'status-badge hanko-stamp hanko-correct opacity-80';
+                    slots.forEach((slot, idx) => {
+                        if (currentOrder[idx] === correctOrder[idx]) slot.classList.add('bg-green-50', 'border-green-600', 'text-green-700');
+                        else slot.classList.add('bg-red-50', 'border-red-600', 'text-red-700');
+                    });
+                } else {
+                    statusBadge.textContent = '脱的';
+                    statusBadge.className = 'status-badge hanko-stamp hanko-incorrect';
+                    slots.forEach((slot, idx) => {
+                        if (currentOrder[idx] === correctOrder[idx]) slot.classList.add('bg-green-50', 'border-green-600', 'text-green-700');
+                        else slot.classList.add('bg-red-50', 'border-red-600', 'text-red-700');
+                    });
+                }
+                
+                const explanationArea = block.querySelector('.explanation-area');
+                if (explanationArea) {
+                    explanationArea.classList.remove('hidden');
+                    explanationArea.classList.add('flex', 'fade-in');
+                }
+
+                const actionArea = block.querySelector('.action-area');
+                const hasReachedRandomTarget = app.practiceMode === 'random' && app.randomAnsweredCount >= app.randomRoundTarget;
+                const nextLabel = hasReachedRandomTarget ? '查看修练结果' : '次の的 (下一靶)';
+                actionArea.innerHTML = `<button class="next-question-btn submit-btn-kyudo px-4 py-1.5 text-[11px] tracking-widest font-bold font-serif-jp shadow-sm flex items-center gap-1">${nextLabel} <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3"><path d="m9 18 6-6-6-6"/></svg></button>`;
+                app.updateTimerUI();
+            }
+        });
+    </script>
+</body>
+</html>
