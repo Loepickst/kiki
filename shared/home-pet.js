@@ -17,7 +17,7 @@
         area: 'daily',
         sectionKey: 'daily',
         label: '词汇入口',
-        href: 'vocabulary/index.html',
+        href: 'exam/vocabulary/index.html',
         statusText: '先挑一条轻松的练习开始吧。',
         reviewCount: 0,
         score: 1
@@ -1870,7 +1870,7 @@
             area: 'daily',
             sectionKey: 'daily',
             label: '格助词题库',
-            href: createTrackedHref(config, 'grammar/index.html', 'daily'),
+            href: createTrackedHref(config, 'daily/grammar/index.html', 'daily'),
             statusText: `待复习 ${reviewCount} 题`,
             reviewCount,
             score: 12 + reviewCount * 4
@@ -1931,7 +1931,7 @@
                 area: 'exam',
                 sectionKey: 'exam',
                 label: `読解 ${item.level} / ${formatReadingType(item.type)}`,
-                href: createTrackedHref(config, 'reading/index.html', 'exam'),
+                href: createTrackedHref(config, 'exam/jlpt-reading/index.html', 'exam'),
                 statusText: item.reviewCount > 0
                     ? `${item.lastPractice ? `${item.lastPractice} · ` : ''}待复习 ${item.reviewCount} 题`
                     : `最近做到 ${item.lastPractice}`,
@@ -1984,7 +1984,7 @@
         return Array.from(summaries.values())
             .filter((item) => item.reviewCount > 0 || item.lastPractice)
             .map((item) => {
-                let rawHref = `grammar/sort.html?level=${encodeURIComponent(item.level)}`;
+                let rawHref = `exam/grammar/sort.html?level=${encodeURIComponent(item.level)}`;
                 if (item.reviewCount > 0 && item.lastPractice) {
                     rawHref += `&year=${encodeURIComponent(item.lastPractice)}&mode=review`;
                 } else if (item.lastPractice) {
@@ -2017,13 +2017,9 @@
             return [];
         }
 
-        let rawHref = 'grammar/textbook-n1.html';
-        if (reviewCount > 0) {
-            rawHref += '?mode=mistake';
-        } else if (lastRoute.startsWith('lesson:')) {
+        let rawHref = 'exam/textbook/try-n1.html';
+        if (lastRoute.startsWith('lesson:')) {
             rawHref += `?lesson=${encodeURIComponent(lastRoute.split(':')[1] || '')}`;
-        } else if (lastRoute.startsWith('stage:')) {
-            rawHref += `?mode=stage&stage=${encodeURIComponent(lastRoute.split(':')[1] || '')}`;
         }
 
         return [{
@@ -2045,13 +2041,15 @@
                 label: 'N1 动词',
                 lastDayKey: 'study_quest_test_v1_vocab_last_day',
                 starPrefix: 'study_quest_test_v1_vocab_star::',
-                href: 'vocabulary/n1-verbs.html'
+                href: 'exam/vocabulary/n1/verbs_n1.html',
+                isPractice: false
             },
             {
                 label: 'N1 动词练习',
                 lastDayKey: 'study_quest_test_v1_vocab_last_day',
                 starPrefix: 'study_quest_test_v1_vocab_star::',
-                href: 'vocabulary/n1-verbs.html'
+                href: 'exam/vocabulary/n1/practice_n1_verbs.html',
+                isPractice: true
             }
         ];
 
@@ -2063,6 +2061,15 @@
                     return null;
                 }
 
+                let rawHref = track.href;
+                if (track.isPractice) {
+                    if (lastDay > 0) {
+                        rawHref += `?day=${encodeURIComponent(lastDay)}`;
+                    } else if (starCount > 0) {
+                        rawHref += '?day=-1';
+                    }
+                }
+
                 const parts = [];
                 if (lastDay) parts.push(`Day ${lastDay}`);
                 if (starCount) parts.push(`收藏 ${starCount}`);
@@ -2071,7 +2078,7 @@
                     area: 'exam',
                     sectionKey: 'exam',
                     label: track.label,
-                    href: createTrackedHref(config, track.href, 'exam'),
+                    href: createTrackedHref(config, rawHref, 'exam'),
                     statusText: parts.join(' · '),
                     reviewCount: 0,
                     score: 6 + Math.min(lastDay, 20) + Math.min(starCount, 8)
@@ -2080,23 +2087,37 @@
             .filter(Boolean);
     }
 
+    function resolveListeningYearHref(level, rawYearLabel) {
+        const normalizedLevel = String(level || '').trim().toLowerCase();
+        if (!normalizedLevel) {
+            return 'exam/listening/index.html';
+        }
+
+        const match = String(rawYearLabel || '').match(/20\d{2}/);
+        if (match) {
+            return `exam/listening/immediate-response/${normalizedLevel}/years/${normalizedLevel}_${match[0]}.html`;
+        }
+
+        return `exam/listening/immediate-response/${normalizedLevel}/index.html`;
+    }
+
     function collectListeningSummaries(config) {
         const items = [];
         const responseTracks = [
             {
                 label: formatListeningLabel('N1'),
                 lastKey: 'study_quest_test_v1_listening_last_practice::n1',
-                href: 'listening/index.html'
+                href: 'exam/listening/index.html'
             },
             {
                 label: '阅读样本',
                 lastKey: 'study_quest_test_v1_reading_last_practice::n1::short',
-                href: 'reading/index.html'
+                href: 'exam/jlpt-reading/index.html'
             },
             {
                 label: '语法排序',
                 lastKey: 'study_quest_test_v1_grammar_last_practice::n1',
-                href: 'grammar/index.html'
+                href: 'exam/grammar/index.html'
             }
         ];
 
@@ -2124,7 +2145,7 @@
                 area: 'exam',
                 sectionKey: 'exam',
                 label: '即时应答 N1',
-                href: createTrackedHref(config, 'listening/immediate-response-2019.html', 'exam'),
+                href: createTrackedHref(config, resolveListeningYearHref('n1', lastListeningTask), 'exam'),
                 statusText: listeningTaskReviewCount > 0
                     ? `${lastListeningTask ? `${lastListeningTask} · ` : ''}待复习 ${listeningTaskReviewCount} 题`
                     : `最近练到 ${lastListeningTask}`,
