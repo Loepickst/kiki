@@ -594,6 +594,14 @@
         return String(value == null ? '' : value).trim();
     }
 
+    function getLocalDateKey(input) {
+        const source = input instanceof Date ? input : new Date(input || Date.now());
+        const year = source.getFullYear();
+        const month = String(source.getMonth() + 1).padStart(2, '0');
+        const day = String(source.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     function buildDrawHref(runKey, returnHref) {
         const url = new URL('./lottery.html', siteRoot);
         if (runKey) {
@@ -619,7 +627,19 @@
             ? state.rewardFlow.pendingDraws
             : {};
         const record = pendingDraws[normalizedRunKey];
-        return Boolean(record && !record.claimedAt);
+        if (!record || record.claimedAt) {
+            return false;
+        }
+        const practiceDrawDaily = state && state.practiceLedger && state.practiceLedger.practiceDrawDaily
+            ? state.practiceLedger.practiceDrawDaily
+            : {};
+        const dailyRecord = record.module ? practiceDrawDaily[record.module] : null;
+        const claimedToday = Boolean(
+            dailyRecord
+            && normalizeRunKey(dailyRecord.dateKey) === getLocalDateKey()
+            && normalizeRunKey(dailyRecord.claimedAt)
+        );
+        return !claimedToday;
     }
 
     function getDrawAffordanceMarkup(runKey) {

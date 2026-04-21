@@ -19,9 +19,10 @@
     const EX_CARD_ASSET_BASE = "https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/takarakuji/";
     const LEGACY_PRACTICE_REWARD_ID_MAP = Object.freeze({
         growth_vocabulary_max: "practice_yaji_max",
-        growth_grammar_max: "practice_anji_max",
+        growth_grammar_max: "practice_gaoji_max",
         growth_reading_max: "practice_geji_max",
-        growth_listening_max: "practice_geji_max"
+        growth_listening_max: "practice_anji_max",
+        practice_tingji_max: "practice_anji_max"
     });
 
     function safeParseJSON(rawValue, fallback) {
@@ -127,9 +128,10 @@
     const petRewardFortunes = Object.freeze([]);
 
     const practiceRewardFortunes = [
-        { id: "practice_anji_max", rarity: "MR", title: "安吉", desc: "这美妙的琴声，如语法般缓缓入👂，让人沉醉。", color: "#4E5FA8", icon: "takarakuji/anji.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" },
+        { id: "practice_anji_max", rarity: "MR", title: "安吉", desc: "天気がいいから、散歩しましょう", color: "#4E5FA8", icon: "takarakuji/anji.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" },
         { id: "practice_yaji_max", rarity: "MR", title: "丫吉", desc: "去背你的单词，别抢我的肉啦。", color: "#8A5A35", icon: "takarakuji/yaji2.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" },
-        { id: "practice_geji_max", rarity: "MR", title: "🐦吉", desc: "读到关键句时，线索像小鸟一样轻轻落回掌心，整篇文章也会突然明朗。", color: "#2F7B67", icon: "takarakuji/geji2.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" }
+        { id: "practice_geji_max", rarity: "MR", title: "🐦吉", desc: "读到关键句时，线索像小鸟一样轻轻落回掌心，整篇文章也会突然明朗。", color: "#2F7B67", icon: "takarakuji/geji2.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" },
+        { id: "practice_gaoji_max", rarity: "MR", title: "高吉", desc: "文字里的故事，就如怀中的手办一样温暖。", color: "#7A5C9E", icon: "takarakuji/gaoji.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" }
     ];
 
     const themeRewardFortunes = [
@@ -151,8 +153,8 @@
         {
             id: "exam_good_luck",
             title: "考试大吉",
-            intro: "把词汇、语法与阅读三张积累卡收齐后，这场旅程便会真正迎来属于你的胜利。",
-            cardIds: ["practice_yaji_max", "practice_anji_max", "practice_geji_max"],
+            intro: "把词汇、语法、阅读与听力四张积累卡收齐后，这场旅程便会真正迎来属于你的胜利。",
+            cardIds: ["practice_yaji_max", "practice_gaoji_max", "practice_geji_max", "practice_anji_max"],
             rewardCardId: "practice_shengji_max",
             coverCardId: "practice_yaji_max"
         }

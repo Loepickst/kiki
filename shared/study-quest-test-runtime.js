@@ -59,9 +59,10 @@
     ]);
     const PET_REWARD_FORTUNES = Object.freeze([]);
     const PRACTICE_REWARD_FORTUNES = Object.freeze([
-        { id: 'practice_anji_max', rarity: 'MR', title: '安吉', desc: '语法里的接续与判断慢慢理顺之后，句子终于肯安安稳稳地落到正确的位置上。', color: '#4E5FA8', icon: 'takarakuji/anji.png', isRewardOnly: true },
+        { id: 'practice_anji_max', rarity: 'MR', title: '安吉', desc: '天気がいいから、散歩しましょう', color: '#4E5FA8', icon: 'takarakuji/anji.png', isRewardOnly: true },
         { id: 'practice_yaji_max', rarity: 'MR', title: '丫吉', desc: '单词一旦背出节奏，嘴边会先冒出熟悉感，记忆也会越滚越顺。', color: '#8A5A35', icon: 'takarakuji/yaji2.png', isRewardOnly: true },
         { id: 'practice_geji_max', rarity: 'MR', title: '🐦吉', desc: '读到关键句时，线索像小鸟一样轻轻落回掌心，整篇文章也会突然明朗。', color: '#2F7B67', icon: 'takarakuji/geji2.png', isRewardOnly: true },
+        { id: 'practice_gaoji_max', rarity: 'MR', title: '高吉', desc: '文字里的故事，就如怀中的手办一样温暖。', color: '#7A5C9E', icon: 'takarakuji/gaoji.png', isRewardOnly: true },
         { id: 'practice_shengji_max', rarity: 'MR', title: '胜吉', desc: '烟火在夜空里炸开的时候，努力终于有了形状。一步一步走到最后，也会迎来属于自己的合格时刻。', color: '#C96A2A', icon: 'takarakuji/shengji.png', isRewardOnly: true }
     ]);
     const HIDDEN_COLLECTION_CARD_IDS = Object.freeze(PET_REWARD_FORTUNES.map((card) => card.id));
@@ -82,32 +83,45 @@
         'growth_reading_max',
         'growth_listening_max'
     ]);
+    const NORMALIZED_PRACTICE_REWARD_CARD_ID_BY_ID = Object.freeze({
+        growth_vocabulary_max: 'practice_yaji_max',
+        growth_grammar_max: 'practice_gaoji_max',
+        growth_reading_max: 'practice_geji_max',
+        growth_listening_max: 'practice_anji_max',
+        practice_tingji_max: 'practice_anji_max'
+    });
     const PRIMARY_PRACTICE_REWARD_CARD_BY_MODULE = Object.freeze({
         vocabulary: 'practice_yaji_max',
-        grammar: 'practice_anji_max',
+        grammar: 'practice_gaoji_max',
         reading: 'practice_geji_max',
         listening: 'practice_geji_max'
     });
-    const MODULE_PRACTICE_CARD_WEIGHTS = Object.freeze({
+    const PRIMARY_PRACTICE_REWARD_CARD_BY_TRACK = Object.freeze({
+        listening_random_exam: 'practice_anji_max'
+    });
+    const PRACTICE_CARD_WEIGHTS_BY_SOURCE = Object.freeze({
         vocabulary: Object.freeze({
             practice_yaji_max: 7,
-            practice_anji_max: 2,
+            practice_gaoji_max: 2,
             practice_geji_max: 1
         }),
         grammar: Object.freeze({
-            practice_anji_max: 7,
+            practice_gaoji_max: 7,
             practice_yaji_max: 2,
             practice_geji_max: 1
         }),
         reading: Object.freeze({
             practice_geji_max: 7,
             practice_yaji_max: 2,
-            practice_anji_max: 1
+            practice_gaoji_max: 1
         }),
         listening: Object.freeze({
             practice_geji_max: 4,
             practice_yaji_max: 3,
-            practice_anji_max: 3
+            practice_gaoji_max: 3
+        }),
+        listening_random_exam: Object.freeze({
+            practice_anji_max: 1
         })
     });
 
@@ -233,23 +247,58 @@
         return HIDDEN_COLLECTION_CARD_IDS.includes(normalizeString(cardId));
     }
 
-    function remapLegacyPracticeRewardCardId(cardId, module) {
+    function normalizePracticeRewardCardId(cardId) {
         const normalizedCardId = normalizeString(cardId);
-        if (!isLegacyPracticeRewardCardId(normalizedCardId)) {
-            return normalizedCardId;
+        return NORMALIZED_PRACTICE_REWARD_CARD_ID_BY_ID[normalizedCardId] || normalizedCardId;
+    }
+
+    function mergeCollectionMetaEntry(baseEntry, incomingEntry) {
+        const count = Number.parseInt(incomingEntry && incomingEntry.count, 10);
+        if (!Number.isInteger(count) || count <= 0) {
+            return baseEntry || null;
         }
-        return PRIMARY_PRACTICE_REWARD_CARD_BY_MODULE[normalizeString(module)] || 'practice_geji_max';
+
+        const nextEntry = baseEntry
+            ? { ...baseEntry }
+            : {
+                count: 0,
+                firstObtainedAt: null,
+                lastObtainedAt: null,
+                isNew: false,
+                rarity: 'R',
+                title: '',
+                source: 'lab'
+            };
+
+        const firstObtainedAt = Number(incomingEntry.firstObtainedAt);
+        const lastObtainedAt = Number(incomingEntry.lastObtainedAt);
+        nextEntry.count += count;
+        if (Number.isFinite(firstObtainedAt) && firstObtainedAt > 0) {
+            nextEntry.firstObtainedAt = nextEntry.firstObtainedAt
+                ? Math.min(nextEntry.firstObtainedAt, firstObtainedAt)
+                : firstObtainedAt;
+        }
+        if (Number.isFinite(lastObtainedAt) && lastObtainedAt > 0) {
+            nextEntry.lastObtainedAt = nextEntry.lastObtainedAt
+                ? Math.max(nextEntry.lastObtainedAt, lastObtainedAt)
+                : lastObtainedAt;
+        }
+        nextEntry.isNew = Boolean(nextEntry.isNew || incomingEntry.isNew);
+        nextEntry.rarity = normalizeString(incomingEntry.rarity) || nextEntry.rarity;
+        nextEntry.title = normalizeString(incomingEntry.title) || nextEntry.title;
+        nextEntry.source = normalizeString(incomingEntry.source || nextEntry.source);
+        return nextEntry;
     }
 
     function normalizePendingDrawRecord(record) {
         const source = record && typeof record === 'object' ? record : {};
-        const module = normalizeString(source.module);
         return {
             runKey: normalizeString(source.runKey),
-            module,
+            module: normalizeString(source.module),
             subType: normalizeString(source.subType),
+            rewardTrack: normalizeString(source.rewardTrack),
             scopeKey: normalizeString(source.scopeKey),
-            cardId: remapLegacyPracticeRewardCardId(source.cardId, module),
+            cardId: normalizePracticeRewardCardId(source.cardId),
             rarity: normalizeString(source.rarity),
             preparedAt: normalizeString(source.preparedAt),
             claimedAt: normalizeString(source.claimedAt),
@@ -262,7 +311,8 @@
         return {
             dateKey: normalizeString(source.dateKey),
             runKey: normalizeString(source.runKey),
-            triggeredAt: normalizeString(source.triggeredAt)
+            triggeredAt: normalizeString(source.triggeredAt),
+            claimedAt: normalizeString(source.claimedAt)
         };
     }
 
@@ -349,28 +399,21 @@
 
         return Object.keys(rawMeta).reduce((accumulator, id) => {
             const entry = rawMeta[id];
-            const normalizedId = normalizeString(id);
+            const normalizedId = normalizePracticeRewardCardId(id);
             if (!normalizedId || !entry || typeof entry !== 'object' || Array.isArray(entry)) {
                 return accumulator;
             }
             if (isLegacyPracticeRewardCardId(normalizedId)) {
                 return accumulator;
             }
-
-            const count = Number.parseInt(entry.count, 10);
-            if (!Number.isInteger(count) || count <= 0) {
+            if (!getCardDefinition(normalizedId)) {
                 return accumulator;
             }
 
-            accumulator[normalizedId] = {
-                count,
-                firstObtainedAt: Number(entry.firstObtainedAt) || null,
-                lastObtainedAt: Number(entry.lastObtainedAt) || null,
-                isNew: Boolean(entry.isNew),
-                rarity: normalizeString(entry.rarity) || 'R',
-                title: normalizeString(entry.title),
-                source: normalizeString(entry.source || 'lab')
-            };
+            const mergedEntry = mergeCollectionMetaEntry(accumulator[normalizedId], entry);
+            if (mergedEntry) {
+                accumulator[normalizedId] = mergedEntry;
+            }
             return accumulator;
         }, {});
     }
@@ -389,7 +432,7 @@
 
     function saveCollectionIds(ids) {
         const normalizedIds = Array.from(new Set(
-            Array.isArray(ids) ? ids.map((id) => normalizeString(id)).filter(Boolean) : []
+            Array.isArray(ids) ? ids.map((id) => normalizePracticeRewardCardId(id)).filter(Boolean) : []
         ));
         global.localStorage.setItem(COLLECTION_KEY, JSON.stringify(normalizedIds));
         return normalizedIds;
@@ -401,7 +444,7 @@
             return null;
         }
 
-        const id = normalizeString(parsed.id);
+        const id = normalizePracticeRewardCardId(parsed.id);
         if (!id || isLegacyPracticeRewardCardId(id) || isHiddenCollectionCardId(id) || !getCardDefinition(id)) {
             return null;
         }
@@ -413,7 +456,7 @@
     }
 
     function saveLastObtained(id, obtainedAt) {
-        const normalizedId = normalizeString(id);
+        const normalizedId = normalizePracticeRewardCardId(id);
         if (!normalizedId) {
             global.localStorage.removeItem(LAST_OBTAINED_KEY);
             return null;
@@ -440,7 +483,7 @@
     }
 
     function getCardDefinition(cardId) {
-        const normalizedId = normalizeString(cardId);
+        const normalizedId = normalizePracticeRewardCardId(cardId);
         if (!normalizedId) {
             return null;
         }
@@ -505,7 +548,7 @@
         return result.answeredCount > 0 ? result.answeredCount : result.questionCount;
     }
 
-    function hasPracticeDrawForModuleToday(state, moduleKey) {
+    function hasClaimedPracticeDrawForModuleToday(state, moduleKey) {
         const normalizedModule = normalizePracticeDrawModuleKey(moduleKey);
         if (!normalizedModule) {
             return false;
@@ -514,24 +557,29 @@
             ? state.practiceLedger.practiceDrawDaily
             : {};
         const record = normalizePracticeDrawDailyRecord(ledger[normalizedModule]);
-        return record.dateKey === getLocalDateKey();
+        return record.dateKey === getLocalDateKey() && Boolean(record.claimedAt);
     }
 
-    function markPracticeDrawForModuleToday(state, moduleKey, runKey) {
+    function markPracticeDrawClaimedForModuleToday(state, moduleKey, runKey, claimedAt) {
         const normalizedModule = normalizePracticeDrawModuleKey(moduleKey);
         if (!normalizedModule) {
             return;
         }
+        const claimedAtValue = normalizeString(claimedAt || new Date().toISOString());
         state.practiceLedger.practiceDrawDaily[normalizedModule] = {
             dateKey: getLocalDateKey(),
             runKey: normalizeString(runKey),
-            triggeredAt: new Date().toISOString()
+            triggeredAt: claimedAtValue,
+            claimedAt: claimedAtValue
         };
     }
 
     function isEffectivePractice(result) {
         const answeredCount = getAnsweredCount(result);
         if (!result.cleared) {
+            return false;
+        }
+        if (result.mode === 'challenge' && !result.challengeCleared) {
             return false;
         }
         if (result.module === 'vocabulary') {
@@ -568,6 +616,7 @@
             runKey: normalizeString(source.runKey),
             module: normalizeString(source.module),
             subType: normalizeString(source.subType),
+            rewardTrack: normalizeString(source.rewardTrack),
             mode: normalizeString(source.mode),
             scopeKey: normalizeString(source.scopeKey),
             level: normalizeString(source.level),
@@ -600,6 +649,17 @@
         return `${result.module}:${result.subType}`;
     }
 
+    function getPracticeRewardSourceKey(result) {
+        const rewardTrack = normalizeString(result && result.rewardTrack);
+        if (rewardTrack && (
+            PRIMARY_PRACTICE_REWARD_CARD_BY_TRACK[rewardTrack]
+            || PRACTICE_CARD_WEIGHTS_BY_SOURCE[rewardTrack]
+        )) {
+            return rewardTrack;
+        }
+        return normalizeString(result && result.module);
+    }
+
     function rollFromChance(chance) {
         return Math.random() < chance;
     }
@@ -619,7 +679,7 @@
 
     function createDrawOffer(result, state) {
         const moduleKey = normalizePracticeDrawModuleKey(result && result.module);
-        if (moduleKey && hasPracticeDrawForModuleToday(state, moduleKey)) {
+        if (moduleKey && hasClaimedPracticeDrawForModuleToday(state, moduleKey)) {
             return {
                 available: false,
                 chance: 0,
@@ -630,9 +690,6 @@
         }
         const chance = getDrawOfferChance(result.accuracy);
         const available = rollFromChance(chance);
-        if (available && moduleKey) {
-            markPracticeDrawForModuleToday(state, moduleKey, result.runKey);
-        }
         return {
             available,
             chance,
@@ -656,11 +713,11 @@
     }
 
     function pickWeightedPracticeRewardCardId(result) {
-        const weights = MODULE_PRACTICE_CARD_WEIGHTS[normalizeString(result && result.module)];
+        const weights = PRACTICE_CARD_WEIGHTS_BY_SOURCE[getPracticeRewardSourceKey(result)];
         const pool = weights && typeof weights === 'object'
             ? weights
             : {
-                practice_anji_max: 1,
+                practice_gaoji_max: 1,
                 practice_yaji_max: 1,
                 practice_geji_max: 1
             };
@@ -827,6 +884,12 @@
             };
         }
         if (reason === 'not_effective') {
+            if (result.mode === 'challenge' && !result.challengeCleared) {
+                return {
+                    headline: '挑战未通过',
+                    detail: '本轮挑战失败，不进入奖励结算。'
+                };
+            }
             return {
                 headline: '这轮没有进入奖励结算',
                 detail: '当前题量还没达到奖励门槛。'
@@ -875,6 +938,7 @@
             descriptor: {
                 module: normalizeString(source.module),
                 subType: normalizeString(source.subType),
+                rewardTrack: normalizeString(source.rewardTrack),
                 mode: normalizeString(source.mode),
                 scopeKey: normalizeString(source.scopeKey)
             }
@@ -930,6 +994,7 @@
                 runKey: result.runKey,
                 module: result.module,
                 subType: result.subType,
+                rewardTrack: result.rewardTrack,
                 scopeKey: result.scopeKey,
                 cardId: preparedCard.id,
                 rarity: preparedCard.rarity,
@@ -947,6 +1012,7 @@
         state.progress.lastSummary = {
             runKey: result.runKey,
             module: result.module,
+            rewardTrack: result.rewardTrack,
             mode: result.mode,
             scopeKey: result.scopeKey,
             finishedAt: result.finishedAt,
@@ -1013,6 +1079,13 @@
             };
         }
 
+        if (hasClaimedPracticeDrawForModuleToday(state, pendingDraw.module)) {
+            return {
+                accepted: false,
+                reason: 'daily_draw_already_claimed'
+            };
+        }
+
         const cardDefinition = getCardDefinition(pendingDraw.cardId);
         if (!cardDefinition) {
             return {
@@ -1023,7 +1096,9 @@
 
         const claimedAt = Date.now();
         const cardResult = recordCard(cardDefinition, claimedAt);
+        const claimedAtIso = new Date(claimedAt).toISOString();
         state.rewardFlow.pendingDraws[normalizedRunKey].claimedAt = String(claimedAt);
+        markPracticeDrawClaimedForModuleToday(state, pendingDraw.module, normalizedRunKey, claimedAtIso);
         saveState(state);
 
         dispatchLabEvent('studyquestlab:draw-claimed', {
