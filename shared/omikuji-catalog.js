@@ -91,7 +91,7 @@
         { id: "f37", rarity: "KR", title: "画吉", desc: "快看～，我成为一幅画了，啊啊啊啊啊啊", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}huaji.png` },
         { id: "f32", rarity: "KR", title: "天吉", desc: "知识中的私语，细细聆听，那是日语之神对你的回应。", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}tianji.png` },
         { id: "f8", rarity: "UR", title: "神吉", desc: "⛩️考神附体！今天直觉准得可怕，做阅读题一抓一个准，就算蒙的也全对！", weight: 1, color: "#d4af37", icon: `${EX_CARD_ASSET_BASE}shenji.png` },
-        { id: "f7", rarity: "UR", title: "玉吉", desc: "一尾便是一重境界。熬过漫长的沉淀与枯燥的练习，终能修得灵动的语感。", weight: 3, color: "#F44336", icon: `${EX_CARD_ASSET_BASE}huji.png` },
+        { id: "f7", rarity: "UR", title: "玉吉", desc: "一尾便是一重境界。熬过漫长的沉淀与枯燥的练习，终能修得灵动的语感。", weight: 3, color: "#F44336", icon: `${EX_CARD_ASSET_BASE}huji.png`, themeSetId: "hyakki_yakou" },
         { id: "f16", rarity: "UR", title: "鹿吉", desc: "步履从容，一步一印，语感自然如影随形。", weight: 1, color: "#e6b422", icon: `${EX_CARD_ASSET_BASE}luji2.png` },
         { id: "f22", rarity: "UR", title: "友吉", desc: "切磋琢磨之友，乃求学路上的不灭之光。", weight: 1, color: "#d4af37", icon: `${EX_CARD_ASSET_BASE}xueji.png` },
         { id: "f30", rarity: "UR", title: "狮吉", desc: "即使是幼小的“可爱”，终有一天也可成为草原的王！（😆）", weight: 1, color: "#d4af37", icon: `${EX_CARD_ASSET_BASE}shiji.png` },
@@ -121,7 +121,12 @@
         { id: "f15", rarity: "R", title: "龟吉", desc: "要想“快”，先得“慢”，只有学会了放平心态去细细打磨，“快”便会自然出现。", weight: 30, color: "#8d6e63", icon: `${EX_CARD_ASSET_BASE}guiji.png` },
         { id: "f18", rarity: "R", title: "鼬吉", desc: "思维若如鼬般柔软，再凶狠的学习障碍，也能轻盈越过。", weight: 30, color: "#8d6e63", icon: `${EX_CARD_ASSET_BASE}youji.png` },
         { id: "f31", rarity: "R", title: "鬼吉", desc: "好意的显现，不一定是笑容，有时候也可能会是某种“恐怖😱”哦", weight: 30, color: "#8d6e63", icon: `${EX_CARD_ASSET_BASE}eji.png` },
-        { id: "f25", rarity: "R", title: "鵺吉", desc: "困难，即是机遇，不要畏惧不要害怕，解题之法就在其中！", weight: 30, color: "#8d6e63", icon: `${EX_CARD_ASSET_BASE}nueji.png` },
+        { id: "f25", rarity: "R", title: "鵺吉", desc: "困难，即是机遇，不要畏惧不要害怕，解题之法就在其中！", weight: 30, color: "#8d6e63", icon: `${EX_CARD_ASSET_BASE}nueji.png`, themeSetId: "hyakki_yakou" },
+        { id: "f40", rarity: "SSR", title: "狗吉", desc: "万人的敬仰，源自你手中的力量", weight: 5, color: "#d32f2f", icon: `${EX_CARD_ASSET_BASE}tiangouji.png`, themeSetId: "hyakki_yakou" },
+        { id: "f41", rarity: "UR", title: "岐吉", desc: "狂乱肆虐的欲望，看，它正在吞噬一切", weight: 1, color: "#d4af37", icon: `${EX_CARD_ASSET_BASE}qiji.png`, themeSetId: "hyakki_yakou" },
+        { id: "f42", rarity: "SR", title: "座吉", desc: "那微小的脚步声，便是幸福的证明。", weight: 10, color: "#00897b", icon: `${EX_CARD_ASSET_BASE}zuoji.png`, themeSetId: "hyakki_yakou" },
+        { id: "f43", rarity: "SR", title: "河吉", desc: "吾乃清流の主，要来比试相扑吗", weight: 10, color: "#00897b", icon: `${EX_CARD_ASSET_BASE}tongji.png`, themeSetId: "hyakki_yakou" },
+        { id: "f44", rarity: "UR", title: "雪吉", desc: "最冰冷的话语，蕴藏着最温暖的真情。", weight: 1, color: "#d4af37", icon: `${EX_CARD_ASSET_BASE}xueji2.png`, themeSetId: "hyakki_yakou" },
         { id: "f39", rarity: "R", title: "鹰吉", desc: "日复一日的练习，必然让你练就锐利的“鹰眼”，一箭正中要害！", weight: 30, color: "#5C4A3D", icon: `${EX_CARD_ASSET_BASE}yingji.png` }
     ].map(attachCatalogMetadata);
 
@@ -146,6 +151,18 @@
             acquireMode: "set_reward",
             themeSetId: "exam_good_luck",
             rewardSource: { type: "set_complete", setId: "exam_good_luck" }
+        },
+        {
+            id: "theme_hyakki_yakou_chiji",
+            rarity: "MR",
+            title: "魑吉",
+            desc: "狗长鼻，猫长尾，狐现九尾，百兽夜行～",
+            color: "#B7282E",
+            icon: `${EX_CARD_ASSET_BASE}chiji.png`,
+            isRewardOnly: true,
+            acquireMode: "set_reward",
+            themeSetId: "hyakki_yakou",
+            rewardSource: { type: "set_complete", setId: "hyakki_yakou" }
         }
     ];
 
@@ -157,6 +174,14 @@
             cardIds: ["practice_yaji_max", "practice_gaoji_max", "practice_geji_max", "practice_anji_max"],
             rewardCardId: "practice_shengji_max",
             coverCardId: "practice_yaji_max"
+        },
+        {
+            id: "hyakki_yakou",
+            title: "百鬼夜行",
+            intro: "众妖踏月而来，百鬼夜行。集齐夜行众相后，终可见真相。",
+            cardIds: ["f25", "f7", "f40", "f41", "f42", "f43", "f44"],
+            rewardCardId: "theme_hyakki_yakou_chiji",
+            coverCardId: "f40"
         }
     ]);
 
