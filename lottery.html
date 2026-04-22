@@ -1874,6 +1874,43 @@
             return '抽卡';
         }
 
+        function getAvailabilityLabel(fortune) {
+            const availability = fortune && fortune.availability;
+            if (!availability || typeof availability !== 'object') {
+                return '';
+            }
+            return String(availability.label || '').trim();
+        }
+
+        function isFortuneAvailableToday(fortune, now = new Date()) {
+            if (!fortune) {
+                return false;
+            }
+
+            const availability = fortune.availability;
+            if (!availability || typeof availability !== 'object') {
+                return true;
+            }
+
+            if (availability.type === 'weekday') {
+                const weekdays = Array.isArray(availability.weekdays)
+                    ? availability.weekdays
+                        .map((value) => Number.parseInt(value, 10))
+                        .filter((value) => Number.isInteger(value) && value >= 0 && value <= 6)
+                    : [];
+                if (!weekdays.length) {
+                    return true;
+                }
+                return weekdays.includes(now.getDay());
+            }
+
+            return true;
+        }
+
+        function getDrawableFortunes(pool, now = new Date()) {
+            return pool.filter((fortune) => isFortuneAvailableToday(fortune, now));
+        }
+
         function isMysteryFortune(fortune) {
             return Boolean(fortune && fortune.rarity === 'MR');
         }
@@ -2243,6 +2280,10 @@
             if (themeSet) {
                 metaRows.push({ label: '所属套组', value: themeSet.title });
             }
+            const availabilityLabel = getAvailabilityLabel(fortune);
+            if (availabilityLabel) {
+                metaRows.push({ label: '限定规则', value: availabilityLabel });
+            }
 
             previewMeta.innerHTML = metaRows.map((row) => `
                 <div class="preview-meta-row">
@@ -2322,6 +2363,10 @@
                     const entry = meta[fortune.id];
                     const isUnlocked = Boolean(entry && entry.count > 0);
                     const isLockedMr = fortune.rarity === 'MR' && !isUnlocked;
+                    const availabilityLabel = getAvailabilityLabel(fortune);
+                    const sourceLabel = availabilityLabel
+                        ? `${getSourceLabel(fortune)} · ${availabilityLabel}`
+                        : getSourceLabel(fortune);
                     const div = document.createElement('div');
                     div.className = `collection-item ${isUnlocked ? 'unlocked' : 'locked'}`;
                     div.dataset.fortuneId = fortune.id;
@@ -2333,7 +2378,7 @@
                     }
 
                     div.innerHTML = `
-                        <div class="item-source">${escapeHtml(getSourceLabel(fortune))}</div>
+                        <div class="item-source">${escapeHtml(sourceLabel)}</div>
                         ${isUnlocked && entry && entry.isNew ? '<div class="item-new-badge">新获得</div>' : ''}
                         ${isLockedMr
                             ? `<div class="item-icon mystery-icon">
@@ -2591,10 +2636,14 @@
                 }
             }
 
-            const pool = fortunes.filter((fortune) => fortune.rarity === selectedRarity && !fortune.isSpecial);
+            const pool = getDrawableFortunes(
+                fortunes.filter((fortune) => fortune.rarity === selectedRarity && !fortune.isSpecial)
+            );
 
             if (!pool.length) {
-                const normalPool = fortunes.filter((fortune) => !fortune.isSpecial);
+                const normalPool = getDrawableFortunes(
+                    fortunes.filter((fortune) => !fortune.isSpecial)
+                );
                 return normalPool[Math.floor(Math.random() * normalPool.length)];
             }
 

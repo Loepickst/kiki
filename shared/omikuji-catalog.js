@@ -86,7 +86,7 @@
         { id: "sp1", rarity: "SP", title: "感谢祭", desc: "感谢你一直以来的支持，谢谢。", weight: 1, color: "#9c27b0", icon: `${EX_CARD_ASSET_BASE}ganxieji.png`, isSpecial: true },
         { id: "f1", rarity: "KR", title: "旺吉", desc: "🎉你就是最帅（美）的气运之子🎉！kiki祝福你，旺！", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}wangji.png` },
         { id: "f19", rarity: "KR", title: "乐吉", desc: "喝上一口肥宅水，快乐一整天！", weight: 7, color: "#000000", icon: `${EX_CARD_ASSET_BASE}keleji.png` },
-        { id: "f34", rarity: "KR", title: "肯吉", desc: "疯狂星期四，V你50。真要啊！不行，我要自己吃。", weight: 2, color: "#000000", icon: `${EX_CARD_ASSET_BASE}kenji.png` },
+        { id: "f34", rarity: "KR", title: "肯吉", desc: "疯狂星期四，V你50。真要啊！不行，我要自己吃。", weight: 2, color: "#000000", icon: `${EX_CARD_ASSET_BASE}kenji.png`, availability: { type: "weekday", weekdays: [4], label: "周四限定" } },
         { id: "f21", rarity: "KR", title: "桃吉", desc: "学习上的不如意，说不定会带来其他方面的好运哦～", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}taoji.png` },
         { id: "f37", rarity: "KR", title: "画吉", desc: "快看～，我成为一幅画了，啊啊啊啊啊啊", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}huaji.png` },
         { id: "f32", rarity: "KR", title: "天吉", desc: "知识中的私语，细细聆听，那是日语之神对你的回应。", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}tianji.png` },
