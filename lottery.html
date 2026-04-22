@@ -2256,7 +2256,7 @@
             const normalizedFortune = omikujiCatalogApi && typeof omikujiCatalogApi.getFortuneById === 'function'
                 ? omikujiCatalogApi.getFortuneById(fortune.id)
                 : fortune;
-            if (!normalizedFortune || isMysteryFortune(normalizedFortune)) {
+            if (!normalizedFortune) {
                 return;
             }
             const meta = migrateLegacyCollectionIfNeeded();
@@ -2318,28 +2318,10 @@
                 const grid = document.createElement('div');
                 grid.className = 'rarity-grid';
 
-                if (rarity === 'MR') {
-                    if (!shouldShowMysteryRarity(currentCollectionFilter, unlockedInRarity, items.length)) {
-                        return;
-                    }
-
-                    const div = document.createElement('div');
-                    div.className = 'collection-item mystery-item';
-                    div.innerHTML = `
-                        <div class="item-icon mystery-icon">
-                            <span class="collection-mystery-mark">謎</span>
-                        </div>
-                        <div class="item-title">謎</div>
-                    `;
-                    grid.appendChild(div);
-                    section.appendChild(grid);
-                    collectionGrid.appendChild(section);
-                    return;
-                }
-
                 filteredItems.forEach((fortune) => {
                     const entry = meta[fortune.id];
                     const isUnlocked = Boolean(entry && entry.count > 0);
+                    const isLockedMr = fortune.rarity === 'MR' && !isUnlocked;
                     const div = document.createElement('div');
                     div.className = `collection-item ${isUnlocked ? 'unlocked' : 'locked'}`;
                     div.dataset.fortuneId = fortune.id;
@@ -2353,9 +2335,13 @@
                     div.innerHTML = `
                         <div class="item-source">${escapeHtml(getSourceLabel(fortune))}</div>
                         ${isUnlocked && entry && entry.isNew ? '<div class="item-new-badge">新获得</div>' : ''}
-                        <div class="item-icon">
-                            <img src="${escapeHtml(fortune.icon)}" alt="${escapeHtml(fortune.title)}" class="collection-icon-img">
-                        </div>
+                        ${isLockedMr
+                            ? `<div class="item-icon mystery-icon">
+                                <span class="collection-mystery-mark">謎</span>
+                            </div>`
+                            : `<div class="item-icon">
+                                <img src="${escapeHtml(fortune.icon)}" alt="${escapeHtml(fortune.title)}" class="collection-icon-img">
+                            </div>`}
                         <div class="item-title">${isUnlocked ? escapeHtml(fortune.title) : '???'}</div>
                         ${isUnlocked && entry ? `<div class="item-count">×${entry.count}</div>` : ''}
                         <div class="item-rarity" style="background:${escapeHtml(rarityColors[fortune.rarity] || fortune.color || 'var(--accent)')}">${escapeHtml(fortune.rarity)}</div>
@@ -2505,17 +2491,12 @@
                                 <span class="theme-reward-label">终章奖励</span>
                                 <span class="theme-reward-state${rewardUnlocked ? '' : ' locked'}">${escapeHtml(rewardStateLabel)}</span>
                             </div>
-                            ${isMysteryFortune(rewardCard)
-                                ? `<button type="button" class="theme-reward-card mystery-card" disabled>
-                                    <span class="theme-placeholder-thumb theme-locked-thumb">謎</span>
-                                    <span class="theme-reward-name">謎</span>
-                                </button>`
-                                : `<button type="button" class="theme-reward-card ${rewardUnlocked ? 'unlocked' : 'locked'}" ${rewardUnlocked ? `data-theme-card-id="${escapeHtml(themeSet.rewardCardId)}"` : 'disabled'}>
-                                    ${rewardUnlocked
-                                        ? `<img class="theme-reward-thumb" src="${escapeHtml(rewardCard.icon)}" alt="${escapeHtml(rewardCard.title)}">`
-                                        : '<span class="theme-placeholder-thumb theme-locked-thumb">终</span>'}
-                                    <span class="theme-reward-name">${rewardUnlocked ? escapeHtml(rewardCard.title) : '终章剪影'}</span>
-                                </button>`}
+                            <button type="button" class="theme-reward-card ${rewardUnlocked ? 'unlocked' : 'locked'}" ${rewardUnlocked ? `data-theme-card-id="${escapeHtml(themeSet.rewardCardId)}"` : 'disabled'}>
+                                ${rewardUnlocked
+                                    ? `<img class="theme-reward-thumb" src="${escapeHtml(rewardCard.icon)}" alt="${escapeHtml(rewardCard.title)}">`
+                                    : '<span class="theme-placeholder-thumb theme-locked-thumb">謎</span>'}
+                                <span class="theme-reward-name">${rewardUnlocked ? escapeHtml(rewardCard.title) : '终章剪影'}</span>
+                            </button>
                         </div>
                     </article>
                 `;

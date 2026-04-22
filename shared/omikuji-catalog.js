@@ -90,6 +90,7 @@
         { id: "f21", rarity: "KR", title: "桃吉", desc: "学习上的不如意，说不定会带来其他方面的好运哦～", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}taoji.png` },
         { id: "f37", rarity: "KR", title: "画吉", desc: "快看～，我成为一幅画了，啊啊啊啊啊啊", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}huaji.png` },
         { id: "f32", rarity: "KR", title: "天吉", desc: "知识中的私语，细细聆听，那是日语之神对你的回应。", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}tianji.png` },
+        { id: "f45", rarity: "KR", title: "武吉", desc: "学累了，就稍作片刻休息吧", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}wuji.png` },
         { id: "f8", rarity: "UR", title: "神吉", desc: "⛩️考神附体！今天直觉准得可怕，做阅读题一抓一个准，就算蒙的也全对！", weight: 1, color: "#d4af37", icon: `${EX_CARD_ASSET_BASE}shenji.png` },
         { id: "f7", rarity: "UR", title: "玉吉", desc: "一尾便是一重境界。熬过漫长的沉淀与枯燥的练习，终能修得灵动的语感。", weight: 3, color: "#F44336", icon: `${EX_CARD_ASSET_BASE}huji.png`, themeSetId: "hyakki_yakou" },
         { id: "f16", rarity: "UR", title: "鹿吉", desc: "步履从容，一步一印，语感自然如影随形。", weight: 1, color: "#e6b422", icon: `${EX_CARD_ASSET_BASE}luji2.png` },
