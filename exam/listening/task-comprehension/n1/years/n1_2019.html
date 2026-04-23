@@ -504,6 +504,26 @@
             font-family: sans-serif;
         }
 
+        .question-image-area {
+            display: none;
+            margin: 16px 0 18px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1.5px dashed rgba(51, 51, 51, 0.18);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .question-image-area img {
+            display: block;
+            width: auto;
+            max-width: 100%;
+            max-height: 320px;
+            margin: 0 auto;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
         .conversation-box {
             padding: 28px 22px 4px;
             font-size: 16px;
@@ -810,6 +830,8 @@
             .transcript-section { margin-bottom: 24px; }
             .question-box { font-size: 14px; padding: 30px 16px 14px; }
             .question-box::before { top: 8px; left: 12px; font-size: 11px; padding: 2px 8px; }
+            .question-image-area { margin: 14px 0 16px; padding: 12px; }
+            .question-image-area img { max-height: 240px; }
             .conversation-box { font-size: 14px; padding: 20px 16px 4px; }
             .speaker-name { font-size: 12px; }
             .translation { font-size: 12px; }
@@ -852,6 +874,8 @@
             .mode-switch { gap: 4px !important; }
             .mode-switch button { font-size: 11px !important; padding: 4px 5px !important; }
             .question-box { font-size: 13px !important; }
+            .question-image-area { margin: 12px 0 14px !important; padding: 10px !important; }
+            .question-image-area img { max-height: 190px !important; }
             .conversation-box { font-size: 13px !important; }
             .translation { font-size: 11px !important; }
             
@@ -908,14 +932,19 @@
                         <div id="questionText"></div>
                         <div class="translation" id="questionTrans"></div>
                     </div>
-                    
+
                     <!-- 对话区块 -->
                     <div class="conversation-box" id="conversationText">
                         <!-- 由JS填充对话内容 -->
                     </div>
-                </div>
+</div>
 
-                <!-- 选项列表 (练习模式下保持可见) -->
+<div class="question-image-area" id="questionImageArea" aria-live="polite">
+    <img id="questionImage" alt="">
+</div>
+
+<!-- 选项列表 (练习模式下保持可见) -->
+
                 <ul class="options-list" id="optionsList"></ul>
             </div>
         </div>
@@ -1532,7 +1561,19 @@
             // Transcript Update (分割问题与对话内容)
             document.getElementById('questionText').innerHTML = data.script.question;
             document.getElementById('questionTrans').innerHTML = data.script.questionTrans;
-
+            const questionImageArea = document.getElementById('questionImageArea');
+            const questionImage = document.getElementById('questionImage');
+            if (questionImageArea && questionImage) {
+                if (data.image) {
+                    questionImage.src = data.image;
+                    questionImage.alt = `${examData[currentExamKey].label} 問題 ${data.id} 题图`;
+                    questionImageArea.style.display = 'block';
+                } else {
+                    questionImage.removeAttribute('src');
+                    questionImage.alt = '';
+                    questionImageArea.style.display = 'none';
+                }
+            }
             const conversationHtml = data.script.dialogue.map(line => `
                 <div class="conversation-line">
                     <span class="speaker-name">${line.speaker}</span>
