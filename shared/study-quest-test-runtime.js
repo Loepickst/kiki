@@ -11,6 +11,10 @@
     const COLLECTION_KEY = 'study_quest_test_v1_omikujiCollection';
     const COLLECTION_META_KEY = 'study_quest_test_v1_omikujiCollectionMeta_v1';
     const LAST_OBTAINED_KEY = 'study_quest_test_v1_omikujiLastObtained_v1';
+    const LOTTERY_COLLECTION_KEY = 'omikujiCollection';
+    const LOTTERY_COLLECTION_META_KEY = 'omikujiCollectionMeta_v1';
+    const LOTTERY_LAST_OBTAINED_KEY = 'omikujiLastObtained_v1';
+    const LOTTERY_COLLECTION_SYNC_KEY = 'study_quest_test_v1_omikujiCollectionLotterySync_v1';
     const PET_STATE_KEY = 'study_quest_test_v1_kiki_pet_state_v1';
     const PET_SETTINGS_KEY = 'study_quest_test_v1_kiki_pet_settings_v1';
     const PRACTICE_DRAW_DAILY_MODULES = Object.freeze(['vocabulary', 'grammar', 'reading', 'listening']);
@@ -60,7 +64,7 @@
     const PET_REWARD_FORTUNES = Object.freeze([]);
     const PRACTICE_REWARD_FORTUNES = Object.freeze([
         { id: 'practice_anji_max', rarity: 'MR', title: '安吉', desc: '天気がいいから、散歩しましょう', color: '#4E5FA8', icon: 'takarakuji/anji.png', isRewardOnly: true },
-        { id: 'practice_yaji_max', rarity: 'MR', title: '丫吉', desc: '单词一旦背出节奏，嘴边会先冒出熟悉感，记忆也会越滚越顺。', color: '#8A5A35', icon: 'takarakuji/yaji2.png', isRewardOnly: true },
+        { id: 'practice_yaji_max', rarity: 'MR', title: '丫吉', desc: '去背你的单词，别抢我的肉啦。', color: '#8A5A35', icon: 'takarakuji/yaji2.png', isRewardOnly: true },
         { id: 'practice_geji_max', rarity: 'MR', title: '🐦吉', desc: '读到关键句时，线索像小鸟一样轻轻落回掌心，整篇文章也会突然明朗。', color: '#2F7B67', icon: 'takarakuji/geji2.png', isRewardOnly: true },
         { id: 'practice_gaoji_max', rarity: 'MR', title: '高吉', desc: '文字里的故事，就如怀中的手办一样温暖。', color: '#7A5C9E', icon: 'takarakuji/gaoji.png', isRewardOnly: true },
         { id: 'practice_shengji_max', rarity: 'MR', title: '胜吉', desc: '烟火在夜空里炸开的时候，努力终于有了形状。一步一步走到最后，也会迎来属于自己的合格时刻。', color: '#C96A2A', icon: 'takarakuji/shengji.png', isRewardOnly: true }
@@ -470,6 +474,143 @@
         return payload;
     }
 
+    function getLotteryCollectionMeta() {
+        const rawMeta = safeParseJSON(global.localStorage.getItem(LOTTERY_COLLECTION_META_KEY), {});
+        if (!rawMeta || typeof rawMeta !== 'object' || Array.isArray(rawMeta)) {
+            return {};
+        }
+
+        return Object.keys(rawMeta).reduce((accumulator, id) => {
+            const entry = rawMeta[id];
+            const normalizedId = normalizePracticeRewardCardId(id);
+            if (!normalizedId || !entry || typeof entry !== 'object' || Array.isArray(entry)) {
+                return accumulator;
+            }
+            if (!getCardDefinition(normalizedId)) {
+                return accumulator;
+            }
+
+            const mergedEntry = mergeCollectionMetaEntry(accumulator[normalizedId], entry);
+            if (mergedEntry) {
+                accumulator[normalizedId] = mergedEntry;
+            }
+            return accumulator;
+        }, {});
+    }
+
+    function saveLotteryCollectionMeta(meta) {
+        global.localStorage.setItem(LOTTERY_COLLECTION_META_KEY, JSON.stringify(meta));
+        return meta;
+    }
+
+    function saveLotteryCollectionIds(ids) {
+        const normalizedIds = Array.from(new Set(
+            Array.isArray(ids) ? ids.map((id) => normalizePracticeRewardCardId(id)).filter(Boolean) : []
+        ));
+        global.localStorage.setItem(LOTTERY_COLLECTION_KEY, JSON.stringify(normalizedIds));
+        return normalizedIds;
+    }
+
+    function saveLotteryLastObtained(id, obtainedAt) {
+        const normalizedId = normalizePracticeRewardCardId(id);
+        if (!normalizedId) {
+            global.localStorage.removeItem(LOTTERY_LAST_OBTAINED_KEY);
+            return null;
+        }
+
+        const payload = {
+            id: normalizedId,
+            obtainedAt: Number(obtainedAt) || Date.now()
+        };
+        global.localStorage.setItem(LOTTERY_LAST_OBTAINED_KEY, JSON.stringify(payload));
+        return payload;
+    }
+
+    function getLotteryCollectionSyncMeta() {
+        const rawMeta = safeParseJSON(global.localStorage.getItem(LOTTERY_COLLECTION_SYNC_KEY), {});
+        if (!rawMeta || typeof rawMeta !== 'object' || Array.isArray(rawMeta)) {
+            return {};
+        }
+
+        return Object.keys(rawMeta).reduce((accumulator, id) => {
+            const normalizedId = normalizePracticeRewardCardId(id);
+            const entry = rawMeta[id];
+            const count = Number.parseInt(entry && entry.count, 10);
+            if (!normalizedId || !Number.isInteger(count) || count <= 0) {
+                return accumulator;
+            }
+
+            accumulator[normalizedId] = {
+                count,
+                lastSyncedAt: Number(entry.lastSyncedAt) || null,
+                lastObtainedAt: Number(entry.lastObtainedAt) || null
+            };
+            return accumulator;
+        }, {});
+    }
+
+    function saveLotteryCollectionSyncMeta(meta) {
+        global.localStorage.setItem(LOTTERY_COLLECTION_SYNC_KEY, JSON.stringify(meta));
+        return meta;
+    }
+
+    function markLotteryCollectionSynced(cardId, increment, obtainedAt) {
+        const normalizedId = normalizePracticeRewardCardId(cardId);
+        const countIncrement = Number.parseInt(increment, 10);
+        if (!normalizedId || !Number.isInteger(countIncrement) || countIncrement <= 0) {
+            return null;
+        }
+
+        const syncMeta = getLotteryCollectionSyncMeta();
+        const existing = syncMeta[normalizedId] || { count: 0 };
+        syncMeta[normalizedId] = {
+            count: Number(existing.count || 0) + countIncrement,
+            lastSyncedAt: Date.now(),
+            lastObtainedAt: Number(obtainedAt) || Date.now()
+        };
+        saveLotteryCollectionSyncMeta(syncMeta);
+        return syncMeta[normalizedId];
+    }
+
+    function syncPracticeRewardToLotteryCollection(cardDefinition, obtainedAt, increment) {
+        const normalizedId = normalizePracticeRewardCardId(cardDefinition && cardDefinition.id);
+        const countIncrement = Number.parseInt(increment, 10);
+        const definition = normalizedId ? getCardDefinition(normalizedId) || cardDefinition : null;
+        if (!definition || !normalizedId || isHiddenCollectionCardId(normalizedId) || !Number.isInteger(countIncrement) || countIncrement <= 0) {
+            return false;
+        }
+
+        const now = Number(obtainedAt) || Date.now();
+        const meta = getLotteryCollectionMeta();
+        const existingRecord = meta[normalizedId] || null;
+        const nextRecord = existingRecord
+            ? { ...existingRecord }
+            : {
+                count: 0,
+                firstObtainedAt: now,
+                lastObtainedAt: now,
+                isNew: true,
+                rarity: definition.rarity,
+                title: definition.title,
+                source: 'practice'
+            };
+
+        nextRecord.count = Number(nextRecord.count || 0) + countIncrement;
+        nextRecord.firstObtainedAt = nextRecord.firstObtainedAt || now;
+        nextRecord.lastObtainedAt = now;
+        nextRecord.isNew = existingRecord ? Boolean(existingRecord.isNew) : true;
+        nextRecord.rarity = definition.rarity;
+        nextRecord.title = definition.title;
+        nextRecord.source = 'practice';
+        meta[normalizedId] = nextRecord;
+
+        saveLotteryCollectionMeta(meta);
+        saveLotteryCollectionIds(getUnlockedIdsFromMeta(meta));
+        saveLotteryLastObtained(normalizedId, now);
+        markLotteryCollectionSynced(normalizedId, countIncrement, now);
+        return true;
+    }
+
     function resetLabState() {
         [
             STORAGE_KEY,
@@ -486,6 +627,13 @@
         const normalizedId = normalizePracticeRewardCardId(cardId);
         if (!normalizedId) {
             return null;
+        }
+        const catalogApi = global.OmikujiCatalog;
+        if (catalogApi && typeof catalogApi.getFortuneById === 'function') {
+            const catalogCard = catalogApi.getFortuneById(normalizedId);
+            if (catalogCard) {
+                return catalogCard;
+            }
         }
         return COLLECTION_CATALOG.find((card) => card.id === normalizedId) || null;
     }
@@ -847,12 +995,13 @@
             isNew: true,
             rarity: cardDefinition.rarity,
             title: cardDefinition.title,
-            source: 'lottery'
+            source: 'practice'
         };
 
         saveCollectionMeta(meta);
         saveCollectionIds(getUnlockedIdsFromMeta(meta));
         saveLastObtained(cardDefinition.id, now);
+        syncPracticeRewardToLotteryCollection(cardDefinition, now, 1);
 
         return {
             granted: true,
@@ -1126,6 +1275,10 @@
         collection: COLLECTION_KEY,
         collectionMeta: COLLECTION_META_KEY,
         lastObtained: LAST_OBTAINED_KEY,
+        lotteryCollection: LOTTERY_COLLECTION_KEY,
+        lotteryCollectionMeta: LOTTERY_COLLECTION_META_KEY,
+        lotteryLastObtained: LOTTERY_LAST_OBTAINED_KEY,
+        lotteryCollectionSync: LOTTERY_COLLECTION_SYNC_KEY,
         petState: PET_STATE_KEY,
         petSettings: PET_SETTINGS_KEY
     });
