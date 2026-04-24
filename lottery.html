@@ -1535,6 +1535,10 @@
         const COLLECTION_KEY = 'omikujiCollection';
         const COLLECTION_META_KEY = 'omikujiCollectionMeta_v1';
         const LAST_OBTAINED_KEY = 'omikujiLastObtained_v1';
+        const PRACTICE_COLLECTION_KEY = 'study_quest_test_v1_omikujiCollection';
+        const PRACTICE_COLLECTION_META_KEY = 'study_quest_test_v1_omikujiCollectionMeta_v1';
+        const PRACTICE_LAST_OBTAINED_KEY = 'study_quest_test_v1_omikujiLastObtained_v1';
+        const PRACTICE_COLLECTION_SYNC_KEY = 'study_quest_test_v1_omikujiCollectionLotterySync_v1';
         const SPECIAL_POOL_KEY = 'specialPoolState_v1';
         const PET_STATE_KEY = 'kiki_pet_state_v1';
         const DEFAULT_UNLOCKED_PET_IDS = ['shiba', 'cat'];
@@ -1667,7 +1671,10 @@
                     count: 0,
                     firstObtainedAt: null,
                     lastObtainedAt: null,
-                    isNew: false
+                    isNew: false,
+                    rarity: '',
+                    title: '',
+                    source: ''
                 };
 
             const firstObtainedAt = Number(incomingEntry.firstObtainedAt);
@@ -1684,6 +1691,9 @@
                     : lastObtainedAt;
             }
             nextEntry.isNew = Boolean(nextEntry.isNew || incomingEntry.isNew);
+            nextEntry.rarity = incomingEntry.rarity || nextEntry.rarity;
+            nextEntry.title = incomingEntry.title || nextEntry.title;
+            nextEntry.source = incomingEntry.source || nextEntry.source;
             return nextEntry;
         }
 
@@ -1770,6 +1780,150 @@
             }));
         }
 
+        function getPracticeRewardSyncMeta() {
+            const raw = safeParseJSON(localStorage.getItem(PRACTICE_COLLECTION_SYNC_KEY), {});
+            if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+                return {};
+            }
+
+            return Object.keys(raw).reduce((acc, id) => {
+                const normalizedId = normalizeFortuneId(id);
+                const entry = raw[id];
+                const count = Number.parseInt(entry && entry.count, 10);
+                if (!normalizedId || !Number.isInteger(count) || count <= 0) {
+                    return acc;
+                }
+                acc[normalizedId] = {
+                    count,
+                    lastSyncedAt: Number(entry.lastSyncedAt) || null,
+                    lastObtainedAt: Number(entry.lastObtainedAt) || null
+                };
+                return acc;
+            }, {});
+        }
+
+        function savePracticeRewardSyncMeta(meta) {
+            localStorage.setItem(PRACTICE_COLLECTION_SYNC_KEY, JSON.stringify(meta));
+        }
+
+        function getPracticeRewardMeta() {
+            const raw = safeParseJSON(localStorage.getItem(PRACTICE_COLLECTION_META_KEY), {});
+            if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+                return {};
+            }
+
+            return Object.keys(raw).reduce((acc, id) => {
+                const normalizedId = normalizeFortuneId(id);
+                const entry = raw[id];
+                const knownFortune = omikujiCatalogApi && typeof omikujiCatalogApi.getFortuneById === 'function'
+                    ? omikujiCatalogApi.getFortuneById(normalizedId)
+                    : null;
+                if (!entry || typeof entry !== 'object' || Array.isArray(entry) || !knownFortune || knownFortune.isSpecial) {
+                    return acc;
+                }
+
+                const mergedEntry = mergeCollectionMetaEntry(acc[normalizedId], {
+                    ...entry,
+                    rarity: knownFortune.rarity,
+                    title: knownFortune.title,
+                    source: 'practice'
+                });
+                if (mergedEntry) {
+                    acc[normalizedId] = mergedEntry;
+                }
+                return acc;
+            }, {});
+        }
+
+        function migratePracticeRewardsIntoCollection(meta) {
+            const practiceMeta = getPracticeRewardMeta();
+            const practiceIds = safeParseJSON(localStorage.getItem(PRACTICE_COLLECTION_KEY), []);
+            const syncMeta = getPracticeRewardSyncMeta();
+            let didChange = false;
+            let latestPracticeLastObtained = getLastObtained();
+            const practiceLastObtained = safeParseJSON(localStorage.getItem(PRACTICE_LAST_OBTAINED_KEY), null);
+
+            if (Array.isArray(practiceIds)) {
+                practiceIds.forEach((id) => {
+                    const normalizedId = normalizeFortuneId(id);
+                    if (!normalizedId || practiceMeta[normalizedId]) {
+                        return;
+                    }
+                    const knownFortune = omikujiCatalogApi && typeof omikujiCatalogApi.getFortuneById === 'function'
+                        ? omikujiCatalogApi.getFortuneById(normalizedId)
+                        : null;
+                    if (!knownFortune || knownFortune.isSpecial) {
+                        return;
+                    }
+                    practiceMeta[normalizedId] = {
+                        count: 1,
+                        firstObtainedAt: null,
+                        lastObtainedAt: null,
+                        isNew: false,
+                        rarity: knownFortune.rarity,
+                        title: knownFortune.title,
+                        source: 'practice'
+                    };
+                });
+            }
+
+            Object.keys(practiceMeta).forEach((id) => {
+                const entry = practiceMeta[id];
+                const practiceCount = Number.parseInt(entry && entry.count, 10);
+                const syncedCount = Number.parseInt(syncMeta[id] && syncMeta[id].count, 10) || 0;
+                const unsyncedCount = practiceCount - syncedCount;
+                if (!Number.isInteger(practiceCount) || practiceCount <= 0 || unsyncedCount <= 0) {
+                    return;
+                }
+
+                const fortune = omikujiCatalogApi && typeof omikujiCatalogApi.getFortuneById === 'function'
+                    ? omikujiCatalogApi.getFortuneById(id)
+                    : null;
+                if (!fortune) {
+                    return;
+                }
+
+                const incomingEntry = {
+                    ...entry,
+                    count: unsyncedCount,
+                    rarity: fortune.rarity,
+                    title: fortune.title,
+                    source: 'practice'
+                };
+                const mergedEntry = mergeCollectionMetaEntry(meta[id], incomingEntry);
+                if (mergedEntry) {
+                    meta[id] = mergedEntry;
+                    didChange = true;
+                }
+
+                syncMeta[id] = {
+                    count: practiceCount,
+                    lastSyncedAt: Date.now(),
+                    lastObtainedAt: Number(entry.lastObtainedAt) || null
+                };
+            });
+
+            if (practiceLastObtained && practiceLastObtained.id) {
+                const normalizedId = normalizeFortuneId(practiceLastObtained.id);
+                const obtainedAt = Number(practiceLastObtained.obtainedAt);
+                if (normalizedId && practiceMeta[normalizedId] && Number.isFinite(obtainedAt) && obtainedAt > 0) {
+                    const currentObtainedAt = Number(latestPracticeLastObtained && latestPracticeLastObtained.obtainedAt);
+                    if (!Number.isFinite(currentObtainedAt) || obtainedAt >= currentObtainedAt) {
+                        latestPracticeLastObtained = { id: normalizedId, obtainedAt };
+                    }
+                }
+            }
+
+            if (didChange) {
+                savePracticeRewardSyncMeta(syncMeta);
+                if (latestPracticeLastObtained && latestPracticeLastObtained.id) {
+                    saveLastObtained(latestPracticeLastObtained.id, latestPracticeLastObtained.obtainedAt);
+                }
+            }
+
+            return didChange;
+        }
+
         function getNormalizedPetRewardState() {
             const parsed = safeParseJSON(localStorage.getItem(PET_STATE_KEY), {});
             const source = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
@@ -1838,6 +1992,8 @@
                     didChange = true;
                 }
             });
+
+            didChange = migratePracticeRewardsIntoCollection(meta) || didChange;
 
             const normalizedLegacy = getUnlockedIdsFromMeta(meta);
             if (normalizedLegacy.length !== legacyIds.length || normalizedLegacy.some((id, index) => id !== legacyIds[index])) {
@@ -1939,7 +2095,10 @@
                     count: 0,
                     firstObtainedAt: now,
                     lastObtainedAt: now,
-                    isNew: options.markNew !== false
+                    isNew: options.markNew !== false,
+                    rarity: fortune.rarity,
+                    title: fortune.title,
+                    source: 'lottery'
                 };
 
             const previousCount = Number(nextEntry.count || 0);
@@ -1949,6 +2108,9 @@
                 nextEntry.firstObtainedAt = now;
             }
             nextEntry.isNew = existing ? Boolean(existing.isNew) : options.markNew !== false;
+            nextEntry.rarity = fortune.rarity;
+            nextEntry.title = fortune.title;
+            nextEntry.source = nextEntry.source || 'lottery';
 
             meta[fortune.id] = nextEntry;
             saveCollectionMeta(meta);
