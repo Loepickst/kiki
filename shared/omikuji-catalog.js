@@ -121,7 +121,7 @@
         { id: "f11", rarity: "R", title: "狐吉", desc: "🍵普普通通、平平淡淡的一天。按部就班地背单词吧，没有波澜也是一种幸福。", weight: 30, color: "#8d6e63", icon: `${EX_CARD_ASSET_BASE}pingji.png` },
         { id: "f15", rarity: "R", title: "龟吉", desc: "要想“快”，先得“慢”，只有学会了放平心态去细细打磨，“快”便会自然出现。", weight: 30, color: "#8d6e63", icon: `${EX_CARD_ASSET_BASE}guiji.png` },
         { id: "f18", rarity: "R", title: "鼬吉", desc: "思维若如鼬般柔软，再凶狠的学习障碍，也能轻盈越过。", weight: 30, color: "#8d6e63", icon: `${EX_CARD_ASSET_BASE}youji.png` },
-        { id: "f31", rarity: "R", title: "鬼吉", desc: "好意的显现，不一定是笑容，有时候也可能会是某种“恐怖😱”哦", weight: 30, color: "#8d6e63", icon: `${EX_CARD_ASSET_BASE}eji.png` },
+        { id: "f31", rarity: "R", title: "鬼吉", desc: "好意的显现，不一定是笑容，有时候也可能会是某种“恐怖😱”哦", weight: 30, color: "#8d6e63", icon: `${EX_CARD_ASSET_BASE}eji.png`, hiddenStage2: { unlockCount: 10, icon: `${EX_CARD_ASSET_BASE}guiji2.png` } },
         { id: "f25", rarity: "R", title: "鵺吉", desc: "困难，即是机遇，不要畏惧不要害怕，解题之法就在其中！", weight: 30, color: "#8d6e63", icon: `${EX_CARD_ASSET_BASE}nueji.png`, themeSetId: "hyakki_yakou" },
         { id: "f40", rarity: "SSR", title: "狗吉", desc: "万人的敬仰，源自你手中的力量", weight: 5, color: "#d32f2f", icon: `${EX_CARD_ASSET_BASE}tiangouji.png`, themeSetId: "hyakki_yakou" },
         { id: "f41", rarity: "UR", title: "岐吉", desc: "狂乱肆虐的欲望，看，它正在吞噬一切", weight: 1, color: "#d4af37", icon: `${EX_CARD_ASSET_BASE}qiji.png`, themeSetId: "hyakki_yakou" },
@@ -132,6 +132,20 @@
     ].map(attachCatalogMetadata);
 
     const petRewardFortunes = Object.freeze([]);
+
+    const achievementRewardFortunes = [
+        {
+            id: "sp_yingji1",
+            rarity: "SP",
+            title: "赢吉",
+            desc: "相信自己，会赢的！",
+            color: "#9c27b0",
+            icon: `${EX_CARD_ASSET_BASE}yingji1.png`,
+            isRewardOnly: true,
+            acquireMode: "achievement",
+            rewardSource: { type: "level_practice_count", level: "N1", threshold: 30 }
+        }
+    ];
 
     const practiceRewardFortunes = [
         { id: "practice_anji_max", rarity: "MR", title: "安吉", desc: "天気がいいから、散歩しましょう", color: "#4E5FA8", icon: "takarakuji/anji.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" },
@@ -187,6 +201,7 @@
     ]);
 
     const collectionCatalog = Object.freeze([
+        ...achievementRewardFortunes,
         ...practiceRewardFortunes,
         ...themeRewardFortunes,
         ...fortunes
@@ -317,6 +332,7 @@
         COLLECTION_META_KEY,
         fortunes,
         petRewardFortunes,
+        achievementRewardFortunes,
         practiceRewardFortunes,
         themeRewardFortunes,
         themeSets,

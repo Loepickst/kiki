@@ -18,6 +18,8 @@
     const PET_STATE_KEY = 'study_quest_test_v1_kiki_pet_state_v1';
     const PET_SETTINGS_KEY = 'study_quest_test_v1_kiki_pet_settings_v1';
     const PRACTICE_DRAW_DAILY_MODULES = Object.freeze(['vocabulary', 'grammar', 'reading', 'listening']);
+    const N1_PRACTICE_ACHIEVEMENT_CARD_ID = 'sp_yingji1';
+    const N1_PRACTICE_ACHIEVEMENT_THRESHOLD = 30;
 
     const FORTUNES = Object.freeze([
         { id: 'sp1', rarity: 'SP', title: '感谢祭', desc: '感谢你一直以来的支持，谢谢。', weight: 1, color: '#9c27b0', icon: 'https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/takarakuji/ganxieji.png', isSpecial: true },
@@ -62,6 +64,9 @@
         { id: 'f39', rarity: 'R', title: '鹰吉', desc: '日复一日的练习，必然让你练就锐利的“鹰眼”，一箭正中要害！', weight: 30, color: '#5C4A3D', icon: 'https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/takarakuji/yingji.png' }
     ]);
     const PET_REWARD_FORTUNES = Object.freeze([]);
+    const ACHIEVEMENT_REWARD_FORTUNES = Object.freeze([
+        { id: 'sp_yingji1', rarity: 'SP', title: '赢吉', desc: '相信自己，会赢的！', color: '#9c27b0', icon: 'takarakuji/yingji1.png', isRewardOnly: true, acquireMode: 'achievement' }
+    ]);
     const PRACTICE_REWARD_FORTUNES = Object.freeze([
         { id: 'practice_anji_max', rarity: 'MR', title: '安吉', desc: '天気がいいから、散歩しましょう', color: '#4E5FA8', icon: 'takarakuji/anji.png', isRewardOnly: true },
         { id: 'practice_yaji_max', rarity: 'MR', title: '丫吉', desc: '去背你的单词，别抢我的肉啦。', color: '#8A5A35', icon: 'takarakuji/yaji2.png', isRewardOnly: true },
@@ -70,7 +75,7 @@
         { id: 'practice_shengji_max', rarity: 'MR', title: '胜吉', desc: '烟火在夜空里炸开的时候，努力终于有了形状。一步一步走到最后，也会迎来属于自己的合格时刻。', color: '#C96A2A', icon: 'takarakuji/shengji.png', isRewardOnly: true }
     ]);
     const HIDDEN_COLLECTION_CARD_IDS = Object.freeze(PET_REWARD_FORTUNES.map((card) => card.id));
-    const COLLECTION_CATALOG = Object.freeze([...PRACTICE_REWARD_FORTUNES, ...FORTUNES]);
+    const COLLECTION_CATALOG = Object.freeze([...ACHIEVEMENT_REWARD_FORTUNES, ...PRACTICE_REWARD_FORTUNES, ...FORTUNES]);
     const RARITY_ORDER = Object.freeze(['MR', 'SP', 'KR', 'UR', 'SSR', 'SR', 'R']);
     const RARITY_COLORS = Object.freeze({
         MR: '#B7282E',
@@ -238,7 +243,9 @@
             progress: {
                 firstClearTracks: {},
                 recentRewards: [],
-                lastSummary: null
+                lastSummary: null,
+                levelPracticeCounts: {},
+                achievementRewards: {}
             }
         };
     }
@@ -254,6 +261,76 @@
     function normalizePracticeRewardCardId(cardId) {
         const normalizedCardId = normalizeString(cardId);
         return NORMALIZED_PRACTICE_REWARD_CARD_ID_BY_ID[normalizedCardId] || normalizedCardId;
+    }
+
+    function normalizeLevelPracticeCounts(value) {
+        const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+        return ['N1', 'N2', 'N3'].reduce((accumulator, level) => {
+            const count = Number.parseInt(source[level], 10);
+            accumulator[level] = Number.isInteger(count) && count > 0 ? count : 0;
+            return accumulator;
+        }, {});
+    }
+
+    function normalizeAchievementRewards(value) {
+        const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+        return Object.keys(source).reduce((accumulator, cardId) => {
+            const normalizedCardId = normalizePracticeRewardCardId(cardId);
+            const record = source[cardId];
+            if (!normalizedCardId || !record || typeof record !== 'object' || Array.isArray(record)) {
+                return accumulator;
+            }
+            accumulator[normalizedCardId] = {
+                cardId: normalizedCardId,
+                level: normalizeString(record.level),
+                threshold: clampNumber(record.threshold, 0, Number.MAX_SAFE_INTEGER),
+                count: clampNumber(record.count, 0, Number.MAX_SAFE_INTEGER),
+                claimedAt: normalizeString(record.claimedAt)
+            };
+            return accumulator;
+        }, {});
+    }
+
+    function getExplicitPracticeLevel(value) {
+        const normalizedLevel = normalizeString(value).toUpperCase();
+        return ['N1', 'N2', 'N3'].includes(normalizedLevel) ? normalizedLevel : '';
+    }
+
+    function inferPracticeLevelFromText(value) {
+        const text = normalizeString(value).toLowerCase();
+        if (!text) {
+            return '';
+        }
+        if (/(^|[^a-z0-9])n1([^a-z0-9]|$)/.test(text)
+            || text.includes('textbook_n1')
+            || text.includes('try-n1')
+            || text.includes('text_1.html')) {
+            return 'N1';
+        }
+        if (/(^|[^a-z0-9])n2([^a-z0-9]|$)/.test(text)
+            || text.includes('textbook_n2')
+            || text.includes('try-n2')
+            || text.includes('text_2.html')) {
+            return 'N2';
+        }
+        if (/(^|[^a-z0-9])n3([^a-z0-9]|$)/.test(text)) {
+            return 'N3';
+        }
+        return '';
+    }
+
+    function inferPracticeLevel(source) {
+        const explicitLevel = getExplicitPracticeLevel(source && source.level);
+        if (explicitLevel) {
+            return explicitLevel;
+        }
+        const haystack = [
+            source && source.subType,
+            source && source.scopeKey,
+            source && source.sourcePage,
+            source && source.runKey
+        ].map(normalizeString).join(' ');
+        return inferPracticeLevelFromText(haystack);
     }
 
     function mergeCollectionMetaEntry(baseEntry, incomingEntry) {
@@ -353,6 +430,8 @@
                 ? nextState.practiceLedger.rewardedRunKeys.map((runKey) => normalizeString(runKey)).filter(Boolean)
                 : []
         ));
+        nextState.progress.levelPracticeCounts = normalizeLevelPracticeCounts(nextState.progress.levelPracticeCounts);
+        nextState.progress.achievementRewards = normalizeAchievementRewards(nextState.progress.achievementRewards);
         const practiceDrawDaily = nextState.practiceLedger.practiceDrawDaily
             && typeof nextState.practiceLedger.practiceDrawDaily === 'object'
             && !Array.isArray(nextState.practiceLedger.practiceDrawDaily)
@@ -722,6 +801,105 @@
         };
     }
 
+    function syncHistoricalLevelPracticeCounts(state) {
+        if (!state || !state.progress || !state.practiceLedger) {
+            return false;
+        }
+        const rewardedRunKeys = Array.isArray(state.practiceLedger.rewardedRunKeys)
+            ? state.practiceLedger.rewardedRunKeys
+            : [];
+        const historicalN1Count = rewardedRunKeys.reduce((count, runKey) => {
+            return inferPracticeLevel({ runKey }) === 'N1' ? count + 1 : count;
+        }, 0);
+        const currentN1Count = Number(state.progress.levelPracticeCounts.N1) || 0;
+        if (historicalN1Count > currentN1Count) {
+            state.progress.levelPracticeCounts.N1 = historicalN1Count;
+            return true;
+        }
+        return false;
+    }
+
+    function addLevelPracticeProgress(state, result) {
+        const level = inferPracticeLevel(result);
+        if (!level) {
+            return { level: '', didChange: false };
+        }
+        const currentCount = Number(state.progress.levelPracticeCounts[level]) || 0;
+        state.progress.levelPracticeCounts[level] = currentCount + 1;
+        return { level, didChange: true };
+    }
+
+    function maybeGrantN1PracticeAchievement(state, obtainedAt) {
+        const count = Number(state && state.progress && state.progress.levelPracticeCounts
+            ? state.progress.levelPracticeCounts.N1
+            : 0) || 0;
+        if (count < N1_PRACTICE_ACHIEVEMENT_THRESHOLD) {
+            return { didChange: false, achievement: null };
+        }
+
+        const achievements = state.progress.achievementRewards || {};
+        const existingAchievement = achievements[N1_PRACTICE_ACHIEVEMENT_CARD_ID];
+        if (existingAchievement && existingAchievement.claimedAt) {
+            return { didChange: false, achievement: null };
+        }
+
+        const cardDefinition = getCardDefinition(N1_PRACTICE_ACHIEVEMENT_CARD_ID);
+        if (!cardDefinition) {
+            return { didChange: false, achievement: null };
+        }
+
+        const now = Number(obtainedAt) || Date.now();
+        const meta = getCollectionMeta();
+        const existingCardRecord = meta[N1_PRACTICE_ACHIEVEMENT_CARD_ID];
+        const alreadyOwned = Boolean(existingCardRecord && Number(existingCardRecord.count) > 0);
+        const cardResult = alreadyOwned
+            ? createCardSnapshot(N1_PRACTICE_ACHIEVEMENT_CARD_ID)
+            : recordCard(cardDefinition, now);
+
+        achievements[N1_PRACTICE_ACHIEVEMENT_CARD_ID] = {
+            cardId: N1_PRACTICE_ACHIEVEMENT_CARD_ID,
+            level: 'N1',
+            threshold: N1_PRACTICE_ACHIEVEMENT_THRESHOLD,
+            count,
+            claimedAt: new Date(now).toISOString()
+        };
+        state.progress.achievementRewards = achievements;
+
+        if (alreadyOwned) {
+            return { didChange: true, achievement: null };
+        }
+
+        return {
+            didChange: true,
+            achievement: {
+                type: 'level_practice_count',
+                level: 'N1',
+                threshold: N1_PRACTICE_ACHIEVEMENT_THRESHOLD,
+                count,
+                card: cardResult
+            }
+        };
+    }
+
+    function syncPracticeAchievements(state, result, obtainedAt) {
+        const changedByHistory = syncHistoricalLevelPracticeCounts(state);
+        let changedByRun = false;
+        const resultLevel = result ? inferPracticeLevel(result) : '';
+        const runAlreadyRecorded = Boolean(result && Array.isArray(state.practiceLedger.rewardedRunKeys)
+            && state.practiceLedger.rewardedRunKeys.includes(result.runKey));
+        if (result && !runAlreadyRecorded) {
+            changedByRun = addLevelPracticeProgress(state, result).didChange;
+        }
+        const achievementGrant = resultLevel === 'N1'
+            ? maybeGrantN1PracticeAchievement(state, obtainedAt)
+            : { didChange: false, achievement: null };
+        const achievement = achievementGrant.achievement;
+        return {
+            didChange: changedByHistory || changedByRun || achievementGrant.didChange,
+            achievements: achievement ? [achievement] : []
+        };
+    }
+
     function isEffectivePractice(result) {
         const answeredCount = getAnsweredCount(result);
         if (!result.cleared) {
@@ -844,6 +1022,41 @@
             runKey: result.runKey,
             entryLabel: '🐶',
             blockedByDailyLimit: false
+        };
+    }
+
+    function createSuppressedDrawOffer(result, reason) {
+        return {
+            available: false,
+            chance: 0,
+            runKey: result && result.runKey ? result.runKey : '',
+            entryLabel: '🐶',
+            blockedByDailyLimit: false,
+            blockedByAchievement: reason === 'achievement_draw'
+        };
+    }
+
+    function createAchievementDraw(result, achievementResult) {
+        const achievements = achievementResult && Array.isArray(achievementResult.achievements)
+            ? achievementResult.achievements
+            : [];
+        const achievement = achievements.find((entry) => entry && entry.card && entry.card.cardId);
+        if (!achievement) {
+            return {
+                available: false,
+                runKey: result && result.runKey ? result.runKey : '',
+                card: null
+            };
+        }
+        return {
+            available: true,
+            runKey: result && result.runKey ? result.runKey : '',
+            type: achievement.type || 'level_practice_count',
+            level: achievement.level || 'N1',
+            threshold: achievement.threshold || N1_PRACTICE_ACHIEVEMENT_THRESHOLD,
+            count: achievement.count || N1_PRACTICE_ACHIEVEMENT_THRESHOLD,
+            reason: 'n1_practice_30',
+            card: achievement.card
         };
     }
 
@@ -1044,6 +1257,12 @@
                 detail: '当前题量还没达到奖励门槛。'
             };
         }
+        if (summaryContext && summaryContext.achievementDraw && summaryContext.achievementDraw.available) {
+            return {
+                headline: '赢吉来了',
+                detail: 'N1 练习累计 30 次，特别抽签将在结算界面自动开启。'
+            };
+        }
         if (summaryContext && summaryContext.drawOffer && summaryContext.drawOffer.available) {
             return {
                 headline: '🐶来了',
@@ -1116,7 +1335,16 @@
         const state = existingState;
         const rewards = calculateBaseRewards(result);
         const trackKey = getTrackKey(result);
-        const drawOffer = createDrawOffer(result, state);
+        state.economy.studyXp += rewards.studyXp;
+        state.economy.shards += rewards.shards;
+        state.economy.totalRewardedRuns += 1;
+        state.progress.firstClearTracks[trackKey] = true;
+        const achievementResult = syncPracticeAchievements(state, result, result.finishedAt);
+        state.practiceLedger.rewardedRunKeys.push(result.runKey);
+        const achievementDraw = createAchievementDraw(result, achievementResult);
+        const drawOffer = achievementDraw.available
+            ? createSuppressedDrawOffer(result, 'achievement_draw')
+            : createDrawOffer(result, state);
         const cardResult = {
             granted: false,
             cardId: '',
@@ -1133,7 +1361,9 @@
             isDuplicate: false,
             count: 0,
             isNew: false,
-            reason: drawOffer.available ? 'pending_draw' : 'no_draw_offer'
+            reason: achievementDraw.available
+                ? 'achievement_draw'
+                : (drawOffer.available ? 'pending_draw' : 'no_draw_offer')
         };
 
         if (drawOffer.available) {
@@ -1153,11 +1383,6 @@
             };
         }
 
-        state.economy.studyXp += rewards.studyXp;
-        state.economy.shards += rewards.shards;
-        state.economy.totalRewardedRuns += 1;
-        state.practiceLedger.rewardedRunKeys.push(result.runKey);
-        state.progress.firstClearTracks[trackKey] = true;
         state.progress.lastSummary = {
             runKey: result.runKey,
             module: result.module,
@@ -1170,6 +1395,11 @@
                 available: drawOffer.available,
                 runKey: result.runKey
             },
+            achievementDraw: {
+                available: achievementDraw.available,
+                runKey: result.runKey,
+                cardId: achievementDraw.card && achievementDraw.card.cardId ? achievementDraw.card.cardId : ''
+            },
             card: {
                 granted: false,
                 cardId: '',
@@ -1177,7 +1407,14 @@
                 title: '',
                 isDuplicate: false,
                 count: 0
-            }
+            },
+            achievements: achievementResult.achievements.map((achievement) => ({
+                type: achievement.type,
+                level: achievement.level,
+                threshold: achievement.threshold,
+                count: achievement.count,
+                cardId: achievement.card && achievement.card.cardId ? achievement.card.cardId : ''
+            }))
         };
         state.progress.recentRewards = [
             deepClone(state.progress.lastSummary),
@@ -1188,7 +1425,9 @@
         dispatchLabEvent('studyquestlab:practice-reward', {
             runKey: result.runKey,
             rewards: deepClone(rewards),
-            practice: deepClone(result)
+            practice: deepClone(result),
+            achievements: deepClone(achievementResult.achievements),
+            achievementDraw: deepClone(achievementDraw)
         });
 
         return {
@@ -1196,8 +1435,10 @@
             practice: deepClone(result),
             rewards: deepClone(rewards),
             card: deepClone(cardResult),
+            achievements: deepClone(achievementResult.achievements),
+            achievementDraw: deepClone(achievementDraw),
             drawOffer: deepClone(drawOffer),
-            summary: buildSummary(result, { drawOffer }, ''),
+            summary: buildSummary(result, { drawOffer, achievementDraw }, ''),
             collection: buildCollectionState(),
             state: getState(),
             labState: getLabState()
@@ -1269,6 +1510,19 @@
         };
     }
 
+    function initializePracticeAchievements() {
+        const state = readState();
+        const didChange = syncHistoricalLevelPracticeCounts(state);
+        if (didChange) {
+            saveState(state);
+        }
+        return {
+            didChange,
+            achievements: []
+        };
+    }
+
+    initializePracticeAchievements();
     const root = getRoot();
     root.storageKeys = Object.freeze({
         state: STORAGE_KEY,

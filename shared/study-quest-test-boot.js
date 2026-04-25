@@ -8,6 +8,7 @@
     const QUIET_PRACTICE_PATHS = [
         '/exam/vocabulary/n1/practice_n1_verbs.html',
         '/exam/grammar/sort.html',
+        '/exam/grammar/sort/index.html',
         '/exam/textbook/text_1.html',
         '/exam/jlpt-reading/s/2020.12.html',
         '/exam/listening/immediate-response/n1/years/n1_2019.html'
@@ -16,6 +17,7 @@
     const DRAW_AFFORDANCE_ICON = `
         <span class="lab-draw-affordance-icon lab-draw-affordance-emoji" aria-hidden="true">🐶</span>
     `;
+    const autoAchievementDrawRunKeys = new Set();
 
     function ensureStyle() {
         if (document.getElementById(STYLE_ID)) {
@@ -779,19 +781,8 @@
         }
     }
 
-    function openInlineDrawOverlay(runKey, options) {
-        const normalizedRunKey = normalizeRunKey(runKey);
-        if (!normalizedRunKey) {
-            return Promise.resolve({ accepted: false, reason: 'missing_run_key' });
-        }
-        if (!canOpenDrawForRunKey(normalizedRunKey)) {
-            const trigger = options && options.trigger;
-            if (trigger && typeof trigger.remove === 'function') {
-                trigger.remove();
-            }
-            return Promise.resolve({ accepted: false, reason: 'draw_unavailable' });
-        }
-
+    function openInlineDrawResultOverlay(options) {
+        const source = options && typeof options === 'object' ? options : {};
         const refs = ensureInlineDrawOverlay();
         if (refs.root.dataset.busy === 'true' || refs.root.dataset.phase === 'revealing') {
             return Promise.resolve({ accepted: false, reason: 'overlay_busy' });
@@ -806,7 +797,7 @@
         refs.resultCard.style.display = 'none';
         refs.newBadge.style.display = 'none';
         refs.closeBtn.classList.remove('is-visible');
-        refs.activeTrigger = options && options.trigger ? options.trigger : null;
+        refs.activeTrigger = source.trigger || null;
         if (typeof refs.unlockScroll === 'function') {
             refs.unlockScroll();
         }
@@ -823,10 +814,18 @@
                     refs.omikujiContainer.classList.remove('shake');
                     refs.omikujiContainer.style.display = 'none';
 
-                    const runtime = window.StudyQuestTestServer;
-                    const claimResult = runtime && typeof runtime.claimPendingDraw === 'function'
-                        ? runtime.claimPendingDraw(normalizedRunKey)
-                        : { accepted: false, reason: 'runtime_unavailable' };
+                    let claimResult = { accepted: false, reason: 'missing_claim_handler' };
+                    try {
+                        claimResult = typeof source.getClaimResult === 'function'
+                            ? source.getClaimResult()
+                            : claimResult;
+                    } catch (error) {
+                        claimResult = {
+                            accepted: false,
+                            reason: 'claim_failed',
+                            error: error && error.message ? error.message : String(error)
+                        };
+                    }
 
                     if (refs.activeTrigger && typeof refs.activeTrigger.remove === 'function') {
                         refs.activeTrigger.remove();
@@ -857,6 +856,48 @@
                     }, prefersReducedMotion ? 0 : 120);
                 }, preludeDelay);
             }, prefersReducedMotion ? 0 : 40);
+        });
+    }
+
+    function openInlineDrawOverlay(runKey, options) {
+        const normalizedRunKey = normalizeRunKey(runKey);
+        if (!normalizedRunKey) {
+            return Promise.resolve({ accepted: false, reason: 'missing_run_key' });
+        }
+        if (!canOpenDrawForRunKey(normalizedRunKey)) {
+            const trigger = options && options.trigger;
+            if (trigger && typeof trigger.remove === 'function') {
+                trigger.remove();
+            }
+            return Promise.resolve({ accepted: false, reason: 'draw_unavailable' });
+        }
+
+        return openInlineDrawResultOverlay({
+            trigger: options && options.trigger ? options.trigger : null,
+            getClaimResult() {
+                const runtime = window.StudyQuestTestServer;
+                return runtime && typeof runtime.claimPendingDraw === 'function'
+                    ? runtime.claimPendingDraw(normalizedRunKey)
+                    : { accepted: false, reason: 'runtime_unavailable' };
+            }
+        });
+    }
+
+    function openInlineAchievementDrawOverlay(achievementDraw) {
+        const source = achievementDraw && typeof achievementDraw === 'object' ? achievementDraw : {};
+        const card = source.card && typeof source.card === 'object' ? source.card : null;
+        if (!source.available || !card || !card.cardId) {
+            return Promise.resolve({ accepted: false, reason: 'missing_achievement_draw' });
+        }
+        return openInlineDrawResultOverlay({
+            getClaimResult() {
+                return {
+                    accepted: true,
+                    reason: source.reason || 'achievement_draw',
+                    runKey: source.runKey || '',
+                    card
+                };
+            }
         });
     }
 
@@ -922,6 +963,7 @@
         ui.getDrawAffordanceMarkup = getDrawAffordanceMarkup;
         ui.buildDrawHref = buildDrawHref;
         ui.openInlineDrawOverlay = openInlineDrawOverlay;
+        ui.openInlineAchievementDrawOverlay = openInlineAchievementDrawOverlay;
         ui.canOpenDrawForRunKey = canOpenDrawForRunKey;
         ui.mountPracticeTestTools = function mountPracticeTestTools(config = {}) {
             const refs = ensurePracticeTestToolsShell();
@@ -1014,6 +1056,23 @@
         window.__studyQuestTestPetController = controller || null;
     }
 
+    function scheduleAchievementDrawReveal(achievementDraw) {
+        const source = achievementDraw && typeof achievementDraw === 'object' ? achievementDraw : {};
+        const runKey = normalizeRunKey(source.runKey);
+        if (!source.available || !runKey || autoAchievementDrawRunKeys.has(runKey)) {
+            return;
+        }
+        autoAchievementDrawRunKeys.add(runKey);
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.setTimeout(() => {
+            openInlineAchievementDrawOverlay(source).then((result) => {
+                if (!result || !result.accepted) {
+                    autoAchievementDrawRunKeys.delete(runKey);
+                }
+            });
+        }, prefersReducedMotion ? 120 : 640);
+    }
+
     function bindPracticePetEvents() {
         if (window.__studyQuestTestPetEventsBound) {
             return;
@@ -1028,6 +1087,7 @@
             if (controller && typeof controller.awardLabXp === 'function' && amount > 0) {
                 controller.awardLabXp('shiba', amount);
             }
+            scheduleAchievementDrawReveal(detail.achievementDraw);
         });
 
         window.addEventListener('studyquestlab:practice-state', (event) => {
