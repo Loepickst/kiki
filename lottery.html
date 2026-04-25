@@ -2085,6 +2085,26 @@
             return rarity;
         }
 
+        function getHiddenStage2DisplayFortune(fortune, entryOrCount) {
+            const stage2 = fortune && fortune.hiddenStage2;
+            if (!stage2 || !stage2.icon) {
+                return fortune;
+            }
+
+            const count = typeof entryOrCount === 'number'
+                ? entryOrCount
+                : Number(entryOrCount && entryOrCount.count) || 0;
+            const unlockCount = Math.max(1, Number(stage2.unlockCount) || 10);
+            if (count < unlockCount) {
+                return fortune;
+            }
+
+            return {
+                ...fortune,
+                icon: stage2.icon
+            };
+        }
+
         function grantFortune(fortune, options = {}) {
             const meta = migrateLegacyCollectionIfNeeded();
             const now = Number.isFinite(Number(options.obtainedAt)) ? Number(options.obtainedAt) : Date.now();
@@ -2417,23 +2437,24 @@
             const themeSet = fortune.themeSetId && omikujiCatalogApi && typeof omikujiCatalogApi.getThemeSetById === 'function'
                 ? omikujiCatalogApi.getThemeSetById(fortune.themeSetId)
                 : null;
+            const displayFortune = getHiddenStage2DisplayFortune(fortune, entry);
 
-            previewImage.src = fortune.icon;
-            previewImage.alt = fortune.title;
+            previewImage.src = displayFortune.icon;
+            previewImage.alt = displayFortune.title;
             previewImage.onerror = () => {
                 previewImage.onerror = null;
                 previewImage.src = FALLBACK_IMAGE_URL;
             };
             const obtainedCount = entry ? entry.count : 0;
             previewTitle.innerHTML = `
-                <span class="preview-title-main">${escapeHtml(fortune.title)}</span>
+                <span class="preview-title-main">${escapeHtml(displayFortune.title)}</span>
                 <span class="preview-title-count">×${escapeHtml(obtainedCount)}</span>
             `;
-            previewTitle.style.color = fortune.color;
-            previewCard.style.borderColor = fortune.color;
-            previewRarityBadge.textContent = fortune.rarity;
-            previewRarityBadge.style.background = rarityColors[fortune.rarity] || fortune.color;
-            previewDesc.textContent = fortune.desc;
+            previewTitle.style.color = displayFortune.color;
+            previewCard.style.borderColor = displayFortune.color;
+            previewRarityBadge.textContent = displayFortune.rarity;
+            previewRarityBadge.style.background = rarityColors[displayFortune.rarity] || displayFortune.color;
+            previewDesc.textContent = displayFortune.desc;
 
             const metaRows = [
                 { label: '获得次数', value: `×${obtainedCount}` }
@@ -2524,6 +2545,7 @@
                 filteredItems.forEach((fortune) => {
                     const entry = meta[fortune.id];
                     const isUnlocked = Boolean(entry && entry.count > 0);
+                    const displayFortune = getHiddenStage2DisplayFortune(fortune, entry);
                     const isLockedMr = fortune.rarity === 'MR' && !isUnlocked;
                     const availabilityLabel = getAvailabilityLabel(fortune);
                     const sourceLabel = availabilityLabel
@@ -2547,9 +2569,9 @@
                                 <span class="collection-mystery-mark">謎</span>
                             </div>`
                             : `<div class="item-icon">
-                                <img src="${escapeHtml(fortune.icon)}" alt="${escapeHtml(fortune.title)}" class="collection-icon-img">
+                                <img src="${escapeHtml(displayFortune.icon)}" alt="${escapeHtml(displayFortune.title)}" class="collection-icon-img">
                             </div>`}
-                        <div class="item-title">${isUnlocked ? escapeHtml(fortune.title) : '???'}</div>
+                        <div class="item-title">${isUnlocked ? escapeHtml(displayFortune.title) : '???'}</div>
                         ${isUnlocked && entry ? `<div class="item-count">×${entry.count}</div>` : ''}
                         <div class="item-rarity" style="background:${escapeHtml(rarityColors[fortune.rarity] || fortune.color || 'var(--accent)')}">${escapeHtml(fortune.rarity)}</div>
                     `;
@@ -2751,13 +2773,14 @@
         }
 
         function renderResultCard(fortune, drawRecord, extras) {
-            resultCard.style.borderColor = fortune.color || 'var(--accent-gold)';
-            resultTitle.style.color = fortune.color || 'var(--ink-main)';
-            resultTitle.style.borderColor = fortune.color || 'var(--line)';
-            rarityBadge.textContent = fortune.rarity;
-            rarityBadge.style.background = rarityColors[fortune.rarity] || fortune.color || 'var(--accent)';
-            resultTitle.textContent = fortune.title;
-            resultIcon.innerHTML = `<img src="${escapeHtml(fortune.icon)}" alt="${escapeHtml(fortune.title)}" class="icon-img">`;
+            const displayFortune = getHiddenStage2DisplayFortune(fortune, drawRecord && drawRecord.meta);
+            resultCard.style.borderColor = displayFortune.color || 'var(--accent-gold)';
+            resultTitle.style.color = displayFortune.color || 'var(--ink-main)';
+            resultTitle.style.borderColor = displayFortune.color || 'var(--line)';
+            rarityBadge.textContent = displayFortune.rarity;
+            rarityBadge.style.background = rarityColors[displayFortune.rarity] || displayFortune.color || 'var(--accent)';
+            resultTitle.textContent = displayFortune.title;
+            resultIcon.innerHTML = `<img src="${escapeHtml(displayFortune.icon)}" alt="${escapeHtml(displayFortune.title)}" class="icon-img">`;
 
             const resultImage = resultIcon.querySelector('img');
             if (resultImage) {
@@ -2766,7 +2789,7 @@
                 }, { once: true });
             }
 
-            resultDesc.textContent = fortune.desc;
+            resultDesc.textContent = displayFortune.desc;
             const metaText = getResultMetaText(drawRecord, extras);
             if (metaText) {
                 resultMeta.textContent = metaText;
