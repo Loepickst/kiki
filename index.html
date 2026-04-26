@@ -1810,9 +1810,9 @@
                         </div>
                         <div class="notice-body">
                             <h1 class="notice-title">更新日志</h1>
-                            <p><b>N1,N2排序、N1听力已经更新完毕</b><b>N1中篇阅读</b>也在更新中了！。！</p>
-                            <p>抽卡添加了套图系统，并且给练习添加了特殊卡片奖励的功能，词汇背诵添加了新的模式，并且给每个练习添加新的视觉效果，使得更具有游戏感（测试）。</p>
-                            <p>宠物现在有了更加丰富的互动话语，且添加了语法复习话语，出现语法提醒时，可以点击对应高亮语法来查看使用。并且可以牵绳来使得宠物一直留在画面中，会在你每次做题时给予对应的反馈。</p>
+                            <p><b>N1部分的内容基本更新完毕，现在还剩听力的更新和阅读中篇的补全。</b></p>
+                            <p>抽卡添加了一些新的卡组和练习奖励卡片，并且优化阅读部分的显示效果，但介于手机看阅读就是不方便，推荐纸质做完后来看解析。</p>
+                            <p>后续会专注于N2内容的更新，等N2更新完之后，会考虑完善细化一下各个部分的内容。争取做一个完善且好用的学习网站。</p>
                         </div>
                         <div class="notice-foot">
                             现在<b>我的常用</b>，以及每个学习入口都可以自定义封面，可以用自己抽到的卡片作为封面。
@@ -2429,13 +2429,42 @@
             return value ? value.slice(0, 80) : "";
         }
 
+        function getFavoriteCoverCollectionMeta() {
+            if (!omikujiCatalogApi || typeof omikujiCatalogApi.getCollectionMeta !== "function") {
+                return {};
+            }
+
+            return omikujiCatalogApi.getCollectionMeta() || {};
+        }
+
+        function getFavoriteCoverDisplayFortune(fortune) {
+            const stage2 = fortune && fortune.hiddenStage2;
+            if (!stage2 || !stage2.icon) {
+                return fortune;
+            }
+
+            const meta = getFavoriteCoverCollectionMeta();
+            const entry = meta[fortune.id] || null;
+            const count = Number(entry && entry.count) || 0;
+            const unlockCount = Math.max(1, Number(stage2.unlockCount) || 10);
+            if (count < unlockCount) {
+                return fortune;
+            }
+
+            return {
+                ...fortune,
+                icon: stage2.icon
+            };
+        }
+
         function getFavoriteCoverFortune(fortuneId) {
             if (!omikujiCatalogApi || typeof omikujiCatalogApi.getFortuneById !== "function") {
                 return null;
             }
 
             const normalizedId = normalizeCoverFortuneId(fortuneId);
-            return normalizedId ? omikujiCatalogApi.getFortuneById(normalizedId) : null;
+            const fortune = normalizedId ? omikujiCatalogApi.getFortuneById(normalizedId) : null;
+            return fortune ? getFavoriteCoverDisplayFortune(fortune) : null;
         }
 
         function getUnlockedFavoriteCoverCatalog() {
@@ -2443,7 +2472,9 @@
                 return [];
             }
 
-            return omikujiCatalogApi.getUnlockedCatalog({ includeRewardOnly: true });
+            return omikujiCatalogApi
+                .getUnlockedCatalog({ includeRewardOnly: true })
+                .map(getFavoriteCoverDisplayFortune);
         }
 
         function buildFixedEntryCatalog() {
