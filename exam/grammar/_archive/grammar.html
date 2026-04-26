@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLPT 文法選択 - 素描铅笔特训</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;600;700;900&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script>
+        // 配置 Tailwind 铅笔素描风配色表
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['"Noto Sans SC"', '"Noto Sans JP"', 'sans-serif'],
+                        'serif-jp': ['"Noto Serif SC"', '"Noto Serif JP"', '"Songti SC"', '"SimSun"', 'serif'],
+                    },
+                    colors: {
+                        bgMain: '#fcfbf9',        /* 偏暖的素描纸本白 */
+                        bgCard: '#fcfbf9',        
+                        textMain: '#3b3b3b',      /* 铅笔石墨灰，不用纯黑 */
+                        textSub: '#666666',       
+                        textMuted: '#999999',     
+                        borderMain: '#d1d1d1',    /* 浅铅笔线 */
+                        borderDark: '#a3a3a3',    
+                        borderStrong: '#4b4b4b',  /* 用力刻画的铅笔线 */
+                        accentRed: '#cc4444',     /* 红色彩铅批改色 */
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* ==============================================================
+           纸张底座：素描纸肌理
+           ============================================================== */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-color: var(--bgMain);
+            color: var(--textMain);
+            position: relative;
+        }
+
+        /* 素描纸噪点纹理 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 核心工具类：手绘感边框 (微小的不规则圆角) + 轻微石墨擦痕阴影 */
+        .sketch-box {
+            border: 1.5px solid #4b4b4b !important;
+            border-radius: 3px 255px 4px 25px / 255px 5px 225px 4px !important;
+            background-color: #fcfbf9 !important;
+            box-shadow: 2px 3px 5px rgba(0,0,0,0.03), inset 0 0 8px rgba(0,0,0,0.01) !important;
+            transition: all 0.2s ease;
+        }
+
+        .sketch-btn {
+            border: 1.5px solid #4b4b4b !important;
+            border-radius: 3px 8px 4px 6px / 6px 4px 8px 3px !important;
+            transition: all 0.2s ease;
+        }
+        
+        /* 铅笔排线背景 (Hatching) - 彩铅涂色效果 */
+        .hatching-yellow {
+            background-image: repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(250, 190, 88, 0.25) 2px, rgba(250, 190, 88, 0.25) 4px) !important;
+        }
+
+        .hatching-gray {
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(75, 75, 75, 0.05) 3px, rgba(75, 75, 75, 0.05) 5px) !important;
+        }
+
+        /* ==============================================================
+           选项卡片 (铅笔速写风)
+           ============================================================== */
+        
+        .question-block .choice-option-btn {
+            border: 1.5px dashed #a3a3a3 !important; /* 较浅的铅笔虚线 */
+            background: transparent !important;
+            border-radius: 4px 255px 5px 25px / 255px 4px 225px 3px !important; 
+            position: relative;
+            transition: all 0.2s ease;
+            transform: translate(0, 0);
+            padding: 14px 18px !important;
+            display: flex;
+            align-items: center;
+            text-align: left;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .question-block .choice-option-btn:hover:not(.is-judged) {
+            border-style: solid !important;
+            border-color: #666 !important;
+            background: rgba(75, 75, 75, 0.02) !important; 
+            transform: translateY(-1px) !important;
+        }
+
+        /* 选中状态：彩铅涂色 + 深色边框实体阴影 */
+        .question-block .choice-option-btn.is-selected:not(.is-judged) {
+            border-style: solid !important;
+            border-width: 1.5px !important;
+            border-color: #3b3b3b !important;
+            background: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(250, 190, 88, 0.15) 3px, rgba(250, 190, 88, 0.15) 5px), #fcfbf9 !important; 
+            box-shadow: 2px 3px 0px rgba(59, 59, 59, 0.25) !important; /* 石墨阴影 */
+            transform: translate(-1px, -2px) !important; 
+        }
+
+        .question-block .choice-option-btn.is-selected .option-letter {
+            border-color: #3b3b3b !important;
+            color: #3b3b3b !important;
+            font-weight: 700 !important;
+        }
+
+        .question-block .option-letter {
+            background: transparent !important;
+            color: #777 !important;
+            border: 1.2px solid #a3a3a3 !important;
+            /* 手绘不规则圆 */
+            border-radius: 50% 45% 55% 40% / 45% 55% 45% 50% !important; 
+            width: 26px;
+            height: 26px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px !important;
+            margin-right: 14px !important;
+            flex-shrink: 0;
+            font-weight: 500 !important;
+            transition: all 0.2s ease;
+        }
+
+        .question-block .choice-option-btn.is-judged {
+            pointer-events: none;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+
+        /* 判题后：绿色排线 */
+        .question-block .choice-option-btn.is-correct-ans {
+            border-style: solid !important;
+            border-color: #10B981 !important;
+            background: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(16, 185, 129, 0.08) 3px, rgba(16, 185, 129, 0.08) 6px), #fcfbf9 !important;
+            opacity: 1 !important;
+        }
+        
+        .question-block .choice-option-btn.is-correct-ans .option-letter {
+            color: #10B981 !important;
+            border-color: #10B981 !important;
+            font-weight: 700 !important;
+        }
+
+        /* 判题后：红色排线 */
+        .question-block .choice-option-btn.is-wrong-ans {
+            border-style: solid !important;
+            border-color: #cc4444 !important;
+            background: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(204, 68, 68, 0.08) 3px, rgba(204, 68, 68, 0.08) 6px), #fcfbf9 !important;
+            opacity: 1 !important;
+        }
+        
+        .question-block .choice-option-btn.is-wrong-ans .option-letter {
+            color: #cc4444 !important;
+            border-color: #cc4444 !important;
+            font-weight: 700 !important;
+        }
+
+        .question-block .choice-option-btn.is-judged:not(.is-correct-ans):not(.is-wrong-ans) {
+            opacity: 0.35;
+            border-color: #d1d1d1 !important;
+            background: transparent !important;
+        }
+
+        /* ==============================================================
+           容器与面板
+           ============================================================== */
+        
+        .font-title-unified {
+            font-family: "Noto Serif SC", "Noto Serif JP", "Songti SC", "SimSun", serif;
+            letter-spacing: 0.1em;
+        }
+
+        .question-block > .bg-bgCard {
+            padding: 28px 32px !important;
+        }
+
+        .timer-toolbar-btn, .timer-chip-btn, .timer-control-btn, .timer-hide-btn, .random-target-btn {
+            border: 1.5px solid #4b4b4b;
+            border-radius: 3px 8px 4px 6px / 6px 4px 8px 3px;
+            background: transparent;
+            color: #4b4b4b;
+            transition: all 0.2s ease;
+        }
+
+        .timer-toolbar-btn:hover:not(:disabled), .timer-chip-btn:hover:not(:disabled), 
+        .timer-control-btn:hover:not(:disabled), .timer-hide-btn:hover:not(:disabled), 
+        .random-target-btn:hover:not(:disabled) {
+            background-color: rgba(75, 75, 75, 0.04); 
+        }
+
+        .timer-toolbar-btn.is-primary, .timer-chip-btn.is-selected, 
+        .timer-control-btn.is-primary, .timer-hide-btn.is-selected, .random-target-btn.is-primary {
+            background: #4b4b4b;
+            color: #fcfbf9;
+        }
+
+        #view-level-select button,
+        #view-mode-select button,
+        #view-year-select button {
+            border: 1.5px solid #4b4b4b !important;
+            border-radius: 3px 255px 4px 25px / 255px 5px 225px 4px !important;
+            box-shadow: none !important;
+            background-color: transparent;
+            transition: all 0.2s ease;
+        }
+
+        #view-level-select button:hover:not(:disabled),
+        #view-mode-select button:hover:not(:disabled),
+        #view-year-select button:hover:not(:disabled) {
+            /* hover 添加淡淡的灰色排线 */
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(75, 75, 75, 0.03) 3px, rgba(75, 75, 75, 0.03) 5px) !important;
+            transform: translate(-1px, -1px);
+        }
+        
+        #view-year-select .bg-bgMain { background-color: transparent !important; }
+
+        .question-block .submit-btn,
+        .question-block .next-question-btn {
+            background: #4b4b4b !important;
+            color: #fcfbf9 !important;
+            border: none !important;
+            border-radius: 4px 8px 4px 6px / 6px 4px 8px 4px !important;
+            box-shadow: 1px 2px 3px rgba(0,0,0,0.1) !important;
+            transition: all 0.2s ease;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+
+        .question-block .submit-btn:hover:not(:disabled),
+        .question-block .next-question-btn:hover {
+            background: #333 !important; 
+            transform: translateY(-1px);
+            box-shadow: 1px 3px 6px rgba(0,0,0,0.15) !important;
+        }
+
+        .question-block .submit-btn:disabled {
+            background: transparent !important;
+            border: 1.5px dashed #a3a3a3 !important;
+            color: #999 !important;
+            box-shadow: none !important;
+            cursor: not-allowed;
+        }
+
+        /* 解析区 */
+        .question-block .explanation-area {
+            border: 1.5px solid #4b4b4b;
+            border-radius: 3px 255px 4px 25px / 255px 5px 225px 4px;
+            background: transparent;
+            margin-top: 16px;
+            padding: 24px;
+        }
+        .explanation-stack {
+            gap: 20px;
+        }
+        .explanation-group-title {
+            font-size: 11.5px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            color: #666;
+            margin-bottom: 10px;
+            /* 标题加上淡淡的底纹 */
+            display: inline-block;
+            background: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(75,75,75,0.06) 2px, rgba(75,75,75,0.06) 4px);
+            padding: 2px 6px;
+            border-radius: 2px;
+        }
+        .correct-answer-box {
+            padding: 14px 16px;
+            border: 1.5px dashed #a3a3a3;
+            border-radius: 4px 255px 5px 25px / 255px 4px 225px 3px;
+        }
+        .explanation-copy {
+            font-size: 0.96rem;
+            line-height: 1.9;
+            font-weight: 500;
+            color: #4b4b4b;
+        }
+        
+        /* 核心：铅笔排线高亮特效 */
+        .explanation-copy strong,
+        .explanation-copy b {
+            font-weight: 700;
+            color: #222;
+            /* 用斜线渐变模拟彩铅涂抹 */
+            background: repeating-linear-gradient(-60deg, transparent, transparent 2px, rgba(250, 190, 88, 0.4) 2px, rgba(250, 190, 88, 0.4) 4px);
+            padding: 0 4px;
+            margin: 0 2px;
+            border-radius: 2px;
+        }
+
+        .view-section {
+            display: none;
+            animation: fadeInView 0.3s ease-out forwards;
+        }
+        .view-section.active {
+            display: block;
+        }
+        @keyframes fadeInView {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeInView 0.3s ease-out forwards;
+        }
+
+        /* 批改印章：用红色彩铅色 */
+        .status-badge {
+            position: absolute;
+            top: 24px;
+            right: 32px;
+            font-size: 15px !important;
+            font-weight: 700 !important;
+            color: #cc4444 !important; 
+            letter-spacing: 0.1em;
+            background: transparent !important;
+            border: 1.5px solid #cc4444 !important; /* 给印章加个框 */
+            padding: 4px 8px;
+            border-radius: 4px 8px 4px 6px / 6px 4px 8px 4px !important;
+            transform: rotate(3deg); /* 盖章歪一点 */
+            box-shadow: none !important;
+            animation: stampIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        @keyframes stampIn {
+            0% { opacity: 0; transform: scale(1.5) rotate(10deg); }
+            100% { opacity: 1; transform: scale(1) rotate(3deg); }
+        }
+
+        .status-badge.hidden {
+            display: none !important; 
+        }
+
+        .page-shell {
+            width: min(100%, 1000px);
+            margin: 0 auto;
+            padding: 32px 16px 48px;
+            box-sizing: border-box;
+        }
+
+        #view-practice.has-bottom-toolbar #practice-question-container {
+            margin-bottom: 0 !important;
+            padding-bottom: calc(8rem + env(safe-area-inset-bottom));
+        }
+
+        .selection-view-shell { width: min(100%, 700px); margin-left: auto; margin-right: auto; }
+        
+        .training-mode-overlay {
+            position: fixed; inset: 0; z-index: 2100; display: flex; align-items: center; justify-content: center;
+            padding: 20px; background: rgba(252, 251, 249, 0.85); backdrop-filter: blur(4px);
+        }
+        .training-mode-overlay[hidden] { display: none; }
+        .training-mode-modal {
+            width: min(100%, 580px); padding: 32px; border: 1.5px solid #4b4b4b; background: #fcfbf9;
+            border-radius: 3px 255px 4px 25px / 255px 5px 225px 4px;
+            box-shadow: 2px 4px 12px rgba(0,0,0,0.05); box-sizing: border-box;
+        }
+        .training-mode-title { font-size: 1.4rem; font-weight: 700; color: #3b3b3b; letter-spacing: 0.1em; }
+        .training-mode-subtitle { margin-top: 8px; color: #666; font-size: 0.95rem; }
+        .training-mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; }
+        .training-mode-card {
+            appearance: none; border: 1.5px dashed #a3a3a3; border-radius: 8px; background: transparent; padding: 20px 18px; text-align: left; transition: all 0.2s ease; cursor: pointer;
+        }
+        .training-mode-card:hover { border-color: #666; background: rgba(75, 75, 75, 0.03); }
+        .training-mode-card.is-selected { background: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(75, 75, 75, 0.05) 3px, rgba(75, 75, 75, 0.05) 5px); border-color: #4b4b4b; border-style: solid; }
+        .training-mode-card-title { font-size: 1.1rem; font-weight: 700; color: #3b3b3b; }
+        .training-mode-card-copy { margin-top: 10px; color: #666; font-size: 0.85rem; line-height: 1.6; }
+        .training-mode-card-tag { display: inline-flex; padding: 2px 8px; border: 1px solid #4b4b4b; border-radius: 4px; font-size: 0.72rem; margin-top: 12px;}
+        
+        .training-mode-chip, .training-mode-action {
+            border: 1.5px solid #4b4b4b; border-radius: 6px; padding: 8px 16px; background: transparent; font-size: 0.9rem; font-weight: 700; color: #4b4b4b;
+        }
+        .training-mode-chip.is-selected, .training-mode-action.is-primary { background: #4b4b4b !important; color: #fcfbf9 !important; }
+        .training-mode-timer, .training-mode-random-settings { margin-top: 24px; padding: 20px; border: 1.5px dashed #a3a3a3; border-radius: 8px; }
+
+        .practice-bottom-toolbar {
+            position: fixed; left: 0; right: 0; bottom: 0;
+            z-index: 1600; padding: 0 12px calc(env(safe-area-inset-bottom));
+            display: none; pointer-events: none;
+        }
+        .practice-bottom-toolbar.is-visible { display: block; }
+        .practice-toolbar-main {
+            display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 16px;
+            border: 1.5px solid #4b4b4b; border-radius: 8px 8px 0 0;
+            background: rgba(252, 251, 249, 0.95); backdrop-filter: blur(8px);
+            pointer-events: auto; max-width: 800px; margin: 0 auto;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.03);
+        }
+        .practice-bottom-toolbar__inner { max-width: 800px; margin: 0 auto; }
+        .practice-toolbar-slot { position: relative; }
+        .practice-toolbar-backdrop {
+            position: fixed; inset: 0; background: rgba(252, 251, 249, 0.72); backdrop-filter: blur(3px);
+        }
+        .timer-drawer {
+            position: absolute; right: 0; bottom: calc(100% + 10px);
+            width: min(100vw - 24px, 340px); padding: 18px; border: 1.5px solid #4b4b4b;
+            border-radius: 3px 255px 4px 25px / 255px 5px 225px 4px; background: rgba(252, 251, 249, 0.98);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.05); box-sizing: border-box; pointer-events: auto;
+        }
+        .timer-drawer-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+        .timer-drawer-title { font-size: 0.95rem; font-weight: 700; letter-spacing: 0.08em; color: #3b3b3b; }
+        .timer-drawer-close {
+            width: 28px; height: 28px; border: 1.5px solid #4b4b4b; border-radius: 6px; background: transparent;
+            color: #4b4b4b; font-size: 16px; line-height: 1; display: inline-flex; align-items: center; justify-content: center;
+        }
+        .timer-drawer-display {
+            font-family: "Noto Sans SC", "Noto Sans JP", sans-serif; font-size: 2rem; font-weight: 800; line-height: 1; color: #3b3b3b; margin-bottom: 16px;
+        }
+        .timer-control-row { display: flex; flex-wrap: wrap; gap: 10px; }
+        .timer-status-text { margin-top: 12px; font-size: 0.78rem; line-height: 1.6; color: #666; font-weight: 700; }
+        .practice-toolbar-meta { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .timer-status-dot { width: 8px; height: 8px; border-radius: 999px; background: #9ca3af; display: inline-block; flex-shrink: 0; }
+        #timer-toolbar-main[data-timer-status="running"] .timer-status-dot,
+        .random-toolbar-main .timer-status-dot { background: #10B981; }
+        #timer-toolbar-main[data-timer-status="paused"] .timer-status-dot { background: #F59E0B; }
+        .practice-toolbar-label { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; color: #666; white-space: nowrap; }
+        .practice-toolbar-time {
+            min-width: 68px; font-size: 1.2rem; line-height: 1; font-weight: 800;
+            font-family: "Noto Sans SC", "Noto Sans JP", sans-serif; color: #3b3b3b;
+        }
+        .timer-action-group { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
+        .random-toolbar-main { justify-content: space-between; }
+        .random-toolbar-summary { display: flex; align-items: center; justify-content: center; gap: 18px; flex: 1 1 auto; min-width: 0; }
+        .random-toolbar-metric { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 58px; }
+        .random-toolbar-metric-label { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; color: #666; white-space: nowrap; }
+        .random-toolbar-metric-value { font-size: 1rem; line-height: 1; font-weight: 800; color: #3b3b3b; font-family: "Noto Sans SC", "Noto Sans JP", sans-serif; }
+
+        .sort-page-header {
+            width: 100%; padding: 16px 20px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100; background: rgba(252, 251, 249, 0.92); backdrop-filter: blur(4px);
+            border-bottom: 1.5px solid #4b4b4b; border-bottom-left-radius: 50% 2px; border-bottom-right-radius: 50% 3px;
+        }
+
+        .back-btn {
+            text-decoration: none; color: #4b4b4b; font-size: 14px; font-weight: 700; padding: 4px 12px; background: transparent;
+            border: 1.5px solid #4b4b4b; border-radius: 2px 8px 3px 6px / 6px 3px 8px 2px; display: inline-flex; align-items: center;
+            gap: 6px; transition: all 0.2s ease; letter-spacing: 0.05em;
+        }
+        .back-btn:hover { background: rgba(75, 75, 75, 0.05); }
+        .sort-page-header-title {
+            margin: 0; font-size: 18px; font-weight: 700; color: #3b3b3b; position: absolute; left: 50%; transform: translateX(-50%);
+            white-space: nowrap; letter-spacing: 0.1em; display: flex; align-items: center;
+        }
+        .sort-page-header-title span {
+            color: #3b3b3b; background: transparent; padding: 2px 8px; font-size: 12px; margin-left: 8px;
+            border: 1.5px solid #4b4b4b; border-radius: 2px 8px 2px 6px / 6px 2px 8px 2px; font-family: "Noto Sans JP", sans-serif;
+        }
+        .sort-page-header-spacer { width: 70px; flex-shrink: 0; }
+        .sort-question-top { margin-bottom: 1.5rem; }
+        .sort-question-meta { flex-wrap: wrap; }
+        .sort-question-label, .sort-question-count { white-space: nowrap; }
+        
+        .choice-sentence {
+            font-size: 1.2rem;
+            line-height: 1.95;
+            margin-bottom: 2rem;
+        }
+
+        .choice-options-grid {
+            gap: 1rem;
+        }
+
+        /* Responsive Fixes */
+        @media (max-width: 768px) {
+            .sort-page-header { padding: 12px 16px; }
+            .sort-page-header-title { font-size: 16px; }
+            .back-btn { font-size: 12px; padding: 4px 10px; }
+            .page-shell { padding: 18px 12px 36px; }
+            #view-level-select .mb-10 { margin-bottom: 2rem !important; }
+            #view-level-select .text-2xl { font-size: 1.45rem !important; }
+            #view-practice > header { margin-bottom: 1.5rem !important; padding-bottom: 0.85rem !important; }
+            .question-block > .bg-bgCard { padding: 18px 14px !important; }
+            .choice-sentence { font-size: 1rem !important; line-height: 1.82 !important; margin-bottom: 1.35rem !important; }
+            .choice-options-grid { gap: 10px !important; margin-bottom: 1.15rem !important; }
+            .question-block .choice-option-btn { padding: 10px 12px !important; min-height: 48px; }
+            .question-block .option-letter { width: 22px; height: 22px; font-size: 11px !important; margin-right: 10px !important;}
+            .question-block .submit-btn, .question-block .next-question-btn { min-height: 42px; padding: 0 20px !important; font-size: 0.86rem !important; }
+            .question-block .explanation-area { margin-top: 12px !important; padding: 18px !important; }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen">
+
+    <header class="sort-page-header">
+        <button type="button" id="page-back-btn" class="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            戻る
+        </button>
+        <h1 class="sort-page-header-title">文法 <span>選択問題</span></h1>
+        <div class="sort-page-header-spacer" aria-hidden="true"></div>
+    </header>
+
+    <div class="page-shell">
+    <div class="max-w-4xl mx-auto">
+        
+        <div id="view-level-select" class="view-section active selection-view-shell selection-view-hero">
+            <div class="text-center mb-10 pt-4">
+                <h2 class="text-xl md:text-2xl font-title-unified font-bold text-textMain tracking-[0.1em] mb-3">学習レベルの選択</h2>
+                <p class="text-textSub font-bold text-sm">挑戦するレベルを選んでください</p>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-center gap-6 mb-6">
+                <button onclick="app.selectLevel('N1')" class="flex-1 flex flex-col items-center group relative overflow-hidden py-8 px-6 sketch-box">
+                    <span class="text-3xl font-bold font-sans text-textMain mb-2 group-hover:scale-105 transition-transform">N1</span>
+                    <span class="text-xs text-textSub font-bold tracking-widest">過去問演習</span>
+                </button>
+                <button onclick="app.selectLevel('N2')" class="flex-1 flex flex-col items-center group py-8 px-6 sketch-box">
+                    <span class="text-3xl font-bold font-sans text-textMain mb-2 group-hover:scale-105 transition-transform">N2</span>
+                    <span class="text-xs text-textSub font-bold tracking-widest">過去問演習</span>
+                </button>
+                <button type="button" disabled class="flex-1 flex flex-col items-center group opacity-40 cursor-not-allowed py-8 px-6 sketch-box">
+                    <span class="text-3xl font-bold font-sans text-textMain mb-2">N3</span>
+                    <span class="text-xs text-textSub font-bold tracking-widest">準備中</span>
+                </button>
+            </div>
+
+            <div class="mt-8">
+                <button onclick="app.startGlobalRandomPractice()" class="w-full group flex items-center justify-between p-5 relative overflow-hidden sketch-box">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 border border-borderStrong rounded-full flex items-center justify-center shrink-0 hatching-yellow">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-textMain"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+                        </div>
+                        <div class="text-left">
+                            <h3 class="text-lg font-bold text-textMain tracking-wide">全レベル乱序特訓</h3>
+                            <p class="text-xs text-textSub font-bold mt-1">N1 / N2 ランダム抽出</p>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <div id="view-mode-select" class="view-section selection-view-shell selection-view-standard">
+            <div class="mb-8 text-center">
+                <h2 class="text-xl font-bold text-textMain tracking-widest">
+                    <span id="display-selected-level" style="border: 1.5px solid #4b4b4b; padding: 2px 8px; border-radius: 4px;" class="text-lg mr-2 hatching-yellow">N?</span>演習モード
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <button onclick="app.showYearList()" class="group text-left p-6 relative overflow-hidden flex flex-col items-start sketch-box">
+                    <div class="w-10 h-10 border border-borderStrong rounded-md flex items-center justify-center mb-4 hatching-gray">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-textMain"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-textMain mb-2 tracking-wide">年度別演習</h3>
+                    <p class="text-xs text-textSub font-bold leading-relaxed">歴代の過去問を一年ずつ順番に解いていきます。</p>
+                </button>
+
+                <button onclick="app.startRandomPractice()" class="group text-left p-6 relative overflow-hidden flex flex-col items-start sketch-box">
+                    <div class="w-10 h-10 border border-borderStrong rounded-md flex items-center justify-center mb-4 hatching-gray">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-textMain"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-textMain mb-2 tracking-wide">ランダム演習</h3>
+                    <p class="text-xs text-textSub font-bold leading-relaxed">ランダムに抽出された問題で実力をテストします。</p>
+                </button>
+            </div>
+        </div>
+
+        <div id="view-year-select" class="view-section selection-view-shell selection-view-standard">
+            <div id="year-review-section" class="hidden mb-8 p-5 sketch-box hatching-gray">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-dashed border-borderDark pb-3">
+                    <div class="text-base font-bold text-textMain tracking-wide flex items-center gap-2">
+                        ✔ 赤ペン復習 (弱点特訓)
+                    </div>
+                </div>
+                <div id="year-review-grid" class="mt-4 flex flex-wrap gap-3">
+                </div>
+            </div>
+
+            <div id="year-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            </div>
+        </div>
+
+        <div id="training-mode-overlay" class="training-mode-overlay" hidden>
+            <div class="training-mode-modal" role="dialog" aria-modal="true" aria-labelledby="training-mode-title">
+                <div id="training-mode-title" class="training-mode-title">学習スタイルを選択</div>
+                <div id="training-mode-subtitle" class="training-mode-subtitle">ノートにまとめるか、時間を測るか。</div>
+                <div class="training-mode-grid">
+                    <button type="button" class="training-mode-card" data-training-mode="study">
+                        <div class="training-mode-card-title">学習モード</div>
+                        <div class="training-mode-card-copy">一問ずつ答え合わせをしながら、じっくり構文を理解します。</div>
+                        <div class="training-mode-card-tag">即時解説</div>
+                    </button>
+                    <button type="button" class="training-mode-card" data-training-mode="challenge">
+                        <div class="training-mode-card-title">テストモード</div>
+                        <div class="training-mode-card-copy">時間を意識して本番に近い環境で全問を一気に解きます。</div>
+                        <div class="training-mode-card-tag">一括採点</div>
+                    </button>
+                </div>
+                <div id="training-mode-timer" class="training-mode-timer" hidden>
+                    <div class="text-sm font-bold mb-3 text-textMain">制限時間の設定</div>
+                    <div class="flex flex-wrap gap-3">
+                        <button type="button" class="training-mode-chip" data-training-minutes="5">5 分</button>
+                        <button type="button" class="training-mode-chip" data-training-minutes="10">10 分</button>
+                        <button type="button" class="training-mode-chip" data-training-minutes="15">15 分</button>
+                        <label class="inline-flex items-center gap-2 border border-borderStrong rounded-md px-3 bg-transparent text-sm font-bold text-textMain">
+                            カスタム
+                            <input id="training-mode-custom-input" type="number" min="1" max="180" step="1" value="10" style="width: 40px; border:none; text-align:center; outline:none; background: transparent;">
+                            分
+                        </label>
+                    </div>
+                </div>
+                <div id="training-mode-random-settings" class="training-mode-random-settings" hidden>
+                    <div class="text-sm font-bold mb-3 text-textMain">出題数の設定</div>
+                    <div class="flex flex-wrap gap-3">
+                        <button type="button" class="training-mode-chip" data-training-random-target="5">5 題</button>
+                        <button type="button" class="training-mode-chip" data-training-random-target="10">10 題</button>
+                        <button type="button" class="training-mode-chip" data-training-random-target="20">20 題</button>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="training-mode-cancel-btn" class="training-mode-action" style="border:none; text-decoration:underline;">キャンセル</button>
+                    <button type="button" id="training-mode-confirm-btn" class="training-mode-action is-primary">スタート</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-practice" class="view-section">
+            <header class="mb-8 border-b-2 border-dashed border-borderDark pb-4">
+                <div>
+                    <h1 id="practice-title" class="text-xl md:text-2xl font-bold text-textMain tracking-wide">演習ノート</h1>
+                    <p id="practice-subtitle" class="text-xs font-bold text-textSub mt-2 tracking-wider">選択肢をクリックして正しい答えを選んでください。</p>
+                </div>
+            </header>
+            
+            <div id="practice-question-container" class="space-y-12 mb-16">
+            </div>
+
+            <div id="practice-bottom-toolbar" class="practice-bottom-toolbar" aria-live="polite">
+                <div id="practice-toolbar-backdrop" class="practice-toolbar-backdrop" hidden></div>
+                <div class="practice-bottom-toolbar__inner">
+                    <div id="timer-tool-slot" class="practice-toolbar-slot">
+                        <div id="timer-drawer" class="timer-drawer" hidden>
+                            <div class="timer-drawer-header">
+                                <div class="timer-drawer-title">タイマー設定</div>
+                                <button type="button" class="timer-drawer-close" id="timer-drawer-close-btn" aria-label="关闭">×</button>
+                            </div>
+                            <div id="timer-drawer-display" class="timer-drawer-display">00:00</div>
+                            <div class="timer-drawer-section">
+                                <div class="timer-control-row">
+                                    <button type="button" class="timer-control-btn is-primary" id="timer-drawer-start-btn">開始</button>
+                                    <button type="button" class="timer-control-btn" id="timer-drawer-pause-btn">一時停止</button>
+                                    <button type="button" class="timer-control-btn" id="timer-drawer-reset-btn">リセット</button>
+                                </div>
+                            </div>
+                            <div id="timer-status-text" class="timer-status-text"></div>
+                        </div>
+
+                        <div id="timer-toolbar-main" class="practice-toolbar-main" data-timer-status="idle">
+                            <div class="practice-toolbar-meta">
+                                <span class="timer-status-dot" aria-hidden="true"></span>
+                                <span class="practice-toolbar-label">TIMER</span>
+                            </div>
+                            <div id="timer-toolbar-display" class="practice-toolbar-time">00:00</div>
+                            <div class="timer-action-group">
+                                <button type="button" class="timer-toolbar-btn is-primary" id="timer-toolbar-toggle-btn">開始</button>
+                                <button type="button" class="timer-toolbar-btn" id="timer-toolbar-settings-btn">設定</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="random-tool-slot" class="practice-toolbar-slot" hidden>
+                        <div id="random-toolbar-main" class="practice-toolbar-main random-toolbar-main">
+                            <div class="practice-toolbar-meta">
+                                <span class="timer-status-dot" aria-hidden="true"></span>
+                                <span class="practice-toolbar-label">PROGRESS</span>
+                            </div>
+                            <div class="random-toolbar-summary">
+                                <div class="random-toolbar-metric">
+                                    <span class="random-toolbar-metric-label">完了</span>
+                                    <span id="random-toolbar-progress" class="random-toolbar-metric-value">0/10</span>
+                                </div>
+                                <div class="random-toolbar-metric">
+                                    <span class="random-toolbar-metric-label">連続正解</span>
+                                    <span id="random-toolbar-streak" class="random-toolbar-metric-value">0</span>
+                                </div>
+                            </div>
+                            <div class="random-target-group">
+                                <button type="button" class="timer-toolbar-btn" id="random-toolbar-end-btn">終了する</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+
+    <!-- 2010年7月 N1 真题 (第6~10题) 数据更新 -->
+    <script>
+        const questionDatabase = [
+            {
+                id: "q_n1_c_201007_06",
+                level: "N1",
+                year: "2010年7月",
+                label: "文法形式の判断",
+                sentence: "（電車の中で）\nA「いつもならこの時間帯は込んでるのに、今日は空いてるね。」\nB「祝日だからね。」\nA「あ、そっか。どうりで空いてる（　　　）。」",
+                options: [
+                    { id: "1", text: "こともある" },
+                    { id: "2", text: "に決まってる" },
+                    { id: "3", text: "に違いない" },
+                    { id: "4", text: "はずだ" }
+                ],
+                correctOptionId: "4",
+                translation: "(在电车里)\nA：“平常这个时间段都很拥挤，今天却很空呢。”\nB：“因为是节假日嘛。”\nA：“啊，原来如此。难怪这么空。”",
+                grammar: "结合题干，对话中A得知了“今天是节假日”这个原因，从而对“电车很空”这一结果表示理解。<strong>「〜はずだ」</strong>通常用来表示基于客观事实或理由得出的理所当然的推断。前文与<strong>「どうりで（难怪）」</strong>搭配，构成<strong>“难怪会...；理应如此”</strong>的固定用法，十分契合对话情境。",
+                optionsExp: {
+                    "1": "「〜こともある」表示“有时也会...”，不构成“难怪”的因果照应。",
+                    "2": "「〜に決まっている」表示主观的强烈断定（肯定是...），一般不和「どうりで」搭配使用。",
+                    "3": "「〜に違いない」表示主观推测判断（想必是...），同样不能接续「どうりで」。"
+                }
+            },
+            {
+                id: "q_n1_c_201007_07",
+                level: "N1",
+                year: "2010年7月",
+                label: "文法形式の判断",
+                sentence: "今回の事件で山田氏の政治的影響力が完全に失われる（　　　）、弱まることは間違いないだろう。",
+                options: [
+                    { id: "1", text: "ことはないにしても" },
+                    { id: "2", text: "ことはないにもかかわらず" },
+                    { id: "3", text: "ほかはないにしても" },
+                    { id: "4", text: "ほかはないにもかかわらず" }
+                ],
+                correctOptionId: "1",
+                translation: "因为这次事件，山田氏的政治影响力就算没有完全丧失，也毫无疑问会减弱吧。",
+                grammar: "结合题干，后半句说政治影响力“会减弱”，而前半句提到“完全丧失”，这里需要一个让步的逻辑衔接。<strong>「〜にしても」</strong>接在动词普通体之后，表示让步转折，意为<strong>“即使...也...”</strong>。填入此处构成“即使不至于完全丧失（至少也会减弱）”的语境，逻辑很妥帖。",
+                optionsExp: {
+                    "2": "「〜にもかかわらず」表示逆接，“尽管...却...”，后项多为与常识相反的既定事实，不接推测表达「だろう」。",
+                    "3": "「〜ほか（は）ない」表示“只能...；只好...”，填入后意思不通顺。",
+                    "4": "生硬地结合了「ほかはない」和「にもかかわらず」，语意不通。"
+                }
+            },
+            {
+                id: "q_n1_c_201007_08",
+                level: "N1",
+                year: "2010年7月",
+                label: "文法形式の判断",
+                sentence: "「3歳までの育児は母親がすべきだ」と言う人もいるが、子育てをするのが母親で（　　　）、必ずしもそうではないと思う。",
+                options: [
+                    { id: "1", text: "なくてはならないからといって" },
+                    { id: "2", text: "なくてはならないかというと" },
+                    { id: "3", text: "あるわけにはいかないからといって" },
+                    { id: "4", text: "あるわけにはいかないかというと" }
+                ],
+                correctOptionId: "2",
+                translation: "虽然也有人说“3岁前的育儿应该由母亲来做”，但要说是不是非母亲不可，我认为未必如此。",
+                grammar: "结合题干「必ずしもそうではないと思う」（我认为未必如此），前面需要一个提出疑问或假设的表达。<strong>「〜かというと」</strong>接在疑问词或假设命题之后，表示提出疑问并给出部分否定的回答，意为<strong>“要说是否...（其实并非如此）”</strong>。前接动词<strong>ない形</strong>加上「なくてはならない」（非...不可），两者搭配很好地呼应了后文。",
+                optionsExp: {
+                    "1": "「〜からといって」表示“虽说...但是...”，通常用来否定以前项为理由得出的必然结论，在这里句子逻辑不顺畅。",
+                    "3": "「〜わけにはいかない」表示受限于常识或心理而“不能做某事”，意思不对。",
+                    "4": "同样引入了“不能做”的含义，“要说是不是不能做”，逻辑不符。"
+                }
+            },
+            {
+                id: "q_n1_c_201007_09",
+                level: "N1",
+                year: "2010年7月",
+                label: "文法形式の判断",
+                sentence: "もう二度と恋（　　　）と固く心に誓ったはずだったが、知らず知らずのうちに彼女のことが好きになっていた。",
+                options: [
+                    { id: "1", text: "こそするものか" },
+                    { id: "2", text: "などするものか" },
+                    { id: "3", text: "こそするものなのか" },
+                    { id: "4", text: "などするものなのか" }
+                ],
+                correctOptionId: "2",
+                translation: "明明曾在心里暗暗发誓“绝对不再谈恋爱了”，却不知不觉地喜欢上了她。",
+                grammar: "结合题干「固く心に誓った」（在心里暗暗发誓），说明前面表达的是自己内心的强烈决心。<strong>「〜ものか」</strong>接在<strong>动词辞书形</strong>之后，表示强烈的否定意志，意为<strong>“绝不...；怎么会...”</strong>。前面搭配提示轻视或举例的副助词<strong>「など」</strong>，连起来顺理成章地表达了“恋爱这种事，我绝不碰了”的决心。",
+                optionsExp: {
+                    "1": "「こそ」用于强调肯定，与后面的强烈否定意志「ものか」存在明显的语义冲突。",
+                    "3": "「〜ものなのか」多用于提出疑问（到底是怎样的呢），不表示强烈的意志和决心。",
+                    "4": "仅仅是提出疑问，不表示决心。"
+                }
+            },
+            {
+                id: "q_n1_c_201007_10",
+                level: "N1",
+                year: "2010年7月",
+                label: "文法形式の判断",
+                sentence: "先日提出した私の意見書は、単に決定に至るプロセスの問題点を指摘（　　　）、決定そのものに反対するものではありません。",
+                options: [
+                    { id: "1", text: "しそうになったにすぎず" },
+                    { id: "2", text: "しそうになったほどで" },
+                    { id: "3", text: "しようとしたにすぎず" },
+                    { id: "4", text: "しようとしたほどで" }
+                ],
+                correctOptionId: "3",
+                translation: "前几天我提交的意见书，仅仅是想要指出决策过程中的问题点，并不是反对该决策本身。",
+                grammar: "结合题干「単に...指摘（　　　）」，需要一个与「単に（仅仅）」相呼应的句型来表示程度有限。<strong>「〜にすぎない」</strong>意为<strong>“只不过是...”</strong>，这里接在<strong>动词意志形</strong>+「とした」（表示意图或尝试）之后，变为连用形<strong>「〜にすぎず」</strong>作中顿，表示“只不过是想指出问题，而不是反对”，语境非常妥帖。",
+                optionsExp: {
+                    "1": "「〜そうになる」表示眼看就要发生某事（差点就...），不符合“主动提出意见书”的意图。",
+                    "2": "「〜ほどで」表示程度（到了...的地步），不符合澄清说明的句意。",
+                    "4": "意为“到了想要指出的程度”，不如「〜にすぎず」贴合用来澄清事实的语境。"
+                }
+            }
+        ];
+    </script>
+
+    <script>
+        // --- 1. 工具与存储机制 ---
+        const TIMER_PRESETS = [5, 10, 15];
+        const RANDOM_TARGET_PRESETS = [5, 10, 20];
+        
+        function isEnabledChoiceLevel(level) {
+            return questionDatabase.some(q => q.level === level);
+        }
+
+        function isEnabledChoiceYear(level, year) {
+            return questionDatabase.some(q => q.level === level && q.year === year);
+        }
+
+        function clampTimerMinutes(value) {
+            const numeric = Number(value);
+            if (!Number.isFinite(numeric)) return TIMER_PRESETS[0];
+            return Math.min(180, Math.max(1, Math.round(numeric)));
+        }
+
+        function formatTimerClock(totalSeconds) {
+            const safeSeconds = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+            const minutes = Math.floor(safeSeconds / 60);
+            const seconds = safeSeconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function shuffleQuestions(items) {
+            const shuffled = [...items];
+            for (let index = shuffled.length - 1; index > 0; index--) {
+                const swapIndex = Math.floor(Math.random() * (index + 1));
+                [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+            }
+            return shuffled;
+        }
+
+        function getIconSvg(name, className = '') {
+            const icons = {
+                'check-circle': '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>',
+            };
+            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${className}" aria-hidden="true" focusable="false">${icons[name] || ''}</svg>`;
+        }
+
+        // LocalStorage Keys
+        function getGrammarChoiceMarksKey(level, year) { return `grammar_choice_marks::${level}::${year}`; }
+        function getGrammarChoiceLastPracticeKey(level) { return `grammar_choice_last_practice::${level}`; }
+        function getGrammarChoiceTrainingModeKey() { return 'grammar_choice_training_mode'; }
+        function getGrammarChoiceChallengeMinutesKey() { return 'grammar_choice_challenge_minutes'; }
+
+        function parseStoredIdList(rawValue) {
+            try {
+                const parsed = JSON.parse(rawValue || '[]');
+                if (!Array.isArray(parsed)) return [];
+                return Array.from(new Set(parsed.map(item => String(item || '').trim()).filter(Boolean)));
+            } catch (error) { return []; }
+        }
+
+        function getYearMistakes(level, year) {
+            return parseStoredIdList(localStorage.getItem(getGrammarChoiceMarksKey(level, year)));
+        }
+
+        function saveYearMistakes(level, year, ids) {
+            const normalized = Array.from(new Set((ids || []).map(item => String(item || '').trim()).filter(Boolean)));
+            const key = getGrammarChoiceMarksKey(level, year);
+            if (normalized.length === 0) {
+                localStorage.removeItem(key);
+                return;
+            }
+            localStorage.setItem(key, JSON.stringify(normalized));
+        }
+
+        function getYearSortValue(year) {
+            const match = String(year || '').match(/^(\d{4})年(\d{1,2})月$/);
+            if (!match) return 0;
+            return Number(match[1]) * 100 + Number(match[2]);
+        }
+
+        function collectYearReviewItems(level) {
+            const prefix = `grammar_choice_marks::${level}::`;
+            const items = [];
+            for (let index = 0; index < localStorage.length; index++) {
+                const key = localStorage.key(index);
+                if (!key || !key.startsWith(prefix)) continue;
+                const year = key.slice(prefix.length);
+                const ids = getYearMistakes(level, year);
+                if (ids.length === 0) continue;
+                items.push({ year, count: ids.length });
+            }
+            items.sort((left, right) => getYearSortValue(right.year) - getYearSortValue(left.year));
+            return items;
+        }
+
+        function replaceAppUrl(params) {
+            const nextParams = new URLSearchParams();
+            Object.entries(params || {}).forEach(([key, value]) => {
+                if (value) nextParams.set(key, value);
+            });
+            const nextUrl = nextParams.toString() ? `${window.location.pathname}?${nextParams.toString()}` : window.location.pathname;
+            try { window.history.replaceState({ path: nextUrl }, '', nextUrl); } catch (e) {}
+        }
+
+        // --- 2. 核心应用状态与逻辑 ---
+        const app = {
+            currentLevel: null,
+            practiceMode: null, // 'year' | 'random' | 'mistake'
+            trainingMode: 'study',
+            currentYear: null,
+            
+            questionQueue: [], 
+            currentIndex: 0,
+            stats: { correct: 0, incorrect: 0 }, 
+            randomTargetCount: RANDOM_TARGET_PRESETS[1],
+            randomRoundTarget: RANDOM_TARGET_PRESETS[1],
+            randomAnsweredCount: 0,
+            randomStreak: 0,
+            randomBestStreak: 0,
+            pendingPracticeEntry: null,
+            
+            trainingPicker: {
+                open: false,
+                selectedMode: localStorage.getItem(getGrammarChoiceTrainingModeKey()) === 'challenge' ? 'challenge' : 'study',
+                selectedMinutes: clampTimerMinutes(localStorage.getItem(getGrammarChoiceChallengeMinutesKey()) || TIMER_PRESETS[1])
+            },
+            
+            timer: {
+                mode: 'countup', status: 'idle', elapsedSeconds: 0, remainingSeconds: TIMER_PRESETS[0] * 60,
+                selectedMinutes: TIMER_PRESETS[0], totalSeconds: TIMER_PRESETS[0] * 60, timerId: null,
+                drawerOpen: false, displayHidden: false, hasStarted: false, timeoutTriggered: false,
+                resultHasRun: false, resultSeconds: 0, resultTimeout: false
+            },
+
+            init() {
+                const params = new URLSearchParams(window.location.search);
+                const level = params.get('level');
+                const year = params.get('year');
+                const mode = params.get('mode');
+                const training = params.get('training');
+                const timer = params.get('timer');
+
+                if (!['N1', 'N2', 'N3'].includes(level) || !isEnabledChoiceLevel(level)) {
+                    replaceAppUrl({});
+                    return;
+                }
+
+                this.currentLevel = level;
+                document.getElementById('display-selected-level').textContent = level;
+
+                const hasYear = year && isEnabledChoiceYear(level, year);
+                if (hasYear) {
+                    const initTrainingMode = training === 'challenge' ? 'challenge' : 'study';
+                    const initChallengeMinutes = clampTimerMinutes(timer || this.trainingPicker.selectedMinutes);
+                    if (mode === 'review') {
+                        this.startMistakePractice(year, { updateUrl: false, fromInit: true, skipPicker: true, trainingMode: initTrainingMode, challengeMinutes: initChallengeMinutes });
+                    } else {
+                        this.startYearPractice(year, { updateUrl: false, skipPicker: true, trainingMode: initTrainingMode, challengeMinutes: initChallengeMinutes });
+                    }
+                    return;
+                }
+
+                replaceAppUrl({ level });
+                this.showYearList({ updateUrl: false });
+            },
+
+            getTrainingEntrySubtitle(entry) {
+                if (!entry) return 'ノートにまとめるか、時間を測るか。';
+                if (entry.kind === 'year') return `${this.currentLevel} · ${entry.year}`;
+                if (entry.kind === 'mistake') return `${this.currentLevel} · ${entry.year} · 弱点特訓`;
+                if (entry.kind === 'random') return `${this.currentLevel} · ランダム演習`;
+                if (entry.kind === 'global-random') return '全レベル乱序特訓';
+                return 'ノートにまとめるか、時間を測るか。';
+            },
+
+            renderTrainingModePicker() {
+                const overlay = document.getElementById('training-mode-overlay');
+                const subtitle = document.getElementById('training-mode-subtitle');
+                const timerPanel = document.getElementById('training-mode-timer');
+                const randomSettingsPanel = document.getElementById('training-mode-random-settings');
+                const confirmBtn = document.getElementById('training-mode-confirm-btn');
+                const customInput = document.getElementById('training-mode-custom-input');
+                if (!overlay) return;
+
+                subtitle.textContent = this.getTrainingEntrySubtitle(this.pendingPracticeEntry);
+                overlay.hidden = !this.trainingPicker.open;
+                document.body.style.overflow = this.trainingPicker.open ? 'hidden' : '';
+
+                document.querySelectorAll('[data-training-mode]').forEach((button) => button.classList.toggle('is-selected', button.dataset.trainingMode === this.trainingPicker.selectedMode));
+                document.querySelectorAll('[data-training-minutes]').forEach((button) => button.classList.toggle('is-selected', Number(button.dataset.trainingMinutes) === this.trainingPicker.selectedMinutes));
+
+                if (customInput) customInput.value = String(this.trainingPicker.selectedMinutes);
+
+                const isChallenge = this.trainingPicker.selectedMode === 'challenge';
+                const isRandomEntry = this.pendingPracticeEntry?.kind === 'random' || this.pendingPracticeEntry?.kind === 'global-random';
+                timerPanel.hidden = !isChallenge;
+                randomSettingsPanel.hidden = !isRandomEntry;
+                confirmBtn.textContent = isChallenge ? 'テスト開始' : '学習開始';
+
+                document.querySelectorAll('[data-training-random-target]').forEach((button) => button.classList.toggle('is-selected', Number(button.dataset.trainingRandomTarget) === this.randomTargetCount));
+            },
+
+            openTrainingModePicker(entry) {
+                this.pendingPracticeEntry = entry;
+                this.trainingPicker.open = true;
+                this.trainingPicker.selectedMode = localStorage.getItem(getGrammarChoiceTrainingModeKey()) === 'challenge' ? 'challenge' : 'study';
+                this.trainingPicker.selectedMinutes = clampTimerMinutes(localStorage.getItem(getGrammarChoiceChallengeMinutesKey()) || TIMER_PRESETS[1]);
+                this.renderTrainingModePicker();
+            },
+
+            closeTrainingModePicker() {
+                this.trainingPicker.open = false;
+                this.pendingPracticeEntry = null;
+                this.renderTrainingModePicker();
+            },
+
+            setTrainingPickerMode(mode) {
+                this.trainingPicker.selectedMode = mode === 'challenge' ? 'challenge' : 'study';
+                this.renderTrainingModePicker();
+            },
+
+            setTrainingPickerMinutes(minutes) {
+                this.trainingPicker.selectedMinutes = clampTimerMinutes(minutes || this.trainingPicker.selectedMinutes);
+                this.renderTrainingModePicker();
+            },
+
+            prepareTrainingForRun(mode, challengeMinutes) {
+                this.trainingMode = mode === 'challenge' ? 'challenge' : 'study';
+                localStorage.setItem(getGrammarChoiceTrainingModeKey(), this.trainingMode);
+                if (this.trainingMode === 'challenge') {
+                    const minutes = clampTimerMinutes(challengeMinutes || this.trainingPicker.selectedMinutes || TIMER_PRESETS[1]);
+                    this.trainingPicker.selectedMinutes = minutes;
+                    localStorage.setItem(getGrammarChoiceChallengeMinutesKey(), String(minutes));
+                    this.resetTimerForPractice();
+                    this.setTimerMode('countdown');
+                    this.setTimerSelectedMinutes(minutes);
+                } else {
+                    this.resetTimerForPractice();
+                    this.setTimerMode('countup');
+                }
+                this.closeTimerDrawer({ skipUpdate: true });
+            },
+
+            confirmTrainingModePicker() {
+                if (!this.pendingPracticeEntry) return;
+                const { kind, year, updateUrl = true, fromInit = false } = this.pendingPracticeEntry;
+                const options = {
+                    updateUrl, fromInit, skipPicker: true,
+                    trainingMode: this.trainingPicker.selectedMode,
+                    challengeMinutes: this.trainingPicker.selectedMinutes,
+                    randomTargetCount: this.randomTargetCount
+                };
+                this.closeTrainingModePicker();
+                if (kind === 'year') { this.startYearPractice(year, options); return; }
+                if (kind === 'mistake') { this.startMistakePractice(year, options); return; }
+                if (kind === 'global-random') { this.startGlobalRandomPractice(options); return; }
+                this.startRandomPractice(options);
+            },
+
+            getActiveViewId() { return document.querySelector('.view-section.active')?.id || 'view-level-select'; },
+
+            handleHeaderBack() {
+                const activeViewId = this.getActiveViewId();
+                if (activeViewId === 'view-level-select') { window.location.href = './index.html'; return; }
+                if (activeViewId === 'view-mode-select') { this.goHome(); return; }
+                if (activeViewId === 'view-year-select') { this.backToModeSelect(); return; }
+                if (activeViewId === 'view-practice') { this.handleBackFromPractice(); return; }
+                window.location.href = './index.html';
+            },
+
+            goHome() {
+                this.closeTrainingModePicker(); this.resetTimerForPractice(); this.setPracticeToolbarMode(null);
+                this.currentLevel = null; this.practiceMode = null; this.trainingMode = 'study'; this.currentYear = null;
+                replaceAppUrl({}); this.switchView('view-level-select');
+            },
+
+            backToModeSelect() {
+                this.closeTrainingModePicker(); this.practiceMode = null; this.currentYear = null;
+                replaceAppUrl({ level: this.currentLevel }); this.switchView('view-mode-select');
+            },
+
+            returnToLevelSelect() {
+                this.closeTrainingModePicker(); this.resetTimerForPractice(); this.setPracticeToolbarMode(null);
+                this.currentLevel = null; this.practiceMode = null; this.trainingMode = 'study'; this.currentYear = null;
+                replaceAppUrl({}); this.switchView('view-level-select');
+            },
+
+            handleBackFromPractice() {
+                this.resetTimerForPractice(); this.setPracticeToolbarMode(null);
+                if (this.practiceMode === 'year' || this.practiceMode === 'mistake') { this.showYearList(); } 
+                else if (this.currentLevel === 'ALL') { this.returnToLevelSelect(); } 
+                else { replaceAppUrl({ level: this.currentLevel }); this.switchView('view-mode-select'); }
+            },
+
+            isPracticeInProgress() { return this.questionQueue.length > 0 && this.currentIndex < this.questionQueue.length; },
+
+            getActiveToolbarMode() {
+                const practiceView = document.getElementById('view-practice');
+                if (!practiceView?.classList.contains('active') || !this.isPracticeInProgress()) return null;
+                if (this.trainingMode === 'challenge') return 'timer';
+                if (this.practiceMode === 'random') return 'random';
+                return null;
+            },
+
+            setPracticeToolbarMode(mode) {
+                const toolbar = document.getElementById('practice-bottom-toolbar');
+                if (!toolbar) return;
+                toolbar.hidden = !mode; toolbar.classList.toggle('is-visible', Boolean(mode));
+                document.getElementById('view-practice').classList.toggle('has-bottom-toolbar', Boolean(mode));
+                document.getElementById('timer-tool-slot').hidden = mode !== 'timer';
+                document.getElementById('random-tool-slot').hidden = mode !== 'random';
+                if (mode !== 'timer') {
+                    this.timer.drawerOpen = false; toolbar.classList.remove('drawer-open');
+                    document.getElementById('practice-toolbar-backdrop').hidden = true;
+                    document.getElementById('timer-drawer').hidden = true;
+                }
+            },
+
+            getRandomQuestionPool() {
+                if (this.currentLevel === 'ALL') return [...questionDatabase];
+                return questionDatabase.filter(q => q.level === this.currentLevel);
+            },
+
+            getEffectiveRandomTarget(poolLength) {
+                const target = RANDOM_TARGET_PRESETS.includes(Number(this.randomTargetCount)) ? Number(this.randomTargetCount) : RANDOM_TARGET_PRESETS[1];
+                return poolLength ? Math.min(target, poolLength) : target;
+            },
+
+            prepareRandomRound(pool) {
+                const target = this.getEffectiveRandomTarget(pool.length);
+                this.randomRoundTarget = target; this.randomAnsweredCount = 0; this.randomStreak = 0; this.randomBestStreak = 0;
+                this.questionQueue = shuffleQuestions(pool).slice(0, target);
+                this.currentIndex = 0;
+            },
+
+            setRandomTargetCount(value) {
+                this.randomTargetCount = RANDOM_TARGET_PRESETS.includes(Number(value)) ? Number(value) : RANDOM_TARGET_PRESETS[1];
+                if (this.trainingPicker.open) { this.renderTrainingModePicker(); } else { this.updateTimerUI(); }
+            },
+
+            updateRandomProgressAfterAnswer(isCorrect) {
+                if (this.practiceMode !== 'random') return;
+                this.randomAnsweredCount = Math.min(this.randomRoundTarget, this.randomAnsweredCount + 1);
+                if (isCorrect) {
+                    this.randomStreak += 1;
+                    if (this.randomStreak > this.randomBestStreak) this.randomBestStreak = this.randomStreak;
+                } else { this.randomStreak = 0; }
+            },
+
+            finishRandomRound() {
+                if (this.practiceMode !== 'random') return;
+                this.currentIndex = this.questionQueue.length;
+                this.renderPracticeQuestion();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            // Timer logic
+            stopTimer() { if (this.timer.timerId) { window.clearInterval(this.timer.timerId); this.timer.timerId = null; } },
+            getTimerClockText() { return formatTimerClock(this.timer.mode === 'countdown' ? this.timer.remainingSeconds : this.timer.elapsedSeconds); },
+            getTimerUsedSeconds() { return this.timer.hasStarted ? (this.timer.mode === 'countdown' ? Math.max(0, this.timer.totalSeconds - this.timer.remainingSeconds) : this.timer.elapsedSeconds) : 0; },
+            getResultTimerText() { return this.timer.resultHasRun ? formatTimerClock(this.timer.resultSeconds) : '未計測'; },
+            
+            closeTimerDrawer(options = {}) { this.timer.drawerOpen = false; if (!options.skipUpdate) this.updateTimerUI(); },
+            openTimerDrawer() { if (!this.isPracticeInProgress() || this.practiceMode !== 'year') return; this.timer.drawerOpen = true; this.updateTimerUI(); },
+            toggleTimerDrawer() { if (!this.isPracticeInProgress() || this.practiceMode !== 'year') return; this.timer.drawerOpen = !this.timer.drawerOpen; this.updateTimerUI(); },
+
+            resetTimerForPractice() {
+                this.stopTimer(); this.timer.status = 'idle'; this.timer.elapsedSeconds = 0;
+                this.timer.totalSeconds = clampTimerMinutes(this.timer.selectedMinutes) * 60;
+                this.timer.remainingSeconds = this.timer.totalSeconds; this.timer.hasStarted = false;
+                this.timer.timeoutTriggered = false; this.timer.resultHasRun = false;
+                this.timer.resultSeconds = 0; this.timer.resultTimeout = false;
+                this.closeTimerDrawer({ skipUpdate: true }); this.updateTimerUI();
+            },
+
+            finalizeTimerForResult(options = {}) {
+                if (!this.timer.resultTimeout && !this.timer.resultHasRun) {
+                    this.timer.resultHasRun = this.timer.hasStarted; this.timer.resultSeconds = this.getTimerUsedSeconds();
+                }
+                this.timer.resultTimeout = this.timer.resultTimeout || options.timedOut;
+                this.stopTimer();
+                this.timer.status = options.timedOut ? 'timeout' : (this.timer.hasStarted ? 'finished' : 'idle');
+                if(options.timedOut) this.timer.remainingSeconds = 0;
+                this.setPracticeToolbarMode(null); this.updateTimerUI();
+            },
+
+            setTimerMode(mode) {
+                if (!['countup', 'countdown'].includes(mode) || this.timer.mode === mode) return;
+                this.stopTimer(); this.timer.mode = mode; this.timer.status = 'idle'; this.timer.elapsedSeconds = 0;
+                this.timer.totalSeconds = clampTimerMinutes(this.timer.selectedMinutes) * 60;
+                this.timer.remainingSeconds = this.timer.totalSeconds; this.timer.hasStarted = false;
+                this.updateTimerUI();
+            },
+
+            setTimerSelectedMinutes(value) {
+                const minutes = clampTimerMinutes(value);
+                this.timer.selectedMinutes = minutes; this.timer.totalSeconds = minutes * 60;
+                if (this.timer.mode === 'countdown') {
+                    this.stopTimer(); this.timer.status = 'idle'; this.timer.remainingSeconds = this.timer.totalSeconds;
+                    this.timer.hasStarted = false;
+                }
+                this.updateTimerUI();
+            },
+
+            toggleTimerDisplayVisibility() { this.timer.displayHidden = !this.timer.displayHidden; this.updateTimerUI(); },
+
+            startTimer() {
+                if (!this.isPracticeInProgress()) return;
+                const timer = this.timer; this.stopTimer();
+                if (timer.mode === 'countdown') {
+                    timer.totalSeconds = clampTimerMinutes(timer.selectedMinutes) * 60;
+                    if (!timer.hasStarted || timer.status === 'idle' || timer.status === 'finished' || timer.status === 'timeout') timer.remainingSeconds = timer.totalSeconds;
+                } else if (!timer.hasStarted || timer.status === 'finished' || timer.status === 'timeout') timer.elapsedSeconds = 0;
+                
+                timer.hasStarted = true; timer.status = 'running';
+                timer.timerId = window.setInterval(() => {
+                    if (timer.mode === 'countup') { timer.elapsedSeconds += 1; this.updateTimerUI(); return; }
+                    timer.remainingSeconds = Math.max(0, timer.remainingSeconds - 1);
+                    if (timer.remainingSeconds === 0) { this.finishCountdown(); return; }
+                    this.updateTimerUI();
+                }, 1000);
+                this.updateTimerUI();
+            },
+
+            pauseTimer() { if (this.timer.status !== 'running') return; this.stopTimer(); this.timer.status = this.timer.hasStarted ? 'paused' : 'idle'; this.updateTimerUI(); },
+            toggleTimerRun() { this.timer.status === 'running' ? this.pauseTimer() : this.startTimer(); },
+            resetTimer() { this.resetTimerForPractice(); },
+
+            finishCountdown() {
+                if (!this.isPracticeInProgress() || this.timer.timeoutTriggered) return;
+                this.stopTimer(); this.timer.remainingSeconds = 0; this.timer.status = 'timeout'; this.timer.timeoutTriggered = true;
+                this.currentIndex = this.questionQueue.length; this.renderPracticeQuestion();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            updateTimerUI() {
+                const timer = this.timer;
+                const toolbar = document.getElementById('practice-bottom-toolbar');
+                if (!toolbar) return;
+                const activeMode = this.getActiveToolbarMode();
+                this.setPracticeToolbarMode(activeMode);
+                
+                const realTime = this.getTimerClockText();
+                const dDisplay = document.getElementById('timer-toolbar-display');
+                if(dDisplay) {
+                    dDisplay.textContent = timer.displayHidden ? '--:--' : realTime;
+                    dDisplay.classList.toggle('is-concealed', timer.displayHidden);
+                }
+                const drawDisplay = document.getElementById('timer-drawer-display');
+                if(drawDisplay) drawDisplay.textContent = realTime;
+
+                const tMain = document.getElementById('timer-toolbar-main');
+                if(tMain) tMain.dataset.timerStatus = timer.status;
+                
+                const tToggle = document.getElementById('timer-toolbar-toggle-btn');
+                if(tToggle) tToggle.textContent = timer.status === 'running' ? '一時停止' : (timer.status === 'paused' ? '再開' : '開始');
+                
+                const tSet = document.getElementById('timer-toolbar-settings-btn');
+                if(tSet) tSet.classList.toggle('is-primary', timer.drawerOpen && activeMode === 'timer');
+
+                const drawer = document.getElementById('timer-drawer');
+                if(drawer) drawer.hidden = !timer.drawerOpen || activeMode !== 'timer';
+                
+                const dStart = document.getElementById('timer-drawer-start-btn');
+                if(dStart) dStart.textContent = timer.status === 'paused' ? '再開' : '開始';
+
+                const rMain = document.getElementById('random-toolbar-main');
+                if(rMain) rMain.dataset.timerStatus = this.randomStreak > 0 ? 'running' : 'idle';
+                
+                const rProg = document.getElementById('random-toolbar-progress');
+                if(rProg) rProg.textContent = `${Math.min(this.randomAnsweredCount, this.randomRoundTarget)}/${this.randomRoundTarget}`;
+                
+                const rStrk = document.getElementById('random-toolbar-streak');
+                if(rStrk) rStrk.textContent = String(this.randomStreak);
+            },
+
+            // View Management
+            switchView(viewId) {
+                document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+                const view = document.getElementById(viewId);
+                if (view) view.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                this.updateTimerUI();
+            },
+
+            selectLevel(level) {
+                if (!isEnabledChoiceLevel(level)) return;
+                this.currentLevel = level;
+                document.getElementById('display-selected-level').textContent = level;
+                replaceAppUrl({ level });
+                this.switchView('view-mode-select');
+            },
+
+            showYearList(options = {}) {
+                if (options.updateUrl !== false) replaceAppUrl({ level: this.currentLevel });
+                this.practiceMode = 'year';
+                
+                const availableYears = [...new Set(questionDatabase.filter(q => q.level === this.currentLevel).map(q => q.year))]
+                    .sort((left, right) => getYearSortValue(right) - getYearSortValue(left));
+
+                const container = document.getElementById('year-list-container');
+                const reviewSection = document.getElementById('year-review-section');
+                const reviewGrid = document.getElementById('year-review-grid');
+                container.innerHTML = ''; reviewGrid.innerHTML = '';
+
+                const reviewItems = collectYearReviewItems(this.currentLevel).filter(item => isEnabledChoiceYear(this.currentLevel, item.year));
+                if (reviewItems.length > 0) {
+                    reviewGrid.innerHTML = reviewItems.map(item => `
+                        <button onclick="app.startMistakePractice('${item.year}')" class="group inline-flex items-center gap-2 px-4 py-2 border-[1.5px] border-borderStrong bg-transparent text-textMain text-sm font-bold transition-all sketch-btn">
+                            <span>${item.year}</span>
+                            <span class="text-xs px-2 py-0.5 border border-borderStrong bg-transparent text-accentRed rounded-sm hatching-yellow">待復習 ${item.count} 問</span>
+                        </button>
+                    `).join('');
+                    reviewSection.classList.remove('hidden');
+                } else { reviewSection.classList.add('hidden'); }
+
+                const lastPractice = localStorage.getItem(getGrammarChoiceLastPracticeKey(this.currentLevel)) || '';
+
+                if (availableYears.length === 0) {
+                    container.innerHTML = `<div class="col-span-full text-center py-12 text-textSub border-[1.5px] border-borderMain sketch-box">データがありません</div>`;
+                } else {
+                    container.innerHTML = availableYears.map(year => {
+                        const qCount = questionDatabase.filter(q => q.level === this.currentLevel && q.year === year).length;
+                        const isLastPractice = year === lastPractice;
+                        const isEnabled = isEnabledChoiceYear(this.currentLevel, year);
+                        return `
+                            <button ${isEnabled ? `onclick="app.startYearPractice('${year}')"` : 'type="button" disabled'} class="flex items-center justify-between p-5 border-[1.5px] border-borderStrong transition-all group text-left sketch-box ${isEnabled ? 'hover:bg-transparent' : 'opacity-50 cursor-not-allowed'}">
+                                <div class="font-bold text-lg text-textMain tracking-wider">${year}</div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    ${isLastPractice ? '<span class="text-[10px] font-bold text-textMain px-2 py-1 border border-borderStrong rounded-sm hatching-yellow">前回</span>' : ''}
+                                    <div class="text-sm text-textSub font-sans bg-transparent px-2 py-1 border-[1px] border-borderStrong rounded-sm">全 ${qCount} 問</div>
+                                </div>
+                            </button>
+                        `;
+                    }).join('');
+                }
+                this.switchView('view-year-select');
+            },
+
+            restartCurrentPractice() {
+                const opts = { skipPicker: true, trainingMode: this.trainingMode, challengeMinutes: this.timer.selectedMinutes, randomTargetCount: this.randomTargetCount };
+                if (this.practiceMode === 'year') { this.startYearPractice(this.currentYear, opts); }
+                else if (this.practiceMode === 'mistake') { this.startMistakePractice(this.currentYear, opts); }
+                else if (this.currentLevel === 'ALL') { this.startGlobalRandomPractice(opts); }
+                else { this.startRandomPractice(opts); }
+            },
+
+            startRandomPractice(options = {}) {
+                if (!options.skipPicker) { this.openTrainingModePicker({ kind: 'random' }); return; }
+                this.prepareTrainingForRun(options.trainingMode || 'study', options.challengeMinutes);
+                this.randomTargetCount = RANDOM_TARGET_PRESETS.includes(Number(options.randomTargetCount)) ? Number(options.randomTargetCount) : this.randomTargetCount;
+                this.practiceMode = 'random'; this.currentYear = 'ランダム演習';
+                this.stats = { correct: 0, incorrect: 0 }; this.randomStreak = 0; this.randomBestStreak = 0;
+                replaceAppUrl({ level: this.currentLevel });
+                const pool = this.getRandomQuestionPool();
+                if(pool.length === 0) { alert('問題がありません'); return; }
+                this.prepareRandomRound(pool);
+                this.renderPracticeQuestion(); this.switchView('view-practice');
+                if (this.trainingMode === 'challenge') this.startTimer();
+            },
+
+            startGlobalRandomPractice(options = {}) {
+                if (!options.skipPicker) { this.openTrainingModePicker({ kind: 'global-random' }); return; }
+                this.prepareTrainingForRun(options.trainingMode || 'study', options.challengeMinutes);
+                this.randomTargetCount = RANDOM_TARGET_PRESETS.includes(Number(options.randomTargetCount)) ? Number(options.randomTargetCount) : this.randomTargetCount;
+                this.currentLevel = 'ALL'; this.practiceMode = 'random'; this.currentYear = '全レベルランダム';
+                this.stats = { correct: 0, incorrect: 0 }; this.randomStreak = 0; this.randomBestStreak = 0;
+                replaceAppUrl({});
+                const pool = this.getRandomQuestionPool();
+                if(pool.length === 0) { alert('問題がありません'); return; }
+                this.prepareRandomRound(pool);
+                this.renderPracticeQuestion(); this.switchView('view-practice');
+                if (this.trainingMode === 'challenge') this.startTimer();
+            },
+
+            startMistakePractice(year, options = {}) {
+                if (!options.skipPicker) { this.openTrainingModePicker({ kind: 'mistake', year, updateUrl: options.updateUrl !== false, fromInit: options.fromInit }); return; }
+                this.prepareTrainingForRun(options.trainingMode || 'study', options.challengeMinutes);
+                this.practiceMode = 'mistake'; this.currentYear = year;
+                this.stats = { correct: 0, incorrect: 0 }; this.randomStreak = 0; this.randomBestStreak = 0;
+
+                const mistakeIds = getYearMistakes(this.currentLevel, year);
+                const pool = questionDatabase.filter(q => q.level === this.currentLevel && q.year === year && mistakeIds.includes(q.id));
+                if (pool.length === 0) {
+                    alert('弱点特訓の対象問題がありません。');
+                    if (options.fromInit) replaceAppUrl({ level: this.currentLevel });
+                    this.showYearList({ updateUrl: options.updateUrl !== false }); return;
+                }
+
+                localStorage.setItem(getGrammarChoiceLastPracticeKey(this.currentLevel), year);
+                this.questionQueue = pool; this.currentIndex = 0;
+
+                if (options.updateUrl !== false) {
+                    replaceAppUrl({ level: this.currentLevel, year, mode: 'review', training: this.trainingMode, timer: this.trainingMode === 'challenge' ? String(this.timer.selectedMinutes) : null });
+                }
+                this.renderPracticeQuestion(); this.switchView('view-practice');
+                if (this.trainingMode === 'challenge') this.startTimer();
+            },
+
+            startYearPractice(year, options = {}) {
+                if (!options.skipPicker) { this.openTrainingModePicker({ kind: 'year', year, updateUrl: options.updateUrl !== false }); return; }
+                this.prepareTrainingForRun(options.trainingMode || 'study', options.challengeMinutes);
+                this.practiceMode = 'year'; this.currentYear = year;
+                this.stats = { correct: 0, incorrect: 0 }; this.randomStreak = 0; this.randomBestStreak = 0;
+                localStorage.setItem(getGrammarChoiceLastPracticeKey(this.currentLevel), year);
+                
+                this.questionQueue = questionDatabase.filter(q => q.level === this.currentLevel && q.year === year);
+                this.currentIndex = 0;
+                
+                if (options.updateUrl !== false) {
+                    replaceAppUrl({ level: this.currentLevel, year, training: this.trainingMode, timer: this.trainingMode === 'challenge' ? String(this.timer.selectedMinutes) : null });
+                }
+                this.renderPracticeQuestion(); this.switchView('view-practice');
+                if (this.trainingMode === 'challenge') this.startTimer();
+            },
+
+            buildChallengeExplanationCards() {
+                return this.questionQueue.map((q, index) => `
+                    <div class="bg-transparent border-[1.5px] border-borderStrong p-5 md:p-6 mb-6 rounded-lg shadow-sm">
+                        <div class="flex items-center justify-between gap-3 border-b border-dashed border-borderDark pb-3 mb-4">
+                            <div class="text-sm font-bold text-textMain tracking-wide">${q.label || `Q${index + 1}`}</div>
+                        </div>
+                        <div class="choice-sentence text-textMain font-serif-jp text-lg md:text-xl font-bold leading-loose bg-transparent p-4 border-[1.5px] border-borderStrong mb-5 rounded-md hatching-gray">
+                            ${q.sentence}
+                        </div>
+                        <div class="space-y-6 explanation-stack">
+                            <div>
+                                <h4 class="explanation-group-title">【和訳】</h4>
+                                <div class="explanation-copy text-textSub">${q.translation}</div>
+                            </div>
+                            <div>
+                                <h4 class="explanation-group-title">【文法解説】</h4>
+                                <div class="explanation-copy">${q.grammar}</div>
+                            </div>
+                            <div>
+                                <h4 class="explanation-group-title">【選択肢の分析】</h4>
+                                <div class="space-y-3 explanation-copy">
+                                    ${q.options.filter(opt => opt.id !== q.correctOptionId).map(opt => `
+                                        <div class="flex items-start gap-2">
+                                            <span class="inline-flex w-5 h-5 items-center justify-center border border-borderStrong rounded-[40%] text-[10px] font-bold mt-1.5 shrink-0 bg-transparent text-textSub">${opt.id}</span>
+                                            <p class="text-[0.96rem] leading-[1.8] flex-1"><strong>${opt.text}</strong>：${q.optionsExp[opt.id]}</p>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            openChallengeAnalysisView() {
+                if (this.trainingMode !== 'challenge') return;
+                const container = document.getElementById('practice-question-container');
+                if (!container) return;
+                document.getElementById('practice-title').textContent = '赤ペン解説';
+                const sub = document.getElementById('practice-subtitle');
+                if (sub) sub.textContent = 'テストモードが終了しました。以下の解説で弱点を復習しましょう。';
+                
+                container.innerHTML = `
+                    <div class="bg-transparent border-[1.5px] border-borderStrong p-6 md:p-8 rounded-xl shadow-sm fade-in sketch-box">
+                        <div class="text-center border-b border-dashed border-borderDark pb-4 mb-6">
+                            <h2 class="text-2xl font-title-unified font-bold text-textMain tracking-wide">一括採点・解説</h2>
+                        </div>
+                        <div class="space-y-6">${this.buildChallengeExplanationCards()}</div>
+                        <div class="mt-8 flex flex-wrap justify-center gap-3">
+                            <button onclick="app.renderPracticeQuestion()" class="px-5 py-2.5 bg-transparent text-textMain border-[1.5px] border-borderStrong rounded-md text-sm font-bold hover:bg-gray-50 transition-all">採点結果に戻る</button>
+                            <button onclick="app.restartCurrentPractice()" class="px-5 py-2.5 bg-textMain text-bgMain border-[1.5px] border-borderStrong rounded-md text-sm font-bold hover:bg-accentRed transition-all">もう一度解く</button>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderPracticeQuestion() {
+                const container = document.getElementById('practice-question-container');
+                container.innerHTML = ''; 
+                
+                const headerTitle = this.currentLevel === 'ALL' ? '全レベルランダム' : `[${this.currentLevel}] ${this.currentYear}${this.practiceMode === 'mistake' ? '（弱点特訓）' : ''}`;
+                document.getElementById('practice-title').textContent = headerTitle;
+                const sub = document.getElementById('practice-subtitle');
+                if (sub) sub.textContent = this.trainingMode === 'challenge' ? `テストモード · 残り ${this.timer.selectedMinutes} 分 · 一括採点` : '学習モード · 正しい選択肢をクリックして選んでください。';
+
+                // 结算页
+                if (this.currentIndex >= this.questionQueue.length) {
+                    if (this.trainingMode === 'challenge') this.finalizeTimerForResult({ timedOut: this.timer.timeoutTriggered });
+                    else { this.stopTimer(); this.setPracticeToolbarMode(null); this.closeTimerDrawer({ skipUpdate: true }); }
+
+                    const totalQ = this.stats.correct + this.stats.incorrect;
+                    let completeMsg = `お疲れ様でした！ <strong class="text-textMain">${headerTitle}</strong> の ${totalQ} 問が完了しました。`;
+                    if (this.practiceMode === 'year') completeMsg += `<br>間違えた問題は自動的に「赤ペン復習」に追加されます。`;
+                    if (this.practiceMode === 'mistake') completeMsg = `お疲れ様でした！ <strong class="text-textMain">[${this.currentLevel}] ${this.currentYear}</strong> の弱点特訓が完了しました。<br>正解した問題は復習リストから外れます。`;
+
+                    const timerSummaryHtml = this.trainingMode === 'challenge' ? `
+                        <div class="max-w-xs mx-auto mb-6 bg-transparent border-[1.5px] border-borderStrong rounded-lg px-4 py-4 shadow-sm">
+                            <div class="text-xs font-bold tracking-widest text-textSub">所要時間</div>
+                            <div class="mt-2 text-2xl font-bold text-textMain font-sans">${this.getResultTimerText()}</div>
+                            ${this.timer.resultTimeout ? '<p class="mt-3 text-sm font-bold text-accentRed">タイムアップ</p>' : ''}
+                        </div>` : '';
+
+                    const randomSummaryHtml = this.practiceMode === 'random' ? `
+                        <div class="max-w-sm mx-auto mb-6 bg-transparent border-[1.5px] border-borderStrong rounded-lg px-5 py-4 shadow-sm">
+                            <div class="grid grid-cols-2 gap-4 text-center">
+                                <div><div class="text-xs font-bold tracking-widest text-textSub">解答数</div><div class="mt-2 text-2xl font-bold text-textMain font-sans">${this.randomRoundTarget}</div></div>
+                                <div><div class="text-xs font-bold tracking-widest text-textSub">最大連続正解</div><div class="mt-2 text-2xl font-bold text-textMain font-sans">${this.randomBestStreak}</div></div>
+                            </div>
+                        </div>` : '';
+
+                    container.innerHTML = `
+                        <div class="text-center bg-transparent border-[1.5px] border-borderStrong rounded-xl p-8 md:p-12 shadow-sm fade-in relative sketch-box">
+                            <div class="w-16 h-16 bg-transparent border-[1.5px] border-borderStrong text-textMain rounded-[40%] flex items-center justify-center mx-auto mb-4 hatching-yellow">
+                                ${getIconSvg('check-circle', 'w-8 h-8')}
+                            </div>
+                            <h2 class="text-2xl font-bold text-textMain tracking-wide mb-6">演習完了</h2>
+                            <div class="flex justify-center gap-8 mb-8 border-y-[1.5px] border-dashed border-borderDark py-6 max-w-sm mx-auto">
+                                <div class="text-center w-24">
+                                    <div class="text-3xl font-bold text-textMain mb-2 font-sans">${this.stats.correct}</div>
+                                    <div class="text-xs text-textMain font-bold border border-borderStrong bg-transparent rounded-md py-1 px-2 hatching-gray">正解</div>
+                                </div>
+                                <div class="text-center w-24">
+                                    <div class="text-3xl font-bold text-accentRed mb-2 font-sans">${this.stats.incorrect}</div>
+                                    <div class="text-xs text-accentRed font-bold border border-accentRed bg-transparent rounded-md py-1 px-2">不正解</div>
+                                </div>
+                            </div>
+                            ${timerSummaryHtml}${randomSummaryHtml}
+                            <p class="text-textSub mb-8 text-sm font-bold leading-relaxed">${completeMsg}</p>
+                            <div class="flex flex-wrap justify-center gap-3">
+                                ${this.trainingMode === 'challenge' ? '<button onclick="app.openChallengeAnalysisView()" class="px-6 py-2.5 bg-transparent text-textMain border-[1.5px] border-borderStrong rounded-md text-sm font-bold hover:bg-gray-50 transition-all">解説を見る</button>' : ''}
+                                <button onclick="app.restartCurrentPractice()" class="px-6 py-2.5 bg-textMain text-bgMain border-[1.5px] border-borderStrong rounded-md text-sm font-bold hover:bg-accentRed transition-all">もう一度解く</button>
+                                <button onclick="app.handleBackFromPractice()" class="px-6 py-2.5 bg-transparent text-textMain border-[1.5px] border-borderStrong rounded-md text-sm font-bold transition-all hover:bg-gray-50">一覧に戻る</button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const q = this.questionQueue[this.currentIndex];
+                container.innerHTML = this.generateQuestionHTML(q, this.currentIndex, this.questionQueue.length);
+                this.updateTimerUI();
+            },
+
+            generateQuestionHTML(q, index, total) {
+                let optionsHtml = '';
+                q.options.forEach(opt => {
+                    optionsHtml += `
+                        <button class="choice-option-btn focus:outline-none" data-id="${opt.id}">
+                            <span class="option-letter">${opt.id}</span>
+                            <span class="leading-relaxed font-bold text-textMain text-base">${opt.text}</span>
+                        </button>
+                    `;
+                });
+
+                let qLabel = this.practiceMode === 'year' ? q.label : 
+                             (this.practiceMode === 'mistake' ? `[${q.year}] ${q.label}` : 
+                             (this.currentLevel === 'ALL' ? `[${q.level}] Q${index + 1}` : `Q${index + 1}`));
+
+                return `
+                <div class="flex flex-col gap-3 md:gap-4 question-block mb-8 fade-in" data-correct-id="${q.correctOptionId}">
+                    <div class="bg-bgCard border-[1.5px] border-borderStrong rounded-xl shadow-sm relative p-6 md:p-8 sketch-box">
+                        <div class="sort-question-top flex items-center justify-between mb-6 border-b border-dashed border-borderDark pb-4">
+                            <div class="sort-question-meta flex items-center gap-2 text-textMain">
+                                <span class="sort-question-label text-xs font-bold border border-borderStrong rounded-md px-3 py-1">${qLabel}</span>
+                                <span class="sort-question-count text-xs font-bold text-textSub">(${index + 1}/${total})</span>
+                            </div>
+                            <span class="status-badge hidden"></span>
+                        </div>
+
+                        <div class="choice-sentence font-serif-jp font-bold text-textMain mb-8">
+                            ${q.sentence}
+                        </div>
+
+                        <div class="choice-options-grid grid grid-cols-1 sm:grid-cols-2 gap-4 font-serif-jp mb-6">
+                            ${optionsHtml}
+                        </div>
+
+                        <div class="flex justify-end pt-2 action-area">
+                            <button class="submit-btn px-6 py-2.5 text-bgMain rounded-md text-sm font-bold transition-colors" disabled>決定</button>
+                        </div>
+                    </div>
+
+                    <div class="explanation-area hidden flex-col mt-4 p-6 sketch-box">
+                        <div class="space-y-6 explanation-stack">
+                            <div>
+                                <h4 class="explanation-group-title">【和訳】</h4>
+                                <div class="explanation-copy text-textSub">${q.translation}</div>
+                            </div>
+                            <div>
+                                <h4 class="explanation-group-title">【文法解説】</h4>
+                                <div class="explanation-copy">${q.grammar}</div>
+                            </div>
+                            <div>
+                                <h4 class="explanation-group-title">【選択肢の分析】</h4>
+                                <div class="space-y-3 explanation-copy">
+                                    ${q.options.filter(opt => opt.id !== q.correctOptionId).map(opt => `
+                                        <div class="flex items-start gap-2">
+                                            <span class="inline-flex w-5 h-5 items-center justify-center border border-borderStrong rounded-[40%] text-[10px] font-bold mt-1.5 shrink-0 bg-transparent text-textSub">${opt.id}</span>
+                                            <p class="text-[0.96rem] leading-[1.8] flex-1"><strong>${opt.text}</strong>：${q.optionsExp[opt.id]}</p>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }
+        };
+
+        window.app = app;
+        app.init();
+
+        // 事件监听
+        document.getElementById('page-back-btn')?.addEventListener('click', () => app.handleHeaderBack());
+        document.getElementById('timer-toolbar-toggle-btn')?.addEventListener('click', () => app.toggleTimerRun());
+        document.getElementById('timer-toolbar-reset-btn')?.addEventListener('click', () => app.resetTimer());
+        document.getElementById('timer-toolbar-settings-btn')?.addEventListener('click', () => app.toggleTimerDrawer());
+        document.getElementById('timer-drawer-close-btn')?.addEventListener('click', () => app.closeTimerDrawer());
+        document.getElementById('practice-toolbar-backdrop')?.addEventListener('click', () => app.closeTimerDrawer());
+        document.getElementById('timer-drawer-start-btn')?.addEventListener('click', () => app.startTimer());
+        document.getElementById('timer-drawer-pause-btn')?.addEventListener('click', () => app.pauseTimer());
+        document.getElementById('timer-drawer-reset-btn')?.addEventListener('click', () => app.resetTimer());
+        document.getElementById('random-toolbar-end-btn')?.addEventListener('click', () => app.finishRandomRound());
+        document.getElementById('training-mode-cancel-btn')?.addEventListener('click', () => app.closeTrainingModePicker());
+        document.getElementById('training-mode-confirm-btn')?.addEventListener('click', () => app.confirmTrainingModePicker());
+        document.querySelectorAll('[data-training-mode]').forEach(b => b.addEventListener('click', () => app.setTrainingPickerMode(b.dataset.trainingMode)));
+        document.querySelectorAll('[data-training-minutes]').forEach(b => b.addEventListener('click', () => app.setTrainingPickerMinutes(b.dataset.trainingMinutes)));
+        document.querySelectorAll('[data-training-random-target]').forEach(b => b.addEventListener('click', () => app.setRandomTargetCount(b.dataset.trainingRandomTarget)));
+
+        // 全局事件委托：处理选择交互
+        document.addEventListener('click', (e) => {
+            const block = e.target.closest('.question-block');
+            if (!block) return;
+
+            const nextBtn = e.target.closest('.next-question-btn');
+            if (nextBtn) {
+                app.currentIndex++; app.renderPracticeQuestion(); window.scrollTo({ top: 0, behavior: 'smooth' }); return;
+            }
+
+            const options = Array.from(block.querySelectorAll('.choice-option-btn'));
+            const submitBtn = block.querySelector('.submit-btn');
+            if(!submitBtn) return; 
+
+            // 点击选项
+            const optBtn = e.target.closest('.choice-option-btn');
+            if (optBtn && !optBtn.classList.contains('is-judged') && submitBtn.textContent === '決定') {
+                options.forEach(btn => btn.classList.remove('is-selected'));
+                optBtn.classList.add('is-selected');
+                submitBtn.disabled = false;
+                return;
+            }
+
+            // 点击提交
+            if (e.target === submitBtn) {
+                const selectedBtn = options.find(btn => btn.classList.contains('is-selected'));
+                if (!selectedBtn) return;
+
+                const selectedId = selectedBtn.dataset.id;
+                const correctId = block.dataset.correctId;
+                const isCorrect = selectedId === correctId;
+                const currentQuestion = app.questionQueue[app.currentIndex];
+
+                if (isCorrect) app.stats.correct++; else app.stats.incorrect++;
+
+                if (app.practiceMode === 'year' || app.practiceMode === 'mistake') {
+                    let yearMistakes = getYearMistakes(app.currentLevel, app.currentYear);
+                    if (!isCorrect && !yearMistakes.includes(currentQuestion.id)) {
+                        yearMistakes.push(currentQuestion.id); saveYearMistakes(app.currentLevel, app.currentYear, yearMistakes);
+                    } else if (isCorrect) {
+                        yearMistakes = yearMistakes.filter(id => id !== currentQuestion.id); saveYearMistakes(app.currentLevel, app.currentYear, yearMistakes);
+                    }
+                }
+
+                app.updateRandomProgressAfterAnswer(isCorrect);
+
+                // 更新选项样式
+                options.forEach(btn => {
+                    btn.classList.add('is-judged');
+                    btn.classList.remove('is-selected');
+                    if (btn.dataset.id === correctId) btn.classList.add('is-correct-ans');
+                    else if (btn.dataset.id === selectedId) btn.classList.add('is-wrong-ans');
+                });
+
+                const badge = block.querySelector('.status-badge');
+                if (app.trainingMode === 'challenge') {
+                    badge.classList.add('hidden');
+                } else {
+                    badge.classList.remove('hidden');
+                    if (isCorrect) {
+                        badge.textContent = '正解'; 
+                        badge.style.color = '#10B981';
+                        badge.style.borderColor = '#10B981';
+                    } else {
+                        badge.textContent = '不正解'; 
+                        badge.style.color = '#cc4444';
+                        badge.style.borderColor = '#cc4444';
+                    }
+                }
+                
+                const expArea = block.querySelector('.explanation-area');
+                if (expArea && app.trainingMode !== 'challenge') {
+                    expArea.classList.remove('hidden'); expArea.classList.add('flex', 'fade-in');
+                }
+
+                const actionArea = block.querySelector('.action-area');
+                const shouldSummary = (app.practiceMode === 'random' && app.randomAnsweredCount >= app.randomRoundTarget) || (app.currentIndex >= app.questionQueue.length - 1);
+                actionArea.innerHTML = `<button class="next-question-btn bg-textMain text-bgMain px-6 py-2.5 rounded-md text-sm font-bold transition-all hover:bg-opacity-80">${shouldSummary ? '結果を見る' : '次の問題へ'}</button>`;
+                app.updateTimerUI(); return;
+            }
+        });
+    </script>
+</body>
+</html>

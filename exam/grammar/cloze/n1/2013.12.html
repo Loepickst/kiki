@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLPT 完形填空 - 水彩笔记特训</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Klee One 手写铅笔风字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;600;700;900&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../jlpt-reading/shared/reading-tools.css">
+    <link rel="stylesheet" href="../../../jlpt-reading/shared/reading-user-highlights.css">
+    <link rel="stylesheet" href="../shared/cloze-practice-mobile.css">
+    <script>
+        // 重写 Tailwind 配置表，注入水彩素描本风格配色
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['"Noto Sans SC"', '"Noto Sans JP"', 'sans-serif'],
+                        'serif-jp': ['"Noto Serif SC"', '"Noto Serif JP"', '"Songti SC"', '"SimSun"', 'serif'],
+                        'pencil': ['"Klee One"', '"Noto Sans JP"', '"Noto Sans SC"', 'sans-serif'], // 新增铅笔手写字体
+                    },
+                    colors: {
+                        bgMain: '#fcfbf9', // 调整为更暖的纸张底色
+                        bgCard: '#ffffff',        
+                        textMain: '#333333',      
+                        textSub: '#666666',       
+                        textMuted: '#999999',     
+                        borderMain: '#e5e5e5',    
+                        borderDark: '#cccccc',    
+                        borderStrong: '#333333',  
+                        accentRed: '#e64a4a',     
+                        markerYellow: 'rgba(255, 213, 79, 0.25)',
+                        markerBlue: 'rgba(129, 212, 250, 0.25)',
+                        markerMint: 'rgba(134, 239, 172, 0.25)',
+                        markerPink: 'rgba(244, 143, 177, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --accent-color: #333333;
+            --text-color: #333333;
+            --chinese-font: "Noto Sans SC", "Noto Sans JP", sans-serif;
+        }
+
+        :root {
+            --font-serif: 'Noto Serif SC', 'Noto Serif JP', 'Songti SC', 'SimSun', serif;
+        }
+
+        /* ==============================================================
+           基础纸张底座与工具类
+           ============================================================== */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-color: var(--bgMain);
+            background-image: radial-gradient(#d5d5d5 1px, transparent 1px);
+            background-size: 20px 20px; /* 增加网格点阵，模仿笔记本 */
+            color: var(--textMain);
+            position: relative;
+            scroll-behavior: smooth;
+        }
+
+        /* 极弱的纸张噪点纹理 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 手绘感不规则边框 (Sketchy Border) */
+        .sketch-box {
+            border: 2px solid #333333 !important;
+            border-radius: 3px 255px 5px 25px / 255px 5px 225px 3px !important;
+            box-shadow: 3px 4px 0px rgba(51, 51, 51, 0.15) !important; /* 更硬的阴影模仿错位排线 */
+            transition: all 0.2s ease;
+        }
+
+        .sketch-btn {
+            border: 2px solid #333333 !important;
+            border-radius: 2px 8px 3px 6px / 6px 3px 8px 2px !important;
+            box-shadow: 2px 2px 0px rgba(51, 51, 51, 0.15) !important;
+            transition: all 0.2s ease;
+        }
+        
+        .sketch-btn:hover:not(:disabled) {
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px rgba(51, 51, 51, 0.2) !important;
+        }
+
+        /* ==============================================================
+           完形填空专有样式 (Cloze Specific)
+           ============================================================== */
+        
+        /* 文章排版：标准衬线体正文 */
+        .cloze-passage {
+            font-family: var(--font-serif);
+            font-size: 16px; 
+            line-height: 2.2;
+            color: #222; 
+        }
+        
+        .cloze-passage p {
+            text-indent: 2em; 
+            margin-bottom: 1em;
+        }
+
+        .cloze-passage h2,
+        .cloze-passage h3 {
+            text-indent: 0;
+        }
+
+        /* 排除译文和底部小字注释的首行缩进 */
+        .cloze-passage p.passage-translation,
+        .cloze-passage p.text-xs,
+        .cloze-passage p.text-indent-0 {
+            text-indent: 0;
+        }
+
+        /* 注释词汇：低调的铅笔点划线注释特效 */
+        .annotation-word {
+            position: relative;
+            cursor: help; /* 鼠标悬停显示帮助/问号图标 */
+            color: inherit; /* 继承原文颜色，不突兀 */
+            border-bottom: 1.5px dotted #999999; /* 灰色的点状虚线 */
+            padding-bottom: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .annotation-word:hover {
+            background: rgba(255, 213, 79, 0.3); /* 悬停时轻微的黄色马克笔涂抹感 */
+            border-bottom-color: #333333; /* 悬停时虚线加深 */
+        }
+
+        /* 解释气泡：水彩素描卡片风 */
+        .annotation-bubble {
+            position: absolute;
+            z-index: 9999;
+            max-width: 280px;
+            background: #fdfdfd;
+            border: 2px solid #333333;
+            border-radius: 3px 255px 5px 25px / 255px 5px 225px 3px;
+            box-shadow: 3px 4px 0px rgba(51, 51, 51, 0.15);
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            font-family: "Noto Sans SC", "Noto Sans JP", sans-serif;
+            color: #333333;
+            font-weight: 700;
+            line-height: 1.6;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(5px);
+            transition: all 0.2s ease;
+        }
+
+        .annotation-bubble.is-visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .annotation-bubble::before {
+            content: "💡";
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        /* 文章内的填空槽位 */
+        .cloze-blank-inline {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+            height: 28px;
+            margin: 0 4px;
+            padding: 0 12px;
+            border-bottom: 2px dashed #999999;
+            background: transparent;
+            color: #333333;
+            font-family: var(--font-serif);
+            font-weight: 700;
+            font-size: 1rem; 
+            vertical-align: baseline;
+            cursor: pointer;
+            position: relative;
+            text-indent: 0; /* 取消内部缩进 */
+            transition: all 0.2s ease;
+            border-radius: 2px 4px 0 0;
+        }
+
+        .cloze-blank-inline:hover {
+            border-bottom-color: #333333;
+            background: linear-gradient(104deg, transparent 0%, rgba(129, 212, 250, 0.2) 2%, rgba(129, 212, 250, 0.3) 98%, transparent 100%);
+        }
+
+        /* 槽位编号 (左上角小数字) */
+        .cloze-blank-num {
+            position: absolute;
+            left: 2px;
+            top: -10px;
+            font-size: 11px;
+            font-family: "Noto Sans JP", sans-serif;
+            font-weight: 900;
+            color: #666666;
+            background: var(--bgMain);
+            padding: 0 4px;
+            border: 1.5px solid #999999;
+            border-radius: 4px 8px 3px 6px / 6px 3px 8px 2px;
+            line-height: 1;
+            text-shadow: none;
+        }
+
+        /* 已填写的槽位 */
+        .cloze-blank-inline.is-filled {
+            border-bottom-style: solid;
+            border-bottom-width: 2px;
+            border-bottom-color: #333333;
+            background: linear-gradient(104deg, transparent 0%, rgba(255, 213, 79, 0.4) 2%, rgba(255, 213, 79, 0.5) 98%, transparent 100%);
+        }
+
+        /* 判题后的槽位样式 */
+        .cloze-blank-inline.judged-correct {
+            background: linear-gradient(104deg, transparent 0%, rgba(134, 239, 172, 0.4) 2%, rgba(134, 239, 172, 0.5) 98%, transparent 100%) !important;
+            border-bottom-color: #10B981 !important;
+            border-bottom-style: solid !important;
+        }
+        
+        .cloze-blank-inline.judged-wrong {
+            background: transparent !important;
+            border-bottom-color: #e64a4a !important;
+            border-bottom-style: dashed !important;
+            color: #e64a4a !important;
+            text-decoration: line-through;
+            text-decoration-color: #e64a4a;
+            text-decoration-thickness: 2px;
+        }
+
+        /* 选项卡片 */
+        .cloze-option-btn {
+            border: 2px dashed #cccccc !important;
+            background: #ffffff !important;
+            border-radius: 3px 255px 5px 25px / 255px 5px 225px 3px !important; 
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            text-align: left;
+            width: 100%;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .cloze-option-btn:hover {
+            border-style: solid !important;
+            border-color: #999999 !important;
+            background: linear-gradient(104deg, transparent 0%, rgba(129, 212, 250, 0.1) 2%, rgba(129, 212, 250, 0.15) 98%, transparent 100%) !important;
+            transform: translateY(-1px);
+        }
+
+        /* 选中的选项 */
+        .cloze-option-btn.is-selected {
+            border-style: solid !important;
+            border-color: #333333 !important;
+            background: linear-gradient(104deg, transparent 0%, rgba(255, 213, 79, 0.25) 2%, rgba(255, 213, 79, 0.35) 98%, transparent 100%) !important;
+            box-shadow: 3px 3px 0px rgba(51, 51, 51, 0.15) !important;
+            transform: translate(-1px, -1px);
+        }
+
+        /* 选项字母/数字圆圈 */
+        .option-marker {
+            background: #ffffff;
+            color: #666666;
+            border: 1.5px solid #999999;
+            border-radius: 45% 55% 40% 60% / 55% 45% 60% 40%; 
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 12px;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .cloze-option-btn.is-selected .option-marker {
+            border-color: #333333;
+            color: #333333;
+            background: #ffffff;
+        }
+
+        /* ==============================================================
+           判题后的选项高亮样式 (正确绿/错误红)
+           ============================================================== */
+        .cloze-option-btn.is-correct-answer {
+            border-style: solid !important;
+            border-color: #10B981 !important;
+            background: linear-gradient(104deg, transparent 0%, rgba(134, 239, 172, 0.3) 2%, rgba(134, 239, 172, 0.4) 98%, transparent 100%) !important;
+            box-shadow: 3px 3px 0px rgba(16, 185, 129, 0.15) !important;
+            transform: translate(-1px, -1px);
+        }
+        .cloze-option-btn.is-correct-answer .option-marker {
+            border-color: #10B981 !important;
+            color: #10B981 !important;
+            font-weight: 900;
+        }
+        .cloze-option-btn.is-correct-answer .option-text {
+            color: #059669 !important; /* 深一点的绿色保证文字可读性 */
+        }
+
+        .cloze-option-btn.is-wrong-answer {
+            border-style: solid !important;
+            border-color: #e64a4a !important;
+            background: linear-gradient(104deg, transparent 0%, rgba(230, 74, 74, 0.1) 2%, rgba(230, 74, 74, 0.15) 98%, transparent 100%) !important;
+        }
+        .cloze-option-btn.is-wrong-answer .option-marker {
+            border-color: #e64a4a !important;
+            color: #e64a4a !important;
+        }
+        .cloze-option-btn.is-wrong-answer .option-text {
+            color: #e64a4a !important;
+            text-decoration: line-through;
+            text-decoration-thickness: 2px;
+        }
+
+
+        /* 提交按钮 */
+        .submit-btn {
+            background: #3a3a3a;
+            color: #ffffff;
+            border: 2px solid #333333;
+            border-radius: 2px 8px 3px 6px / 6px 3px 8px 2px;
+            box-shadow: 3px 4px 0px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+            letter-spacing: 0.05em;
+        }
+        .submit-btn:hover:not(:disabled) {
+            background: #222222; 
+            transform: translate(-1px, -1px);
+            box-shadow: 4px 5px 0px rgba(0,0,0,0.25);
+        }
+        .submit-btn:disabled {
+            background: transparent;
+            border: 2px dashed #999999;
+            color: #999999;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* 解析区 */
+        .explanation-box {
+            border: 2px solid #333333;
+            border-radius: 3px 255px 5px 25px / 255px 5px 225px 3px;
+            background: #fdfdfd;
+            padding: 20px;
+            margin-top: 16px;
+            display: none;
+            animation: fadeIn 0.3s ease-out forwards;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(51, 51, 51, 0.02) 3px, rgba(51, 51, 51, 0.02) 4px);
+        }
+        .explanation-box.is-visible {
+            display: block;
+        }
+
+        /* 动画效果：高亮闪烁 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes highlightFlash {
+            0% { background-color: rgba(255, 213, 79, 0.8); box-shadow: 0 0 0 4px rgba(255, 213, 79, 0.4); }
+            100% { background-color: transparent; box-shadow: 0 0 0 0 transparent; }
+        }
+        .flash-highlight {
+            animation: highlightFlash 1.5s ease-out;
+            border-radius: 4px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        /* ==============================================================
+           布局壳子
+           ============================================================== */
+        .page-shell {
+            width: min(100%, 900px);
+            margin: 0 auto;
+            padding: 24px 16px 64px;
+        }
+
+        /* 顶部导航 */
+        .page-header {
+            width: 100%;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(4px);
+            border-bottom: 1.5px solid #333333;
+            border-bottom-left-radius: 50% 2px;
+            border-bottom-right-radius: 50% 3px;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased cloze-practice-page reading-tools-no-furigana" data-reading-highlight-root="#passage-container" data-reading-highlight-type="cloze" data-reading-highlight-level="N1">
+
+    <!-- 全局注释解释气泡 -->
+    <div id="global-annotation-bubble" class="annotation-bubble"></div>
+
+    <!-- 顶部导航条 -->
+    <header class="page-header top-bar">
+        <div class="w-[100px]"> <!-- 占位保持标题居中 -->
+            <button type="button" id="page-back-btn" class="sketch-btn px-3 py-1 text-sm font-bold flex items-center gap-1 hover:bg-yellow-50 w-max">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                戻る
+            </button>
+        </div>
+        <h1 class="top-title m-0 text-lg font-bold text-textMain tracking-widest text-center flex-1 flex items-center justify-center">
+            文章の文法 <span class="ml-2 text-xs border border-borderStrong sketch-btn px-2 py-0.5 font-sans">完形填空</span>
+        </h1>
+        <div class="top-actions"> <!-- 译文开关置于右上角 -->
+            <button id="translation-toggle-btn" disabled class="px-3 py-1 bg-gray-100 border border-borderStrong text-xs font-bold text-textMuted sketch-btn cursor-not-allowed transition-colors flex items-center gap-1.5 outline-none whitespace-nowrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>訳文：OFF</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="page-shell">
+        
+        <!-- 文章阅读区 (包含填空槽位) -->
+        <div class="sketch-box bg-white p-6 md:p-8 mb-8 shadow-sm relative">
+            <h2 id="article-title" class="text-xl md:text-2xl font-bold text-textMain tracking-wide mb-4 hidden"></h2> <!-- 标题直接嵌入文章上方，这里隐藏通用的 -->
+            
+            <div id="passage-container" class="cloze-passage mt-4">
+                <!-- JS 动态注入文章 -->
+            </div>
+        </div>
+
+        <!-- 题目列表区 -->
+        <div id="questions-container" class="space-y-6 mb-12">
+            <!-- JS 动态注入单道题目 -->
+        </div>
+
+        <!-- 底部提交与结果结算区 -->
+        <div id="bottom-action-area" class="flex flex-col items-center justify-center pt-6 border-t-2 border-dashed border-borderMain">
+            <button id="submit-btn" class="submit-btn px-10 py-3 text-base font-bold w-full md:w-auto" disabled>
+                採点する（提交批改）
+            </button>
+        </div>
+        
+        <!-- 结算面板 (默认隐藏) -->
+        <div id="result-section" class="hidden sketch-box bg-white p-5 md:p-6 mt-4">
+            <!-- 内容由JS生成 -->
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. 模拟数据 (完形填空通常是一篇文章带有多个空) ---
+        const clozeData = {
+            id: "n1_reading_cloze_2013_12",
+            title: "人生相談万事OK", // 文章标题
+            // 使用带有特定占位符的文本，并在下方预埋隐藏的中文翻译，带有点击注释功能
+            passage: `
+                <div class="mb-5">
+                    <p class="text-sm font-bold text-textSub mb-2 text-indent-0">以下は、『人生相談万事OK』という本に書かれている質問と、それに対する回答である。</p>
+                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">以下是写在《人生咨询万事OK》这本书里的问题以及对该问题的回答。</p>
+                </div>
+
+                <div class="mb-5">
+                    <h3 class="text-xl md:text-2xl font-bold text-textMain mb-4">Q　７０犬が嫌いです</h3>
+                    <p>夫の実家は、大の犬好きで家の中で放し飼いにしています。しかし私は大の犬嫌い。昔、母が「近づくとかまれる」と言っていたこともあります。犬は見抜いているのでしょう。ほかの人にはキュイーンと甘えるのに私だけに吠えまくります。私はこの実家のものとして失格でしょうか。たかが犬、されど犬。かなりのストレスです。（いまいち、２８歳）</p>
+                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">【Q 70 我讨厌狗】<br>丈夫的老家非常喜欢狗，在家里放养着。但是我极其讨厌狗。以前，母亲也曾说过“靠近的话会被咬”。狗应该是看穿了我的心思吧。它对别人都会“嘤嘤”地撒娇，却唯独对我狂吠不止。我作为这个老家的一分子是不是不合格呢？虽说只是狗，但毕竟是狗。我感到相当大的压力。（今市，28岁）</p>
+                </div>
+
+                <div class="mb-5">
+                    <h3 class="text-xl md:text-2xl font-bold text-textMain mb-4">A　７０犬クッキー手なずける。</h3>
+                    <p>パブロフの犬という有名な実験がありました。ベルを鳴らして餌を繰り返したら、しまいに犬が、ベルの音を聞いただけで、餌を与えなくても<span class="annotation-word" data-explanation="つば、口から流れ出る液体">よだれ</span>を出すようになったというのです。あれを応用します。</p>
+                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">【A 70 用狗饼干驯服它】<br>有一个著名的实验叫做“巴甫洛夫的狗”。据说只要一边摇铃一边喂食，重复多次后，最终狗只要听到铃声，即使不给食物也会流<span class="annotation-word" data-explanation="唾液，从口中流出的液体">口水</span>。我们要应用这个原理。</p>
+                </div>
+
+                <div class="mb-5">
+                    <p>ペットショップへ走り、おいしそうな犬用のクッキーを、[[1]]。それを夫の生家に行くときは必ず持参し、ポケットに入れておきます。</p>
+                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">跑到宠物店，去买些看起来很好吃的狗饼干<span class="text-accentRed font-bold">吧</span>。去丈夫老家的时候一定要带上它，放在口袋里。</p>
+                </div>
+
+                <div class="mb-5">
+                    <p>[[2]]あなたが取るべき態度は、吠えられても、動じないってことです。手をひっこめたり、叫び声を上げたり、逃げ腰になったりしちゃいけません。犬に足元を見られます。といって、犬の目をまっすぐ見てはいけません。犬は威嚇されてると思い込むものなんです。この辺、人間の常識は通じませんから、目は合わせない、それが[[3]]礼儀作法です。</p>
+                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r"><span class="text-accentRed font-bold">在此基础上</span>，你应该采取的态度是，即使被狗吠也不动摇。绝不能把手缩回去、大声尖叫或者退缩。会被狗看轻的。虽说如此，但也绝不能直视狗的眼睛。狗会认定自己受到了威吓。在这些方面，人类的常识是行不通的，所以不跟它对视，这才是<span class="text-accentRed font-bold">狗的</span>礼仪作法。</p>
+                </div>
+
+                <div class="mb-5">
+                    <p>さて、吠えられても動じず。目をそらしつつ、手のひらに犬クッキーをのせて差し出します。犬の歯が当たらないので、指で、つまんでやるよりこわくない。あなたは今後、その犬にあったら必ず犬クッキーをやることにします。それを繰り返すうちに、犬は、あなた、イコール、クッキーってのを学習し、やがて、[[4]]でしょう。</p>
+                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">那么，即使被吠也不动摇。一边移开视线，一边把狗饼干放在手掌心递出去。因为狗的牙齿碰不到手掌，所以这比用手指捏着喂要不那么害怕。你今后，只要遇到那只狗，就一定要给它狗饼干。在不断重复的过程中，狗就会学到“你=饼干”，不久之后，就会<span class="text-accentRed font-bold">流着口水来迎接你</span>了吧。</p>
+                </div>
+
+                <div class="mb-5">
+                    <p>以上は、よく吠えるうちの犬に対して、犬嫌いの友人が試みたことです。いまだに友人の顔をみると吠えますが、それはクッキーほしさの吠え声で、もらえばたちまちおとなしくなります。友人もそれがわかってるので、怯えなくなりました。</p>
+                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">以上这些，是我那怕狗的朋友对我家爱叫的狗尝试过的方法。虽然现在它看到朋友的脸还是会叫，但那是想要饼干的叫声，只要得到了立刻就会变乖。朋友也明白了这一点，所以就不再害怕了。</p>
+                </div>
+
+                <div class="mb-5">
+                    <p>クッキーをやったら、後は無視します。無理はしません。犬好きがいるように犬嫌いが、[[5]]。</p>
+                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">给了饼干之后，就无视它。不要勉强自己。就像有喜欢狗的人一样，怕狗的人存在<span class="text-accentRed font-bold">也是完全没问题的</span>。</p>
+                </div>
+            `,
+            questions: [
+                {
+                    id: "q1",
+                    blankNum: 1,
+                    options: ["買ってきたわけです", "買ってきましょう", "買ってきたはずです", "買ってくるのでしょう"],
+                    correctIndex: 1, // 買ってきましょう
+                    explanation: "本文是一篇解答咨询者烦恼的文章，作者正在给咨询者提出解决建议。前文说“我们要应用巴甫洛夫的狗的原理”，接下来自然是促使咨询者去采取行动：“跑到宠物店，去买些看起来很好吃的狗饼干【吧】”。「〜ましょう」表示提议、劝诱，符合指导别人去做的语境。<br><br><b>【错误选项分析】</b><br>1. 「買ってきたわけです（所以就买回来了）」表说明原因；<br>3. 「買ってきたはずです（理应已经买回来了）」表推测；<br>4. 「買ってくるのでしょう（大概会买回来吧）」表客观推测，均不符合向别人提出建议的语气。"
+                },
+                {
+                    id: "q2",
+                    blankNum: 2,
+                    options: ["だから", "つまり", "その上で", "そのために"],
+                    correctIndex: 2, // その上で
+                    explanation: "前一段提出了行动的第一步：“去丈夫老家的时候一定要随身携带狗饼干放在口袋里”。紧接着空格后说的是第二步：“你应该采取的态度是……”。前后是“在这个基础之上、在这之后”的递进/先后关系。因此选「その上で（在此基础上）」。<br><br><b>【错误选项分析】</b><br>1. 「だから（所以）」表因果；<br>2. 「つまり（也就是说）」表总结、换言之；<br>4. 「そのために（为此）」表目的，都不符合“准备好饼干后，在这个基础上还要注意态度”的语境。"
+                },
+                {
+                    id: "q3",
+                    blankNum: 3,
+                    options: ["犬の", "この犬の", "その犬の", "あの犬の"],
+                    correctIndex: 0, // 犬の
+                    explanation: "前文提到“人类的常识在这里是行不通的（人間の常識は通じません）”，所以不和它对视，这才是【狗的】礼节。「人間の常識」与「犬の礼儀作法」形成了工整的对比。因为是在讲述狗类普遍的行为准则，并非特指某一只狗，所以直接用「犬の」。<br><br><b>【错误选项分析】</b><br>2. 「この犬の」、3. 「その犬の」、4. 「あの犬の」都加了指示代词，变成了特指“丈夫家的那只狗的礼节”，缩小了概念范围，无法与泛指的“人类”形成对立呼应。"
+                },
+                {
+                    id: "q4",
+                    blankNum: 4,
+                    options: ["家の中で飼えるようになる", "よだれを流して迎えてくれる", "クッキーを差し出せるようになる", "ベルの音を聞いてすぐ食べてくれる"],
+                    correctIndex: 1, // よだれを流して迎えてくれる
+                    explanation: "文章开头提到了“巴甫洛夫的狗”的实验：“狗听到铃声就会流口水（よだれを出す）”。本段作者说让狗学习“你=饼干”的条件反射。所以，在不断重复之后，狗一看到你，就会像听到铃声一样产生条件反射，“【流着口水来迎接你】”。选「よだれを流して迎えてくれる」完美首尾呼应。<br><br><b>【错误选项分析】</b><br>1. 「家の中で飼えるようになる（变得能在家里养了）」咨询者本来也不想养狗；<br>3. 「クッキーを差し出せるようになる（变得能递出饼干）」递饼干的是人，不是狗；<br>4. 「ベルの音を聞いてすぐ食べてくれる（一听到铃声就马上吃）」这里并没有铃声，是你这个人代替了铃声。"
+                },
+                {
+                    id: "q5",
+                    blankNum: 5,
+                    options: ["いるのでしょうか", "いればよかったんです", "いたのではないでしようか", "いたっていいんです"],
+                    correctIndex: 3, // いたっていいんです
+                    explanation: "咨询者在提问中很内疚，觉得自己“作为家里的一分子是不是不合格”。作者在结尾处开导她：“给了饼干之后无视就好，不要勉强自己。就像有喜欢狗的人一样，讨厌狗的人【存在也是完全没问题的/即使存在也可以】”。「～て（も）いいんです」表示许可、没关系，起到了安慰咨询者的作用。<br><br><b>【错误选项分析】</b><br>1. 「いるのでしょうか（存在吗）」表疑问；<br>2. 「いればよかったんです（要是存在就好了）」表过去的遗憾；<br>3. 「いたのではないでしようか（难道不是存在的吗）」这三项都无法表达“没关系，你这样也可以”的宽慰之意。"
+                }
+            ]
+        };
+
+        // --- 2. 状态管理 ---
+        const state = {
+            answers: {}, // 存储用户的选择 { 'q1': 1, 'q2': 0, ... }
+            isSubmitted: false
+        };
+
+        // --- 3. DOM 渲染与初始化 ---
+        function initApp() {
+            renderPassage();
+            renderQuestions();
+            
+            // 绑定提交按钮事件
+            document.getElementById('submit-btn').addEventListener('click', handleSubmit);
+            document.getElementById("page-back-btn").addEventListener("click", () => {
+                window.location.href = "../index.html";
+            });
+            // 绑定译文开关事件
+            document.getElementById('translation-toggle-btn').addEventListener('click', toggleTranslation);
+            
+            // 绑定全局点击事件，处理解释气泡
+            document.addEventListener('click', handleGlobalClicks);
+            // 滚动时隐藏气泡
+            window.addEventListener('scroll', () => {
+                const bubble = document.getElementById('global-annotation-bubble');
+                if (bubble && bubble.classList.contains('is-visible')) {
+                    bubble.classList.remove('is-visible');
+                }
+            }, { passive: true });
+        }
+
+        // 处理全局点击（包括气泡的显示与隐藏）
+        function handleGlobalClicks(e) {
+            const wordEl = e.target.closest('.annotation-word');
+            const bubble = document.getElementById('global-annotation-bubble');
+            
+            if (wordEl) {
+                // 获取自定义的解释内容
+                bubble.textContent = wordEl.dataset.explanation;
+                
+                // 暂时显示气泡以获取准确宽高
+                bubble.style.display = 'block';
+                bubble.classList.add('is-visible');
+                
+                const wordRect = wordEl.getBoundingClientRect();
+                
+                // 初步计算气泡位置（相对页面坐标）
+                let top = wordRect.bottom + window.scrollY + 8;
+                let left = wordRect.left + window.scrollX;
+                
+                // 应用临时位置获取高度
+                bubble.style.top = top + 'px';
+                bubble.style.left = left + 'px';
+                
+                const bubbleRect = bubble.getBoundingClientRect();
+                
+                // 边界检测：防止气泡超出屏幕右侧
+                if (left + bubbleRect.width > window.innerWidth - 16) {
+                    left = window.innerWidth - bubbleRect.width - 16;
+                }
+                
+                // 边界检测：防止气泡超出屏幕底部，如果超出则显示在词汇上方
+                if (wordRect.bottom + bubbleRect.height + 16 > window.innerHeight) {
+                    top = wordRect.top + window.scrollY - bubbleRect.height - 8;
+                }
+                
+                // 设置最终安全位置
+                bubble.style.top = top + 'px';
+                bubble.style.left = left + 'px';
+                
+                e.stopPropagation();
+            } else if (bubble && !bubble.contains(e.target)) {
+                // 点击到气泡以外的地方，隐藏气泡
+                bubble.classList.remove('is-visible');
+            }
+        }
+
+        // 渲染文章，并将 [[1]] 替换为交互式槽位
+        function renderPassage() {
+            let html = clozeData.passage;
+            
+            clozeData.questions.forEach(q => {
+                const placeholder = `[[${q.blankNum}]]`;
+                // 生成对应的槽位 HTML
+                const slotHtml = `
+                    <span class="cloze-blank-inline" data-qid="${q.id}" onclick="scrollToQuestion('${q.id}')">
+                        <span class="cloze-blank-num">${q.blankNum}</span>
+                        <span class="blank-text" id="slot-text-${q.id}"></span>
+                    </span>
+                `;
+                html = html.replace(placeholder, slotHtml);
+            });
+
+            document.getElementById('passage-container').innerHTML = html;
+        }
+
+        // 渲染下方的题目列表
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            let html = '';
+
+            clozeData.questions.forEach(q => {
+                // 生成选项
+                let optionsHtml = '';
+                q.options.forEach((opt, idx) => {
+                    optionsHtml += `
+                        <button class="cloze-option-btn focus:outline-none" data-qid="${q.id}" data-optidx="${idx}" onclick="handleOptionSelect('${q.id}', ${idx})">
+                            <span class="option-marker">${idx + 1}</span>
+                            <span class="font-bold text-textMain font-sans text-[0.95rem] option-text">${opt}</span>
+                        </button>
+                    `;
+                });
+
+                // 生成整道题の HTML，外层包裹 sketch-box
+                html += `
+                    <div id="question-block-${q.id}" class="question-block sketch-box bg-white p-5 md:p-6 relative transition-colors duration-500">
+                        <div class="mb-4 flex items-center justify-between border-b border-dashed border-borderMain pb-3 gap-3">
+                            <h3 class="text-sm font-bold text-textSub tracking-wider flex-1">
+                                （ ${q.blankNum} ）に入れるのに最もよいものを選びなさい。
+                            </h3>
+                            
+                            <!-- 跳转回原文按钮 固定在右侧 -->
+                            <div class="flex items-center gap-2 shrink-0">
+                                <button onclick="scrollToPassageBlank('${q.id}')" class="text-xs font-bold text-textSub hover:text-textMain border border-borderMain hover:border-borderStrong px-3 py-1.5 sketch-btn bg-gray-50 transition-colors flex items-center gap-1">
+                                    ↑ 原文の（ ${q.blankNum} ）へ
+                                </button>
+                                <span id="badge-${q.id}" class="hidden text-sm font-bold tracking-widest px-2 py-1 sketch-btn"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2">
+                            ${optionsHtml}
+                        </div>
+
+                        <!-- 解析区域，默认隐藏 -->
+                        <div id="explanation-${q.id}" class="explanation-box">
+                            <div>
+                                <span class="text-xs font-bold text-textSub tracking-widest bg-gray-100 px-2 py-1 sketch-btn">【题目解析】</span>
+                                <div class="mt-3 text-sm font-sans leading-relaxed text-textMain bg-yellow-50/50 p-4 sketch-box border-yellow-200">
+                                    ${q.explanation}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // --- 4. 交互逻辑 ---
+
+        // 译文开关切换逻辑
+        let isTranslationVisible = false;
+        function toggleTranslation() {
+            if (!state.isSubmitted) return; // 未提交前不可切换
+
+            isTranslationVisible = !isTranslationVisible;
+            const btn = document.getElementById('translation-toggle-btn');
+            const span = btn.querySelector('span');
+            const eyeIcon = btn.querySelector('.eye-icon');
+
+            if (isTranslationVisible) {
+                span.textContent = '訳文：ON';
+                btn.classList.add('bg-blue-50');
+                btn.classList.remove('bg-yellow-50');
+                // 闭眼图标 (eye-off)
+                eyeIcon.innerHTML = `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>`;
+
+                document.querySelectorAll('.passage-translation').forEach(el => {
+                    el.classList.remove('hidden');
+                    el.classList.add('fade-in');
+                });
+            } else {
+                span.textContent = '訳文：OFF';
+                btn.classList.remove('bg-blue-50');
+                btn.classList.add('bg-yellow-50');
+                // 睁眼图标 (eye)
+                eyeIcon.innerHTML = `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
+
+                document.querySelectorAll('.passage-translation').forEach(el => {
+                    el.classList.add('hidden');
+                    el.classList.remove('fade-in');
+                });
+            }
+        }
+
+        // 点击选项
+        function handleOptionSelect(qId, optIdx) {
+            if (state.isSubmitted) return; // 提交后不可修改
+
+            // 1. 更新状态
+            state.answers[qId] = optIdx;
+
+            // 2. 更新题目区的 UI (高亮选中项)
+            const block = document.getElementById(`question-block-${qId}`);
+            const buttons = block.querySelectorAll('.cloze-option-btn');
+            buttons.forEach(btn => btn.classList.remove('is-selected'));
+            buttons[optIdx].classList.add('is-selected');
+
+            // 3. 更新文章区填空槽位的 UI
+            const slot = document.querySelector(`.cloze-blank-inline[data-qid="${qId}"]`);
+            const slotText = document.getElementById(`slot-text-${qId}`);
+            const targetQuestion = clozeData.questions.find(q => q.id === qId);
+            
+            slotText.textContent = targetQuestion.options[optIdx];
+            slot.classList.add('is-filled');
+
+            // 4. 检查是否所有题目都已作答，决定是否点亮提交按钮
+            checkSubmitStatus();
+        }
+
+        // [功能1]: 点击文章槽位 -> 滚动到对应题目
+        function scrollToQuestion(qId) {
+            const targetBlock = document.getElementById(`question-block-${qId}`);
+            if (targetBlock) {
+                // 平滑滚动并稍作偏移避免被导航栏遮挡
+                const y = targetBlock.getBoundingClientRect().top + window.scrollY - 80;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+                
+                // 给予一个瞬間の背景高亮提示
+                targetBlock.classList.remove('flash-highlight');
+                void targetBlock.offsetWidth; // 触发重绘
+                targetBlock.classList.add('flash-highlight');
+            }
+        }
+
+        // [功能2]: 点击题目里的按钮 -> 滚动回文章槽位
+        function scrollToPassageBlank(qId) {
+            const targetSlot = document.querySelector(`.cloze-blank-inline[data-qid="${qId}"]`);
+            if (targetSlot) {
+                // 平滑滚动并稍作偏移避免被顶部栏遮挡
+                const y = targetSlot.getBoundingClientRect().top + window.scrollY - 150;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+                
+                // 给文章空隙增加闪烁动画
+                targetSlot.classList.remove('flash-highlight');
+                void targetSlot.offsetWidth; // 触发重绘
+                targetSlot.classList.add('flash-highlight');
+            }
+        }
+
+        // 检查是否全部答完
+        function checkSubmitStatus() {
+            const answeredCount = Object.keys(state.answers).length;
+            const totalCount = clozeData.questions.length;
+            const btn = document.getElementById('submit-btn');
+            
+            if (answeredCount === totalCount) {
+                btn.disabled = false;
+                btn.textContent = '採点する（批改）';
+            } else {
+                btn.disabled = true;
+                btn.textContent = `解答中 (${answeredCount}/${totalCount})`;
+            }
+        }
+
+        // 提交批改，并生成结算页面
+        function handleSubmit() {
+            state.isSubmitted = true;
+            document.getElementById('bottom-action-area').style.display = 'none'; // 隐藏提交按钮区
+            
+            let correctCount = 0;
+            const resultSection = document.getElementById('result-section');
+            let summaryGridHtml = ''; // 用于存放结算面板中的各个题目标记
+
+            clozeData.questions.forEach(q => {
+                const userAns = state.answers[q.id];
+                const isCorrect = userAns === q.correctIndex;
+                syncClozeMistake(q.id, isCorrect);
+                const slot = document.querySelector(`.cloze-blank-inline[data-qid="${q.id}"]`);
+                const badge = document.getElementById(`badge-${q.id}`);
+                const expBox = document.getElementById(`explanation-${q.id}`);
+                const block = document.getElementById(`question-block-${q.id}`);
+
+                // 禁用所有选项按钮
+                block.querySelectorAll('.cloze-option-btn').forEach(btn => btn.style.pointerEvents = 'none');
+
+                if (isCorrect) {
+                    correctCount++;
+                    // 文章槽位变绿
+                    slot.classList.add('judged-correct');
+                    // 题目标签变绿
+                    badge.textContent = "正解";
+                    badge.className = "text-sm font-bold tracking-widest px-2 py-1 sketch-btn border border-green-500 bg-green-50 text-green-600 inline-block";
+                    
+                    // 结算面板：绿色块 (精简版胶囊)
+                    summaryGridHtml += `
+                        <div class="px-3 py-1.5 sketch-btn border-green-500 bg-green-50 text-green-600 font-bold text-sm flex items-center gap-1 shrink-0">
+                            （${q.blankNum}） <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                    `;
+
+                } else {
+                    // 文章槽位变红并画删除线
+                    slot.classList.add('judged-wrong');
+                    
+                    // 题目标签变红
+                    badge.textContent = "不正解";
+                    badge.className = "text-sm font-bold tracking-widest px-2 py-1 sketch-btn border border-accentRed bg-red-50 text-accentRed inline-block";
+                    
+                    // 将选错的按钮变成错误红样式
+                    if (userAns !== undefined) {
+                        block.querySelectorAll('.cloze-option-btn')[userAns].classList.add('is-wrong-answer');
+                    }
+
+                    // 结算面板：红色可点击块 (精简版胶囊)
+                    summaryGridHtml += `
+                        <button onclick="scrollToQuestion('${q.id}')" title="点击查看解析" class="px-3 py-1.5 sketch-btn border-accentRed bg-red-50 text-accentRed font-bold text-sm hover:bg-red-100 transition-colors cursor-pointer flex items-center gap-1 shrink-0">
+                            （${q.blankNum}） <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                    `;
+                }
+
+                // --- 新增：无论对错，直接将正确的选项高亮为绿色 ---
+                const correctOptionBtn = block.querySelectorAll('.cloze-option-btn')[q.correctIndex];
+                // 移除选中状态以防冲突
+                correctOptionBtn.classList.remove('is-selected'); 
+                correctOptionBtn.classList.add('is-correct-answer');
+
+                // 无论对错，都展开解析框
+                expBox.classList.add('is-visible');
+            });
+
+            // 激活右上角的译文开关
+            const transToggleBtn = document.getElementById('translation-toggle-btn');
+            if (transToggleBtn) {
+                transToggleBtn.disabled = false;
+                transToggleBtn.classList.remove('bg-gray-100', 'text-textMuted', 'cursor-not-allowed');
+                transToggleBtn.classList.add('bg-yellow-50', 'text-textMain', 'cursor-pointer', 'hover:bg-yellow-100');
+            }
+
+            // 渲染并显示底部的精简版结算面板
+            const total = clozeData.questions.length;
+            const isPerfect = correctCount === total;
+            
+            resultSection.innerHTML = `
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+                    <div class="flex items-center gap-4 shrink-0">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full ${isPerfect ? 'bg-green-100 text-green-600' : 'bg-red-100 text-accentRed'}">
+                            ${isPerfect ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>'}
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-textSub tracking-wider mb-0.5">採点結果</div>
+                            <div class="text-3xl font-sans font-bold ${isPerfect ? 'text-green-500' : 'text-accentRed'} leading-none">
+                                ${correctCount} <span class="text-lg text-textMuted">/ ${total}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 border-t md:border-t-0 md:border-l border-dashed border-borderMain pt-4 md:pt-0 md:pl-6 w-full md:w-auto flex-1">
+                        ${summaryGridHtml}
+                    </div>
+                </div>
+            `;
+            
+            resultSection.classList.remove('hidden');
+
+            // 平滑滚动到底部的结算面板
+            setTimeout(() => {
+                const y = resultSection.getBoundingClientRect().top + window.scrollY - 100;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }, 100);
+        }
+
+
+        function getClozeMistakesKey() {
+            const fileId = decodeURIComponent((window.location.pathname.split('/').pop() || '').replace(/\.html$/, ''));
+            return `grammar_cloze_mistakes::N1::${fileId}`;
+        }
+
+        function getClozeMistakes() {
+            try {
+                const parsed = JSON.parse(localStorage.getItem(getClozeMistakesKey()) || '[]');
+                return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function saveClozeMistakes(ids) {
+            const uniqueIds = Array.from(new Set(ids.filter(Boolean)));
+            localStorage.setItem(getClozeMistakesKey(), JSON.stringify(uniqueIds));
+        }
+
+        function syncClozeMistake(qId, isCorrect) {
+            const currentIds = getClozeMistakes();
+            const nextIds = isCorrect
+                ? currentIds.filter(id => id !== qId)
+                : Array.from(new Set([...currentIds, qId]));
+            saveClozeMistakes(nextIds);
+        }
+
+        function renderClozeReviewNotice() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('mode') !== 'review') return;
+            const mistakeIds = getClozeMistakes();
+            const shell = document.querySelector('.page-shell');
+            if (!shell || document.getElementById('cloze-review-notice')) return;
+            const notice = document.createElement('div');
+            notice.id = 'cloze-review-notice';
+            notice.className = 'sketch-box bg-yellow-50/70 border-borderStrong p-4 mb-5 text-sm font-bold text-textMain leading-relaxed';
+            notice.innerHTML = mistakeIds.length > 0
+                ? `错题复习：当前文章还有 <span class="text-accentRed">${mistakeIds.length}</span> 个空位需要复习。请重点查看对应题目，答对后会自动从错题记录中移除。`
+                : '错题复习：当前文章暂无错题记录，可以按完整练习重新巩固。';
+            shell.insertBefore(notice, shell.firstChild);
+        }
+
+        function loadReadingTools() {
+            if (document.getElementById("cloze-reading-tools-script")) return;
+            const script = document.createElement("script");
+            script.id = "cloze-reading-tools-script";
+            script.src = "../../../jlpt-reading/shared/reading-tools.js";
+            document.body.appendChild(script);
+        }
+
+        function loadReadingUserHighlights() {
+            if (document.getElementById("cloze-reading-highlights-script")) return;
+            const script = document.createElement("script");
+            script.id = "cloze-reading-highlights-script";
+            script.src = "../../../jlpt-reading/shared/reading-user-highlights.js";
+            document.body.appendChild(script);
+        }
+
+        document.addEventListener("studyquest:reading-test-timeout", () => {
+            if (!state.isSubmitted) handleSubmit();
+        });
+
+        // 页面加载完毕后初始化
+        document.addEventListener("DOMContentLoaded", () => {
+            initApp();
+            renderClozeReviewNotice();
+            loadReadingTools();
+            loadReadingUserHighlights();
+        });
+    </script>
+</body>
+</html>
