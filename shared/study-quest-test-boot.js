@@ -7,10 +7,9 @@
     const STYLE_ID = 'study-quest-test-boot-style';
     const QUIET_PRACTICE_PATHS = [
         '/exam/vocabulary/n1/practice_n1_verbs.html',
-        '/exam/grammar/sort.html',
         '/exam/grammar/sort/index.html',
         '/exam/textbook/text_1.html',
-        '/exam/jlpt-reading/s/2020.12.html',
+        '/exam/jlpt-reading/s/n1/2020.12.html',
         '/exam/listening/immediate-response/n1/years/n1_2019.html'
     ];
     const DRAW_REVEAL_IMAGE = 'https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/chouqian.png';
