@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情報検索 - 练习与解析</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;600;700;900&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* 纸张与铅笔色盘 */
+            --paper: #ffffff;          
+            --graphite: #333333;       
+            --graphite-sub: #666666;   
+            --graphite-faint: #cccccc; 
+            
+            /* 批改笔触颜色 */
+            --red-pencil: #e64a4a;     
+            --green-pencil: #10b981;
+            --blue-pencil: #0ea5e9;
+            --orange-pencil: #f97316;
+            
+            /* 水彩记号笔色系 */
+            --marker-blue: rgba(14, 165, 233, 0.25);    
+            --marker-peach: rgba(249, 115, 22, 0.25);   
+            --marker-mint: rgba(16, 185, 129, 0.25);    
+            --marker-yellow: rgba(255, 213, 79, 0.35);   
+            --marker-yellow-strong: rgba(255, 213, 79, 0.8);
+            --marker-green: rgba(16, 185, 129, 0.15);
+            --marker-red: rgba(230, 74, 74, 0.1);
+            --marker-lavender: rgba(196, 181, 253, 0.35);
+
+            --transition: all 0.3s ease-out;
+            
+            --font-sans: 'Noto Sans SC', 'Noto Sans JP', sans-serif;
+            --font-serif: 'Noto Serif SC', 'Noto Serif JP', 'Songti SC', 'SimSun', serif;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--paper);
+            color: var(--graphite);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        /* 纸张噪点纹理 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .sketch-box {
+            border: 1.5px solid var(--graphite);
+            border-radius: 2px 255px 3px 25px / 255px 5px 225px 3px;
+            background: transparent;
+        }
+
+        /* ================= Header ================= */
+        header {
+            width: 100%;
+            padding: 16px 20px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
+            border-bottom: 1.5px solid var(--graphite);
+            border-bottom-left-radius: 50% 2px;
+            border-bottom-right-radius: 50% 3px;
+        }
+
+        .header-btn {
+            text-decoration: none;
+            color: var(--graphite);
+            font-size: 14px;
+            font-weight: 700;
+            padding: 6px 12px;
+            background: transparent;
+            border: 1.5px solid var(--graphite);
+            border-radius: 2px 8px 3px 6px / 6px 3px 8px 2px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .header-btn:hover { background: var(--marker-yellow); }
+
+        h1 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--graphite);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            letter-spacing: 0.1em;
+            display: flex;
+            align-items: center;
+        }
+
+        /* ================= 布局容器 ================= */
+        .layout-container {
+            width: 95%;
+            max-width: 900px; 
+            padding: 30px 0 80px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            flex: 1;
+            box-sizing: border-box;
+        }
+
+        /* ================= 上部文章区 ================= */
+        .article-section {
+            padding: 30px 40px;
+            background: var(--paper);
+            box-shadow: 2px 4px 15px rgba(0,0,0,0.03);
+            height: fit-content;
+        }
+
+        .article-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1.5px dashed var(--graphite-faint);
+        }
+
+        .meta-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tag {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 12px;
+            color: var(--graphite);
+            background: var(--marker-lavender); 
+            padding: 2px 8px;
+            border: 1.5px solid var(--graphite);
+            border-radius: 2px 8px 2px 6px / 6px 2px 8px 2px;
+            font-weight: 700;
+        }
+
+        .article-title-info {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--graphite-sub);
+        }
+
+        .translate-toggle-btn {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--graphite);
+            background: transparent;
+            border: 1.5px solid var(--graphite);
+            border-radius: 2px 8px 3px 6px / 6px 3px 8px 2px;
+            padding: 4px 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .translate-toggle-btn:hover, .translate-toggle-btn.active {
+            background: var(--marker-blue);
+            box-shadow: inset 1px 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* ================= 海报/通知专用排版 ================= */
+        .poster-box {
+            border: 2px solid var(--graphite);
+            padding: 30px;
+            margin-bottom: 20px;
+            position: relative;
+            background: #fff;
+        }
+        
+        .poster-top-nav {
+            font-family: var(--font-serif);
+            font-size: 15px;
+            font-weight: 900;
+            color: var(--graphite);
+            margin-bottom: 16px;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .poster-title {
+            text-align: center;
+            font-family: var(--font-serif);
+            font-size: 17px;
+            font-weight: 900;
+            margin-bottom: 24px;
+            letter-spacing: 0.05em;
+        }
+
+        .poster-intro {
+            font-family: var(--font-serif);
+            font-size: 14.5px;
+            line-height: 1.8;
+            color: var(--graphite);
+            margin-bottom: 20px;
+        }
+
+        .numbered-section {
+            margin-bottom: 20px;
+        }
+
+        .section-number-title {
+            font-family: var(--font-serif);
+            font-size: 15px;
+            font-weight: 900;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .subsection-title {
+            font-family: var(--font-serif);
+            font-size: 14.5px;
+            font-weight: 900;
+            margin-bottom: 8px;
+            margin-left: 1.5em;
+        }
+
+        .section-content {
+            font-family: var(--font-serif);
+            font-size: 14.5px;
+            line-height: 1.8;
+            color: var(--graphite);
+            margin-left: 1.5em;
+            margin-bottom: 12px;
+        }
+
+        .sub-content {
+            font-family: var(--font-serif);
+            font-size: 14.5px;
+            line-height: 1.8;
+            color: var(--graphite);
+            margin-left: 3em;
+            margin-bottom: 12px;
+        }
+
+        .note-line {
+            color: var(--graphite);
+            margin-bottom: 4px;
+        }
+
+        /* 表格样式 */
+        .table-responsive {
+            width: calc(100% - 3em);
+            margin-left: 1.5em;
+            overflow-x: auto;
+            margin-bottom: 16px;
+        }
+
+        .poster-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            font-family: var(--font-serif);
+            text-align: center;
+            min-width: 450px;
+        }
+
+        .poster-table th, .poster-table td {
+            border: 1px solid var(--graphite);
+            padding: 6px 12px;
+            vertical-align: middle;
+            line-height: 1.5;
+        }
+
+        .poster-table th {
+            font-weight: normal;
+        }
+        
+        .poster-table td:first-child {
+            text-align: left;
+            padding-left: 16px;
+        }
+
+        /* 重点词汇点击查词功能 */
+        .article-section.reviewed .vocab-word {
+            border-bottom: 1.5px dotted var(--red-pencil);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .article-section.reviewed .vocab-word:hover {
+            background-color: rgba(230, 74, 74, 0.1);
+        }
+
+        /* 词汇解释气泡容器 */
+        .vocab-tooltip {
+            position: absolute;
+            z-index: 1000;
+            background: #fffcf2; 
+            border: 1.5px solid var(--graphite);
+            border-radius: 2px 12px 3px 12px / 12px 3px 12px 2px;
+            padding: 8px 14px;
+            box-shadow: 2px 4px 8px rgba(0,0,0,0.1);
+            font-family: var(--font-sans);
+            font-size: 13px;
+            color: var(--graphite);
+            pointer-events: none; 
+            opacity: 0;
+            transform: translateY(5px);
+            transition: all 0.2s ease-out;
+            display: none;
+            width: max-content;
+            max-width: 220px;
+        }
+
+        .vocab-tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+
+        .vocab-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 20px;
+            width: 10px;
+            height: 10px;
+            background: #fffcf2;
+            border-bottom: 1.5px solid var(--graphite);
+            border-right: 1.5px solid var(--graphite);
+            transform: rotate(45deg);
+        }
+
+        .vocab-tooltip .reading {
+            font-size: 11px;
+            color: var(--graphite-sub);
+            margin-bottom: 4px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .vocab-tooltip .meaning {
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        /* 翻译样式 */
+        .article-translation {
+            display: none;
+            font-family: var(--font-sans);
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--graphite-sub);
+            background: rgba(0,0,0,0.02);
+            padding: 8px 12px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--marker-yellow-strong);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .article-translation.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* --- 动态解题关键句划线样式 --- */
+        .ks-target {
+            transition: background-color 0.4s ease;
+            border-radius: 2px;
+        }
+
+        span.ks-target.revealed-q1, tr.ks-target.revealed-q1 td {
+            background: linear-gradient(transparent 65%, var(--marker-blue) 65%);
+            display: inline; 
+        }
+        tr.ks-target.revealed-q1 td {
+            display: table-cell;
+            background: var(--marker-blue);
+        }
+        
+        span.ks-target.revealed-q2, div.ks-target.revealed-q2 {
+            background: linear-gradient(transparent 65%, var(--marker-peach) 65%);
+            display: inline;
+        }
+
+        .ks-target.flash-focus {
+            animation: flashHighlight 1.5s ease-out;
+        }
+        @keyframes flashHighlight {
+            0% { background-color: rgba(255, 213, 79, 0.7); }
+            100% { background-color: transparent; }
+        }
+
+        /* ================= 下部题目区 ================= */
+        .question-section {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .question-card {
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.5);
+            transition: var(--transition);
+            position: relative;
+            scroll-margin-top: 80px; 
+        }
+
+        .question-card:hover {
+            box-shadow: 2px 4px 10px rgba(0,0,0,0.02);
+            background: var(--paper);
+        }
+
+        .q-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .q-number {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 16px;
+            font-weight: 900;
+            color: var(--graphite);
+            background: var(--marker-yellow);
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid var(--graphite);
+            border-radius: 50% 45% 55% 40% / 45% 55% 40% 50%;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .q-text-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .q-text {
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
+        .q-text-trans {
+            display: none;
+            font-size: 13px;
+            color: var(--graphite-sub);
+            font-weight: normal;
+            margin-bottom: 8px;
+        }
+
+        .source-jump-btn {
+            display: none;
+            background: #fff;
+            border: 1.5px dashed var(--graphite-faint); 
+            padding: 6px 12px;
+            margin-top: 12px;
+            margin-bottom: 4px;
+            box-shadow: 1px 2px 5px rgba(0,0,0,0.02);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            align-self: flex-start;
+        }
+
+        .question-card.reviewed .source-jump-btn {
+            display: inline-flex;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .source-jump-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 2px 4px 8px rgba(0,0,0,0.04);
+            background: #fdfdfd;
+        }
+
+        .ks-icon-text {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            font-size: 12.5px;
+        }
+
+        .ks-theme-q1 { border-color: var(--blue-pencil); background: #f0f9ff; }
+        .ks-theme-q1 .ks-icon-text { color: var(--blue-pencil); }
+
+        .ks-theme-q2 { border-color: var(--orange-pencil); background: #fff7ed; }
+        .ks-theme-q2 .ks-icon-text { color: var(--orange-pencil); }
+
+        /* 选项样式 */
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 16px;
+            border: 1.5px solid var(--graphite);
+            border-radius: 2px 255px 3px 25px / 255px 5px 225px 3px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            background: transparent;
+            flex-wrap: wrap; 
+        }
+
+        .option-label:hover:not(.disabled) {
+            background: var(--hatching-graphite);
+        }
+
+        .options-group.reviewed .option-label {
+            cursor: pointer;
+        }
+        .options-group.reviewed .option-label:hover {
+            border-color: var(--graphite);
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.05);
+        }
+        
+        .click-hint {
+            display: none; 
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            font-size: 11px;
+            color: var(--marker-yellow-strong);
+            font-weight: 700;
+            border: 1px solid var(--marker-yellow-strong);
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: #fff;
+        }
+        .options-group.reviewed .click-hint {
+            display: block; 
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .option-input {
+            display: none; 
+        }
+
+        .custom-radio {
+            width: 18px;
+            height: 18px;
+            border: 1.5px solid var(--graphite);
+            border-radius: 50% 40% 60% 45% / 55% 45% 50% 60%;
+            margin-right: 12px;
+            margin-top: 4px;
+            flex-shrink: 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-weight: 900;
+            font-size: 12px;
+            font-family: 'Noto Sans JP', sans-serif;
+            color: var(--graphite-sub);
+        }
+
+        /* 选中状态 */
+        .option-input:checked + .custom-radio {
+            background: var(--marker-yellow-strong);
+            color: var(--graphite);
+        }
+        
+        .option-label.selected {
+            background: rgba(255, 213, 79, 0.1);
+            border-style: solid;
+        }
+
+        .option-content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .option-content {
+            font-size: 15px;
+            line-height: 1.5;
+            color: var(--graphite);
+        }
+
+        .option-input:checked ~ .option-content-wrapper .option-content {
+            font-weight: 700;
+        }
+
+        .option-trans {
+            display: none;
+            font-size: 13px;
+            color: var(--graphite-sub);
+            line-height: 1.4;
+        }
+
+        .question-card.reviewed .q-text-trans,
+        .question-card.reviewed .option-trans {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* 选项独立解析展开框 */
+        .option-detail-analysis {
+            display: none;
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: #fffcf2;
+            border: 1px dashed var(--graphite-sub);
+            border-radius: 2px 8px 3px 6px / 6px 3px 8px 2px;
+            font-size: 13px;
+            color: var(--graphite);
+            line-height: 1.6;
+            box-sizing: border-box;
+            position: relative;
+        }
+        
+        .option-detail-analysis::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            transform: rotate(-2deg);
+            width: 40px;
+            height: 15px;
+            background: rgba(255, 213, 79, 0.6);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .option-detail-analysis.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        /* 答对/答错样式 */
+        .option-label.is-correct {
+            background: var(--marker-green);
+            border-color: var(--green-pencil);
+        }
+        .option-label.is-correct .custom-radio {
+            background: var(--green-pencil);
+            border-color: var(--green-pencil);
+            color: white;
+        }
+        
+        .option-label.is-wrong {
+            background: var(--marker-red);
+            border-color: var(--red-pencil);
+            border-style: dashed;
+        }
+        .option-label.is-wrong .custom-radio {
+            background: var(--red-pencil);
+            border-color: var(--red-pencil);
+            color: white;
+        }
+
+        /* ================= 底部动作区 ================= */
+        .action-bar {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            padding-top: 30px;
+            border-bottom: 1.5px dashed var(--graphite-faint); 
+            padding-bottom: 30px;
+        }
+
+        .submit-btn {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--graphite);
+            background: var(--marker-mint);
+            padding: 12px 50px;
+            border: 1.5px solid var(--graphite);
+            border-radius: 3px 255px 4px 25px / 255px 5px 225px 4px;
+            cursor: pointer;
+            letter-spacing: 0.1em;
+            transition: var(--transition);
+            box-shadow: 2px 4px 0px rgba(51,51,51,0.1);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 2px 6px 0px rgba(51,51,51,0.15);
+        }
+
+        .submit-btn:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0px 0px 0px rgba(51,51,51,0);
+        }
+        
+        .submit-btn:disabled {
+            background: var(--graphite-faint);
+            color: var(--graphite-sub);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* ================= 快速跳转导航栏 ================= */
+        .quick-nav {
+            position: fixed;
+            right: 8px; 
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 2px; 
+            z-index: 90;
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(2px);
+            padding: 6px 4px; 
+            border: 1px solid var(--graphite-faint);
+            border-radius: 4px;
+            opacity: 0.5; 
+            transition: all 0.3s ease;
+        }
+
+        .quick-nav:hover {
+            opacity: 1; 
+            background: rgba(255, 255, 255, 0.95);
+            border-color: var(--graphite);
+            box-shadow: 1px 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--graphite-sub);
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 11px; 
+            font-weight: 700;
+            padding: 4px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            transition: var(--transition);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            background: var(--marker-yellow);
+            color: var(--graphite);
+        }
+
+        .nav-divider {
+            width: 80%;
+            margin: 2px auto;
+            border-width: 1px 0 0 0;
+            border-style: dashed;
+            border-color: var(--graphite-faint);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ================= 响应式调整 ================= */
+        @media (max-width: 768px) {
+            .quick-nav { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            header { padding: 12px 16px; }
+            h1 { font-size: 15px; }
+            .header-btn { font-size: 13px; padding: 6px 10px; }
+            
+            .layout-container { width: 100%; padding: 20px 16px 60px 16px; gap: 24px; }
+            .article-section { padding: 20px 16px; border-radius: 2px 20px 3px 20px / 20px 5px 20px 3px; }
+            .poster-box { padding: 20px; }
+            
+            .question-section { gap: 16px; padding-top: 16px; }
+            .question-card { padding: 20px 16px; }
+            
+            .click-hint { 
+                position: static; margin-top: 8px; font-size: 11px; padding: 4px 8px; 
+                background: #fff9e6; border: 1px dashed var(--marker-yellow-strong);
+            }
+            .options-group.reviewed .click-hint { display: inline-block; }
+            
+            .option-detail-analysis { padding: 16px; font-size: 14px; }
+            .submit-btn { width: 100%; padding: 12px; font-size: 15px; }
+            
+            .vocab-tooltip { max-width: 200px; font-size: 12px; padding: 6px 10px; }
+            
+            .table-responsive { width: 100%; margin-left: 0; }
+        }
+    </style>
+    <link rel="stylesheet" href="../../shared/reading-dt-mobile.css">
+    <link rel="stylesheet" href="../../shared/reading-tools.css">
+    <link rel="stylesheet" href="../../shared/reading-user-highlights.css">
+</head>
+<body id="top" class="reading-article-tools-page reading-tools-no-furigana">
+
+    <header class="top-bar">
+        <button class="header-btn" onclick="history.back()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            戻る
+        </button>
+        <h1>情報検索演習</h1>
+        <div class="top-actions"></div>
+    </header>
+
+    <nav class="quick-nav sketch-box">
+        <a href="#top" class="nav-link">Top</a>
+        <div class="nav-divider"></div>
+        <a href="#poster-content" class="nav-link">案内</a>
+        <div class="nav-divider"></div>
+        <a href="#q1-card" class="nav-link">問1</a>
+        <a href="#q2-card" class="nav-link">問2</a>
+    </nav>
+
+    <div class="layout-container">
+        
+        <!-- 上部：海报区域 -->
+        <main class="article-section sketch-box" id="mainArticleContent">
+            <div class="article-meta">
+                <div class="meta-left">
+                    <span class="tag">N1 読解</span>
+                    <span class="article-title-info">2016年12月 · 情報検索</span>
+                </div>
+                <button class="translate-toggle-btn" onclick="toggleTranslation(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+                    参考訳
+                </button>
+            </div>
+            
+            <div class="poster-box" id="poster-content">
+                <div class="poster-top-nav">大森大学図書館</div>
+                
+                <div class="poster-title">他大学の図書館の資料の利用について</div>
+                
+                <div class="poster-intro">
+                    利用したい<span class="vocab-word" data-reading="しりょう" data-meaning="资料">資料</span>が本学にない場合、他大学の図書館の資料を利用できます。
+                </div>
+
+                <div class="article-translation">
+                    大森大学图书馆<br>
+                    关于利用其他大学图书馆资料的说明<br>
+                    如果想利用的资料本校没有，可以利用其他大学图书馆的资料。
+                </div>
+
+                <div class="numbered-section">
+                    <div class="section-number-title">① 他大学の図書館に行く</div>
+                    
+                    <div class="subsection-title">①－A　<span class="vocab-word" data-reading="そうごりようきょうていこう" data-meaning="相互利用协定学校">相互利用協定校</span>を利用する</div>
+                    <div class="sub-content">
+                        <span class="ks-target target-q1">相互利用協定に加盟している図書館は、学生証の<span class="vocab-word" data-reading="ていじ" data-meaning="出示">提示</span>のみで、利用することができます。</span>図書館によって、受けられるサービスが異なりますので、下記一覧を参照してください。
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="poster-table">
+                            <thead>
+                                <tr>
+                                    <th colspan="3">協定に加盟している図書館の一覧</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th><span class="vocab-word" data-reading="えつらん" data-meaning="阅览">閲覧</span></th>
+                                    <th><span class="vocab-word" data-reading="かしだし" data-meaning="借出，出借">貸出</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>みはま大学図書館</td>
+                                    <td>可</td>
+                                    <td>可</td>
+                                </tr>
+                                <tr class="ks-target target-q1">
+                                    <td>長島大学図書館</td>
+                                    <td>可</td>
+                                    <td>可</td>
+                                </tr>
+                                <tr>
+                                    <td>あおば大学図書館</td>
+                                    <td>可</td>
+                                    <td>不可</td>
+                                </tr>
+                                <tr>
+                                    <td>中山工業大学図書館</td>
+                                    <td>可</td>
+                                    <td>不可</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="subsection-title" style="margin-top: 24px;">①－B　相互利用協定校以外を利用する</div>
+                    <div class="sub-content">
+                        本学図書館が発行する<span class="vocab-word" data-reading="しょうかいじょう" data-meaning="介绍信">紹介状</span>を<span class="vocab-word" data-reading="じさん" data-meaning="带来，自备">持参</span>すれば、相互利用協定以外の図書館にも入館できます。受けられるサービスについては、各図書館に問い合わせてください。<br>
+                        紹介状の発行は、所定の申込書に記入本学図書館受付で申し込んでください。<br>
+                        <div class="note-line">注意：利用時は、必ず学生証と紹介状を持参してください。</div>
+                        <span class="ks-target target-q1">紹介状の発行は無料ですが、発行まで約５日かかります</span>
+                    </div>
+                </div>
+
+                <div class="article-translation">
+                    ① 前往其他大学图书馆<br>
+                    ①-A 利用相互利用协定学校<br>
+                    加盟相互利用协定的图书馆，仅凭出示学生证即可利用。因图书馆而异，可享受的服务不同，请参照下方一览表。<br>
+                    【协定加盟图书馆一览】(阅览 / 借出)<br>
+                    ・Mihama大学：可 / 可<br>
+                    ・长岛大学：可 / 可<br>
+                    ・青叶大学：可 / 不可<br>
+                    ・中山工业大学：可 / 不可<br><br>
+                    ①-B 利用相互利用协定校以外的学校<br>
+                    只要自带本校图书馆发行的介绍信，也可以进入相互利用协定外的图书馆。关于可享受的服务，请向各图书馆咨询。<br>
+                    介绍信的发行，请填写规定的申请书在本校图书馆前台申请。<br>
+                    注意：利用时，请务必随身携带学生证和介绍信。<br>
+                    介绍信的发行是免费的，但发行大约需要5天时间。
+                </div>
+
+                <div class="numbered-section">
+                    <div class="section-number-title" style="margin-top: 24px;">② 他大学の図書館に<span class="vocab-word" data-reading="ふくしゃ" data-meaning="复制，复印">複写</span>を依頼し、<span class="vocab-word" data-reading="とりよせる" data-meaning="索取，寄来">取り寄せる</span></div>
+                    <div class="section-content">
+                        本学図書館が他大学の図書館に複写を依頼し、取り寄せることができます。<br>
+                        <span class="ks-target target-q2">申し込みは、本学図書館受付、または本学図書館ホームページ上で行ってください。</span><br>
+                        <div class="note-line">注意：資料の複写料金、送料などは全額利用者<span class="vocab-word" data-reading="ふたん" data-meaning="负担">負担</span>となります。</div>
+                        <span class="ks-target target-q2">一度に依頼できる件数は５件までです。</span>
+                    </div>
+                </div>
+
+                <div class="article-translation">
+                    ② 委托其他大学图书馆复印，并将其寄来<br>
+                    本校图书馆可以向其他大学的图书馆委托复印，并索取寄来。<br>
+                    申请请在本校图书馆前台，或本校图书馆主页上进行。<br>
+                    注意：资料的复印费、邮费等全部由利用者负担。<br>
+                    一次可申请的数量上限为5件。
+                </div>
+
+                <div class="numbered-section">
+                    <div class="section-number-title" style="margin-top: 24px;">③ 他大学の図書館から<span class="vocab-word" data-reading="しゃくよう" data-meaning="借用">借用</span>した資料を見る</div>
+                    <div class="section-content">
+                        本学図書館が他大学の図書館から資料を一定の期間借用し、その資料を本学図書館内にて閲覧することができます。<br>
+                        申し込みは、本学図書館受付で行って下さい。<br>
+                        <div class="note-line ks-target target-q2">注意：資料の往復送料などは全額利用者負担となります。</div>
+                        <div class="note-line ks-target target-q2">本学図書館内での閲覧に限ります。貸出はできません。</div>
+                        借用可能な資料は、一人一点限りとなります。
+                    </div>
+                </div>
+                
+                <div class="article-translation">
+                    ③ 阅览从其他大学图书馆借用的资料<br>
+                    本校图书馆可以从其他大学图书馆借用资料一定期间，并在本校图书馆内阅览该资料。<br>
+                    申请请在本校图书馆前台进行。<br>
+                    注意：资料的往返邮费等全部由利用者负担。<br>
+                    仅限于在本校图书馆内阅览。无法外借。<br>
+                    可借用的资料，每人限1件。
+                </div>
+
+            </div>
+            
+        </main>
+
+        <!-- 下部：题目区域 -->
+        <aside class="question-section" id="quizForm">
+            
+            <!-- 问题 1 -->
+            <div class="question-card sketch-box" data-question="q1" id="q1-card">
+                <div class="q-header">
+                    <div class="q-number" style="background: var(--marker-blue);">1</div>
+                    <div class="q-text-wrapper">
+                        <div class="q-text">
+                            大森大学の学生のリンさんは、明日中に借りたい本がある。明日行ける図書館の中では、以下の４館が所蔵していることがわかったので、メモをした。リンさんが本を借りられるのは、次の方法のうちどれか。<br>
+                            <div class="source-jump-btn ks-theme-q1" onclick="jumpToTarget('q1')">
+                                <div class="ks-icon-text">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                                    <span>クリックしてポスター内の出処へ移動</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="q-text-trans">(大森大学的学生林同学，有想在明天之内借的书。在明天能去的图书馆中，了解到以下4个馆有收藏，所以做了笔记。林同学能借到书的是以下哪种方法？)</div>
+                    </div>
+                </div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1">
+                        <input type="radio" name="q1" value="1" class="option-input">
+                        <div class="custom-radio">1</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">学生証を持参して、長島大学図書館に行く。</div>
+                            <div class="option-trans">带上学生证，去长岛大学图书馆。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                    <label class="option-label" data-opt="2">
+                        <input type="radio" name="q1" value="2" class="option-input">
+                        <div class="custom-radio">2</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">今から紹介状を申請し、それを持参して、あおば大学図書館に行く。</div>
+                            <div class="option-trans">现在开始申请介绍信，然后带上它，去青叶大学图书馆。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                    <label class="option-label" data-opt="3">
+                        <input type="radio" name="q1" value="3" class="option-input">
+                        <div class="custom-radio">3</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">学生証を持参して、中山工業大学図書館に行く。</div>
+                            <div class="option-trans">带上学生证，去中山工业大学图书馆。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                    <label class="option-label" data-opt="4">
+                        <input type="radio" name="q1" value="4" class="option-input">
+                        <div class="custom-radio">4</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">今から紹介状を申請し、それを持参して、さくら大学図書館に行く。</div>
+                            <div class="option-trans">现在开始申请介绍信，然后带上它，去樱花大学图书馆。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 问题 2 -->
+            <div class="question-card sketch-box" data-question="q2" id="q2-card">
+                <div class="q-header">
+                    <div class="q-number" style="background: var(--marker-peach);">2</div>
+                    <div class="q-text-wrapper">
+                        <div class="q-text">
+                            大森大学の学生のロイさんは利用したい資料があるが、大森大学にはなかった。他大学に行く時間がないため、複写依頼か資料借用のサービスを利用しようと考えている。ロイさんが注意しなければならないこととして合っているのは、次のどれか。<br>
+                            <div class="source-jump-btn ks-theme-q2" onclick="jumpToTarget('q2')">
+                                <div class="ks-icon-text">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                                    <span>クリックしてポスター内の出処へ移動</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="q-text-trans">(大森大学的学生罗伊有想用的资料，但是大森大学没有。因为没有时间去其他大学，所以打算使用复印委托或资料借用的服务。作为罗伊必须要注意的事项，合适的是哪一项？)</div>
+                    </div>
+                </div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1">
+                        <input type="radio" name="q2" value="1" class="option-input">
+                        <div class="custom-radio">1</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">複写依頼は、資料を所蔵する大学のホームページから行わなければならない。</div>
+                            <div class="option-trans">复印委托，要在收藏该资料的大学的主页上进行。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                    <label class="option-label" data-opt="2">
+                        <input type="radio" name="q2" value="2" class="option-input">
+                        <div class="custom-radio">2</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">複写依頼は、一度に２件以上まとめて申し込むことはできない。</div>
+                            <div class="option-trans">复印委托，不能一次合并申请2件以上。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                    <label class="option-label" data-opt="3">
+                        <input type="radio" name="q2" value="3" class="option-input">
+                        <div class="custom-radio">3</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">資料の借用に必要な送料は、半額を自身が負担しなければならない。</div>
+                            <div class="option-trans">资料借用所需的邮费，自己要负担一半。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                    <label class="option-label" data-opt="4">
+                        <input type="radio" name="q2" value="4" class="option-input">
+                        <div class="custom-radio">4</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">借用した資料は、大森大学図書館内で閲覧しなければならない。</div>
+                            <div class="option-trans">借用的资料，要在大森大学图书馆内阅览。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 提交按钮 -->
+            <div class="action-bar">
+                <button type="button" class="submit-btn" id="submitBtn" onclick="submitAnswers()">答え合わせ</button>
+            </div>
+
+        </aside>
+
+    </div>
+
+    <!-- 词汇解释气泡 -->
+    <div id="vocabTooltip" class="vocab-tooltip"></div>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if(targetId === '#top') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+        });
+
+        function toggleTranslation(btn) {
+            if (!document.getElementById('mainArticleContent').classList.contains('reviewed')) {
+                alert("请先完成所有题目（点击「答え合わせ」提交），然后再查看译文哦！");
+                return;
+            }
+            
+            btn.classList.toggle('active');
+            const translations = document.querySelectorAll('.article-translation');
+            translations.forEach(el => {
+                el.classList.toggle('show');
+            });
+        }
+
+        const answerData = {
+            q1: { 
+                correct: "1", 
+                optAnalysis: {
+                    "1": "【✔ 正解】林同学想“明天之内借书”。长岛大学属于“协定学校”，根据表格，阅览和借出均为“可”。且前往协定学校只需“出示学生证（学生証の提示のみ）”，所以明天直接带学生证去即可借到书。",
+                    "2": "【✖ 排除】青叶大学（あおば）虽然是协定学校，但表格中显示其借出（貸出）为“不可”，因此无法借书。",
+                    "3": "【✖ 排除】中山工业大学是协定学校，但表格中显示其借出（貸出）为“不可”，因此无法借书。",
+                    "4": "【✖ 排除】樱花大学（さくら）不在协定学校列表中，属于“协定校以外”。前往非协定校需要申请介绍信，而介绍信发行需要约5天时间（発行まで約５日かかります），赶不上“明天之内”的要求。"
+                }
+            },
+            q2: { 
+                correct: "4", 
+                optAnalysis: {
+                    "1": "【✖ 排除】关于复印申请（複写依頼），②中提到申请途径是“本校图书馆前台，或本校图书馆主页（本学図書館受付、または本学図書館ホームページ上）”，而非资料所在大学的主页。",
+                    "2": "【✖ 排除】②中说明“一次可申请的数量上限为5件（一度に依頼できる件数は５件まで）”，并非不能一次申请2件以上。",
+                    "3": "【✖ 排除】③中说明，关于借用资料的往返邮费等，是“全额由使用者负担（全額利用者負担）”，并非负担半额。",
+                    "4": "【✔ 正解】③中明确规定，借用的资料“仅限于在本校图书馆内阅览（本学図書館内での閲覧に限ります）”，该选项内容相符。"
+                }
+            }
+        };
+
+        document.querySelectorAll('.option-input').forEach(input => {
+            input.addEventListener('change', function() {
+                if (document.getElementById('submitBtn').disabled) return;
+
+                const name = this.name;
+                document.querySelectorAll(`input[name="${name}"]`).forEach(radio => {
+                    radio.closest('.option-label').classList.remove('selected');
+                });
+                
+                if(this.checked) {
+                    this.closest('.option-label').classList.add('selected');
+                }
+            });
+        });
+
+        // 选项点击展示独立解析的逻辑
+        document.querySelectorAll('.option-label').forEach(label => {
+            label.addEventListener('click', function(e) {
+                const group = this.closest('.options-group');
+                if(group.classList.contains('reviewed')) {
+                    const detailBox = this.querySelector('.option-detail-analysis');
+                    if(detailBox.classList.contains('show')) {
+                        detailBox.classList.remove('show');
+                    } else {
+                        group.querySelectorAll('.option-detail-analysis').forEach(box => box.classList.remove('show'));
+                        detailBox.classList.add('show');
+                    }
+                }
+            });
+        });
+
+        const vocabTooltip = document.getElementById('vocabTooltip');
+        document.querySelectorAll('.vocab-word').forEach(word => {
+            word.addEventListener('click', function(e) {
+                if (!document.getElementById('mainArticleContent').classList.contains('reviewed')) return;
+                
+                e.stopPropagation();
+                const reading = this.getAttribute('data-reading');
+                const meaning = this.getAttribute('data-meaning');
+                
+                vocabTooltip.innerHTML = `<span class="reading">${reading}</span><span class="meaning">${meaning}</span>`;
+                
+                const rect = this.getBoundingClientRect();
+                const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+                const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+                
+                vocabTooltip.style.left = `${rect.left + scrollX - 10}px`;
+                vocabTooltip.style.top = `${rect.top + scrollY - vocabTooltip.offsetHeight - 10}px`;
+                
+                vocabTooltip.classList.add('show');
+                setTimeout(() => {
+                    vocabTooltip.style.top = `${rect.top + scrollY - vocabTooltip.offsetHeight - 10}px`;
+                }, 10);
+            });
+        });
+
+        document.addEventListener('click', function() {
+            vocabTooltip.classList.remove('show');
+        });
+        
+        // 跳转逻辑函数
+        window.jumpToTarget = function(qName) {
+            const targetArticleSpans = document.querySelectorAll(`.target-${qName}`);
+            if (targetArticleSpans.length > 0) {
+                targetArticleSpans[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                targetArticleSpans.forEach(span => {
+                    span.classList.add(`revealed-${qName}`);
+                    span.classList.remove('flash-focus');
+                    void span.offsetWidth; 
+                    span.classList.add('flash-focus');
+                });
+            }
+        };
+
+        function submitAnswers() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+
+            if (!q1 || !q2) {
+                alert("すべての問いに答えてください。（请回答所有問題）");
+                return;
+            }
+
+            const userAnswers = { q1: q1.value, q2: q2.value };
+            let score = 0;
+
+            document.querySelectorAll('.option-input').forEach(input => {
+                input.disabled = true;
+                input.closest('.option-label').classList.add('disabled'); 
+            });
+            
+            document.querySelectorAll('.options-group').forEach(group => {
+                group.classList.add('reviewed');
+            });
+
+            document.getElementById('mainArticleContent').classList.add('reviewed');
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+
+            Object.keys(answerData).forEach(qName => {
+                const qCard = document.querySelector(`.question-card[data-question="${qName}"]`);
+                qCard.classList.add('reviewed');
+
+                const data = answerData[qName];
+                const correctVal = data.correct;
+                const userVal = userAnswers[qName];
+
+                qCard.querySelectorAll('.option-label').forEach(label => {
+                    const input = label.querySelector('.option-input');
+                    const optVal = input.value;
+                    
+                    if (optVal === correctVal) {
+                        label.classList.add('is-correct');
+                        label.querySelector('.custom-radio').innerHTML = '✔';
+                    }
+                    if (optVal === userVal && userVal !== correctVal) {
+                        label.classList.add('is-wrong');
+                        label.querySelector('.custom-radio').innerHTML = '✖';
+                    }
+                    
+                    const detailBox = label.querySelector('.option-detail-analysis');
+                    if (detailBox) {
+                        detailBox.innerText = data.optAnalysis[optVal];
+                    }
+                });
+
+                if (userVal === correctVal) {
+                    score++;
+                }
+            });
+
+            if (score === 2) {
+                btn.innerText = "全問正解！素晴らしい！";
+                btn.style.background = "var(--marker-mint)";
+                btn.style.color = "var(--green-pencil)";
+            } else {
+                btn.innerText = `完了 (${score}/2 正解)`;
+                btn.style.background = "var(--marker-peach)";
+                btn.style.color = "var(--red-pencil)";
+            }
+        }
+    </script>
+
+    <script src="../../../../shared/study-quest-test-runtime.js"></script>
+    <script src="../../../../shared/study-quest-test-boot.js"></script>
+    <script src="../../shared/reading-year-system.js"></script>
+    <script src="../../shared/reading-tools.js"></script>
+    <script src="../../shared/reading-dt-year-session.js"></script>
+    <script src="../../shared/reading-user-highlights.js"></script>
+
+</body>
+</html>

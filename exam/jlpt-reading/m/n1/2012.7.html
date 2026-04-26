@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本語読解 - 2012年07月 中長文</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&display=swap');
+
+        :root {
+            --bg-color: #fdfaf5;
+            --paper-color: #ffffff;
+            --text-color: #2c2c2c;
+            --accent-color: #3b5998; 
+            --sub-color: #787878;
+            --note-bg: #f4f6f9; 
+            --chinese-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+            --japanese-font: 'Noto Serif JP', serif;
+            --underline-color: #2c2c2c;
+            --q-badge-color: #e67e22; 
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--japanese-font);
+            margin: 0;
+            padding: 80px 15px 120px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(253, 250, 245, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #today-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 500; }
+        .toggle-btn {
+            background: white; color: var(--accent-color); border: 1px solid var(--accent-color);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+            font-family: var(--chinese-font); cursor: pointer; transition: 0.3s;
+        }
+        @media (hover: hover) { .toggle-btn:hover { background: var(--accent-color); color: white; } }
+        .toggle-btn.active { background: var(--accent-color); color: white; }
+
+        .container {
+            max-width: 760px;
+            width: 100%;
+            background: var(--paper-color); padding: 50px 35px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-sizing: border-box; border-radius: 8px;
+        }
+
+        .page-content { display: none; animation: fadeIn 0.35s ease-out; }
+        .page-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .header-title { 
+            text-align: center; margin-top: 0; margin-bottom: 40px; 
+            font-size: 1.3rem; color: var(--text-color); border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .paragraph {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        p.japanese {
+            font-size: 1.15rem; line-height: 2.2; 
+            text-align: justify; margin: 0;
+            text-indent: 1em; 
+        }
+        ruby rt { font-size: 0.55em; color: var(--sub-color); letter-spacing: 0; }
+
+        .exam-underline {
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            text-decoration-thickness: 1.5px;
+            text-decoration-color: var(--underline-color);
+            position: relative;
+            padding-bottom: 2px;
+        }
+        
+        body.show-analysis .exam-underline {
+            background-color: rgba(231, 76, 60, 0.1); 
+            text-decoration-color: #e74c3c;
+        }
+
+        .analysis-element { display: none; }
+        body.show-analysis .analysis-element { display: block; }
+
+        .paragraph-analysis {
+            margin-top: 15px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            font-family: var(--chinese-font);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .para-role {
+            padding: 12px 18px;
+            background-color: rgba(59, 89, 152, 0.05);
+            border-bottom: 1px dashed #cbd5e1;
+            font-size: 0.9rem;
+            color: #334155;
+            line-height: 1.6;
+        }
+        .role-title {
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-right: 8px;
+            display: inline-flex;
+            align-items: center;
+        }
+        .para-translation {
+            padding: 15px 18px;
+            font-size: 0.95rem;
+            color: #475569;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        .trans-title {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: bold;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .key-sentence { transition: 0.3s ease; }
+        body.show-analysis .key-sentence { background-color: rgba(59, 89, 152, 0.06); border-bottom: 2px dashed #baccf1; cursor: pointer; border-radius: 3px; padding: 2px 0; }
+        body.show-analysis .key-sentence:hover { background-color: rgba(59, 89, 152, 0.12); }
+        body.show-analysis .key-sentence.active { background-color: rgba(216, 67, 21, 0.08); border-bottom-color: #e74c3c; }
+
+        .sentence-badge { display: none; }
+        body.show-analysis .sentence-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            background-color: var(--accent-color); color: white;
+            font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;
+            margin: 0 6px; vertical-align: middle;
+            font-family: var(--chinese-font); font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateY(-2px); transition: 0.3s;
+        }
+        body.show-analysis .sentence-badge.q-badge {
+            background-color: var(--q-badge-color);
+        }
+        body.show-analysis .key-sentence:hover .sentence-badge { transform: translateY(-2px) scale(1.05); }
+        body.show-analysis .key-sentence.active .sentence-badge { background-color: #e74c3c; }
+
+        .inline-note-container {
+            display: none; background-color: #fff; border-left: 4px solid #e74c3c;
+            padding: 15px 20px; margin: 15px 0 15px -1em; 
+            font-size: 0.95rem; color: #444; box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            font-family: var(--chinese-font); border-radius: 0 6px 6px 0;
+            text-indent: 0; line-height: 1.8; cursor: text;
+        }
+        .key-sentence.active .inline-note-container { display: block; }
+        .inline-note-title { font-weight: bold; color: #e74c3c; margin-bottom: 8px; font-size: 1rem; display: flex; align-items: center; }
+
+        .qa-container { margin-top: 50px; border-top: 2px solid #f0f0f0; padding-top: 20px; }
+        .qa-section { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px dashed #e2e8f0; font-family: var(--chinese-font); }
+        .qa-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        
+        .question-title { 
+            font-size: 1.1rem; color: var(--text-color); margin-bottom: 20px; 
+            font-weight: bold; font-family: var(--japanese-font); line-height: 1.8; 
+        }
+        .question-num-badge {
+            background-color: var(--accent-color); color: white;
+            font-size: 0.8rem; padding: 2px 8px; border-radius: 4px;
+            margin-right: 8px; font-family: var(--chinese-font);
+            white-space: nowrap; 
+            display: inline-block;
+            vertical-align: baseline;
+            position: relative;
+            top: -2px; 
+        }
+        
+        .option-item {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px;
+            cursor: pointer; transition: 0.2s; overflow: hidden;
+        }
+        .option-item:hover { border-color: var(--accent-color); box-shadow: 0 2px 10px rgba(59, 89, 152, 0.1); }
+        
+        body:not(.show-analysis) .option-item.answered-correct { border-color: #38a169; background-color: rgba(56, 161, 105, 0.05); }
+        body:not(.show-analysis) .option-item.answered-wrong { border-color: #e53e3e; background-color: rgba(229, 62, 62, 0.05); }
+        body:not(.show-analysis) .option-item.answered-correct .option-number::after { content: " ⭕"; font-size: 1rem; color: #38a169; }
+        body:not(.show-analysis) .option-item.answered-wrong .option-number::after { content: " ❌"; font-size: 1rem; color: #e53e3e; }
+        body.show-analysis .option-item.is-correct { border-left: 4px solid #38a169; }
+        body:not(.show-analysis) .option-content rt { display: none; }
+
+        /* 選択肢の番号とテキストが揃うように修正 */
+        .option-content { padding: 15px 20px; display: flex; align-items: flex-start; font-family: var(--japanese-font); line-height: 1.6; }
+        .option-number { font-weight: bold; color: var(--accent-color); margin-right: 15px; font-family: var(--chinese-font); white-space: nowrap; flex-shrink: 0; line-height: 1.6; }
+        .option-text-group { display: flex; flex-direction: column; line-height: 1.6; }
+        
+        .option-translation { display: none; font-size: 0.85rem; color: #718096; margin-top: 4px; font-family: var(--chinese-font); }
+        body.show-analysis .option-translation { display: block; }
+
+        .option-explanation {
+            display: none; padding: 15px 20px; background: #f8fafc; border-top: 1px dashed #e2e8f0;
+            font-size: 0.95rem; color: #4a5568; line-height: 1.7;
+        }
+        body.show-analysis .option-item.expanded .option-explanation { display: block; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; color: white; font-size: 0.8rem; font-weight: bold; margin-right: 8px; }
+        .badge.wrong { background: #e53e3e; }
+        .badge.correct { background: #38a169; }
+
+        .article-navigation { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 30px; border-top: 2px dashed #f0f0f0; }
+        .nav-btn { display: inline-flex; align-items: center; padding: 10px 20px; background: #ffffff; color: var(--accent-color); text-decoration: none; border-radius: 8px; font-size: 0.95rem; font-family: var(--chinese-font); font-weight: bold; transition: all 0.3s ease; border: 1px solid #d0dcf2; box-shadow: 0 2px 4px rgba(59, 89, 152, 0.05); cursor: pointer; }
+        .nav-btn:hover { background: var(--accent-color); color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(59, 89, 152, 0.15); }
+        .nav-btn.disabled { opacity: 0.5; pointer-events: none; background: #f8fafc; color: #a0aec0; border-color: #e2e8f0; box-shadow: none; }
+
+        .quick-nav-widget {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(6px);
+            padding: 12px 10px;
+            border-radius: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(59, 89, 152, 0.1);
+            z-index: 900;
+        }
+
+        .quick-nav-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--note-bg);
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-family: var(--chinese-font);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .quick-nav-item:hover {
+            background: var(--accent-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(59, 89, 152, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-group-title {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 2px;
+            margin-top: 4px;
+            font-family: var(--chinese-font);
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background: rgba(59, 89, 152, 0.15);
+            margin: 4px 0;
+            width: 100%;
+        }
+
+        .audio-wrapper { position: fixed; bottom: 0; left: 0; right: 0; z-index: 2000; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 15px 20px 25px 20px; display: flex; justify-content: center; border-top: 1px solid rgba(0,0,0,0.05); box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+        .audio-player { display: flex; align-items: center; width: 100%; max-width: 600px; }
+        .play-btn { width: 36px; height: 36px; border-radius: 50%; background-color: var(--accent-color); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 12px; flex-shrink: 0; transition: transform 0.2s; padding: 0; }
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .play-btn.playing svg { margin-left: 0; }
+        .progress-container { flex-grow: 1; height: 20px; display: flex; align-items: center; margin-right: 12px; cursor: pointer; position: relative; }
+        .progress-bg { width: 100%; height: 4px; background-color: #f0f0f0; border-radius: 2px; position: relative; }
+        .progress-bar { height: 100%; background-color: var(--accent-color); width: 0%; border-radius: 2px; position: relative; }
+        .progress-bar::after { content: ""; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background-color: white; border: 2px solid var(--accent-color); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .time-display { font-size: 0.7rem; color: #999; width: 70px; text-align: right; font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
+        .loop-btn { background: none; border: none; cursor: pointer; padding: 8px; margin-left: 8px; opacity: 0.5; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .loop-btn.active { opacity: 1; color: var(--accent-color); }
+        .loop-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        .speed-btn {
+            background: none; border: 1px solid #ccc; border-radius: 4px;
+            cursor: pointer; padding: 2px 6px; margin-left: 8px;
+            font-size: 0.75rem; color: #787878; transition: all 0.2s;
+            font-family: var(--chinese-font); font-variant-numeric: tabular-nums;
+            font-weight: 500;
+        }
+        .speed-btn.active {
+            color: var(--accent-color); border-color: var(--accent-color); background: rgba(59, 89, 152, 0.05);
+        }
+
+        @media (max-width: 1000px) {
+            .quick-nav-widget {
+                right: 15px;
+                transform: scale(0.85) translateY(-50%);
+                transform-origin: right center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 30px 20px 90px; }
+            p.japanese { text-indent: 0; } 
+            
+            .quick-nav-widget {
+                display: none;
+            }
+        }
+        
+        /* =========================================
+           1. 試験の公式注釈（解析モードオフ時に目立つ）
+           ========================================= */
+        body:not(.show-analysis) .exam-note {
+            border-bottom: 1px dashed #e74c3c;
+            cursor: help;
+            position: relative;
+            color: inherit;
+            transition: background-color 0.2s;
+            border-radius: 2px;
+            padding: 0 2px;
+        }
+        body:not(.show-analysis) .exam-note:hover {
+            background-color: rgba(231, 76, 60, 0.08);
+        }
+        body:not(.show-analysis) .exam-note::after {
+            content: '*注';
+            font-size: 0.65rem;
+            color: #e74c3c;
+            vertical-align: super;
+            margin-left: 2px;
+            font-weight: bold;
+            font-family: var(--chinese-font);
+        }
+        /* 解析モード時は公式注釈の強調を控えめに（同化させる） */
+        body.show-analysis .exam-note {
+            border-bottom: none;
+            cursor: text;
+        }
+        body.show-analysis .exam-note::after {
+            display: none;
+        }
+
+        /* =========================================
+           2. N1語彙解説（解析モード時のみ表示）
+           ========================================= */
+        .vocab-word {
+            transition: all 0.2s ease;
+        }
+        body.show-analysis .vocab-word {
+            background-color: rgba(16, 185, 129, 0.15); 
+            color: #059669; 
+            font-weight: bold; 
+            border-bottom: 2px dashed #10b981; 
+            cursor: help; 
+            position: relative;
+            padding: 2px 4px;
+            margin: 0 2px;
+            border-radius: 4px;
+            text-decoration: none; 
+        }
+        body.show-analysis .vocab-word:hover {
+            background-color: rgba(16, 185, 129, 0.25);
+            border-bottom-style: solid;
+        }
+        
+        /* ツールチップ（気泡）スタイル */
+        #global-tooltip {
+            position: fixed;
+            background-color: rgba(44, 44, 44, 0.95);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: var(--chinese-font);
+            pointer-events: none;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.2s ease, margin-top 0.2s ease;
+            transform: translate(-50%, -100%);
+            margin-top: 0;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        #global-tooltip.show {
+            opacity: 1;
+            margin-top: -8px;
+        }
+        #global-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -6px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: rgba(44, 44, 44, 0.95) transparent transparent transparent;
+        }
+        /* 注釈エリア */
+        .article-notes {
+            margin-top: 30px;
+            padding: 15px 20px;
+            background-color: #fcfcfc;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #555;
+            font-family: var(--japanese-font);
+            border: 1px solid #eee;
+        }
+        .article-notes .note-item {
+            margin-bottom: 5px;
+            line-height: 1.6;
+        }
+        .article-notes .note-mark {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+    </style>
+    <link rel="stylesheet" href="../../../../shared/site-fonts.css">
+    <link rel="stylesheet" href="../../shared/reading-tools.css">
+    <link rel="stylesheet" href="../../shared/reading-medium-tools.css">
+    <link rel="stylesheet" href="../../shared/reading-medium-copy-theme.css">
+    <link rel="stylesheet" href="../../shared/reading-unified-theme.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a id="back-to-reading-index" href="../../index.html?level=N1&type=middle" class="toggle-btn" style="text-decoration: none;">← 戻る</a>
+    <div id="today-date">N1 中篇</div>
+    <div class="top-bar-controls">
+        <button id="analysis-btn" class="toggle-btn" onclick="toggleAnalysis()">解析</button>
+    </div>
+</div>
+
+<div class="container">
+    <!-- PAGE 1: 会社人間の「その後」 -->
+    <div id="page-1" class="page-content active">
+        <h2 class="header-title">2012年07月 中篇（一）</h2>
+
+        <div class="article-content">
+            <!-- 段落 1 -->
+            <div class="paragraph" id="page1-para-1" data-para-id="1">
+                <p class="japanese">
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby>に<span class="vocab-word" data-meaning="防备，准备"><ruby>備<rt>そな</rt></ruby>えた</span><ruby>企<rt>き</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>の<ruby>研<rt>けん</rt></ruby><ruby>修<rt>しゅう</rt></ruby><ruby>資<rt>し</rt></ruby><ruby>料<rt>りょう</rt></ruby>に＜「<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>」－「<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>」＝？＞とあるのを<ruby>見<rt>み</rt></ruby>て、<ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby><span class="vocab-word" data-meaning="一心一意，全心全意"><ruby>一<rt>ひと</rt></ruby><ruby>筋<rt>すじ</rt></ruby></span>に<ruby>働<rt>はたら</rt></ruby>いてきた<ruby>人<rt>ひと</rt></ruby>には<ruby>厳<rt>きび</rt></ruby>しい<ruby>設<rt>せつ</rt></ruby><ruby>問<rt>もん</rt></ruby>だなぁ、と<ruby>思<rt>おも</rt></ruby>ったことがある。
+                        <span class="sentence-badge q-badge">問1の鍵（1）</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問1：「ゼロや」の意味とは？（背景）</span>
+                            本题探讨友人回答“是零啊”的具体含义。首先，作者在此处交代了背景：对于那些一心扑在公司上、全心全意工作的人来说，“自己－工作”这个问题非常残酷，因为他们的人生中除了工作似乎别无其他。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        引入话题。作者看到一个针对退休的测验题目：“自己 - 工作 = ？”并感叹，这对那些一生只顾着为公司工作的人来说，是一个非常残酷的问题。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        看到为了准备退休的企业研修资料上写着<“自己”－“工作”＝？>，我曾觉得，这对那些一心一意只为公司工作的人来说，真是个残酷的设问啊。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 2 -->
+            <div class="paragraph" id="page1-para-2" data-para-id="2">
+                <p class="japanese">
+                    <ruby>事<rt>じ</rt></ruby><ruby>実<rt>じつ</rt></ruby>、<ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby><ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>だった<ruby>大<rt>おお</rt></ruby><ruby>阪<rt>さか</rt></ruby>の<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>はこの<ruby>設<rt>せつ</rt></ruby><ruby>問<rt>もん</rt></ruby>に「ゼロや」と<ruby>苦<rt>く</rt></ruby><ruby>笑<rt>しょう</rt></ruby>して、<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>後<rt>ご</rt></ruby>の<ruby>近<rt>きん</rt></ruby><ruby>況<rt>きょう</rt></ruby>を<ruby>話<rt>はな</rt></ruby>す。
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        用具体案例来验证上一段的感叹：一位作为典型“公司人”的朋友，面对这个问题也只能苦笑着回答“是零啊”。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        事实上，作为“公司人”的大阪朋友，面对这个设问苦笑着回答“是零啊”，并谈起了退休后的近况。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 3 -->
+            <div class="paragraph" id="page1-para-3" data-para-id="3">
+                <p class="japanese">
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        「<ruby>女<rt>にょう</rt></ruby><ruby>房<rt>ぼう</rt></ruby>が<ruby>出<rt>で</rt></ruby><ruby>掛<rt>か</rt></ruby>けようとすると、ワシ（注）も<ruby>行<rt>い</rt></ruby>くと<ruby>言<rt>い</rt></ruby>うもんやから、<span class="vocab-word" data-meaning="完全地，彻底地">すっかり</span><span class="vocab-word" data-meaning="被讨厌，被嫌弃"><ruby>嫌<rt>いや</rt></ruby>がられて</span>るよ」
+                        <span class="sentence-badge q-badge">問1の鍵（2）/ 問2の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問1・問2：友人の状況と「ワシも族」の特徴</span>
+                            此处通过朋友的话说明了退休后（减去工作后）的真实状态：因为没事干，只要妻子一要出门，他就说“我也去”，结果被彻底嫌弃。
+                            对于【问1】，这印证了由于他以前完全以工作为中心，现在没了工作就无所事事（等于零）。
+                            对于【问2】，“我也去一族（ワシも族）”指的正是这类妻子一干点什么或出门时、丈夫非要跟着去的退休男人。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        借朋友之口，展现“减去工作等于零”的具体生活状态——因为无事可做，只能天天黏着妻子，反而招致嫌弃。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        “我老婆一要出门，我就说‘我也去’，结果被她给彻底嫌弃了哟。”
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 4 -->
+            <div class="paragraph" id="page1-para-4" data-para-id="4">
+                <p class="japanese">
+                    こういう<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>亭<rt>てい</rt></ruby><ruby>主<rt>しゅ</rt></ruby>を「<ruby>恐<rt>きょう</rt></ruby><ruby>怖<rt>ふ</rt></ruby>のワシも<ruby>族<rt>ぞく</rt></ruby>」と<ruby>言<rt>い</rt></ruby>うのだそうだが、<ruby>今<rt>いま</rt></ruby>や<span class="vocab-word" data-meaning="想必，一定">さぞかし</span>①<span class="exam-underline">「ワシも<ruby>族<rt>ぞく</rt></ruby>」</span>が<span class="vocab-word" data-meaning="蔓延，泛滥">はびこって</span>いることだろうと<span class="vocab-word" data-meaning="原以为...却"><ruby>思<rt>おも</rt></ruby>いきや</span>、ニッセイ<ruby>基<rt>き</rt></ruby><ruby>礎<rt>そ</rt></ruby><ruby>研<rt>けん</rt></ruby><ruby>究<rt>きゅう</rt></ruby><ruby>所<rt>しょ</rt></ruby>の「<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>前<rt>まえ</rt></ruby>・<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>後<rt>ご</rt></ruby>」という<ruby>本<rt>ほん</rt></ruby>にこんな<ruby>調<rt>ちょう</rt></ruby><ruby>査<rt>さ</rt></ruby><ruby>結<rt>けっ</rt></ruby><ruby>果<rt>か</rt></ruby>が<span class="vocab-word" data-meaning="收录"><ruby>収<rt>おさ</rt></ruby>められて</span>いた。<ruby>数<rt>すう</rt></ruby><ruby>字<rt>じ</rt></ruby>は<span class="vocab-word" data-meaning="省去，省略"><ruby>省<rt>はぶ</rt></ruby>く</span>が、<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>に<span class="vocab-word" data-meaning="生存的意义/动力"><ruby>生<rt>い</rt></ruby>きがい</span>を<ruby>持<rt>も</rt></ruby>っていた<ruby>人<rt>ひと</rt></ruby>のほうが、そうでない<ruby>人<rt>ひと</rt></ruby>より<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>後<rt>ご</rt></ruby>の<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby><ruby>活<rt>かつ</rt></ruby><ruby>動<rt>どう</rt></ruby>にもずっと<ruby>生<rt>い</rt></ruby>きがいを<ruby>感<rt>かん</rt></ruby>じているという<ruby>内<rt>ない</rt></ruby><ruby>容<rt>よう</rt></ruby>で、<span class="vocab-word" data-meaning="总之，简而言之"><ruby>要<rt>よう</rt></ruby>するに</span>、<ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby><ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>ほど<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>後<rt>ご</rt></ruby>も<ruby>意<rt>い</rt></ruby><ruby>欲<rt>よく</rt></ruby><ruby>的<rt>てき</rt></ruby>という<ruby>分<rt>ぶん</rt></ruby><ruby>析<rt>せき</rt></ruby>だ。
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        引入转折。作者原以为这类黏着妻子的“我也去一族”会非常多，但根据一份调查结果显示，那些以前越是对工作有热情、越是“公司人”的男性，退休后对社会活动反而越有干劲。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        听说这种退休后的丈夫被称为“恐怖的我也去一族”。我原以为现在“我也去一族”想必已经泛滥成灾了吧，然而，在日生基础研究所出版的《退休前·退休后》一书中却收录了这样的调查结果。虽然省略具体数字，但内容指出，对工作抱有生存意义的人，比那些不抱有此意义的人，在退休后的社会活动中也能感受到更多的生存意义。总之，分析认为越是“公司人”，在退休后反而越积极。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 5 -->
+            <div class="paragraph" id="page1-para-5" data-para-id="5">
+                <p class="japanese">
+                    <ruby>彼<rt>かれ</rt></ruby>らの<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby><ruby>活<rt>かつ</rt></ruby><ruby>動<rt>どう</rt></ruby>の<ruby>生<rt>い</rt></ruby>きがいは、<ruby>交<rt>こう</rt></ruby><ruby>友<rt>ゆう</rt></ruby><ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby>の<ruby>広<rt>ひろ</rt></ruby>がりによって<ruby>生<rt>う</rt></ruby>まれているようで、<ruby>植<rt>うえ</rt></ruby><ruby>木<rt>き</rt></ruby><ruby>職<rt>しょく</rt></ruby><ruby>人<rt>にん</rt></ruby>になったり、ＮＰＯやボランティア、<ruby>地<rt>ち</rt></ruby><ruby>域<rt>いき</rt></ruby><ruby>活<rt>かつ</rt></ruby><ruby>動<rt>どう</rt></ruby>に<span class="vocab-word" data-meaning="参与，从事"><ruby>携<rt>たずさ</rt></ruby>わって</span>いる<ruby>元<rt>もと</rt></ruby><ruby>銀<rt>ぎん</rt></ruby><ruby>行<rt>こう</rt></ruby><ruby>員<rt>いん</rt></ruby>をはじめ、<ruby>多<rt>た</rt></ruby><ruby>種<rt>しゅ</rt></ruby><ruby>多<rt>た</rt></ruby><ruby>様<rt>よう</rt></ruby>なケースがいろいろ<ruby>紹<rt>しょう</rt></ruby><ruby>介<rt>かい</rt></ruby>されている。
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        进一步列举具体案例，说明这些退休后的“公司人”是如何通过交友和各种社会活动（如志愿者、园林工等）来重新获得生活动力的。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        他们在社会活动中的生存意义，似乎是由交友关系的扩大而产生的。书中介绍了很多多种多样的案例，比如成了园林工匠的人，还有参与非营利组织、志愿者活动以及地区活动的前银行职员等等。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 6 -->
+            <div class="paragraph" id="page1-para-6" data-para-id="6">
+                <p class="japanese">
+                    <ruby>以<rt>い</rt></ruby><ruby>前<rt>ぜん</rt></ruby>、あれは<ruby>有<rt>ゆう</rt></ruby><ruby>力<rt>りょく</rt></ruby><ruby>銀<rt>ぎん</rt></ruby><ruby>行<rt>こう</rt></ruby>の<ruby>支<rt>し</rt></ruby><ruby>店<rt>てん</rt></ruby><ruby>長<rt>ちょう</rt></ruby>であったか、<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>退<rt>たい</rt></ruby><ruby>職<rt>しょく</rt></ruby>した<span class="vocab-word" data-meaning="刚一...就"><ruby>途<rt>と</rt></ruby><ruby>端<rt>たん</rt></ruby></span>、<ruby>年<rt>ねん</rt></ruby><ruby>賀<rt>が</rt></ruby><ruby>状<rt>じょう</rt></ruby>も<ruby>激<rt>げき</rt></ruby><ruby>減<rt>げん</rt></ruby>するなど<ruby>一<rt>いっ</rt></ruby><ruby>変<rt>ぺん</rt></ruby>した<ruby>状<rt>じょう</rt></ruby><ruby>況<rt>きょう</rt></ruby>に<span class="vocab-word" data-meaning="感觉到"><ruby>喪<rt>そう</rt></ruby><ruby>失<rt>しつ</rt></ruby><ruby>感<rt>かん</rt></ruby>を<ruby>覚<rt>おぼ</rt></ruby>え</span>、<ruby>自<rt>みずか</rt></ruby>ら<ruby>命<rt>いのち</rt></ruby>を<ruby>絶<rt>た</rt></ruby>ったという<ruby>話<rt>はなし</rt></ruby>を<ruby>聞<rt>き</rt></ruby>いたことがある。
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        提供反面案例。作者想起以前听说的一个极端例子：一位前银行行长因为退休后失去了一切职场联系（甚至连贺年卡都剧减），在巨大的丧失感中自杀了。这代表了人们过去对“公司人退休”的刻板印象。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        以前，好像是某个有实力的银行的分行行长吧，刚一退休，贺年卡就骤减。面对这种完全改变的状况，他感到了丧失感，最后自己结束了生命。我曾听说过这样的故事。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 7 -->
+            <div class="paragraph" id="page1-para-7" data-para-id="7">
+                <p class="japanese">
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        これなどは<ruby>極<rt>きょく</rt></ruby><ruby>端<rt>たん</rt></ruby>なケースだとしても、＜「<ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby>」のために<ruby>頑<rt>がん</rt></ruby><ruby>張<rt>ば</rt></ruby>る<ruby>価<rt>か</rt></ruby><ruby>値<rt>ち</rt></ruby><ruby>観<rt>かん</rt></ruby>は、「<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby>」のために<ruby>頑<rt>がん</rt></ruby><ruby>張<rt>ば</rt></ruby>る<ruby>価<rt>か</rt></ruby><ruby>値<rt>ち</rt></ruby><ruby>観<rt>かん</rt></ruby>と<span class="vocab-word" data-meaning="一致，吻合"><ruby>合<rt>がっ</rt></ruby><ruby>致<rt>ち</rt></ruby>する</span>かもしれない＞と<ruby>分<rt>ぶん</rt></ruby><ruby>析<rt>せき</rt></ruby>される<ruby>先<rt>さき</rt></ruby>の<ruby>調<rt>ちょう</rt></ruby><ruby>査<rt>さ</rt></ruby><ruby>結<rt>けっ</rt></ruby><ruby>果<rt>か</rt></ruby>などは、<ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby><ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>の「その<ruby>後<rt>ご</rt></ruby>」に②<span class="exam-underline"><ruby>新<rt>あたら</rt></ruby>しい<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>を<span class="vocab-word" data-meaning="带来，招致">もたらす</span></span>ものだろう。
+                        <span class="sentence-badge q-badge">問3の鍵</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問3：新しい視点とは何か？</span>
+                            本题探讨“带来新视角”的具体含义。前文提到一般认为一心为公司的人退休后会无所适从（如自杀或成为“我也去一族”），但调查结果却给出了反直觉的分析：「『会社』のために頑張る価値観は、『社会』のために頑張る価値観と合致するかもしれない」（为公司拼搏的价值观可能与为社会拼搏的价值观相吻合），也就是说，越是“公司人”，退休后越能把干劲转移到社会活动中。选项3恰当地概括了这一反转认知的新视角。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        总结全文。提出这种打破常规认知的“新视角”：为公司拼命的人，其价值观与为社会贡献的价值观是相通的，他们退休后同样能充满干劲地投入社会活动中。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        就算刚才那个是极端的例子，但前文那份分析认为“为‘公司’努力的价值观，可能与为‘社会’努力的价值观相吻合”的调查结果等，想必会为“公司人”的“那之后（退休生活）”带来②新的视角吧。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 注釈セクション（解析モードオフでも見られる用） -->
+            <div class="article-notes">
+                <div class="note-item"><span class="note-mark">（注）ワシ：</span>わたし</div>
+            </div>
+        </div>
+
+        <!-- 多个问题容器 -->
+        <div class="qa-container">
+            <!-- 问题 1 -->
+            <div class="qa-section question-block" data-q-id="1">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="1" aria-pressed="false" title="记题">問1</button>
+                        <span class="question-title-text"><ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>が、＜「<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>」－「<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>」＝？＞という<ruby>設<rt>せつ</rt></ruby><ruby>問<rt>もん</rt></ruby>に「ゼロや」と<ruby>答<rt>こた</rt></ruby>えたそうだが、それはどのような<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby>か。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span>その<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>はこれまで<ruby>一<rt>ひと</rt></ruby>つの<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>しかしてこなかったので、ほかの<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>は<ruby>全<rt>ぜん</rt></ruby><ruby>然<rt>ぜん</rt></ruby>できないという<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby></span>
+                            <span class="option-translation">那位朋友至今为止只做过一份工作，所以其他工作完全做不来。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        “零”在这里指的是生活中除了工作之外没有其他内容（无事可做），而不是指“缺乏从事其他工作的能力”。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span>その<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>は<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby><ruby>一<rt>ひと</rt></ruby><ruby>筋<rt>すじ</rt></ruby>に<ruby>生<rt>い</rt></ruby>きてきたので、これからも<ruby>家<rt>か</rt></ruby><ruby>族<rt>ぞく</rt></ruby>と<ruby>一<rt>いっ</rt></ruby><ruby>緒<rt>しょ</rt></ruby>に<ruby>何<rt>なに</rt></ruby>か<ruby>し<rt>し</rt></ruby><ruby>よう<rt>よう</rt></ruby>とは<ruby>考<rt>かんが</rt></ruby>えていないという<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby></span>
+                            <span class="option-translation">那位朋友一心扑在工作上，所以今后也不打算和家人一起做点什么。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        从第三段可以看出，他因为没事干，妻子想干什么时他反而总是想跟着去（「ワシも行く」），选项描述的“不打算和家人一起做什么”与事实正好相反。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span>その<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>は<ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>のすべてを<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby><ruby>中<rt>ちゅう</rt></ruby><ruby>心<rt>しん</rt></ruby>に<ruby>送<rt>おく</rt></ruby>ってきたので、<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>後<rt>ご</rt></ruby>は<ruby>何<rt>なに</rt></ruby>もすることがないという<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby></span>
+                            <span class="option-translation">那位朋友的生活完全以工作为中心，所以退休后无事可做。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        设问考察友人回答“零”的含义。定位到第一、二段，背景提到这道题对“一心扑在公司上的人”很残酷。身为“公司人”的朋友苦笑着回答“是零啊”，并在后续抱怨因为没事干总是跟着妻子。这就说明，这位朋友的生活完全以工作为中心，一旦退休（减去工作），生活就变成了空白，没有什么可做的事。选项3合理地表达了这一逻辑。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span>その<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>は<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>後<rt>ご</rt></ruby>に<ruby>生<rt>い</rt></ruby><ruby>きがい</rt></ruby>を<ruby>見<rt>み</rt></ruby>つけ、<ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby><ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>で<ruby>得<rt>え</rt></ruby>たものはゼロだったと<ruby>感<rt>かん</rt></ruby>じているという<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby></span>
+                            <span class="option-translation">那位朋友在退休后找到了生活意义，觉得公司生活中得到的东西等于零。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        因果倒置。公式的意思是“现在的自己减去过去的工作”，得出零意味着目前没有生活意义（只有过去的工作），而不是说过去的工作没有意义。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 问题 2 -->
+            <div class="qa-section question-block" data-q-id="2">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="2" aria-pressed="false" title="记题">問2</button>
+                        <span class="question-title-text">①<span class="exam-underline">「ワシも<ruby>族<rt>ぞく</rt></ruby>」</span>とは、どのような<ruby>人<rt>ひと</rt></ruby>たちのことか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>奥<rt>おく</rt></ruby>さんが<ruby>何<rt>なに</rt></ruby>か<ruby>し<rt>し</rt></ruby><ruby>よう<rt>よう</rt></ruby>とすると、なんでも<ruby>一<rt>いっ</rt></ruby><ruby>緒<rt>しょ</rt></ruby>にしたがる<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>後<rt>ご</rt></ruby>の<ruby>夫<rt>おっと</rt></ruby></span>
+                            <span class="option-translation">妻子一想做点什么，什么都想跟着一起做的退休丈夫。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题询问“我也去一族”指的是哪类人。紧接在划线词前的一句话给出了具体的描述：「女房が出掛けようとすると、ワシも行くと言うもんやから…」（妻子一要出门，他就说‘我也去’……）。由此可见，这类人就是指退休后无事可做，妻子想干点什么时总想跟着去的丈夫。选项1准确无误地还原了这一行为特征。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>奥<rt>おく</rt></ruby>さんばかりでなく、<ruby>家<rt>か</rt></ruby><ruby>族<rt>ぞく</rt></ruby>の<ruby>皆<rt>みな</rt></ruby>からも<ruby>嫌<rt>いや</rt></ruby>がられている<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>後<rt>ご</rt></ruby>の<ruby>父<rt>ちち</rt></ruby><ruby>親<rt>おや</rt></ruby></span>
+                            <span class="option-translation">不仅被妻子，也被全体家人嫌弃的退休父亲。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文并没有提及被“全体家人”嫌弃，“我也去一族”侧重的是他们想黏着妻子的行为特征，而不是被嫌弃的范围。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby>に<ruby>出<rt>で</rt></ruby><ruby>か</rt></ruby>けて<ruby>行<rt>い</rt></ruby>くよりも、<ruby>家<rt>いえ</rt></ruby>で<ruby>奥<rt>おく</rt></ruby>さんと<ruby>一<rt>いっ</rt></ruby><ruby>緒<rt>しょ</rt></ruby>にいるのが<ruby>好<rt>す</rt></ruby>きな<ruby>夫<rt>おっと</rt></ruby></span>
+                            <span class="option-translation">比起去公司上班，更喜欢和妻子待在家里的丈夫。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        这些人不是“喜欢待在家里”，而是因为已经退休、没有公司可去，无奈之下只好跟着妻子出门。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>退<rt>たい</rt></ruby><ruby>職<rt>しょく</rt></ruby><ruby>後<rt>ご</rt></ruby>、<ruby>自<rt>みずか</rt></ruby>ら<ruby>進<rt>すす</rt></ruby>んで<ruby>家<rt>か</rt></ruby><ruby>事<rt>じ</rt></ruby>や<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby><ruby>活<rt>かつ</rt></ruby><ruby>動<rt>どう</rt></ruby>に<ruby>積<rt>せっ</rt></ruby><ruby>極<rt>きょく</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>参<rt>さん</rt></ruby><ruby>加<rt>か</rt></ruby>したがる<ruby>夫<rt>おっと</rt></ruby></span>
+                            <span class="option-translation">退休后自愿积极参加家务和社会活动的丈夫。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        这是后文提到的那些“对社会活动充满干劲”的群体，而不是缺乏主见、只会说“我也去”的「ワシも族」。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 问题 3 -->
+            <div class="qa-section question-block" data-q-id="3">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="3" aria-pressed="false" title="记题">問3</button>
+                        <span class="question-title-text">②<span class="exam-underline"><ruby>新<rt>あたら</rt></ruby>しい<ruby>視<rt>し</rt></ruby><ruby>点<rt>てん</rt></ruby>をもたらす</span>とは、どのようなことか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>退<rt>たい</rt></ruby><ruby>職<rt>しょく</rt></ruby><ruby>後<rt>ご</rt></ruby>には<ruby>多<rt>た</rt></ruby><ruby>種<rt>しゅ</rt></ruby><ruby>多<rt>た</rt></ruby><ruby>様<rt>よう</rt></ruby>な<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>の<ruby>選<rt>せん</rt></ruby><ruby>択<rt>たく</rt></ruby><ruby>肢<rt>し</rt></ruby>があるから<ruby>明<rt>あか</rt></ruby>るいと<ruby>感<rt>かん</rt></ruby>じること</span>
+                            <span class="option-translation">因为退休后有多种多样的职业选项，让人感觉前途光明。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        文中提到的园林工、NPO志愿者等是“社会活动（社会活動）”，且重心并非强调“职业选项多”，而是强调公司人将拼搏的热情转移到了这些活动中。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby><ruby>中<rt>ちゅう</rt></ruby><ruby>心<rt>しん</rt></ruby>に<ruby>過<rt>す</rt></ruby>ごしてきた<ruby>人<rt>ひと</rt></ruby>ほど、<ruby>家<rt>いえ</rt></ruby>での<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>に<ruby>積<rt>せっ</rt></ruby><ruby>極<rt>きょく</rt></ruby><ruby>的<rt>てき</rt></ruby>になれること</span>
+                            <span class="option-translation">越是以公司为中心度过的人，对家里的事情就越积极。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        新视角指的是对“社会活动”变得积极，而不是对“家里的工作（家事等）”变得积极。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>会<rt>かい</rt></ruby><ruby>社<rt>しゃ</rt></ruby><ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>ほど<ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>後<rt>ご</rt></ruby>の<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby><ruby>活<rt>かつ</rt></ruby><ruby>動<rt>どう</rt></ruby>に<ruby>意<rt>い</rt></ruby><ruby>欲<rt>よく</rt></ruby><ruby>的<rt>てき</rt></ruby>であるととらえられること</span>
+                            <span class="option-translation">被认为越是公司人，在退休后的社会活动中就越有热情。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题探讨“带来新视角”的具体含义。前文提到一般认为一心为公司的人退休后会无所适从（如自杀或成为“我也去一族”），但调查结果却给出了反直觉的分析：「『会社』のために頑張る価値観は、『社会』のために頑張る価値観と合致するかもしれない」（为公司拼搏的价值观可能与为社会拼搏的价值观相吻合），也就是说，越是“公司人”，退休后越能把干劲转移到社会活动中。选项3恰当地概括了这一反转认知的新视角。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>定<rt>てい</rt></ruby><ruby>年<rt>ねん</rt></ruby><ruby>後<rt>ご</rt></ruby>に<ruby>生<rt>い</rt></ruby><ruby>きがい</rt></ruby>がない<ruby>人<rt>ひと</rt></ruby>でも、<ruby>社<rt>しゃ</rt></ruby><ruby>会<rt>かい</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>活<rt>かつ</rt></ruby><ruby>動<rt>どう</rt></ruby>には<ruby>期<rt>き</rt></ruby><ruby>待<rt>たい</rt></ruby>できること</span>
+                            <span class="option-translation">即使是退休后没有生活意义的人，在社会活动方面也是值得期待的。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        调查结果针对的是“以前对工作有热情的人（仕事に生きがいを持っていた人）”，而不是指原本就没有生活意义的人。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- PAGE 2: レース車開発の魅力 -->
+    <div id="page-2" class="page-content">
+        <h2 class="header-title">2012年07月 中篇（二）</h2>
+
+        <div class="article-content">
+            <!-- 段落 1 -->
+            <div class="paragraph" id="page2-para-1" data-para-id="1">
+                <p class="japanese">
+                    <ruby>技<rt>ぎ</rt></ruby><ruby>術<rt>じゅつ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>にとってレース<ruby>車<rt>しゃ</rt></ruby>を<ruby>開<rt>かい</rt></ruby><ruby>発<rt>はつ</rt></ruby>するというのは、<ruby>非<rt>ひ</rt></ruby><ruby>常<rt>じょう</rt></ruby>に<ruby>魅<rt>み</rt></ruby><ruby>力<rt>りょく</rt></ruby>があるようなのだ。
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        引入话题。指出对于技术人员来说，开发赛车似乎具有极大的魅力。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        对技术人员来说，开发赛车似乎具有极大的魅力。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 2 -->
+            <div class="paragraph" id="page2-para-2" data-para-id="2">
+                <p class="japanese">
+                    それはそうだろう。<ruby>市<rt>し</rt></ruby><ruby>販<rt>はん</rt></ruby><ruby>車<rt>しゃ</rt></ruby>の<ruby>開<rt>かい</rt></ruby><ruby>発<rt>はつ</rt></ruby>であれば、コストのことや<ruby>工<rt>こう</rt></ruby><ruby>場<rt>じょう</rt></ruby>のことを<ruby>考<rt>かんが</rt></ruby>えなければいけないので、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>考<rt>かんが</rt></ruby>え<ruby>出<rt>だ</rt></ruby>した<ruby>創<rt>そう</rt></ruby><ruby>意<rt>い</rt></ruby><ruby>工<rt>く</rt></ruby><ruby>夫<rt>ふう</rt></ruby>を<ruby>必<rt>かなら</rt></ruby>ずしも<ruby>反<rt>はん</rt></ruby><ruby>映<rt>えい</rt></ruby>できるわけではない。いいモデルを<ruby>出<rt>だ</rt></ruby>したからといって、<ruby>営<rt>えい</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>の<ruby>力<rt>りょく</rt></ruby>が<ruby>弱<rt>よわ</rt></ruby>ければ<ruby>売<rt>う</rt></ruby>れるとは<ruby>限<rt>かぎ</rt></ruby>らない（<ruby>少<rt>すく</rt></ruby>なくとも、<ruby>多<rt>おお</rt></ruby>くの<ruby>開<rt>かい</rt></ruby><ruby>発<rt>はつ</rt></ruby><ruby>技<rt>ぎ</rt></ruby><ruby>術<rt>じゅつ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>はそう<ruby>思<rt>おも</rt></ruby>って<span class="exam-note" data-meaning="【注】ここでは、悔しく思う"><ruby>歯<rt>は</rt></ruby><ruby>軋<rt>ぎし</rt></ruby>り</span>をしているに<ruby>違<rt>ちが</rt></ruby>いない）。しかし、レース<ruby>車<rt>しゃ</rt></ruby>であれば、ある<ruby>程<rt>てい</rt></ruby><ruby>度<rt>ど</rt></ruby>、<ruby>採<rt>さい</rt></ruby><ruby>算<rt>さん</rt></ruby><ruby>無<rt>む</rt></ruby><ruby>視<rt>し</rt></ruby>で<ruby>色<rt>いろ</rt></ruby>んなことにトライできる。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <ruby>何<rt>なに</rt></ruby>よりも、<ruby>営<rt>えい</rt></ruby><ruby>業<rt>ぎょう</rt></ruby><ruby>力<rt>りょく</rt></ruby>とか<ruby>他<rt>ほか</rt></ruby>の<ruby>要<rt>よう</rt></ruby><ruby>素<rt>そ</rt></ruby>に<span class="vocab-word" data-meaning="被妨碍，被阻碍"><ruby>邪<rt>じゃ</rt></ruby><ruby>魔<rt>ま</rt></ruby>される</span>ことなく、<span class="exam-underline">①どんな<ruby>大<rt>だい</rt></ruby>メーカーを<ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>にも<ruby>対<rt>たい</rt></ruby><ruby>等<rt>とう</rt></ruby>に<ruby>優<rt>ゆう</rt></ruby><ruby>劣<rt>れつ</rt></ruby>を<ruby>争<rt>あらそ</rt></ruby>うことができる</span>わけだ。
+                        <span class="sentence-badge q-badge">問1の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問1：なぜ対等に争えるのか？</span>
+                            本题探讨为什么在赛车领域“无论面对多大的制造商都能平等竞争”。原句直接说明了原因：因为“不会被营业能力或其他因素（如成本、工厂情况）所阻碍（邪魔されることなく）”。正是排除了这些干扰因素，技术人员才能依靠纯粹的技术与大制造商公平竞争。选项4合理地概括了这一因果关系。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        市售车开发与赛车开发的对比。市售车开发会受到成本、工厂和营业能力的制约，而赛车开发在一定程度上可以无视核算，排除干扰因素，凭借纯粹的技术实力与大厂平等竞争。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        那也是理所当然的。如果是开发市售车，就必须考虑成本和工厂的情况，因此自己想出的创意未必都能反映出来。就算推出了好的车型，如果营业能力弱，也不一定能卖得出去（至少，许多开发技术人员肯定是这么认为并为此咬牙切齿的）。但是，如果是赛车的话，在某种程度上可以无视核算，去尝试各种各样的事情。最重要的是，不会被营业能力或其他因素所阻碍，①无论面对多么大的制造商，都能平等地一决高下。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 3 -->
+            <div class="paragraph" id="page2-para-3" data-para-id="3">
+                <p class="japanese">
+                    <ruby>逆<rt>ぎゃく</rt></ruby>にいうと、<ruby>言<rt>い</rt></ruby>い<ruby>訳<rt>わけ</rt></ruby>のない<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby>でもある。<ruby>敵<rt>てき</rt></ruby>よりコンマ1<ruby>秒<rt>びょう</rt></ruby>でも<span class="vocab-word" data-meaning="落后"><ruby>遅<rt>おく</rt></ruby>れをとれば</span><ruby>負<rt>ま</rt></ruby>けるのだ。そして、それは、はっきりとその<ruby>場<rt>ば</rt></ruby>で<ruby>目<rt>め</rt></ruby>に<ruby>見<rt>み</rt></ruby>える。（<ruby>中<rt>ちゅう</rt></ruby><ruby>略<rt>りゃく</rt></ruby>）
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        指出赛车开发世界的严酷性。这是一个纯粹追求速度、没有任何借口的残酷世界。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        反过来说，这也是一个没有借口的世界。只要比对手落后零点一秒就会输。而且，这在现场是清清楚楚能看到的。（中略）
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 4 -->
+            <div class="paragraph" id="page2-para-4" data-para-id="4">
+                <p class="japanese">
+                    <ruby>目<rt>もく</rt></ruby><ruby>標<rt>ひょう</rt></ruby><ruby>設<rt>せつ</rt></ruby><ruby>定<rt>てい</rt></ruby>も<ruby>単<rt>たん</rt></ruby><ruby>純<rt>じゅん</rt></ruby>だ。<ruby>市<rt>し</rt></ruby><ruby>販<rt>はん</rt></ruby><ruby>車<rt>しゃ</rt></ruby><ruby>開<rt>かい</rt></ruby><ruby>発<rt>はつ</rt></ruby>なら、<ruby>時<rt>とき</rt></ruby>にはアメリカと<ruby>欧<rt>おう</rt></ruby><ruby>州<rt>しゅう</rt></ruby>の<ruby>両<rt>りょう</rt></ruby><ruby>市<rt>し</rt></ruby><ruby>場<rt>じょう</rt></ruby>で<ruby>売<rt>う</rt></ruby>れる<ruby>車<rt>くるま</rt></ruby>を<ruby>作<rt>つく</rt></ruby>ってくれと<ruby>営<rt>えい</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>から<ruby>要<rt>よう</rt></ruby><ruby>求<rt>きゅう</rt></ruby>されたりする。そこでは<ruby>技<rt>ぎ</rt></ruby><ruby>術<rt>じゅつ</rt></ruby><ruby>的<rt>てき</rt></ruby>に<span class="vocab-word" data-meaning="不得不妥协"><ruby>妥<rt>だ</rt></ruby><ruby>協<rt>きょう</rt></ruby>せざるを<ruby>得<rt>え</rt></ruby>ない</span>が、レースは<ruby>絶<rt>ぜっ</rt></ruby><ruby>対<rt>たい</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>速<rt>はや</rt></ruby>さだけを<ruby>目<rt>め</rt></ruby><ruby>指<rt>ざ</rt></ruby>せばいいのだ。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        その<ruby>代<rt>か</rt></ruby>わり、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>実<rt>じつ</rt></ruby><ruby>力<rt>りょく</rt></ruby>が<ruby>今<rt>いま</rt></ruby>どうであれ、<ruby>敵<rt>てき</rt></ruby>の<ruby>車<rt>くるま</rt></ruby>が75<ruby>秒<rt>びょう</rt></ruby>で（注2）サーキットを1<ruby>周<rt>しゅう</rt></ruby>していれば、それより<ruby>速<rt>はや</rt></ruby>いタイムで<ruby>走<rt>はし</rt></ruby>る<ruby>車<rt>くるま</rt></ruby>をつくらないと<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby>がないのだ。<span class="exam-underline">②<ruby>出<rt>で</rt></ruby><ruby>来<rt>き</rt></ruby>る、<ruby>出<rt>で</rt></ruby><ruby>来<rt>き</rt></ruby>ないを<ruby>論<rt>ろん</rt></ruby>じる<ruby>余<rt>よ</rt></ruby><ruby>地<rt>ち</rt></ruby>は<ruby>全<rt>まった</rt></ruby>くない</span>。
+                        <span class="sentence-badge q-badge">問2の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問2：「出来る、出来ない」とは何のことか？</span>
+                            本题要求明确“做得到还是做不到”具体指的是什么。根据前一句的内容：“无论自己现在的实力如何，如果对手的车跑一圈需要75秒，如果不造出比它跑得更快时间的车就没有意义”。紧接着的“完全没有讨论做得到或做不到的余地”正是针对这一严苛的现实而言的，即没有讨价还价的余地，必须造出比竞争对手跑得更快的车。选项3准确还原了这一内容。
+                        </span>
+                    </span>
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        また、お<ruby>分<rt>わ</rt></ruby>かりのように、<ruby>他<rt>た</rt></ruby>チームの<ruby>車<rt>くるま</rt></ruby>の<ruby>真<rt>ま</rt></ruby><ruby>似<rt>ね</rt></ruby>だけをしていれば、<ruby>決<rt>けっ</rt></ruby>して「<ruby>最<rt>さい</rt></ruby><ruby>速<rt>そく</rt></ruby>」にはならないのも<ruby>真<rt>しん</rt></ruby><ruby>実<rt>じつ</rt></ruby>なのだ。
+                        <span class="sentence-badge q-badge">問3の鍵</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問3：レース車開発が魅力的な理由</span>
+                            这是一道全文主旨题。综合全文的对比结构：开发市售车时，技术人员会受到成本和营业等因素的干扰，甚至不得不做出技术妥协；而开发赛车时，可以排除这些干扰，“目标设定也很单纯”，只需追求绝对的速度。这意味着，他们可以不受阻碍地朝着明确的目标集中精力进行开发。选项3完美地提炼了这一核心魅力。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        赛车开发目标的单纯性与严苛性。只需追求绝对的速度，面对对手的成绩，只有造出更快的车才有意义，没有任何讨论做得到或做不到的余地。这也是技术人员能集中精力进行开发的魅力所在。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        目标设定也很单纯。如果是市售车开发，有时会被营业部门要求制造出能在美国和欧洲两大市场都畅销的车。在那里在技术上不得不妥协，但赛车只需追求绝对的速度即可。取而代之的是，无论自己现在的实力如何，如果对手的车绕赛道跑一圈是75秒，那么如果不造出能以更快时间跑完的车就没有意义。②完全没有讨论做得到还是做不到的余地。另外，大家也明白，如果只是模仿其他车队的车，是绝对成不了“最快”的，这也是事实。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 注釈セクション（解析モードオフでも見られる用） -->
+            <div class="article-notes">
+                <div class="note-item"><span class="note-mark">（注1）歯軋（はぎし）りをする：</span>ここでは、悔しく思う</div>
+                <div class="note-item"><span class="note-mark">（注2）サーキット：</span>レース用のコース</div>
+            </div>
+        </div>
+
+        <!-- 多个问题容器 -->
+        <div class="qa-container">
+            <!-- 问题 1 -->
+            <div class="qa-section question-block" data-q-id="1">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="1" aria-pressed="false" title="记题">問1</button>
+                        <span class="question-title-text">①<span class="exam-underline">どんな<ruby>大<rt>だい</rt></ruby>メーカーを<ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>にも<ruby>対<rt>たい</rt></ruby><ruby>等<rt>とう</rt></ruby>に<ruby>優<rt>ゆう</rt></ruby><ruby>劣<rt>れつ</rt></ruby>を<ruby>争<rt>あらそ</rt></ruby>うことができる</span>とあるが、なぜか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>創<rt>そう</rt></ruby><ruby>意<rt>い</rt></ruby><ruby>工<rt>く</rt></ruby><ruby>夫<rt>ふう</rt></ruby>する<ruby>力<rt>ちから</rt></ruby>さえあれば<ruby>売<rt>う</rt></ruby>れる<ruby>車<rt>くるま</rt></ruby>がつくれるから</span>
+                            <span class="option-translation">因为只要有创意工夫的能力就能造出卖得出去的车。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        “卖得出去”是开发市售车时的标准，而赛车的魅力恰恰在于不需要受营业（卖不卖得出去）的干扰。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>性<rt>せい</rt></ruby><ruby>能<rt>のう</rt></ruby>さえよければ<ruby>採<rt>さい</rt></ruby><ruby>算<rt>さん</rt></ruby>の<ruby>とれる</rt></ruby>レース<ruby>車<rt>しゃ</rt></ruby>がつくれるから</span>
+                            <span class="option-translation">因为只要性能好就能造出有核算（能盈利）的赛车。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文提到开发赛车在某种程度上是“无视核算（採算無視）”的，选项表述与原文相悖。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>営<rt>えい</rt></ruby><ruby>業<rt>ぎょう</rt></ruby><ruby>力<rt>りょく</rt></ruby>に<ruby>邪<rt>じゃ</rt></ruby><ruby>魔<rt>ま</rt></ruby>されずに<ruby>価<rt>か</rt></ruby><ruby>格<rt>かく</rt></ruby>で<ruby>勝<rt>しょう</rt></ruby><ruby>負<rt>ぶ</rt></ruby>できる<ruby>車<rt>くるま</rt></ruby>がつくれるから</span>
+                            <span class="option-translation">因为能造出不受营业能力阻碍、靠价格取胜的车。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        赛车是不看重成本和核算的，当然也不是“靠价格取胜（価格で勝負できる）”的。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span>コストなどの<ruby>要<rt>よう</rt></ruby><ruby>素<rt>そ</rt></ruby>に<ruby>影<rt>えい</rt></ruby><ruby>響<rt>きょう</rt></ruby>されずにレースで<ruby>競<rt>きそ</rt></ruby>える<ruby>車<rt>くるま</rt></ruby>がつくれるから</span>
+                            <span class="option-translation">因为能造出不受成本等因素影响、在比赛中竞争的车。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题探讨为什么在赛车领域“无论面对多大的制造商都能平等竞争”。回到第二段分析，作者指出开发市售车时会受到成本、工厂条件和营业能力等因素的制约。而开发赛车时，“不会被营业能力或其他因素所阻碍（営業力とか他の要素に邪魔されることなく）”。正是排除了这些干扰因素，技术人员才能依靠纯粹的技术与大制造商公平竞争。选项4合理地概括了这一因果关系。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 问题 2 -->
+            <div class="qa-section question-block" data-q-id="2">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="2" aria-pressed="false" title="记题">問2</button>
+                        <span class="question-title-text">②<span class="exam-underline"><ruby>出<rt>で</rt></ruby><ruby>来<rt>き</rt></ruby>る、<ruby>出<rt>で</rt></ruby><ruby>来<rt>き</rt></ruby>ない</span>とあるが、<ruby>何<rt>なに</rt></ruby>が<ruby>出<rt>で</rt></ruby><ruby>来<rt>き</rt></ruby>る、<ruby>出<rt>で</rt></ruby><ruby>来<rt>き</rt></ruby>ないのか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>自<rt>じ</rt></ruby><ruby>社<rt>しゃ</rt></ruby>の<ruby>最<rt>さい</rt></ruby><ruby>高<rt>こう</rt></ruby>タイムを<ruby>次<rt>つぎ</rt></ruby>レースで<span class="vocab-word" data-meaning="超过，超出"><ruby>上<rt>うわ</rt></ruby><ruby>回<rt>まわ</rt></ruby>る</span>こと</span>
+                            <span class="option-translation">在下一场比赛中超过本公司的最高纪录。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文说的是超越“对手的车（敵の車）”，而不是自我超越（本公司的最高纪录）。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>技<rt>ぎ</rt></ruby><ruby>術<rt>じゅつ</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>妥<rt>だ</rt></ruby><ruby>協<rt>きょう</rt></ruby>するしかない<ruby>場<rt>ば</rt></ruby><ruby>合<rt>あい</rt></ruby>には<ruby>妥<rt>だ</rt></ruby><ruby>協<rt>きょう</rt></ruby>すること</span>
+                            <span class="option-translation">在技术上只能妥协的情况下进行妥协。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        在技术上妥协是“开发市售车（市販車開発）”时的情况，赛车开发追求的是绝对的速度。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span>ライバル<ruby>社<rt>しゃ</rt></ruby>より<ruby>少<rt>すこ</rt></ruby>しでも<ruby>速<rt>はや</rt></ruby>く<ruby>走<rt>はし</rt></ruby>れる<ruby>車<rt>くるま</rt></ruby>をつくること</span>
+                            <span class="option-translation">制造出哪怕比竞争对手快一点点的车。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        本题要求明确“做得到还是做不到”具体指的是什么。根据划线句前文的内容：“无论自己现在的实力如何，如果对手的车跑一圈需要75秒，如果不造出比它跑得更快时间的车就没有意义”。紧接着的“完全没有讨论做得到或做不到的余地”正是针对这一严苛的现实而言的，即必须造出比竞争对手跑得更快的车。选项3准确还原了这一内容。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span>アメリカや<ruby>欧<rt>おう</rt></ruby><ruby>州<rt>しゅう</rt></ruby>のレースでいい<ruby>成<rt>せい</rt></ruby><ruby>績<rt>せき</rt></ruby>を<span class="vocab-word" data-meaning="取得（好成绩）"><ruby>収<rt>おさ</rt></ruby>める</span>こと</span>
+                            <span class="option-translation">在美国或欧洲的比赛中取得好成绩。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        “美国和欧洲市场”是前文举出的开发市售车时的目标，并不是赛车的目标。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 问题 3 -->
+            <div class="qa-section question-block" data-q-id="3">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="3" aria-pressed="false" title="记题">問3</button>
+                        <span class="question-title-text">この<ruby>文<rt>ぶん</rt></ruby><ruby>章<rt>しょう</rt></ruby>によると、レース<ruby>車<rt>しゃ</rt></ruby>の<ruby>開<rt>かい</rt></ruby><ruby>発<rt>はつ</rt></ruby>は、<ruby>技<rt>ぎ</rt></ruby><ruby>術<rt>じゅつ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>にとってなぜ<ruby>魅<rt>み</rt></ruby><ruby>力<rt>りょく</rt></ruby><ruby>的<rt>てき</rt></ruby>なのか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>高<rt>たか</rt></ruby>い<ruby>技<rt>ぎ</rt></ruby><ruby>術<rt>じゅつ</rt></ruby><ruby>力<rt>りょく</rt></ruby>が<ruby>示<rt>しめ</rt></ruby>せれば<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby>で<ruby>認<rt>みと</rt></ruby>められるから</span>
+                            <span class="option-translation">因为如果能展现出高超的技术力，就会被世界认可。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文并没有提及开发赛车是为了“被世界认可”，这属于过度发散。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>自<rt>じ</rt></ruby><ruby>社<rt>しゃ</rt></ruby>が<ruby>持<rt>も</rt></ruby>っている<ruby>技<rt>ぎ</rt></ruby><ruby>術<rt>じゅつ</rt></ruby><ruby>力<rt>りょく</rt></ruby>の<ruby>高<rt>たか</rt></ruby>さを<ruby>証<rt>しょう</rt></ruby><ruby>明<rt>めい</rt></ruby>できるから</span>
+                            <span class="option-translation">因为能够证明本公司所拥有的技术实力之高。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        题目探讨的是赛车开发“对于技术人员”的魅力，而不是为了证明“本公司”的技术实力。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>明<rt>めい</rt></ruby><ruby>確<rt>かく</rt></ruby>な<ruby>目<rt>もく</rt></ruby><ruby>標<rt>ひょう</rt></ruby>に<ruby>向<rt>む</rt></ruby>かって<ruby>開<rt>かい</rt></ruby><ruby>発<rt>はつ</rt></ruby>だけに<ruby>集<rt>しゅう</rt></ruby><ruby>中<rt>ちゅう</rt></ruby>できるから</span>
+                            <span class="option-translation">因为能够朝着明确的目标，只专注于开发。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        这是一道全文主旨题，探讨赛车开发对技术人员的魅力所在。综合全文的对比结构：开发市售车时，技术人员会受到成本和营业部门等因素的干扰，甚至不得不做出技术妥协；而开发赛车时，可以排除这些干扰，“目标设定也很单纯（目標設定も単純だ）”，只需追求绝对的速度。这意味着，他们可以不受阻碍地朝着明确的目标集中精力进行开发。选项3完美地提炼了这一核心魅力。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>開<rt>かい</rt></ruby><ruby>発<rt>はつ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>としての<ruby>実<rt>じつ</rt></ruby><ruby>力<rt>りょく</rt></ruby>が<ruby>大<rt>だい</rt></ruby>メーカーからも<ruby>評<rt>ひょう</rt></ruby><ruby>価<rt>か</rt></ruby>されるから</span>
+                            <span class="option-translation">因为作为开发者的实力也能得到大制造商的评价。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文是说能“和大制造商平等竞争（大メーカーを相手にも対等に優劣を争う）”，并不是为了得到大厂的评价。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- PAGE 3: 柳田国男の空想と想像 -->
+    <div id="page-3" class="page-content">
+        <h2 class="header-title">2012年07月 中篇（三）</h2>
+
+        <div class="article-content">
+            <!-- 段落 1 -->
+            <div class="paragraph" id="page3-para-1" data-para-id="1">
+                <p class="japanese">
+                    わが<ruby>国<rt>くに</rt></ruby>の<ruby>文<rt>ぶん</rt></ruby><ruby>章<rt>しょう</rt></ruby>の<ruby>書<rt>か</rt></ruby>き<ruby>手<rt>て</rt></ruby>として、<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>・<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>するという<ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>をもっともよく<ruby>使<rt>つか</rt></ruby>ったのは、おそらく<ruby>柳<rt>やなぎ</rt></ruby><ruby>田<rt>た</rt></ruby><ruby>国<rt>くに</rt></ruby><ruby>男<rt>お</rt></ruby>であろう。<ruby>民<rt>みん</rt></ruby><ruby>衆<rt>しゅう</rt></ruby>に<ruby>伝<rt>つた</rt></ruby>えられる<ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>の<ruby>慣<rt>かん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>、<ruby>用<rt>よう</rt></ruby><ruby>具<rt>ぐ</rt></ruby>などに<ruby>残<rt>のこ</rt></ruby>る<span class="vocab-word" data-meaning="线索，头绪"><ruby>手<rt>て</rt></ruby>がかり</span>をつうじて、なつかしい<span class="exam-note" data-meaning="【注】ここでは、古い時代"><ruby>古<rt>こ</rt></ruby><ruby>層<rt>そう</rt></ruby></span>へと<span class="vocab-word" data-meaning="追寻，探索"><ruby>たどる</rt></ruby></span><ruby>民<rt>みん</rt></ruby><ruby>俗<rt>ぞく</rt></ruby><ruby>学<rt>がく</rt></ruby>の、わが<ruby>国<rt>くに</rt></ruby>での<ruby>開<rt>かい</rt></ruby><ruby>拓<rt>たく</rt></ruby><ruby>者<rt>しゃ</rt></ruby>として、<ruby>柳<rt>やなぎ</rt></ruby><ruby>田<rt>た</rt></ruby>にはこの<ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>がきわめてたいせつなものであった。
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        介绍柳田国男在民俗学中对“想象”一词的重视。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        作为我国文章的写作者，最常使用“想象·去想象”这个词的，恐怕就是柳田国男了。作为我国民俗学的开拓者，他通过民间流传的生活习俗、用具等留下的线索，追寻那令人怀念的古老时代（古层），对他而言，这个词是极其重要的。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 2 -->
+            <div class="paragraph" id="page3-para-2" data-para-id="2">
+                <p class="japanese">
+                    <ruby>柳<rt>やなぎ</rt></ruby><ruby>田<rt>た</rt></ruby>は、それと<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>・<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>するという<ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>とを<ruby>区<rt>く</rt></ruby><ruby>別<rt>べつ</rt></ruby>しようとした。
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        その<ruby>文<rt>ぶん</rt></ruby><ruby>章<rt>しょう</rt></ruby>の<ruby>執<rt>しっ</rt></ruby><ruby>筆<rt>ぴつ</rt></ruby>の<ruby>時<rt>じ</rt></ruby><ruby>期<rt>き</rt></ruby>や、<span class="vocab-word" data-meaning="处理，对待"><ruby>あつかう</rt></ruby></span><ruby>対<rt>たい</rt></ruby><ruby>象<rt>しょう</rt></ruby>、また<ruby>語<rt>かた</rt></ruby>りかける<ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>のちがいに<span class="vocab-word" data-meaning="伴随，随着"><ruby>つれて</rt></ruby></span>、<ruby>柳<rt>やなぎ</rt></ruby><ruby>田<rt>た</rt></ruby>の<ruby>行<rt>おこな</rt></ruby>なった<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>・<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>すると、<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>・<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>するの<ruby>区<rt>く</rt></ruby><ruby>別<rt>べつ</rt></ruby>には、<span class="vocab-word" data-meaning="确实，显然"><ruby>いかにも</rt></ruby></span>はっきりしている<ruby>際<rt>さい</rt></ruby>と、そうでない<ruby>場<rt>ば</rt></ruby><ruby>合<rt>あい</rt></ruby>がある。しかし<ruby>後<rt>のち</rt></ruby>の<ruby>場<rt>ば</rt></ruby><ruby>合<rt>あい</rt></ruby>も、<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>・<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>することを<span class="vocab-word" data-meaning="逐渐地，渐渐地"><ruby>しだいに</rt></ruby></span><ruby>正<rt>せい</rt></ruby><ruby>確<rt>かく</rt></ruby>にしてゆけば、<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>・<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>するにいたるという、<ruby>段<rt>だん</rt></ruby><ruby>階<rt>かい</rt></ruby><ruby>的<rt>てき</rt></ruby>なつながりにおいてーー<span class="exam-note" data-meaning="【注】互いに接し">あい<ruby>接<rt>せっ</rt></ruby>し</span>、<ruby>境<rt>きょう</rt></ruby><ruby>界<rt>かい</rt></ruby>が<span class="vocab-word" data-meaning="模糊不清"><ruby>ぼやけて</rt></ruby>いる</span>ことはあるにしても、その<ruby>上<rt>じょう</rt></ruby><ruby>辺<rt>へん</rt></ruby>と<ruby>下<rt>か</rt></ruby><ruby>辺<rt>へん</rt></ruby>では、ちがいがはっきりしている、という<ruby>仕<rt>し</rt></ruby><ruby>方<rt>かた</rt></ruby>でーー<ruby>使<rt>つか</rt></ruby>われている。
+                        <span class="sentence-badge q-badge">問1の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問1：二つの言葉の段階的なつながり</span>
+                            本题考察作者认为这两种表达存在怎样的关系。划线句指出：虽然有时两者的界限会模糊（「境界がぼやけていることはあるにしても」），但在两极（上限和下限）的区别是清晰的。并且，只要将空想逐渐准确化，就能达到想象（「空想することをしだいに正確にしてゆけば、想像するにいたる」）。这说明两者是可以发生转化的。选项4合理概括了这一阶段性联系。
+                        </span>
+                    </span>
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        说明柳田对“空想”与“想象”的区分。两者界限有时清晰有时模糊，但存在一种阶段性的联系：只要将空想逐渐准确化，就能达到想象。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        柳田试图将它与“空想·去空想”这个词区分开来。随着文章执笔时期、探讨对象以及倾诉对象的不同，柳田对两者的区分，既有确实非常清晰的时候，也有不那么清晰的时候。但在后一种情况下，他也是以这样一种方式来使用的——在“只要将空想逐渐准确化，就能达到想象”这种阶段性的联系中，即使两者相互交接、界限模糊，但在其上限和下限（两极）上，区别也是清晰的。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段落 3 -->
+            <div class="paragraph" id="page3-para-3" data-para-id="3">
+                <p class="japanese">
+                    <span class="key-sentence" onclick="toggleInlineNote(event, this)">
+                        <ruby>具<rt>ぐ</rt></ruby><ruby>体<rt>たい</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>根<rt>こん</rt></ruby><ruby>拠<rt>きょ</rt></ruby>のない、あるいはあっても<span class="vocab-word" data-meaning="含糊，暧昧">あいまい</span>なものにたって<ruby>行<rt>おこな</rt></ruby>なう<ruby>古<rt>こ</rt></ruby><ruby>層<rt>そう</rt></ruby>への<ruby>心<rt>こころ</rt></ruby>の<ruby>動<rt>うご</rt></ruby>きを、<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>・<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>するとし、よりはっきりした<ruby>根<rt>こん</rt></ruby><ruby>拠<rt>きょ</rt></ruby>にたつ、しっかりした<ruby>心<rt>こころ</rt></ruby>の<ruby>働<rt>はたら</rt></ruby>きを、<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>・<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>するとして、<ruby>柳<rt>やなぎ</rt></ruby><ruby>田<rt>た</rt></ruby>は<span class="vocab-word" data-meaning="区分使用，分别使用"><ruby>使<rt>つか</rt></ruby>いわけている</span>のである。
+                        <span class="sentence-badge q-badge">問2・問3の解答箇所</span>
+                        <span class="inline-note-container">
+                            <span class="inline-note-title">💡 問2・問3：それぞれの言葉の定義</span>
+                            这里给出了柳田区分这两个词的核心标准。
+                            对于【问2】（空想）：是基于没有具体依据，或依据模糊的事物去追寻古老时代（「具体的な根拠のない、あるいはあってもあいまいなものにたって…古層への心の動き」）。
+                            对于【问3】（想像）：是基于更清晰的依据、扎实的内心活动（「よりはっきりした根拠にたつ、しっかりした心の働き」）。
+                        </span>
+                    </span>
+                    そこで<ruby>時<rt>とき</rt></ruby>には、ややとか、あきらかにとかいう<ruby>限<rt>げん</rt></ruby><ruby>定<rt>てい</rt></ruby><ruby>辞<rt>じ</rt></ruby>をかぶせねばならぬのではあるが、<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>・<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>するには、<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>の<ruby>心<rt>こころ</rt></ruby>の<ruby>働<rt>はたら</rt></ruby>きとして、マイナス・<ruby>消<rt>しょう</rt></ruby><ruby>極<rt>きょく</rt></ruby><ruby>的<rt>てき</rt></ruby><ruby>評<rt>ひょう</rt></ruby><ruby>価<rt>か</rt></ruby>の<span class="vocab-word" data-meaning="标记，印记"><ruby>しるし</rt></ruby></span>がついており、<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>・<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>するは、プラス・<ruby>積<rt>せっ</rt></ruby><ruby>極<rt>きょく</rt></ruby><ruby>的<rt>てき</rt></ruby><ruby>評<rt>ひょう</rt></ruby><ruby>価<rt>か</rt></ruby>のしるしがついている。
+                </p>
+                
+                <div class="paragraph-analysis analysis-element">
+                    <div class="para-role">
+                        <span class="role-title">📌 段落の役割</span>
+                        给出两者的明确定义及评价倾向。“空想”缺乏具体依据或依据模糊，带有消极评价；“想象”基于明确依据，带有积极评价。
+                    </div>
+                    <div class="para-translation">
+                        <span class="trans-title">文段訳</span>
+                        柳田是这样区分使用的：把基于没有具体依据、或者即使有依据也很模糊的事物，去追寻古老时代的内心活动，称为“空想·去空想”；而把基于更清晰的依据、扎实的内心活动，称为“想象·去想象”。因此，有时虽然不得不加上“稍微”或“明显地”等限定词，但作为人类的内心活动，“空想”带有负面、消极评价的印记，而“想象”则带有正面、积极评价的印记。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 注釈セクション（解析モードオフでも見られる用） -->
+            <div class="article-notes">
+                <div class="note-item"><span class="note-mark">（注1）古層（こそう）：</span>ここでは、古い時代</div>
+                <div class="note-item"><span class="note-mark">（注2）あい接（せっ）し：</span>互いに接し</div>
+            </div>
+        </div>
+
+        <!-- 多个问题容器 -->
+        <div class="qa-container">
+            <!-- 问题 1 -->
+            <div class="qa-section question-block" data-q-id="1">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="1" aria-pressed="false" title="记题">問1</button>
+                        <span class="question-title-text"><ruby>柳<rt>やなぎ</rt></ruby><ruby>田<rt>た</rt></ruby>が<ruby>使<rt>つか</rt></ruby>う「<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>・<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>する」と「<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>・<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>する」にはどのような<ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby>があると<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>は<ruby>考<rt>かんが</rt></ruby>えているか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>互<rt>たが</rt></ruby>いに<ruby>似<rt>に</rt></ruby>ている<ruby>部<rt>ぶ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>があるが、「<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>・<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>する」から「<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>・<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>する」に<ruby>変<rt>か</rt></ruby>わることはない。</span>
+                            <span class="option-translation">虽然有相互相似的部分，但不会从“空想”转变为“想象”。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文第二段明确提到，如果让空想逐渐准确化，是可以达到想象的阶段的（「空想・空想することをしだいに正確にしてゆけば、想像・想像するにいたる」），因此两者是可以发生转化的。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>全<rt>まった</rt></ruby>く<ruby>異<rt>こと</rt></ruby>なるものであり、「<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>・<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>する」と「<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>・<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>する」との<ruby>境<rt>きょう</rt></ruby><ruby>界<rt>かい</rt></ruby>ははっきりしている。</span>
+                            <span class="option-translation">是完全不同的东西，“空想”与“想象”的界限是清晰的。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文说两者之间有时“边界是模糊的（境界がぼやけていることはあるにしても）”，并非界限始终清晰。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>両<rt>りょう</rt></ruby><ruby>極<rt>きょく</rt></ruby>も<ruby>境<rt>さかい</rt></ruby>もぼやけていて、「<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>・<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>する」と「<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>・<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>する」との<ruby>境<rt>きょう</rt></ruby><ruby>界<rt>かい</rt></ruby>ははっきりしない。</span>
+                            <span class="option-translation">两极和边界都是模糊的，“空想”与“想象”的界限并不清晰。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        虽然边界有时模糊，但原文强调在其上限和下限（即两极）上，差别是清晰的（「その上辺と下辺では、ちがいがはっきりしている」），选项表述与原文矛盾。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>両<rt>りょう</rt></ruby><ruby>極<rt>きょく</rt></ruby>は<ruby>明<rt>めい</rt></ruby><ruby>確<rt>かく</rt></ruby>だが<ruby>境<rt>さかい</rt></ruby>はぼやけていて、「<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>・<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>する」から「<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>・<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>する」に<ruby>変<rt>か</rt></ruby>わることがある。</span>
+                            <span class="option-translation">两极虽然明确但边界模糊，有时会从“空想”转变为“想象”。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        设问考察作者认为这两种表达存在怎样的关系。定位到第二段，作者指出虽然有时两者的界限会模糊（「境界がぼやけていることはあるにしても」），但在两极的区别是清晰的（「その上辺と下辺では、ちがいがはっきりしている」）。并且，通过使空想逐渐准确，是可以达到想象的阶段的（「空想することをしだいに正確にしてゆけば、想像するにいたる」），即两者可以发生转化。选项4合理概括了这一阶段性联系。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 问题 2 -->
+            <div class="qa-section question-block" data-q-id="2">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="2" aria-pressed="false" title="记题">問2</button>
+                        <span class="question-title-text"><ruby>柳<rt>やなぎ</rt></ruby><ruby>田<rt>た</rt></ruby>が「<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>・<ruby>空<rt>くう</rt></ruby><ruby>想<rt>そう</rt></ruby>する」という<ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>を<ruby>使<rt>つか</rt></ruby>うのはどのようなときだと<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>は<ruby>考<rt>かんが</rt></ruby>えているか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span>はっきりしないものをもとに<ruby>古<rt>ふる</rt></ruby>い<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>を<ruby>考<rt>かんが</rt></ruby>えるとき</span>
+                            <span class="option-translation">在基于不清晰的事物去思考古老时代时。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        设问探讨“空想”的使用条件。定位到第三段前半部分，文中给出了清晰的定义：「具体的な根拠のない、あるいはあってもあいまいなものにたって行なう古層への心の動きを、空想・空想するとし」（把基于没有具体依据、或者即使有依据也很模糊的事物，去追寻古老时代的内心活动，称为空想）。选项1“在基于不清晰的事物去思考古老时代时”准确对应了这一表述。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span>はっきりしたものを<ruby>根<rt>こん</rt></ruby><ruby>拠<rt>きょ</rt></ruby>に<ruby>古<rt>ふる</rt></ruby>い<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>をたどるとき</span>
+                            <span class="option-translation">在基于清晰的事物去追寻古老时代时。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        基于清晰的依据去追寻，这对应的是原文中对“想象（想像）”的定义，而不是“空想”。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span><ruby>現<rt>げん</rt></ruby><ruby>代<rt>だい</rt></ruby>に<ruby>残<rt>のこ</rt></ruby>されている手がかりから<ruby>過<rt>か</rt></ruby><ruby>去<rt>こ</rt></ruby>をたどるとき</span>
+                            <span class="option-translation">从现代遗留的线索去追寻过去时。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        虽然柳田国男的研究确实包含了这个动作，但这并非文中用来区分“空想”的特定条件。空想的特质在于线索的“模糊、缺乏具体依据”。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>過<rt>か</rt></ruby><ruby>去<rt>こ</rt></ruby>の出来事を手がかりに<ruby>現<rt>げん</rt></ruby><ruby>代<rt>だい</rt></ruby>を<ruby>考<rt>かんが</rt></ruby>えるとき</span>
+                            <span class="option-translation">以过去的事件为线索来思考现代时。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文说的是去追寻“令人怀念的古老时代（なつかしい古層へとたどる）”，即从现在去推导过去，选项的方向完全反了。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 问题 3 -->
+            <div class="qa-section question-block" data-q-id="3">
+                <div class="question-title">
+                    <div class="question-title-main">
+                        <button type="button" class="question-num-badge question-note-btn" data-q-id="3" aria-pressed="false" title="记题">問3</button>
+                        <span class="question-title-text"><ruby>柳<rt>やなぎ</rt></ruby><ruby>田<rt>た</rt></ruby>が「<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>・<ruby>想<rt>そう</rt></ruby><ruby>像<rt>ぞう</rt></ruby>する」という<ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>を<ruby>使<rt>つか</rt></ruby>うのはどのようなときだと<ruby>筆<rt>ひっ</rt></ruby><ruby>者<rt>しゃ</rt></ruby>は<ruby>考<rt>かんが</rt></ruby>えているか。</span>
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">1</span>
+                        <div class="option-text-group">
+                            <span><ruby>古<rt>ふる</rt></ruby>い<ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>の<ruby>民<rt>みん</rt></ruby><ruby>衆<rt>しゅう</rt></ruby>の<ruby>心<rt>こころ</rt></ruby>を<ruby>伝<rt>つた</rt></ruby>えるとき</span>
+                            <span class="option-translation">在传达古老时代民众的心声时。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        传达民众心声只是研究的内容背景，但并非定义“想象”这一词汇具体使用条件的决定性因素。
+                    </div>
+                </div>
+
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">2</span>
+                        <div class="option-text-group">
+                            <span><ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>の<ruby>心<rt>こころ</rt></ruby>の<ruby>働<rt>はたら</rt></ruby>きを<ruby>積<rt>せっ</rt></ruby><ruby>極<rt>きょく</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>評<rt>ひょう</rt></ruby><ruby>価<rt>か</rt></ruby>するとき</span>
+                            <span class="option-translation">在对人类的内心活动进行积极评价时。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        虽然文中确实提到“想象”带有一个积极评价的印记，但这是基于有明确依据之后才产生的评价，不能因为要“进行积极评价”所以才去使用“想象”这个词。这属于因果逻辑的偏差。
+                    </div>
+                </div>
+                
+                <div class="option-item" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">3</span>
+                        <div class="option-text-group">
+                            <span>あいまいなイメージをはっきりさせるとき</span>
+                            <span class="option-translation">在使模糊的印象变得清晰时。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge wrong">誤り</span>
+                        原文并没有说使用“想象”是为了把原本模糊的东西“变得清晰”，而是当依据本身已经比较明确时才使用这个词。
+                    </div>
+                </div>
+                
+                <div class="option-item is-correct" onclick="toggleOption(this)">
+                    <div class="option-content">
+                        <span class="option-number">4</span>
+                        <div class="option-text-group">
+                            <span><ruby>明<rt>めい</rt></ruby><ruby>確<rt>かく</rt></ruby>な<ruby>根<rt>こん</rt></ruby><ruby>拠<rt>きょ</rt></ruby>にもとづく<ruby>心<rt>こころ</rt></ruby>の<ruby>働<rt>はたら</rt></ruby>きを<ruby>表<rt>あらわ</rt></ruby>すとき</span>
+                            <span class="option-translation">在表达基于明确依据的内心活动时。</span>
+                        </div>
+                    </div>
+                    <div class="option-explanation">
+                        <span class="badge correct">正解</span>
+                        设问探讨“想象”的使用条件。定位到最后一段，紧接着“空想”的定义，作者说明了“想象”的定义：「よりはっきりした根拠にたつ、しっかりした心の働きを、想像・想像するとして」（把基于更清晰的依据、扎实的内心活动，称为想象）。选项4“在表达基于明确依据的内心活动时”恰好与之吻合。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="article-navigation">
+        <button id="prev-btn" class="nav-btn disabled" onclick="prevPage()">← 上一篇</button>
+        <button id="study-submit-btn" class="submit-btn" type="button" onclick="submitCurrentStudyPage()" hidden disabled>答え合わせ</button>
+        <button id="next-btn" class="nav-btn disabled" onclick="nextPage()">下一篇 →</button>
+    </div>
+</div>
+
+<div id="global-tooltip"></div>
+
+<script>
+    function toggleAnalysis() {
+        const btn = document.getElementById('analysis-btn');
+        btn.classList.toggle('active');
+        document.body.classList.toggle('show-analysis');
+        
+        if (!document.body.classList.contains('show-analysis')) {
+            document.querySelectorAll('.option-item.expanded').forEach(item => item.classList.remove('expanded'));
+            document.querySelectorAll('.key-sentence.active').forEach(item => item.classList.remove('active'));
+            const tooltip = document.getElementById('global-tooltip');
+            if (tooltip) tooltip.classList.remove('show');
+        }
+    }
+
+    function toggleInlineNote(event, element) {
+        if (!document.body.classList.contains('show-analysis')) return;
+        if (event.target.closest('.inline-note-container')) return;
+        
+        // 注釈や語彙をクリックした場合は、文の展開を妨げる
+        if (event.target.closest('.vocab-word') || event.target.closest('.exam-note')) return; 
+        
+        element.classList.toggle('active');
+    }
+
+    document.addEventListener('click', function(e) {
+        const tooltip = document.getElementById('global-tooltip');
+        if (!tooltip) return;
+
+        // 公式の注釈（exam-note）は解析モードのオンオフに関わらず動作する
+        const examNote = e.target.closest('.exam-note');
+        
+        // 独自の語彙（vocab-word）は解析モードがオンの時だけ動作する
+        const vocabWord = e.target.closest('.vocab-word');
+        const isAnalysisMode = document.body.classList.contains('show-analysis');
+
+        let targetWord = null;
+        if (!isAnalysisMode && examNote) {
+            targetWord = examNote;
+        } else if (isAnalysisMode && vocabWord) {
+            targetWord = vocabWord;
+        } else if (isAnalysisMode && examNote) {
+            // 解析モードでは公式注釈は一般テキストと同化するため動作しない
+            targetWord = null;
+        }
+
+        if (targetWord) {
+            const meaning = targetWord.getAttribute('data-meaning');
+            tooltip.innerHTML = meaning; 
+            
+            const rect = targetWord.getBoundingClientRect();
+            let left = rect.left + (rect.width / 2);
+            let top = rect.top;
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.classList.add('show');
+            e.stopPropagation();
+        } else {
+            tooltip.classList.remove('show');
+        }
+    });
+
+    window.addEventListener('scroll', () => {
+        const tooltip = document.getElementById('global-tooltip');
+        if (tooltip) tooltip.classList.remove('show');
+    });
+
+    function scrollToElement(selector) {
+        const element = document.querySelector(selector);
+        if (element) {
+            const topBarOffset = 80; 
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.scrollY - topBarOffset;
+            
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
+    }
+</script>
+
+<script src="../../shared/reading-year-system.js"></script>
+<script src="../../categories/index.js"></script>
+<script src="../../shared/reading-category-system.js"></script>
+<script>
+    const ARTICLE_LEVEL = 'N1';
+    const ARTICLE_TYPE = 'middle';
+    const ARTICLE_YEAR = '2012.07';
+    const ARTICLE_ID = 'n1-2012-07-middle';
+    const ARTICLE_LINK = 'm/n1/2012.7.html';
+    const totalPages = 3; // 記事数を更新
+    
+    let readingSession = {
+        isReviewMode: false,
+        getReviewPages: () => [],
+        recordAnswer: () => {},
+        redirectToIndex: () => {},
+        getInitialPage: (p) => p || 1,
+        getNavState: (p) => ({ prevDisabled: p <= 1, nextDisabled: p >= totalPages }),
+        replacePageUrl: () => {},
+        getMoveTarget: () => ({})
+    };
+
+    let categorySession = {
+        isCategoryMode: false,
+        getInitialTarget: () => ({ empty: false }),
+        buildBackUrl: () => '../../index.html',
+        getNavState: (p) => ({ prevDisabled: p <= 1, nextDisabled: p >= totalPages }),
+        rememberProgress: () => {},
+        replacePageUrl: () => {},
+        getMoveTarget: () => ({})
+    };
+
+    const backLink = document.getElementById('back-to-reading-index');
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedPage = parseInt(urlParams.get('page'), 10);
+
+    try {
+        if (typeof ReadingYearSystem !== 'undefined') {
+            readingSession = ReadingYearSystem.createReadingYearSession({
+                level: ARTICLE_LEVEL,
+                type: ARTICLE_TYPE,
+                examKey: urlParams.get('examKey') || ARTICLE_YEAR,
+                totalPages,
+                indexPath: '../../index.html',
+                urlParams
+            });
+        }
+        
+        if (typeof ReadingCategorySystem !== 'undefined') {
+            categorySession = ReadingCategorySystem.createCategorySession({
+                level: ARTICLE_LEVEL,
+                type: ARTICLE_TYPE,
+                categoryId: urlParams.get('category'),
+                practiceMode: urlParams.get('practiceMode'),
+                examKey: urlParams.get('examKey') || ARTICLE_YEAR
+            });
+        }
+    } catch (e) {
+        console.warn("External systems not loaded properly. Using fallbacks.", e);
+    }
+
+    function toggleOption(element) {
+        if (document.body.classList.contains('show-analysis')) {
+            element.classList.toggle('expanded');
+            return;
+        }
+        
+        const qaSection = element.closest('.qa-section');
+        if (qaSection.hasAttribute('data-answered')) return;
+        
+        const isCorrect = element.classList.contains('is-correct');
+        element.classList.add('selected');
+        
+        if (isCorrect) {
+            element.classList.add('answered-correct');
+        } else {
+            element.classList.add('answered-wrong');
+            const correctOpt = qaSection.querySelector('.is-correct');
+            if (correctOpt) correctOpt.classList.add('answered-correct');
+        }
+
+        qaSection.setAttribute('data-answered', 'true');
+        recordAnswer(isCorrect);
+        checkAllAnsweredOnPage();
+    }
+
+    function checkAllAnsweredOnPage() {
+        const totalQuestions = document.querySelectorAll('.page-content.active .qa-section').length;
+        const answeredQuestions = document.querySelectorAll('.page-content.active .qa-section[data-answered="true"]').length;
+        
+        if (totalQuestions > 0 && totalQuestions === answeredQuestions) {
+            console.log("当前文章的所有题目已作答完毕。");
+        }
+    }
+
+    function handleReviewCompletionIfNeeded(isCorrect) {
+        if (!readingSession.isReviewMode || !isCorrect) {
+            return;
+        }
+
+        if (readingSession.getReviewPages().length === 0) {
+            window.setTimeout(() => {
+                alert('🎉 太棒了！这一年の錯題（間違えた問題）は復習完了です！');
+                readingSession.redirectToIndex();
+            }, 160);
+        }
+    }
+
+    function recordAnswer(isCorrect) {
+        readingSession.recordAnswer(currentPage, isCorrect);
+        handleReviewCompletionIfNeeded(isCorrect);
+    }
+
+    const isCategoryPractice = categorySession.isCategoryMode && !readingSession.isReviewMode;
+    const categoryTarget = isCategoryPractice
+        ? categorySession.getInitialTarget(requestedPage)
+        : { empty: false };
+
+    if (isCategoryPractice) {
+        backLink.href = categorySession.buildBackUrl();
+    }
+
+    const reviewModeHasNoPages = readingSession.isReviewMode && readingSession.getReviewPages().length === 0;
+    if (reviewModeHasNoPages) {
+        alert('当前年份还没有错题记录，先去正常练习一轮吧。');
+        readingSession.redirectToIndex();
+    }
+
+    if (isCategoryPractice && categoryTarget.empty) {
+        alert('这个文章分类里还没有可练习的内容。');
+        window.location.href = categorySession.buildBackUrl();
+    }
+
+    if (isCategoryPractice && categoryTarget.redirectUrl) {
+        window.location.href = categoryTarget.redirectUrl;
+    }
+
+    let currentPage = isCategoryPractice && typeof categoryTarget.page === 'number'
+        ? categoryTarget.page
+        : readingSession.getInitialPage(requestedPage);
+    window.currentPage = currentPage;
+    window.totalPages = totalPages;
+
+    function syncHeaderTitles(activePage) {
+        document.querySelectorAll('.header-title').forEach(titleEl => {
+            if (!titleEl.dataset.baseTitle) {
+                titleEl.dataset.baseTitle = titleEl.textContent.replace(/\s*（🐶 復習モード）$/, '').trim();
+            }
+
+            const isActive = Boolean(activePage && activePage.contains(titleEl));
+            titleEl.textContent = isActive && readingSession.isReviewMode
+                ? `${titleEl.dataset.baseTitle}（🐶 復習モード）`
+                : titleEl.dataset.baseTitle;
+        });
+    }
+
+    function showPage(page) {
+        document.querySelectorAll('.page-content').forEach(el => {
+            el.style.display = 'none';
+            el.classList.remove('active');
+        });
+
+        const currentEl = document.getElementById('page-' + page);
+        if (currentEl) {
+            currentEl.style.display = 'block';
+            currentEl.classList.add('active');
+        }
+
+        syncHeaderTitles(currentEl);
+
+        document.querySelectorAll('.qa-section').forEach(section => {
+            section.removeAttribute('data-answered');
+        });
+
+        document.querySelectorAll('.option-item').forEach(item => {
+            item.classList.remove('selected', 'answered-correct', 'answered-wrong', 'expanded');
+        });
+
+        document.querySelectorAll('.key-sentence').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelectorAll('.paragraph.recorder-focus').forEach(paragraph => {
+            paragraph.classList.remove('recorder-focus');
+        });
+        if (typeof window.hideGlobalTooltip === 'function') {
+            window.hideGlobalTooltip();
+        } else {
+            const tooltip = document.getElementById('global-tooltip');
+            if (tooltip) {
+                tooltip.classList.remove('show');
+            }
+        }
+        if (typeof window.clearActiveVocabWords === 'function') {
+            window.clearActiveVocabWords();
+        }
+        if (typeof window.clearDraftSelection === 'function') {
+            window.clearDraftSelection(true);
+        }
+
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const navState = isCategoryPractice
+            ? categorySession.getNavState(page)
+            : readingSession.getNavState(page);
+
+        prevBtn.classList.toggle('disabled', navState.prevDisabled);
+        nextBtn.classList.toggle('disabled', navState.nextDisabled);
+
+        currentPage = page;
+        window.currentPage = currentPage;
+        if (isCategoryPractice) {
+            categorySession.rememberProgress(page);
+            categorySession.replacePageUrl(page);
+        } else {
+            readingSession.replacePageUrl(page);
+        }
+        if (typeof window.renderSentenceRecorder === 'function') {
+            window.renderSentenceRecorder();
+        }
+        if (typeof window.renderMediumQuickNav === 'function') {
+            window.renderMediumQuickNav();
+        }
+        window.scrollTo(0, 0);
+    }
+
+    window.showPage = showPage;
+
+    function navigateCategory(direction) {
+        const target = categorySession.getMoveTarget(currentPage, direction);
+
+        if (target.sameExamKey && typeof target.page === 'number') {
+            showPage(target.page);
+            return;
+        }
+
+        if (target.href) {
+            window.location.href = target.href;
+            return;
+        }
+
+        if (target.done) {
+            alert('已经是这个分类的最后一篇了！');
+            return;
+        }
+
+        alert('已经是这个分类的第一篇了！');
+    }
+
+    function navigateReview(direction) {
+        const target = readingSession.getMoveTarget(currentPage, direction);
+
+        if (typeof target.page === 'number') {
+            showPage(target.page);
+            return;
+        }
+
+        if (target.done) {
+            alert('🎉 太棒了！这一年の錯題（間違えた問題）は復習完了です！');
+            readingSession.redirectToIndex();
+            return;
+        }
+
+        alert('已经是这一年错题的第一题了！');
+    }
+
+    function prevPage() {
+        if (readingSession.isReviewMode) {
+            navigateReview(-1);
+            return;
+        }
+        if (isCategoryPractice) {
+            navigateCategory(-1);
+            return;
+        }
+        if (currentPage > 1) {
+            showPage(currentPage - 1);
+        }
+    }
+
+    function nextPage() {
+        if (readingSession.isReviewMode) {
+            navigateReview(1);
+            return;
+        }
+        if (isCategoryPractice) {
+            navigateCategory(1);
+            return;
+        }
+        if (currentPage < totalPages) {
+            showPage(currentPage + 1);
+        } else {
+            alert('已经是該年份の最后一篇了！');
+        }
+    }
+
+    if (!reviewModeHasNoPages && !(isCategoryPractice && categoryTarget.redirectUrl) && !(isCategoryPractice && categoryTarget.empty)) {
+        showPage(currentPage);
+    }
+</script>
+<script>
+    window.readingMediumToolsConfig = {
+        manageVocabTooltip: false
+    };
+    window.readingMediumRuntimeConfig = {
+        studyBatchSubmit: true,
+        lockAnalysisUntilSubmitted: true
+    };
+</script>
+<script src="../../../../shared/study-quest-test-runtime.js"></script>
+<script src="../../../../shared/study-quest-test-boot.js"></script>
+<script src="../../shared/reading-medium-tools.js"></script>
+<script src="../../shared/reading-tools.js"></script>
+<script src="../../shared/reading-medium-runtime.js"></script>
+
+</body>
+</html>
