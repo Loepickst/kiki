@@ -404,6 +404,24 @@
             transform: scale(1.25);
             opacity: 1;
         }
+        .mark-btn.review-remove {
+            opacity: 1;
+            filter: none;
+            transform: none;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-accent);
+            border: 1px solid rgba(166, 78, 54, 0.24);
+            border-radius: 999px;
+            padding: 6px 10px;
+            background: rgba(166, 78, 54, 0.08);
+            white-space: nowrap;
+        }
+        .mark-btn.review-remove:hover {
+            transform: translateY(-1px);
+            opacity: 1;
+            background: rgba(166, 78, 54, 0.14);
+        }
 
         .list-actions {
             display: flex;
@@ -691,6 +709,15 @@
             box-shadow: 0 4px 12px rgba(166, 78, 54, 0.1);
         }
 
+        .practice-picker-option:disabled,
+        .practice-picker-option.is-disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            transform: none;
+            box-shadow: none;
+            border-style: dashed;
+        }
+
         .practice-picker-option.is-last-used {
             border-color: var(--text-accent);
             background: #FFF9F7;
@@ -722,6 +749,15 @@
             font-size: 13px;
             line-height: 1.5;
             font-weight: 500;
+        }
+
+        .practice-picker-option-count {
+            display: block;
+            margin-top: 6px;
+            color: var(--text-accent);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
         }
 
         body.practice-picker-open {
@@ -1284,6 +1320,7 @@
 
     <script src="n1_verbs_data.js"></script>
     <script src="n1-verbs-curriculum.js"></script>
+    <script src="../shared/vocabulary-sentence-review-store.js"></script>
     <script>
         const CURRICULUM_DAYS = Array.isArray(window.LAB_N1_VERB_DAYS) ? window.LAB_N1_VERB_DAYS : [];
         const CURRICULUM_STAGES = Array.isArray(window.LAB_N1_VERB_STAGES) ? window.LAB_N1_VERB_STAGES : [];
@@ -1308,6 +1345,9 @@
                 hint: '稳扎稳打，根据语境选出最合适的动词。'
             })
         ]);
+        const SENTENCE_REVIEW_MODULE_KEY = 'n1_verbs';
+        const sentenceReviewStore = window.VocabularySentenceReviewStore || null;
+        const reviewStore = window.VocabularyReviewStore || null;
 
         let currentView = 'days';
         let currentDay = 1;
@@ -1372,6 +1412,195 @@
 
         function getVocabStarKey(wordId) {
             return `${STAR_KEY_PREFIX}${String(wordId || '').trim()}`;
+        }
+
+        function getWordStorageId(word) {
+            return String(word && (word.id || word.word) ? (word.id || word.word) : '').trim();
+        }
+
+        function getSentenceReviewQuestionCount() {
+            return sentenceReviewStore ? sentenceReviewStore.getQuestionCount(SENTENCE_REVIEW_MODULE_KEY) : 0;
+        }
+
+        function getSentenceMistakeCountForWord(word) {
+            if (!sentenceReviewStore) return 0;
+            const storageId = getWordStorageId(word);
+            const surface = String(word && word.word ? word.word : '').trim();
+            const primaryCount = storageId ? sentenceReviewStore.getWordMistakeCount(SENTENCE_REVIEW_MODULE_KEY, storageId) : 0;
+            if (primaryCount > 0) return primaryCount;
+            return surface ? sentenceReviewStore.getWordMistakeCount(SENTENCE_REVIEW_MODULE_KEY, surface) : 0;
+        }
+
+        function findWordByReviewIdentifier(wordId) {
+            const target = String(wordId || '').trim();
+            if (!target) return null;
+            const pools = [currentDailyWords, typeof FULL_WORD_LIST !== 'undefined' && Array.isArray(FULL_WORD_LIST) ? FULL_WORD_LIST : []];
+            for (const pool of pools) {
+                const found = pool.find((word) => {
+                    if (!word || isPlaceholderWord(word)) return false;
+                    const storageId = getWordStorageId(word);
+                    const surface = String(word.word || '').trim();
+                    return storageId === target || surface === target;
+                });
+                if (found) return found;
+            }
+            return null;
+        }
+
+        function getReviewKeywordIds(wordOrId) {
+            const ids = new Set();
+            if (typeof wordOrId === 'string') ids.add(wordOrId.trim());
+            const word = typeof wordOrId === 'string' ? findWordByReviewIdentifier(wordOrId) : wordOrId;
+            if (word) {
+                const storageId = getWordStorageId(word);
+                const surface = String(word.word || '').trim();
+                if (storageId) ids.add(storageId);
+                if (surface) ids.add(surface);
+            }
+            return Array.from(ids).filter(Boolean);
+        }
+
+        function isReviewKeywordDismissed(word) {
+            if (!reviewStore || typeof reviewStore.isKeywordDismissed !== 'function') return false;
+            return getReviewKeywordIds(word).some((wordId) => reviewStore.isKeywordDismissed(SENTENCE_REVIEW_MODULE_KEY, wordId));
+        }
+
+        function dismissReviewKeyword(wordOrId) {
+            const ids = getReviewKeywordIds(wordOrId);
+            ids.forEach((wordId) => {
+                safeRemoveItem(getVocabStarKey(wordId));
+                if (!reviewStore) return;
+                if (typeof reviewStore.removeTypedWord === 'function') {
+                    reviewStore.removeTypedWord(SENTENCE_REVIEW_MODULE_KEY, 'reading', wordId);
+                    reviewStore.removeTypedWord(SENTENCE_REVIEW_MODULE_KEY, 'meaning', wordId);
+                }
+                if (typeof reviewStore.dismissKeyword === 'function') {
+                    reviewStore.dismissKeyword(SENTENCE_REVIEW_MODULE_KEY, wordId);
+                }
+            });
+        }
+
+        function refreshReviewKeywordListAfterDismiss() {
+            if (currentDay !== -1) return;
+            currentDailyWords = getReviewableWords();
+            if (currentDailyWords.length === 0) {
+                currentWordIndex = 0;
+                currentView = 'list';
+                renderWordList(currentDailyWords);
+                updateUI();
+                return;
+            }
+            if (currentView === 'detail') {
+                currentWordIndex = Math.min(currentWordIndex, currentDailyWords.length - 1);
+                renderDetailCard();
+                updateUI();
+                return;
+            }
+            renderWordList(currentDailyWords);
+            updateUI();
+        }
+
+        function getSentenceReviewWords() {
+            if (!sentenceReviewStore || typeof FULL_WORD_LIST === 'undefined' || !Array.isArray(FULL_WORD_LIST)) return [];
+            const trackedIds = new Set(sentenceReviewStore.listTrackedWordIds(SENTENCE_REVIEW_MODULE_KEY));
+            if (trackedIds.size === 0) return [];
+            return FULL_WORD_LIST.filter((word) => {
+                if (!word || isPlaceholderWord(word)) return false;
+                const storageId = getWordStorageId(word);
+                const surface = String(word.word || '').trim();
+                return trackedIds.has(storageId) || trackedIds.has(surface);
+            });
+        }
+
+        function getTypedReviewCount(type) {
+            return reviewStore ? reviewStore.getTypedCount(SENTENCE_REVIEW_MODULE_KEY, type) : 0;
+        }
+
+        function getTypedReviewSnapshots(type) {
+            return reviewStore ? reviewStore.listTypedWords(SENTENCE_REVIEW_MODULE_KEY, type) : [];
+        }
+
+        function findWordByReviewSnapshot(snapshot) {
+            if (!snapshot || typeof FULL_WORD_LIST === 'undefined' || !Array.isArray(FULL_WORD_LIST)) return null;
+            const wordId = String(snapshot.wordId || snapshot.id || '').trim();
+            const wordLabel = String(snapshot.wordLabel || snapshot.word || '').trim();
+            return FULL_WORD_LIST.find((word) => {
+                if (!word || isPlaceholderWord(word)) return false;
+                const storageId = getWordStorageId(word);
+                const surface = String(word.word || '').trim();
+                return (wordId && (storageId === wordId || surface === wordId)) || (wordLabel && surface === wordLabel);
+            }) || null;
+        }
+
+        function getTypedReviewWords(type) {
+            return getTypedReviewSnapshots(type).map(findWordByReviewSnapshot).filter(Boolean);
+        }
+
+        function getTypedReviewWordIds() {
+            const ids = new Set();
+            ['reading', 'meaning'].forEach((type) => {
+                getTypedReviewSnapshots(type).forEach((snapshot) => {
+                    const wordId = String(snapshot && snapshot.wordId || '').trim();
+                    const wordLabel = String(snapshot && (snapshot.wordLabel || snapshot.word) || '').trim();
+                    if (wordId) ids.add(wordId);
+                    if (wordLabel) ids.add(wordLabel);
+                });
+            });
+            return ids;
+        }
+
+        function getSentenceTrackedWordIds() {
+            return sentenceReviewStore ? new Set(sentenceReviewStore.listTrackedWordIds(SENTENCE_REVIEW_MODULE_KEY)) : new Set();
+        }
+
+        function getLegacyStarredWords() {
+            const typedIds = getTypedReviewWordIds();
+            const sentenceIds = getSentenceTrackedWordIds();
+            return getStarredWords().filter((word) => {
+                const storageId = getWordStorageId(word);
+                const surface = String(word && word.word || '').trim();
+                return !typedIds.has(storageId) && !typedIds.has(surface) && !sentenceIds.has(storageId) && !sentenceIds.has(surface);
+            });
+        }
+
+        function getReviewableWords() {
+            const seen = new Set();
+            return [...getTypedReviewWords('reading'), ...getTypedReviewWords('meaning'), ...getSentenceReviewWords(), ...getLegacyStarredWords()].filter((word) => {
+                const key = getWordStorageId(word) || String(word && word.word || '').trim();
+                if (!key || seen.has(key)) return false;
+                if (isReviewKeywordDismissed(word)) return false;
+                seen.add(key);
+                return true;
+            });
+        }
+
+        function getReviewWordCount() {
+            return getReviewableWords().length;
+        }
+
+        function getPendingReviewCount() {
+            return getReviewWordCount() + getSentenceReviewQuestionCount();
+        }
+
+        function getPracticeOptionReviewCount(type) {
+            if (type === 'sentence') return getSentenceReviewQuestionCount();
+            return getTypedReviewCount(type);
+        }
+
+        function getPracticeOptionReviewCountLabel(type) {
+            const count = getPracticeOptionReviewCount(type);
+            if (count <= 0) return '暂无该类错题';
+            return type === 'sentence' ? `${count} 题待回放` : `${count} 词待练`;
+        }
+
+        function getReviewCountSummary() {
+            return `看错关键词 ${getReviewWordCount()} 词 · 句子题 ${getSentenceReviewQuestionCount()} 题待回放`;
+        }
+
+        function getEmptyReviewPracticeMessage(defaultMessage) {
+            return getReviewWordCount() > 0
+                ? '这些错词先作为关键词整理出来，确认词形和意思后再回到练习。'
+                : defaultMessage;
         }
 
         function getLastStudiedDay() {
@@ -1513,8 +1742,29 @@
                 closePracticePicker();
                 return;
             }
+            if (Number(practicePickerContext.params && practicePickerContext.params.day) === -1 && getPracticeOptionReviewCount(type) <= 0) {
+                return;
+            }
             setStoredPracticeType(type);
             window.location.href = buildPracticeUrl(practicePickerContext.params, type);
+        }
+
+        function launchReviewActionFromPicker(action) {
+            if (!practicePickerContext) {
+                closePracticePicker();
+                return;
+            }
+            if (action === 'keywords') {
+                if (getReviewWordCount() <= 0) return;
+                closePracticePicker();
+                selectStarredWords();
+                return;
+            }
+            if (action === 'sentence') {
+                if (getSentenceReviewQuestionCount() <= 0) return;
+                setStoredPracticeType('sentence');
+                window.location.href = buildPracticeUrl(practicePickerContext.params, 'sentence');
+            }
         }
 
         function openPracticePicker(params) {
@@ -1525,16 +1775,63 @@
             };
             practicePickerContextNode.textContent = pickerMeta.context;
             document.getElementById('practice-picker-title').textContent = pickerMeta.title;
-            practicePickerOptionsNode.innerHTML = PRACTICE_TYPE_OPTIONS.map((option) => `
+            const isReviewPicker = Number(practicePickerContext.params.day) === -1;
+            if (isReviewPicker) {
+                const keywordCount = getReviewWordCount();
+                const sentenceCount = getSentenceReviewQuestionCount();
+                const reviewOptions = [
+                    {
+                        id: 'keywords',
+                        label: '看错关键词',
+                        hint: '把看错、记错和自己记录的词先集中确认一遍。',
+                        countLabel: keywordCount > 0 ? `${keywordCount} 词待确认` : '暂无看错关键词',
+                        disabled: keywordCount <= 0
+                    },
+                    {
+                        id: 'sentence',
+                        label: '句子题回放',
+                        hint: '重做当时错过的句子题，并查看完整解析。',
+                        countLabel: sentenceCount > 0 ? `${sentenceCount} 题待回放` : '暂无句子错题',
+                        disabled: sentenceCount <= 0
+                    }
+                ];
+                practicePickerOptionsNode.innerHTML = reviewOptions.map((option) => `
                 <button
                     type="button"
-                    class="practice-picker-option ${option.id === currentPracticeType ? 'is-last-used' : ''}"
-                    data-picker-type="${option.id}"
+                    class="practice-picker-option ${option.disabled ? 'is-disabled' : ''}"
+                    data-review-action="${option.id}"
+                    ${option.disabled ? 'disabled' : ''}
                 >
                     <span class="practice-picker-option-title">${escapeHtml(option.label)}</span>
-                    <span class="practice-picker-option-sub">${escapeHtml(option.hint)}</span>
+                    <span class="practice-picker-option-sub">${escapeHtml(option.hint)}<span class="practice-picker-option-count">${escapeHtml(option.countLabel)}</span></span>
                 </button>
             `).join('');
+                practicePickerOptionsNode.querySelectorAll('[data-review-action]').forEach((node) => {
+                    node.addEventListener('click', () => launchReviewActionFromPicker(node.dataset.reviewAction));
+                });
+                practicePickerOverlay.classList.add('is-open');
+                practicePickerOverlay.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('practice-picker-open');
+                return;
+            }
+            practicePickerOptionsNode.innerHTML = PRACTICE_TYPE_OPTIONS.map((option) => {
+                const reviewCount = isReviewPicker ? getPracticeOptionReviewCount(option.id) : null;
+                const isDisabled = isReviewPicker && reviewCount <= 0;
+                const countHtml = isReviewPicker
+                    ? `<span class="practice-picker-option-count">${escapeHtml(getPracticeOptionReviewCountLabel(option.id))}</span>`
+                    : '';
+                return `
+                <button
+                    type="button"
+                    class="practice-picker-option ${option.id === currentPracticeType ? 'is-last-used' : ''} ${isDisabled ? 'is-disabled' : ''}"
+                    data-picker-type="${option.id}"
+                    ${isDisabled ? 'disabled' : ''}
+                >
+                    <span class="practice-picker-option-title">${escapeHtml(option.label)}</span>
+                    <span class="practice-picker-option-sub">${escapeHtml(option.hint)}${countHtml}</span>
+                </button>
+            `;
+            }).join('');
             practicePickerOptionsNode.querySelectorAll('[data-picker-type]').forEach((node) => {
                 node.addEventListener('click', () => launchPracticeFromPicker(node.dataset.pickerType));
             });
@@ -1571,7 +1868,7 @@
         }
 
         function startReviewPractice() {
-            if (getStarredCount() === 0) {
+            if (getReviewWordCount() === 0 && getSentenceReviewQuestionCount() === 0) {
                 alert('基础很扎实，错题库目前是空的哦。');
                 return;
             }
@@ -1580,14 +1877,14 @@
         }
 
         function selectStarredWords() {
-            const starredWords = getStarredWords();
-            if (starredWords.length === 0) {
+            const reviewableWords = getReviewableWords();
+            if (reviewableWords.length === 0) {
                 alert('基础很扎实，错题库目前是空的哦。');
                 return;
             }
             resetTestMode();
             currentDay = -1;
-            currentDailyWords = starredWords;
+            currentDailyWords = reviewableWords;
             currentView = 'list';
             renderWordList(currentDailyWords);
             updateUI();
@@ -1595,6 +1892,9 @@
 
         function renderDays() {
             daysView.innerHTML = '';
+            const reviewWordCount = getReviewWordCount();
+            const sentenceReviewQuestionCount = getSentenceReviewQuestionCount();
+            const reviewSubtitle = `看错关键词 ${reviewWordCount} 词 • 句子题 ${sentenceReviewQuestionCount} 题待回放`;
 
             // Review Card
             const reviewCard = document.createElement('div');
@@ -1602,13 +1902,13 @@
             reviewCard.style.borderColor = 'rgba(166, 78, 54, 0.4)';
             reviewCard.style.background = 'var(--panel-bg)';
             reviewCard.innerHTML = `
-                <div class="day-info">
-                    <div class="day-icon" style="color: var(--text-accent); border-color: rgba(166, 78, 54, 0.3);">🔍</div>
-                    <div class="day-text-group">
-                        <div class="day-title" style="color: var(--text-accent);">错题库巩固</div>
-                        <div class="day-subtitle">${getStarredCount()} 个易错词 • 待巩固</div>
+                    <div class="day-info">
+                        <div class="day-icon" style="color: var(--text-accent); border-color: rgba(166, 78, 54, 0.3);">🔍</div>
+                        <div class="day-text-group">
+                            <div class="day-title" style="color: var(--text-accent);">错题库巩固</div>
+                        <div class="day-subtitle">${reviewSubtitle}</div>
+                        </div>
                     </div>
-                </div>
                 <div class="go-badge" style="background: var(--text-accent); color: #fff;">清理</div>
             `;
             reviewCard.addEventListener('click', startReviewPractice);
@@ -1721,16 +2021,37 @@
         function renderWordList(words) {
             const container = document.getElementById('word-list-container');
             container.innerHTML = '';
+            const isReviewKeywordList = currentDay === -1;
+
+            if (words.length === 0) {
+                container.innerHTML = `
+                    <div style="padding:42px 20px; text-align:center; color:var(--text-dim); font-weight:700; line-height:1.8;">
+                        ${isReviewKeywordList ? '看错关键词已经清空。句子题如果还有待回放，可以从错题库入口继续复盘。' : '这一组词条还在整理中。'}
+                    </div>
+                `;
+                window.scrollTo(0, 0);
+                return;
+            }
 
             words.forEach((wordData, index) => {
                 const item = document.createElement('div');
                 item.className = 'word-list-item';
                 const wordId = wordData.word;
                 const isStarred = safeGetItem(getVocabStarKey(wordId)) === 'true';
+                const actionClass = isReviewKeywordList ? 'active review-remove' : (isStarred ? 'active' : '');
+                const actionLabel = isReviewKeywordList ? '移出' : '🔖';
+                const actionTitle = isReviewKeywordList ? '移出错题词' : '加入错题本';
+                const sentenceMistakeCount = getSentenceMistakeCountForWord(wordData);
+                const sentenceMistakeHtml = sentenceMistakeCount > 0
+                    ? `<div style="font-size:12px; font-weight:600; color: var(--text-dim); line-height:1.5;">句子错 ${sentenceMistakeCount} 次</div>`
+                    : '';
                 item.innerHTML = `
-                    <div class="list-word-text">${wordData.word_html || wordData.word}</div>
+                    <div style="min-width:0; display:flex; flex-direction:column; gap:4px;">
+                        <div class="list-word-text">${wordData.word_html || wordData.word}</div>
+                        ${sentenceMistakeHtml}
+                    </div>
                     <div class="list-actions">
-                        <div class="mark-btn ${isStarred ? 'active' : ''}" data-word="${escapeHtml(wordId)}">🔖</div>
+                        <div class="mark-btn ${actionClass}" data-word="${escapeHtml(wordId)}" title="${actionTitle}" aria-label="${actionTitle}">${actionLabel}</div>
                         <div class="list-arrow">›</div>
                     </div>
                 `;
@@ -1750,10 +2071,18 @@
         }
 
         function toggleMark(button, wordId) {
+            if (currentDay === -1) {
+                dismissReviewKeyword(wordId);
+                refreshReviewKeywordListAfterDismiss();
+                return;
+            }
             const storageKey = getVocabStarKey(wordId);
             const nextActive = safeGetItem(storageKey) !== 'true';
             if (nextActive) {
                 safeSetItem(storageKey, 'true');
+                if (reviewStore && typeof reviewStore.restoreKeyword === 'function') {
+                    getReviewKeywordIds(wordId).forEach((id) => reviewStore.restoreKeyword(SENTENCE_REVIEW_MODULE_KEY, id));
+                }
             } else {
                 safeRemoveItem(storageKey);
             }
@@ -1816,8 +2145,16 @@
 
             const isFirst = currentWordIndex === 0;
             const isLast = currentWordIndex === currentDailyWords.length - 1;
+            const isReviewKeywordList = currentDay === -1;
             const wordId = wordData.word;
             const isStarred = safeGetItem(getVocabStarKey(wordId)) === 'true';
+            const actionClass = isReviewKeywordList ? 'active review-remove' : (isStarred ? 'active' : '');
+            const actionLabel = isReviewKeywordList ? '移出' : '🔖';
+            const actionTitle = isReviewKeywordList ? '移出错题词' : '加入错题本';
+            const sentenceMistakeCount = getSentenceMistakeCountForWord(wordData);
+            const sentenceMistakeHtml = sentenceMistakeCount > 0
+                ? `<div style="margin-top:10px;"><span style="display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; background: rgba(166, 78, 54, 0.08); border: 1px solid rgba(166, 78, 54, 0.2); color: var(--text-accent); font-size:12px; font-weight:700; letter-spacing:0.04em;">句子错 ${sentenceMistakeCount} 次</span></div>`
+                : '';
 
             container.innerHTML = `
                 <div class="flashcard-main">
@@ -1828,8 +2165,9 @@
                                 ${toneHtml}
                                 ${posHtml}
                             </div>
+                            ${sentenceMistakeHtml}
                         </div>
-                        <div class="mark-btn ${isStarred ? 'active' : ''}" onclick="toggleMark(this, '${wordId}')">🔖</div>
+                        <div class="mark-btn ${actionClass}" onclick="toggleMark(this, '${wordId}')" title="${actionTitle}" aria-label="${actionTitle}">${actionLabel}</div>
                     </div>
                     
                     <div style="flex: 1;">
@@ -1845,9 +2183,9 @@
                             上一词
                         </button>
                         <div style="font-size:13px; font-weight:700; color:var(--text-dim);">${currentWordIndex + 1} / ${currentDailyWords.length}</div>
-                        <button class="nav-btn primary ${isLast ? 'practice-btn' : ''}" onclick="${isLast ? `startPractice(${currentDay})` : 'navigateWord(1)'}">
-                            ${isLast ? '去修行 (考核)' : '下一词'}
-                            ${isLast ? '' : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>'}
+                        <button class="nav-btn primary ${isReviewKeywordList ? (isLast ? 'disabled' : '') : (isLast ? 'practice-btn' : '')}" onclick="${isReviewKeywordList ? (isLast ? '' : 'navigateWord(1)') : (isLast ? `startPractice(${currentDay})` : 'navigateWord(1)')}">
+                            ${isReviewKeywordList ? '下一词' : (isLast ? '去修行 (考核)' : '下一词')}
+                            ${isReviewKeywordList && isLast ? '' : (!isReviewKeywordList && isLast ? '' : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>')}
                         </button>
                     </div>
                 </div>

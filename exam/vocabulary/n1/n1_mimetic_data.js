@@ -21,6 +21,7 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "question": "空が<span class='ex-highlight'>____</span>晴れて、気持ちがいい。",
+            "cn": "天空一下子放晴，心情很好。",
             "options": ["からっと", "じめっと", "しっとり", "どんより"],
             "answer": "からっと"
         }
@@ -41,6 +42,7 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "question": "時間がないので、内容を<span class='ex-highlight'>____</span>説明してください。",
+            "cn": "时间不多了，请大致说明一下内容。",
             "options": ["ざっと", "じっと", "ぼうっと", "ぬっと"],
             "answer": "ざっと"
         }
@@ -66,6 +68,7 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "question": "彼は嫌なことも<span class='ex-highlight'>____</span>水に流すタイプだ。",
+            "cn": "他是那种连讨厌的事也能轻描淡写放下的人。",
             "options": ["さらっと", "どろっと", "ぐらっと", "べたっと"],
             "answer": "さらっと"
         }
@@ -91,6 +94,7 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "question": "言いたいことを言ったら、胸が<span class='ex-highlight'>____</span>した。",
+            "cn": "把想说的话说出来后，心里一下子舒畅了。",
             "options": ["もやもや", "ずきずき", "スッと", "いらいら"],
             "answer": "スッと"
         }
@@ -111,6 +115,7 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "question": "好きな人がこっちを向いたので、<span class='ex-highlight'>____</span>目が合った。",
+            "cn": "喜欢的人朝这边看过来，我和他一瞬间对上了眼。",
             "options": ["じろじろ", "まじまじ", "ちらっと", "きょろきょろ"],
             "answer": "ちらっと"
         }
@@ -136,6 +141,7 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "question": "熱があって頭が<span class='ex-highlight'>____</span>する。",
+            "cn": "发烧了，头脑昏昏沉沉的。",
             "options": ["きりきり", "ぼうっと", "きびきび", "すらすら"],
             "answer": "ぼうっと"
         }
@@ -156,6 +162,7 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "question": "迷子になった子供が見つかって、親は<span class='ex-highlight'>____</span>した。",
+            "cn": "迷路的孩子找到了，父母松了一口气。",
             "options": ["はっと", "ぎょっと", "ほっと", "むっと"],
             "answer": "ほっと"
         }
@@ -181,6 +188,7 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "question": "批判されて、彼は<span class='ex-highlight'>____</span>した顔をした。",
+            "cn": "被批评后，他露出了不高兴的表情。",
             "options": ["にこっと", "ほっと", "むっと", "きょとんと"],
             "answer": "むっと"
         }
@@ -206,6 +214,7 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "question": "こってりしたラーメンより、<span class='ex-highlight'>____</span>したうどんが食べたい。",
+            "cn": "比起浓厚的拉面，我更想吃清淡的乌冬。",
             "options": ["ぎっしり", "あっさり", "こっそり", "がっくり"],
             "answer": "あっさり"
         }
@@ -226,6 +235,7 @@ const DAY1_WORDS = [
         ],
         "practice": {
             "question": "満開の桜を<span class='ex-highlight'>____</span>眺める。",
+            "cn": "我出神地望着盛开的樱花。",
             "options": ["ぼんやり", "うっとり", "きっぱり", "がっかり"],
             "answer": "うっとり"
         }
@@ -253,6 +263,7 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "question": "このラーメンは<span class='ex-highlight'>____</span>したスープで、<ruby>濃<rt>こ</rt></ruby>い<ruby>味<rt>あじ</rt></ruby>が<ruby>特<rt>とく</rt></ruby><ruby>徴<rt>ちょう</rt></ruby>だ。",
+            "cn": "这碗拉面的汤很浓厚，味道重是它的特点。",
             "options": ["こってり", "さらっと", "あっさり", "すっきり"],
             "answer": "こってり"
         }
@@ -273,6 +284,7 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "question": "<ruby>天<rt>てん</rt></ruby><ruby>気<rt>き</rt></ruby>が<span class='ex-highlight'>____</span><ruby>変<rt>か</rt></ruby>わって、<ruby>急<rt>きゅう</rt></ruby>に<ruby>寒<rt>さむ</rt></ruby>くなった。",
+            "cn": "天气突然大变，一下子冷了起来。",
             "options": ["がらりと", "こっそり", "ちらっと", "ぼうっと"],
             "answer": "がらりと"
         }
@@ -293,6 +305,7 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "question": "<ruby>電<rt>でん</rt></ruby><ruby>車<rt>しゃ</rt></ruby>の<ruby>中<rt>なか</rt></ruby>は<ruby>満<rt>まん</rt></ruby><ruby>員<rt>いん</rt></ruby>で、<ruby>乗<rt>じょう</rt></ruby><ruby>客<rt>きゃく</rt></ruby>が<span class='ex-highlight'>____</span>と<ruby>詰<rt>つ</rt></ruby>まっていた。",
+            "cn": "电车里满员，乘客挤得满满当当。",
             "options": ["ぎっしり", "すっきり", "けろりと", "げっそり"],
             "answer": "ぎっしり"
         }
@@ -313,6 +326,7 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "question": "<ruby>誘<rt>さそ</rt></ruby>われたが、<ruby>誘<rt>ゆう</rt></ruby><ruby>惑<rt>わく</ruby>に<span class='ex-highlight'>____</span>と<ruby>断<rt>ことわ</rt></ruby>った。",
+            "cn": "虽然被邀请了，但他断然拒绝了。",
             "options": ["きっぱり", "あっさり", "うっとり", "こっそり"],
             "answer": "きっぱり"
         }
@@ -333,6 +347,7 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "question": "<ruby>激<rt>げき</rt></ruby><ruby>走<rt>そう</rt></ruby>のあと、<ruby>体<rt>からだ</rt></ruby>が<span class='ex-highlight'>____</span>して<ruby>動<rt>うご</rt></ruby>けない。",
+            "cn": "激烈奔跑之后，身体累得瘫软，动不了了。",
             "options": ["ぐったり", "すっきり", "ちらりと", "ばったり"],
             "answer": "ぐったり"
         }
@@ -358,6 +373,7 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "question": "<ruby>町<rt>まち</rt></ruby>で<span class='ex-highlight'>____</span><ruby>昔<rt>むかし</rt></ruby>の<ruby>同<rt>どう</rt></ruby><ruby>級<rt>きゅう</rt></ruby><ruby>生<rt>せい</rt></ruby>に<ruby>会<rt>あ</rt></ruby>った。",
+            "cn": "在街上偶然遇见了以前的同学。",
             "options": ["ばったり", "ちらっと", "ぼうっと", "がらりと"],
             "answer": "ばったり"
         }
@@ -383,6 +399,7 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "question": "<ruby>試<rt>し</rt></ruby><ruby>験<rt>けん</rt></ruby>に<ruby>落<rt>お</rt></ruby>ちて、<ruby>肩<rt>かた</rt></ruby>を<span class='ex-highlight'>____</span>と<ruby>落<rt>お</rt></ruby>とした。",
+            "cn": "考试没通过，他沮丧地垂下了肩。",
             "options": ["がっくり", "こっそり", "けろりと", "ぎっしり"],
             "answer": "がっくり"
         }
@@ -408,6 +425,7 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "question": "<ruby>大<rt>おお</rt></ruby>きな<ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>をしても、<ruby>彼<rt>かれ</rt></ruby>は<span class='ex-highlight'>____</ruby>としていて<ruby>平<rt>へい</rt></ruby><ruby>然<rt>ぜん</rt></ruby>だ。",
+            "cn": "即使犯了大错，他也一副若无其事的样子。",
             "options": ["けろり", "がっくり", "むっと", "ぼうっと"],
             "answer": "けろり"
         }
@@ -433,6 +451,7 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "question": "<ruby>一<rt>いっ</rt></ruby><ruby>週<rt>しゅう</rt></ruby><ruby>間<rt>かん</rt></ruby>の<ruby>食<rt>しょく</rt></ruby><ruby>事<rt>じ</rt></ruby>がカレーだけで、<ruby>胃<rt>い</rt></ruby><ruby>袋<rt>ぶくろ</rt></ruby>が<span class='ex-highlight'>____</span>した。",
+            "cn": "连续一周只吃咖喱，胃都受不了了。",
             "options": ["げっそり", "すっきり", "こってり", "しっとり"],
             "answer": "げっそり"
         }
@@ -453,6 +472,7 @@ const DAY2_WORDS = [
         ],
         "practice": {
             "question": "<ruby>母<rt>はは</rt></ruby>に<ruby>見<rt>み</rt></ruby>つからないように、<span class='ex-highlight'>____</span>とクッキーを<ruby>食<rt>た</rt></ruby>べた。",
+            "cn": "我趁妈妈没发现，偷偷吃了饼干。",
             "options": ["こっそり", "きっぱり", "がらり", "ちらっ"],
             "answer": "こっそり"
         }
@@ -485,6 +505,7 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "question": "<ruby>新<rt>しん</rt></ruby><ruby>入<rt>にゅう</rt></ruby><ruby>社<rt>しゃ</rt></ruby><ruby>員<rt>いん</rt></ruby>なのに、<ruby>彼<rt>かれ</rt></ruby>は<span class='ex-highlight'>____</span>した<ruby>考<rt>かんが</rt></ruby>えを<ruby>持<rt>も</rt></ruby>っている。",
+            "cn": "明明是新员工，他却有很踏实的想法。",
             "options": ["しっかり", "すっきり", "ぼんやり", "うっかり"],
             "answer": "しっかり"
         }
@@ -505,6 +526,7 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "question": "<ruby>大<rt>おお</rt></ruby>きな<ruby>決<rt>けっ</rt></ruby><ruby>断<rt>だん</rt></ruby>をする<ruby>前<rt>まえ</rt></ruby>に、<span class='ex-highlight'>____</span><ruby>話<rt>はな</rt></ruby>し<ruby>合<rt>あ</rt></ruby>いましょう。",
+            "cn": "做重大决定前，我们好好深入谈一谈吧。",
             "options": ["じっくり", "ぴったり", "ぼんやり", "ぐっすり"],
             "answer": "じっくり"
         }
@@ -530,6 +552,7 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "question": "<ruby>雨<rt>あめ</rt></ruby>の<ruby>日<rt>ひ</rt></ruby>は、<ruby>古都<rt>こと</rt></ruby>の<ruby>町並<rt>まちな</rt></ruby>みが<span class='ex-highlight'>____</span>として<ruby>美<rt>うつく</rt></ruby>しい。",
+            "cn": "下雨天，古都的街景显得湿润而优美。",
             "options": ["しっとり", "ぐったり", "きっぱり", "がっちり"],
             "answer": "しっとり"
         }
@@ -555,6 +578,7 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "question": "<ruby>誤<rt>ご</rt></ruby><ruby>解<rt>かい</rt></ruby>が<ruby>解<rt>と</rt></ruby>けて、<ruby>気<rt>き</rt></ruby><ruby>分<rt>ぶん</rt></ruby>が<span class='ex-highlight'>____</span>した。",
+            "cn": "误会解开后，心情清爽了。",
             "options": ["すっきり", "しっとり", "こっそり", "ぼんやり"],
             "answer": "すっきり"
         }
@@ -580,6 +604,7 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "question": "<ruby>金<rt>きん</rt></ruby><ruby>貨<rt>か</rt></ruby>が<ruby>入<rt>はい</rt></ruby>った<ruby>箱<rt>はこ</rt></ruby>は、<span class='ex-highlight'>____</span>と<ruby>重<rt>おも</rt></ruby>かった。",
+            "cn": "装着金币的箱子沉甸甸的。",
             "options": ["ずっしり", "ぴったり", "すっきり", "あっさり"],
             "answer": "ずっしり"
         }
@@ -600,6 +625,7 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "question": "<ruby>美術<rt>びじゅつ</rt></ruby><ruby>館<rt>かん</rt></ruby>に<ruby>有名<rt>ゆうめい</rt></ruby>な<ruby>絵画<rt>かいが</rt></ruby>が<span class='ex-highlight'>____</span><ruby>並<rt>なら</rt></ruby>んでいた。",
+            "cn": "美术馆里名画一幅接一幅地排列着。",
             "options": ["ずらり", "ちらり", "ぼんやり", "うっかり"],
             "answer": "ずらり"
         }
@@ -625,6 +651,7 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "question": "<ruby>占<rt>うらな</rt></ruby>い<ruby>師<rt>し</rt></ruby>に<ruby>私<rt>わたし</rt></ruby>の<ruby>職業<rt>しょくぎょう</rt></ruby>を<span class='ex-highlight'>____</span><ruby>当<rt>あ</rt></ruby>てられた。",
+            "cn": "算命师一下子说中了我的职业。",
             "options": ["ずばり", "ぼんやり", "ふんわり", "うっかり"],
             "answer": "ずばり"
         }
@@ -645,6 +672,7 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "question": "<ruby>好<rt>す</rt></ruby>きな<ruby>人<rt>ひと</rt></ruby>と<ruby>目<rt>め</rt></ruby>が<span class='ex-highlight'>____</span><ruby>合<rt>あ</rt></ruby>った。",
+            "cn": "和喜欢的人目光一瞬间相遇了。",
             "options": ["ちらり", "じっくり", "まじまじ", "ぼんやり"],
             "answer": "ちらり"
         }
@@ -665,6 +693,7 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "question": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>私<rt>わたし</rt></ruby>より<ruby>年下<rt>としした</rt></ruby>だと、<span class='ex-highlight'>____</span><ruby>思<rt>おも</rt></ruby>っていた。",
+            "cn": "我一直以为他比我小。",
             "options": ["てっきり", "しっかり", "すっきり", "きっぱり"],
             "answer": "てっきり"
         }
@@ -685,6 +714,7 @@ const DAY3_WORDS = [
         ],
         "practice": {
             "question": "<ruby>夏休<rt>なつやす</rt></ruby>みの<ruby>宿題<rt>しゅくだい</rt></ruby>が<span class='ex-highlight'>____</span><ruby>出<rt>で</rt></ruby>た。",
+            "cn": "暑假作业布置了一大堆。",
             "options": ["どっさり", "ぴったり", "しっとり", "ちらり"],
             "answer": "どっさり"
         }
@@ -712,6 +742,7 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "question": "<ruby>答<rt>こた</rt></ruby>えがわかっているなら、<span class='ex-highlight'>____</span>と<ruby>言<rt>い</rt></ruby>いなさい。",
+            "cn": "如果知道答案，就清楚地说出来。",
             "options": ["はっきり", "ひっそり", "こっそり", "すっきり"],
             "answer": "はっきり"
         }
@@ -737,6 +768,7 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "question": "<ruby>深<rt>ふか</rt></ruby>い<ruby>山<rt>やま</rt></ruby>の<ruby>中<rt>なか</rt></ruby>に、<ruby>古<rt>ふる</rt></ruby>い<ruby>寺<rt>てら</rt></ruby>が<span class='ex-highlight'>____</span>と<ruby>建<rt>た</rt></ruby>っている。",
+            "cn": "深山里静静地坐落着一座古寺。",
             "options": ["ひっそり", "ぴったり", "はっきり", "どっさり"],
             "answer": "ひっそり"
         }
@@ -757,6 +789,7 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "question": "<ruby>毎日<rt>まいにち</rt></ruby><ruby>同<rt>おな</rt></ruby>じことの<ruby>繰<rt>く</rt></ruby>り<ruby>返<rt>かえ</rt></ruby>しで、<span class='ex-highlight'>____</span>する。",
+            "cn": "每天重复同样的事，让人厌烦。",
             "options": ["うんざり", "すんなり", "しっとり", "しんなり"],
             "answer": "うんざり"
         }
@@ -777,6 +810,7 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "question": "<ruby>試<rt>し</rt></ruby><ruby>合<rt>あい</rt></ruby>に<ruby>負<rt>ま</rt></ruby>けて、<ruby>選手<rt>せんしゅ</rt></ruby>たちは<span class='ex-highlight'>____</span>していた。",
+            "cn": "输掉比赛后，选手们垂头丧气。",
             "options": ["しょんぼり", "はっきり", "すっきり", "きっぱり"],
             "answer": "しょんぼり"
         }
@@ -797,6 +831,7 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "question": "<ruby>茹<rt>ゆ</rt></ruby>でた<ruby>野菜<rt>やさい</rt></ruby>が<span class='ex-highlight'>____</span>して、<ruby>食<rt>た</rt></ruby>べやすくなった。",
+            "cn": "煮过的蔬菜变软了，吃起来更方便。",
             "options": ["しんなり", "ふんわり", "すんなり", "ひんやり"],
             "answer": "しんなり"
         }
@@ -822,6 +857,7 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "question": "<ruby>反対<rt>はんたい</rt></ruby>されると<ruby>思<rt>おも</rt></ruby>ったが、<ruby>案<rt>あん</rt></ruby><ruby>外<rt>がい</rt></ruby><span class='ex-highlight'>____</span><ruby>許可<rt>きょか</rt></ruby>された。",
+            "cn": "本以为会遭到反对，没想到意外顺利地获批了。",
             "options": ["すんなり", "はっきり", "ずばり", "きっぱり"],
             "answer": "すんなり"
         }
@@ -842,6 +878,7 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "question": "<ruby>部屋<rt>へや</rt></ruby>の<ruby>空気<rt>くうき</rt></ruby>が<span class='ex-highlight'>____</span>して、<ruby>重<rt>おも</rt></ruby>苦しい。",
+            "cn": "房间里的空气阴沉沉的，令人压抑。",
             "options": ["どんより", "ひんやり", "ぼんやり", "ふんわり"],
             "answer": "どんより"
         }
@@ -862,6 +899,7 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "question": "<ruby>走<rt>はし</rt></ruby>ったので、<ruby>背中<rt>せなか</rt></ruby>が<ruby>汗<rt>あせ</rt></ruby>で<span class='ex-highlight'>____</span>だ。",
+            "cn": "跑了一阵，后背被汗湿透了。",
             "options": ["びっしょり", "しっとり", "たっぷり", "すっきり"],
             "answer": "びっしょり"
         }
@@ -882,6 +920,7 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "question": "<ruby>朝<rt>あさ</rt></ruby>の<ruby>高原<rt>こうげん</rt></ruby>は、<ruby>風<rt>かぜ</rt></ruby>が<span class='ex-highlight'>____</span>して<ruby>気持<rt>きも</rt></ruby>ちがいい。",
+            "cn": "清晨的高原，风凉丝丝的，很舒服。",
             "options": ["ひんやり", "しんみり", "どんより", "ぼんやり"],
             "answer": "ひんやり"
         }
@@ -907,6 +946,7 @@ const DAY4_WORDS = [
         ],
         "practice": {
             "question": "<span class='ex-highlight'>____</span>したスポンジケーキが<ruby>焼<rt>や</rt></ruby>けた。",
+            "cn": "烤出了松软的海绵蛋糕。",
             "options": ["ふんわり", "しんなり", "ぐったり", "げっそり"],
             "answer": "ふんわり"
         }
@@ -934,6 +974,7 @@ const DAY5_WORDS = [
         ],
         "practice": {
             "question": "<ruby>眼鏡<rt>めがね</rt></ruby>がないので、<ruby>遠<rt>とお</rt></ruby>くが<span class='ex-highlight'>____</span>してよく<ruby>見<rt>み</rt></ruby>えない。",
+            "cn": "没有眼镜，远处模模糊糊看不清。",
             "options": ["ぼんやり", "はっきり", "すっきり", "きっぱり"],
             "answer": "ぼんやり"
         }
@@ -954,6 +995,7 @@ const DAY5_WORDS = [
         ],
         "practice": {
             "question": "<ruby>部下<rt>ぶか</rt></ruby>の<ruby>失敗<rt>しっぱい</rt></ruby>を、<span class='ex-highlight'>____</span><ruby>注意<rt>ちゅうい</rt></ruby>した。",
+            "cn": "我委婉地提醒了下属的失误。",
             "options": ["やんわり", "ずばり", "きっぱり", "しっかり"],
             "answer": "やんわり"
         }
@@ -974,6 +1016,7 @@ const DAY5_WORDS = [
         ],
         "practice": {
             "question": "<ruby>不審<rt>ふしん</rt></ruby>な<ruby>男<rt>おとこ</rt></ruby>が<ruby>家<rt>いえ</rt></ruby>の<ruby>周<rt>まわ</rt></ruby>りを<span class='ex-highlight'>____</span>している。",
+            "cn": "一个可疑男人在我家周围转来转去。",
             "options": ["うろうろ", "すらすら", "ぼろぼろ", "きらきら"],
             "answer": "うろうろ"
         }
@@ -994,6 +1037,7 @@ const DAY5_WORDS = [
         ],
         "practice": {
             "question": "<ruby>子犬<rt>こいぬ</rt></ruby>が<ruby>足元<rt>あしもと</rt></ruby>を<span class='ex-highlight'>____</span>して<ruby>危<rt>あぶ</rt></ruby>ない。",
+            "cn": "小狗在脚边跑来跑去，很危险。",
             "options": ["うろちょろ", "ひそひそ", "のろのろ", "ふらふら"],
             "answer": "うろちょろ"
         }
@@ -1019,6 +1063,7 @@ const DAY5_WORDS = [
         ],
         "practice": {
             "question": "<ruby>乾燥<rt>かんそう</rt></ruby>して、<ruby>肌<rt>はだ</rt></ruby>が<span class='ex-highlight'>____</span>だ。",
+            "cn": "因为干燥，皮肤粗糙。",
             "options": ["がさがさ", "すべすべ", "つやつや", "きらきら"],
             "answer": "がさがさ"
         }
@@ -1039,6 +1084,7 @@ const DAY5_WORDS = [
         ],
         "practice": {
             "question": "<ruby>会議<rt>かいぎ</rt></ruby>が<ruby>終<rt>お</rt></ruby>わると、<ruby>部屋<rt>へや</rt></ruby>の<ruby>中<rt>なか</rt></ruby>が<ruby>急<rt>きゅう</rt></ruby>に<span class='ex-highlight'>____</span>し<ruby>始<rt>はじ</rt></ruby>めた。",
+            "cn": "会议一结束，房间里一下子吵闹起来。",
             "options": ["がやがや", "しんしん", "ひっそり", "すらすら"],
             "answer": "がやがや"
         }
@@ -1064,6 +1110,7 @@ const DAY5_WORDS = [
         ],
         "practice": {
             "question": "<ruby>水<rt>みず</rt></ruby>をやっていなかったので、<ruby>土<rt>つち</rt></ruby>が<span class='ex-highlight'>____</span>に<ruby>乾<rt>かわ</rt></ruby>いている。",
+            "cn": "没浇水，土干得透透的。",
             "options": ["からから", "びしょびしょ", "じめじめ", "ねばねば"],
             "answer": "からから"
         }
@@ -1084,6 +1131,7 @@ const DAY5_WORDS = [
         ],
         "practice": {
             "question": "<ruby>緊張<rt>きんちょう</rt></ruby>して、<ruby>動<rt>うご</rt></ruby>きが<span class='ex-highlight'>____</span>してしまった。",
+            "cn": "因为紧张，动作变得僵硬不自然。",
             "options": ["ぎくしゃく", "すらすら", "のびのび", "きびきび"],
             "answer": "ぎくしゃく"
         }
@@ -1104,6 +1152,7 @@ const DAY5_WORDS = [
         ],
         "practice": {
             "question": "<span class='ex-highlight'>____</span>していないで、<ruby>早<rt>はや</rt></ruby>く<ruby>準備<rt>じゅんび</rt></ruby>しなさい。",
+            "cn": "别磨磨蹭蹭的，快点准备。",
             "options": ["ぐずぐず", "きびきび", "さっさと", "すらすら"],
             "answer": "ぐずぐず"
         }
@@ -1129,6 +1178,7 @@ const DAY5_WORDS = [
         ],
         "practice": {
             "question": "<ruby>転<rt>ころ</rt></ruby>んで、トマトが<span class='ex-highlight'>____</span>につぶれた。",
+            "cn": "摔了一跤，番茄被压得稀烂。",
             "options": ["ぐちゃぐちゃ", "ころころ", "さらさら", "つるつる"],
             "answer": "ぐちゃぐちゃ"
         }
@@ -1157,6 +1207,7 @@ const DAY6_WORDS = [
         ],
         "practice": {
             "question": "<ruby>歯<rt>は</rt></ruby>が<span class='ex-highlight'>____</span>して、<ruby>抜<rt>ぬ</rt></ruby>けそうだ。",
+            "cn": "牙齿摇摇晃晃的，快要掉了。",
             "options": ["ぐらぐら", "ごろごろ", "がらがら", "ごつごつ"],
             "answer": "ぐらぐら"
         }
@@ -1182,6 +1233,7 @@ const DAY6_WORDS = [
         ],
         "practice": {
             "question": "<ruby>頭<rt>あたま</rt></ruby>の<ruby>中<rt>なか</rt></ruby>が<span class='ex-highlight'>____</span>で、<ruby>整理<rt>せいり</rt></ruby>できない。",
+            "cn": "脑子里乱成一团，整理不出来。",
             "options": ["ごちゃごちゃ", "すっきり", "さっぱり", "ぺらぺら"],
             "answer": "ごちゃごちゃ"
         }
@@ -1202,6 +1254,7 @@ const DAY6_WORDS = [
         ],
         "practice": {
             "question": "<ruby>父<rt>ちち</rt></ruby>の<ruby>手<rt>て</rt></ruby>は、<ruby>長年<rt>ながねん</rt></ruby>の<ruby>仕事<rt>しごと</rt></ruby>で<span class='ex-highlight'>____</span>している。",
+            "cn": "父亲的手因多年工作变得粗糙坚硬。",
             "options": ["ごつごつ", "つるつる", "すべすべ", "ふわふわ"],
             "answer": "ごつごつ"
         }
@@ -1232,6 +1285,7 @@ const DAY6_WORDS = [
         ],
         "practice": {
             "question": "<ruby>山<rt>やま</rt></ruby>から<ruby>岩<rt>いわ</rt></ruby>が<span class='ex-highlight'>____</span><ruby>落<rt>お</rt></ruby>ちてきた。",
+            "cn": "岩石从山上咕噜咕噜地滚落下来。",
             "options": ["ごろごろ", "ころころ", "ぶらぶら", "ふらふら"],
             "answer": "ごろごろ"
         }
@@ -1257,6 +1311,7 @@ const DAY6_WORDS = [
         ],
         "practice": {
             "question": "このペンはインクが<span class='ex-highlight'>____</span><ruby>出<rt>で</rt></ruby>て<ruby>書<rt>か</rt></ruby>きやすい。",
+            "cn": "这支笔出墨很顺滑，写起来方便。",
             "options": ["さらさら", "ざらざら", "ぎしぎし", "ぱさぱさ"],
             "answer": "さらさら"
         }
@@ -1277,6 +1332,7 @@ const DAY6_WORDS = [
         ],
         "practice": {
             "question": "<ruby>砂<rt>すな</rt></ruby>ぼこりで<ruby>床<rt>ゆか</rt></ruby>が<span class='ex-highlight'>____</span>している。",
+            "cn": "因为沙尘，地板摸起来粗糙。",
             "options": ["ざらざら", "さらさら", "ぬるぬる", "つるつる"],
             "answer": "ざらざら"
         }
@@ -1302,6 +1358,7 @@ const DAY6_WORDS = [
         ],
         "practice": {
             "question": "<ruby>彼<rt>かれ</rt></ruby>はいつも<span class='ex-highlight'>____</span>していて、<ruby>暗<rt>くら</rt></ruby>い。",
+            "cn": "他总是阴沉沉的，很消极。",
             "options": ["じめじめ", "しめじめ", "しくしく", "しょぼしょぼ"],
             "answer": "じめじめ"
         }
@@ -1322,6 +1379,7 @@ const DAY6_WORDS = [
         ],
         "practice": {
             "question": "<ruby>薬<rt>くすり</rt></ruby>の<ruby>効果<rt>こうか</rt></ruby>が<span class='ex-highlight'>____</span><ruby>現<rt>あらわ</rt></ruby>れてきた。",
+            "cn": "药效慢慢显现出来了。",
             "options": ["じわじわ", "じゃあじゃあ", "びりびり", "きりきり"],
             "answer": "じわじわ"
         }
@@ -1342,6 +1400,7 @@ const DAY6_WORDS = [
         ],
         "practice": {
             "question": "<ruby>都会<rt>とかい</rt></ruby>で<span class='ex-highlight'>____</span>した<ruby>生活<rt>せいかつ</rt></ruby>を送るのは<ruby>疲<rt>つか</rt></ruby>れる。",
+            "cn": "在城市里过着匆匆忙忙的生活很累。",
             "options": ["せかせか", "のびのび", "ゆったり", "のろのろ"],
             "answer": "せかせか"
         }
@@ -1367,6 +1426,7 @@ const DAY6_WORDS = [
         ],
         "practice": {
             "question": "<ruby>事件<rt>じけん</rt></ruby>の<ruby>真相<rt>しんそう</rt></ruby>がわからず、<ruby>気持<rt>きも</rt></ruby>ちが<span class='ex-highlight'>____</span>する。",
+            "cn": "不知道事件真相，心里总觉得堵得慌。",
             "options": ["もやもや", "すっきり", "はっきり", "くっきり"],
             "answer": "もやもや"
         }
@@ -1399,6 +1459,7 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "question": "<ruby>血<rt>ち</rt></ruby>が<span class='ex-highlight'>____</span>と<ruby>流<rt>なが</rt></ruby>れて<ruby>止<rt>と</rt></ruby>まらない。",
+            "cn": "血不停地流个不停。",
             "options": ["だらだら", "たらたら", "ぽたぽた", "さらさら"],
             "answer": "だらだら"
         }
@@ -1419,6 +1480,7 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "question": "<ruby>彼女<rt>かのじょ</rt></ruby>は<ruby>家事<rt>かじ</rt></ruby>を<span class='ex-highlight'>____</span>こなす。",
+            "cn": "她麻利地处理家务。",
             "options": ["てきぱき", "どきどき", "わくわく", "ふわふわ"],
             "answer": "てきぱき"
         }
@@ -1439,6 +1501,7 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "question": "<ruby>好<rt>す</rt></ruby>きな<ruby>人<rt>ひと</rt></ruby>の<ruby>前<rt>まえ</rt></ruby>で、<ruby>心臓<rt>しんぞう</rt></ruby>が<span class='ex-highlight'>____</span>する。",
+            "cn": "在喜欢的人面前，心脏怦怦直跳。",
             "options": ["どきどき", "きらきら", "ぴかぴか", "すらすら"],
             "answer": "どきどき"
         }
@@ -1469,6 +1532,7 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "question": "<ruby>雪<rt>ゆき</rt></ruby>が<ruby>溶<rt>と</rt></ruby>けて、<ruby>道<rt>みち</rt></ruby>が<span class='ex-highlight'>____</span>だ。",
+            "cn": "雪融化了，道路泥泞不堪。",
             "options": ["どろどろ", "さらさら", "かちかち", "つるつる"],
             "answer": "どろどろ"
         }
@@ -1489,6 +1553,7 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "question": "<ruby>石鹸<rt>せっけん</rt></ruby>で<ruby>手<rt>て</rt></ruby>が<span class='ex-highlight'>____</span>する。",
+            "cn": "手上沾了肥皂，滑溜溜的。",
             "options": ["ぬるぬる", "つるつる", "すべすべ", "さらさら"],
             "answer": "ぬるぬる"
         }
@@ -1509,6 +1574,7 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "question": "オクラは刻むと<span class='ex-highlight'>____</span>する。",
+            "cn": "秋葵切碎后会变得黏糊糊的。",
             "options": ["ねばねば", "さらさら", "ぱさぱさ", "ごつごつ"],
             "answer": "ねばねば"
         }
@@ -1534,6 +1600,7 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "question": "<ruby>魚<rt>さかな</rt></ruby>が<ruby>水中<rt>すいちゅう</rt></ruby>を<span class='ex-highlight'>____</span>泳いでいる。",
+            "cn": "鱼在水中轻快地游着。",
             "options": ["すいすい", "ぶらぶら", "のろのろ", "よちよち"],
             "answer": "すいすい"
         }
@@ -1554,6 +1621,7 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "question": "<ruby>子供<rt>こども</rt></ruby>は<ruby>親<rt>おや</rt></ruby>の<ruby>愛情<rt>あいじょう</rt></ruby>を<ruby>受<rt>う</rt></ruby>けて<span class='ex-highlight'>____</span>育った。",
+            "cn": "孩子在父母的关爱下茁壮成长。",
             "options": ["すくすく", "のびのび", "いきいき", "きびきび"],
             "answer": "すくすく"
         }
@@ -1574,6 +1642,7 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "question": "<ruby>温泉<rt>おんせん</rt></ruby>に<ruby>入<rt>はい</rt></ruby>ったら、<ruby>肌<rt>はだ</rt></ruby>が<span class='ex-highlight'>____</span>になった。",
+            "cn": "泡完温泉后，皮肤变得光滑。",
             "options": ["すべすべ", "ざらざら", "がさがさ", "ごつごつ"],
             "answer": "すべすべ"
         }
@@ -1594,6 +1663,7 @@ const DAY7_WORDS = [
         ],
         "practice": {
             "question": "<ruby>面接<rt>めんせつ</rt></ruby>では<span class='ex-highlight'>____</span>した<ruby>態度<rt>たいど</rt></ruby>が<ruby>好<rt>す</rt></ruby>まれる。",
+            "cn": "面试时，清晰爽快的态度很受欢迎。",
             "options": ["はきはき", "もじもじ", "うじうじ", "ぶつぶつ"],
             "answer": "はきはき"
         }
@@ -1616,6 +1686,7 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "question": "<ruby>亀<rt>かめ</rt></ruby>が<span class='ex-highlight'>____</span>と<ruby>歩<rt>ある</rt></ruby>いている。",
+            "cn": "乌龟慢吞吞地走着。",
             "options": ["のろのろ", "すいすい", "てきぱき", "はきはき"],
             "answer": "のろのろ"
         }
@@ -1641,6 +1712,7 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "question": "<ruby>貧血<rt>ひんけつ</rt></ruby>で<span class='ex-highlight'>____</span>して<ruby>倒<rt>たお</rt></ruby>れそうだ。",
+            "cn": "因为贫血，头晕得快要倒下。",
             "options": ["ふらふら", "ぴかぴか", "てきぱき", "もりもり"],
             "answer": "ふらふら"
         }
@@ -1671,6 +1743,7 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "question": "<ruby>暇<rt>ひま</rt></ruby>なので、<ruby>商店街<rt>しょうてんがい</rt></ruby>を<span class='ex-highlight'>____</span>した。",
+            "cn": "因为没事做，我在商店街闲逛。",
             "options": ["ぶらぶら", "きびきび", "ばりばり", "がんがん"],
             "answer": "ぶらぶら"
         }
@@ -1701,6 +1774,7 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "question": "<ruby>手<rt>て</rt></ruby>にジャムがついて<span class='ex-highlight'>____</span>する。",
+            "cn": "手上沾了果酱，黏糊糊的。",
             "options": ["べたべた", "さらさら", "すべすべ", "つるつる"],
             "answer": "べたべた"
         }
@@ -1721,6 +1795,7 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "question": "<ruby>山<rt>やま</rt></ruby>の<ruby>頂上<rt>ちょうじょう</rt></ruby>まで<ruby>登<rt>のぼ</rt></ruby>って、<span class='ex-highlight'>____</span>になった。",
+            "cn": "爬到山顶后，累得筋疲力尽。",
             "options": ["へとへと", "めきめき", "のびのび", "いきいき"],
             "answer": "へとへと"
         }
@@ -1741,6 +1816,7 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "question": "<ruby>腕前<rt>うでまえ</rt></ruby>が<span class='ex-highlight'>____</span><ruby>上達<rt>じょうたつ</rt></ruby>した。",
+            "cn": "技艺突飞猛进。",
             "options": ["めきめき", "めそめそ", "おどおど", "くよくよ"],
             "answer": "めきめき"
         }
@@ -1761,6 +1837,7 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "question": "<ruby>小<rt>ちい</rt></ruby>さなことでいつまでも<span class='ex-highlight'>____</span>するのはやめなさい。",
+            "cn": "不要总为小事哭哭啼啼。",
             "options": ["めそめそ", "はきはき", "にこにこ", "げらげら"],
             "answer": "めそめそ"
         }
@@ -1786,6 +1863,7 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "question": "<ruby>計画<rt>けいかく</rt></ruby>が<span class='ex-highlight'>____</span>になった。",
+            "cn": "计划变得一团糟。",
             "options": ["めちゃめちゃ", "ぴかぴか", "すらすら", "ぺらぺら"],
             "answer": "めちゃめちゃ"
         }
@@ -1806,6 +1884,7 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "question": "<ruby>彼女<rt>かのじょ</rt></ruby>は<ruby>誰<rt>だれ</rt></ruby>にでも<span class='ex-highlight'>____</span><ruby>物<rt>もの</rt></ruby>を<ruby>言<rt>い</rt></ruby>う。",
+            "cn": "她对谁都直言不讳。",
             "options": ["ずけずけ", "こそこそ", "ひそひそ", "ぶつぶつ"],
             "answer": "ずけずけ"
         }
@@ -1831,6 +1910,7 @@ const DAY8_WORDS = [
         ],
         "practice": {
             "question": "<ruby>自信<rt>じしん</rt></ruby>がなさそうに<span class='ex-highlight'>____</span><ruby>話<rt>はな</rt></ruby>す。",
+            "cn": "他一副没自信的样子，小声嘟囔着说话。",
             "options": ["ぼそぼそ", "はきはき", "ぺらぺら", "すらすら"],
             "answer": "ぼそぼそ"
         }
@@ -1853,6 +1933,7 @@ const DAY9_WORDS = [
         ],
         "practice": {
             "question": "<ruby>電車<rt>でんしゃ</rt></ruby>がなかなか<ruby>来<rt>こ</rt></ruby>なくて、<span class='ex-highlight'>____</span>した。",
+            "cn": "电车迟迟不来，我很焦躁。",
             "options": ["いらいら", "はらはら", "びくびく", "うすうす"],
             "answer": "いらいら"
         }
@@ -1878,6 +1959,7 @@ const DAY9_WORDS = [
         ],
         "practice": {
             "question": "<ruby>桜<rt>さくら</rt></ruby>の<ruby>花<rt>はな</rt></ruby>びらが<span class='ex-highlight'>____</span>と<ruby>散<rt>ち</rt></ruby>る。",
+            "cn": "樱花花瓣纷纷飘落。",
             "options": ["はらはら", "いらいら", "びくびく", "おどおど"],
             "answer": "はらはら"
         }
@@ -1898,6 +1980,7 @@ const DAY9_WORDS = [
         ],
         "practice": {
             "question": "<ruby>親<rt>おや</rt></ruby>に<ruby>叱<rt>しか</rt></ruby>られると<ruby>思<rt>おも</rt></ruby>って、<span class='ex-highlight'>____</span>している。",
+            "cn": "以为会被父母骂，心里战战兢兢。",
             "options": ["びくびく", "いらいら", "はらはら", "うずうず"],
             "answer": "びくびく"
         }
@@ -1918,6 +2001,7 @@ const DAY9_WORDS = [
         ],
         "practice": {
             "question": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>自信<rt>じしん</rt></ruby>がなさそうで、いつも<span class='ex-highlight'>____</span>している。",
+            "cn": "他看起来没自信，总是畏畏缩缩。",
             "options": ["おどおど", "いらいら", "はらはら", "ひしひし"],
             "answer": "おどおど"
         }
@@ -1938,6 +2022,7 @@ const DAY9_WORDS = [
         ],
         "practice": {
             "question": "<ruby>駅<rt>えき</rt></ruby>で<ruby>乗<rt>の</rt></ruby>り<ruby>換<rt>か</rt></ruby>えが<ruby>分<rt>わ</rt></ruby>からず、<span class='ex-highlight'>____</span>してしまった。",
+            "cn": "在车站不知道怎么换乘，慌里慌张了起来。",
             "options": ["まごまご", "いらいら", "はらはら", "うずうず"],
             "answer": "まごまご"
         }
@@ -1958,6 +2043,7 @@ const DAY9_WORDS = [
         ],
         "practice": {
             "question": "<ruby>合格発表<rt>ごうかくはっぴょう</rt></ruby>の<ruby>日<rt>ひ</rt></ruby>で、<ruby>朝<rt>あさ</rt></ruby>から<ruby>気<rt>き</rt></ruby>になって<span class='ex-highlight'>____</span>している。",
+            "cn": "发布录取结果的日子，一早就心神不宁。",
             "options": ["そわそわ", "いらいら", "くよくよ", "うすうす"],
             "answer": "そわそわ"
         }
@@ -1978,6 +2064,7 @@ const DAY9_WORDS = [
         ],
         "practice": {
             "question": "<ruby>責任<rt>せきにん</rt></ruby>の<ruby>重<rt>おも</rt></ruby>さを<span class='ex-highlight'>____</span>と<ruby>感<rt>かん</rt></ruby>じる。",
+            "cn": "我深切感受到责任的重大。",
             "options": ["ひしひし", "いらいら", "はらはら", "まごまご"],
             "answer": "ひしひし"
         }
@@ -1998,6 +2085,7 @@ const DAY9_WORDS = [
         ],
         "practice": {
             "question": "<ruby>彼<rt>かれ</rt></ruby>が<ruby>犯人<rt>はんにん</rt></ruby>ではないかと、<span class='ex-highlight'>____</span><ruby>気<rt>き</rt></ruby>づいていた。",
+            "cn": "我隐约察觉到他可能就是犯人。",
             "options": ["うすうす", "いらいら", "はらはら", "うずうず"],
             "answer": "うすうす"
         }
@@ -2018,6 +2106,7 @@ const DAY9_WORDS = [
         ],
         "practice": {
             "question": "<ruby>早<rt>はや</rt></ruby>く<ruby>旅行<rt>りょこう</rt></ruby>に<ruby>行<rt>い</rt></ruby>きたくて、<span class='ex-highlight'>____</span>している。",
+            "cn": "我迫不及待想早点去旅行。",
             "options": ["うずうず", "いらいら", "はらはら", "くよくよ"],
             "answer": "うずうず"
         }
@@ -2038,6 +2127,7 @@ const DAY9_WORDS = [
         ],
         "practice": {
             "question": "<ruby>済<rt>す</rt></ruby>んだことをいつまでも<span class='ex-highlight'>____</span><ruby>悩<rt>なや</rt></ruby>んでも<ruby>仕方<rt>しかた</rt></ruby>がない。",
+            "cn": "已经过去的事，再一直烦恼也没办法。",
             "options": ["くよくよ", "いらいら", "はらはら", "そわそわ"],
             "answer": "くよくよ"
         }
