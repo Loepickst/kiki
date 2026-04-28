@@ -20,11 +20,13 @@
     const durationEl = document.getElementById('duration');
     const loopBtn = document.getElementById('loop-btn');
     const speedBtn = document.getElementById('speed-btn');
-    const audioPrefix = String(typeof AUDIO_PREFIX !== 'undefined' ? AUDIO_PREFIX : ARTICLE_YEAR || '').trim();
-
-    if (!audio || !playBtn || !progressBar || !progressContainer || !currentTimeEl || !durationEl || !loopBtn || !speedBtn || !audioPrefix) {
-        return;
-    }
+    const fallbackAudioPrefix = typeof ARTICLE_YEAR !== 'undefined' ? ARTICLE_YEAR : '';
+    const audioPrefix = String(typeof AUDIO_PREFIX !== 'undefined' ? AUDIO_PREFIX : fallbackAudioPrefix).trim();
+    const audioBasePath = (() => {
+        const initialSrc = audio ? String(audio.getAttribute('src') || '').trim() : '';
+        const match = initialSrc.match(/^(.*\/)[^/]*$/);
+        return match ? match[1] : 'audio/';
+    })();
 
     let isLooping = false;
     let currentSpeed = 1.0;
@@ -41,6 +43,9 @@
     }
 
     function renderPlayButton(isPlaying) {
+        if (!playBtn) {
+            return;
+        }
         playBtn.classList.toggle('playing', isPlaying);
         playBtn.innerHTML = isPlaying
             ? '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'
@@ -48,6 +53,9 @@
     }
 
     function resetAudioUi() {
+        if (!progressBar || !currentTimeEl || !durationEl) {
+            return;
+        }
         renderPlayButton(false);
         progressBar.style.width = '0%';
         currentTimeEl.textContent = '00:00';
@@ -55,6 +63,9 @@
     }
 
     function syncAudioState() {
+        if (!audio || !loopBtn || !speedBtn) {
+            return;
+        }
         audio.loop = isLooping;
         audio.playbackRate = currentSpeed;
         loopBtn.classList.toggle('active', isLooping);
@@ -63,9 +74,12 @@
     }
 
     function syncAudioForPage(page) {
+        if (!audio || !audioPrefix) {
+            return;
+        }
         const normalizedPage = Number.isFinite(page) && page > 0 ? page : 1;
         audio.pause();
-        audio.src = `audio/${audioPrefix}-${normalizedPage}.mp3`;
+        audio.src = `${audioBasePath}${audioPrefix}-${normalizedPage}.mp3`;
         audio.load();
         resetAudioUi();
         syncAudioState();
@@ -108,16 +122,25 @@
     }
 
     function toggleLoop() {
+        if (!audio || !loopBtn || !speedBtn) {
+            return;
+        }
         isLooping = !isLooping;
         syncAudioState();
     }
 
     function toggleSpeed() {
+        if (!audio || !loopBtn || !speedBtn) {
+            return;
+        }
         currentSpeed = currentSpeed === 1.0 ? 0.75 : 1.0;
         syncAudioState();
     }
 
     function togglePlay() {
+        if (!audio || !playBtn) {
+            return;
+        }
         if (audio.paused) {
             audio.play().catch((error) => {
                 console.log('Audio play error:', error);
@@ -130,6 +153,9 @@
     }
 
     function seek(event) {
+        if (!audio || !progressContainer) {
+            return;
+        }
         if (!audio.duration) {
             return;
         }
@@ -148,55 +174,57 @@
     togglePlay = window.togglePlay;
     seek = window.seek;
 
-    audio.addEventListener('timeupdate', () => {
-        if (!audio.duration) {
-            return;
-        }
-        progressBar.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
-        currentTimeEl.textContent = formatTime(audio.currentTime);
-    });
+    if (audio && playBtn && progressBar && progressContainer && currentTimeEl && durationEl && loopBtn && speedBtn && audioPrefix) {
+        audio.addEventListener('timeupdate', () => {
+            if (!audio.duration) {
+                return;
+            }
+            progressBar.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        });
 
-    audio.addEventListener('loadedmetadata', () => {
-        durationEl.textContent = formatTime(audio.duration);
-        syncAudioState();
-    });
+        audio.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(audio.duration);
+            syncAudioState();
+        });
 
-    audio.addEventListener('ended', () => {
-        renderPlayButton(false);
-        progressBar.style.width = '0%';
-        currentTimeEl.textContent = '00:00';
-    });
+        audio.addEventListener('ended', () => {
+            renderPlayButton(false);
+            progressBar.style.width = '0%';
+            currentTimeEl.textContent = '00:00';
+        });
 
-    progressContainer.addEventListener('mousedown', (event) => {
-        isDragging = true;
-        seek(event);
-    });
-    window.addEventListener('mousemove', (event) => {
-        if (isDragging) {
+        progressContainer.addEventListener('mousedown', (event) => {
+            isDragging = true;
             seek(event);
-        }
-    });
-    window.addEventListener('mouseup', () => {
-        isDragging = false;
-    });
-    progressContainer.addEventListener('touchstart', (event) => {
-        isDragging = true;
-        seek(event);
-    });
-    window.addEventListener('touchmove', (event) => {
-        if (isDragging) {
-            event.preventDefault();
+        });
+        window.addEventListener('mousemove', (event) => {
+            if (isDragging) {
+                seek(event);
+            }
+        });
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+        progressContainer.addEventListener('touchstart', (event) => {
+            isDragging = true;
             seek(event);
-        }
-    }, { passive: false });
-    window.addEventListener('touchend', () => {
-        isDragging = false;
-    });
+        });
+        window.addEventListener('touchmove', (event) => {
+            if (isDragging) {
+                event.preventDefault();
+                seek(event);
+            }
+        }, { passive: false });
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        syncToCurrentPage();
+    }
 
     wrapNavigation('showPage');
     wrapNavigation('prevPage');
     wrapNavigation('nextPage');
     wrapNavigation('openReadingAnalysisFromResult');
-
-    syncToCurrentPage();
 })();
