@@ -2,11 +2,11 @@
     'use strict';
 
     const groups = [
-        { id: 1, title: 'N1 副詞（準備中）', dayIds: [1] }
+        { id: 1, title: 'N1 副詞（准备中）', dayIds: [1] }
     ];
 
     const days = [
-        { id: 1, title: '準備中', groupId: 1, wordIds: [] }
+        { id: 1, title: '准备中', groupId: 1, wordIds: [] }
     ];
 
     const stages = [];

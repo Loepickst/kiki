@@ -715,6 +715,24 @@
             color: var(--accent-red);
         }
 
+        .action-option:focus,
+        .action-option:focus-visible {
+            outline: none;
+        }
+
+        @media (hover: none), (pointer: coarse) {
+            .action-option:hover:not(:disabled) {
+                background: rgba(255, 255, 255, 0.8);
+                border-color: rgba(0,0,0,0.1);
+                box-shadow: none;
+                color: var(--text-main);
+            }
+
+            .action-option:active:not(:disabled) {
+                transform: none;
+            }
+        }
+
         /* 拼写输入模式 */
         .reading-answer-wrap {
             display: grid;
@@ -1365,6 +1383,7 @@
     <script src="../shared/vocabulary-sentence-analysis.js"></script>
 
     <script src="vocabulary-reading-helper.js"></script>
+    <script src="../shared/vocabulary-practice-core.js"></script>
     <script src="vocabulary-role-config.js"></script>
     <script>
         if (typeof window.bindStatefulBack === 'function') {
@@ -1432,6 +1451,7 @@
         const SENTENCE_REVIEW_MODULE_KEY = 'n1_mimetic';
         const sentenceReviewStore = window.VocabularySentenceReviewStore || null;
         const reviewStore = window.VocabularyReviewStore || null;
+        let practiceCore = null;
 
 
         function getVocabStarKey(wordId) {
@@ -3244,6 +3264,9 @@
             const answerArea = document.getElementById('challenge-answer-area');
             const feedback = document.getElementById('challenge-feedback');
             answerArea.classList.add('hidden');
+            if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                document.activeElement.blur();
+            }
             feedback.textContent = '';
             feedback.className = 'challenge-feedback';
             clearSentenceReviewAnalysis();
@@ -3253,6 +3276,7 @@
                 answerArea.innerHTML = buildChoiceAnswerMarkup(question);
                 answerArea.querySelectorAll('.action-option[data-option-index]').forEach((buttonNode) => {
                     buttonNode.addEventListener('click', () => {
+                        buttonNode.blur();
                         const selectedIndex = Number(buttonNode.dataset.optionIndex);
                         checkAnswer(buttonNode, question.options[selectedIndex]);
                     });
@@ -3406,7 +3430,9 @@
                 bestStreak = Math.max(bestStreak, answerStreak);
                 feedback.textContent = answerStreak > 3 ? '太棒啦！已经连对好几题了，现在的你超级耀眼！' : '答对啦！继续保持！';
                 feedback.classList.add('good');
-                if (shouldShowReviewAnalysis) {
+                if (isReviewPracticeMode() && practiceCore && typeof practiceCore.handleCorrectAnswer === 'function') {
+                    practiceCore.handleCorrectAnswer(question, dailyPracticeType);
+                } else if (shouldShowReviewAnalysis) {
                     removeSentenceReviewQuestion(question);
                 }
                 playSlashEffect();
@@ -3427,15 +3453,22 @@
                 setTimeout(() => dialogueBox.classList.remove('shake'), 520);
 
                 if (!(isChallengeMode && selectedDifficulty)) {
-                    const wordId = question.word.word;
-                    restoreReviewKeyword(question.word);
-                    const key = getVocabStarKey(wordId);
-                    if (localStorage.getItem(key) !== 'true') {
-                        localStorage.setItem(key, 'true');
-                        showToast(`「${wordId}」帮你记下来啦，待会记得复习哦！`);
-                    }
-                    if (question.kind === 'sentence') {
-                        recordSentenceQuestionWrong(question);
+                    const recordResult = practiceCore && typeof practiceCore.handleWrongAnswer === 'function'
+                        ? practiceCore.handleWrongAnswer(question, dailyPracticeType)
+                        : null;
+                    if (recordResult) {
+                        if (recordResult.starred) showToast(`「${recordResult.wordId}」帮你记下来啦，待会记得复习哦！`);
+                    } else {
+                        const wordId = question.word.word;
+                        restoreReviewKeyword(question.word);
+                        const key = getVocabStarKey(wordId);
+                        if (localStorage.getItem(key) !== 'true') {
+                            localStorage.setItem(key, 'true');
+                            showToast(`「${wordId}」帮你记下来啦，待会记得复习哦！`);
+                        }
+                        if (question.kind === 'sentence') {
+                            recordSentenceQuestionWrong(question);
+                        }
                     }
                 }
 
@@ -3814,6 +3847,75 @@
             switchView('view-main');
             renderQuestion();
         }
+
+        function installVocabularyPracticeCore() {
+            if (!window.VocabularyPracticeCore || typeof window.VocabularyPracticeCore.create !== 'function') return;
+            practiceCore = window.VocabularyPracticeCore.create({
+                moduleKey: SENTENCE_REVIEW_MODULE_KEY,
+                starKeyPrefix: VOCAB_STAR_KEY_PREFIX,
+                practiceTypeLabels: DAILY_PRACTICE_TYPE_MAP,
+                limits: { day: DAY_QUESTION_LIMIT, stage: STAGE_QUESTION_LIMIT, final: FINAL_QUESTION_LIMIT },
+                wordsPerDay: typeof WORDS_PER_DAY !== 'undefined' ? WORDS_PER_DAY : 20,
+                getFullWordList: () => typeof FULL_WORD_LIST !== 'undefined' && Array.isArray(FULL_WORD_LIST) ? FULL_WORD_LIST : [],
+                getAllDefinedWords: () => typeof ALL_DEFINED_WORDS !== 'undefined' && Array.isArray(ALL_DEFINED_WORDS)
+                    ? ALL_DEFINED_WORDS
+                    : (typeof FULL_WORD_LIST !== 'undefined' && Array.isArray(FULL_WORD_LIST) ? FULL_WORD_LIST.filter((word) => word && word.word !== '（準備中）') : []),
+                getDays: () => CURRICULUM_DAYS,
+                getStages: () => CURRICULUM_STAGES,
+                getGroups: () => CURRICULUM_GROUPS,
+                getPracticeType: () => dailyPracticeType,
+                getSelectedDifficulty: () => selectedDifficulty,
+                escapeHtml,
+                shuffleArray,
+                getKanaDisplayText: extractKanaDisplayTextFromWordHtml,
+                getWordDisplayText,
+                formatTypingText: buildQuestionTypingText,
+                formatQuestionHtml: (bodyHtml, supportText) => `${buildDialogueQuestionHtml(bodyHtml)}<br><br><span class="question-sub-text">${escapeHtml(supportText)}</span>`
+            });
+            window.__vocabularyPracticeCore = practiceCore;
+
+            getVocabStarKey = practiceCore.getVocabStarKey;
+            getWordStorageId = practiceCore.getWordStorageId;
+            restoreReviewKeyword = practiceCore.restoreReviewKeyword;
+            cloneLiteWord = practiceCore.cloneLiteWord;
+            collectWordsByIndexes = practiceCore.collectWordsByIndexes;
+            getDayWords = practiceCore.getDayWords;
+            getStageWords = practiceCore.getStageWords;
+            getFinalWords = practiceCore.getFinalWords;
+            getStarredWords = practiceCore.getStarredWords;
+            getQuestionLimitForContext = practiceCore.getQuestionLimitForContext;
+            getReadingPromptForWord = practiceCore.getReadingPromptForWord;
+            extractPrimaryMeaning = practiceCore.extractPrimaryMeaning;
+            extractPrimaryUsage = practiceCore.extractPrimaryUsage;
+            extractCommonCollocation = practiceCore.extractCommonCollocation;
+            getEligibleWordsForPracticeType = practiceCore.getEligibleWordsForPracticeType;
+            getSentenceCorrectAnswer = practiceCore.getSentenceCorrectAnswer;
+            getSentenceSourceMeta = practiceCore.getSentenceSourceMeta;
+            normalizeSentenceForTranslationMatch = practiceCore.normalizeSentenceForTranslationMatch;
+            findCurrentPracticeSourceForSnapshot = practiceCore.findCurrentPracticeSourceForSnapshot;
+            getCurrentSentenceTranslationForSnapshot = practiceCore.getCurrentSentenceTranslationForSnapshot;
+            normalizeSentencePresetOptions = practiceCore.normalizeSentencePresetOptions;
+            buildSentenceFallbackOptions = practiceCore.buildSentenceFallbackOptions;
+            findWordBySentenceSnapshot = practiceCore.findWordBySentenceSnapshot;
+            buildSentenceOptionDetails = practiceCore.buildSentenceOptionDetails;
+            buildSentenceReviewAnalysis = practiceCore.buildSentenceReviewAnalysis;
+            createSentenceQuestionSnapshot = practiceCore.createSentenceQuestionSnapshot;
+            recordSentenceQuestionWrong = practiceCore.recordSentenceQuestionWrong;
+            removeSentenceReviewQuestion = practiceCore.removeSentenceReviewQuestion;
+            getSentenceReviewQuestions = practiceCore.getSentenceReviewQuestions;
+            buildSentenceQuestionSpec = practiceCore.buildSentenceQuestionSpec;
+            buildReadingQuestionSpec = practiceCore.buildReadingQuestionSpec;
+            buildMeaningQuestionSpec = practiceCore.buildMeaningQuestionSpec;
+            buildReviewSummaryItems = () => practiceCore.buildReviewSummaryItems(questions);
+            buildReviewSummaryMarkup = () => practiceCore.buildReviewSummaryMarkup(questions);
+            prepareQuestionSet = function prepareQuestionSetWithCore() {
+                const prepared = practiceCore.prepareQuestionSet(getPracticeContext(), dailyPracticeType);
+                targetWords = prepared.targetWords;
+                questions = prepared.questions;
+            };
+        }
+
+        installVocabularyPracticeCore();
 
         document.getElementById('intro-story-panel').addEventListener('click', () => {
             finishCurrentTypewriter('intro');

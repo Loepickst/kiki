@@ -4686,10 +4686,10 @@ for (let i = 0; i < 265; i++) {
         FULL_WORD_LIST.push({
             id: i,
             word: "（準備中）",
-            word_html: "<span style='color:#ccc;'>（準備中）</span>",
+            word_html: "<span style='color:#ccc;'>（准备中）</span>",
             tone: "",
             pos: "",
-            mean: "データ準備中...",
+            mean: "数据准备中...",
             nuance: "",
             examples: []
         });
