@@ -18,6 +18,7 @@
     const PET_STATE_KEY = 'study_quest_test_v1_kiki_pet_state_v1';
     const PET_SETTINGS_KEY = 'study_quest_test_v1_kiki_pet_settings_v1';
     const PRACTICE_DRAW_DAILY_MODULES = Object.freeze(['vocabulary', 'grammar', 'reading', 'listening']);
+    const PRACTICE_DRAW_PITY_THRESHOLD = 20;
     const N1_PRACTICE_ACHIEVEMENT_CARD_ID = 'sp_yingji1';
     const N1_PRACTICE_ACHIEVEMENT_THRESHOLD = 30;
 
@@ -103,7 +104,7 @@
         vocabulary: 'practice_yaji_max',
         grammar: 'practice_gaoji_max',
         reading: 'practice_geji_max',
-        listening: 'practice_geji_max'
+        listening: 'practice_anji_max'
     });
     const PRIMARY_PRACTICE_REWARD_CARD_BY_TRACK = Object.freeze({
         listening_random_exam: 'practice_anji_max'
@@ -111,26 +112,33 @@
     const PRACTICE_CARD_WEIGHTS_BY_SOURCE = Object.freeze({
         vocabulary: Object.freeze({
             practice_yaji_max: 7,
-            practice_gaoji_max: 2,
-            practice_geji_max: 1
+            practice_gaoji_max: 1,
+            practice_geji_max: 1,
+            practice_anji_max: 1
         }),
         grammar: Object.freeze({
             practice_gaoji_max: 7,
-            practice_yaji_max: 2,
-            practice_geji_max: 1
+            practice_yaji_max: 1,
+            practice_geji_max: 1,
+            practice_anji_max: 1
         }),
         reading: Object.freeze({
             practice_geji_max: 7,
-            practice_yaji_max: 2,
-            practice_gaoji_max: 1
+            practice_yaji_max: 1,
+            practice_gaoji_max: 1,
+            practice_anji_max: 1
         }),
         listening: Object.freeze({
-            practice_geji_max: 4,
-            practice_yaji_max: 3,
-            practice_gaoji_max: 3
+            practice_anji_max: 7,
+            practice_yaji_max: 1,
+            practice_gaoji_max: 1,
+            practice_geji_max: 1
         }),
         listening_random_exam: Object.freeze({
-            practice_anji_max: 1
+            practice_anji_max: 7,
+            practice_yaji_max: 1,
+            practice_gaoji_max: 1,
+            practice_geji_max: 1
         })
     });
 
@@ -235,7 +243,8 @@
             },
             practiceLedger: {
                 rewardedRunKeys: [],
-                practiceDrawDaily: {}
+                practiceDrawDaily: {},
+                practiceDrawPity: {}
             },
             rewardFlow: {
                 pendingDraws: {}
@@ -397,6 +406,15 @@
         };
     }
 
+    function normalizePracticeDrawPityRecord(record) {
+        const source = record && typeof record === 'object' && !Array.isArray(record) ? record : {};
+        return {
+            count: Math.floor(clampNumber(source.count, 0, Number.MAX_SAFE_INTEGER)),
+            lastRunKey: normalizeString(source.lastRunKey),
+            updatedAt: normalizeString(source.updatedAt)
+        };
+    }
+
     function readState() {
         const parsed = safeParseJSON(global.localStorage.getItem(STORAGE_KEY), null);
         const defaults = createDefaultState();
@@ -444,6 +462,24 @@
             }
             const normalizedRecord = normalizePracticeDrawDailyRecord(practiceDrawDaily[moduleKey]);
             if (!normalizedRecord.dateKey) {
+                return accumulator;
+            }
+            accumulator[normalizedModule] = normalizedRecord;
+            return accumulator;
+        }, {});
+
+        const practiceDrawPity = nextState.practiceLedger.practiceDrawPity
+            && typeof nextState.practiceLedger.practiceDrawPity === 'object'
+            && !Array.isArray(nextState.practiceLedger.practiceDrawPity)
+            ? nextState.practiceLedger.practiceDrawPity
+            : {};
+        nextState.practiceLedger.practiceDrawPity = Object.keys(practiceDrawPity).reduce((accumulator, moduleKey) => {
+            const normalizedModule = normalizePracticeDrawModuleKey(moduleKey);
+            if (!normalizedModule) {
+                return accumulator;
+            }
+            const normalizedRecord = normalizePracticeDrawPityRecord(practiceDrawPity[moduleKey]);
+            if (normalizedRecord.count <= 0 && !normalizedRecord.lastRunKey && !normalizedRecord.updatedAt) {
                 return accumulator;
             }
             accumulator[normalizedModule] = normalizedRecord;
@@ -801,6 +837,48 @@
         };
     }
 
+    function getPracticeDrawPityRecord(state, moduleKey) {
+        const normalizedModule = normalizePracticeDrawModuleKey(moduleKey);
+        if (!normalizedModule) {
+            return normalizePracticeDrawPityRecord(null);
+        }
+        const ledger = state && state.practiceLedger && state.practiceLedger.practiceDrawPity
+            ? state.practiceLedger.practiceDrawPity
+            : {};
+        return normalizePracticeDrawPityRecord(ledger[normalizedModule]);
+    }
+
+    function setPracticeDrawPityRecord(state, moduleKey, record) {
+        const normalizedModule = normalizePracticeDrawModuleKey(moduleKey);
+        if (!normalizedModule || !state || !state.practiceLedger) {
+            return normalizePracticeDrawPityRecord(null);
+        }
+        if (!state.practiceLedger.practiceDrawPity || typeof state.practiceLedger.practiceDrawPity !== 'object') {
+            state.practiceLedger.practiceDrawPity = {};
+        }
+        const normalizedRecord = normalizePracticeDrawPityRecord(record);
+        state.practiceLedger.practiceDrawPity[normalizedModule] = normalizedRecord;
+        return normalizedRecord;
+    }
+
+    function incrementPracticeDrawPity(state, moduleKey, result) {
+        const previousRecord = getPracticeDrawPityRecord(state, moduleKey);
+        const nextRecord = {
+            count: previousRecord.count + 1,
+            lastRunKey: normalizeString(result && result.runKey),
+            updatedAt: normalizeString(result && result.finishedAt) || new Date().toISOString()
+        };
+        return setPracticeDrawPityRecord(state, moduleKey, nextRecord);
+    }
+
+    function resetPracticeDrawPity(state, moduleKey, result) {
+        return setPracticeDrawPityRecord(state, moduleKey, {
+            count: 0,
+            lastRunKey: normalizeString(result && result.runKey),
+            updatedAt: normalizeString(result && result.finishedAt) || new Date().toISOString()
+        });
+    }
+
     function syncHistoricalLevelPracticeCounts(state) {
         if (!state || !state.progress || !state.practiceLedger) {
             return false;
@@ -1005,34 +1083,57 @@
 
     function createDrawOffer(result, state) {
         const moduleKey = normalizePracticeDrawModuleKey(result && result.module);
+        const pityRecord = moduleKey
+            ? incrementPracticeDrawPity(state, moduleKey, result)
+            : normalizePracticeDrawPityRecord(null);
         if (moduleKey && hasClaimedPracticeDrawForModuleToday(state, moduleKey)) {
             return {
                 available: false,
                 chance: 0,
-                runKey: result.runKey,
+                runKey: result && result.runKey ? result.runKey : '',
                 entryLabel: '🐶',
-                blockedByDailyLimit: true
+                blockedByDailyLimit: true,
+                guaranteedByPity: false,
+                reason: 'daily_limit',
+                pityCount: pityRecord.count,
+                pityThreshold: PRACTICE_DRAW_PITY_THRESHOLD
             };
         }
-        const chance = getDrawOfferChance(result.accuracy);
-        const available = rollFromChance(chance);
+        const chance = getDrawOfferChance(result && Number.isFinite(Number(result.accuracy)) ? Number(result.accuracy) : 0);
+        const guaranteedByPity = moduleKey && pityRecord.count >= PRACTICE_DRAW_PITY_THRESHOLD;
+        const available = guaranteedByPity || rollFromChance(chance);
+        if (available && moduleKey) {
+            resetPracticeDrawPity(state, moduleKey, result);
+        }
         return {
             available,
             chance,
-            runKey: result.runKey,
+            runKey: result && result.runKey ? result.runKey : '',
             entryLabel: '🐶',
-            blockedByDailyLimit: false
+            blockedByDailyLimit: false,
+            guaranteedByPity: Boolean(guaranteedByPity),
+            reason: guaranteedByPity ? 'pity' : (available ? 'random' : 'chance_miss'),
+            pityCount: available ? 0 : pityRecord.count,
+            pityThreshold: PRACTICE_DRAW_PITY_THRESHOLD
         };
     }
 
-    function createSuppressedDrawOffer(result, reason) {
+    function createSuppressedDrawOffer(result, reason, state) {
+        const moduleKey = normalizePracticeDrawModuleKey(result && result.module);
+        const pityRecord = state && moduleKey
+            ? incrementPracticeDrawPity(state, moduleKey, result)
+            : normalizePracticeDrawPityRecord(null);
         return {
             available: false,
             chance: 0,
             runKey: result && result.runKey ? result.runKey : '',
             entryLabel: '🐶',
             blockedByDailyLimit: false,
-            blockedByAchievement: reason === 'achievement_draw'
+            blockedByAchievement: reason === 'achievement_draw',
+            guaranteedByPity: false,
+            reason: reason || 'suppressed',
+            pityCount: pityRecord.count,
+            pityThreshold: PRACTICE_DRAW_PITY_THRESHOLD
         };
     }
 
@@ -1343,7 +1444,7 @@
         state.practiceLedger.rewardedRunKeys.push(result.runKey);
         const achievementDraw = createAchievementDraw(result, achievementResult);
         const drawOffer = achievementDraw.available
-            ? createSuppressedDrawOffer(result, 'achievement_draw')
+            ? createSuppressedDrawOffer(result, 'achievement_draw', state)
             : createDrawOffer(result, state);
         const cardResult = {
             granted: false,
@@ -1393,7 +1494,11 @@
             rewards: deepClone(rewards),
             drawOffer: {
                 available: drawOffer.available,
-                runKey: result.runKey
+                runKey: result.runKey,
+                reason: drawOffer.reason || '',
+                guaranteedByPity: Boolean(drawOffer.guaranteedByPity),
+                pityCount: Number.isFinite(Number(drawOffer.pityCount)) ? Number(drawOffer.pityCount) : 0,
+                pityThreshold: PRACTICE_DRAW_PITY_THRESHOLD
             },
             achievementDraw: {
                 available: achievementDraw.available,
