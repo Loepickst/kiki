@@ -19,6 +19,7 @@
     const PET_SETTINGS_KEY = 'study_quest_test_v1_kiki_pet_settings_v1';
     const PRACTICE_DRAW_DAILY_MODULES = Object.freeze(['vocabulary', 'grammar', 'reading', 'listening']);
     const PRACTICE_DRAW_PITY_THRESHOLD = 20;
+    const PRACTICE_DRAW_PITY_MIN_ACCURACY = 0.6;
     const N1_PRACTICE_ACHIEVEMENT_CARD_ID = 'sp_yingji1';
     const N1_PRACTICE_ACHIEVEMENT_THRESHOLD = 30;
 
@@ -1068,6 +1069,14 @@
         return Math.random() < chance;
     }
 
+    function getPracticeDrawAccuracy(result) {
+        return result && Number.isFinite(Number(result.accuracy)) ? Number(result.accuracy) : 0;
+    }
+
+    function canAccruePracticeDrawPity(result) {
+        return getPracticeDrawAccuracy(result) >= PRACTICE_DRAW_PITY_MIN_ACCURACY;
+    }
+
     function getDrawOfferChance(accuracy) {
         if (accuracy >= 0.9) {
             return 0.12;
@@ -1083,9 +1092,11 @@
 
     function createDrawOffer(result, state) {
         const moduleKey = normalizePracticeDrawModuleKey(result && result.module);
-        const pityRecord = moduleKey
+        const accuracy = getPracticeDrawAccuracy(result);
+        const canAccruePity = moduleKey && canAccruePracticeDrawPity(result);
+        const pityRecord = canAccruePity
             ? incrementPracticeDrawPity(state, moduleKey, result)
-            : normalizePracticeDrawPityRecord(null);
+            : getPracticeDrawPityRecord(state, moduleKey);
         if (moduleKey && hasClaimedPracticeDrawForModuleToday(state, moduleKey)) {
             return {
                 available: false,
@@ -1099,8 +1110,8 @@
                 pityThreshold: PRACTICE_DRAW_PITY_THRESHOLD
             };
         }
-        const chance = getDrawOfferChance(result && Number.isFinite(Number(result.accuracy)) ? Number(result.accuracy) : 0);
-        const guaranteedByPity = moduleKey && pityRecord.count >= PRACTICE_DRAW_PITY_THRESHOLD;
+        const chance = getDrawOfferChance(accuracy);
+        const guaranteedByPity = canAccruePity && pityRecord.count >= PRACTICE_DRAW_PITY_THRESHOLD;
         const available = guaranteedByPity || rollFromChance(chance);
         if (available && moduleKey) {
             resetPracticeDrawPity(state, moduleKey, result);
@@ -1120,9 +1131,10 @@
 
     function createSuppressedDrawOffer(result, reason, state) {
         const moduleKey = normalizePracticeDrawModuleKey(result && result.module);
-        const pityRecord = state && moduleKey
+        const canAccruePity = state && moduleKey && canAccruePracticeDrawPity(result);
+        const pityRecord = canAccruePity
             ? incrementPracticeDrawPity(state, moduleKey, result)
-            : normalizePracticeDrawPityRecord(null);
+            : getPracticeDrawPityRecord(state, moduleKey);
         return {
             available: false,
             chance: 0,
