@@ -4,6 +4,7 @@
     const DEFAULT_SECTION = 'daily';
     const DEFAULT_PET_ID = 'shiba';
     const DEFAULT_UNLOCKED_PET_IDS = ['shiba', 'cat'];
+    const HIDDEN_PET_IDS = ['daodun'];
     const DEFAULT_UNLOCKED_INTERACTION_IDS = [];
     const DEFAULT_FOLLOW_OUTSIDE_HOME = false;
     const COLA_TREAT_UNLOCK_ID = 'colaTreat';
@@ -55,6 +56,18 @@
         '灵感捕手',
         '月影学伴神'
     ];
+    const DAODUN_LEVEL_TITLES = [
+        '初醒刀盾',
+        '待命护符',
+        '桌角守卫',
+        '词页巡护',
+        '专注护阵',
+        '复习护盾',
+        '备考刀锋',
+        '静默守护',
+        '星纹充能',
+        '学習守护神'
+    ];
     const SHIBA_LEVEL_UNLOCK_LABELS = {
         2: '新的欢迎语',
         3: '新的待机闲聊',
@@ -76,6 +89,17 @@
         8: '新的睡前回应',
         9: '新的陪学短语',
         10: '满级纪念语'
+    };
+    const DAODUN_LEVEL_UNLOCK_LABELS = {
+        2: '新的待命语',
+        3: '新的巡护提醒',
+        4: '新的触碰回应',
+        5: '新的复习守护语',
+        6: '新的补给回应',
+        7: '新的备考守护语',
+        8: '新的休眠回应',
+        9: '新的静默陪学语',
+        10: '满级守护语'
     };
     const STUDY_LAUNCH_MILESTONES = [
         { count: 10, xp: 1 },
@@ -188,9 +212,53 @@
             { minLevel: 8, label: '追线上头' }
         ]
     };
+    const DAODUN_MOOD_LABELS = {
+        idle: '静默待命',
+        curious: '侦测中',
+        cheer: '护纹发亮',
+        cola: '能量过载',
+        sleep: '低功耗',
+        sleeping: '低功耗',
+        dazed: '校准中',
+        headpatGentle: '温和响应',
+        headpatPlayful: '轻微闪避',
+        headpatAnnoyed: '护盾收拢',
+        ballPose: '巡护待机'
+    };
+    const DAODUN_MOOD_LABEL_VARIANTS = {
+        idle: [
+            { minLevel: 1, label: '静默待命' },
+            { minLevel: 5, label: '护阵展开' },
+            { minLevel: 9, label: '星纹守护' }
+        ],
+        curious: [
+            { minLevel: 1, label: '侦测中' },
+            { minLevel: 6, label: '巡护扫描' }
+        ],
+        cheer: [
+            { minLevel: 1, label: '护纹发亮' },
+            { minLevel: 7, label: '能量稳定' }
+        ],
+        cola: [
+            { minLevel: 1, label: '能量过载' }
+        ],
+        sleep: [
+            { minLevel: 1, label: '低功耗' }
+        ],
+        sleeping: [
+            { minLevel: 1, label: '低功耗' }
+        ],
+        dazed: [
+            { minLevel: 1, label: '校准中' }
+        ],
+        ballPose: [
+            { minLevel: 1, label: '巡护待机' }
+        ]
+    };
     const TREAT_COOLDOWN_DIALOGS = {
         shiba: '打咩！肚子已经圆滚滚了，再吃要变成猪犬了🐷',
-        cat: '拿走拿走，本喵现在看什么都像猫条，连看你都觉得反胃。'
+        cat: '拿走拿走，本喵现在看什么都像猫条，连看你都觉得反胃。',
+        daodun: '补给槽已经充满，刀盾暂时不需要追加能量。'
     };
     const INTERACTION_CHAIN_MS = 8000;
     const DAZED_DURATION_MS = 8000;
@@ -204,11 +272,13 @@
     const BALL_POSE_DURATION_MS = 5200;
     const COLA_TREAT_LOCKED_DIALOGS = {
         shiba: '汪？你还没解锁可乐呢！{name}只能咽咽口水假装喝过了……',
-        cat: '喵？说好的猫薄荷呢？你想拿空气糊弄本喵吗！'
+        cat: '喵？说好的猫薄荷呢？你想拿空气糊弄本喵吗！',
+        daodun: '{name}检测到特殊补给尚未解锁，继续保持待命。'
     };
     const HEADPAT_FALLBACK_DIALOGS = {
         shiba: '略略略~ 你摸不到！快去把专注力放在书本上！',
-        cat: '喵呜，扑空了吧？把这股劲头拿去翻书更划算。'
+        cat: '喵呜，扑空了吧？把这股劲头拿去翻书更划算。',
+        daodun: '{name}轻轻格挡了一下，像是在提醒你继续专注。'
     };
     const TREAT_OVERFEED_DIALOGS = {
         shiba: {
@@ -220,11 +290,17 @@
             4: '喂，你是打算把我喂成橘猫那种体型吗？拿走，本喵要保持身材！',
             5: '（用肉垫推开你的手）我说不吃就不吃！你以为这点零食就能掩盖你没背单词的事实吗？',
             sleep: '吃撑了……连骂你的力气都没了。本喵要睡美容觉了，你最好在我醒来前把这两页看完。（闭眼）'
+        },
+        daodun: {
+            4: '补给已经足够，{name}的护纹稳定亮起。',
+            5: '{name}收起补给槽，进入静默守护姿态。',
+            sleep: '能量过载，{name}切换为低功耗守护模式。'
         }
     };
     const COLA_OVERFLOW_DIALOGS = {
         shiba: '今天的快乐额度快被你灌满啦。',
-        cat: '不行了……再吸脑子都要变成毛线球了……喵呜……'
+        cat: '不行了……再吸脑子都要变成毛线球了……喵呜……',
+        daodun: '{name}的能量读数已经满格，建议暂停特殊补给。'
     };
     const TEXTBOOK_LAST_LABEL_KEY = 'study_quest_test_v1_textbook_n1_last_label';
     const TEXTBOOK_LAST_ROUTE_KEY = 'study_quest_test_v1_textbook_n1_last_route';
@@ -241,7 +317,8 @@
     const HOMEPAGE_GRAMMAR_REMINDER_CHANCE = 15;
     const FOLLOW_OUTSIDE_HOME_DIALOGS = {
         shiba: '要出去玩啦！{name}已经把牵绳叼好了，我们边逛边学！',
-        cat: '要出去玩啦？……那就把{name}也带上吧，别走丢了。'
+        cat: '要出去玩啦？……那就把{name}也带上吧，别走丢了。',
+        daodun: '要出去巡护啦，{name}已经切换到随行守护。'
     };
     const SECTION_ENTRY_DIALOGS = {
         shiba: {
@@ -279,6 +356,24 @@
                 '收藏页就收藏页，快点挑，别拿犹豫当复习。',
                 '你喜欢的入口都在这儿了，挑一个继续就好。'
             ]
+        },
+        daodun: {
+            daily: [
+                '{name}已进入日常守护，等待你选择学习入口。',
+                '日常学习区确认，{name}保持静默待命。'
+            ],
+            examRecent: [
+                '前回位置【{label}】已标记，{name}建议从这里继续。',
+                '检测到最近进度【{label}】，守护路线已同步。'
+            ],
+            examFallback: [
+                '备考区域已展开，{name}进入巡护模式。',
+                '未检测到前回位置，{name}将从基础入口开始守护。'
+            ],
+            favorites: [
+                '常用入口已列出，{name}等待你的指令。',
+                '收藏路径稳定，选择一项即可继续。'
+            ]
         }
     };
     const LIGHT_STUDY_REMINDER_DIALOGS = {
@@ -291,6 +386,11 @@
             '别想着一步到位，先做一点也算开始。',
             '随便挑个小任务，别让今天空着过去。',
             '你先动起来，本喵再考虑要不要夸你。'
+        ],
+        daodun: [
+            '先启动一个小任务，{name}会守住这段专注。',
+            '学习路径等待确认，先选择一步即可。',
+            '{name}已待命，建议从最近的一项开始。'
         ]
     };
     const LOTTERY_RESULT_DIALOGS = {
@@ -337,6 +437,28 @@
                 '结果还行，平平稳稳的也没什么不好。',
                 '普通一点的结果最耐看，别挑三拣四。'
             ]
+        },
+        daodun: {
+            unlock: [
+                '奖励信号确认，{name}已记录新的解锁项。',
+                '特殊结果已归档，守护清单更新完毕。'
+            ],
+            rare: [
+                '高能结果出现，{name}的护纹短暂亮起。',
+                '稀有信号确认，当前运势读数偏高。'
+            ],
+            new: [
+                '新卡已登记，图鉴记录增加一项。',
+                '{name}完成扫描：这是新的收藏。'
+            ],
+            duplicate: [
+                '重复卡已归档，记录保持稳定。',
+                '已拥有项目再次出现，{name}保持待命。'
+            ],
+            ordinary: [
+                '抽签结果稳定，适合继续前进。',
+                '普通结果已记录，学习节奏不受影响。'
+            ]
         }
     };
     const HOMEPAGE_GRAMMAR_TEMPLATES = {
@@ -373,11 +495,29 @@
                 { type: 'grammar-token', grammarId: label.id, label: label.title },
                 { type: 'text', text: '」也一起看懂。' }
             ]
+        ],
+        daodun: [
+            ({ label }) => [
+                { type: 'text', text: '检测到语法「' },
+                { type: 'grammar-token', grammarId: label.id, label: label.title },
+                { type: 'text', text: '」，建议短暂复核。' }
+            ],
+            ({ label }) => [
+                { type: 'text', text: '{name}已标记「' },
+                { type: 'grammar-token', grammarId: label.id, label: label.title },
+                { type: 'text', text: '」，可作为今日巡护点。' }
+            ],
+            ({ label }) => [
+                { type: 'text', text: '语法节点「' },
+                { type: 'grammar-token', grammarId: label.id, label: label.title },
+                { type: 'text', text: '」等待确认。' }
+            ]
         ]
     };
     const GRAMMAR_PEEK_HINTS = {
         shiba: '汪，先闻闻这条语法的味道，再慢慢看懂它。',
-        cat: '喵，先看清楚再下判断，别囫囵吞过去。'
+        cat: '喵，先看清楚再下判断，别囫囵吞过去。',
+        daodun: '刀盾已展开语法节点，先确认结构，再继续前进。'
     };
 
     function frameBlock(strings, ...values) {
@@ -385,12 +525,96 @@
         return raw ? raw.split('\n').map((row) => row.trim()) : [];
     }
 
+    function withFrameRows(baseRows, overrides = {}) {
+        const nextRows = Array.isArray(baseRows) ? baseRows.slice() : [];
+        Object.keys(overrides).forEach((key) => {
+            const index = Number(key);
+            if (!Number.isInteger(index) || index < 0) {
+                return;
+            }
+            nextRows[index] = String(overrides[key] || '');
+        });
+        return nextRows;
+    }
+
+    function pixelSequence(frames, interval = 140, loop = true) {
+        return {
+            frames: Array.isArray(frames) ? frames.slice() : [],
+            interval,
+            loop
+        };
+    }
+
+    const HOME_PET_SCRIPT_URL = (() => {
+        const currentScript = document.currentScript;
+        return currentScript && currentScript.src ? currentScript.src : '';
+    })();
+
+    function escapeHtmlAttribute(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function resolveHomePetAssetUrl(relativePath) {
+        const assetPath = String(relativePath || '').replace(/^\/+/, '');
+        if (!HOME_PET_SCRIPT_URL) {
+            return assetPath;
+        }
+        try {
+            return new URL(assetPath, HOME_PET_SCRIPT_URL).href;
+        } catch (error) {
+            return assetPath;
+        }
+    }
+
+    function imageSequence(frames, interval = 140, loop = true) {
+        return {
+            type: 'image',
+            frames: Array.isArray(frames) ? frames.slice() : [],
+            interval,
+            loop
+        };
+    }
+
+    function mianmianFrames(action, count) {
+        return Array.from({ length: count }, (_, index) => (
+            `assets/pets/mianmian/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.png`
+        ));
+    }
+
+    function mumuShibaFrames(action, count) {
+        return Array.from({ length: count }, (_, index) => (
+            `assets/pets/mumu-shiba/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.png`
+        ));
+    }
+
+    function normalizePixelRows(frameRows) {
+        if (!Array.isArray(frameRows) || !frameRows.length) {
+            return [['.']];
+        }
+        const rows = frameRows.map((row) => {
+            if (Array.isArray(row)) {
+                return row.map((token) => String(token || '.'));
+            }
+            return [...String(row || '')];
+        });
+        const width = Math.max(1, ...rows.map((row) => row.length));
+        return rows.map((row) => row.concat(Array.from({ length: Math.max(0, width - row.length) }, () => '.')));
+    }
+
     function remapFrameRows(frameRows, tokenMap) {
         if (!tokenMap) {
             return frameRows.slice();
         }
 
-        return frameRows.map((row) => [...row].map((token) => tokenMap[token] || '.').join(''));
+        return frameRows.map((row) => {
+            const tokens = Array.isArray(row) ? row : [...String(row || '')];
+            const mapped = tokens.map((token) => tokenMap[token] || '.');
+            return Array.isArray(row) ? mapped : mapped.join('');
+        });
     }
 
     function trimTransparentFrame(frameRows, padding = 0) {
@@ -398,16 +622,16 @@
             return frameRows;
         }
 
-        const width = Math.max(0, ...frameRows.map((row) => row.length));
-        const normalizedRows = frameRows.map((row) => row.padEnd(width, '.'));
+        const normalizedRows = normalizePixelRows(frameRows);
+        const width = Math.max(0, ...normalizedRows.map((row) => row.length));
         let minX = width;
         let minY = normalizedRows.length;
         let maxX = -1;
         let maxY = -1;
 
         normalizedRows.forEach((row, y) => {
-            [...row].forEach((token, x) => {
-                if (token === '.') {
+            row.forEach((token, x) => {
+                if (token === '.' || token === 'H2' || !PIXEL_PALETTE[token]) {
                     return;
                 }
                 minX = Math.min(minX, x);
@@ -438,358 +662,329 @@
         E: '#F4B596',
         F: '#F9F6F0',
         G: '#B86A4A',
-        H: '#F6C37B'
+        H: '#F6C37B',
+        I: '#E95C63',
+        J: '#C94550',
+        K: '#9ED7FF',
+        L: '#5CA6E6',
+        A1: '#FFF0C4',
+        A7: '#F58F32',
+        A10: '#F4A24A',
+        A11: '#FFD17F',
+        A21: '#F0D37A',
+        F10: '#7F3F20',
+        F18: '#D97836',
+        G1: '#FFF3D7',
+        G4: '#D4A46F',
+        G5: '#E5964C',
+        G6: '#D8873E',
+        G8: '#7F3D2F',
+        G9: '#F2B577',
+        G10: '#BD8A45',
+        G12: '#E8C980',
+        G15: '#D9D4AD',
+        G19: '#C6833D',
+        G20: '#9F562E',
+        H2: null,
+        H5: '#3F4348',
+        H6: '#211F22',
+        H7: '#050505',
+        H20: '#9AA4A6',
+        H22: '#CFD2CF',
+        M3: '#657B7C',
+        M9: '#A08B69',
+        M15: '#6E7470',
+        R3: '#E57E39',
+        A14: '#E55C58',
+        F8: '#B74442'
     };
-    const SHIBA_SOURCE_TOKEN_MAP = {
-        '.': '.',
-        A: 'A',
-        B: 'B',
-        C: 'H',
-        D: 'C',
-        E: 'D'
+
+    function createSpecFrame(width, height, fillToken, cells) {
+        const rows = Array.from({ length: height }, () => Array.from({ length: width }, () => fillToken));
+        cells.forEach(([x, y, token]) => {
+            const col = Number(x) - 1;
+            const row = Number(y) - 1;
+            if (row < 0 || row >= height || col < 0 || col >= width) {
+                return;
+            }
+            rows[row][col] = token;
+        });
+        return rows;
+    }
+
+    const DAODUN_FRAME_OPTIONS = {
+        trim: false
+    };
+    const DAODUN_IDLE_FRAME = createSpecFrame(36, 36, 'H2', [
+        [9, 5, 'H7'], [10, 5, 'H7'], [11, 5, 'H7'],
+        [8, 6, 'H7'], [9, 6, 'F18'], [10, 6, 'A1'], [11, 6, 'G20'], [12, 6, 'H7'],
+        [7, 7, 'H7'], [8, 7, 'H5'], [9, 7, 'H7'], [10, 7, 'G20'], [11, 7, 'H7'], [12, 7, 'H7'],
+        [6, 8, 'M3'], [7, 8, 'H22'], [8, 8, 'M3'], [9, 8, 'H7'], [10, 8, 'H7'], [11, 8, 'H7'],
+        [5, 9, 'M15'], [6, 9, 'H22'], [7, 9, 'H20'], [8, 9, 'H6'], [9, 9, 'G20'], [10, 9, 'H7'], [11, 9, 'G20'], [12, 9, 'H7'], [13, 9, 'H7'], [14, 9, 'H7'], [15, 9, 'H7'], [16, 9, 'H7'], [17, 9, 'H7'], [18, 9, 'H7'],
+        [4, 10, 'M3'], [5, 10, 'H22'], [6, 10, 'H20'], [7, 10, 'H5'], [8, 10, 'H7'], [9, 10, 'G20'], [10, 10, 'H7'], [11, 10, 'H7'], [12, 10, 'G20'], [13, 10, 'A7'], [14, 10, 'G20'], [15, 10, 'G20'], [16, 10, 'G20'], [17, 10, 'G20'], [18, 10, 'G20'], [19, 10, 'G20'], [20, 10, 'H7'], [21, 10, 'H7'],
+        [4, 11, 'H5'], [5, 11, 'H22'], [6, 11, 'M3'], [7, 11, 'H7'], [8, 11, 'G20'], [9, 11, 'H7'], [10, 11, 'G20'], [11, 11, 'F18'], [12, 11, 'F18'], [13, 11, 'G20'], [14, 11, 'G20'], [15, 11, 'G20'], [16, 11, 'G20'], [17, 11, 'G20'], [18, 11, 'G20'], [19, 11, 'G20'], [20, 11, 'G20'], [21, 11, 'H7'],
+        [4, 12, 'H5'], [5, 12, 'H22'], [6, 12, 'H7'], [8, 12, 'H7'], [9, 12, 'G20'], [10, 12, 'G20'], [11, 12, 'G20'], [12, 12, 'G20'], [13, 12, 'G20'], [14, 12, 'G20'], [15, 12, 'G20'], [16, 12, 'G20'], [17, 12, 'G20'], [18, 12, 'G20'], [19, 12, 'F18'], [20, 12, 'F18'], [21, 12, 'A7'], [22, 12, 'G20'], [23, 12, 'H7'],
+        [4, 13, 'H7'], [5, 13, 'H7'], [7, 13, 'H7'], [8, 13, 'G20'], [9, 13, 'A7'], [10, 13, 'G20'], [11, 13, 'G20'], [12, 13, 'G20'], [13, 13, 'G20'], [14, 13, 'G20'], [15, 13, 'G20'], [16, 13, 'G20'], [17, 13, 'G20'], [18, 13, 'A7'], [19, 13, 'G20'], [20, 13, 'G20'], [21, 13, 'G20'], [22, 13, 'G20'], [23, 13, 'G20'], [24, 13, 'H7'],
+        [7, 14, 'H7'], [8, 14, 'F18'], [9, 14, 'H7'], [10, 14, 'G9'], [11, 14, 'G20'], [12, 14, 'G20'], [13, 14, 'G20'], [14, 14, 'G20'], [15, 14, 'G20'], [16, 14, 'G20'], [17, 14, 'F18'], [18, 14, 'G20'], [19, 14, 'G20'], [20, 14, 'H7'], [21, 14, 'H7'], [22, 14, 'G20'], [23, 14, 'H7'],
+        [6, 15, 'H7'], [7, 15, 'A7'], [8, 15, 'G1'], [9, 15, 'H7'], [10, 15, 'H7'], [11, 15, 'G20'], [12, 15, 'G20'], [13, 15, 'G20'], [14, 15, 'G20'], [15, 15, 'A7'], [16, 15, 'F18'], [17, 15, 'G20'], [18, 15, 'G20'], [19, 15, 'H7'], [20, 15, 'H7'], [21, 15, 'H7'], [22, 15, 'G20'], [23, 15, 'H7'],
+        [6, 16, 'H7'], [7, 16, 'A10'], [8, 16, 'A1'], [9, 16, 'G8'], [10, 16, 'G8'], [11, 16, 'F18'], [12, 16, 'A7'], [13, 16, 'G20'], [14, 16, 'A10'], [15, 16, 'H7'], [16, 16, 'H7'], [17, 16, 'H7'], [18, 16, 'G20'], [19, 16, 'G20'], [20, 16, 'H7'], [21, 16, 'G20'], [22, 16, 'G20'], [23, 16, 'H7'],
+        [6, 17, 'H7'], [7, 17, 'A10'], [8, 17, 'G9'], [9, 17, 'G8'], [10, 17, 'G4'], [11, 17, 'H7'], [12, 17, 'H7'], [13, 17, 'H7'], [14, 17, 'A10'], [15, 17, 'H7'], [16, 17, 'H7'], [18, 17, 'A1'], [19, 17, 'G9'], [20, 17, 'F18'], [21, 17, 'A7'], [22, 17, 'G20'], [23, 17, 'G20'], [24, 17, 'H7'], [30, 17, 'H7'], [31, 17, 'H7'], [32, 17, 'H7'],
+        [6, 18, 'H7'], [7, 18, 'A10'], [8, 18, 'H7'], [9, 18, 'H7'], [10, 18, 'H7'], [11, 18, 'H7'], [12, 18, 'G1'], [13, 18, 'A1'], [14, 18, 'A1'], [15, 18, 'A10'], [16, 18, 'G12'], [17, 18, 'A1'], [18, 18, 'A1'], [19, 18, 'G9'], [20, 18, 'F18'], [21, 18, 'G20'], [22, 18, 'G20'], [23, 18, 'H7'], [29, 18, 'H7'], [30, 18, 'M3'], [31, 18, 'H5'], [32, 18, 'H5'], [33, 18, 'H5'], [34, 18, 'H7'],
+        [6, 19, 'H7'], [7, 19, 'G20'], [8, 19, 'H7'], [9, 19, 'H7'], [10, 19, 'H7'], [11, 19, 'A1'], [12, 19, 'A1'], [13, 19, 'A1'], [14, 19, 'H7'], [15, 19, 'A1'], [16, 19, 'A1'], [17, 19, 'A1'], [18, 19, 'G9'], [19, 19, 'G4'], [20, 19, 'G8'], [21, 19, 'G8'], [22, 19, 'G8'], [23, 19, 'A10'], [24, 19, 'H7'], [28, 19, 'H7'], [29, 19, 'H20'], [30, 19, 'H5'], [31, 19, 'H5'], [32, 19, 'H5'], [33, 19, 'H7'],
+        [7, 20, 'H7'], [8, 20, 'A1'], [9, 20, 'H7'], [10, 20, 'G8'], [11, 20, 'G10'], [12, 20, 'G10'], [13, 20, 'H7'], [14, 20, 'G20'], [15, 20, 'A1'], [16, 20, 'A10'], [17, 20, 'A10'], [18, 20, 'G20'], [19, 20, 'G20'], [20, 20, 'G20'], [21, 20, 'A7'], [22, 20, 'G20'], [23, 20, 'H7'], [28, 20, 'H7'], [29, 20, 'M3'], [30, 20, 'H5'], [31, 20, 'H5'], [32, 20, 'H5'], [33, 20, 'H7'],
+        [7, 21, 'H7'], [8, 21, 'G6'], [9, 21, 'A1'], [10, 21, 'H7'], [11, 21, 'H7'], [12, 21, 'H7'], [13, 21, 'M9'], [14, 21, 'G4'], [15, 21, 'G19'], [16, 21, 'G19'], [17, 21, 'F10'], [18, 21, 'G8'], [19, 21, 'F18'], [20, 21, 'F18'], [21, 21, 'A7'], [22, 21, 'F18'], [23, 21, 'F18'], [24, 21, 'A10'], [25, 21, 'H7'], [26, 21, 'H7'], [27, 21, 'H7'], [28, 21, 'H7'], [29, 21, 'H5'], [30, 21, 'H5'], [31, 21, 'H5'], [32, 21, 'H5'], [33, 21, 'H7'],
+        [7, 22, 'H7'], [8, 22, 'G9'], [9, 22, 'G4'], [10, 22, 'A11'], [11, 22, 'A11'], [12, 22, 'G19'], [13, 22, 'G4'], [14, 22, 'G4'], [15, 22, 'G4'], [16, 22, 'G4'], [17, 22, 'G9'], [18, 22, 'A11'], [19, 22, 'G4'], [20, 22, 'A10'], [21, 22, 'A1'], [22, 22, 'F18'], [23, 22, 'A7'], [24, 22, 'A7'], [25, 22, 'A10'], [26, 22, 'G9'], [27, 22, 'H7'], [28, 22, 'H7'], [29, 22, 'H7'], [30, 22, 'H5'], [31, 22, 'H5'], [32, 22, 'H5'], [33, 22, 'H7'],
+        [7, 23, 'H7'], [8, 23, 'A1'], [9, 23, 'A1'], [10, 23, 'A1'], [11, 23, 'A1'], [12, 23, 'A21'], [13, 23, 'G1'], [14, 23, 'A21'], [15, 23, 'A21'], [16, 23, 'A1'], [17, 23, 'G10'], [18, 23, 'G19'], [19, 23, 'A1'], [20, 23, 'G20'], [21, 23, 'A1'], [22, 23, 'A1'], [23, 23, 'A7'], [24, 23, 'G20'], [25, 23, 'H7'], [26, 23, 'A1'], [27, 23, 'G20'], [28, 23, 'H7'], [29, 23, 'H5'], [30, 23, 'H5'], [31, 23, 'M3'], [32, 23, 'H7'],
+        [7, 24, 'H7'], [8, 24, 'A1'], [9, 24, 'A1'], [10, 24, 'A1'], [11, 24, 'G4'], [12, 24, 'A1'], [13, 24, 'A1'], [14, 24, 'A1'], [15, 24, 'A1'], [16, 24, 'A1'], [17, 24, 'A1'], [18, 24, 'A1'], [19, 24, 'G4'], [20, 24, 'G20'], [21, 24, 'G8'], [22, 24, 'G20'], [23, 24, 'A7'], [24, 24, 'G20'], [25, 24, 'H7'], [26, 24, 'G9'], [27, 24, 'G20'], [28, 24, 'H7'], [29, 24, 'H5'], [30, 24, 'H5'], [31, 24, 'H5'], [32, 24, 'H7'],
+        [7, 25, 'H7'], [8, 25, 'A10'], [9, 25, 'A1'], [10, 25, 'A1'], [11, 25, 'A1'], [12, 25, 'G4'], [13, 25, 'A1'], [14, 25, 'A1'], [15, 25, 'A1'], [16, 25, 'A1'], [17, 25, 'A1'], [18, 25, 'A1'], [19, 25, 'A1'], [20, 25, 'G4'], [21, 25, 'G20'], [22, 25, 'H7'], [23, 25, 'H7'], [24, 25, 'H7'], [25, 25, 'H7'], [26, 25, 'H7'], [27, 25, 'H7'], [28, 25, 'H7'], [29, 25, 'H5'], [30, 25, 'M3'], [31, 25, 'H7'],
+        [7, 26, 'H7'], [8, 26, 'F18'], [9, 26, 'G4'], [10, 26, 'A1'], [11, 26, 'A1'], [12, 26, 'A21'], [15, 26, 'A1'], [17, 26, 'G15'], [18, 26, 'G15'], [19, 26, 'A1'], [20, 26, 'G9'], [21, 26, 'G4'], [22, 26, 'H7'], [26, 26, 'H7'], [27, 26, 'H7'], [28, 26, 'H5'], [29, 26, 'H5'], [30, 26, 'M3'], [31, 26, 'H7'],
+        [8, 27, 'H7'], [9, 27, 'G20'], [10, 27, 'G4'], [11, 27, 'A1'], [12, 27, 'A1'], [13, 27, 'G9'], [16, 27, 'G15'], [18, 27, 'G15'], [20, 27, 'A11'], [21, 27, 'G4'], [22, 27, 'G20'], [23, 27, 'H7'], [28, 27, 'H7'], [29, 27, 'M3'], [30, 27, 'M3'], [31, 27, 'H7'],
+        [8, 28, 'H7'], [9, 28, 'G20'], [10, 28, 'G20'], [11, 28, 'G9'], [12, 28, 'A1'], [13, 28, 'A1'], [14, 28, 'A1'], [15, 28, 'A1'], [17, 28, 'G15'], [18, 28, 'G15'], [19, 28, 'G15'], [20, 28, 'G4'], [21, 28, 'F18'], [22, 28, 'G6'], [23, 28, 'H7'], [28, 28, 'H7'], [29, 28, 'H5'], [30, 28, 'H5'], [31, 28, 'H7'],
+        [9, 29, 'H7'], [10, 29, 'A7'], [11, 29, 'G20'], [12, 29, 'G5'], [13, 29, 'G9'], [14, 29, 'G9'], [15, 29, 'G9'], [16, 29, 'G9'], [17, 29, 'G12'], [18, 29, 'G9'], [19, 29, 'G4'], [20, 29, 'F18'], [21, 29, 'F18'], [22, 29, 'G8'], [23, 29, 'H7'], [28, 29, 'H7'], [29, 29, 'H7'],
+        [9, 30, 'H7'], [10, 30, 'H7'], [11, 30, 'G20'], [12, 30, 'H7'], [13, 30, 'H7'], [14, 30, 'G19'], [15, 30, 'G4'], [16, 30, 'G4'], [17, 30, 'G10'], [18, 30, 'H7'], [19, 30, 'G20'], [20, 30, 'G20'], [21, 30, 'H7'], [22, 30, 'H7'], [23, 30, 'H22'],
+        [8, 31, 'H7'], [9, 31, 'G9'], [10, 31, 'A1'], [11, 31, 'A21'], [12, 31, 'G20'], [13, 31, 'H7'], [14, 31, 'H7'], [15, 31, 'H7'], [16, 31, 'H7'], [17, 31, 'H7'], [18, 31, 'H7'], [19, 31, 'G4'], [20, 31, 'G1'], [21, 31, 'A1'], [22, 31, 'H7'],
+        [8, 32, 'H7'], [9, 32, 'H7'], [10, 32, 'A10'], [11, 32, 'H7'], [12, 32, 'H7'], [19, 32, 'H7'], [20, 32, 'H7'], [21, 32, 'A10'], [22, 32, 'H7'], [23, 32, 'H7'],
+        [10, 33, 'H7'], [21, 33, 'H7']
+    ]);
+    const DAODUN_PIXEL_FRAMES = {
+        idle: pixelSequence([DAODUN_IDLE_FRAME], 240),
+        blink: pixelSequence([DAODUN_IDLE_FRAME], 240),
+        hop: pixelSequence([DAODUN_IDLE_FRAME], 240),
+        cheer: pixelSequence([DAODUN_IDLE_FRAME], 240),
+        sleep: pixelSequence([DAODUN_IDLE_FRAME], 240)
     };
     const SHIBA_FRAME_OPTIONS = {
-        tokenMap: SHIBA_SOURCE_TOKEN_MAP,
-        trim: true,
-        padding: 1
+        trim: false
     };
-    const SHIBA_IDLE_FRAME = frameBlock`
-        ................................
-        ................................
-        ................................
-        ..............A..A..............
-        .............ABA..ABA...........
-        ............ABB.AA.BBA..........
-        ...........ABBBBAABBBBA.........
-        ..........ABBBBBBBBBBBBA........
-        .........ABBCCCCDDCCCCBBA.......
-        ........ABCCCDDDDDDDDCCCBA......
-        ........ABCCDDDDDDDDDDCCBA......
-        .......ABCCDDDAADDAADDDCCBA.....
-        .......ABCCDDDDAEADDDDDCCBA.....
-        .......ABCCDDDDAAADDDDDCCBA.....
-        .......ABCCDDDDDDDDDDDDCCBA.....
-        .......ABCCDDDDDDDDDDDDCCBA.....
-        ........ABCCCDDDDDDDDCCCBA......
-        ........ABBCCCCDDCCCCBBA........
-        ........ABBCCCDDDDCCCBBA........
-        .........ABCCDDDDDDCCBA.........
-        .........ABCCDDDDDDCCBA.........
-        .........ABCCDDDDDDCCBA.........
-        .........ABBCDAAADDCBBA.........
-        ..........ABBA....ABBA..........
-        ..........ABBA....ABBA..........
-        ..........ABBA....ABBA..........
-        ...........AA......AA...........
-        ................................
-        ................................
-        ................................
-        ................................
-        ................................
+    const SHIBA_IDLE_BASE_FRAME = frameBlock`
+        ................
+        ....AA....AA....
+        ...AHH....HHA...
+        ..AHHHABBAHHHA..
+        ..AHHHHHHHHHHA..
+        ..AHCCHHHHCCHA..
+        ..AHEHDDDDHEHA..
+        ..AHCCDEEDCCHA..
+        ...ACCCDDCCCA...
+        ...AJIIIIIIJA...
+        ..AHHJIJJIJHHA..
+        ..AHHHHHHHHHHAA.
+        ..AHHHCCFFCHHHAA
+        ...AHCF..FCHHBA.
+        ...AFA....AFABH.
+        ...........AHHA.
     `;
-    const SHIBA_BLINK_FRAME = frameBlock`
-        ................................
-        ................................
-        ................................
-        ..............A..A..............
-        .............ABA..ABA...........
-        ............ABB.AA.BBA..........
-        ...........ABBBBAABBBBA.........
-        ..........ABBBBBBBBBBBBA........
-        .........ABBCCCCDDCCCCBBA.......
-        ........ABCCCDDDDDDDDCCCBA......
-        ........ABCCDDEEDDEEDDCCBA......
-        .......ABCCDDDAADDAADDDCCBA.....
-        .......ABCCDDDDAEADDDDDCCBA.....
-        .......ABCCDDDDAAADDDDDCCBA.....
-        .......ABCCDDDDDDDDDDDDCCBA.....
-        .......ABCCDDDDDDDDDDDDCCBA.....
-        ........ABCCCDDDDDDDDCCCBA......
-        ........ABBCCCCDDCCCCBBA........
-        ........ABBCCCDDDDCCCBBA........
-        .........ABCCDDDDDDCCBA.........
-        .........ABCCDDDDDDCCBA.........
-        .........ABCCDDDDDDCCBA.........
-        .........ABBCDAAADDCBBA.........
-        ..........ABBA....ABBA..........
-        ..........ABBA....ABBA..........
-        ..........ABBA....ABBA..........
-        ...........AA......AA...........
-        ................................
-        ................................
-        ................................
-        ................................
-        ................................
+    const SHIBA_IDLE_FRAME_2 = withFrameRows(SHIBA_IDLE_BASE_FRAME, {
+        10: '..AHHJIJJIJHHA..',
+        11: '..AHHHHHHHHHBAA.',
+        12: '..AHHHCCFFCHHBAA',
+        13: '...AHCF..FCHHAA.',
+        14: '...AFA....AFAHH.',
+        15: '............AHHA'
+    });
+    const SHIBA_IDLE_FRAME_3 = withFrameRows(SHIBA_IDLE_BASE_FRAME, {
+        11: '...AHHHHHHHHHAA.',
+        12: '..AHHHCCFFCHHHBA',
+        13: '...AHCF..FCHHGAA',
+        15: '...........AHAA.'
+    });
+    const SHIBA_BLINK_CLOSED_FRAME = withFrameRows(SHIBA_IDLE_FRAME_2, {
+        6: '..AHEAAAAAAEHA..'
+    });
+    const SHIBA_CHEER_FRAME_1 = withFrameRows(SHIBA_IDLE_BASE_FRAME, {
+        7: '..AHCCDEEECCHA..',
+        8: '...ACCCEDCCCA...',
+        11: '...AHHHHHHHHAA..',
+        13: '....AHCF..FCHBA.',
+        14: '....FA....AFABH.',
+        15: '...........AHHA.'
+    });
+    const SHIBA_CHEER_FRAME_2 = withFrameRows(SHIBA_IDLE_FRAME_2, {
+        7: '..AHCCDEEEDCHA..',
+        8: '...ACCCEECCCA...',
+        13: '....AHCF..FCHHA.',
+        14: '....FA....AFAHH.',
+        15: '............AHHA'
+    });
+    const SHIBA_CHEER_FRAME_3 = withFrameRows(SHIBA_IDLE_FRAME_3, {
+        6: '..AHEAAAAAAEHA..',
+        7: '..AHCCDEEECCHA..',
+        8: '...ACCCEECCCA...',
+        13: '....AHCF..FCHAA.',
+        14: '....FA....AFABH.',
+        15: '...........AHHA.'
+    });
+    const SHIBA_HOP_FRAME_1 = withFrameRows(SHIBA_IDLE_BASE_FRAME, {
+        11: '...AHHHHHHHHAA..',
+        12: '..AHHHCCFFCHHBAA',
+        13: '...AHCF..FCHHGAA',
+        14: '....FA....AFABH.',
+        15: '...........AHHA.'
+    });
+    const SHIBA_HOP_FRAME_2 = withFrameRows(SHIBA_IDLE_BASE_FRAME, {
+        11: '..AHHHHHHHHHBAA.',
+        12: '..AHHHCCFFCHHHAA',
+        13: '..AHCF....FCHHAA',
+        14: '...AFA....AFAAH.',
+        15: '............AHHA'
+    });
+    const SHIBA_BALL_FRAME_1 = withFrameRows(SHIBA_IDLE_BASE_FRAME, {
+        13: '...AHCF..FCHHBAK',
+        14: '...AFA....AFABKL',
+        15: '...........AHHKL'
+    });
+    const SHIBA_BALL_FRAME_2 = withFrameRows(SHIBA_IDLE_FRAME_2, {
+        13: '..AHCF....FCHBAK',
+        14: '...AFA....AFAAKL',
+        15: '............AHKL'
+    });
+    const SHIBA_BALL_FRAME_3 = withFrameRows(SHIBA_IDLE_BASE_FRAME, {
+        12: '..AHHHCCFFCHHBAK',
+        13: '...AHCF..FCHHBL.',
+        14: '...AFA....AFAB..',
+        15: '...........AHA..'
+    });
+    const SHIBA_SLEEPY_FRAME_1 = withFrameRows(SHIBA_IDLE_BASE_FRAME, {
+        6: '..AHEAAAAAAEHA..',
+        7: '..AHCCDDDDCCHA..',
+        11: '..AHHHHHHHHHBAA.',
+        12: '..AHHHCCFFCHHBAA',
+        13: '...AHCF..FCHHAA.',
+        14: '...AFA....AFAAA.',
+        15: '............AA..'
+    });
+    const SHIBA_SLEEPY_FRAME_2 = withFrameRows(SHIBA_IDLE_BASE_FRAME, {
+        6: '..AHCCAAAACCHA..',
+        7: '..AHCCDDDDCCHA..',
+        11: '...AHHHHHHHHAA..',
+        12: '..AHHHCCFFCHHHAA',
+        13: '...AHCF..FCHHAA.',
+        14: '....AA....AFAAA.',
+        15: '.............AA.'
+    });
+    const SHIBA_SLEEP_FRAME_1 = frameBlock`
+        ................
+        ................
+        ................
+        .....AAAAA......
+        ....AHHHHHA.....
+        ...AHCCCCCCHA...
+        ..AHCDDDDDCCHA..
+        .AHHHHHHHHHHHHA.
+        .AJIIIIIIIIIIJA.
+        .AHHHHHHHHHHHHA.
+        ..AHHHHCCCCHHA..
+        ...AHCCFFCCHA...
+        ....ABCCCCBA....
+        .....AABBAA.....
+        ................
+        ................
     `;
-    const SHIBA_HAPPY_SOFT_FRAME = frameBlock`
-        ................................
-        ................................
-        ................................
-        ..............A..A..............
-        ............ABA..ABA............
-        ...........ABB.AA.BBA...........
-        ..........ABBBBAABBBBA..........
-        .........ABBBBBBBBBBBBA.........
-        ........ABBCCCCDDCCCCBBA........
-        .......ABCCCDDDDDDDDCCCBA.......
-        ......ABCCDDAADDDDAADDCCBA......
-        ......ABCCDDDDDAAADDDDCCBA......
-        ......ABCCDDDDAEADDDDDCCBA......
-        ......ABCCDDDDDADADDDDCCBA......
-        ......ABCCDDDDDDDDDDDDCCBA......
-        .......ABCCDDDDDDDDDDCCBA.......
-        .......ABCCCDDDDDDDDCCCBA.......
-        ........ABBCCCCDDCCCCBBA........
-        ........ABBCCCDDDDCCCBBA........
-        ........ABBCCDDDDDDCCBBA........
-        .........ABCCDDDDDDCCBA.........
-        .........ABCCDDDDDDCCBA.........
-        .........ABCCDAAADDCCBA.........
-        .........ABBCA....ACBBA.........
-        ..........ABBA....ABBA..........
-        ..........ABBA....ABBA..........
-        ...........AA......AA...........
-        ................................
-        ................................
-        ................................
-        ................................
-        ................................
+    const SHIBA_SLEEP_FRAME_2 = frameBlock`
+        ................
+        ................
+        ................
+        ......AAAA......
+        ....AHHHHHA.....
+        ...AHCCCCCCHA...
+        ..AHCDDDDDCCHA..
+        .AHHHHHHHHHHHHA.
+        .AJIIIIIIIIIIJA.
+        .AHHHHHHHHHHHHA.
+        ...AHHHCCCCHHA..
+        ....AHCCFFCCHA..
+        .....ABCCCBA....
+        ......AABAA.....
+        ................
+        ................
     `;
-    const SHIBA_BALL_FRAME = frameBlock`
-        ................................
-        ................................
-        ................................
-        ..............A..A..............
-        .............ABA..ABA...........
-        ............ABB.AA.BBA..........
-        ...........ABBBBAABBBBA.........
-        ..........ABBBBBBBBBBBBA........
-        .........ABBCCCCDDCCCCBBA.......
-        ........ABCCCDDDDDDDDCCCBA......
-        .......ABCCDDDAADDAADDDCCBA.....
-        .......ABCCDDDDAEADDDDDCCBA.....
-        .......ABCCDDDDAAADDDDDCCBA.....
-        .......ABCCDDDDDDDDDDDDCCBA.....
-        .......ABCCDDDDDDDDDDDDCCBA.....
-        ........ABCCCDDDDDDDDCCCBA......
-        ........ABBCCCCDDCCCCBBA........
-        ........ABBCCCDDDDCCCBBA........
-        .........ABCCDDDDDDCCBA.........
-        .........ABCCDDDDDDCCBA.........
-        .........ABCCDDDDDDCCBA.........
-        .........ABBCDAAADDCBBA.........
-        ..........ABBA....ABBA.CCC......
-        ..........ABBA....ABBAACCC......
-        ..........ABBA....ABBA.CCC......
-        ...........AA......AA...........
-        ................................
-        ................................
-        ................................
-        ................................
-        ................................
-    `;
-    const SHIBA_SLEEPY_FRAME = frameBlock`
-        ................................
-        ................................
-        ................................
-        ..............A..A..............
-        ............ABA..ABA............
-        ...........ABB.AA.BBA...........
-        ..........ABBBBAABBBBA..........
-        .........ABBBBBBBBBBBBA.........
-        ........ABBCCCCDDCCCCBBA........
-        .......ABCCCDDDDDDDDCCCBA.......
-        .......ABCCDEEDDDDEEDCCBA.......
-        ......ABCCDDDDDDDDDDDDCCBA......
-        ......ABCCDDDDAEADDDDDCCBA......
-        ......ABCCDDDDDDADDDDDCCBA......
-        ......ABCCDDDDDAAADDDDCCBA......
-        .......ABCCDDDDDDDDDDCCBA.......
-        .......ABCCCDDDDDDDDCCCBA.......
-        ........ABBCCCCDDCCCCBBA........
-        ........ABBCCCDDDDCCCBBA........
-        ........ABBCCDDDDDDCCBBA........
-        .........ABCCDDDDDDCCBA.........
-        .........ABCCDDDDDDCCBA.........
-        .........ABCCDAAADDCCBA.........
-        .........ABBCA....ACBBA.........
-        ..........ABBA....ABBA..........
-        ..........ABBA....ABBA..........
-        ...........AA......AA...........
-        ................................
-        ................................
-        ................................
-        ................................
-        ................................
-    `;
-    const SHIBA_SLEEP_CURL_FRAME = frameBlock`
-        ................................................
-        ................................................
-        ................................................
-        ................................................
-        ................................................
-        ................................................
-        ......................AA..AA....................
-        .....................ABBAABBA...................
-        ....................ABBBAABBBA..................
-        ...................ABBCCDDDCCBBA................
-        ..................ABCCDDDDDCDDCBA...............
-        .................ABCDDDEEDDDDCCBBA..............
-        ................ABCCDDDDDDDDDDCCBBA.............
-        ................ABCCDDDDDDDDDDCCCBBA............
-        ...............ABBCCCDCCCCCCCCCCCCBBA...........
-        ...............ABCCCCCCCCCCCCCCCCCCBA...........
-        ..............ABCCCCCCCCCCCCCCCCCCCCBA..........
-        ..............ABCCCCCCCCCCCCCCCCCCCCBA..........
-        ..............ABCCCCCCCCCCCCCCCCCCCCBA..........
-        ...............ABCCCCCCCCCCCCCCCCCCBBA..........
-        ...............ABBCCCCCCCCCCCCCCCCBBA...........
-        ................ABCCCCCCCCCCCCCCCBBA............
-        .................ABCCCCCCCCCCCCCCBBA............
-        ..................ABCCCCCCCCCCCCCCBBA...........
-        ...................ABCCCCCCCCCCCCCCBBBA.........
-        ....................ABCCCCCCCCCCCCCCCBBA........
-        .....................ABCCCCCCCCCCCCCCCBA........
-        ......................ABCCCCCCCCDDCCCCBA........
-        .......................ABCCCCCCDDDDCCCBA........
-        ........................ABCCCCDDDDDDCCBA........
-        .........................ABBCCDDDDDDCCBA........
-        ..........................ABBCCCCCCCCCBBA.......
-        ...........................ABBBCCCCCCCCBA.......
-        ............................AABBCCCCCCBA........
-        ..............................ABBBBBBBBA........
-        ...............................AABBBBBA.........
-        .................................AAAA...........
-        ................................................
-        ................................................
-        ................................................
-        ................................................
-        ................................................
-        ................................................
-        ................................................
-        ................................................
-        ................................................
-        ................................................
-        ................................................
-    `;
+    const SHIBA_COLA_FRAME_1 = withFrameRows(SHIBA_CHEER_FRAME_1, {
+        8: '...ACCEEECCCA...'
+    });
+    const SHIBA_COLA_FRAME_2 = withFrameRows(SHIBA_CHEER_FRAME_2, {
+        6: '..AHDHDDDDHDHA..',
+        7: '..AHCCDEEECCHA..',
+        8: '...ACCEEEDCCA...',
+        14: '....FA....AFAHH.',
+        15: '............AHHA'
+    });
+    const SHIBA_COLA_FRAME_3 = withFrameRows(SHIBA_CHEER_FRAME_3, {
+        6: '..AHCAAAAAACHA..',
+        7: '..AHCCDEEECCHA..',
+        8: '...ACCEEEDCCA...',
+        14: '....FA....AFABH.',
+        15: '...........AHAA.'
+    });
+    const SHIBA_SPEC_IDLE_FRAME = [
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'H7', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'H7', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'A1', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'A1', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'A1', 'A1', 'A1', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'A1', 'A1', 'A1', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'G20', 'R3', 'R3', 'R3', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'R3', 'R3', 'R3', 'G20', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'A1', 'A1', 'A1', 'G20', 'A1', 'R3', 'R3', 'R3', 'R3', 'H7', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'H7', 'R3', 'R3', 'R3', 'R3', 'A1', 'G20', 'A1', 'A1', 'A1', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H7', 'G20', 'G20', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'G20', 'G20', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'A1', 'A1', 'H7', 'A1', 'A1', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'A1', 'A1', 'H7', 'A1', 'A1', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H7', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'A1', 'A1', 'H7', 'A1', 'A1', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'A1', 'A1', 'H7', 'A1', 'A1', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H7', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'A1', 'H7', 'H7', 'A1', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'A1', 'H7', 'H7', 'A1', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'R3', 'A1', 'A1', 'A1', 'A1', 'R3', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H7', 'R3', 'R3', 'R3', 'R3', 'A1', 'R3', 'R3', 'R3', 'R3', 'H7', 'H7', 'H7', 'A1', 'A1', 'A1', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'A1', 'A1', 'A1', 'H7', 'H7', 'H7', 'R3', 'R3', 'R3', 'A1', 'A1', 'R3', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H7', 'R3', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'R3', 'H7', 'H7', 'A1', 'A1', 'A1', 'A1', 'H7', 'H7', 'H7', 'H7', 'A1', 'A1', 'A1', 'A1', 'H7', 'H7', 'R3', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H7', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'A1', 'H7', 'H7', 'H7', 'H7', 'A1', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H7', 'R3', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'H7', 'A1', 'A1', 'H7', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H7', 'G4', 'G4', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'H7', 'H7', 'H7', 'H7', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'G4', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H7', 'G4', 'G4', 'G4', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'H7', 'H7', 'A14', 'A14', 'H7', 'H7', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'G4', 'G4', 'R3', 'H7', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H7', 'G4', 'G4', 'G4', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'H7', 'H7', 'A14', 'A14', 'H7', 'H7', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'G4', 'G4', 'G4', 'R3', 'H7', 'A1', 'A1', 'H7', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'H7', 'H7', 'G4', 'G4', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'H7', 'H7', 'F8', 'H7', 'H7', 'H7', 'A1', 'A1', 'A1', 'A1', 'G4', 'G4', 'G4', 'H7', 'H7', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'H7', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'G20', 'G20', 'G20', 'G20', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G20', 'G20', 'H7', 'R3', 'R3', 'R3', 'G20', 'G20', 'A1', 'A1', 'A1', 'H7', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'R3', 'R3', 'H7', 'G20', 'G20', 'H7', 'R3', 'R3', 'R3', 'A1', 'A1', 'H7', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'G20', 'H7', 'G20', 'G20', 'R3', 'R3', 'R3', 'A1', 'H7', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'G20', 'G20', 'H7', 'G20', 'R3', 'R3', 'A1', 'H7', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'G4', 'G4', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'G20', 'H7', 'R3', 'R3', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'G20', 'G20', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G20', 'G20', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'G20', 'G20', 'H7', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'G4', 'H7', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'R3', 'H7', 'G20', 'R3', 'R3', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'A1', 'A1', 'A1', 'A1', 'A1', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'H7', 'A1', 'A1', 'A1', 'A1', 'A1', 'A1', 'H7', 'A1', 'A1', 'A1', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'A1', 'A1', 'A1', 'R3', 'A1', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'A1', 'A1', 'R3', 'A1', 'A1', 'H7', 'A1', 'A1', 'A1', 'A1', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'H7', 'H7', 'H7', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H7', 'H7', 'H7', 'H7', 'H7', 'H2', 'H7', 'H7', 'H7', 'H7', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2'],
+        ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2']
+    ];
     const SHIBA_PIXEL_FRAMES = {
-        idle: SHIBA_IDLE_FRAME,
-        blink: SHIBA_BLINK_FRAME,
-        ball: SHIBA_BALL_FRAME,
-        hop: SHIBA_HAPPY_SOFT_FRAME,
-        sleepy: SHIBA_SLEEPY_FRAME,
-        sleep: SHIBA_SLEEP_CURL_FRAME,
-        cheer: SHIBA_HAPPY_SOFT_FRAME
+        idle: imageSequence(mumuShibaFrames('happy', 1), 0),
+        blink: imageSequence(mumuShibaFrames('blink', 4), 150),
+        cheer: imageSequence(mumuShibaFrames('happy', 4), 140),
+        hop: imageSequence(mumuShibaFrames('run', 6), 110),
+        ball: imageSequence(mumuShibaFrames('play', 6), 130),
+        eat: imageSequence(mumuShibaFrames('eat', 5), 150),
+        sleepy: imageSequence(mumuShibaFrames('sleepy_wake', 6), 170),
+        sleep: imageSequence(mumuShibaFrames('sleep', 4), 260),
+        cola: imageSequence(mumuShibaFrames('cola', 6), 160),
+        sad: imageSequence(mumuShibaFrames('sad', 6), 170),
+        headpatAnnoyed: imageSequence(mumuShibaFrames('headpat_annoyed', 6), 170),
+        thinking: imageSequence(mumuShibaFrames('thinking', 4), 170),
+        reward: imageSequence(mumuShibaFrames('reward', 4), 140),
+        leash: imageSequence(mumuShibaFrames('leash', 4), 140)
     };
     const CAT_PIXEL_FRAMES = {
-        idle: [
-            '................',
-            '....A......A....',
-            '...ABH....HBA...',
-            '..ABEEABBAEEBA..',
-            '..ABHHHHHHHHBA..',
-            '..BGHCCCCCCHGB..',
-            '..AHDDCCCCDDHA..',
-            '..AHDFCEECFDHA..',
-            '...BCCEDDECCB...',
-            '...ABCCCCCCCCBA.',
-            '..ABHHCCCCHHGBA.',
-            '..ABHCCCCCCHGBA.',
-            '..ABHCCFFCCHGGA.',
-            '...ABCF..FCBGAA.',
-            '...AFA....AFAA..',
-            '............GG..'
-        ],
-        blink: [
-            '................',
-            '....A......A....',
-            '...ABH....HBA...',
-            '..ABEEABBAEEBA..',
-            '..ABHHHHHHHHBA..',
-            '..BGHCCCCCCHGB..',
-            '..AHDDCCCCDDHA..',
-            '..AH..CEEC..HA..',
-            '...BCCEDDECCB...',
-            '...ABCCCCCCCCBA.',
-            '..ABHHCCCCHHGBA.',
-            '..ABHCCCCCCHGBA.',
-            '..ABHCCFFCCHGGA.',
-            '...ABCF..FCBGAA.',
-            '...AFA....AFAA..',
-            '............GG..'
-        ],
-        hop: [
-            '................',
-            '....A......A....',
-            '...ABH....HBA...',
-            '..ABEEABBAEEBA..',
-            '..ABHHHHHHHHBA..',
-            '..BGHCCCCCCHGB..',
-            '..AHDDCCCCDDHA..',
-            '..AHDFCEECFDHA..',
-            '...BCCEDDECCB...',
-            '..ABCCCCCCCCBA..',
-            '..ABHHCCCCHGBA..',
-            '..ABHCCCCCCHGAA.',
-            '...ABHCCFFCHGAA.',
-            '...ABCF..FCBGAA.',
-            '....AFA..AFAA...',
-            '......FFFFFF....'
-        ],
-        ball: [
-            '................',
-            '....A......A....',
-            '...ABH....HBA...',
-            '..ABEEABBAEEBA..',
-            '..ABHHHHHHHHBA..',
-            '..BGHCCCCCCHGB..',
-            '..AHDDCCCCDDHA..',
-            '..AHDFCEECFDHA..',
-            '...BCCEDDECCB...',
-            '..ABCCCCCCCCBA..',
-            '..ABHHCCCCHGBA..',
-            '..ABHCCFFCCHGAA.',
-            '...ABCF..FCBGAA.',
-            '...AFA....AFAAB.',
-            '......FFFF..BBB.',
-            '...........BBBB.'
-        ],
-        sleep: [
-            '................',
-            '................',
-            '.....A....A.....',
-            '....ABH..HBA....',
-            '...ABHHHHHHBA...',
-            '...AH.CCCC.HA...',
-            '..ABCCCEECCBA...',
-            '..ABCCDDDDCBA...',
-            '..ABCCCCCCCCBA..',
-            '...ABHCCCCHGBA..',
-            '...ABCCCCCCBA...',
-            '....ABHCCGBA....',
-            '.....ABBGAA.....',
-            '......AAA.......',
-            '....F......G....',
-            '................'
-        ],
-        cheer: [
-            '................',
-            '....A......A....',
-            '...ABH....HBA...',
-            '..ABEEABBAEEBA..',
-            '..ABHHHHHHHHBA..',
-            '..BGHCCCCCCHGB..',
-            '..AHDDCCCCDDHA..',
-            '..AHDFCEECFDHA..',
-            '...BCCEDDECCB...',
-            '..ABCCCCCCCCBA..',
-            '.AABHHCCCCHHGBA.',
-            'A..ABHCCCCCHGBA.',
-            '...ABHCCFFCHGGA.',
-            '...ABCF..FCBGAA.',
-            '..AAFA....AFAA..',
-            '............GG..'
-        ]
+        idle: imageSequence(mianmianFrames('happy', 1), 0),
+        blink: imageSequence(mianmianFrames('blink', 4), 150),
+        cheer: imageSequence(mianmianFrames('happy', 4), 140),
+        hop: imageSequence(mianmianFrames('run', 6), 110),
+        ball: imageSequence(mianmianFrames('play', 6), 130),
+        eat: imageSequence(mianmianFrames('eat', 5), 150),
+        sleepy: imageSequence(mianmianFrames('sleepy_wake', 6), 170),
+        sleep: imageSequence(mianmianFrames('sleep', 4), 260),
+        cola: imageSequence(mianmianFrames('catnip_dizzy', 6), 160),
+        sad: imageSequence(mianmianFrames('sad', 6), 170),
+        headpatAnnoyed: imageSequence(mianmianFrames('headpat_annoyed', 6), 170),
+        thinking: imageSequence(mianmianFrames('thinking', 4), 170),
+        reward: imageSequence(mianmianFrames('reward', 4), 140),
+        leash: imageSequence(mianmianFrames('leash', 4), 140)
     };
     const PET_PROFILES = {
         shiba: {
@@ -832,7 +1027,7 @@
                 headpatEaster: [
                     { message: '看在你这么喜欢 {name} 的份上，就破例让你多rua两下好啦~', mode: 'headpatGentle', anim: 'blink' },
                     { message: '嘿，摸不到摸不到！{name}可是练过闪避的！', mode: 'headpatPlayful', anim: 'hop' },
-                    { message: '汪！毛都要被你薅秃啦！快去学习，不然 {name} 要咬笔头了！', mode: 'headpatAnnoyed', anim: 'idle' }
+                    { message: '汪！毛都要被你薅秃啦！快去学习，不然 {name} 要咬笔头了！', mode: 'headpatAnnoyed', anim: 'headpatAnnoyed' }
                 ],
                 sleepWake: [
                     '唔……{name}只是在梦里帮你背单词，绝对没偷懒……',
@@ -968,7 +1163,7 @@
                 headpatEaster: [
                     { message: '……算你手法还不错，{name}就勉强再给你摸一下。', mode: 'headpatGentle', anim: 'blink' },
                     { message: '喵，扑空了吧？{name}可不是随便就能摸到的。', mode: 'headpatPlayful', anim: 'hop' },
-                    { message: '够了够了，再摸下去，{name}就要把爪子按在你的书上了。', mode: 'headpatAnnoyed', anim: 'idle' }
+                    { message: '够了够了，再摸下去，{name}就要把爪子按在你的书上了。', mode: 'headpatAnnoyed', anim: 'headpatAnnoyed' }
                 ],
                 sleepWake: [
                     '吵死了……{name}才没有在睡觉，只是在闭目养神帮你构思解题思路！',
@@ -1050,6 +1245,109 @@
                     defaultIdle: [
                         '不知不觉都陪你这么久了……真是的，没有{name}盯着你，你可怎么办呀。',
                         '累的话就靠过来一点。就一点点哦！'
+                    ]
+                }
+            }
+        },
+        daodun: {
+            id: 'daodun',
+            label: '刀盾',
+            species: 'daodun',
+            defaultName: '刀盾',
+            levelTitles: DAODUN_LEVEL_TITLES,
+            levelUnlockLabels: DAODUN_LEVEL_UNLOCK_LABELS,
+            moodLabels: DAODUN_MOOD_LABELS,
+            moodLabelVariants: DAODUN_MOOD_LABEL_VARIANTS,
+            pixelFrames: createPixelFrameMap(DAODUN_PIXEL_FRAMES, DAODUN_FRAME_OPTIONS),
+            dialogs: {
+                welcome: [
+                    '{name}已启动，守护协议进入待命。',
+                    '巡护核心稳定，{name}会安静守在这里。',
+                    '学习区域确认，{name}准备记录你的下一步。'
+                ],
+                treat: [
+                    '补给接收完毕，{name}的纹路微微发亮。',
+                    '能量稳定上升，{name}继续保持守护。',
+                    '补给已归档，今日专注值维持良好。'
+                ],
+                headpat: [
+                    '你轻轻碰了碰{name}，护盾边缘闪了一下。',
+                    '{name}没有躲开，只是安静地调整了待命角度。',
+                    '触碰确认，{name}回以一次很轻的光。'
+                ],
+                sleepWake: [
+                    '{name}从低功耗守护中苏醒，重新点亮护纹。',
+                    '休眠解除，{name}已恢复待命。'
+                ],
+                defaultReview: [
+                    '【{label}】需要重新校准，{name}已经标记好了。',
+                    '复习节点【{label}】等待确认，建议现在回看一次。',
+                    '{name}检测到【{label}】仍有可巩固空间。'
+                ],
+                defaultExam: [
+                    '备考区域已展开，{name}进入守护待命。',
+                    '压力读数上升，{name}会帮你稳住节奏。',
+                    '目标锁定，先从一题开始推进。'
+                ],
+                defaultRecent: [
+                    '刚才的【{label}】仍在记录里，可以继续推进。',
+                    '{name}已保存【{label}】的学习痕迹。',
+                    '路径【{label}】仍然有效，要接着走吗？'
+                ],
+                defaultIdle: [
+                    '{name}静默待命，等待你的下一条指令。',
+                    '守护阵列稳定，随时可以开始学习。',
+                    '桌面巡护中，当前状态安全。',
+                    '如果不知道从哪开始，先选一个最近入口即可。'
+                ]
+            },
+            dialogUnlocks: {
+                2: {
+                    welcome: [
+                        '熟悉信号已确认，{name}继续为你守护。'
+                    ]
+                },
+                3: {
+                    defaultIdle: [
+                        '短程学习路径已准备，先迈出一步就好。'
+                    ]
+                },
+                4: {
+                    headpatExtras: {
+                        0: ['{name}的护盾边缘亮了一下，像是在回应你的触碰。']
+                    }
+                },
+                5: {
+                    defaultReview: [
+                        '旧记录不是负担，是{name}帮你留下的路标。'
+                    ]
+                },
+                6: {
+                    treatExtras: {
+                        0: ['补给完成后，{name}短暂展开了更亮的护纹。']
+                    }
+                },
+                7: {
+                    defaultExam: [
+                        '备考路线不必一次走完，{name}会守住每一步。'
+                    ]
+                },
+                8: {
+                    sleepWakeExtras: {
+                        0: ['低功耗模式中，{name}仍然保持着最小巡护。']
+                    }
+                },
+                9: {
+                    defaultIdle: [
+                        '{name}已经熟悉你的节奏，会安静等你回来。'
+                    ]
+                },
+                10: {
+                    welcome: [
+                        '满级守护协议启动，{name}今天也会稳定陪你前进。'
+                    ],
+                    defaultIdle: [
+                        '长久守护记录已达成，{name}仍在这里。'
                     ]
                 }
             }
@@ -1183,6 +1481,14 @@
 
     function getPetIds() {
         return Object.keys(PET_PROFILES);
+    }
+
+    function isPetVisible(petId) {
+        return Boolean(PET_PROFILES[petId]) && !HIDDEN_PET_IDS.includes(petId);
+    }
+
+    function getVisiblePetIds() {
+        return getPetIds().filter(isPetVisible);
     }
 
     function getPetProfile(petId) {
@@ -1342,7 +1648,7 @@
             unlockedPetIds: Array.from(new Set([
                 ...DEFAULT_UNLOCKED_PET_IDS,
                 ...normalizeIdList(source.unlockedPetIds)
-            ])),
+            ])).filter(isPetVisible),
             unlockedInteractionIds: Array.from(new Set(normalizeIdList(source.unlockedInteractionIds)))
         };
     }
@@ -1381,7 +1687,7 @@
     }
 
     function getActivePetId(settings) {
-        return PET_PROFILES[settings.activePetId] ? settings.activePetId : DEFAULT_PET_ID;
+        return isPetVisible(settings.activePetId) ? settings.activePetId : DEFAULT_PET_ID;
     }
 
     function getDisplayPetName(settings, petId = getActivePetId(settings)) {
@@ -1514,12 +1820,12 @@
     }
 
     function buildPixelSvg(frameRows) {
-        const normalizedRows = Array.isArray(frameRows) ? frameRows.map((row) => String(row || '')) : ['.'];
+        const normalizedRows = normalizePixelRows(frameRows);
         const width = Math.max(1, ...normalizedRows.map((row) => row.length));
         const height = Math.max(1, normalizedRows.length);
         let rects = '';
         normalizedRows.forEach((row, y) => {
-            [...row.padEnd(width, '.')].forEach((token, x) => {
+            row.forEach((token, x) => {
                 const fill = PIXEL_PALETTE[token];
                 if (!fill) {
                     return;
@@ -1536,14 +1842,42 @@
         ].join('');
     }
 
-    function createPixelFrameMap(frameSource, options = {}) {
-        return Object.keys(frameSource).reduce((accumulator, mood) => {
-            let nextRows = Array.isArray(frameSource[mood]) ? frameSource[mood].slice() : [];
+    function buildImageFrameHtml(framePath) {
+        const src = resolveHomePetAssetUrl(framePath);
+        return `<img src="${escapeHtmlAttribute(src)}" alt="" aria-hidden="true" draggable="false" decoding="async" loading="eager" />`;
+    }
+
+    function buildPixelFrameEntry(frameSource, options = {}) {
+        const isSequence = Boolean(frameSource) && typeof frameSource === 'object' && !Array.isArray(frameSource) && Array.isArray(frameSource.frames);
+        if (isSequence && frameSource.type === 'image') {
+            const frames = frameSource.frames.map(buildImageFrameHtml).filter(Boolean);
+            return {
+                frames: frames.length ? frames : [''],
+                interval: Math.max(80, Number(frameSource.interval) || 120),
+                loop: frameSource.loop !== false
+            };
+        }
+
+        const rawFrames = isSequence ? frameSource.frames : [frameSource];
+        const frames = rawFrames.map((nextFrameRows) => {
+            let nextRows = Array.isArray(nextFrameRows) ? nextFrameRows.slice() : [];
             nextRows = remapFrameRows(nextRows, options.tokenMap);
             if (options.trim) {
                 nextRows = trimTransparentFrame(nextRows, options.padding || 0);
             }
-            accumulator[mood] = buildPixelSvg(nextRows);
+            return buildPixelSvg(nextRows);
+        }).filter(Boolean);
+
+        return {
+            frames: frames.length ? frames : [buildPixelSvg(['.'])],
+            interval: isSequence ? Math.max(80, Number(frameSource.interval) || 120) : 0,
+            loop: !isSequence || frameSource.loop !== false
+        };
+    }
+
+    function createPixelFrameMap(frameSource, options = {}) {
+        return Object.keys(frameSource).reduce((accumulator, mood) => {
+            accumulator[mood] = buildPixelFrameEntry(frameSource[mood], options);
             return accumulator;
         }, {});
     }
@@ -1593,7 +1927,7 @@
                 petProfiles[petId] = normalizePersistentPetSettings(parsed.petProfiles[petId]);
             });
             return {
-                activePetId: PET_PROFILES[parsed.activePetId] ? parsed.activePetId : DEFAULT_PET_ID,
+                activePetId: isPetVisible(parsed.activePetId) ? parsed.activePetId : DEFAULT_PET_ID,
                 followOutsideHome: parsed.followOutsideHome === true,
                 petProfiles
             };
@@ -1984,7 +2318,7 @@
         return Array.from(summaries.values())
             .filter((item) => item.reviewCount > 0 || item.lastPractice)
             .map((item) => {
-                let rawHref = `exam/grammar/sort.html?level=${encodeURIComponent(item.level)}`;
+                let rawHref = `exam/grammar/sort/index.html?level=${encodeURIComponent(item.level)}`;
                 if (item.reviewCount > 0 && item.lastPractice) {
                     rawHref += `&year=${encodeURIComponent(item.lastPractice)}&mode=review`;
                 } else if (item.lastPractice) {
@@ -2858,6 +3192,9 @@
         let modalOpen = false;
         let collectionOpen = false;
         let motionTimer = null;
+        let spriteFrameTimer = null;
+        let activeSpritePetId = '';
+        let activeSpriteAnim = '';
         let idleRotationTimer = null;
         let isNameEditing = false;
         let dragState = null;
@@ -2937,6 +3274,70 @@
         const treatBtn = root.querySelector('[data-pet-treat]');
         const colaBtn = root.querySelector('[data-pet-cola]');
         const leashBtn = root.querySelector('[data-pet-leash]');
+
+        function clearSpriteFrameTimer() {
+            if (spriteFrameTimer) {
+                clearTimeout(spriteFrameTimer);
+                spriteFrameTimer = null;
+            }
+            activeSpritePetId = '';
+            activeSpriteAnim = '';
+        }
+
+        function getPixelFrameEntryForAnim(petProfile, animKey) {
+            return petProfile.pixelFrames[animKey] || petProfile.pixelFrames.cheer || petProfile.pixelFrames.idle;
+        }
+
+        function renderPetAnimFrame(petProfile, animKey, petId, { forceRestart = false } = {}) {
+            if (getCurrentPetId() !== petId) {
+                return;
+            }
+
+            const frameEntry = getPixelFrameEntryForAnim(petProfile, animKey);
+            const frames = frameEntry && Array.isArray(frameEntry.frames) && frameEntry.frames.length ? frameEntry.frames : [''];
+            const nextFrame = frames[0] || '';
+            const shouldKeepSequence = !forceRestart
+                && activeSpritePetId === petId
+                && activeSpriteAnim === animKey
+                && spriteFrameTimer;
+
+            root.dataset.anim = animKey;
+            if (shouldKeepSequence) {
+                return;
+            }
+
+            clearSpriteFrameTimer();
+            spriteEl.innerHTML = nextFrame;
+            activeSpritePetId = petId;
+            activeSpriteAnim = animKey;
+
+            if (frames.length <= 1 || !(Number(frameEntry.interval) > 0)) {
+                return;
+            }
+
+            let frameIndex = 0;
+            const tick = () => {
+                const runtime = getPetRuntime(petId);
+                if (getCurrentPetId() !== petId || runtime.animState !== animKey) {
+                    clearSpriteFrameTimer();
+                    return;
+                }
+
+                frameIndex += 1;
+                if (frameIndex >= frames.length) {
+                    if (frameEntry.loop === false) {
+                        clearSpriteFrameTimer();
+                        return;
+                    }
+                    frameIndex = 0;
+                }
+
+                spriteEl.innerHTML = frames[frameIndex] || frames[0] || '';
+                spriteFrameTimer = setTimeout(tick, frameEntry.interval);
+            };
+
+            spriteFrameTimer = setTimeout(tick, frameEntry.interval);
+        }
 
         function getSurfaceType() {
             return String(config && config.surfaceType ? config.surfaceType : 'home').trim() || 'home';
@@ -3309,9 +3710,17 @@
             savePetState(state);
         }
 
+        function getCollectionPetIcon(petProfile) {
+            const idleEntry = petProfile && petProfile.pixelFrames && petProfile.pixelFrames.idle;
+            if (idleEntry && Array.isArray(idleEntry.frames) && idleEntry.frames[0]) {
+                return idleEntry.frames[0];
+            }
+            return '';
+        }
+
         function renderCollectionCards() {
             const collection = getPetCollection();
-            collectionGridEl.innerHTML = getPetIds().map((petId) => {
+            collectionGridEl.innerHTML = getVisiblePetIds().map((petId) => {
                 const petProfile = getPetProfile(petId);
                 const isActive = petId === getCurrentPetId();
                 const isUnlocked = collection.unlockedPetIds.includes(petId);
@@ -3325,7 +3734,7 @@
                         ${isUnlocked ? '' : 'disabled'}
                     >
                         <span class="home-pet-collection-item-icon" aria-hidden="true">
-                            ${petProfile.pixelFrames.idle || ''}
+                            ${getCollectionPetIcon(petProfile)}
                         </span>
                         <span class="home-pet-collection-item-title">${escapeHtml(petProfile.label)}</span>
                         <span class="home-pet-collection-item-meta">${escapeHtml(statusText)}</span>
@@ -3567,10 +3976,11 @@
                 return 'blink';
             }
             if (runtime.interactionMode === 'headpatPlayful') {
-                return 'cheer';
+                return 'hop';
             }
             if (runtime.interactionMode === 'headpatAnnoyed') {
-                return 'idle';
+                const petProfile = getPetProfile(petId);
+                return petProfile.pixelFrames.headpatAnnoyed ? 'headpatAnnoyed' : 'idle';
             }
             const petProfile = getPetProfile(petId);
             const petState = getPetStateById(petId);
@@ -3708,14 +4118,58 @@
             return true;
         }
 
+        const TEMPORARY_ANIM_KEYS = new Set([
+            'hop',
+            'cheer',
+            'cola',
+            'eat',
+            'sad',
+            'reward',
+            'leash',
+            'blink',
+            'headpatAnnoyed',
+            'thinking'
+        ]);
+
+        function pickPetAnim(petId, preferredAnims, fallbackAnim = 'idle') {
+            const petProfile = getPetProfile(petId);
+            const candidates = Array.isArray(preferredAnims) ? preferredAnims : [preferredAnims];
+            const matched = candidates.find((animKey) => animKey && petProfile.pixelFrames[animKey]);
+            if (matched) {
+                return matched;
+            }
+            return petProfile.pixelFrames[fallbackAnim] ? fallbackAnim : 'idle';
+        }
+
+        function getTemporaryAnimDuration(animKey) {
+            if (animKey === 'hop') {
+                return 620;
+            }
+            if (animKey === 'cheer' || animKey === 'reward' || animKey === 'leash') {
+                return 820;
+            }
+            if (animKey === 'cola'
+                || animKey === 'eat'
+                || animKey === 'sad'
+                || animKey === 'blink'
+                || animKey === 'headpatAnnoyed'
+                || animKey === 'thinking') {
+                return 980;
+            }
+            return 0;
+        }
+
         function setAnim(nextAnim, petId = getCurrentPetId()) {
             const runtime = getPetRuntime(petId);
             const petProfile = getPetProfile(petId);
-            runtime.animState = nextAnim;
+            const resolvedAnim = pickPetAnim(petId, nextAnim || 'idle', 'idle');
+            const previousAnim = runtime.animState;
+            runtime.animState = resolvedAnim;
 
             if (getCurrentPetId() === petId) {
-                root.dataset.anim = nextAnim;
-                spriteEl.innerHTML = petProfile.pixelFrames[nextAnim] || petProfile.pixelFrames.cheer || petProfile.pixelFrames.idle;
+                renderPetAnimFrame(petProfile, resolvedAnim, petId, {
+                    forceRestart: previousAnim !== resolvedAnim || activeSpritePetId !== petId || activeSpriteAnim !== resolvedAnim
+                });
             }
 
             if (motionTimer) {
@@ -3723,8 +4177,8 @@
                 motionTimer = null;
             }
 
-            if (nextAnim === 'hop' || nextAnim === 'cheer' || nextAnim === 'cola') {
-                const duration = nextAnim === 'hop' ? 620 : (nextAnim === 'cola' ? 940 : 820);
+            const duration = getTemporaryAnimDuration(resolvedAnim);
+            if (duration > 0) {
                 const targetPetId = petId;
                 motionTimer = setTimeout(() => {
                     const targetSummary = buildSummaryForPet(targetPetId);
@@ -3733,8 +4187,7 @@
                     targetRuntime.animState = fallbackAnim;
                     if (getCurrentPetId() === targetPetId) {
                         const targetProfile = getPetProfile(targetPetId);
-                        root.dataset.anim = fallbackAnim;
-                        spriteEl.innerHTML = targetProfile.pixelFrames[fallbackAnim] || targetProfile.pixelFrames.cheer || targetProfile.pixelFrames.idle;
+                        renderPetAnimFrame(targetProfile, fallbackAnim, targetPetId, { forceRestart: true });
                     }
                     motionTimer = null;
                 }, duration);
@@ -4138,17 +4591,18 @@
 
         function buildPracticeAnim(detail) {
             const phase = String(detail && detail.phase ? detail.phase : 'enter');
+            const petId = getCurrentPetId();
             if (phase === 'answer_wrong') {
-                return 'sleepy';
+                return pickPetAnim(petId, ['sad', 'sleepy'], 'idle');
             }
             if (phase === 'streak' || phase === 'clear' || phase === 'perfect_clear' || phase === 'reward_hit') {
-                return 'cheer';
+                return pickPetAnim(petId, ['reward', 'cheer'], 'idle');
             }
             if (phase === 'answer_correct') {
-                return 'hop';
+                return pickPetAnim(petId, ['cheer', 'hop'], 'idle');
             }
             if (phase === 'review') {
-                return 'blink';
+                return pickPetAnim(petId, ['thinking', 'blink'], 'idle');
             }
             return 'idle';
         }
@@ -4214,11 +4668,11 @@
             runtime.practiceReactionKey = `lottery:${normalized.title || ''}:${normalized.rarity || ''}`;
             clearWelcomeLock({ keepCurrentDialog: true });
             setInteractionMode('normal', PRACTICE_MAJOR_DURATION_MS, petId);
+            const petProfile = getPetProfile(petId);
+            const shouldCelebrate = normalized.didUnlockColaTreat || normalized.isNew || normalized.isRare;
             showInteractionDialog(
                 message,
-                normalized.didUnlockColaTreat || normalized.isNew || normalized.isRare
-                    ? (petId === 'cat' ? 'hop' : 'cheer')
-                    : 'blink',
+                shouldCelebrate && petProfile.pixelFrames.reward ? 'reward' : 'blink',
                 'lottery'
             );
             return true;
@@ -4451,11 +4905,17 @@
             root.dataset.bubbleVisible = String(shouldShowBubble);
             renderBubbleContent(shouldShowBubble ? bubblePayload : createPlainDialogPayload(''));
 
-            if (runtime.animState !== 'hop' && runtime.animState !== 'cheer' && runtime.animState !== 'cola') {
-                setAnim(visualMood, petId);
+            const hasGrammarToken = shouldShowBubble
+                && Array.isArray(bubblePayload.segments)
+                && bubblePayload.segments.some((segment) => segment && segment.type === 'grammar-token');
+            const nextVisualMood = hasGrammarToken && petProfile.pixelFrames.thinking && runtime.interactionMode === 'normal'
+                ? 'thinking'
+                : visualMood;
+
+            if (!TEMPORARY_ANIM_KEYS.has(runtime.animState)) {
+                setAnim(nextVisualMood, petId);
             } else {
-                root.dataset.anim = runtime.animState;
-                spriteEl.innerHTML = petProfile.pixelFrames[runtime.animState] || petProfile.pixelFrames.cheer || petProfile.pixelFrames.idle;
+                renderPetAnimFrame(petProfile, runtime.animState, petId);
             }
 
             applyAnchorPosition();
@@ -4643,7 +5103,8 @@
             if (nextValue) {
                 setDialogSourceForPet(petId, { kind: 'fixed', message: FOLLOW_OUTSIDE_HOME_DIALOGS[petId] || FOLLOW_OUTSIDE_HOME_DIALOGS.shiba }, summary, getCurrentSection());
                 setInteractionMode('normal', INTERACTION_CHAIN_MS, petId);
-                setAnim(petId === 'cat' ? 'hop' : 'cheer', petId);
+                const petProfile = getPetProfile(petId);
+                setAnim(petProfile.pixelFrames.leash ? 'leash' : (petId === 'cat' ? 'hop' : 'cheer'), petId);
             } else if (getCurrentPetRuntime().interactionMode === 'normal') {
                 setDialogSourceForPet(petId, { kind: 'default' }, summary, getCurrentSection());
                 setAnim(getVisualMood(petId, summary.mood), petId);
@@ -4702,7 +5163,10 @@
 
             renderBubbleContent(runtime.currentDialogPayload);
             if (!['headpatGentle', 'headpatPlayful', 'headpatAnnoyed'].includes(runtime.interactionMode)) {
-                setAnim(runtime.sessionHeadpatChainCount >= 4 ? 'hop' : 'cheer', petId);
+                const headpatAnim = runtime.sessionHeadpatChainCount >= 4
+                    ? pickPetAnim(petId, ['headpatAnnoyed', 'sad', 'hop'], 'idle')
+                    : pickPetAnim(petId, ['blink', 'cheer'], 'idle');
+                setAnim(headpatAnim, petId);
             }
         });
 
@@ -4716,7 +5180,11 @@
             resetHeadpatChain(petId);
 
             if (isTreatCooldownActive(petId)) {
-                showInteractionDialog(getTreatCooldownDialog(petId), 'idle', 'treat-cooldown');
+                showInteractionDialog(
+                    getTreatCooldownDialog(petId),
+                    pickPetAnim(petId, ['headpatAnnoyed', 'sad'], 'idle'),
+                    'treat-cooldown'
+                );
                 return;
             }
 
@@ -4725,23 +5193,23 @@
             if (runtime.sessionTreatCount === 1) {
                 setDialogSourceForPet(petId, { kind: 'treat', index: 0 }, summary, getCurrentSection());
                 setInteractionMode('normal', 0, petId);
-                setAnim('cheer', petId);
+                setAnim(pickPetAnim(petId, ['eat', 'cheer'], 'idle'), petId);
             } else if (runtime.sessionTreatCount === 2) {
                 setDialogSourceForPet(petId, { kind: 'treat', index: 1 }, summary, getCurrentSection());
                 setInteractionMode('normal', 0, petId);
-                setAnim('cheer', petId);
+                setAnim(pickPetAnim(petId, ['eat', 'cheer'], 'idle'), petId);
             } else if (runtime.sessionTreatCount === 3) {
                 setDialogSourceForPet(petId, { kind: 'treat', index: 2 }, summary, getCurrentSection());
                 setInteractionMode('normal', 0, petId);
-                setAnim('cheer', petId);
+                setAnim(pickPetAnim(petId, ['eat', 'cheer'], 'idle'), petId);
             } else if (runtime.sessionTreatCount === 4) {
                 setDialogSourceForPet(petId, { kind: 'fixed', message: getTreatOverfeedDialog(petId, 4) }, summary, getCurrentSection());
                 setInteractionMode('normal', 0, petId);
-                setAnim('idle', petId);
+                setAnim(pickPetAnim(petId, ['headpatAnnoyed', 'sad'], 'idle'), petId);
             } else if (runtime.sessionTreatCount === 5) {
                 setDialogSourceForPet(petId, { kind: 'fixed', message: getTreatOverfeedDialog(petId, 5) }, summary, getCurrentSection());
                 setInteractionMode('normal', 0, petId);
-                setAnim('idle', petId);
+                setAnim(pickPetAnim(petId, ['headpatAnnoyed', 'sad'], 'idle'), petId);
             } else {
                 setDialogSourceForPet(petId, { kind: 'fixed', message: getTreatOverfeedDialog(petId, 'sleep') }, summary, getCurrentSection());
                 petState.lastSleepStartedAt = Date.now();
@@ -4810,7 +5278,7 @@
 
             const nextPetId = optionButton.getAttribute('data-pet-collection-option');
             const collection = getPetCollection();
-            if (!PET_PROFILES[nextPetId] || !collection.unlockedPetIds.includes(nextPetId) || nextPetId === getCurrentPetId()) {
+            if (!isPetVisible(nextPetId) || !collection.unlockedPetIds.includes(nextPetId) || nextPetId === getCurrentPetId()) {
                 return;
             }
 
@@ -4857,7 +5325,7 @@
                 setDialogSourceForPet(petId, { kind: 'fixed', message: getColaLockedDialog(petId) }, summary, getCurrentSection());
                 setInteractionMode('normal', 0, petId);
                 renderBubbleContent(runtime.currentDialogPayload);
-                setAnim('idle', petId);
+                setAnim(pickPetAnim(petId, ['sad', 'blink'], 'idle'), petId);
                 sync('cola-locked');
                 return;
             }
@@ -4872,7 +5340,7 @@
 
             setInteractionMode('cola', INTERACTION_CHAIN_MS, petId);
             renderBubbleContent(runtime.currentDialogPayload);
-            setAnim(petId === 'shiba' ? 'cola' : 'hop', petId);
+            setAnim('cola', petId);
             sync('cola');
         });
 
@@ -4968,6 +5436,7 @@
                 window.removeEventListener('resize', resizeHandler);
                 document.removeEventListener('click', handlePageInteraction, true);
                 clearIdleRotationTimer();
+                clearSpriteFrameTimer();
                 if (motionTimer) {
                     clearTimeout(motionTimer);
                 }

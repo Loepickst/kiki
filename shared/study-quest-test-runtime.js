@@ -546,7 +546,7 @@
     function getUnlockedIdsFromMeta(meta) {
         return Object.keys(meta).filter((id) => {
             const entry = meta[id];
-            return entry && Number(entry.count) > 0 && !isHiddenCollectionCardId(id) && Boolean(getCardDefinition(id));
+            return entry && Number(entry.count) > 0 && !isHiddenCollectionCardId(id);
         });
     }
 
@@ -602,10 +602,6 @@
             if (!normalizedId || !entry || typeof entry !== 'object' || Array.isArray(entry)) {
                 return accumulator;
             }
-            if (!getCardDefinition(normalizedId)) {
-                return accumulator;
-            }
-
             const mergedEntry = mergeCollectionMetaEntry(accumulator[normalizedId], entry);
             if (mergedEntry) {
                 accumulator[normalizedId] = mergedEntry;
