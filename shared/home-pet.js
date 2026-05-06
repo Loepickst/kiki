@@ -549,6 +549,7 @@
         const currentScript = document.currentScript;
         return currentScript && currentScript.src ? currentScript.src : '';
     })();
+    const DEFAULT_HOME_PET_ASSET_BASE_URL = 'https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/shared/';
 
     function escapeHtmlAttribute(value) {
         return String(value || '')
@@ -558,8 +559,19 @@
             .replace(/>/g, '&gt;');
     }
 
-    function resolveHomePetAssetUrl(relativePath) {
+    function resolveHomePetAssetUrl(relativePath, assetBaseUrl) {
         const assetPath = String(relativePath || '').replace(/^\/+/, '');
+        const preferredBaseUrl = assetBaseUrl === undefined || assetBaseUrl === null ? '' : String(assetBaseUrl).trim();
+        if (preferredBaseUrl) {
+            try {
+                const normalizedBase = preferredBaseUrl.endsWith('/') ? preferredBaseUrl : `${preferredBaseUrl}/`;
+                const baseHref = HOME_PET_SCRIPT_URL || (window.location && window.location.href) || '';
+                const resolvedBase = baseHref ? new URL(normalizedBase, baseHref).href : normalizedBase;
+                return new URL(assetPath, resolvedBase).href;
+            } catch (error) {
+                return assetPath;
+            }
+        }
         if (!HOME_PET_SCRIPT_URL) {
             return assetPath;
         }
@@ -581,13 +593,13 @@
 
     function mianmianFrames(action, count) {
         return Array.from({ length: count }, (_, index) => (
-            `assets/pets/mianmian/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.png`
+            `assets/pets-optimized/mianmian/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.webp`
         ));
     }
 
     function mumuShibaFrames(action, count) {
         return Array.from({ length: count }, (_, index) => (
-            `assets/pets/mumu-shiba/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.png`
+            `assets/pets-optimized/mumu-shiba/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.webp`
         ));
     }
 
@@ -1842,16 +1854,23 @@
         ].join('');
     }
 
-    function buildImageFrameHtml(framePath) {
-        const src = resolveHomePetAssetUrl(framePath);
-        return `<img src="${escapeHtmlAttribute(src)}" alt="" aria-hidden="true" draggable="false" decoding="async" loading="eager" />`;
+    function buildImageFrameHtml(framePath, assetBaseUrl = DEFAULT_HOME_PET_ASSET_BASE_URL) {
+        const src = resolveHomePetAssetUrl(framePath, assetBaseUrl);
+        const fallbackSrc = resolveHomePetAssetUrl(framePath, '');
+        const fallbackAttrs = src !== fallbackSrc
+            ? ` data-pet-fallback-src="${escapeHtmlAttribute(fallbackSrc)}" onerror="if(this.dataset.petFallbackSrc&&this.src!==this.dataset.petFallbackSrc){this.src=this.dataset.petFallbackSrc;delete this.dataset.petFallbackSrc;}"`
+            : '';
+        return `<img src="${escapeHtmlAttribute(src)}"${fallbackAttrs} alt="" aria-hidden="true" draggable="false" decoding="async" loading="eager" />`;
     }
 
     function buildPixelFrameEntry(frameSource, options = {}) {
         const isSequence = Boolean(frameSource) && typeof frameSource === 'object' && !Array.isArray(frameSource) && Array.isArray(frameSource.frames);
         if (isSequence && frameSource.type === 'image') {
-            const frames = frameSource.frames.map(buildImageFrameHtml).filter(Boolean);
+            const framePaths = frameSource.frames.map((framePath) => String(framePath || '').trim()).filter(Boolean);
+            const frames = framePaths.map((framePath) => buildImageFrameHtml(framePath)).filter(Boolean);
             return {
+                type: 'image',
+                framePaths,
                 frames: frames.length ? frames : [''],
                 interval: Math.max(80, Number(frameSource.interval) || 120),
                 loop: frameSource.loop !== false
@@ -3189,6 +3208,9 @@
     function createController(root, config) {
         let state = loadPetState();
         let settings = loadPetSettings();
+        const petAssetBaseUrl = Object.prototype.hasOwnProperty.call(config || {}, 'assetBaseUrl')
+            ? config.assetBaseUrl
+            : DEFAULT_HOME_PET_ASSET_BASE_URL;
         let modalOpen = false;
         let collectionOpen = false;
         let motionTimer = null;
@@ -3295,7 +3317,15 @@
 
             const frameEntry = getPixelFrameEntryForAnim(petProfile, animKey);
             const frames = frameEntry && Array.isArray(frameEntry.frames) && frameEntry.frames.length ? frameEntry.frames : [''];
-            const nextFrame = frames[0] || '';
+            const framePaths = frameEntry && frameEntry.type === 'image' && Array.isArray(frameEntry.framePaths) ? frameEntry.framePaths : [];
+            const frameCount = framePaths.length || frames.length;
+            const getFrameMarkup = (index) => {
+                if (framePaths.length) {
+                    return buildImageFrameHtml(framePaths[index] || framePaths[0] || '', petAssetBaseUrl);
+                }
+                return frames[index] || frames[0] || '';
+            };
+            const nextFrame = getFrameMarkup(0);
             const shouldKeepSequence = !forceRestart
                 && activeSpritePetId === petId
                 && activeSpriteAnim === animKey
@@ -3311,7 +3341,7 @@
             activeSpritePetId = petId;
             activeSpriteAnim = animKey;
 
-            if (frames.length <= 1 || !(Number(frameEntry.interval) > 0)) {
+            if (frameCount <= 1 || !(Number(frameEntry.interval) > 0)) {
                 return;
             }
 
@@ -3324,7 +3354,7 @@
                 }
 
                 frameIndex += 1;
-                if (frameIndex >= frames.length) {
+                if (frameIndex >= frameCount) {
                     if (frameEntry.loop === false) {
                         clearSpriteFrameTimer();
                         return;
@@ -3332,7 +3362,7 @@
                     frameIndex = 0;
                 }
 
-                spriteEl.innerHTML = frames[frameIndex] || frames[0] || '';
+                spriteEl.innerHTML = getFrameMarkup(frameIndex);
                 spriteFrameTimer = setTimeout(tick, frameEntry.interval);
             };
 
@@ -3710,8 +3740,11 @@
             savePetState(state);
         }
 
-        function getCollectionPetIcon(petProfile) {
+        function getCollectionPetIcon(petProfile, assetBaseUrl = DEFAULT_HOME_PET_ASSET_BASE_URL) {
             const idleEntry = petProfile && petProfile.pixelFrames && petProfile.pixelFrames.idle;
+            if (idleEntry && idleEntry.type === 'image' && Array.isArray(idleEntry.framePaths) && idleEntry.framePaths[0]) {
+                return buildImageFrameHtml(idleEntry.framePaths[0], assetBaseUrl);
+            }
             if (idleEntry && Array.isArray(idleEntry.frames) && idleEntry.frames[0]) {
                 return idleEntry.frames[0];
             }
@@ -3734,7 +3767,7 @@
                         ${isUnlocked ? '' : 'disabled'}
                     >
                         <span class="home-pet-collection-item-icon" aria-hidden="true">
-                            ${getCollectionPetIcon(petProfile)}
+                            ${getCollectionPetIcon(petProfile, petAssetBaseUrl)}
                         </span>
                         <span class="home-pet-collection-item-title">${escapeHtml(petProfile.label)}</span>
                         <span class="home-pet-collection-item-meta">${escapeHtml(statusText)}</span>
