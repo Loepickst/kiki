@@ -7,9 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 Klee One 手写铅笔风字体 -->
     <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;600;700;900&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../../jlpt-reading/shared/reading-tools.css">
-    <link rel="stylesheet" href="../../../jlpt-reading/shared/reading-user-highlights.css">
-    <link rel="stylesheet" href="../shared/cloze-practice-mobile.css">
     <script>
         // 重写 Tailwind 配置表，注入水彩素描本风格配色
         window.tailwind = window.tailwind || {};
@@ -41,12 +38,6 @@
         }
     </script>
     <style>
-        :root {
-            --accent-color: #333333;
-            --text-color: #333333;
-            --chinese-font: "Noto Sans SC", "Noto Sans JP", sans-serif;
-        }
-
         :root {
             --font-serif: 'Noto Serif SC', 'Noto Serif JP', 'Songti SC', 'SimSun', serif;
         }
@@ -314,7 +305,7 @@
             font-weight: 900;
         }
         .cloze-option-btn.is-correct-answer .option-text {
-            color: #059669 !important; /* 深一点的绿色保证文字可读性 */
+            color: #059669 !important; /* 深一点の绿色保证文字可读性 */
         }
 
         .cloze-option-btn.is-wrong-answer {
@@ -387,7 +378,7 @@
         }
 
         .fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
+            animation: fadeIn 0.4s forwards;
         }
 
         /* ==============================================================
@@ -417,23 +408,23 @@
         }
     </style>
 </head>
-<body class="font-sans antialiased cloze-practice-page reading-tools-no-furigana" data-reading-highlight-root="#passage-container" data-reading-highlight-type="cloze" data-reading-highlight-level="N1">
+<body class="font-sans antialiased">
 
     <!-- 全局注释解释气泡 -->
     <div id="global-annotation-bubble" class="annotation-bubble"></div>
 
     <!-- 顶部导航条 -->
-    <header class="page-header top-bar">
+    <header class="page-header">
         <div class="w-[100px]"> <!-- 占位保持标题居中 -->
-            <button type="button" id="page-back-btn" class="sketch-btn px-3 py-1 text-sm font-bold flex items-center gap-1 hover:bg-yellow-50 w-max">
+            <button type="button" onclick="window.location.href='../index.html?level=N2&view=years'" class="sketch-btn px-3 py-1 text-sm font-bold flex items-center gap-1 hover:bg-yellow-50 w-max">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
                 戻る
             </button>
         </div>
-        <h1 class="top-title m-0 text-lg font-bold text-textMain tracking-widest text-center flex-1 flex items-center justify-center">
+        <h1 class="m-0 text-lg font-bold text-textMain tracking-widest text-center flex-1 flex items-center justify-center">
             文章の文法 <span class="ml-2 text-xs border border-borderStrong sketch-btn px-2 py-0.5 font-sans">完形填空</span>
         </h1>
-        <div class="top-actions"> <!-- 译文开关置于右上角 -->
+        <div class="w-[100px] flex justify-end"> <!-- 译文开关置于右上角 -->
             <button id="translation-toggle-btn" disabled class="px-3 py-1 bg-gray-100 border border-borderStrong text-xs font-bold text-textMuted sketch-btn cursor-not-allowed transition-colors flex items-center gap-1.5 outline-none whitespace-nowrap">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                 <span>訳文：OFF</span>
@@ -457,7 +448,7 @@
             <!-- JS 动态注入单道题目 -->
         </div>
 
-        <!-- 底部提交与结果结算区 -->
+        <!-- 底部提交与結果结算区 -->
         <div id="bottom-action-area" class="flex flex-col items-center justify-center pt-6 border-t-2 border-dashed border-borderMain">
             <button id="submit-btn" class="submit-btn px-10 py-3 text-base font-bold w-full md:w-auto" disabled>
                 採点する（提交批改）
@@ -474,91 +465,72 @@
     <script>
         // --- 1. 模拟数据 (完形填空通常是一篇文章带有多个空) ---
         const clozeData = {
-            id: "n1_reading_cloze_2012_12",
-            title: "大人時間", // 文章标题
+            id: "n2_reading_cloze_2016_07",
+            title: "２５時", // 文章标题
             // 使用带有特定占位符的文本，并在下方预埋隐藏的中文翻译，带有点击注释功能
+            // 联动填空（一题多空）标记：使用 [[题号-后缀]] 的格式，如 [[2-a]]
             passage: `
+                <div class="mb-5 text-center">
+                    <p class="text-sm font-bold text-textSub mb-2 text-indent-0">以下の文章は、留学生の作文である。</p>
+                </div>
+                
                 <div class="mb-5">
-                    <h3 class="text-xl md:text-2xl font-bold text-textMain mb-4">大人時間</h3>
-                    <p>今年は一回しか踊れなかったのだけれど、毎年、<span class="annotation-word" data-explanation="夏のお盆に行われる行事。参加者が輪になり、音楽に合わせて踊る">盆踊り</span>を楽しみにしているのだった。盆踊りが上手な友人がいるので、いつも彼女の後ろに張り付いて踊っている。</p>
-                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">【大人的时间】<br>虽然今年只跳了一次，但我每年都非常期待<span class="annotation-word" data-explanation="夏季盂兰盆节举行的活动。参加者围成一圈，和着音乐跳舞">盂兰盆节舞</span>。因为有个很会跳盂兰盆节舞的朋友，所以我总是紧跟在她身后跳。</p>
+                    <h3 class="text-xl md:text-2xl font-bold text-textMain mb-4 text-center">２５時</h3>
+                    <p class="text-right text-textSub text-sm mb-4">ロベズ エドガ</p>
+                    <p>先日、サッカーの日本代表が海外で試合を行い、その試合が深夜にテレビで<span class="annotation-word" data-explanation="テレビやラジオなどで、現場からそのまま放送すること">生中継</span>された。生中継が始まる前に、放送は何時からか確認しようとインターネットで調べて驚いた。あるサイトに「金曜２５時放送」と書いてあったのだ。一日は[[1]]。知人に聞いて、「金曜２５時」というのは土曜の午前１時のことだと知った。「２５時」のような表現は、店の営業時間の掲示などでも見るという。なぜ、午前１時を「２５時」と表現するのだろうか。</p>
+                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">【25点】<br>前几天，日本国家足球队在海外进行了比赛，那场比赛在深夜被电视<span class="annotation-word" data-explanation="现场直播">现场直播</span>了。在直播开始前，我为了确认从几点开始广播而在网上查了一下，结果很吃惊。某个网站上写着“周五25点广播”。一天<span class="text-accentRed font-bold">难道不是24小时吗</span>。问了熟人之后才知道，“周五25点”指的是周六的凌晨1点。据说像“25点”这样的表达，在店铺营业时间的告示等地方也能看到。为什么要把凌晨1点表达为“25点”呢。</p>
                 </div>
 
                 <div class="mb-5">
-                    <p>踊りに行く場所はいろいろ。でも、たいてい東京の下町ばかりを選んでいる。踊っている人たちの感じが好きなのである。地元の方が多いのは当たり前なのだけれど、下町の会社にお勤めの人々が、仕事帰りにふらっと踊っていたりするのが面白いのだった。肩からバッグをぶら下げながら踊る<span class="annotation-word" data-explanation="女性の会社員">ＯＬ</span>さんたちの、かわいらしさと言ったら！</p>
-                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">去跳舞的地方有很多。不过，大都选的净是东京的平民区（下町）。因为我喜欢跳舞的人们的那种感觉。当地人多是理所当然的，但在平民区公司上班的人们，下班后顺道过来跳舞，这让我觉得很有趣。那些肩上挂着包跳舞的<span class="annotation-word" data-explanation="女性公司职员">女白领</span>们，别提多可爱了！</p>
+                    <p>[[2]]表現を使い始めたのはテレビ局だとする説が有力だ。日本の多くのテレビ局では、朝４時前後に一日の放送が始まり、そこからの２４時間を一日と考える。つまり、テレビ局にとっては、夜の０時が一日の終わりではない。２２時、２３時ときたら、その次は０時ではなく２４時で、午前１時は２５時なのである。このようにして「２５時」という表現が[[3]]。</p>
+                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">认为开始使用<span class="text-accentRed font-bold">这种</span>表达的是电视台的说法比较有力。在日本的许多电视台，一天的广播从早上4点左右开始，从那开始的24小时被认为是一天。也就是说，对于电视台来说，夜晚的0点并不是一天的结束。到了22点、23点之后，接下来的不是0点而是24点，凌晨1点也就是25点了。像这样，“25点”这种表达<span class="text-accentRed font-bold">似乎就诞生了</span>。</p>
                 </div>
 
                 <div class="mb-5">
-                    <p>盆踊りは、一見、老若男女が楽しめるイベントのようだけれど、実はそうじゃない、とわたしは思っている。[[1]]のものなのである。</p>
-                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">盂兰盆节舞乍一看像是男女老少都能享受的活动，但我觉得其实并非如此。它<span class="text-accentRed font-bold">是大人们</span>的活动。</p>
-                </div>
-
-                <div class="mb-5">
-                    <p>盆踊りって、まあ、どこも６時半くらいから始まるのだが、８時過ぎくらいになると、子供にお菓子を配る時間がくる。それが合図なのだ。子供の時間は終わったのだ、という合図。</p>
-                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">盂兰盆节舞嘛，到处都是从6点半左右开始，到了8点多的时候，就到了给孩子们发点心的时间。那就是信号。是“孩子的时间结束了”的信号。</p>
-                </div>
-
-                <div class="mb-5">
-                    <p>あからさまに「子供は大人の邪魔するな」なんてことは言わないのだけれど、[[2]]雰囲気が盆踊り会場にただよってくる。今まで、「さあ、踊って踊って」と、恥ずかしがる子供たちを踊りの輪に入れていた大人たちが、子供に声をかけなくなる。</p>
-                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">虽然不会露骨地说“小孩子别妨碍大人”之类的话，但<span class="text-accentRed font-bold">那种</span>氛围会在盂兰盆节舞的会场里弥漫开来。刚才还说着“来，跳吧跳吧”，把害羞的孩子们拉进舞蹈圈里的大人们，渐渐不再跟孩子们搭话了。</p>
-                </div>
-
-                <div class="mb-5">
-                    <p>子供にお菓子が配付された後、やがて、大人たちが本気で踊りはじめるのだった。踊りの難しい曲が多くなる。『炭坑節』など、渋い踊りも多くなる。そうなるにしたがって、まわりで立って見ていただけの大人たちが、ひとり、またひとりと踊りの輪に加わりはじめ、盛上がってくるのだった。</p>
-                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">给孩子们分发完点心后，不久，大人们就开始动真格地跳起来了。舞蹈动作难的曲子变多了。像《炭坑节》等充满成熟韵味的舞蹈也变多了。随着情况变成这样，周围只是站着看的大人们，也开始一个接一个地加入到舞蹈圈中，气氛逐渐高涨起来。</p>
-                </div>
-
-                <div class="mb-5">
-                    <p>[[3]]、わたしは自分の子供時代を静かに思い出す。</p>
-                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r"><span class="text-accentRed font-bold">这时（于是）</span>，我静静地回想起了自己的童年时代。</p>
-                </div>
-
-                <div class="mb-5">
-                    <p>大人時間になった盆踊りが、とってもかっこよかったこと。難しい踊りになって、仕方なく踊りの輪から外れ、母親や、近所のおばさんたちが、もくもくと踊っている姿を見ていた。子供の出番はないのだと[[4]]。</p>
-                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">到了大人时间的盂兰盆节舞，真的非常帅气。舞蹈变难了，我只好无奈地退出舞蹈圈，看着母亲、邻居的阿姨们默默地跳着舞的身姿。我<span class="text-accentRed font-bold">被（那种氛围）告知</span>，这里没有小孩子出场的份了。</p>
-                </div>
-
-                <div class="mb-5">
-                    <p>子供は<span class="annotation-word" data-explanation="目立つ必要がないのに、目立とうとする">でしゃばる</span>んじゃないよ！っていう、大人たちの態度。大人（特におばさんたち）がうらやましかったあのときの気持ち。記憶から消えないまま、いい思い出になってわたしの心に残っている。大人が主役になる時間って、悪くないなと思う。子供に歩み寄ってばかりじゃ、大人になった甲斐がないと[[5]]。</p>
-                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">大人们那种“小孩子别<span class="annotation-word" data-explanation="没必要显眼的时候，非要惹人注目">多管闲事（出风头）</span>哦！”的态度。那时羡慕大人（尤其是阿姨们）的心情。一直没有从记忆中消失，成为了美好的回忆留在我的心中。我觉得，由大人当主角的时间，感觉也不坏。如果总是向小孩子妥协让步，<span class="text-accentRed font-bold">那就白当大人了</span>。</p>
+                    <p>現代の日本社会は<span class="annotation-word" data-explanation="夜遅くまで起きている生活スタイルになること">夜型化</span>が進み、午前０時を過ぎても活動している人が多い。だから、午前０時を過ぎても「今日」は続く。[[4]]、「起きてから寝るまでが今日」だと考えれば、翌日の午前１時ではなく、その日の２５時と表現したほうが<span class="annotation-word" data-explanation="的を射ていて、確実なこと">的確</span>かもしれない。私も、土曜の午前１時に見た番組は金曜の夜に見たという感じがするので、金曜２５時と考えたほうが実際の感覚に近い気もする。生活の夜型化と「寝るまでが今日」という考え方が、２４時間しかない一日に「２５時」を[[5]]。</p>
+                    <p class="passage-translation hidden mt-2 text-textSub font-sans text-[0.95rem] font-normal leading-relaxed border-l-2 border-dashed border-borderDark pl-3 bg-gray-50/50 py-2 pr-2 rounded-r">现代日本社会的<span class="annotation-word" data-explanation="生活方式变成熬夜到很晚">夜猫子化</span>在不断发展，过了凌晨0点仍在活动的人很多。所以，即使过了凌晨0点“今天”也还在继续。<span class="text-accentRed font-bold">确实</span>，如果认为“从起床到睡觉期间是‘今天’”的话，不表达为第二天的凌晨1点，而表达为当天的25点可能更<span class="annotation-word" data-explanation="准确，恰当">准确</span>。我也有种感觉，周六凌晨1点看的节目像是在周五晚上看的，所以认为周五25点似乎更接近实际的感觉。生活方式的夜猫子化和“直到睡觉前都是今天”的这种想法，<span class="text-accentRed font-bold">大概在只有24小时的一天中创造出了“25点”吧</span>。</p>
                 </div>
             `,
             questions: [
                 {
                     id: "q1",
                     blankNum: 1,
-                    options: ["下町", "盆踊り", "大人", "彼女"],
-                    correctIndex: 2, // 大人
-                    explanation: "结合前文“乍一看像是男女老少都能享受的活动，但其实并非如此”，说明这其实是特定人群的活动。下文马上提到8点以后发完糖果，就是“小孩时间结束了”，证明其实真正的盂兰盆节舞是“【大人的】时间”。所以填「大人」。<br><br><b>【错误选项分析】</b><br>1. 「下町」是地点，不符合“这是某类人的活动”的语境；<br>2. 「盆踊り」重复，语意不通；<br>4. 「彼女」是特指某个人，这里在谈论普遍现象。"
+                    isMultiBlank: false,
+                    options: ["24時間なのか", "24時間ではないのか", "24時間といえるか", "24時間だっただろうか"],
+                    correctIndex: 1, // 24時間ではないのか
+                    explanation: "考查疑问表达。作者查到“25点”时感到吃惊（驚いた），其内心的潜台词是：“一天【难道不是24小时吗】？”。使用否定疑问句「ではないのか」来表达自己原有的常识受到冲击时的惊讶和确认。<br><br><b>【错误选项分析】</b><br>1. 「24時間なのか（是24小时吗）」疑问方向反了；<br>3. 「24時間といえるか（能说是24小时吗）」对24小时产生怀疑，而作者是坚信24小时才会对25吃惊；<br>4. 「24時間だっただろうか（曾是24小时吗）」时态错误。"
                 },
                 {
                     id: "q2",
                     blankNum: 2,
-                    options: ["その年の", "そういう", "あの町の", "あれのような"],
-                    correctIndex: 1, // そういう
-                    explanation: "前面说“虽然不会露骨地说‘小孩子别妨碍大人’”，空格后接“氛围弥漫开来”。指代前文刚刚提到的“小孩别妨碍大人”的这种氛围，用「そういう（那种）」。<br><br><b>【错误选项分析】</b><br>1. 「その年の（那一年的）」；<br>3. 「あの町の（那个镇上的）」；<br>4. 「あれのような（像那个一样的）」都不符合指代前文所述的抽象氛围。"
+                    isMultiBlank: false,
+                    options: ["こういう", "それ以外の", "同じ", "次のような"],
+                    correctIndex: 0, // こういう
+                    explanation: "考查指示代词。前文刚解释完“25点”的用法，紧接着说“开始使用【这种】表达的是电视台……”。「こういう（这种）」用于指代前文刚论述过的、作者和读者都明白的特定事物或情况。<br><br><b>【错误选项分析】</b><br>2. 「それ以外の（除此之外的）」意思相反；<br>3. 「同じ（同样的）」用法生硬；<br>4. 「次のような（像如下的）」是指代后文的内容。"
                 },
                 {
                     id: "q3",
                     blankNum: 3,
-                    options: ["そして", "なにしろ", "あるいは", "おそらく"],
-                    correctIndex: 0, // そして
-                    explanation: "前一段描述大人们动真格跳舞，舞蹈变难，气氛高涨。空格后接“我静静地回想起了自己的童年时代”。这是作者在看到眼前场景后的顺承联想，用「そして（于是，然后）」最为自然。<br><br><b>【错误选项分析】</b><br>2. 「なにしろ（不管怎样/因为）」表原因强调；<br>3. 「あるいは（或者）」表选择；<br>4. 「おそらく（恐怕）」表推测，这三项均无法起到承接上下文情境的作用。"
+                    isMultiBlank: false,
+                    options: ["生まれることになっている", "生まれたとしよう", "生まれるといわれていた", "生まれたらしい"],
+                    correctIndex: 3, // 生まれたらしい
+                    explanation: "考查文末表达及传闻/推测。本段开头说“～説が有力だ（……的说法很有力）”，表明本段的解释是一种普遍的说法或推测。段尾用「このようにして（像这样）」总结，呼应开头的推测，表示“‘25点’这种表达【似乎就是这样诞生的】”。「らしい」表示基于客观依据的推测或传闻。<br><br><b>【错误选项分析】</b><br>1. 「生まれることになっている（按规定将要诞生）」表示客观规定；<br>2. 「生まれたとしよう（就当作是诞生了吧）」表示假定；<br>3. 「生まれるといわれていた（曾被说将要诞生）」时态和语境不符。"
                 },
                 {
                     id: "q4",
                     blankNum: 4,
-                    options: ["思わせたかった", "思わないだろう", "思われてもいい", "思わされた"],
-                    correctIndex: 3, // 思わされた
-                    explanation: "作者小时候看着大人默默跳复杂舞蹈的身姿，在这个场景下，作者内心产生了某种想法：“没有小孩子出场的份了”。这种想法不是自己主动想的，而是被周围大人的氛围所感染、被迫产生的。主语是“我”，用使役被动形态「思わされた（被让这样认为/不由得这样觉得）」最合适。<br><br><b>【错误选项分析】</b><br>1. 「思わせたかった（想让别人这样觉得）」主客体反了；<br>2. 「思わないだろう（大概不会这样觉得吧）」意思相反；<br>3. 「思われてもいい（被这样认为也无所谓）」语境不符。"
+                    isMultiBlank: false,
+                    options: ["ただ", "一方", "確かに", "それでも"],
+                    correctIndex: 2, // 確かに
+                    explanation: "考查接续词。前文说明了现代人夜猫子化，即使过了0点“今天”也还在继续。空格后作者表示认同：“【确实】，如果认为睡前都是今天的话，表达为25点可能更准确”。「確かに」用于部分承认、肯定某事，引出符合逻辑的判断。<br><br><b>【错误选项分析】</b><br>1. 「ただ（但是/仅仅）」表转折或补充；<br>2. 「一方（另一方面）」表对比；<br>4. 「それでも（尽管如此）」表让步转折，均不符合前后顺畅递进认同的逻辑。"
                 },
                 {
                     id: "q5",
                     blankNum: 5,
-                    options: ["するわけだ", "いうものである", "するかどうか", "いおうとしない"],
-                    correctIndex: 1, // いうものである
-                    explanation: "作者在文章最后总结自己的感悟：“我觉得由大人当主角的时间也不坏。如果总是向小孩子妥协让步，那就白当大人了。”这是一个带有感悟和断言性质的结语。「～というものである」用于表达说话人对事物本质的断定或强烈的感叹（理应是这样的，就是这么回事）。<br><br><b>【错误选项分析】</b><br>1. 「するわけだ（也就是要做……）」缺乏感叹和断定的语气；<br>3. 「するかどうか（做还是不做）」表疑问；<br>4. 「いおうとしない（不打算说）」意思完全不通。"
+                    isMultiBlank: false,
+                    options: ["作ったからだ", "作ったのだろう", "作ったこともある", "作ったほどだ"],
+                    correctIndex: 1, // 作ったのだろう
+                    explanation: "考查文末表达与推测结论。文章最后，作者对“25点”这一用法的成因做出了自己的推测性总结：“生活方式的夜猫子化和‘直到睡觉前都是今天’的想法，【大概创造出了】‘25点’【吧】”。「～（の）だろう」用于表达作者个人的推测性结论。<br><br><b>【错误选项分析】</b><br>1. 「作ったからだ（是因为创造了）」主谓结构不完整，前面是「～考え方が（主语）」；<br>3. 「作ったこともある（也有过创造的情况）」表过去的经历；<br>4. 「作ったほどだ（到了创造的程度）」表程度，都不符合文末下推测结论的语境。"
                 }
             ]
         };
@@ -576,9 +548,6 @@
             
             // 绑定提交按钮事件
             document.getElementById('submit-btn').addEventListener('click', handleSubmit);
-            document.getElementById("page-back-btn").addEventListener("click", () => {
-                window.location.href = "../index.html";
-            });
             // 绑定译文开关事件
             document.getElementById('translation-toggle-btn').addEventListener('click', toggleTranslation);
             
@@ -639,20 +608,30 @@
             }
         }
 
-        // 渲染文章，并将 [[1]] 替换为交互式槽位
+        // 渲染文章，并将 [[1]] 或 [[1-a]] 替换为交互式槽位
         function renderPassage() {
             let html = clozeData.passage;
             
-            clozeData.questions.forEach(q => {
-                const placeholder = `[[${q.blankNum}]]`;
-                // 生成对应的槽位 HTML
-                const slotHtml = `
-                    <span class="cloze-blank-inline" data-qid="${q.id}" onclick="scrollToQuestion('${q.id}')">
-                        <span class="cloze-blank-num">${q.blankNum}</span>
-                        <span class="blank-text" id="slot-text-${q.id}"></span>
+            // 替换联动多空格式 [[3-a]]
+            html = html.replace(/\[\[(\d+)-([a-z])\]\]/g, (match, num, sub) => {
+                const qId = `q${num}`;
+                return `
+                    <span class="cloze-blank-inline" data-qid="${qId}" data-sub="${sub}" onclick="scrollToQuestion('${qId}')">
+                        <span class="cloze-blank-num">${num}-${sub}</span>
+                        <span class="blank-text" id="slot-text-${qId}-${sub}"></span>
                     </span>
                 `;
-                html = html.replace(placeholder, slotHtml);
+            });
+            
+            // 再替换普通单空格式 [[1]]
+            html = html.replace(/\[\[(\d+)\]\]/g, (match, num) => {
+                const qId = `q${num}`;
+                return `
+                    <span class="cloze-blank-inline" data-qid="${qId}" onclick="scrollToQuestion('${qId}')">
+                        <span class="cloze-blank-num">${num}</span>
+                        <span class="blank-text" id="slot-text-${qId}"></span>
+                    </span>
+                `;
             });
 
             document.getElementById('passage-container').innerHTML = html;
@@ -677,7 +656,7 @@
 
                 // 生成整道题の HTML，外层包裹 sketch-box
                 html += `
-                    <div id="question-block-${q.id}" class="question-block sketch-box bg-white p-5 md:p-6 relative transition-colors duration-500">
+                    <div id="question-block-${q.id}" class="sketch-box bg-white p-5 md:p-6 relative transition-colors duration-500">
                         <div class="mb-4 flex items-center justify-between border-b border-dashed border-borderMain pb-3 gap-3">
                             <h3 class="text-sm font-bold text-textSub tracking-wider flex-1">
                                 （ ${q.blankNum} ）に入れるのに最もよいものを選びなさい。
@@ -763,12 +742,32 @@
             buttons[optIdx].classList.add('is-selected');
 
             // 3. 更新文章区填空槽位的 UI
-            const slot = document.querySelector(`.cloze-blank-inline[data-qid="${qId}"]`);
-            const slotText = document.getElementById(`slot-text-${qId}`);
             const targetQuestion = clozeData.questions.find(q => q.id === qId);
+            const selectedOptText = targetQuestion.options[optIdx];
             
-            slotText.textContent = targetQuestion.options[optIdx];
-            slot.classList.add('is-filled');
+            if (targetQuestion.isMultiBlank) {
+                // 如果是多空题，如 "a 血液型 / b 性格 / c 性格"
+                // 按照 "/" 拆分，并去除前缀如 "a " 和 "b "
+                const parts = selectedOptText.split('/');
+                const fills = parts.map(p => p.trim().replace(/^[a-zａ-ｚ][\s　]+/i, ''));
+                
+                targetQuestion.subBlanks.forEach((sub, i) => {
+                    const slot = document.querySelector(`.cloze-blank-inline[data-qid="${qId}"][data-sub="${sub}"]`);
+                    const slotText = document.getElementById(`slot-text-${qId}-${sub}`);
+                    if (slot && slotText && fills[i] !== undefined) {
+                        slotText.textContent = fills[i];
+                        slot.classList.add('is-filled');
+                    }
+                });
+            } else {
+                // 普通单空题
+                const slot = document.querySelector(`.cloze-blank-inline[data-qid="${qId}"]`);
+                const slotText = document.getElementById(`slot-text-${qId}`);
+                if (slot && slotText) {
+                    slotText.textContent = selectedOptText;
+                    slot.classList.add('is-filled');
+                }
+            }
 
             // 4. 检查是否所有题目都已作答，决定是否点亮提交按钮
             checkSubmitStatus();
@@ -791,16 +790,20 @@
 
         // [功能2]: 点击题目里的按钮 -> 滚动回文章槽位
         function scrollToPassageBlank(qId) {
+            // 如果是多空题，滚动到第一个子空即可；如果是单空，滚动到主空
             const targetSlot = document.querySelector(`.cloze-blank-inline[data-qid="${qId}"]`);
             if (targetSlot) {
                 // 平滑滚动并稍作偏移避免被顶部栏遮挡
                 const y = targetSlot.getBoundingClientRect().top + window.scrollY - 150;
                 window.scrollTo({ top: y, behavior: 'smooth' });
                 
-                // 给文章空隙增加闪烁动画
-                targetSlot.classList.remove('flash-highlight');
-                void targetSlot.offsetWidth; // 触发重绘
-                targetSlot.classList.add('flash-highlight');
+                // 给文章空隙增加闪烁动画 (如果有多空，最好把同题号的都闪一下)
+                const allSlotsForQ = document.querySelectorAll(`.cloze-blank-inline[data-qid="${qId}"]`);
+                allSlotsForQ.forEach(slot => {
+                    slot.classList.remove('flash-highlight');
+                    void slot.offsetWidth; // 触发重绘
+                    slot.classList.add('flash-highlight');
+                });
             }
         }
 
@@ -831,8 +834,7 @@
             clozeData.questions.forEach(q => {
                 const userAns = state.answers[q.id];
                 const isCorrect = userAns === q.correctIndex;
-                syncClozeMistake(q.id, isCorrect);
-                const slot = document.querySelector(`.cloze-blank-inline[data-qid="${q.id}"]`);
+                const slots = document.querySelectorAll(`.cloze-blank-inline[data-qid="${q.id}"]`);
                 const badge = document.getElementById(`badge-${q.id}`);
                 const expBox = document.getElementById(`explanation-${q.id}`);
                 const block = document.getElementById(`question-block-${q.id}`);
@@ -842,8 +844,9 @@
 
                 if (isCorrect) {
                     correctCount++;
-                    // 文章槽位变绿
-                    slot.classList.add('judged-correct');
+                    // 文章槽位变绿 (单空和多空通用)
+                    slots.forEach(slot => slot.classList.add('judged-correct'));
+                    
                     // 题目标签变绿
                     badge.textContent = "正解";
                     badge.className = "text-sm font-bold tracking-widest px-2 py-1 sketch-btn border border-green-500 bg-green-50 text-green-600 inline-block";
@@ -857,7 +860,7 @@
 
                 } else {
                     // 文章槽位变红并画删除线
-                    slot.classList.add('judged-wrong');
+                    slots.forEach(slot => slot.classList.add('judged-wrong'));
                     
                     // 题目标签变红
                     badge.textContent = "不正解";
@@ -926,76 +929,8 @@
             }, 100);
         }
 
-
-        function getClozeMistakesKey() {
-            const fileId = decodeURIComponent((window.location.pathname.split('/').pop() || '').replace(/\.html$/, ''));
-            return `grammar_cloze_mistakes::N1::${fileId}`;
-        }
-
-        function getClozeMistakes() {
-            try {
-                const parsed = JSON.parse(localStorage.getItem(getClozeMistakesKey()) || '[]');
-                return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
-            } catch (error) {
-                return [];
-            }
-        }
-
-        function saveClozeMistakes(ids) {
-            const uniqueIds = Array.from(new Set(ids.filter(Boolean)));
-            localStorage.setItem(getClozeMistakesKey(), JSON.stringify(uniqueIds));
-        }
-
-        function syncClozeMistake(qId, isCorrect) {
-            const currentIds = getClozeMistakes();
-            const nextIds = isCorrect
-                ? currentIds.filter(id => id !== qId)
-                : Array.from(new Set([...currentIds, qId]));
-            saveClozeMistakes(nextIds);
-        }
-
-        function renderClozeReviewNotice() {
-            const params = new URLSearchParams(window.location.search);
-            if (params.get('mode') !== 'review') return;
-            const mistakeIds = getClozeMistakes();
-            const shell = document.querySelector('.page-shell');
-            if (!shell || document.getElementById('cloze-review-notice')) return;
-            const notice = document.createElement('div');
-            notice.id = 'cloze-review-notice';
-            notice.className = 'sketch-box bg-yellow-50/70 border-borderStrong p-4 mb-5 text-sm font-bold text-textMain leading-relaxed';
-            notice.innerHTML = mistakeIds.length > 0
-                ? `错题复习：当前文章还有 <span class="text-accentRed">${mistakeIds.length}</span> 个空位需要复习。请重点查看对应题目，答对后会自动从错题记录中移除。`
-                : '错题复习：当前文章暂无错题记录，可以按完整练习重新巩固。';
-            shell.insertBefore(notice, shell.firstChild);
-        }
-
-        function loadReadingTools() {
-            if (document.getElementById("cloze-reading-tools-script")) return;
-            const script = document.createElement("script");
-            script.id = "cloze-reading-tools-script";
-            script.src = "../../../jlpt-reading/shared/reading-tools.js";
-            document.body.appendChild(script);
-        }
-
-        function loadReadingUserHighlights() {
-            if (document.getElementById("cloze-reading-highlights-script")) return;
-            const script = document.createElement("script");
-            script.id = "cloze-reading-highlights-script";
-            script.src = "../../../jlpt-reading/shared/reading-user-highlights.js";
-            document.body.appendChild(script);
-        }
-
-        document.addEventListener("studyquest:reading-test-timeout", () => {
-            if (!state.isSubmitted) handleSubmit();
-        });
-
         // 页面加载完毕后初始化
-        document.addEventListener("DOMContentLoaded", () => {
-            initApp();
-            renderClozeReviewNotice();
-            loadReadingTools();
-            loadReadingUserHighlights();
-        });
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
     <script src="../shared/cloze-study-timer.js"></script>
 </body>
