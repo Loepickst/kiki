@@ -320,6 +320,10 @@
             }];
         }
 
+        function isSentencePracticeDisabled(word) {
+            return Boolean(word && word.sentencePracticeDisabled);
+        }
+
         function getSentenceCorrectAnswer(word, practiceItem = null) {
             const practiceAnswer = normalizeOptionValue(practiceItem && practiceItem.answer)
                 || normalizeOptionValue(word && word.practice && word.practice.answer);
@@ -340,6 +344,18 @@
                     options: asArray(item.options),
                     optionWordIds: asArray(item.optionWordIds),
                     optionDetails: asArray(item.optionDetails)
+                };
+            }
+            if (isSentencePracticeDisabled(word)) {
+                return {
+                    sourceKind: 'disabled',
+                    sourceIndex: 0,
+                    sentence: '',
+                    cn: '',
+                    analysis: '',
+                    options: [],
+                    optionWordIds: [],
+                    optionDetails: []
                 };
             }
             const example = asArray(word && word.examples)[0] || { jp: '例文がありません。', cn: '' };
@@ -389,6 +405,17 @@
                     .filter((value) => value && !seen.has(value))
             );
             answerPool.forEach((value) => {
+                if (options.length >= 4 || seen.has(value)) return;
+                seen.add(value);
+                options.push(value);
+            });
+            const fallbackWordPool = shuffleArray(
+                getAllDefinedWords()
+                    .filter((candidate) => candidate && candidate.word !== (correctWord && correctWord.word))
+                    .map((candidate) => getKanaDisplayText(candidate && candidate.word_html, candidate && candidate.word) || normalizeOptionValue(candidate && candidate.word))
+                    .filter((value) => value && !seen.has(value))
+            );
+            fallbackWordPool.forEach((value) => {
                 if (options.length >= 4 || seen.has(value)) return;
                 seen.add(value);
                 options.push(value);
@@ -584,12 +611,23 @@
             });
         }
 
+        function formatSourceCollocation(value) {
+            if (!value) return '';
+            if (typeof value === 'object') {
+                const jp = asText(value.jp || value.phrase);
+                const cn = asText(value.cn);
+                if (jp && cn) return `${jp}（${cn}）`;
+                return jp || cn;
+            }
+            return asText(value);
+        }
+
         function mergeSourceOptionDetail(baseDetail, sourceDetail, optionValue, isCorrect, resolvedWord) {
             const source = sourceDetail && typeof sourceDetail === 'object' ? sourceDetail : null;
             if (!source) return baseDetail;
             const meaning = asText(source.meaning);
             const usage = asText(source.usage);
-            const collocation = asText(source.collocation);
+            const collocation = formatSourceCollocation(source.collocation);
             const baseForm = asText(source.baseForm);
             if (!meaning && !usage && !collocation && !baseForm) return baseDetail;
             return {
@@ -674,7 +712,9 @@
         }
 
         function buildSentenceQuestionSpec(word, practiceItem = null) {
+            if (!practiceItem && isSentencePracticeDisabled(word) && getSentencePracticeItems(word).length === 0) return null;
             const sourceMeta = getSentenceSourceMeta(word, practiceItem);
+            if (sourceMeta.sourceKind === 'disabled') return null;
             let richSentence = sourceMeta.sentence || '例文がありません。';
             const questionCn = sourceMeta.cn || '';
             const highlightRegex = /<span class=['"]ex-highlight['"]>(.*?)<\/span>/g;
@@ -690,8 +730,11 @@
                 const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                 const surface = asText(word && word.word);
                 const stem = surface.length > 1 ? surface.slice(0, -1) : surface;
+                const surfaceRegex = surface ? new RegExp(escapeRegExp(surface)) : null;
                 const stemRegex = new RegExp(`${escapeRegExp(stem)}[ぁ-ん]*`);
-                richSentence = stemRegex.test(richSentence)
+                richSentence = surfaceRegex && surfaceRegex.test(richSentence)
+                    ? richSentence.replace(surfaceRegex, '[[BLANK]]')
+                    : stemRegex.test(richSentence)
                     ? richSentence.replace(stemRegex, '[[BLANK]]')
                     : `${richSentence} [[BLANK]]`;
             }
@@ -796,7 +839,7 @@
                     return Boolean(getKanaDisplayText(word && word.word_html, word && word.word) && extractPrimaryMeaning(word));
                 });
             }
-            return pool.filter((word) => getSentenceCorrectAnswer(word));
+            return pool.filter((word) => !isSentencePracticeDisabled(word) && getSentenceCorrectAnswer(word));
         }
 
         function createSentenceQuestionSnapshot(question) {
@@ -1027,7 +1070,7 @@
                     reading: getReviewSummaryReading(word),
                     typeLabel: getQuestionTypeLabel(question),
                     meaning,
-                    usage: usage && usage !== meaning ? usage : '',
+                    usage,
                     collocation
                 };
             }).filter(Boolean);
@@ -1046,7 +1089,6 @@
                     + '<div class="review-summary-term"><span>' + esc(item.term) + '</span>'
                     + (metaParts.length ? '<span class="review-summary-meta">' + esc(metaParts.join(' · ')) + '</span>' : '')
                     + '</div>'
-                    + renderLine('释义', item.meaning)
                     + renderLine('用法', item.usage)
                     + renderLine('搭配', item.collocation)
                     + '</article>';
