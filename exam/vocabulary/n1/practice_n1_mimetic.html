@@ -16,7 +16,7 @@
             --bg-grad-start: #FDFBF7;      /* 暖白书页色 */
             --bg-grad-end: #F6EFE9;        /* 晨光浅杏色 */
             
-            --panel-bg: rgba(255, 255, 255, 0.9); /* 明亮半透明文本框 */
+            --panel-bg: #FFFFFF; /* 实色纸面，避免弹窗和结算面板发透 */
             --panel-border: rgba(210, 195, 180, 0.6); /* 柔和纸质边框 */
             
             --text-strong: #3F3732;        /* 强调标题/关键正文 */
@@ -557,7 +557,7 @@
             padding: 14px 16px;
             border-radius: 8px;
             border: 1px solid rgba(194, 122, 98, 0.16);
-            background: rgba(194, 122, 98, 0.08);
+            background: #FFFDFB;
             color: var(--text-secondary);
             font-size: 14px;
             line-height: 1.8;
@@ -611,12 +611,12 @@
             padding: 10px 12px;
             border-radius: 6px;
             border: 1px solid rgba(194, 122, 98, 0.14);
-            background: rgba(255, 255, 255, 0.55);
+            background: #FFFFFF;
         }
 
         .challenge-analysis-option.is-correct {
             border-color: rgba(92, 148, 110, 0.32);
-            background: rgba(92, 148, 110, 0.08);
+            background: #F7FBF7;
         }
 
         .challenge-analysis-option-head {
@@ -1246,6 +1246,7 @@
             .summary-stat-value { font-size: 20px; }
         }
     </style>
+    <link rel="stylesheet" href="../shared/vocabulary-sketch-theme.css">
 </head>
 <body>
     <a href="mimetic_n1.html" class="page-back-btn" id="page-back-btn">
@@ -1357,20 +1358,22 @@
                         <span class="summary-stat-label">最高连对</span>
                         <span class="summary-stat-value" id="summary-streak">0</span>
                     </div>
-                    <div class="summary-stat">
-                        <span class="summary-stat-label">求助阳葵</span>
-                        <span class="summary-stat-value" id="summary-hints">0</span>
+                </div>
+                <div class="summary-wrong-review" id="summary-wrong-review">
+                    <div class="summary-wrong-head">
+                        <span class="summary-wrong-title">本轮错词</span>
+                        <span class="summary-wrong-count" id="summary-wrong-count">0 词</span>
                     </div>
-                    <div class="summary-stat">
-                        <span class="summary-stat-label">剩余集中力</span>
-                        <span class="summary-stat-value" id="summary-hp">-</span>
-                    </div>
+                    <div class="summary-wrong-list" id="summary-wrong-list"></div>
                 </div>
                 <div class="summary-actions">
                     <button class="summary-primary-btn" type="button" onclick="location.reload()">再陪我练习一次！</button>
                     <button class="summary-secondary-btn" type="button" onclick="location.href='mimetic_n1.html'">今天先到这里 (返回)</button>
                 </div>
             </div>
+        </div>
+        <div class="summary-word-overlay" id="summary-word-overlay" hidden>
+            <div class="summary-word-card" id="summary-word-card" role="dialog" aria-modal="true" aria-label="错词速查卡"></div>
         </div>
     </div>
 
@@ -1430,6 +1433,8 @@
         let introTypingController = null;
         let questionTypingController = null;
         let pendingQuestionReveal = null;
+        let sessionWrongWords = [];
+        const sessionWrongWordIds = new Set();
 
         const testServer = window.StudyQuestTestServer;
         const VOCAB_STAR_KEY_PREFIX = 'study_quest_test_v1_vocab_star::';
@@ -1461,6 +1466,15 @@
 
         function getWordStorageId(word) {
             return String(word && (word.id || word.word) ? (word.id || word.word) : '').trim();
+        }
+
+        function rememberSessionWrongWord(question) {
+            const word = question && question.word;
+            if (!word) return;
+            const wordId = getWordStorageId(word) || getWordDisplayText(word);
+            if (!wordId || sessionWrongWordIds.has(wordId)) return;
+            sessionWrongWordIds.add(wordId);
+            sessionWrongWords.push(word);
         }
 
         function restoreReviewKeyword(word) {
@@ -3445,6 +3459,7 @@
                 setTimeout(() => avatar.classList.remove('hit'), 500);
             } else {
                 answerStreak = 0;
+                rememberSessionWrongWord(question);
                 feedback.textContent = isTimeout ? '呜哇！时间不小心跑掉啦，别发呆哦！' : `哎呀，选错啦。正确答案是「${question.correctAnswer}」，下次一定能选对的！`;
                 feedback.classList.add('bad');
                 const dialogueBox = document.getElementById('dialogue-box');
@@ -3548,7 +3563,7 @@
             cacheSummaryDefaults();
             const summaryRoot = document.getElementById('view-summary');
             if (!summaryRoot) return;
-            const selectors = ['#summary-rank', '#summary-eval', '.summary-stat-grid'];
+            const selectors = ['#summary-rank', '#summary-eval', '.summary-stat-grid', '#summary-wrong-review'];
             selectors.forEach((selector) => {
                 const node = summaryRoot.querySelector(selector);
                 if (node) node.style.display = isReview ? 'none' : '';
@@ -3563,6 +3578,135 @@
                 const node = summaryRoot.querySelector(selector);
                 if (node && node.dataset.defaultText) {
                     node.textContent = node.dataset.defaultText;
+                }
+            });
+        }
+
+
+        function buildSummaryWordCardMarkup(word) {
+            if (!word) return '';
+            const toneHtml = word.tone ? `<span class="tone-number">${escapeHtml(word.tone)}</span>` : '';
+            const posHtml = word.pos ? `<span class="pos-tag">${escapeHtml(word.pos)}</span>` : '';
+            const meaning = extractPrimaryMeaning(word);
+            const usage = extractPrimaryUsage(word);
+            const meanings = word.mean ? word.mean.split(/[；;]/).map((item) => item.trim()).filter(Boolean) : [];
+            const nuances = word.nuance
+                ? word.nuance.split('\n').map((line) => line.trim().replace(/^\d+\.\s*/, '')).filter(Boolean)
+                : [];
+            const examples = Array.isArray(word.examples) ? word.examples : [];
+            const count = Math.max(meanings.length, nuances.length, examples.length, usage || meaning ? 1 : 0);
+            const definitionNumbers = ['❶', '❷', '❸', '❹', '❺', '❻', '❼', '❽', '❾', '❿'];
+            let definitionsHtml = '';
+
+            for (let itemIndex = 0; itemIndex < count; itemIndex += 1) {
+                const meanText = meanings[itemIndex] || (itemIndex === 0 ? (usage || meaning) : '');
+                const nuanceText = nuances[itemIndex] || '';
+                const example = examples[itemIndex];
+                if (!meanText && !nuanceText && !(example && example.jp)) {
+                    continue;
+                }
+                definitionsHtml += `
+                    <div class="def-group">
+                        ${(meanText || nuanceText) ? `
+                            <div class="def-head">
+                                <span class="def-number">${definitionNumbers[itemIndex] || `${itemIndex + 1}.`}</span>
+                                <div class="def-copy">
+                                    ${meanText ? `<span class="def-meaning">${escapeHtml(meanText)}</span>` : ''}
+                                    ${nuanceText ? `<span class="def-nuance">（${escapeHtml(nuanceText)}）</span>` : ''}
+                                </div>
+                            </div>
+                        ` : ''}
+                        ${example && example.jp ? `
+                            <div class="def-ex">
+                                <div class="def-example-label">例句</div>
+                                <div class="def-example-body">
+                                    <div class="ex-jp" lang="ja">${example.jp}</div>
+                                    ${example.cn ? `<div class="ex-cn">（${escapeHtml(example.cn)}）</div>` : ''}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            const metaHtml = toneHtml || posHtml
+                ? `<div class="fc-meta-group">${toneHtml}${posHtml}</div>`
+                : '';
+
+            return `
+                <div class="flashcard-main">
+                    <div class="fc-header">
+                        <div class="fc-word-group">
+                            <div class="fc-title-row">
+                                <div class="fc-word">${word.word_html || escapeHtml(word.word || getWordDisplayText(word))}</div>
+                                ${metaHtml}
+                            </div>
+                        </div>
+                        <button type="button" class="summary-word-close" data-summary-word-close aria-label="关闭词卡">×</button>
+                    </div>
+                    <div style="flex: 1;">
+                        <div class="fc-section-title">解析与例句</div>
+                        <div>
+                            ${definitionsHtml || '<div class="def-group"><div class="def-copy"><span class="def-meaning">暂无解析</span></div></div>'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeSummaryWordCard() {
+            const overlay = document.getElementById('summary-word-overlay');
+            const card = document.getElementById('summary-word-card');
+            if (overlay) {
+                overlay.hidden = true;
+            }
+            if (card) {
+                card.innerHTML = '';
+            }
+            document.querySelectorAll('.summary-wrong-chip.is-active').forEach((node) => node.classList.remove('is-active'));
+        }
+
+        function showSummaryWordCard(index) {
+            const overlay = document.getElementById('summary-word-overlay');
+            const card = document.getElementById('summary-word-card');
+            const word = sessionWrongWords[index];
+            if (!overlay || !card || !word) return;
+            card.innerHTML = buildSummaryWordCardMarkup(word);
+            overlay.hidden = false;
+            document.querySelectorAll('.summary-wrong-chip').forEach((node) => {
+                node.classList.toggle('is-active', Number(node.dataset.wrongIndex) === index);
+            });
+            const closeBtn = card.querySelector('[data-summary-word-close]');
+            if (closeBtn) closeBtn.addEventListener('click', closeSummaryWordCard);
+        }
+
+        function renderSessionWrongWords() {
+            const countNode = document.getElementById('summary-wrong-count');
+            const listNode = document.getElementById('summary-wrong-list');
+            if (!countNode || !listNode) return;
+            closeSummaryWordCard();
+            const wrongWords = sessionWrongWords.filter(Boolean);
+            countNode.textContent = wrongWords.length ? `${wrongWords.length} 词` : '0 词';
+
+            if (!wrongWords.length) {
+                listNode.innerHTML = '<div class="summary-wrong-empty">本轮没有错词，老师暂时收起戒尺。</div>';
+                return;
+            }
+
+            listNode.innerHTML = wrongWords.map((word, index) => {
+                const label = getWordDisplayText(word) || word.word || `错词 ${index + 1}`;
+                return `<button type="button" class="summary-wrong-chip" data-wrong-index="${index}">${escapeHtml(label)}</button>`;
+            }).join('');
+
+            listNode.querySelectorAll('[data-wrong-index]').forEach((button) => {
+                button.addEventListener('click', () => showSummaryWordCard(Number(button.dataset.wrongIndex)));
+            });
+        }
+
+        const summaryWordOverlay = document.getElementById('summary-word-overlay');
+        if (summaryWordOverlay) {
+            summaryWordOverlay.addEventListener('click', (event) => {
+                if (event.target === summaryWordOverlay) {
+                    closeSummaryWordCard();
                 }
             });
         }
@@ -3719,8 +3863,7 @@
             document.getElementById('summary-msg').innerHTML = summaryMsg;
             document.getElementById('summary-accuracy').textContent = `${percentage}%`;
             document.getElementById('summary-streak').textContent = String(bestStreak);
-            document.getElementById('summary-hints').textContent = String(Math.max(0, 3 - remainingHints));
-            document.getElementById('summary-hp').textContent = isChallengeMode && selectedDifficulty ? String(hp) : '—';
+            renderSessionWrongWords();
         }
 
         function prepareQuestionSet() {
@@ -3842,6 +3985,8 @@
             answerStreak = 0;
             bestStreak = 0;
             remainingHints = 3;
+            sessionWrongWords = [];
+            sessionWrongWordIds.clear();
             rewardResult = null;
 
             startRewardRun();
