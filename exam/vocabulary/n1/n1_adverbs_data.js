@@ -1348,10 +1348,6 @@
                         {
                                 "jp": "<span class='ex-highlight'>あらかじめ</span><ruby>連<rt>れん</rt></ruby><ruby>絡<rt>らく</rt></ruby>しておきます。",
                                 "cn": "我会事先联系好的。"
-                        },
-                        {
-                                "jp": "<span class='ex-highlight'>あらかじめ</span><ruby>資<rt>し</rt></ruby><ruby>料<rt>りょう</rt></ruby>を<ruby>用<rt>よう</rt></ruby><ruby>意<rt>い</rt></ruby>しておく。",
-                                "cn": "事先准备好资料。"
                         }
                 ],
                 "id": "n1-adverb-008",

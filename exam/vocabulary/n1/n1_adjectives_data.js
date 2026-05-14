@@ -738,13 +738,13 @@ const DAY3_WORDS = [
     {
         "word": "柔らか",
         "word_html": "<ruby>柔<rt>やわ</rt></ruby>らか",
-        "tone": "2",
+        "tone": "3",
         "pos": "な形",
-        "mean": "柔软、柔和；灵活",
-        "nuance": "1. 触感软和，有弹性。\n2. 声音、光线等不刺耳、不刺眼。\n3. 想法或态度不僵硬。",
+        "mean": "柔软；温和、柔和",
+        "nuance": "1. 物体的质地、触感不坚硬。\n2. 态度、语气、光线等不生硬。",
         "examples": [
-            { "jp": "<span class='ex-highlight'><ruby>柔<rt>やわ</rt></ruby>らかな</span><ruby>日<rt>ひ</rt></ruby><ruby>差<rt>ざ</rt></ruby>しを<ruby>浴<rt>あ</rt></ruby>びる。", "cn": "沐浴在柔和的阳光下。" },
-            { "jp": "<ruby>頭<rt>あたま</rt></ruby>を<span class='ex-highlight'><ruby>柔<rt>やわ</rt></ruby>らかに</span>して<ruby>考<rt>かんが</rt></ruby>える。", "cn": "放开思路（灵活地）思考。" }
+            { "jp": "<span class='ex-highlight'><ruby>柔<rt>やわ</rt></ruby>らかい</span>パンにバターを<ruby>塗<rt>ぬ</rt></ruby>る。", "cn": "在柔软的面包上抹黄油。" },
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>はいつも<span class='ex-highlight'><ruby>柔<rt>やわ</rt></ruby>らかな</span><ruby>物<rt>もの</rt></ruby><ruby>腰<rt>ごし</rt></ruby>で<ruby>客<rt>きゃく</rt></ruby>に<ruby>接<rt>せっ</rt></ruby>する。", "cn": "他总是以温和的态度接待客人。" }
         ],
         "practice": {
             "sentence": "赤ちゃんの頬は驚くほど<span class='ex-highlight'>____</span>で、ずっと触っていたくなる。",
@@ -774,12 +774,12 @@ const DAY3_WORDS = [
     {
         "word": "大らか",
         "word_html": "<ruby>大<rt>おお</rt></ruby>らか",
-        "tone": "1",
+        "tone": "2",
         "pos": "な形",
-        "mean": "豁达、大方；心胸宽广",
-        "nuance": "1. 性格不拘小节，淡定且包容力强。\n2. 给人一种舒展、不急躁的印象。",
+        "mean": "豁达、大度",
+        "nuance": "1. 心胸宽广，不拘泥于小事，落落大方。",
         "examples": [
-            { "jp": "<ruby>失敗<rt>しっぱい</rt></ruby>しても<ruby>笑<rt>わら</rt></ruby>って<ruby>許<rt>ゆる</rt></ruby>してくれる<span class='ex-highlight'><ruby>大<rt>おお</rt></ruby>らかな</span><ruby>人<rt>ひと</rt></ruby>だ。", "cn": "他是个豁达的人，即使失败了也会笑着原谅。" }
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>は<span class='ex-highlight'><ruby>大<rt>おお</rt></ruby>らかな</span><ruby>人<rt>ひと</rt></ruby>で、<ruby>細<rt>こま</rt></ruby>かいミスは<ruby>気<rt>き</rt></ruby>にしない。", "cn": "他是个豁达的人，不在意细小的错误。" }
         ],
         "practice": {
             "sentence": "彼は<span class='ex-highlight'>____</span>性格で、小さなミスは笑って許してくれる。",
@@ -793,11 +793,11 @@ const DAY3_WORDS = [
         "word_html": "<ruby>穏<rt>おだ</rt></ruby>やか",
         "tone": "2",
         "pos": "な形",
-        "mean": "平稳、宁静；温和、安详",
-        "nuance": "1. 天气、大海等没有风浪，非常平静。\n2. 性格或言行柔和，不偏激。\n3. 事态平稳发展。",
+        "mean": "平静、安稳；温和、沉稳",
+        "nuance": "1. 天气、海面、局势等安定、没有波折。\n2. 性格、言谈、态度等平和，不激进。",
         "examples": [
-            { "jp": "<ruby>今日<rt>きょう</rt></ruby>は<span class='ex-highlight'><ruby>穏<rt>おだ</rt></ruby>やかな</span><ruby>海<rt>うみ</rt></ruby>だ。", "cn": "今天的大海很平静。" },
-            { "jp": "<span class='ex-highlight'><ruby>穏<rt>おだ</rt></ruby>やかな</span><ruby>表情<rt>ひょうじょう</rt></ruby>で<ruby>話<rt>はな</rt></ruby>す。", "cn": "表情安详地交谈。" }
+            { "jp": "<ruby>今日<rt>きょう</rt></ruby>は<ruby>波<rt>なみ</rt></ruby>が<span class='ex-highlight'><ruby>穏<rt>おだ</rt></ruby>やか</span>で、<ruby>絶<rt>ぜっ</rt></ruby><ruby>好<rt>こう</rt></ruby>の<ruby>釣<rt>つ</rt></ruby>り<ruby>日<rt>び</rt></ruby><ruby>和<rt>より</rt></ruby>だ。", "cn": "今天海面上风平浪静，是钓鱼的大好天气。" },
+            { "jp": "<ruby>父<rt>ちち</rt></ruby>は<span class='ex-highlight'><ruby>穏<rt>おだ</rt></ruby>やかな</span><ruby>口<rt>く</rt></ruby><ruby>調<rt>ちょう</rt></ruby>で<ruby>私<rt>わたし</rt></ruby>を<ruby>諭<rt>さと</rt></ruby>した。", "cn": "父亲用温和的语气劝导我。" }
         ],
         "practice": {
             "sentence": "昨日の嵐が嘘のように、今日は<span class='ex-highlight'>____</span>天気だ。",
@@ -2802,6 +2802,7 @@ const DAY8_WORDS = [
         "mean": "整齐、有序；井然、有条理",
         "nuance": "1. 物理上的排列非常整齐。\n2. 逻辑、论证或结构等条理清晰。",
         "examples": [
+            { "jp": "<ruby>彼<rt>かれ</rt></ruby>らはいすを<ruby>集<rt>あつ</rt></ruby>めて<span class='ex-highlight'><ruby>整<rt>せい</rt></ruby><ruby>然<rt>ぜん</rt></ruby>と</span><ruby>列<rt>れつ</rt></ruby>に<ruby>並<rt>なら</rt></ruby>べた。", "cn": "他们把椅子集中整齐地排了队。" },
             { "jp": "<ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>は<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>意<rt>い</rt></ruby><ruby>見<rt>けん</rt></ruby>を<span class='ex-highlight'><ruby>整<rt>せい</rt></ruby><ruby>然<rt>ぜん</rt></ruby>と</span><ruby>述<rt>の</rt></ruby>べた。", "cn": "她条理清晰地陈述了自己的意见。" }
         ],
         "practice": {
