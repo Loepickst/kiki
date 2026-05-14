@@ -729,6 +729,26 @@
             justify-content: center;
         }
 
+        .header-right-slot {
+            min-width: 70px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .study-elapsed-display {
+            min-width: 86px;
+            justify-content: center;
+            font-family: "Noto Sans SC", "Noto Sans JP", sans-serif;
+            white-space: nowrap;
+            background: rgba(255, 213, 79, 0.28);
+        }
+
+        .study-elapsed-display[hidden] {
+            display: none !important;
+        }
+
         .review-panel {
             background: rgba(255, 213, 79, 0.15);
         }
@@ -856,6 +876,15 @@
             }
             .home-btn {
                 min-width: 50px;
+            }
+            .header-right-slot {
+                min-width: 64px;
+            }
+            .study-elapsed-display {
+                min-width: 76px;
+                padding: 4px 8px;
+                font-size: 12px;
+                letter-spacing: 0.02em;
             }
             .page-shell {
                 padding: 18px 12px 36px;
@@ -1126,6 +1155,14 @@
             .home-btn {
                 min-width: 46px;
             }
+            .header-right-slot {
+                min-width: 58px;
+            }
+            .study-elapsed-display {
+                min-width: 70px;
+                padding: 3px 7px;
+                font-size: 11px;
+            }
             .sort-page-header-title {
                 font-size: 15px;
             }
@@ -1358,7 +1395,10 @@
             戻る
         </button>
         <h1 class="sort-page-header-title">文法 <span>排序题</span></h1>
-        <a href="../../../index.html" class="back-btn home-btn">主页</a>
+        <div id="header-right-slot" class="header-right-slot">
+            <a id="header-home-btn" href="../../../index.html" class="back-btn home-btn">主页</a>
+            <div id="study-elapsed-display" class="back-btn study-elapsed-display" hidden>用时 00:00</div>
+        </div>
     </header>
 
     <div class="page-shell">
@@ -1380,9 +1420,9 @@
                     <span class="text-3xl font-bold font-sans text-textMain mb-2 group-hover:scale-105 transition-transform">N2</span>
                     <span class="text-xs text-textSub font-bold tracking-widest">真题练习</span>
                 </button>
-                <button type="button" disabled class="flex-1 flex flex-col items-center group opacity-50 cursor-not-allowed bg-white py-8 px-6 sketch-box">
-                    <span class="text-3xl font-bold font-sans text-textMain mb-2">N3</span>
-                    <span class="text-xs text-textSub font-bold tracking-widest">准备中</span>
+                <button id="level-btn-N3" type="button" onclick="app.selectLevel('N3')" class="flex-1 flex flex-col items-center group bg-white py-8 px-6 sketch-box">
+                    <span class="text-3xl font-bold font-sans text-textMain mb-2 group-hover:scale-105 transition-transform">N3</span>
+                    <span id="level-btn-N3-status" class="text-xs text-textSub font-bold tracking-widest">真题练习</span>
                 </button>
             </div>
 
@@ -1394,7 +1434,7 @@
                         </div>
                         <div class="text-left">
                             <h3 class="text-lg font-bold text-textMain tracking-wide">全级别随机特训</h3>
-                            <p class="text-xs text-textSub font-bold mt-1">从 N1 / N2 中随机抽题</p>
+                            <p class="text-xs text-textSub font-bold mt-1">从 N1 / N2 / N3 中随机抽题</p>
                         </div>
                     </div>
                 </button>
@@ -1586,6 +1626,17 @@
 
         function isEnabledSortYear(level, year) {
             return questionDatabase.some(q => q.level === level && q.year === year);
+        }
+
+        function updateOptionalLevelButtons() {
+            const n3Button = document.getElementById('level-btn-N3');
+            const n3Status = document.getElementById('level-btn-N3-status');
+            if (!n3Button) return;
+            const enabled = isEnabledSortLevel('N3');
+            n3Button.disabled = !enabled;
+            n3Button.classList.toggle('opacity-50', !enabled);
+            n3Button.classList.toggle('cursor-not-allowed', !enabled);
+            if (n3Status) n3Status.textContent = enabled ? '真题练习' : '准备中';
         }
 
         function clampTimerMinutes(value) {
@@ -2105,6 +2156,33 @@
                 return null;
             },
 
+            isStudyElapsedHeaderActive() {
+                const practiceView = document.getElementById('view-practice');
+                return Boolean(
+                    practiceView?.classList.contains('active') &&
+                    this.trainingMode === 'study' &&
+                    this.isPracticeInProgress()
+                );
+            },
+
+            updateHeaderRightSlot() {
+                const homeBtn = document.getElementById('header-home-btn');
+                const elapsedDisplay = document.getElementById('study-elapsed-display');
+                if (!homeBtn || !elapsedDisplay) return;
+                const showElapsed = this.isStudyElapsedHeaderActive();
+                homeBtn.hidden = showElapsed;
+                elapsedDisplay.hidden = !showElapsed;
+                if (showElapsed) {
+                    elapsedDisplay.textContent = `用时 ${formatTimerClock(this.timer.elapsedSeconds)}`;
+                }
+            },
+
+            startPracticeClock() {
+                if (this.trainingMode === 'study' || this.trainingMode === 'challenge') {
+                    this.startTimer();
+                }
+            },
+
             setPracticeToolbarMode(mode) {
                 const toolbar = document.getElementById('practice-bottom-toolbar');
                 const practiceView = document.getElementById('view-practice');
@@ -2393,6 +2471,7 @@
 
             updateTimerUI() {
                 const timer = this.timer;
+                this.updateHeaderRightSlot();
                 const toolbar = document.getElementById('practice-bottom-toolbar');
                 const toolbarDisplay = document.getElementById('timer-toolbar-display');
                 const drawerDisplay = document.getElementById('timer-drawer-display');
@@ -2596,7 +2675,7 @@
                 startGrammarRewardRun();
                 this.renderPracticeQuestion();
                 this.switchView('view-practice');
-                if (this.trainingMode === 'challenge') this.startTimer();
+                this.startPracticeClock();
             },
 
             startGlobalRandomPractice(options = {}) {
@@ -2622,7 +2701,7 @@
                 startGrammarRewardRun();
                 this.renderPracticeQuestion();
                 this.switchView('view-practice');
-                if (this.trainingMode === 'challenge') this.startTimer();
+                this.startPracticeClock();
             },
 
             // Step 2-C: 启动错题回顾练习
@@ -2664,7 +2743,7 @@
                 }
                 this.renderPracticeQuestion();
                 this.switchView('view-practice');
-                if (this.trainingMode === 'challenge') this.startTimer();
+                this.startPracticeClock();
             },
 
             // Step 3: 启动指定年份练习
@@ -2696,7 +2775,7 @@
                 }
                 this.renderPracticeQuestion();
                 this.switchView('view-practice');
-                if (this.trainingMode === 'challenge') this.startTimer();
+                this.startPracticeClock();
             },
 
             // 统一拼接正确解析
@@ -2804,9 +2883,7 @@
                     if (this.trainingMode === 'challenge') {
                         this.finalizeTimerForResult({ timedOut: this.timer.timeoutTriggered });
                     } else {
-                        this.stopTimer();
-                        this.setPracticeToolbarMode(null);
-                        this.closeTimerDrawer({ skipUpdate: true });
+                        this.finalizeTimerForResult();
                     }
                     const restartAction = 'app.restartCurrentPractice()';
 
@@ -2835,6 +2912,11 @@
                             <div class="text-xs font-bold tracking-widest text-textSub">所要時間</div>
                             <div class="mt-2 text-2xl font-bold text-textMain font-sans">${this.getResultTimerText()}</div>
                             ${this.timer.resultTimeout ? '<p class="mt-3 text-sm font-bold text-accentRed">タイムアップ</p>' : ''}
+                        </div>
+                    ` : this.timer.resultHasRun ? `
+                        <div class="max-w-xs mx-auto mb-6 bg-white border-[1.5px] border-borderStrong rounded-lg px-4 py-4 shadow-sm">
+                            <div class="text-xs font-bold tracking-widest text-textSub">所用时间</div>
+                            <div class="mt-2 text-2xl font-bold text-textMain font-sans">${this.getResultTimerText()}</div>
                         </div>
                     ` : '';
 
@@ -2990,6 +3072,7 @@
         };
 
         window.app = app;
+        updateOptionalLevelButtons();
         app.init();
         app.updateTimerUI();
 
