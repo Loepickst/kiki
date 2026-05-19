@@ -1635,6 +1635,7 @@
         let pendingQuestionReveal = null;
         let sessionWrongWords = [];
         const sessionWrongWordIds = new Set();
+        let currentSummaryWordIndex = -1;
 
         const testServer = window.StudyQuestTestServer;
         const VOCAB_STAR_KEY_PREFIX = 'study_quest_test_v1_vocab_star::';
@@ -3771,8 +3772,12 @@
         }
 
 
-        function buildSummaryWordCardMarkup(word) {
+        function buildSummaryWordCardMarkup(word, index) {
             if (!word) return '';
+            const totalWords = sessionWrongWords.filter(Boolean).length || 1;
+            const safeIndex = Math.max(0, Math.min(Number(index) || 0, totalWords - 1));
+            const isFirst = safeIndex <= 0;
+            const isLast = safeIndex >= totalWords - 1;
             const toneHtml = word.tone ? `<span class="tone-number">${escapeHtml(word.tone)}</span>` : '';
             const posHtml = word.pos ? `<span class="pos-tag">${escapeHtml(word.pos)}</span>` : '';
             const meaning = extractPrimaryMeaning(word);
@@ -3837,6 +3842,11 @@
                             ${definitionsHtml || '<div class="def-group"><div class="def-copy"><span class="def-meaning">暂无解析</span></div></div>'}
                         </div>
                     </div>
+                    <div class="summary-word-nav" aria-label="本轮错词翻页">
+                        <button type="button" class="summary-word-nav-btn" data-summary-word-prev ${isFirst ? 'disabled' : ''}>‹ 上一词</button>
+                        <div class="summary-word-progress">${safeIndex + 1} / ${totalWords}</div>
+                        <button type="button" class="summary-word-nav-btn" data-summary-word-next ${isLast ? 'disabled' : ''}>下一词 ›</button>
+                    </div>
                 </div>
             `;
         }
@@ -3850,21 +3860,42 @@
             if (card) {
                 card.innerHTML = '';
             }
+            currentSummaryWordIndex = -1;
             document.querySelectorAll('.summary-wrong-chip.is-active').forEach((node) => node.classList.remove('is-active'));
         }
 
         function showSummaryWordCard(index) {
             const overlay = document.getElementById('summary-word-overlay');
             const card = document.getElementById('summary-word-card');
-            const word = sessionWrongWords[index];
+            const wrongWords = sessionWrongWords.filter(Boolean);
+            const safeIndex = Math.max(0, Math.min(Number(index) || 0, wrongWords.length - 1));
+            const word = wrongWords[safeIndex];
             if (!overlay || !card || !word) return;
-            card.innerHTML = buildSummaryWordCardMarkup(word);
+            currentSummaryWordIndex = safeIndex;
+            card.innerHTML = buildSummaryWordCardMarkup(word, safeIndex);
             overlay.hidden = false;
             document.querySelectorAll('.summary-wrong-chip').forEach((node) => {
-                node.classList.toggle('is-active', Number(node.dataset.wrongIndex) === index);
+                node.classList.toggle('is-active', Number(node.dataset.wrongIndex) === safeIndex);
             });
             const closeBtn = card.querySelector('[data-summary-word-close]');
             if (closeBtn) closeBtn.addEventListener('click', closeSummaryWordCard);
+            const prevBtn = card.querySelector('[data-summary-word-prev]');
+            if (prevBtn) prevBtn.addEventListener('click', showPreviousSummaryWord);
+            const nextBtn = card.querySelector('[data-summary-word-next]');
+            if (nextBtn) nextBtn.addEventListener('click', showNextSummaryWord);
+        }
+
+        function showPreviousSummaryWord() {
+            if (currentSummaryWordIndex > 0) {
+                showSummaryWordCard(currentSummaryWordIndex - 1);
+            }
+        }
+
+        function showNextSummaryWord() {
+            const wrongWords = sessionWrongWords.filter(Boolean);
+            if (currentSummaryWordIndex >= 0 && currentSummaryWordIndex < wrongWords.length - 1) {
+                showSummaryWordCard(currentSummaryWordIndex + 1);
+            }
         }
 
         function renderSessionWrongWords() {
