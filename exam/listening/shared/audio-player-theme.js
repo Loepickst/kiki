@@ -11,6 +11,68 @@
     let listeningPetAssetsPromise = null;
     let listeningPetHooksInstalled = false;
 
+    function installListeningHighlightAlignmentFix() {
+        if (document.getElementById('listening-highlight-alignment-fix')) {
+            return;
+        }
+
+        const style = document.createElement('style');
+        style.id = 'listening-highlight-alignment-fix';
+        style.textContent = `
+            .mode-explanation .highlight-correct,
+            .mode-explanation .highlight-wrong {
+                display: inline !important;
+                padding: 0 0.14em !important;
+                border-bottom: 0 !important;
+                border-radius: 2px !important;
+                line-height: inherit !important;
+                font-weight: 700 !important;
+                -webkit-box-decoration-break: clone;
+                box-decoration-break: clone;
+            }
+
+            .mode-explanation .highlight-correct {
+                background: linear-gradient(transparent 52%, rgba(129, 199, 132, 0.62) 52%) !important;
+            }
+
+            .mode-explanation .highlight-wrong {
+                background: linear-gradient(transparent 52%, rgba(244, 143, 177, 0.62) 52%) !important;
+            }
+
+            .mode-explanation .highlight-correct .keyword,
+            .mode-explanation .highlight-wrong .keyword,
+            .mode-explanation .highlight-correct .explain-correct,
+            .mode-explanation .highlight-wrong .explain-wrong {
+                display: inline !important;
+            }
+
+            .mode-explanation .opt-tag {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                box-sizing: border-box !important;
+                width: auto !important;
+                min-width: 1.35em !important;
+                height: 1.35em !important;
+                padding: 0 0.22em !important;
+                margin: 0 0.28em 0 0.12em !important;
+                line-height: 1 !important;
+                vertical-align: -0.16em !important;
+                position: relative !important;
+                top: 0 !important;
+                text-align: center !important;
+                font-size: 0.72em !important;
+                font-weight: 900 !important;
+                text-decoration: none !important;
+                white-space: nowrap !important;
+            }
+        `;
+
+        (document.head || document.documentElement).appendChild(style);
+    }
+
+    installListeningHighlightAlignmentFix();
+
     function detectListeningPracticeSubType() {
         const path = String(window.location.pathname || '').toLowerCase();
         if (path.includes('/immediate-response/')) return 'immediate';
