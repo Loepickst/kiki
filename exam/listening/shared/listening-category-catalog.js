@@ -4541,6 +4541,834 @@
                 ]
         },
         {
+                "id": "point-n1-c1-reason-purpose",
+                "name": "理由・原因・目的・契机题",
+                "description": "题干问理由、原因、目的、契机；听的时候抓真正理由/动机/目的，尤其注意一般论或前置信息被否定后的真正原因。",
+                "type": "point_comprehension",
+                "level": "N1",
+                "items": [
+                        {
+                                "sourceExamKey": "2010-07",
+                                "questionId": 2,
+                                "label": "2010年7月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2010-12",
+                                "questionId": 1,
+                                "label": "2010年12月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2010-12",
+                                "questionId": 3,
+                                "label": "2010年12月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2010-12",
+                                "questionId": 6,
+                                "label": "2010年12月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2010-12",
+                                "questionId": 7,
+                                "label": "2010年12月 · 第 7 题"
+                        },
+                        {
+                                "sourceExamKey": "2011-12",
+                                "questionId": 2,
+                                "label": "2011年12月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2011-12",
+                                "questionId": 3,
+                                "label": "2011年12月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2011-12",
+                                "questionId": 7,
+                                "label": "2011年12月 · 第 7 题"
+                        },
+                        {
+                                "sourceExamKey": "2012-07",
+                                "questionId": 1,
+                                "label": "2012年7月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2012-07",
+                                "questionId": 3,
+                                "label": "2012年7月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2012-07",
+                                "questionId": 5,
+                                "label": "2012年7月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2012-12",
+                                "questionId": 1,
+                                "label": "2012年12月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2012-12",
+                                "questionId": 2,
+                                "label": "2012年12月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2012-12",
+                                "questionId": 3,
+                                "label": "2012年12月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2012-12",
+                                "questionId": 7,
+                                "label": "2012年12月 · 第 7 题"
+                        },
+                        {
+                                "sourceExamKey": "2013-07",
+                                "questionId": 1,
+                                "label": "2013年7月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2013-07",
+                                "questionId": 6,
+                                "label": "2013年7月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2013-12",
+                                "questionId": 3,
+                                "label": "2013年12月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2013-12",
+                                "questionId": 5,
+                                "label": "2013年12月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2014-07",
+                                "questionId": 1,
+                                "label": "2014年7月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2014-07",
+                                "questionId": 4,
+                                "label": "2014年7月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2014-07",
+                                "questionId": 6,
+                                "label": "2014年7月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2014-12",
+                                "questionId": 2,
+                                "label": "2014年12月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2014-12",
+                                "questionId": 7,
+                                "label": "2014年12月 · 第 7 题"
+                        },
+                        {
+                                "sourceExamKey": "2015-07",
+                                "questionId": 5,
+                                "label": "2015年7月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2015-12",
+                                "questionId": 3,
+                                "label": "2015年12月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2015-12",
+                                "questionId": 4,
+                                "label": "2015年12月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2016-07",
+                                "questionId": 2,
+                                "label": "2016年7月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2016-07",
+                                "questionId": 3,
+                                "label": "2016年7月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2016-07",
+                                "questionId": 5,
+                                "label": "2016年7月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2016-07",
+                                "questionId": 6,
+                                "label": "2016年7月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2016-12",
+                                "questionId": 1,
+                                "label": "2016年12月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2016-12",
+                                "questionId": 3,
+                                "label": "2016年12月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2017-07",
+                                "questionId": 3,
+                                "label": "2017年7月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2017-07",
+                                "questionId": 4,
+                                "label": "2017年7月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2017-12",
+                                "questionId": 3,
+                                "label": "2017年12月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2018-07",
+                                "questionId": 2,
+                                "label": "2018年7月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2018-07",
+                                "questionId": 3,
+                                "label": "2018年7月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2018-07",
+                                "questionId": 5,
+                                "label": "2018年7月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2018-07",
+                                "questionId": 6,
+                                "label": "2018年7月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2018-12",
+                                "questionId": 2,
+                                "label": "2018年12月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2019-07",
+                                "questionId": 1,
+                                "label": "2019年7月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2019-12",
+                                "questionId": 2,
+                                "label": "2019年12月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2020-12",
+                                "questionId": 2,
+                                "label": "2020年12月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2020-12",
+                                "questionId": 5,
+                                "label": "2020年12月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2021-07",
+                                "questionId": 1,
+                                "label": "2021年7月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2021-07",
+                                "questionId": 4,
+                                "label": "2021年7月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2021-12",
+                                "questionId": 5,
+                                "label": "2021年12月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2021-12",
+                                "questionId": 7,
+                                "label": "2021年12月 · 第 7 题"
+                        }
+                ]
+        },
+        {
+                "id": "point-n1-c2-priority-evaluation",
+                "name": "重点・魅力・评价题",
+                "description": "题干问一番、最も、魅力、重視、評価、利点；听的时候抓最高评价点或最被强调的点。",
+                "type": "point_comprehension",
+                "level": "N1",
+                "items": [
+                        {
+                                "sourceExamKey": "2010-12",
+                                "questionId": 4,
+                                "label": "2010年12月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2010-12",
+                                "questionId": 5,
+                                "label": "2010年12月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2011-07",
+                                "questionId": 3,
+                                "label": "2011年7月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2011-07",
+                                "questionId": 5,
+                                "label": "2011年7月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2011-07",
+                                "questionId": 6,
+                                "label": "2011年7月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2011-12",
+                                "questionId": 1,
+                                "label": "2011年12月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2011-12",
+                                "questionId": 4,
+                                "label": "2011年12月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2011-12",
+                                "questionId": 6,
+                                "label": "2011年12月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2012-07",
+                                "questionId": 4,
+                                "label": "2012年7月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2012-07",
+                                "questionId": 7,
+                                "label": "2012年7月 · 第 7 题"
+                        },
+                        {
+                                "sourceExamKey": "2013-07",
+                                "questionId": 3,
+                                "label": "2013年7月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2013-07",
+                                "questionId": 5,
+                                "label": "2013年7月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2013-12",
+                                "questionId": 4,
+                                "label": "2013年12月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2014-07",
+                                "questionId": 5,
+                                "label": "2014年7月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2015-07",
+                                "questionId": 1,
+                                "label": "2015年7月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2015-07",
+                                "questionId": 2,
+                                "label": "2015年7月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2015-07",
+                                "questionId": 3,
+                                "label": "2015年7月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2015-07",
+                                "questionId": 6,
+                                "label": "2015年7月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2016-07",
+                                "questionId": 1,
+                                "label": "2016年7月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2016-12",
+                                "questionId": 5,
+                                "label": "2016年12月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2017-07",
+                                "questionId": 5,
+                                "label": "2017年7月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2018-07",
+                                "questionId": 1,
+                                "label": "2018年7月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2018-07",
+                                "questionId": 4,
+                                "label": "2018年7月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2018-12",
+                                "questionId": 6,
+                                "label": "2018年12月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2019-07",
+                                "questionId": 5,
+                                "label": "2019年7月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2019-12",
+                                "questionId": 1,
+                                "label": "2019年12月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2020-12",
+                                "questionId": 7,
+                                "label": "2020年12月 · 第 7 题"
+                        },
+                        {
+                                "sourceExamKey": "2021-07",
+                                "questionId": 6,
+                                "label": "2021年7月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2021-12",
+                                "questionId": 2,
+                                "label": "2021年12月 · 第 2 题"
+                        }
+                ]
+        },
+        {
+                "id": "point-n1-c3-decision-selection",
+                "name": "最终决定・选择・采用题",
+                "description": "题干问最后选择、决定、采用、这之后做什么；听的时候抓最后达成一致或实际采用的方案。",
+                "type": "point_comprehension",
+                "level": "N1",
+                "items": [
+                        {
+                                "sourceExamKey": "2010-07",
+                                "questionId": 6,
+                                "label": "2010年7月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2011-07",
+                                "questionId": 4,
+                                "label": "2011年7月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2011-12",
+                                "questionId": 5,
+                                "label": "2011年12月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2012-07",
+                                "questionId": 2,
+                                "label": "2012年7月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2012-12",
+                                "questionId": 4,
+                                "label": "2012年12月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2013-07",
+                                "questionId": 4,
+                                "label": "2013年7月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2014-12",
+                                "questionId": 3,
+                                "label": "2014年12月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2014-12",
+                                "questionId": 4,
+                                "label": "2014年12月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2015-07",
+                                "questionId": 7,
+                                "label": "2015年7月 · 第 7 题"
+                        },
+                        {
+                                "sourceExamKey": "2015-12",
+                                "questionId": 1,
+                                "label": "2015年12月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2015-12",
+                                "questionId": 2,
+                                "label": "2015年12月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2015-12",
+                                "questionId": 7,
+                                "label": "2015年12月 · 第 7 题"
+                        },
+                        {
+                                "sourceExamKey": "2016-07",
+                                "questionId": 4,
+                                "label": "2016年7月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2017-12",
+                                "questionId": 2,
+                                "label": "2017年12月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2017-12",
+                                "questionId": 5,
+                                "label": "2017年12月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2018-12",
+                                "questionId": 1,
+                                "label": "2018年12月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2018-12",
+                                "questionId": 4,
+                                "label": "2018年12月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2019-07",
+                                "questionId": 2,
+                                "label": "2019年7月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2019-12",
+                                "questionId": 5,
+                                "label": "2019年12月 · 第 5 题"
+                        }
+                ]
+        },
+        {
+                "id": "point-n1-c4-content-feature",
+                "name": "内容・特征・变化确认题",
+                "description": "题干问特点、内容、变化、用途、主题、功能、状态；听的时候抓客观信息和范围限定。",
+                "type": "point_comprehension",
+                "level": "N1",
+                "items": [
+                        {
+                                "sourceExamKey": "2010-07",
+                                "questionId": 5,
+                                "label": "2010年7月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2012-12",
+                                "questionId": 6,
+                                "label": "2012年12月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2013-12",
+                                "questionId": 1,
+                                "label": "2013年12月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2013-12",
+                                "questionId": 6,
+                                "label": "2013年12月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2014-07",
+                                "questionId": 3,
+                                "label": "2014年7月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2014-12",
+                                "questionId": 6,
+                                "label": "2014年12月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2015-07",
+                                "questionId": 4,
+                                "label": "2015年7月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2015-12",
+                                "questionId": 6,
+                                "label": "2015年12月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2016-07",
+                                "questionId": 7,
+                                "label": "2016年7月 · 第 7 题"
+                        },
+                        {
+                                "sourceExamKey": "2016-12",
+                                "questionId": 4,
+                                "label": "2016年12月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2017-12",
+                                "questionId": 1,
+                                "label": "2017年12月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2017-12",
+                                "questionId": 4,
+                                "label": "2017年12月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2017-12",
+                                "questionId": 6,
+                                "label": "2017年12月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2019-12",
+                                "questionId": 4,
+                                "label": "2019年12月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2020-12",
+                                "questionId": 3,
+                                "label": "2020年12月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2020-12",
+                                "questionId": 6,
+                                "label": "2020年12月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2021-07",
+                                "questionId": 2,
+                                "label": "2021年7月 · 第 2 题"
+                        }
+                ]
+        },
+        {
+                "id": "point-n1-c5-advice-necessity",
+                "name": "建议・提案・必要题",
+                "description": "题干问建议、提案、必要、应怎么做；听的时候抓应采取的做法或推荐方案。",
+                "type": "point_comprehension",
+                "level": "N1",
+                "items": [
+                        {
+                                "sourceExamKey": "2010-07",
+                                "questionId": 4,
+                                "label": "2010年7月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2011-07",
+                                "questionId": 7,
+                                "label": "2011年7月 · 第 7 题"
+                        },
+                        {
+                                "sourceExamKey": "2012-07",
+                                "questionId": 6,
+                                "label": "2012年7月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2013-07",
+                                "questionId": 2,
+                                "label": "2013年7月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2014-07",
+                                "questionId": 7,
+                                "label": "2014年7月 · 第 7 题"
+                        },
+                        {
+                                "sourceExamKey": "2014-12",
+                                "questionId": 1,
+                                "label": "2014年12月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2016-12",
+                                "questionId": 6,
+                                "label": "2016年12月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2017-07",
+                                "questionId": 1,
+                                "label": "2017年7月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2017-07",
+                                "questionId": 2,
+                                "label": "2017年7月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2018-12",
+                                "questionId": 3,
+                                "label": "2018年12月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2019-07",
+                                "questionId": 6,
+                                "label": "2019年7月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2019-12",
+                                "questionId": 3,
+                                "label": "2019年12月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2019-12",
+                                "questionId": 6,
+                                "label": "2019年12月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2020-12",
+                                "questionId": 4,
+                                "label": "2020年12月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2021-07",
+                                "questionId": 3,
+                                "label": "2021年7月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2021-07",
+                                "questionId": 7,
+                                "label": "2021年7月 · 第 7 题"
+                        },
+                        {
+                                "sourceExamKey": "2021-12",
+                                "questionId": 1,
+                                "label": "2021年12月 · 第 1 题"
+                        }
+                ]
+        },
+        {
+                "id": "point-n1-c6-problem-issue",
+                "name": "问题・不足・心配・课题题",
+                "description": "题干问问题、课题、心配、不足、反省、よくなかった；听的时候抓负面评价、未解决点或改善方向。",
+                "type": "point_comprehension",
+                "level": "N1",
+                "items": [
+                        {
+                                "sourceExamKey": "2010-07",
+                                "questionId": 1,
+                                "label": "2010年7月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2010-07",
+                                "questionId": 3,
+                                "label": "2010年7月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2010-12",
+                                "questionId": 2,
+                                "label": "2010年12月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2011-07",
+                                "questionId": 1,
+                                "label": "2011年7月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2011-07",
+                                "questionId": 2,
+                                "label": "2011年7月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2012-12",
+                                "questionId": 5,
+                                "label": "2012年12月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2013-12",
+                                "questionId": 2,
+                                "label": "2013年12月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2013-12",
+                                "questionId": 7,
+                                "label": "2013年12月 · 第 7 题"
+                        },
+                        {
+                                "sourceExamKey": "2014-07",
+                                "questionId": 2,
+                                "label": "2014年7月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2015-12",
+                                "questionId": 5,
+                                "label": "2015年12月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2016-12",
+                                "questionId": 2,
+                                "label": "2016年12月 · 第 2 题"
+                        },
+                        {
+                                "sourceExamKey": "2017-07",
+                                "questionId": 6,
+                                "label": "2017年7月 · 第 6 题"
+                        },
+                        {
+                                "sourceExamKey": "2018-12",
+                                "questionId": 5,
+                                "label": "2018年12月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2019-07",
+                                "questionId": 3,
+                                "label": "2019年7月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2019-07",
+                                "questionId": 4,
+                                "label": "2019年7月 · 第 4 题"
+                        },
+                        {
+                                "sourceExamKey": "2020-12",
+                                "questionId": 1,
+                                "label": "2020年12月 · 第 1 题"
+                        },
+                        {
+                                "sourceExamKey": "2021-12",
+                                "questionId": 3,
+                                "label": "2021年12月 · 第 3 题"
+                        },
+                        {
+                                "sourceExamKey": "2021-12",
+                                "questionId": 4,
+                                "label": "2021年12月 · 第 4 题"
+                        }
+                ]
+        },
+        {
+                "id": "point-n1-c7-opinion-stance",
+                "name": "意见・立场・自我观点题",
+                "description": "题干问どう思う、幸せ、期待、してほしい等个人立场；听的时候抓说话人的本人观点。",
+                "type": "point_comprehension",
+                "level": "N1",
+                "items": [
+                        {
+                                "sourceExamKey": "2010-07",
+                                "questionId": 7,
+                                "label": "2010年7月 · 第 7 题"
+                        },
+                        {
+                                "sourceExamKey": "2014-12",
+                                "questionId": 5,
+                                "label": "2014年12月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2021-07",
+                                "questionId": 5,
+                                "label": "2021年7月 · 第 5 题"
+                        },
+                        {
+                                "sourceExamKey": "2021-12",
+                                "questionId": 6,
+                                "label": "2021年12月 · 第 6 题"
+                        }
+                ]
+        },
+        {
                 "id": "point-reason-purpose",
                 "name": "理由・原因・目的题",
                 "description": "题干问どうして／理由／原因／目的／きっかけ。练习抓真正理由，并排除被否定或修正的干扰项。",
