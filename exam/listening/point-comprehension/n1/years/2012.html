@@ -630,6 +630,7 @@
 
   <div id="wordTooltip" class="custom-tooltip"></div>
 
+  <script src="../../../shared/listening-progress.js"></script>
   <script>
     'use strict';
 
@@ -1234,6 +1235,8 @@
     var currentQuestionIndex = 0;
     var preferredMode = 'practice';
     var storageKeyPrefix = 'listening-marks-';
+    var LISTENING_TYPE = 'point-comprehension';
+    var LISTENING_LEVEL = 'n1';
     var audioReady = false;
 
     function byId(id) {
@@ -1244,19 +1247,53 @@
       return examData[currentExamKey].questions;
     }
 
-    function getMarks() {
+    function normalizeMarks(marks) {
+      var normalized = [];
+      if (!Array.isArray(marks)) return normalized;
+      marks.forEach(function(mark) {
+        var id = parseInt(mark, 10);
+        if (isFinite(id) && id > 0 && normalized.indexOf(id) === -1) normalized.push(id);
+      });
+      return normalized;
+    }
+
+    function getLegacyMarks() {
       try {
         var parsed = JSON.parse(localStorage.getItem(storageKeyPrefix + currentExamKey) || '[]');
-        return Array.isArray(parsed) ? parsed : [];
+        return normalizeMarks(parsed);
       } catch (error) {
         return [];
       }
     }
 
-    function saveMarks(marks) {
+    function clearLegacyMarks() {
       try {
-        localStorage.setItem(storageKeyPrefix + currentExamKey, JSON.stringify(marks));
+        localStorage.removeItem(storageKeyPrefix + currentExamKey);
       } catch (error) {}
+    }
+
+    function getMarks() {
+      if (window.ListeningProgress && typeof window.ListeningProgress.getMistakeIds === 'function') {
+        var sharedMarks = normalizeMarks(window.ListeningProgress.getMistakeIds(LISTENING_TYPE, LISTENING_LEVEL, currentExamKey));
+        if (sharedMarks.length > 0) return sharedMarks;
+
+        var legacyMarks = getLegacyMarks();
+        if (legacyMarks.length > 0 && typeof window.ListeningProgress.setMistakeIds === 'function') {
+          window.ListeningProgress.setMistakeIds(LISTENING_TYPE, LISTENING_LEVEL, currentExamKey, legacyMarks);
+          clearLegacyMarks();
+          return legacyMarks;
+        }
+        return [];
+      }
+      return getLegacyMarks();
+    }
+
+    function saveMarks(marks) {
+      var normalized = normalizeMarks(marks);
+      if (window.ListeningProgress && typeof window.ListeningProgress.setMistakeIds === 'function') {
+        window.ListeningProgress.setMistakeIds(LISTENING_TYPE, LISTENING_LEVEL, currentExamKey, normalized);
+        clearLegacyMarks();
+      }
     }
 
     function toggleMark() {
@@ -1638,18 +1675,41 @@
     function init() {
       var urlParams = new URLSearchParams(window.location.search);
       var yearParam = urlParams.get('year');
+      var modeParam = urlParams.get('mode');
       var targetKey = yearParam ? 'N1-' + yearParam : currentExamKey;
       if (examData[targetKey]) currentExamKey = targetKey;
       else if (!examData[currentExamKey]) currentExamKey = Object.keys(examData)[0];
       if (window.ListeningProgress && typeof window.ListeningProgress.setLastPractice === 'function') {
-        window.ListeningProgress.setLastPractice('point-comprehension', 'n1', currentExamKey);
+        window.ListeningProgress.setLastPractice(LISTENING_TYPE, LISTENING_LEVEL, currentExamKey);
       }
-      byId('yearLabel').textContent = examData[currentExamKey].label;
+
+      var yearLabel = byId('yearLabel');
+      if (yearLabel) yearLabel.textContent = examData[currentExamKey].label;
+
+      if (modeParam === 'review') {
+        var marks = getMarks();
+        if (marks.length === 0) {
+          alert('付箋を貼った問題はありません。(No marked questions)');
+        } else {
+          var originalQuestions = examData[currentExamKey].questions;
+          var filtered = originalQuestions.filter(function(question) {
+            return marks.indexOf(question.id) !== -1;
+          });
+          if (filtered.length > 0) {
+            examData[currentExamKey].questions = filtered;
+            if (yearLabel) {
+              yearLabel.innerHTML += ' <span style="background:var(--marker-yellow); color:var(--graphite); font-size:12px; margin-left:8px; padding:2px 8px; border-radius:2px 8px 2px 6px / 6px 2px 8px 2px; border:1.5px solid var(--graphite);">✔ 復習ノート</span>';
+            }
+          } else {
+            alert('付箋を貼った問題が見つかりませんでした。');
+          }
+        }
+      }
       bindEvents();
       updateQuestionSelect();
       setupAudioPlayer();
       renderQuestion();
-      runSelfTests();
+      if (modeParam !== 'review') runSelfTests();
     }
 
     window.changeQuestion = changeQuestion;
