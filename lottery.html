@@ -1549,6 +1549,7 @@
         const omikujiCatalogApi = window.OmikujiCatalog || null;
         const fortunes = omikujiCatalogApi ? omikujiCatalogApi.fortunes : [];
         const themeSets = omikujiCatalogApi ? omikujiCatalogApi.themeSets || [] : [];
+        const unlockPools = omikujiCatalogApi ? omikujiCatalogApi.unlockPools || [] : [];
         const collectionCatalog = omikujiCatalogApi ? omikujiCatalogApi.collectionCatalog || [] : [];
         const rarityOrder = omikujiCatalogApi ? omikujiCatalogApi.rarityOrder || ['EX', 'MR', 'SP', 'KR', 'UR', 'SSR', 'SR', 'R'] : ['EX', 'MR', 'SP', 'KR', 'UR', 'SSR', 'SR', 'R'];
         const rarityColors = omikujiCatalogApi ? omikujiCatalogApi.rarityColors || {} : {};
@@ -2063,8 +2064,47 @@
             return true;
         }
 
-        function getDrawableFortunes(pool, now = new Date()) {
-            return pool.filter((fortune) => isFortuneAvailableToday(fortune, now));
+        function getUnlockPoolById(id) {
+            const normalizedId = String(id || '').trim();
+            if (!normalizedId) {
+                return null;
+            }
+            if (omikujiCatalogApi && typeof omikujiCatalogApi.getUnlockPoolById === 'function') {
+                return omikujiCatalogApi.getUnlockPoolById(normalizedId);
+            }
+            return unlockPools.find((pool) => pool && pool.id === normalizedId) || null;
+        }
+
+        function hasCollectedFortune(cardId, meta = getCollectionMeta()) {
+            const normalizedId = normalizeFortuneId(cardId);
+            const entry = normalizedId ? meta[normalizedId] : null;
+            return Boolean(entry && Number(entry.count) > 0);
+        }
+
+        function isFortuneUnlockedForDraw(fortune, meta = getCollectionMeta()) {
+            const requirement = fortune && fortune.unlockRequirement;
+            if (!requirement) {
+                return true;
+            }
+            if (requirement.type === 'card_owned') {
+                return hasCollectedFortune(requirement.cardId, meta);
+            }
+            return true;
+        }
+
+        function getStartedUnlockPoolsForDraw(fortune, drawRecord) {
+            if (!fortune || !drawRecord || !drawRecord.isNew || fortune.poolRole !== 'starter' || !fortune.unlockPoolId) {
+                return [];
+            }
+            const unlockPool = getUnlockPoolById(fortune.unlockPoolId);
+            return unlockPool ? [unlockPool] : [];
+        }
+
+        function getDrawableFortunes(pool, now = new Date(), meta = getCollectionMeta()) {
+            return pool.filter((fortune) => (
+                isFortuneAvailableToday(fortune, now)
+                && isFortuneUnlockedForDraw(fortune, meta)
+            ));
         }
 
         function isMysteryFortune(fortune) {
@@ -2766,6 +2806,13 @@
             if (extras.unlockedThemeRewards.length > 0) {
                 parts.push('套组终章卡已入藏');
             }
+            if (Array.isArray(extras.startedUnlockPools) && extras.startedUnlockPools.length > 0) {
+                extras.startedUnlockPools.forEach((pool) => {
+                    if (pool && pool.title) {
+                        parts.push(`${pool.title}已启动`);
+                    }
+                });
+            }
             if (extras.didUnlockColaTreat) {
                 parts.push('已解锁柴犬互动：喂可乐');
             }
@@ -2816,6 +2863,8 @@
             const rand = Math.random() * 100;
             let cumulative = 0;
             let selectedRarity = 'R';
+            const collectionMeta = getCollectionMeta();
+            const drawDate = new Date();
 
             for (const rarity in rarityRates) {
                 cumulative += rarityRates[rarity];
@@ -2826,12 +2875,16 @@
             }
 
             const pool = getDrawableFortunes(
-                fortunes.filter((fortune) => fortune.rarity === selectedRarity && !fortune.isSpecial)
+                fortunes.filter((fortune) => fortune.rarity === selectedRarity && !fortune.isSpecial),
+                drawDate,
+                collectionMeta
             );
 
             if (!pool.length) {
                 const normalPool = getDrawableFortunes(
-                    fortunes.filter((fortune) => !fortune.isSpecial)
+                    fortunes.filter((fortune) => !fortune.isSpecial),
+                    drawDate,
+                    collectionMeta
                 );
                 return normalPool[Math.floor(Math.random() * normalPool.length)];
             }
@@ -2948,10 +3001,12 @@
                     const didUnlockColaTreat = randomFortune.id === COLA_FORTUNE_ID
                         ? unlockPetInteraction(COLA_TREAT_UNLOCK_ID)
                         : false;
+                    const startedUnlockPools = getStartedUnlockPoolsForDraw(randomFortune, drawRecord);
 
                     renderResultCard(randomFortune, drawRecord, {
                         didUnlockColaTreat,
-                        unlockedThemeRewards
+                        unlockedThemeRewards,
+                        startedUnlockPools
                     });
 
                     currentState.count += 1;
