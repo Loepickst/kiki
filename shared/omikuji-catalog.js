@@ -86,6 +86,7 @@
         { id: "sp1", rarity: "SP", title: "感谢祭", desc: "感谢你一直以来的支持，谢谢。", weight: 1, color: "#9c27b0", icon: `${EX_CARD_ASSET_BASE}ganxieji.png`, isSpecial: true },
         { id: "f1", rarity: "KR", title: "旺吉", desc: "🎉你就是最帅（美）的气运之子🎉！kiki祝福你，旺！", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}wangji.png` },
         { id: "f19", rarity: "KR", title: "乐吉", desc: "喝上一口肥宅水，快乐一整天！", weight: 7, color: "#000000", icon: `${EX_CARD_ASSET_BASE}keleji.png` },
+        { id: "food_journey_chiji_starter", rarity: "KR", title: "吃吉", desc: "学饿了，出去吃点东西吧～", weight: 7, color: "#000000", icon: "takarakuji/chiji%202.png", unlockPoolId: "ki_food_journey", poolRole: "starter" },
         { id: "f34", rarity: "KR", title: "肯吉", desc: "疯狂星期四，V你50。真要啊！不行，我要自己吃。", weight: 2, color: "#000000", icon: `${EX_CARD_ASSET_BASE}kenji.png`, availability: { type: "weekday", weekdays: [4], label: "周四限定" } },
         { id: "f21", rarity: "KR", title: "桃吉", desc: "学习上的不如意，说不定会带来其他方面的好运哦～", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}taoji.png` },
         { id: "f37", rarity: "KR", title: "画吉", desc: "快看～，我成为一幅画了，啊啊啊啊啊啊", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}huaji.png` },
@@ -151,7 +152,8 @@
         { id: "practice_anji_max", rarity: "MR", title: "安吉", desc: "天気がいいから、散歩しましょう", color: "#4E5FA8", icon: "takarakuji/anji.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" },
         { id: "practice_yaji_max", rarity: "MR", title: "丫吉", desc: "去背你的单词，别抢我的肉啦。", color: "#8A5A35", icon: "takarakuji/yaji2.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" },
         { id: "practice_geji_max", rarity: "MR", title: "🐦吉", desc: "读到关键句时，线索像小鸟一样轻轻落回掌心，整篇文章也会突然明朗。", color: "#2F7B67", icon: "takarakuji/geji2.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" },
-        { id: "practice_gaoji_max", rarity: "MR", title: "高吉", desc: "文字里的故事，就如怀中的手办一样温暖。", color: "#7A5C9E", icon: "takarakuji/gaoji.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" }
+        { id: "practice_gaoji_max", rarity: "MR", title: "高吉", desc: "文字里的故事，就如怀中的手办一样温暖。", color: "#7A5C9E", icon: "takarakuji/gaoji.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" },
+        { id: "practice_ciji_past_vocab", rarity: "MR", title: "词吉", desc: "指尖跃动的假名，是对你努力的回应", color: "#A85A3D", icon: "takarakuji/ciji.png", isRewardOnly: true, acquireMode: "growth" }
     ];
 
     const themeRewardFortunes = [
@@ -200,6 +202,15 @@
         }
     ]);
 
+    const unlockPools = Object.freeze([
+        {
+            id: "ki_food_journey",
+            title: "kiの美食旅",
+            starterCardId: "food_journey_chiji_starter",
+            status: "starter_only"
+        }
+    ]);
+
     const collectionCatalog = Object.freeze([
         ...achievementRewardFortunes,
         ...practiceRewardFortunes,
@@ -213,6 +224,11 @@
     }, {});
 
     const themeSetById = themeSets.reduce((acc, item) => {
+        acc[item.id] = item;
+        return acc;
+    }, {});
+
+    const unlockPoolById = unlockPools.reduce((acc, item) => {
         acc[item.id] = item;
         return acc;
     }, {});
@@ -273,6 +289,11 @@
     function getThemeSetById(id) {
         const normalizedId = String(id || "").trim();
         return normalizedId && themeSetById[normalizedId] ? themeSetById[normalizedId] : null;
+    }
+
+    function getUnlockPoolById(id) {
+        const normalizedId = String(id || "").trim();
+        return normalizedId && unlockPoolById[normalizedId] ? unlockPoolById[normalizedId] : null;
     }
 
     function getThemeSetProgress(metaOrSetId, maybeSetId) {
@@ -336,6 +357,7 @@
         practiceRewardFortunes,
         themeRewardFortunes,
         themeSets,
+        unlockPools,
         rarityOrder: [...RARITY_ORDER],
         rarityColors: { ...RARITY_COLORS },
         collectionCatalog,
@@ -345,6 +367,7 @@
         getUnlockedCatalog,
         getFortuneById,
         getThemeSetById,
+        getUnlockPoolById,
         getThemeSetProgress,
         normalizeFortuneId
     };
