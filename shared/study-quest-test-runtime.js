@@ -74,7 +74,8 @@
         { id: 'practice_yaji_max', rarity: 'MR', title: '丫吉', desc: '去背你的单词，别抢我的肉啦。', color: '#8A5A35', icon: 'takarakuji/yaji2.png', isRewardOnly: true },
         { id: 'practice_geji_max', rarity: 'MR', title: '🐦吉', desc: '读到关键句时，线索像小鸟一样轻轻落回掌心，整篇文章也会突然明朗。', color: '#2F7B67', icon: 'takarakuji/geji2.png', isRewardOnly: true },
         { id: 'practice_gaoji_max', rarity: 'MR', title: '高吉', desc: '文字里的故事，就如怀中的手办一样温暖。', color: '#7A5C9E', icon: 'takarakuji/gaoji.png', isRewardOnly: true },
-        { id: 'practice_shengji_max', rarity: 'MR', title: '胜吉', desc: '烟火在夜空里炸开的时候，努力终于有了形状。一步一步走到最后，也会迎来属于自己的合格时刻。', color: '#C96A2A', icon: 'takarakuji/shengji.png', isRewardOnly: true }
+        { id: 'practice_shengji_max', rarity: 'MR', title: '胜吉', desc: '烟火在夜空里炸开的时候，努力终于有了形状。一步一步走到最后，也会迎来属于自己的合格时刻。', color: '#C96A2A', icon: 'takarakuji/shengji.png', isRewardOnly: true },
+        { id: 'practice_ciji_past_vocab', rarity: 'MR', title: '词吉', desc: '指尖跃动的假名，是对你努力的回应', color: '#A85A3D', icon: 'takarakuji/ciji.png', isRewardOnly: true }
     ]);
     const HIDDEN_COLLECTION_CARD_IDS = Object.freeze(PET_REWARD_FORTUNES.map((card) => card.id));
     const COLLECTION_CATALOG = Object.freeze([...ACHIEVEMENT_REWARD_FORTUNES, ...PRACTICE_REWARD_FORTUNES, ...FORTUNES]);
@@ -111,6 +112,13 @@
         listening_random_exam: 'practice_anji_max'
     });
     const PRACTICE_CARD_WEIGHTS_BY_SOURCE = Object.freeze({
+        n1_past_vocab: Object.freeze({
+            practice_yaji_max: 7,
+            practice_gaoji_max: 1,
+            practice_geji_max: 1,
+            practice_anji_max: 1,
+            practice_ciji_past_vocab: 1
+        }),
         vocabulary: Object.freeze({
             practice_yaji_max: 7,
             practice_gaoji_max: 1,
@@ -378,6 +386,12 @@
         nextEntry.rarity = normalizeString(incomingEntry.rarity) || nextEntry.rarity;
         nextEntry.title = normalizeString(incomingEntry.title) || nextEntry.title;
         nextEntry.source = normalizeString(incomingEntry.source || nextEntry.source);
+        const hiddenStage2UnlockedAt = Number(incomingEntry.hiddenStage2UnlockedAt);
+        if (Number.isFinite(hiddenStage2UnlockedAt) && hiddenStage2UnlockedAt > 0) {
+            nextEntry.hiddenStage2UnlockedAt = nextEntry.hiddenStage2UnlockedAt
+                ? Math.min(nextEntry.hiddenStage2UnlockedAt, hiddenStage2UnlockedAt)
+                : hiddenStage2UnlockedAt;
+        }
         return nextEntry;
     }
 
@@ -1216,6 +1230,12 @@
         return getCardDefinition(pickWeightedPracticeRewardCardId(result));
     }
 
+    function pickPreparedDrawCardDefinition(result, state) {
+        const rewardSourceKey = getPracticeRewardSourceKey(result);
+        const growthCard = pickGrowthCardDefinition(result);
+        return growthCard || pickCardDefinition(result, state, pickDrawRarity(result.accuracy));
+    }
+
     function pickDrawRarity(accuracy) {
         const roll = Math.random();
         if (accuracy >= 0.9) {
@@ -1476,8 +1496,7 @@
         };
 
         if (drawOffer.available) {
-            const growthCard = pickGrowthCardDefinition(result);
-            const preparedCard = growthCard || pickCardDefinition(result, state, pickDrawRarity(result.accuracy));
+            const preparedCard = pickPreparedDrawCardDefinition(result, state);
             state.rewardFlow.pendingDraws[result.runKey] = {
                 runKey: result.runKey,
                 module: result.module,
