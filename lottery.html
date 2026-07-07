@@ -1695,6 +1695,12 @@
             nextEntry.rarity = incomingEntry.rarity || nextEntry.rarity;
             nextEntry.title = incomingEntry.title || nextEntry.title;
             nextEntry.source = incomingEntry.source || nextEntry.source;
+            const hiddenStage2UnlockedAt = Number(incomingEntry.hiddenStage2UnlockedAt);
+            if (Number.isFinite(hiddenStage2UnlockedAt) && hiddenStage2UnlockedAt > 0) {
+                nextEntry.hiddenStage2UnlockedAt = nextEntry.hiddenStage2UnlockedAt
+                    ? Math.min(nextEntry.hiddenStage2UnlockedAt, hiddenStage2UnlockedAt)
+                    : hiddenStage2UnlockedAt;
+            }
             return nextEntry;
         }
 
@@ -2134,8 +2140,11 @@
             const count = typeof entryOrCount === 'number'
                 ? entryOrCount
                 : Number(entryOrCount && entryOrCount.count) || 0;
+            const unlockedAt = typeof entryOrCount === 'number'
+                ? 0
+                : Number(entryOrCount && entryOrCount.hiddenStage2UnlockedAt) || 0;
             const unlockCount = Math.max(1, Number(stage2.unlockCount) || 10);
-            if (count < unlockCount) {
+            if (count < unlockCount || unlockedAt <= 0) {
                 return fortune;
             }
 
@@ -2166,6 +2175,13 @@
             nextEntry.lastObtainedAt = now;
             if (!existing) {
                 nextEntry.firstObtainedAt = now;
+            }
+            const stage2 = fortune && fortune.hiddenStage2;
+            if (stage2 && stage2.icon) {
+                const unlockCount = Math.max(1, Number(stage2.unlockCount) || 10);
+                if (nextEntry.count >= unlockCount && !Number(nextEntry.hiddenStage2UnlockedAt)) {
+                    nextEntry.hiddenStage2UnlockedAt = now;
+                }
             }
             nextEntry.isNew = existing ? Boolean(existing.isNew) : options.markNew !== false;
             nextEntry.rarity = fortune.rarity;
