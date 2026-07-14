@@ -231,9 +231,9 @@
         <div class="max-w-6xl mx-auto px-3 sm:px-4">
             <div class="flex items-center justify-between gap-2 sm:gap-4 min-h-[44px]">
                 <div class="min-w-0 flex items-center justify-start">
-                    <a href="index.html" class="inline-flex min-h-[40px] sm:min-h-[44px] items-center gap-1.5 rounded-lg border border-[#d4d4d0] bg-[#f9f8f6] px-2.5 py-2 sm:px-4 text-[10px] sm:text-sm font-bold text-[#6f6f6a] shadow-sm transition-colors hover:bg-[#e5e5e0] hover:text-[#2c2c2a] whitespace-nowrap" data-back-nav>
+                    <a href="../../index.html#daily/exam-textbook" class="inline-flex min-h-[40px] sm:min-h-[44px] items-center gap-1.5 rounded-lg border border-[#d4d4d0] bg-[#f9f8f6] px-2.5 py-2 sm:px-4 text-[10px] sm:text-sm font-bold text-[#6f6f6a] shadow-sm transition-colors hover:bg-[#e5e5e0] hover:text-[#2c2c2a] whitespace-nowrap" data-back-nav>
                         <i class="fa-solid fa-arrow-left text-[10px] sm:text-xs"></i>
-                        <span>返回搜索</span>
+                        <span>返回教材学习</span>
                     </a>
                 </div>
 
@@ -9977,6 +9977,7 @@ const grammarData = [
         let selectedFlashcardTags = deserializeSelectedFlashcardTags(savedState.selectedFlashcardTags);
         let expandedBookFilters = createDefaultExpandedBookFilters();
         let searchQuery = '';
+        let isGrammarSearchComposing = false;
         let searchResults = [];
         let currentSearchResultIds = [];
         let flashcardSwipeState = null;
@@ -10454,7 +10455,7 @@ const grammarData = [
             const resultsContainer = document.getElementById('grammar-search-results');
             if (!input || !clearButton || !resultsContainer) return;
 
-            if (input.value !== searchQuery) input.value = searchQuery;
+            if (!isGrammarSearchComposing && input.value !== searchQuery) input.value = searchQuery;
 
             searchResults = getGrammarSearchResults(searchQuery);
             currentSearchResultIds = searchResults.map(item => item.id);
@@ -10516,11 +10517,22 @@ const grammarData = [
             const clearButton = document.getElementById('grammar-search-clear');
             if (!input || !clearButton || input.dataset.bound === 'true') return;
 
+            input.addEventListener('compositionstart', () => {
+                isGrammarSearchComposing = true;
+            });
+
+            input.addEventListener('compositionend', (event) => {
+                isGrammarSearchComposing = false;
+                setGrammarSearchQuery(event.target.value);
+            });
+
             input.addEventListener('input', (event) => {
+                if (event.isComposing || isGrammarSearchComposing) return;
                 setGrammarSearchQuery(event.target.value);
             });
 
             input.addEventListener('keydown', (event) => {
+                if (event.isComposing || isGrammarSearchComposing || event.keyCode === 229) return;
                 if (event.key !== 'Enter') return;
                 if (!searchResults.length) return;
                 event.preventDefault();
@@ -11391,8 +11403,10 @@ const grammarData = [
 
         window.bindHierarchicalBack({
             selector: "[data-back-nav]",
-            fallback: "index.html"
+            fallback: "../../index.html#daily/exam-textbook"
         });
     </script>
+    <script src="../../shared/word-bank.js"></script>
+    <script src="../../shared/unified-header.js" data-kiki-unified-header-loader></script>
 </body>
 </html>
