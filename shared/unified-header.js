@@ -9,7 +9,7 @@
     const script = document.currentScript;
     const sharedBase = script && script.src ? new URL(".", script.src) : new URL("shared/", window.location.href);
     const homeUrl = new URL("../index.html", sharedBase);
-    const logoUrl = new URL("../assets/home-redesign/kiji-logo-brush-sharp-v2.png", sharedBase);
+    const logoUrl = new URL("../assets/home-redesign/kiji-logo-brush-sharp-v2.webp", sharedBase);
 
     function ensureStylesheet() {
         if (document.querySelector("link[data-kiki-unified-header-style]")) {
@@ -17,7 +17,7 @@
         }
         const link = document.createElement("link");
         link.rel = "stylesheet";
-        link.href = new URL("unified-header.css?v=20260713j", sharedBase).href;
+        link.href = new URL("unified-header.css?v=20260714a", sharedBase).href;
         link.dataset.kikiUnifiedHeaderStyle = "true";
         document.head.appendChild(link);
     }
