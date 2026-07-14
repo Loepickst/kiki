@@ -400,21 +400,25 @@
 
     </style>
     <link rel="stylesheet" href="../../../shared/site-fonts.css">
+    <link rel="stylesheet" href="../../../shared/folklore-reading.css?v=20260713f">
+    <link rel="stylesheet" href="../../../shared/reading-audio.css?v=20260713b">
 </head>
-<body>
+<body class="folklore-reading-page" data-daily-reading-id="folklore-yao" data-daily-reading-title="八百比丘尼">
 
-<div class="top-bar">
-    <a href="read_folklore.html" class="toggle-btn" style="text-decoration: none; margin-right: 15px;">戻る</a>
-    
-    <div id="today-date" style="flex-grow: 1; text-align: center;">日本昔話</div>
-    
-    <button id="trans-btn" class="toggle-btn" onclick="toggleTranslation()">訳文</button>
-</div>
+<header class="top-bar reading-site-header">
+    <a href="../../../index.html#daily/daily-light-read" class="reading-head-link reading-head-back">← 戻る</a>
+    <div id="today-date" class="reading-head-title">日本昔話</div>
+    <nav class="reading-head-tools" aria-label="阅读ページ操作">
+        <div class="reading-toolbar" aria-label="阅读工具">
+            <button type="button" id="trans-btn" class="reading-tool-button folklore-reading-tool-button" data-reading-action="translation" aria-pressed="false">訳文</button>
+        </div>
+    </nav>
+</header>
 
 <div class="container">
    <div class="header-title">
     <!-- ⬇️ 放在这里的图片将作为标题的底纹背景。替换 src 里的内容为您自己的透明底图片路径 -->
-    <img class="title-bg" src="image/1.png" alt="标题背景" onerror="this.style.display='none';">
+    <img class="title-bg" src="image/biqiuni1.png" alt="海岸传说与八百比丘尼的故事插画">
     
     <div class="title-content">
         <span class="stamp-mark">昔話</span>
@@ -610,7 +614,7 @@
 <!-- Fixed Bottom Audio Player -->
 <div class="audio-wrapper">
     <div class="audio-player">
-        <button id="play-btn" class="play-btn" onclick="togglePlay()">
+        <button type="button" id="play-btn" class="play-btn">
             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </button>
         <div class="progress-container" id="progress-container">
@@ -621,7 +625,7 @@
         <div class="time-display">
             <span id="current-time">00:00</span> / <span id="duration">00:00</span>
         </div>
-        <button id="loop-btn" class="loop-btn" onclick="toggleLoop()" title="ループ再生">
+        <button type="button" id="loop-btn" class="loop-btn" title="ループ再生">
             <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
         </button>
         <!-- 占位音频，请替换为您的实际文件 -->
@@ -646,103 +650,6 @@
     const tooltip = document.getElementById('smart-tooltip');
     let activeWord = null;
 
-    // --- Audio Player Logic ---
-    const audio = document.getElementById('audio-element');
-    const playBtn = document.getElementById('play-btn');
-    const progressBar = document.getElementById('progress-bar');
-    const progressContainer = document.getElementById('progress-container');
-    const currentTimeEl = document.getElementById('current-time');
-    const durationEl = document.getElementById('duration');
-    const loopBtn = document.getElementById('loop-btn');
-
-    let isLooping = false;
-
-    function toggleLoop() {
-        isLooping = !isLooping;
-        audio.loop = isLooping;
-        loopBtn.classList.toggle('active', isLooping);
-    }
-
-    function togglePlay() {
-        if (audio.paused) {
-            audio.play().catch(e => console.log("Audio play error (no source set):", e));
-            playBtn.classList.add('playing');
-            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
-        } else {
-            audio.pause();
-            playBtn.classList.remove('playing');
-            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
-        }
-    }
-
-    audio.addEventListener('timeupdate', () => {
-        if (audio.duration) {
-            const percent = (audio.currentTime / audio.duration) * 100;
-            progressBar.style.width = percent + '%';
-            currentTimeEl.textContent = formatTime(audio.currentTime);
-        }
-    });
-
-    audio.addEventListener('loadedmetadata', () => {
-        durationEl.textContent = formatTime(audio.duration);
-    });
-
-    audio.addEventListener('ended', () => {
-        playBtn.classList.remove('playing');
-        playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
-        progressBar.style.width = '0%';
-        currentTimeEl.textContent = "00:00";
-    });
-
-    function seek(e) {
-        if (!audio.duration) return;
-        const rect = progressContainer.getBoundingClientRect();
-        const width = rect.width;
-        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
-        let clickX = clientX - rect.left;
-        clickX = Math.max(0, Math.min(clickX, width));
-        audio.currentTime = (clickX / width) * audio.duration;
-    }
-
-    let isDragging = false;
-
-    progressContainer.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        seek(e);
-    });
-
-    window.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            seek(e);
-        }
-    });
-
-    window.addEventListener('mouseup', () => {
-        isDragging = false;
-    });
-
-    progressContainer.addEventListener('touchstart', (e) => {
-        isDragging = true;
-        seek(e);
-    });
-
-    window.addEventListener('touchmove', (e) => {
-        if (isDragging) {
-            e.preventDefault(); 
-            seek(e);
-        }
-    }, { passive: false });
-
-    window.addEventListener('touchend', () => {
-        isDragging = false;
-    });
-
-    function formatTime(seconds) {
-        if (isNaN(seconds)) return "00:00";
-        const m = Math.floor(seconds / 60);
-        const s = Math.floor(seconds % 60);
-        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    }
 
     // --- 词汇气泡逻辑 ---
     document.querySelectorAll('.vocab-word').forEach(word => {
@@ -793,6 +700,10 @@
     window.addEventListener('resize', hideTooltip);
 
 </script>
-
+    <script src="../../../shared/word-bank.js?v=20260711b"></script>
+    <script src="../../../shared/reading-controls.js?v=20260713n"></script>
+    <script src="../../../shared/reading-audio.js?v=20260713d"></script>
+    <script src="../../../shared/daily-reading-entry.js?v=20260713c"></script>
+    <script src="../../../shared/unified-header.js?v=20260713j" data-kiki-unified-header-loader></script>
 </body>
 </html>
