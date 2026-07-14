@@ -90,22 +90,36 @@
 
     const fortunes = [
         { id: "sp1", rarity: "SP", title: "感谢祭", desc: "感谢你一直以来的支持，谢谢。", weight: 1, color: "#9c27b0", icon: `${EX_CARD_ASSET_BASE}ganxieji.png`, isSpecial: true },
+        { id: "food_journey_jiangbanya", rarity: "SP", title: "酱吉", desc: "好的就是山胡椒油这口味", weight: 1, color: "#9c27b0", icon: "takarakuji/food_journey_jiangbanya.webp", isSpecial: true, unlockPoolId: "ki_food_journey", poolRole: "followup", unlockRequirement: { type: "card_owned", cardId: "food_journey_chiji_starter" } },
+        { id: "food_journey_choudoufu", rarity: "SP", title: "臭吉", desc: "臭臭的，但是吃着挺香", weight: 1, color: "#9c27b0", icon: "takarakuji/food_journey_choudoufu.webp", isSpecial: true, unlockPoolId: "ki_food_journey", poolRole: "followup", unlockRequirement: { type: "card_owned", cardId: "food_journey_chiji_starter" } },
+        { id: "food_journey_xiaolongxia", rarity: "SP", title: "虾吉", desc: "小龙虾配啤酒，最高！", weight: 1, color: "#9c27b0", icon: "takarakuji/food_journey_xiaolongxia.webp", isSpecial: true, unlockPoolId: "ki_food_journey", poolRole: "followup", unlockRequirement: { type: "card_owned", cardId: "food_journey_chiji_starter" } },
+        { id: "food_journey_chayan", rarity: "SP", title: "茶吉", desc: "一杯筝筝纸鸢，不加糖，谢谢", weight: 1, color: "#9c27b0", icon: "takarakuji/food_journey_chayan.webp", isSpecial: true, unlockPoolId: "ki_food_journey", poolRole: "followup", unlockRequirement: { type: "card_owned", cardId: "food_journey_chiji_starter" } },
+        { id: "food_journey_yutou", rarity: "SP", title: "鱼吉", desc: "真是，太！好！吃！啦！", weight: 1, color: "#9c27b0", icon: "takarakuji/food_journey_yutou.webp", isSpecial: true, unlockPoolId: "ki_food_journey", poolRole: "followup", unlockRequirement: { type: "card_owned", cardId: "food_journey_chiji_starter" } },
         { id: "f1", rarity: "KR", title: "旺吉", desc: "🎉你就是最帅（美）的气运之子🎉！kiki祝福你，旺！", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}wangji.png` },
         { id: "f19", rarity: "KR", title: "乐吉", desc: "喝上一口肥宅水，快乐一整天！", weight: 7, color: "#000000", icon: `${EX_CARD_ASSET_BASE}keleji.png` },
         { id: "food_journey_chiji_starter", rarity: "KR", title: "吃吉", desc: "学饿了，出去吃点东西吧～", weight: 7, color: "#000000", icon: "takarakuji/chiji%202.png", unlockPoolId: "ki_food_journey", poolRole: "starter" },
+        { id: "theme_worldcup_mengji", rarity: "KR", title: "梦吉", desc: "梦里什么都有，洗洗睡吧", weight: 7, color: "#000000", icon: "takarakuji/mengji.png", unlockPoolId: "ki_world_cup_journey", poolRole: "starter" },
         { id: "f34", rarity: "KR", title: "肯吉", desc: "疯狂星期四，V你50。真要啊！不行，我要自己吃。", weight: 2, color: "#000000", icon: `${EX_CARD_ASSET_BASE}kenji.png`, availability: { type: "weekday", weekdays: [4], label: "周四限定" } },
         { id: "f21", rarity: "KR", title: "桃吉", desc: "学习上的不如意，说不定会带来其他方面的好运哦～", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}taoji.png` },
         { id: "f37", rarity: "KR", title: "画吉", desc: "快看～，我成为一幅画了，啊啊啊啊啊啊", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}huaji.png` },
         { id: "f32", rarity: "KR", title: "天吉", desc: "知识中的私语，细细聆听，那是日语之神对你的回应。", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}tianji.png` },
         { id: "f45", rarity: "KR", title: "武吉", desc: "学累了，就稍作片刻休息吧", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}wuji.png` },
+        { id: "f46", rarity: "KR", title: "哦吉", desc: "哦？能力考嘛，面白い。", weight: 3, color: "#000000", icon: "takarakuji/ohji.webp" },
+        { id: "worldcup_kaiji", rarity: "SP", title: "凯吉", desc: "纵使一无所有，也要努力拼尽到底", weight: 1, color: "#9c27b0", icon: "takarakuji/worldcup_kaiji.png", isSpecial: true, unlockPoolId: "ki_world_cup_journey", poolRole: "followup", unlockRequirement: { type: "card_owned", cardId: "theme_worldcup_mengji" } },
+        { id: "worldcup_meiji", rarity: "SP", title: "梅吉", desc: "全场的欢声，是对“王”的庆祝", weight: 1, color: "#9c27b0", icon: "takarakuji/meiji.png", isSpecial: true, unlockPoolId: "ki_world_cup_journey", poolRole: "followup", unlockRequirement: { type: "card_owned", cardId: "theme_worldcup_mengji" } },
+        { id: "worldcup_luoji", rarity: "SP", title: "罗吉", desc: "只要心在，其他都不是问题", weight: 1, color: "#9c27b0", icon: "takarakuji/worldcup_luoji.png", isSpecial: true, unlockPoolId: "ki_world_cup_journey", poolRole: "followup", unlockRequirement: { type: "card_owned", cardId: "theme_worldcup_mengji" } },
+        { id: "worldcup_muji", rarity: "SP", title: "姆吉", desc: "如果速度能解决问题，那就靠速度", weight: 1, color: "#9c27b0", icon: "takarakuji/worldcup_muji.png", isSpecial: true, unlockPoolId: "ki_world_cup_journey", poolRole: "followup", unlockRequirement: { type: "card_owned", cardId: "theme_worldcup_mengji" } },
+        { id: "worldcup_haji", rarity: "SP", title: "哈吉", desc: "一不小心又”生吃“了", weight: 1, color: "#9c27b0", icon: "takarakuji/worldcup_haji.png", isSpecial: true, unlockPoolId: "ki_world_cup_journey", poolRole: "followup", unlockRequirement: { type: "card_owned", cardId: "theme_worldcup_mengji" } },
+        { id: "worldcup_yaji", rarity: "SP", title: "亚吉", desc: "贵，有贵的道理", weight: 1, color: "#9c27b0", icon: "takarakuji/worldcup_yaji.png", isSpecial: true, unlockPoolId: "ki_world_cup_journey", poolRole: "followup", unlockRequirement: { type: "card_owned", cardId: "theme_worldcup_mengji" } },
         { id: "f8", rarity: "UR", title: "神吉", desc: "⛩️考神附体！今天直觉准得可怕，做阅读题一抓一个准，就算蒙的也全对！", weight: 1, color: "#d4af37", icon: `${EX_CARD_ASSET_BASE}shenji.png` },
         { id: "f7", rarity: "UR", title: "玉吉", desc: "一尾便是一重境界。熬过漫长的沉淀与枯燥的练习，终能修得灵动的语感。", weight: 3, color: "#F44336", icon: `${EX_CARD_ASSET_BASE}huji.png`, themeSetId: "hyakki_yakou" },
         { id: "f16", rarity: "UR", title: "鹿吉", desc: "步履从容，一步一印，语感自然如影随形。", weight: 1, color: "#e6b422", icon: `${EX_CARD_ASSET_BASE}luji2.png` },
         { id: "f22", rarity: "UR", title: "友吉", desc: "切磋琢磨之友，乃求学路上的不灭之光。", weight: 1, color: "#d4af37", icon: `${EX_CARD_ASSET_BASE}xueji.png` },
         { id: "f30", rarity: "UR", title: "狮吉", desc: "即使是幼小的“可爱”，终有一天也可成为草原的王！（😆）", weight: 1, color: "#d4af37", icon: `${EX_CARD_ASSET_BASE}shiji.png` },
         { id: "f35", rarity: "UR", title: "绯吉", desc: "软软的狗耳朵，可是为听八卦而生的哦！", weight: 1, color: "#d4af37", icon: `${EX_CARD_ASSET_BASE}feiji.png` },
+        { id: "f47", rarity: "UR", title: "马吉", desc: "骐骥非一跃而致千里，学亦如是；日积寸功，终可策马凌云。", weight: 1, color: "#B8893C", icon: "takarakuji/maji.webp" },
         { id: "f2", rarity: "SSR", title: "虎吉", desc: "运气爆棚！干什么都是如虎添翼，チョロいもんだぜ！", weight: 5, color: "#d32f2f", icon: `${EX_CARD_ASSET_BASE}huyan.png` },
-        { id: "f9", rarity: "SSR", title: "猫吉", desc: "明确内心，不被外界所迷惑，直取自己的“目标”，走最优雅的“猫步”。", weight: 5, color: "#ec407a", icon: `${EX_CARD_ASSET_BASE}maoji2.png` },
+        { id: "f9", rarity: "SSR", title: "猫吉", desc: "明确内心，不被外界所迷惑，直取自己的“目标”，走最优雅的“猫步”。", weight: 5, color: "#ec407a", icon: `${EX_CARD_ASSET_BASE}maoji2.png`, hiddenStage2: { unlockCount: 20, icon: "takarakuji/stage2_maoji.webp" } },
         { id: "f12", rarity: "SSR", title: "鸽吉", desc: "咕咕咕，咕咕咕咕咕咕咕，咕咕？咕！", weight: 3, color: "#d32f2f", icon: `${EX_CARD_ASSET_BASE}geji.png`, hiddenStage2: { unlockCount: 10, icon: "takarakuji/stage2_geji.png" } },
         { id: "f13", rarity: "SSR", title: "蛇吉", desc: "褪下“舒适”的旧壳，灵动的语感方能重获新生。", weight: 5, color: "#ec407a", icon: `${EX_CARD_ASSET_BASE}sheji.png` },
         { id: "f20", rarity: "SSR", title: "憨吉", desc: "狗狗我啊，今天，指定是不行了。（不行！）", weight: 4, color: "#1976d2", icon: `${EX_CARD_ASSET_BASE}cheemsji.png` },
@@ -213,7 +227,28 @@
             id: "ki_food_journey",
             title: "kiの美食旅",
             starterCardId: "food_journey_chiji_starter",
-            status: "starter_only"
+            status: "active",
+            followupCardIds: [
+                "food_journey_jiangbanya",
+                "food_journey_choudoufu",
+                "food_journey_xiaolongxia",
+                "food_journey_chayan",
+                "food_journey_yutou"
+            ]
+        },
+        {
+            id: "ki_world_cup_journey",
+            title: "ki的世界杯之旅",
+            starterCardId: "theme_worldcup_mengji",
+            status: "active",
+            followupCardIds: [
+                "worldcup_kaiji",
+                "worldcup_meiji",
+                "worldcup_luoji",
+                "worldcup_muji",
+                "worldcup_haji",
+                "worldcup_yaji"
+            ]
         }
     ]);
 

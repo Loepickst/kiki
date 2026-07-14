@@ -3530,7 +3530,7 @@
   {
     "id": "n3-015",
     "macro": "时间与顺序",
-    "category": "瞬间发生",
+    "category": "紧接发生",
     "keyword": "瞬间发生意外",
     "firstKana": "た",
     "sourceMacro": "时间与场景",
@@ -4139,33 +4139,7 @@
     }
   },
   {
-    "id": "n3-061",
-    "macro": "可能性",
-    "category": "逻辑合理推断",
-    "keyword": "客观根据推断",
-    "firstKana": "は",
-    "sourceMacro": "可能性与推測",
-    "sourceCategory": "逻辑合理推断",
-    "legacy": {
-      "tryCenterId": 3061,
-      "searchId": 3114
-    }
-  },
-  {
     "id": "n3-062",
-    "macro": "可能性",
-    "category": "强烈否定推测",
-    "keyword": "应有状态反推不可能",
-    "firstKana": "は",
-    "sourceMacro": "可能性与推測",
-    "sourceCategory": "逻辑合理推断",
-    "legacy": {
-      "tryCenterId": 3114,
-      "searchId": 3062
-    }
-  },
-  {
-    "id": "n3-063",
     "macro": "条件与假定",
     "category": "礼貌假定",
     "keyword": "礼貌的假定",
@@ -4174,11 +4148,11 @@
     "sourceCategory": "礼貌假定",
     "legacy": {
       "tryCenterId": 3062,
-      "searchId": 3063
+      "searchId": 3062
     }
   },
   {
-    "id": "n3-064",
+    "id": "n3-063",
     "macro": "条件与假定",
     "category": "基于现状假定",
     "keyword": "基于现状的假定",
@@ -4187,11 +4161,11 @@
     "sourceCategory": "基于现状假定",
     "legacy": {
       "tryCenterId": 3063,
-      "searchId": 3064
+      "searchId": 3063
     }
   },
   {
-    "id": "n3-065",
+    "id": "n3-064",
     "macro": "原因与理由",
     "category": "铺垫・说明",
     "keyword": "说明情况/铺垫",
@@ -4200,11 +4174,11 @@
     "sourceCategory": "铺垫・说明",
     "legacy": {
       "tryCenterId": 3064,
-      "searchId": 3065
+      "searchId": 3064
     }
   },
   {
-    "id": "n3-066",
+    "id": "n3-065",
     "macro": "原因与理由",
     "category": "辩解原因",
     "keyword": "辩解的理由",
@@ -4213,11 +4187,11 @@
     "sourceCategory": "辩解原因",
     "legacy": {
       "tryCenterId": 3065,
-      "searchId": 3066
+      "searchId": 3065
     }
   },
   {
-    "id": "n3-067",
+    "id": "n3-066",
     "macro": "举例与递进",
     "category": "例举・轻视",
     "keyword": "举例/轻视",
@@ -4226,11 +4200,11 @@
     "sourceCategory": "例举・轻视",
     "legacy": {
       "tryCenterId": 3066,
-      "searchId": 3067
+      "searchId": 3066
     }
   },
   {
-    "id": "n3-068",
+    "id": "n3-067",
     "macro": "主张与评价",
     "category": "委婉看法",
     "keyword": "委婉表达看法",
@@ -4239,11 +4213,11 @@
     "sourceCategory": "委婉看法",
     "legacy": {
       "tryCenterId": 3067,
-      "searchId": 3068
+      "searchId": 3067
     }
   },
   {
-    "id": "n3-069",
+    "id": "n3-068",
     "macro": "时间与顺序",
     "category": "期间・趁着",
     "keyword": "过程中的变化/趁着",
@@ -4252,11 +4226,11 @@
     "sourceCategory": "期间・趁着",
     "legacy": {
       "tryCenterId": 3068,
-      "searchId": 3069
+      "searchId": 3068
     }
   },
   {
-    "id": "n3-070",
+    "id": "n3-069",
     "macro": "时间与顺序",
     "category": "主观刚完成",
     "keyword": "主观上刚完成",
@@ -4265,11 +4239,11 @@
     "sourceCategory": "主观刚完成",
     "legacy": {
       "tryCenterId": 3069,
-      "searchId": 3070
+      "searchId": 3069
     }
   },
   {
-    "id": "n3-071",
+    "id": "n3-070",
     "macro": "情感与决心",
     "category": "遗憾・责备",
     "keyword": "遗憾/责备/建议",
@@ -4278,11 +4252,11 @@
     "sourceCategory": "遗憾・责备",
     "legacy": {
       "tryCenterId": 3070,
-      "searchId": 3071
+      "searchId": 3070
     }
   },
   {
-    "id": "n3-072",
+    "id": "n3-071",
     "macro": "授受与敬语",
     "category": "请求恩惠",
     "keyword": "委婉请求对方",
@@ -4291,11 +4265,11 @@
     "sourceCategory": "请求恩惠",
     "legacy": {
       "tryCenterId": 3071,
-      "searchId": 3072
+      "searchId": 3071
     }
   },
   {
-    "id": "n3-073",
+    "id": "n3-072",
     "macro": "授受与敬语",
     "category": "接受恩惠",
     "keyword": "谦让接受恩惠",
@@ -4304,11 +4278,11 @@
     "sourceCategory": "接受恩惠",
     "legacy": {
       "tryCenterId": 3072,
-      "searchId": 3073
+      "searchId": 3072
     }
   },
   {
-    "id": "n3-074",
+    "id": "n3-073",
     "macro": "授受与敬语",
     "category": "谦让自身动作",
     "keyword": "谦让降低自己",
@@ -4317,11 +4291,11 @@
     "sourceCategory": "谦让自身动作",
     "legacy": {
       "tryCenterId": 3073,
-      "searchId": 3074
+      "searchId": 3073
     }
   },
   {
-    "id": "n3-075",
+    "id": "n3-074",
     "macro": "授受与敬语",
     "category": "丁重陈述状态",
     "keyword": "郑重陈述状态",
@@ -4330,11 +4304,11 @@
     "sourceCategory": "丁重陈述状态",
     "legacy": {
       "tryCenterId": 3074,
-      "searchId": 3075
+      "searchId": 3074
     }
   },
   {
-    "id": "n3-076",
+    "id": "n3-075",
     "macro": "授受与敬语",
     "category": "尊敬对方状态",
     "keyword": "尊长持续状态",
@@ -4343,11 +4317,11 @@
     "sourceCategory": "尊敬对方状态",
     "legacy": {
       "tryCenterId": 3075,
-      "searchId": 3076
+      "searchId": 3075
     }
   },
   {
-    "id": "n3-077",
+    "id": "n3-076",
     "macro": "授受与敬语",
     "category": "郑重委婉请求",
     "keyword": "极度委婉请求",
@@ -4356,11 +4330,11 @@
     "sourceCategory": "郑重委婉请求",
     "legacy": {
       "tryCenterId": 3076,
-      "searchId": 3077
+      "searchId": 3076
     }
   },
   {
-    "id": "n3-078",
+    "id": "n3-077",
     "macro": "授受与敬语",
     "category": "尊敬语断定",
     "keyword": "抬高对方身份",
@@ -4369,11 +4343,11 @@
     "sourceCategory": "尊敬语断定",
     "legacy": {
       "tryCenterId": 3077,
-      "searchId": 3078
+      "searchId": 3077
     }
   },
   {
-    "id": "n3-079",
+    "id": "n3-078",
     "macro": "授受与敬语",
     "category": "请求许可与感激",
     "keyword": "谦让请求许可",
@@ -4382,11 +4356,11 @@
     "sourceCategory": "请求许可与感激",
     "legacy": {
       "tryCenterId": 3078,
-      "searchId": 3079
+      "searchId": 3078
     }
   },
   {
-    "id": "n3-080",
+    "id": "n3-079",
     "macro": "条件与假定",
     "category": "必要前提",
     "keyword": "必要前提",
@@ -4395,11 +4369,11 @@
     "sourceCategory": "必要前提",
     "legacy": {
       "tryCenterId": 3079,
-      "searchId": 3080
+      "searchId": 3079
     }
   },
   {
-    "id": "n3-081",
+    "id": "n3-080",
     "macro": "举例与递进",
     "category": "宛如比喻",
     "keyword": "宛如一般的比喻",
@@ -4408,11 +4382,11 @@
     "sourceCategory": "宛如比喻",
     "legacy": {
       "tryCenterId": 3080,
-      "searchId": 3081
+      "searchId": 3080
     }
   },
   {
-    "id": "n3-082",
+    "id": "n3-081",
     "macro": "时间与顺序",
     "category": "期间・趁着",
     "keyword": "趁状态未变",
@@ -4421,11 +4395,11 @@
     "sourceCategory": "期间・趁着",
     "legacy": {
       "tryCenterId": 3081,
-      "searchId": 3082
+      "searchId": 3081
     }
   },
   {
-    "id": "n3-083",
+    "id": "n3-082",
     "macro": "对象与关联",
     "category": "面向・适合",
     "keyword": "特意面向/客观适合",
@@ -4434,11 +4408,11 @@
     "sourceCategory": "面向・适合",
     "legacy": {
       "tryCenterId": 3082,
-      "searchId": 3083
+      "searchId": 3082
     }
   },
   {
-    "id": "n3-084",
+    "id": "n3-083",
     "macro": "原因与理由",
     "category": "因...而异",
     "keyword": "随之呈现差异",
@@ -4447,11 +4421,11 @@
     "sourceCategory": "因...而异",
     "legacy": {
       "tryCenterId": 3083,
-      "searchId": 3084
+      "searchId": 3083
     }
   },
   {
-    "id": "n3-085",
+    "id": "n3-084",
     "macro": "时间与顺序",
     "category": "正当此时",
     "keyword": "正进行到一半",
@@ -4460,11 +4434,11 @@
     "sourceCategory": "正当此时",
     "legacy": {
       "tryCenterId": 3084,
-      "searchId": 3085
+      "searchId": 3084
     }
   },
   {
-    "id": "n3-086",
+    "id": "n3-085",
     "macro": "状态与结果",
     "category": "中途状态",
     "keyword": "处于中途未完成",
@@ -4473,11 +4447,11 @@
     "sourceCategory": "中途状态",
     "legacy": {
       "tryCenterId": 3085,
-      "searchId": 3086
+      "searchId": 3085
     }
   },
   {
-    "id": "n3-087",
+    "id": "n3-086",
     "macro": "情感与决心",
     "category": "难以自控",
     "keyword": "难以自控采取动作",
@@ -4486,11 +4460,11 @@
     "sourceCategory": "难以自控",
     "legacy": {
       "tryCenterId": 3086,
-      "searchId": 3087
+      "searchId": 3086
     }
   },
   {
-    "id": "n3-088",
+    "id": "n3-087",
     "macro": "可能性",
     "category": "强烈否定推测",
     "keyword": "常理上的绝对否定",
@@ -4499,11 +4473,11 @@
     "sourceCategory": "强烈否定推测",
     "legacy": {
       "tryCenterId": 3087,
-      "searchId": 3088
+      "searchId": 3087
     }
   },
   {
-    "id": "n3-089",
+    "id": "n3-088",
     "macro": "限定与程度",
     "category": "唯一选择",
     "keyword": "别无选择的妥协",
@@ -4512,11 +4486,11 @@
     "sourceCategory": "唯一选择",
     "legacy": {
       "tryCenterId": 3088,
-      "searchId": 3089
+      "searchId": 3088
     }
   },
   {
-    "id": "n3-090",
+    "id": "n3-089",
     "macro": "原因与理由",
     "category": "强调特定原因",
     "keyword": "正因为特定理由",
@@ -4525,11 +4499,11 @@
     "sourceCategory": "强调特定原因",
     "legacy": {
       "tryCenterId": 3089,
-      "searchId": 3090
+      "searchId": 3089
     }
   },
   {
-    "id": "n3-091",
+    "id": "n3-090",
     "macro": "举例与递进",
     "category": "极端例举・轻视",
     "keyword": "轻视或意外的举例",
@@ -4538,11 +4512,11 @@
     "sourceCategory": "极端例举・轻视",
     "legacy": {
       "tryCenterId": 3090,
-      "searchId": 3091
+      "searchId": 3090
     }
   },
   {
-    "id": "n3-092",
+    "id": "n3-091",
     "macro": "可能性",
     "category": "极低可能性",
     "keyword": "口语极低可能性",
@@ -4551,11 +4525,11 @@
     "sourceCategory": "极低可能性",
     "legacy": {
       "tryCenterId": 3091,
-      "searchId": 3092
+      "searchId": 3091
     }
   },
   {
-    "id": "n3-093",
+    "id": "n3-092",
     "macro": "逆接与让步",
     "category": "否定充足理由",
     "keyword": "不能成为充足理由",
@@ -4564,11 +4538,11 @@
     "sourceCategory": "否定充足理由",
     "legacy": {
       "tryCenterId": 3092,
-      "searchId": 3093
+      "searchId": 3092
     }
   },
   {
-    "id": "n3-094",
+    "id": "n3-093",
     "macro": "主张与评价",
     "category": "存在例外",
     "keyword": "不能一概而论的例外",
@@ -4577,11 +4551,11 @@
     "sourceCategory": "存在例外",
     "legacy": {
       "tryCenterId": 3093,
-      "searchId": 3094
+      "searchId": 3093
     }
   },
   {
-    "id": "n3-095",
+    "id": "n3-094",
     "macro": "主张与评价",
     "category": "程度极深感叹",
     "keyword": "超乎寻常难以言表",
@@ -4590,11 +4564,11 @@
     "sourceCategory": "程度极深感叹",
     "legacy": {
       "tryCenterId": 3094,
-      "searchId": 3095
+      "searchId": 3094
     }
   },
   {
-    "id": "n3-096",
+    "id": "n3-095",
     "macro": "逆接与让步",
     "category": "责备不满",
     "keyword": "强烈责备或不满",
@@ -4603,11 +4577,11 @@
     "sourceCategory": "责备不满",
     "legacy": {
       "tryCenterId": 3095,
-      "searchId": 3096
+      "searchId": 3095
     }
   },
   {
-    "id": "n3-097",
+    "id": "n3-096",
     "macro": "状态与结果",
     "category": "性质倾向",
     "keyword": "带有很强的某种倾向",
@@ -4616,11 +4590,11 @@
     "sourceCategory": "性质倾向",
     "legacy": {
       "tryCenterId": 3096,
-      "searchId": 3097
+      "searchId": 3096
     }
   },
   {
-    "id": "n3-098",
+    "id": "n3-097",
     "macro": "原因与理由",
     "category": "归咎责任",
     "keyword": "埋怨归咎责任",
@@ -4629,11 +4603,11 @@
     "sourceCategory": "归咎责任",
     "legacy": {
       "tryCenterId": 3097,
-      "searchId": 3098
+      "searchId": 3097
     }
   },
   {
-    "id": "n3-099",
+    "id": "n3-098",
     "macro": "原因与理由",
     "category": "基于性格推断",
     "keyword": "基于人物特性的推断",
@@ -4642,11 +4616,11 @@
     "sourceCategory": "基于性格推断",
     "legacy": {
       "tryCenterId": 3098,
-      "searchId": 3099
+      "searchId": 3098
     }
   },
   {
-    "id": "n3-100",
+    "id": "n3-099",
     "macro": "状态与结果",
     "category": "消极倾向",
     "keyword": "稍有消极倾向",
@@ -4655,11 +4629,11 @@
     "sourceCategory": "消极倾向",
     "legacy": {
       "tryCenterId": 3099,
-      "searchId": 3100
+      "searchId": 3099
     }
   },
   {
-    "id": "n3-101",
+    "id": "n3-100",
     "macro": "可能性",
     "category": "无法维持状态",
     "keyword": "紧迫而无法保持",
@@ -4668,11 +4642,11 @@
     "sourceCategory": "无法维持状态",
     "legacy": {
       "tryCenterId": 3100,
-      "searchId": 3101
+      "searchId": 3100
     }
   },
   {
-    "id": "n3-102",
+    "id": "n3-101",
     "macro": "限定与程度",
     "category": "极端举例",
     "keyword": "极端举例暗示其余",
@@ -4681,11 +4655,11 @@
     "sourceCategory": "极端举例",
     "legacy": {
       "tryCenterId": 3101,
-      "searchId": 3102
+      "searchId": 3101
     }
   },
   {
-    "id": "n3-103",
+    "id": "n3-102",
     "macro": "限定与程度",
     "category": "程度说明",
     "keyword": "举例说明程度",
@@ -4694,11 +4668,11 @@
     "sourceCategory": "程度说明",
     "legacy": {
       "tryCenterId": 3102,
-      "searchId": 3103
+      "searchId": 3102
     }
   },
   {
-    "id": "n3-104",
+    "id": "n3-103",
     "macro": "状态与结果",
     "category": "放置不管",
     "keyword": "放任保持原状",
@@ -4707,11 +4681,11 @@
     "sourceCategory": "放置不管",
     "legacy": {
       "tryCenterId": 3103,
-      "searchId": 3104
+      "searchId": 3103
     }
   },
   {
-    "id": "n3-105",
+    "id": "n3-104",
     "macro": "状态与结果",
     "category": "充满・遍布",
     "keyword": "遍布不理想的事物",
@@ -4720,11 +4694,11 @@
     "sourceCategory": "充满・遍布",
     "legacy": {
       "tryCenterId": 3104,
-      "searchId": 3105
+      "searchId": 3104
     }
   },
   {
-    "id": "n3-106",
+    "id": "n3-105",
     "macro": "可能性",
     "category": "意外推测",
     "keyword": "意外或期待的推测",
@@ -4733,11 +4707,11 @@
     "sourceCategory": "意外推测",
     "legacy": {
       "tryCenterId": 3105,
-      "searchId": 3106
+      "searchId": 3105
     }
   },
   {
-    "id": "n3-107",
+    "id": "n3-106",
     "macro": "主张与评价",
     "category": "典型特征",
     "keyword": "符合典型特征",
@@ -4746,11 +4720,11 @@
     "sourceCategory": "典型特征",
     "legacy": {
       "tryCenterId": 3106,
-      "searchId": 3107
+      "searchId": 3106
     }
   },
   {
-    "id": "n3-108",
+    "id": "n3-107",
     "macro": "情感与决心",
     "category": "错觉・误以为",
     "keyword": "瞬间错觉或误会",
@@ -4759,11 +4733,11 @@
     "sourceCategory": "错觉・误以为",
     "legacy": {
       "tryCenterId": 3107,
-      "searchId": 3108
+      "searchId": 3107
     }
   },
   {
-    "id": "n3-109",
+    "id": "n3-108",
     "macro": "举例与递进",
     "category": "随便列举",
     "keyword": "随意列举同类事物",
@@ -4772,11 +4746,11 @@
     "sourceCategory": "随便列举",
     "legacy": {
       "tryCenterId": 3108,
-      "searchId": 3109
+      "searchId": 3108
     }
   },
   {
-    "id": "n3-110",
+    "id": "n3-109",
     "macro": "时间与顺序",
     "category": "顺便利用",
     "keyword": "顺便利用机会",
@@ -4785,11 +4759,11 @@
     "sourceCategory": "顺便利用",
     "legacy": {
       "tryCenterId": 3109,
-      "searchId": 3110
+      "searchId": 3109
     }
   },
   {
-    "id": "n3-111",
+    "id": "n3-110",
     "macro": "可能性",
     "category": "强烈确信",
     "keyword": "非常强烈的主观确信",
@@ -4798,11 +4772,11 @@
     "sourceCategory": "强烈确信",
     "legacy": {
       "tryCenterId": 3110,
-      "searchId": 3111
+      "searchId": 3110
     }
   },
   {
-    "id": "n3-112",
+    "id": "n3-111",
     "macro": "比较与伴随",
     "category": "最高程度",
     "keyword": "主观认为的最高程度",
@@ -4811,11 +4785,11 @@
     "sourceCategory": "最高程度",
     "legacy": {
       "tryCenterId": 3111,
-      "searchId": 3112
+      "searchId": 3111
     }
   },
   {
-    "id": "n3-113",
+    "id": "n3-112",
     "macro": "状态与结果",
     "category": "排除在外",
     "keyword": "排除应包含的事物",
@@ -4824,7 +4798,993 @@
     "sourceCategory": "排除在外",
     "legacy": {
       "tryCenterId": 3112,
+      "searchId": 3112
+    }
+  },
+  {
+    "id": "n3-113",
+    "macro": "情感与决心",
+    "category": "情感极深",
+    "keyword": "情感身体感觉极其强烈",
+    "firstKana": "て",
+    "sourceMacro": "情感与思考",
+    "sourceCategory": "情感极深",
+    "legacy": {
+      "tryCenterId": 3113,
       "searchId": 3113
+    }
+  },
+  {
+    "id": "n3-114",
+    "macro": "可能性",
+    "category": "强烈否定推测",
+    "keyword": "应有状态反推不可能",
+    "firstKana": "は",
+    "sourceMacro": "可能性与推測",
+    "sourceCategory": "逻辑合理推断",
+    "legacy": {
+      "tryCenterId": 3114,
+      "searchId": 3114
+    }
+  },
+  {
+    "id": "supp-n1-review-001",
+    "macro": "时间与顺序",
+    "category": "持续期间",
+    "keyword": "在……期间（一直）",
+    "firstKana": "あ",
+    "sourceMacro": "时间与顺序",
+    "sourceCategory": "持续期间",
+    "legacy": {
+      "searchId": 4001
+    }
+  },
+  {
+    "id": "supp-n1-review-002",
+    "macro": "时间与顺序",
+    "category": "期间内发生",
+    "keyword": "在……期间（发生了某事）",
+    "firstKana": "あ",
+    "sourceMacro": "时间与顺序",
+    "sourceCategory": "期间内发生",
+    "legacy": {
+      "searchId": 4002
+    }
+  },
+  {
+    "id": "supp-n1-review-003",
+    "macro": "时间与顺序",
+    "category": "进行途中",
+    "keyword": "在……途中",
+    "firstKana": "と",
+    "sourceMacro": "时间与顺序",
+    "sourceCategory": "进行途中",
+    "legacy": {
+      "searchId": 4003
+    }
+  },
+  {
+    "id": "supp-n1-review-004",
+    "macro": "否定",
+    "category": "能力上难以实现",
+    "keyword": "怎么也不……   很难……",
+    "firstKana": "と",
+    "sourceMacro": "否定",
+    "sourceCategory": "能力上难以实现",
+    "legacy": {
+      "searchId": 4004
+    }
+  },
+  {
+    "id": "supp-n1-review-005",
+    "macro": "状态与结果",
+    "category": "经历与客观记录",
+    "keyword": "曾经……   有过……的经历",
+    "firstKana": "て",
+    "sourceMacro": "状态与结果",
+    "sourceCategory": "经历与客观记录",
+    "legacy": {
+      "searchId": 4005
+    }
+  },
+  {
+    "id": "supp-n1-review-006",
+    "macro": "状态与结果",
+    "category": "持续不做",
+    "keyword": "一直没有……",
+    "firstKana": "ず",
+    "sourceMacro": "状态与结果",
+    "sourceCategory": "持续不做",
+    "legacy": {
+      "searchId": 4006
+    }
+  },
+  {
+    "id": "supp-n1-review-007",
+    "macro": "状态与结果",
+    "category": "免去原定行为",
+    "keyword": "不用……就行",
+    "firstKana": "ず",
+    "sourceMacro": "状态与结果",
+    "sourceCategory": "免去原定行为",
+    "legacy": {
+      "searchId": 4007
+    }
+  },
+  {
+    "id": "supp-n1-review-008",
+    "macro": "比较与伴随",
+    "category": "交换与代价",
+    "keyword": "以……为交换",
+    "firstKana": "と",
+    "sourceMacro": "比较与伴随",
+    "sourceCategory": "交换与代价",
+    "legacy": {
+      "searchId": 4008
+    }
+  },
+  {
+    "id": "supp-n1-review-009",
+    "macro": "状态与结果",
+    "category": "客观上迫不得已",
+    "keyword": "迫不得已",
+    "firstKana": "や",
+    "sourceMacro": "状态与结果",
+    "sourceCategory": "客观上迫不得已",
+    "legacy": {
+      "searchId": 4009
+    }
+  },
+  {
+    "id": "supp-n1-review-010",
+    "macro": "时间与顺序",
+    "category": "动作后发现",
+    "keyword": "做了……结果发现……",
+    "firstKana": "と",
+    "sourceMacro": "时间与顺序",
+    "sourceCategory": "动作后发现",
+    "legacy": {
+      "searchId": 4010
+    }
+  },
+  {
+    "id": "supp-n1-review-011",
+    "macro": "时间与顺序",
+    "category": "动作后状态持续",
+    "keyword": "……之后就一直……",
+    "firstKana": "な",
+    "sourceMacro": "时间与顺序",
+    "sourceCategory": "动作后状态持续",
+    "legacy": {
+      "searchId": 4011
+    }
+  },
+  {
+    "id": "supp-n1-review-012",
+    "macro": "时间与顺序",
+    "category": "动作反复发生",
+    "keyword": "一……就……",
+    "firstKana": "て",
+    "sourceMacro": "时间与顺序",
+    "sourceCategory": "动作反复发生",
+    "legacy": {
+      "searchId": 4012
+    }
+  },
+  {
+    "id": "supp-n1-review-013",
+    "macro": "时间与顺序",
+    "category": "经历后才认识",
+    "keyword": "直到……才……",
+    "firstKana": "て",
+    "sourceMacro": "时间与顺序",
+    "sourceCategory": "经历后才认识",
+    "legacy": {
+      "searchId": 4013
+    }
+  },
+  {
+    "id": "supp-n1-review-014",
+    "macro": "状态与结果",
+    "category": "客观规定与约定",
+    "keyword": "定好了…… 规定了……",
+    "firstKana": "こ",
+    "sourceMacro": "状态与结果",
+    "sourceCategory": "客观规定与约定",
+    "legacy": {
+      "searchId": 4014
+    }
+  },
+  {
+    "id": "supp-n1-review-015",
+    "macro": "条件与假定",
+    "category": "导致负面结果",
+    "keyword": "如果...的话",
+    "firstKana": "て",
+    "sourceMacro": "条件与假定",
+    "sourceCategory": "导致负面结果",
+    "legacy": {
+      "searchId": 4015
+    }
+  },
+  {
+    "id": "supp-n1-review-016",
+    "macro": "条件与假定",
+    "category": "仅凭条件不足",
+    "keyword": "仅仅……的话   光靠……",
+    "firstKana": "だ",
+    "sourceMacro": "条件与假定",
+    "sourceCategory": "仅凭条件不足",
+    "legacy": {
+      "searchId": 4016
+    }
+  },
+  {
+    "id": "supp-n1-review-017",
+    "macro": "主张与评价",
+    "category": "做了也是徒劳",
+    "keyword": "……也是徒劳",
+    "firstKana": "だ",
+    "sourceMacro": "主张与评价",
+    "sourceCategory": "做了也是徒劳",
+    "legacy": {
+      "searchId": 4017
+    }
+  },
+  {
+    "id": "supp-n1-review-018",
+    "macro": "限定与程度",
+    "category": "最低限度也足够",
+    "keyword": "哪怕只是……   光是……就",
+    "firstKana": "だ",
+    "sourceMacro": "限定与程度",
+    "sourceCategory": "最低限度也足够",
+    "legacy": {
+      "searchId": 4018
+    }
+  },
+  {
+    "id": "supp-n1-review-019",
+    "macro": "条件与假定",
+    "category": "不满足则有后果",
+    "keyword": "如果不……的话",
+    "firstKana": "な",
+    "sourceMacro": "条件与假定",
+    "sourceCategory": "不满足则有后果",
+    "legacy": {
+      "searchId": 4019
+    }
+  },
+  {
+    "id": "supp-n1-review-020",
+    "macro": "原因与理由",
+    "category": "客观原因",
+    "keyword": "由于...   因为...",
+    "firstKana": "こ",
+    "sourceMacro": "原因与理由",
+    "sourceCategory": "客观原因",
+    "legacy": {
+      "searchId": 4020
+    }
+  },
+  {
+    "id": "supp-n1-review-021",
+    "macro": "依据与视角",
+    "category": "实现目的的手段",
+    "keyword": "通过……   借由……",
+    "firstKana": "こ",
+    "sourceMacro": "依据与视角",
+    "sourceCategory": "实现目的的手段",
+    "legacy": {
+      "searchId": 4021
+    }
+  },
+  {
+    "id": "supp-n1-review-022",
+    "macro": "原因与理由",
+    "category": "承接影响采取行动",
+    "keyword": "承接……、应……",
+    "firstKana": "を",
+    "sourceMacro": "原因与理由",
+    "sourceCategory": "承接影响采取行动",
+    "legacy": {
+      "searchId": 4022
+    }
+  },
+  {
+    "id": "supp-n1-review-023",
+    "macro": "原因与理由",
+    "category": "原因与名称由来",
+    "keyword": "因为……",
+    "firstKana": "と",
+    "sourceMacro": "原因与理由",
+    "sourceCategory": "原因与名称由来",
+    "legacy": {
+      "searchId": 4023
+    }
+  },
+  {
+    "id": "supp-n1-review-024",
+    "macro": "依据与视角",
+    "category": "判断的客观依据",
+    "keyword": "从……来看",
+    "firstKana": "と",
+    "sourceMacro": "依据与视角",
+    "sourceCategory": "判断的客观依据",
+    "legacy": {
+      "searchId": 4024
+    }
+  },
+  {
+    "id": "supp-n1-review-025",
+    "macro": "原因与理由",
+    "category": "列举代表性理由",
+    "keyword": "既然……",
+    "firstKana": "こ",
+    "sourceMacro": "原因与理由",
+    "sourceCategory": "列举代表性理由",
+    "legacy": {
+      "searchId": 4025
+    }
+  },
+  {
+    "id": "supp-n1-review-026",
+    "macro": "原因与理由",
+    "category": "主要归因",
+    "keyword": "很大程度上归功于……",
+    "firstKana": "に",
+    "sourceMacro": "原因与理由",
+    "sourceCategory": "主要归因",
+    "legacy": {
+      "searchId": 4026
+    }
+  },
+  {
+    "id": "supp-n1-review-027",
+    "macro": "逆接与让步",
+    "category": "承认事实后转折",
+    "keyword": "确实……了，但是……",
+    "firstKana": "は",
+    "sourceMacro": "逆接与让步",
+    "sourceCategory": "承认事实后转折",
+    "legacy": {
+      "searchId": 4027
+    }
+  },
+  {
+    "id": "supp-n1-review-028",
+    "macro": "逆接与让步",
+    "category": "与期待相反的遗憾",
+    "keyword": "原本会……",
+    "firstKana": "だ",
+    "sourceMacro": "逆接与让步",
+    "sourceCategory": "与期待相反的遗憾",
+    "legacy": {
+      "searchId": 4028
+    }
+  },
+  {
+    "id": "supp-n1-review-029",
+    "macro": "逆接与让步",
+    "category": "先认可后指出问题",
+    "keyword": "……倒是挺好，但是……",
+    "firstKana": "は",
+    "sourceMacro": "逆接与让步",
+    "sourceCategory": "先认可后指出问题",
+    "legacy": {
+      "searchId": 4029
+    }
+  },
+  {
+    "id": "supp-n1-review-030",
+    "macro": "对象与关联",
+    "category": "牵涉复杂事项",
+    "keyword": "牵涉到……、与……有关",
+    "firstKana": "が",
+    "sourceMacro": "对象与关联",
+    "sourceCategory": "牵涉复杂事项",
+    "legacy": {
+      "searchId": 4030
+    }
+  },
+  {
+    "id": "supp-n1-review-031",
+    "macro": "依据与视角",
+    "category": "依照信息执行",
+    "keyword": "按照……",
+    "firstKana": "よ",
+    "sourceMacro": "依据与视角",
+    "sourceCategory": "依照信息执行",
+    "legacy": {
+      "searchId": 4031
+    }
+  },
+  {
+    "id": "supp-n1-review-032",
+    "macro": "主张与评价",
+    "category": "提出问题后修正预期",
+    "keyword": "要说是否……",
+    "firstKana": "か",
+    "sourceMacro": "主张与评价",
+    "sourceCategory": "提出问题后修正预期",
+    "legacy": {
+      "searchId": 4032
+    }
+  },
+  {
+    "id": "supp-n1-review-033",
+    "macro": "举例与递进",
+    "category": "两者均难断定",
+    "keyword": "既不能说是……也不能说是……",
+    "firstKana": "と",
+    "sourceMacro": "举例与递进",
+    "sourceCategory": "两者均难断定",
+    "legacy": {
+      "searchId": 4033
+    }
+  },
+  {
+    "id": "supp-n1-review-034",
+    "macro": "举例与递进",
+    "category": "列举手段",
+    "keyword": "采取……等方式   通过……等手段",
+    "firstKana": "な",
+    "sourceMacro": "举例与递进",
+    "sourceCategory": "列举手段",
+    "legacy": {
+      "searchId": 4034
+    }
+  },
+  {
+    "id": "supp-n1-review-035",
+    "macro": "举例与递进",
+    "category": "追加递进",
+    "keyword": "不仅……而且……",
+    "firstKana": "だ",
+    "sourceMacro": "举例与递进",
+    "sourceCategory": "追加递进",
+    "legacy": {
+      "searchId": 4035
+    }
+  },
+  {
+    "id": "supp-n1-review-036",
+    "macro": "主张与评价",
+    "category": "事物自有其情况",
+    "keyword": "……自有……的（情况   道理   优点等）",
+    "firstKana": "は",
+    "sourceMacro": "主张与评价",
+    "sourceCategory": "事物自有其情况",
+    "legacy": {
+      "searchId": 4036
+    }
+  },
+  {
+    "id": "supp-n1-review-037",
+    "macro": "限定与程度",
+    "category": "发展到某种地步",
+    "keyword": "到了……的地步",
+    "firstKana": "ま",
+    "sourceMacro": "限定与程度",
+    "sourceCategory": "发展到某种地步",
+    "legacy": {
+      "searchId": 4037
+    }
+  },
+  {
+    "id": "supp-n1-review-038",
+    "macro": "限定与程度",
+    "category": "按间隔反复",
+    "keyword": "每隔……",
+    "firstKana": "お",
+    "sourceMacro": "限定与程度",
+    "sourceCategory": "按间隔反复",
+    "legacy": {
+      "searchId": 4038
+    }
+  },
+  {
+    "id": "supp-n1-review-039",
+    "macro": "限定与程度",
+    "category": "每次或每个",
+    "keyword": "每……",
+    "firstKana": "ご",
+    "sourceMacro": "限定与程度",
+    "sourceCategory": "每次或每个",
+    "legacy": {
+      "searchId": 4039
+    }
+  },
+  {
+    "id": "supp-n1-review-040",
+    "macro": "限定与程度",
+    "category": "只不过是",
+    "keyword": "只不过是……",
+    "firstKana": "で",
+    "sourceMacro": "限定与程度",
+    "sourceCategory": "只不过是",
+    "legacy": {
+      "searchId": 4040
+    }
+  },
+  {
+    "id": "supp-n1-review-041",
+    "macro": "限定与程度",
+    "category": "限定在可接受范围",
+    "keyword": "只要……的话",
+    "firstKana": "ぶ",
+    "sourceMacro": "限定与程度",
+    "sourceCategory": "限定在可接受范围",
+    "legacy": {
+      "searchId": 4041
+    }
+  },
+  {
+    "id": "supp-n1-review-042",
+    "macro": "情感与决心",
+    "category": "事后庆幸",
+    "keyword": "……真是太好了",
+    "firstKana": "て",
+    "sourceMacro": "情感与决心",
+    "sourceCategory": "事后庆幸",
+    "legacy": {
+      "searchId": 4042
+    }
+  },
+  {
+    "id": "supp-n1-review-043",
+    "macro": "主张与评价",
+    "category": "强调评价并不过分",
+    "keyword": "说……也不为过",
+    "firstKana": "と",
+    "sourceMacro": "主张与评价",
+    "sourceCategory": "强调评价并不过分",
+    "legacy": {
+      "searchId": 4043
+    }
+  },
+  {
+    "id": "supp-n1-review-044",
+    "macro": "主张与评价",
+    "category": "指出核心所在",
+    "keyword": "在于……",
+    "firstKana": "こ",
+    "sourceMacro": "主张与评价",
+    "sourceCategory": "指出核心所在",
+    "legacy": {
+      "searchId": 4044
+    }
+  },
+  {
+    "id": "supp-n1-review-045",
+    "macro": "否定",
+    "category": "强调不会发生",
+    "keyword": "并不会……",
+    "firstKana": "は",
+    "sourceMacro": "否定",
+    "sourceCategory": "强调不会发生",
+    "legacy": {
+      "searchId": 4045
+    }
+  },
+  {
+    "id": "supp-n1-review-046",
+    "macro": "否定",
+    "category": "连基本动作也不做",
+    "keyword": "连……都不……",
+    "firstKana": "も",
+    "sourceMacro": "否定",
+    "sourceCategory": "连基本动作也不做",
+    "legacy": {
+      "searchId": 4046
+    }
+  },
+  {
+    "id": "supp-n1-review-047",
+    "macro": "主张与评价",
+    "category": "认为行为不合适",
+    "keyword": "……不合适吧",
+    "firstKana": "は",
+    "sourceMacro": "主张与评价",
+    "sourceCategory": "认为行为不合适",
+    "legacy": {
+      "searchId": 4047
+    }
+  },
+  {
+    "id": "supp-n1-review-048",
+    "macro": "传闻与引用",
+    "category": "提示信息出处",
+    "keyword": "根据……",
+    "firstKana": "で",
+    "sourceMacro": "传闻与引用",
+    "sourceCategory": "提示信息出处",
+    "legacy": {
+      "searchId": 4048
+    }
+  },
+  {
+    "id": "supp-n1-review-049",
+    "macro": "传闻与引用",
+    "category": "社会普遍认定",
+    "keyword": "被认为……",
+    "firstKana": "と",
+    "sourceMacro": "传闻与引用",
+    "sourceCategory": "社会普遍认定",
+    "legacy": {
+      "searchId": 4049
+    }
+  },
+  {
+    "id": "supp-n1-review-050",
+    "macro": "情感与决心",
+    "category": "反语表达不满",
+    "keyword": "竟然（给我）……",
+    "firstKana": "て",
+    "sourceMacro": "情感与决心",
+    "sourceCategory": "反语表达不满",
+    "legacy": {
+      "searchId": 4050
+    }
+  },
+  {
+    "id": "supp-n1-review-051",
+    "macro": "情感与决心",
+    "category": "亲身感受到",
+    "keyword": "感到……",
+    "firstKana": "お",
+    "sourceMacro": "情感与决心",
+    "sourceCategory": "亲身感受到",
+    "legacy": {
+      "searchId": 4051
+    }
+  },
+  {
+    "id": "supp-n1-review-052",
+    "macro": "情感与决心",
+    "category": "希望他人行动",
+    "keyword": "希望……做……",
+    "firstKana": "て",
+    "sourceMacro": "情感与决心",
+    "sourceCategory": "希望他人行动",
+    "legacy": {
+      "searchId": 4052
+    }
+  },
+  {
+    "id": "supp-n1-review-053",
+    "macro": "情感与决心",
+    "category": "强烈而由衷的愿望",
+    "keyword": "真希望……",
+    "firstKana": "て",
+    "sourceMacro": "情感与决心",
+    "sourceCategory": "强烈而由衷的愿望",
+    "legacy": {
+      "searchId": 4053
+    }
+  },
+  {
+    "id": "supp-n1-review-054",
+    "macro": "情感与决心",
+    "category": "祈祷未来结果",
+    "keyword": "希望……",
+    "firstKana": "よ",
+    "sourceMacro": "情感与决心",
+    "sourceCategory": "祈祷未来结果",
+    "legacy": {
+      "searchId": 4054
+    }
+  },
+  {
+    "id": "supp-n1-review-055",
+    "macro": "情感与决心",
+    "category": "当前意志与打算",
+    "keyword": "打算……",
+    "firstKana": "よ",
+    "sourceMacro": "情感与决心",
+    "sourceCategory": "当前意志与打算",
+    "legacy": {
+      "searchId": 4055
+    }
+  },
+  {
+    "id": "supp-n1-review-056",
+    "macro": "情感与决心",
+    "category": "有意识地坚持",
+    "keyword": "尽量做到……",
+    "firstKana": "よ",
+    "sourceMacro": "情感与决心",
+    "sourceCategory": "有意识地坚持",
+    "legacy": {
+      "searchId": 4056
+    }
+  },
+  {
+    "id": "supp-n1-review-057",
+    "macro": "指示与忠告",
+    "category": "正式禁止",
+    "keyword": "不可……",
+    "firstKana": "て",
+    "sourceMacro": "指示与忠告",
+    "sourceCategory": "正式禁止",
+    "legacy": {
+      "searchId": 4057
+    }
+  },
+  {
+    "id": "supp-n1-review-058",
+    "macro": "指示与忠告",
+    "category": "提出具体建议",
+    "keyword": "……怎么样",
+    "firstKana": "た",
+    "sourceMacro": "指示与忠告",
+    "sourceCategory": "提出具体建议",
+    "legacy": {
+      "searchId": 4058
+    }
+  },
+  {
+    "id": "supp-n1-review-059",
+    "macro": "授受与敬语",
+    "category": "允许他人做",
+    "keyword": "让别人做…",
+    "firstKana": "さ",
+    "sourceMacro": "授受与敬语",
+    "sourceCategory": "允许他人做",
+    "legacy": {
+      "searchId": 4059
+    }
+  },
+  {
+    "id": "supp-n1-review-060",
+    "macro": "授受与敬语",
+    "category": "尊敬语句型",
+    "keyword": "做……（尊敬语）",
+    "firstKana": "お",
+    "sourceMacro": "授受与敬语",
+    "sourceCategory": "尊敬语句型",
+    "legacy": {
+      "searchId": 4060
+    }
+  },
+  {
+    "id": "supp-n1-review-061",
+    "macro": "状态与结果",
+    "category": "动作带来满足感",
+    "keyword": "值得……",
+    "firstKana": "ご",
+    "sourceMacro": "状态与结果",
+    "sourceCategory": "动作带来满足感",
+    "legacy": {
+      "searchId": 4061
+    }
+  },
+  {
+    "id": "supp-n1-review-062",
+    "macro": "条件与假定",
+    "category": "人为设定假设",
+    "keyword": "假设……",
+    "firstKana": "と",
+    "sourceMacro": "条件与假定",
+    "sourceCategory": "人为设定假设",
+    "legacy": {
+      "searchId": 4062
+    }
+  },
+  {
+    "id": "supp-n1-review-063",
+    "macro": "条件与假定",
+    "category": "面临具体情况时",
+    "keyword": "如果是……",
+    "firstKana": "と",
+    "sourceMacro": "条件与假定",
+    "sourceCategory": "面临具体情况时",
+    "legacy": {
+      "searchId": 4063
+    }
+  },
+  {
+    "id": "supp-n1-review-064",
+    "macro": "条件与假定",
+    "category": "面对特殊条件",
+    "keyword": "既然是……",
+    "firstKana": "と",
+    "sourceMacro": "条件与假定",
+    "sourceCategory": "面对特殊条件",
+    "legacy": {
+      "searchId": 4064
+    }
+  },
+  {
+    "id": "supp-n1-review-065",
+    "macro": "原因与理由",
+    "category": "正式说明理由",
+    "keyword": "以……为由   将……作为原因",
+    "firstKana": "と",
+    "sourceMacro": "原因与理由",
+    "sourceCategory": "正式说明理由",
+    "legacy": {
+      "searchId": 4065
+    }
+  },
+  {
+    "id": "supp-n1-review-066",
+    "macro": "对象与关联",
+    "category": "朝目标开展准备",
+    "keyword": "为了……",
+    "firstKana": "に",
+    "sourceMacro": "对象与关联",
+    "sourceCategory": "朝目标开展准备",
+    "legacy": {
+      "searchId": 4066
+    }
+  },
+  {
+    "id": "supp-n1-review-067",
+    "macro": "限定与程度",
+    "category": "未达到所举程度",
+    "keyword": "没有达到……的程度",
+    "firstKana": "ほ",
+    "sourceMacro": "限定与程度",
+    "sourceCategory": "未达到所举程度",
+    "legacy": {
+      "searchId": 4067
+    }
+  },
+  {
+    "id": "supp-n1-review-068",
+    "macro": "逆接与让步",
+    "category": "客观对比两项",
+    "keyword": "与……相对",
+    "firstKana": "に",
+    "sourceMacro": "逆接与让步",
+    "sourceCategory": "客观对比两项",
+    "legacy": {
+      "searchId": 4068
+    }
+  },
+  {
+    "id": "supp-n1-review-069",
+    "macro": "限定与程度",
+    "category": "比例与配额",
+    "keyword": "每……",
+    "firstKana": "に",
+    "sourceMacro": "限定与程度",
+    "sourceCategory": "比例与配额",
+    "legacy": {
+      "searchId": 4069
+    }
+  },
+  {
+    "id": "supp-n1-review-070",
+    "macro": "主张与评价",
+    "category": "定义概念",
+    "keyword": "所谓……",
+    "firstKana": "と",
+    "sourceMacro": "主张与评价",
+    "sourceCategory": "定义概念",
+    "legacy": {
+      "searchId": 4070
+    }
+  },
+  {
+    "id": "supp-n1-review-071",
+    "macro": "限定与程度",
+    "category": "主观上的唯一代表",
+    "keyword": "只有……",
+    "firstKana": "く",
+    "sourceMacro": "限定与程度",
+    "sourceCategory": "主观上的唯一代表",
+    "legacy": {
+      "searchId": 4071
+    }
+  },
+  {
+    "id": "supp-n1-review-072",
+    "macro": "可能性",
+    "category": "根据外部信息推测",
+    "keyword": "好像...",
+    "firstKana": "ら",
+    "sourceMacro": "可能性",
+    "sourceCategory": "根据外部信息推测",
+    "legacy": {
+      "searchId": 4072
+    }
+  },
+  {
+    "id": "supp-n1-review-073",
+    "macro": "可能性",
+    "category": "委婉提出推测",
+    "keyword": "难道不是……吗   可能是……吧",
+    "firstKana": "ん",
+    "sourceMacro": "可能性",
+    "sourceCategory": "委婉提出推测",
+    "legacy": {
+      "searchId": 4073
+    }
+  },
+  {
+    "id": "supp-n1-review-074",
+    "macro": "情感与决心",
+    "category": "第三人称情感表现",
+    "keyword": "觉得……   表现出……的样子",
+    "firstKana": "が",
+    "sourceMacro": "情感与决心",
+    "sourceCategory": "第三人称情感表现",
+    "legacy": {
+      "searchId": 4074
+    }
+  },
+  {
+    "id": "supp-n1-review-075",
+    "macro": "指示与忠告",
+    "category": "口语禁止与责备",
+    "keyword": "不该……",
+    "firstKana": "じ",
+    "sourceMacro": "指示与忠告",
+    "sourceCategory": "口语禁止与责备",
+    "legacy": {
+      "searchId": 4075
+    }
+  },
+  {
+    "id": "supp-n1-review-076",
+    "macro": "指示与忠告",
+    "category": "温和愿望与建议",
+    "keyword": "要是……就好了",
+    "firstKana": "と",
+    "sourceMacro": "指示与忠告",
+    "sourceCategory": "温和愿望与建议",
+    "legacy": {
+      "searchId": 4076
+    }
+  },
+  {
+    "id": "supp-n1-review-077",
+    "macro": "指示与忠告",
+    "category": "呼吁共同采取行动",
+    "keyword": "一起……吧 让我们……吧",
+    "firstKana": "じ",
+    "sourceMacro": "指示与忠告",
+    "sourceCategory": "呼吁共同采取行动",
+    "legacy": {
+      "searchId": 4077
+    }
+  },
+  {
+    "id": "supp-n1-review-078",
+    "macro": "授受与敬语",
+    "category": "事物触发情感",
+    "keyword": "让（我）感到……   引起（我）的……",
+    "firstKana": "さ",
+    "sourceMacro": "授受与敬语",
+    "sourceCategory": "事物触发情感",
+    "legacy": {
+      "searchId": 4078
+    }
+  },
+  {
+    "id": "supp-n1-review-079",
+    "macro": "可能性",
+    "category": "过去预期未实现",
+    "keyword": "本应该……",
+    "firstKana": "は",
+    "sourceMacro": "可能性",
+    "sourceCategory": "过去预期未实现",
+    "legacy": {
+      "searchId": 4079
+    }
+  },
+  {
+    "id": "supp-n1-review-080",
+    "macro": "主张与评价",
+    "category": "对过去行为后悔",
+    "keyword": "本应该……",
+    "firstKana": "べ",
+    "sourceMacro": "主张与评价",
+    "sourceCategory": "对过去行为后悔",
+    "legacy": {
+      "searchId": 4080
     }
   }
 ];

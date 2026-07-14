@@ -3,8 +3,8 @@
     const PET_SETTINGS_KEY = 'study_quest_test_v1_kiki_pet_settings_v1';
     const DEFAULT_SECTION = 'daily';
     const DEFAULT_PET_ID = 'shiba';
-    const DEFAULT_UNLOCKED_PET_IDS = ['shiba', 'cat'];
-    const HIDDEN_PET_IDS = ['daodun'];
+    const DEFAULT_UNLOCKED_PET_IDS = ['shiba', 'cat', 'capybara'];
+    const HIDDEN_PET_IDS = ['daodun', 'miku'];
     const DEFAULT_UNLOCKED_INTERACTION_IDS = [];
     const DEFAULT_FOLLOW_OUTSIDE_HOME = false;
     const COLA_TREAT_UNLOCK_ID = 'colaTreat';
@@ -12,6 +12,8 @@
     const LOTTERY_COLLECTION_META_KEY = 'study_quest_test_v1_omikujiCollectionMeta_v1';
     const LOTTERY_LAST_OBTAINED_KEY = 'study_quest_test_v1_omikujiLastObtained_v1';
     const MAX_NAME_LENGTH = 8;
+    const MAX_USER_NAME_LENGTH = 16;
+    const USER_PROFILE_CHANGED_EVENT = 'kiki-user-profile:changed';
     const DRAG_THRESHOLD = 8;
     const WELCOME_INTERVAL_MS = 60 * 60 * 1000;
     const FALLBACK_ENTRY = {
@@ -68,6 +70,30 @@
         '星纹充能',
         '学習守护神'
     ];
+    const MIKU_LEVEL_TITLES = [
+        '待机预览',
+        '动作预览',
+        '陪学预览',
+        '节奏预览',
+        '表情预览',
+        '同步预览',
+        '巡场预览',
+        '舞台预览',
+        '演出预览',
+        '视觉预览'
+    ];
+    const CAPYBARA_LEVEL_TITLES = [
+        '发呆新手',
+        '桌边躺客',
+        '橘子平衡员',
+        '慢速陪学员',
+        '摸鱼观察员',
+        '复习旁观者',
+        '备考镇定员',
+        '节奏管理员',
+        '佛系督学官',
+        '淡定学伴神'
+    ];
     const SHIBA_LEVEL_UNLOCK_LABELS = {
         2: '新的欢迎语',
         3: '新的待机闲聊',
@@ -100,6 +126,18 @@
         8: '新的休眠回应',
         9: '新的静默陪学语',
         10: '满级守护语'
+    };
+    const MIKU_LEVEL_UNLOCK_LABELS = {};
+    const CAPYBARA_LEVEL_UNLOCK_LABELS = {
+        2: '新的欢迎语',
+        3: '新的待机闲聊',
+        4: '新的摸头回应',
+        5: '新的复习提醒',
+        6: '新的喂食回应',
+        7: '新的备考陪伴语',
+        8: '新的睡醒回应',
+        9: '新的默契陪学语',
+        10: '满级纪念语'
     };
     const STUDY_LAUNCH_MILESTONES = [
         { count: 10, xp: 1 },
@@ -212,6 +250,67 @@
             { minLevel: 8, label: '追线上头' }
         ]
     };
+    const MIKU_MOOD_LABELS = {
+        idle: '待机预览',
+        curious: '观察中',
+        cheer: '打call中',
+        cola: '可乐预览',
+        sleep: '睡眠预览',
+        sleeping: '睡眠预览',
+        dazed: '迷糊预览',
+        headpatGentle: '轻眨眼',
+        headpatPlayful: '跑动预览',
+        headpatAnnoyed: '倔倔预览',
+        ballPose: '玩耍预览'
+    };
+    const MIKU_MOOD_LABEL_VARIANTS = {};
+    const CAPYBARA_MOOD_LABELS = {
+        idle: '摊平待机',
+        curious: '半睁观察',
+        cheer: '难得精神',
+        cola: '气泡醒脑',
+        sleep: '就地躺平',
+        sleeping: '熟睡勿扰',
+        dazed: '还没开机',
+        headpatGentle: '摸着挺好',
+        headpatPlayful: '慢半拍闪避',
+        headpatAnnoyed: '不想营业',
+        ballPose: '玩一下吧'
+    };
+    const CAPYBARA_MOOD_LABEL_VARIANTS = {
+        idle: [
+            { minLevel: 1, label: '摊平待机' },
+            { minLevel: 4, label: '淡定陪着' },
+            { minLevel: 8, label: '佛系督学' }
+        ],
+        curious: [
+            { minLevel: 1, label: '半睁观察' },
+            { minLevel: 6, label: '看破摸鱼' }
+        ],
+        cheer: [
+            { minLevel: 1, label: '难得精神' },
+            { minLevel: 7, label: '勉强庆祝' }
+        ],
+        cola: [
+            { minLevel: 1, label: '气泡醒脑' },
+            { minLevel: 9, label: '短暂清醒' }
+        ],
+        sleep: [
+            { minLevel: 1, label: '就地躺平' },
+            { minLevel: 8, label: '安心补眠' }
+        ],
+        sleeping: [
+            { minLevel: 1, label: '熟睡勿扰' },
+            { minLevel: 8, label: '陪你入梦' }
+        ],
+        dazed: [
+            { minLevel: 1, label: '还没开机' }
+        ],
+        ballPose: [
+            { minLevel: 1, label: '玩一下吧' },
+            { minLevel: 8, label: '慢慢玩着' }
+        ]
+    };
     const DAODUN_MOOD_LABELS = {
         idle: '静默待命',
         curious: '侦测中',
@@ -258,6 +357,7 @@
     const TREAT_COOLDOWN_DIALOGS = {
         shiba: '打咩！肚子已经圆滚滚了，再吃要变成猪犬了🐷',
         cat: '拿走拿走，本喵现在看什么都像猫条，连看你都觉得反胃。',
+        capybara: '够了。再喂下去，{name}就只能用体重压住退出按钮了。',
         daodun: '补给槽已经充满，刀盾暂时不需要追加能量。'
     };
     const INTERACTION_CHAIN_MS = 8000;
@@ -270,14 +370,20 @@
     const BALL_POSE_COOLDOWN_MS = 45 * 1000;
     const BALL_POSE_CHECK_INTERVAL_MS = 12 * 1000;
     const BALL_POSE_DURATION_MS = 5200;
+    const IDLE_VARIANT_TRIGGER_CHANCE = 0.16;
+    const IDLE_VARIANT_COOLDOWN_MS = 45 * 1000;
+    const IDLE_VARIANT_CHECK_INTERVAL_MS = 15 * 1000;
+    const IDLE_VARIANT_DURATION_MS = 3200;
     const COLA_TREAT_LOCKED_DIALOGS = {
         shiba: '汪？你还没解锁可乐呢！{name}只能咽咽口水假装喝过了……',
         cat: '喵？说好的猫薄荷呢？你想拿空气糊弄本喵吗！',
+        capybara: '没有可乐？那你点得这么熟练，是在测试{name}的想象力吗？',
         daodun: '{name}检测到特殊补给尚未解锁，继续保持待命。'
     };
     const HEADPAT_FALLBACK_DIALOGS = {
         shiba: '略略略~ 你摸不到！快去把专注力放在书本上！',
         cat: '喵呜，扑空了吧？把这股劲头拿去翻书更划算。',
+        capybara: '摸不到。别急，书本不会躲，你先去碰它。',
         daodun: '{name}轻轻格挡了一下，像是在提醒你继续专注。'
     };
     const TREAT_OVERFEED_DIALOGS = {
@@ -291,6 +397,16 @@
             5: '（用肉垫推开你的手）我说不吃就不吃！你以为这点零食就能掩盖你没背单词的事实吗？',
             sleep: '吃撑了……连骂你的力气都没了。本喵要睡美容觉了，你最好在我醒来前把这两页看完。（闭眼）'
         },
+        capybara: {
+            4: '第四口了。你是在喂{name}，还是在给自己拖时间？',
+            5: '零食放下，鼠标拿起来。我们都该克制一点。',
+            sleep: '吃得太饱……{name}先睡。你继续学，至少我们得有一个清醒。'
+        },
+        miku: {
+            4: '',
+            5: '',
+            sleep: ''
+        },
         daodun: {
             4: '补给已经足够，{name}的护纹稳定亮起。',
             5: '{name}收起补给槽，进入静默守护姿态。',
@@ -300,7 +416,12 @@
     const COLA_OVERFLOW_DIALOGS = {
         shiba: '今天的快乐额度快被你灌满啦。',
         cat: '不行了……再吸脑子都要变成毛线球了……喵呜……',
+        capybara: '再喝就不叫提神，叫逃避困意了。这个{name}熟。',
         daodun: '{name}的能量读数已经满格，建议暂停特殊补给。'
+    };
+    const DAZED_INTERACTION_DIALOGS = {
+        default: '吧唧吧唧',
+        capybara: '……开机中。别急，急也不会更快。'
     };
     const TEXTBOOK_LAST_LABEL_KEY = 'study_quest_test_v1_textbook_n1_last_label';
     const TEXTBOOK_LAST_ROUTE_KEY = 'study_quest_test_v1_textbook_n1_last_route';
@@ -308,16 +429,10 @@
     const PRACTICE_FEEDBACK_COOLDOWN_MS = 1500;
     const PRACTICE_FEEDBACK_DURATION_MS = 1700;
     const PRACTICE_MAJOR_DURATION_MS = 2400;
-    const HOMEPAGE_IDLE_ROTATION_MS = 10000;
-    const HOMEPAGE_IDLE_PRIMARY_CHANCE = 60;
-    const HOMEPAGE_LEARNING_REMINDER_CHANCE = 25;
-    const GRAMMAR_REMINDER_LESSON_WEIGHT = 50;
-    const GRAMMAR_REMINDER_LEVEL_WEIGHT = 30;
-    const GRAMMAR_REMINDER_GLOBAL_WEIGHT = 20;
-    const HOMEPAGE_GRAMMAR_REMINDER_CHANCE = 15;
     const FOLLOW_OUTSIDE_HOME_DIALOGS = {
         shiba: '要出去玩啦！{name}已经把牵绳叼好了，我们边逛边学！',
         cat: '要出去玩啦？……那就把{name}也带上吧，别走丢了。',
+        capybara: '要出去玩啦。放心，{name}会跟着你，也会记得你在哪一页偷懒。',
         daodun: '要出去巡护啦，{name}已经切换到随行守护。'
     };
     const SECTION_ENTRY_DIALOGS = {
@@ -357,6 +472,24 @@
                 '你喜欢的入口都在这儿了，挑一个继续就好。'
             ]
         },
+        capybara: {
+            daily: [
+                '挑个轻的开始吧，但别挑个轻的结束。',
+                '日常学习啊……慢慢来可以，停着不算。'
+            ],
+            examRecent: [
+                '上次停在【{label}】。{name}记得，你最好也记得。',
+                '【{label}】还在原地等你。它倒是比你的注意力有耐心。'
+            ],
+            examFallback: [
+                '先深呼吸，再把会不会的都做一遍。反正题目不会替你消失。',
+                '备考区到了。紧张可以，手别停。'
+            ],
+            favorites: [
+                '收藏得挺勤。现在挑一个真正用起来吧。',
+                '慢慢选。只是别把挑入口也挑成今天的主要进度。'
+            ]
+        },
         daodun: {
             daily: [
                 '{name}已进入日常守护，等待你选择学习入口。',
@@ -375,23 +508,6 @@
                 '收藏路径稳定，选择一项即可继续。'
             ]
         }
-    };
-    const LIGHT_STUDY_REMINDER_DIALOGS = {
-        shiba: [
-            '随便挑一小口开始也好，{name}会陪你慢慢嚼完。',
-            '先把今天的第一步踩下去，后面就顺了。',
-            '哪怕只看一页，{name}也算你今天认真开机啦。'
-        ],
-        cat: [
-            '别想着一步到位，先做一点也算开始。',
-            '随便挑个小任务，别让今天空着过去。',
-            '你先动起来，本喵再考虑要不要夸你。'
-        ],
-        daodun: [
-            '先启动一个小任务，{name}会守住这段专注。',
-            '学习路径等待确认，先选择一步即可。',
-            '{name}已待命，建议从最近的一项开始。'
-        ]
     };
     const LOTTERY_RESULT_DIALOGS = {
         shiba: {
@@ -438,6 +554,28 @@
                 '普通一点的结果最耐看，别挑三拣四。'
             ]
         },
+        capybara: {
+            unlock: [
+                '哦，连隐藏奖励都抽到了。看来今天的运气替实力上班了。',
+                '额外奖励到手。先收好，别高兴得忘了原本要学什么。'
+            ],
+            rare: [
+                '稀有。先高兴三秒，然后记得你本来是来学习的。',
+                '这手气确实不错。{name}就不追问实力去哪儿了。'
+            ],
+            new: [
+                '新卡到手。图鉴变满了一点，脑子也顺便装点东西吧。',
+                '没见过的新卡。收好，至少今天不是毫无收获。'
+            ],
+            duplicate: [
+                '又是老朋友。没关系，复习本来就是重复包装。',
+                '重复了。你看，连抽签都在提醒你温故知新。'
+            ],
+            ordinary: [
+                '普通结果，和稳定进步一样，不耀眼但很有用。',
+                '平稳落地。没有惊喜，也没有借口，继续吧。'
+            ]
+        },
         daodun: {
             unlock: [
                 '奖励信号确认，{name}已记录新的解锁项。',
@@ -461,65 +599,6 @@
             ]
         }
     };
-    const HOMEPAGE_GRAMMAR_TEMPLATES = {
-        shiba: [
-            ({ label }) => [
-                { type: 'text', text: '这个「' },
-                { type: 'grammar-token', grammarId: label.id, label: label.title },
-                { type: 'text', text: '」好香呀，是什么味道呢？' }
-            ],
-            ({ label }) => [
-                { type: 'text', text: '闻到「' },
-                { type: 'grammar-token', grammarId: label.id, label: label.title },
-                { type: 'text', text: '」的味道啦，要不要顺手复习一下？' }
-            ],
-            ({ label }) => [
-                { type: 'text', text: '汪，我总觉得「' },
-                { type: 'grammar-token', grammarId: label.id, label: label.title },
-                { type: 'text', text: '」今天会派上用场。' }
-            ]
-        ],
-        cat: [
-            ({ label }) => [
-                { type: 'text', text: '喵，这个「' },
-                { type: 'grammar-token', grammarId: label.id, label: label.title },
-                { type: 'text', text: '」你最好别装作没看见。' }
-            ],
-            ({ label }) => [
-                { type: 'text', text: '这个「' },
-                { type: 'grammar-token', grammarId: label.id, label: label.title },
-                { type: 'text', text: '」有点眼熟吧？顺手复习一下。' }
-            ],
-            ({ label }) => [
-                { type: 'text', text: '别只盯着我看，把「' },
-                { type: 'grammar-token', grammarId: label.id, label: label.title },
-                { type: 'text', text: '」也一起看懂。' }
-            ]
-        ],
-        daodun: [
-            ({ label }) => [
-                { type: 'text', text: '检测到语法「' },
-                { type: 'grammar-token', grammarId: label.id, label: label.title },
-                { type: 'text', text: '」，建议短暂复核。' }
-            ],
-            ({ label }) => [
-                { type: 'text', text: '{name}已标记「' },
-                { type: 'grammar-token', grammarId: label.id, label: label.title },
-                { type: 'text', text: '」，可作为今日巡护点。' }
-            ],
-            ({ label }) => [
-                { type: 'text', text: '语法节点「' },
-                { type: 'grammar-token', grammarId: label.id, label: label.title },
-                { type: 'text', text: '」等待确认。' }
-            ]
-        ]
-    };
-    const GRAMMAR_PEEK_HINTS = {
-        shiba: '汪，先闻闻这条语法的味道，再慢慢看懂它。',
-        cat: '喵，先看清楚再下判断，别囫囵吞过去。',
-        daodun: '刀盾已展开语法节点，先确认结构，再继续前进。'
-    };
-
     function frameBlock(strings, ...values) {
         const raw = String.raw({ raw: strings }, ...values).trim();
         return raw ? raw.split('\n').map((row) => row.trim()) : [];
@@ -549,7 +628,22 @@
         const currentScript = document.currentScript;
         return currentScript && currentScript.src ? currentScript.src : '';
     })();
-    const DEFAULT_HOME_PET_ASSET_BASE_URL = 'https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/shared/';
+    const IS_LOCAL_HOME_PET_PREVIEW = (() => {
+        const locationRef = window.location;
+        if (!locationRef) {
+            return false;
+        }
+        return locationRef.protocol === 'file:'
+            || locationRef.hostname === 'localhost'
+            || locationRef.hostname === '127.0.0.1';
+    })();
+    const DEFAULT_HOME_PET_ASSET_BASE_URL = IS_LOCAL_HOME_PET_PREVIEW
+        ? ''
+        : 'https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/shared/';
+    const MUMU_SHIBA_ASSET_VERSION = '20260714-bandana-panting-v2';
+    const MIANMIAN_ASSET_VERSION = '20260711-ragdoll-v3';
+    const MYTHIC_SKIN_ASSET_VERSION = '20260711-expression-v1';
+    const CAPYBARA_ASSET_VERSION = '20260713-lazy-v1';
 
     function escapeHtmlAttribute(value) {
         return String(value || '')
@@ -582,10 +676,27 @@
         }
     }
 
-    function imageSequence(frames, interval = 140, loop = true) {
+    function imageSequence(frames, interval = 140, loop = true, playback = {}) {
+        const sourceFrames = Array.isArray(frames) ? frames.slice() : [];
+        let playbackFrames = sourceFrames.slice();
+        if (playback && playback.pingPong && sourceFrames.length > 2) {
+            playbackFrames = playbackFrames.concat(sourceFrames.slice(1, -1).reverse());
+        }
+        if (playback && playback.returnToStart && sourceFrames.length) {
+            playbackFrames.push(sourceFrames[0]);
+        }
+        const startHold = Math.max(0, Number(playback && playback.startHold) || 0);
+        const endHold = Math.max(0, Number(playback && playback.endHold) || 0);
+        if (sourceFrames.length && startHold) {
+            playbackFrames = Array.from({ length: startHold }, () => sourceFrames[0]).concat(playbackFrames);
+        }
+        if (playbackFrames.length && endHold) {
+            const finalFrame = playbackFrames[playbackFrames.length - 1];
+            playbackFrames = playbackFrames.concat(Array.from({ length: endHold }, () => finalFrame));
+        }
         return {
             type: 'image',
-            frames: Array.isArray(frames) ? frames.slice() : [],
+            frames: playbackFrames,
             interval,
             loop
         };
@@ -593,13 +704,37 @@
 
     function mianmianFrames(action, count) {
         return Array.from({ length: count }, (_, index) => (
-            `assets/pets-optimized/mianmian/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.webp`
+            `assets/pets-optimized/mianmian/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.webp?v=${MIANMIAN_ASSET_VERSION}`
         ));
     }
 
     function mumuShibaFrames(action, count) {
         return Array.from({ length: count }, (_, index) => (
-            `assets/pets-optimized/mumu-shiba/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.webp`
+            `assets/pets-optimized/mumu-shiba/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.webp?v=${MUMU_SHIBA_ASSET_VERSION}`
+        ));
+    }
+
+    function mikuFrames(action, count) {
+        return Array.from({ length: count }, (_, index) => (
+            `assets/pets-optimized/miku/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.webp`
+        ));
+    }
+
+    function capybaraFrames(action, count) {
+        return Array.from({ length: count }, (_, index) => (
+            `assets/pets-optimized/lazy-capybara/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.webp?v=${CAPYBARA_ASSET_VERSION}`
+        ));
+    }
+
+    function okamiFrames(action, count) {
+        return Array.from({ length: count }, (_, index) => (
+            `assets/pets-optimized/okami/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.webp?v=${MYTHIC_SKIN_ASSET_VERSION}`
+        ));
+    }
+
+    function nekomataFrames(action, count) {
+        return Array.from({ length: count }, (_, index) => (
+            `assets/pets-optimized/nekomata/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.webp?v=${MYTHIC_SKIN_ASSET_VERSION}`
         ));
     }
 
@@ -967,36 +1102,104 @@
         ['H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2', 'H2']
     ];
     const SHIBA_PIXEL_FRAMES = {
-        idle: imageSequence(mumuShibaFrames('happy', 1), 0),
-        blink: imageSequence(mumuShibaFrames('blink', 4), 150),
-        cheer: imageSequence(mumuShibaFrames('happy', 4), 140),
-        hop: imageSequence(mumuShibaFrames('run', 6), 110),
-        ball: imageSequence(mumuShibaFrames('play', 6), 130),
-        eat: imageSequence(mumuShibaFrames('eat', 5), 150),
-        sleepy: imageSequence(mumuShibaFrames('sleepy_wake', 6), 170),
-        sleep: imageSequence(mumuShibaFrames('sleep', 4), 260),
-        cola: imageSequence(mumuShibaFrames('cola', 6), 160),
-        sad: imageSequence(mumuShibaFrames('sad', 6), 170),
-        headpatAnnoyed: imageSequence(mumuShibaFrames('headpat_annoyed', 6), 170),
-        thinking: imageSequence(mumuShibaFrames('thinking', 4), 170),
-        reward: imageSequence(mumuShibaFrames('reward', 4), 140),
-        leash: imageSequence(mumuShibaFrames('leash', 4), 140)
+        idle: imageSequence(mumuShibaFrames('idle_breathe', 6), 260, true, { startHold: 1, endHold: 1 }),
+        blink: imageSequence(mumuShibaFrames('idle_blink_ear', 4), 180, false),
+        idleLook: imageSequence(mumuShibaFrames('idle_look', 4), 320, false, { pingPong: true, returnToStart: true, startHold: 1, endHold: 1 }),
+        idleStretch: imageSequence(mumuShibaFrames('idle_stretch', 4), 300, false, { pingPong: true, returnToStart: true, startHold: 1, endHold: 1 }),
+        cheer: imageSequence(mumuShibaFrames('happy', 4), 180, false),
+        hop: imageSequence(mumuShibaFrames('run', 6), 130, false),
+        ball: imageSequence(mumuShibaFrames('play', 6), 190, true),
+        eat: imageSequence(mumuShibaFrames('eat', 5), 190, false),
+        sleepy: imageSequence(mumuShibaFrames('sleepy_wake', 6), 210, false),
+        sleep: imageSequence(mumuShibaFrames('sleep', 4), 340, true, { pingPong: true }),
+        cola: imageSequence(mumuShibaFrames('cola', 6), 190, false),
+        sad: imageSequence(mumuShibaFrames('sad', 6), 210, false),
+        headpatAnnoyed: imageSequence(mumuShibaFrames('headpat_annoyed', 6), 210, false),
+        thinking: imageSequence(mumuShibaFrames('thinking', 4), 240, false),
+        reward: imageSequence(mumuShibaFrames('reward', 4), 180, false),
+        leash: imageSequence(mumuShibaFrames('leash', 4), 180, false)
     };
     const CAT_PIXEL_FRAMES = {
-        idle: imageSequence(mianmianFrames('happy', 1), 0),
-        blink: imageSequence(mianmianFrames('blink', 4), 150),
-        cheer: imageSequence(mianmianFrames('happy', 4), 140),
-        hop: imageSequence(mianmianFrames('run', 6), 110),
-        ball: imageSequence(mianmianFrames('play', 6), 130),
-        eat: imageSequence(mianmianFrames('eat', 5), 150),
-        sleepy: imageSequence(mianmianFrames('sleepy_wake', 6), 170),
-        sleep: imageSequence(mianmianFrames('sleep', 4), 260),
-        cola: imageSequence(mianmianFrames('catnip_dizzy', 6), 160),
-        sad: imageSequence(mianmianFrames('sad', 6), 170),
-        headpatAnnoyed: imageSequence(mianmianFrames('headpat_annoyed', 6), 170),
-        thinking: imageSequence(mianmianFrames('thinking', 4), 170),
-        reward: imageSequence(mianmianFrames('reward', 4), 140),
-        leash: imageSequence(mianmianFrames('leash', 4), 140)
+        idle: imageSequence(mianmianFrames('blink', 4), 420, true, { pingPong: true, startHold: 4 }),
+        blink: imageSequence(mianmianFrames('blink', 4), 180, false),
+        cheer: imageSequence(mianmianFrames('happy', 4), 180, false),
+        hop: imageSequence(mianmianFrames('run', 6), 130, false),
+        ball: imageSequence(mianmianFrames('play', 6), 190, true),
+        eat: imageSequence(mianmianFrames('eat', 5), 190, false),
+        sleepy: imageSequence(mianmianFrames('sleepy_wake', 6), 210, false),
+        sleep: imageSequence(mianmianFrames('sleep', 4), 340, true, { pingPong: true }),
+        cola: imageSequence(mianmianFrames('catnip_dizzy', 6), 190, false),
+        sad: imageSequence(mianmianFrames('sad', 6), 210, false),
+        headpatAnnoyed: imageSequence(mianmianFrames('headpat_annoyed', 6), 210, false),
+        thinking: imageSequence(mianmianFrames('thinking', 4), 240, false),
+        reward: imageSequence(mianmianFrames('reward', 4), 180, false),
+        leash: imageSequence(mianmianFrames('leash', 4), 180, false)
+    };
+    const CAPYBARA_PIXEL_FRAMES = {
+        idle: imageSequence(capybaraFrames('idle', 6), 320, true),
+        blink: imageSequence(capybaraFrames('blink', 4), 180, false),
+        curious: imageSequence(capybaraFrames('blink', 4), 240, false),
+        headpat: imageSequence(capybaraFrames('headpat', 4), 190, false),
+        cheer: imageSequence(capybaraFrames('cheer', 5), 180, false),
+        hop: imageSequence(capybaraFrames('play', 8), 180, false),
+        ball: imageSequence(capybaraFrames('play', 8), 180, true),
+        eat: imageSequence(capybaraFrames('eat', 6), 190, false),
+        sleepy: imageSequence(capybaraFrames('sleepy_wake', 6), 220, false),
+        sleep: imageSequence(capybaraFrames('sleep', 4), 340, true, { pingPong: true }),
+        cola: imageSequence(capybaraFrames('cola', 6), 190, false),
+        sad: imageSequence(capybaraFrames('sad', 5), 210, false),
+        headpatAnnoyed: imageSequence(capybaraFrames('headpat_annoyed', 6), 210, false),
+        thinking: imageSequence(capybaraFrames('blink', 4), 240, false),
+        reward: imageSequence(capybaraFrames('cheer', 5), 180, false),
+        leash: imageSequence(capybaraFrames('leash', 6), 180, false)
+    };
+    const OKAMI_PIXEL_FRAMES = {
+        idle: imageSequence(okamiFrames('idle', 4), 260, true, { pingPong: true, startHold: 1 }),
+        blink: imageSequence(okamiFrames('blink', 4), 180, false),
+        cheer: imageSequence(okamiFrames('happy', 4), 180, false),
+        hop: imageSequence(okamiFrames('run', 6), 130, false),
+        ball: imageSequence(okamiFrames('play', 6), 190, true),
+        eat: imageSequence(okamiFrames('eat', 5), 190, false),
+        sleepy: imageSequence(okamiFrames('sleepy_wake', 6), 210, false),
+        sleep: imageSequence(okamiFrames('sleep', 4), 340, true, { pingPong: true }),
+        cola: imageSequence(okamiFrames('cola', 6), 190, false),
+        sad: imageSequence(okamiFrames('sad', 6), 210, false),
+        headpatAnnoyed: imageSequence(okamiFrames('headpat_annoyed', 6), 210, false),
+        thinking: imageSequence(okamiFrames('thinking', 4), 240, false),
+        reward: imageSequence(okamiFrames('reward', 4), 180, false),
+        leash: imageSequence(okamiFrames('leash', 4), 180, false)
+    };
+    const NEKOMATA_PIXEL_FRAMES = {
+        idle: imageSequence(nekomataFrames('idle', 4), 260, true, { pingPong: true, startHold: 1 }),
+        blink: imageSequence(nekomataFrames('blink', 4), 180, false),
+        cheer: imageSequence(nekomataFrames('happy', 4), 180, false),
+        hop: imageSequence(nekomataFrames('run', 6), 130, false),
+        ball: imageSequence(nekomataFrames('play', 6), 190, true),
+        eat: imageSequence(nekomataFrames('eat', 5), 190, false),
+        sleepy: imageSequence(nekomataFrames('sleepy_wake', 6), 210, false),
+        sleep: imageSequence(nekomataFrames('sleep', 4), 340, true, { pingPong: true }),
+        cola: imageSequence(nekomataFrames('catnip_dizzy', 6), 190, false),
+        sad: imageSequence(nekomataFrames('sad', 6), 210, false),
+        headpatAnnoyed: imageSequence(nekomataFrames('headpat_annoyed', 6), 210, false),
+        thinking: imageSequence(nekomataFrames('thinking', 4), 240, false),
+        reward: imageSequence(nekomataFrames('reward', 4), 180, false),
+        leash: imageSequence(nekomataFrames('leash', 4), 180, false)
+    };
+    const MIKU_PIXEL_FRAMES = {
+        idle: imageSequence(mikuFrames('idle', 1), 0),
+        blink: imageSequence(mikuFrames('blink', 4), 180, false),
+        cheer: imageSequence(mikuFrames('happy', 6), 160, false),
+        hop: imageSequence(mikuFrames('run', 6), 130, false),
+        ball: imageSequence(mikuFrames('play', 6), 190, true),
+        eat: imageSequence(mikuFrames('eat', 5), 190, false),
+        sleepy: imageSequence(mikuFrames('sad', 6), 210, false),
+        sleep: imageSequence(mikuFrames('sleep', 4), 340, true, { pingPong: true }),
+        cola: imageSequence(mikuFrames('cola', 6), 190, false),
+        sad: imageSequence(mikuFrames('sad', 6), 210, false),
+        headpatAnnoyed: imageSequence(mikuFrames('headpat_annoyed', 6), 210, false),
+        thinking: imageSequence(mikuFrames('thinking', 4), 240, false),
+        reward: imageSequence(mikuFrames('reward', 4), 180, false),
+        leash: imageSequence(mikuFrames('leash', 4), 180, false)
     };
     const PET_PROFILES = {
         shiba: {
@@ -1009,6 +1212,10 @@
             moodLabels: SHIBA_MOOD_LABELS,
             moodLabelVariants: SHIBA_MOOD_LABEL_VARIANTS,
             pixelFrames: createPixelFrameMap(SHIBA_PIXEL_FRAMES, SHIBA_FRAME_OPTIONS),
+            skins: {
+                default: { id: 'default', label: '赤柴' },
+                okami: { id: 'okami', label: '大神', pixelFrames: createPixelFrameMap(OKAMI_PIXEL_FRAMES) }
+            },
             dialogs: {
                 welcome: [
                     '汪！你可算来啦，{name}的尾巴都快摇断了！',
@@ -1147,6 +1354,10 @@
             moodLabels: CAT_MOOD_LABELS,
             moodLabelVariants: CAT_MOOD_LABEL_VARIANTS,
             pixelFrames: createPixelFrameMap(CAT_PIXEL_FRAMES),
+            skins: {
+                default: { id: 'default', label: '布偶猫' },
+                nekomata: { id: 'nekomata', label: '猫又', pixelFrames: createPixelFrameMap(NEKOMATA_PIXEL_FRAMES) }
+            },
             dialogs: {
                 welcome: [
                     '哼，还知道回来啊？{name}等得胡子都要打结了。还不快开始学习！',
@@ -1260,6 +1471,124 @@
                     ]
                 }
             }
+        },
+        capybara: {
+            id: 'capybara',
+            label: '卡皮巴拉',
+            species: 'capybara',
+            defaultName: '卡皮',
+            levelTitles: CAPYBARA_LEVEL_TITLES,
+            levelUnlockLabels: CAPYBARA_LEVEL_UNLOCK_LABELS,
+            moodLabels: CAPYBARA_MOOD_LABELS,
+            moodLabelVariants: CAPYBARA_MOOD_LABEL_VARIANTS,
+            pixelFrames: createPixelFrameMap(CAPYBARA_PIXEL_FRAMES),
+            dialogs: {
+                welcome: [
+                    '你来啦。先坐下吧……坐下不是让你继续发呆。',
+                    '{name}已经躺好了。你负责学习，我负责看着你学习。',
+                    '网页都打开了，现在关掉会显得很刻意哦。',
+                    '今天不用学很多。学到想逃的时候，再多做一道就好。',
+                    '橘子还没掉，说明{name}状态很稳。你的状态呢？'
+                ],
+                treat: [
+                    '嚼嚼……味道不错。现在轮到你把知识也嚼碎了。',
+                    '谢谢。吃人的嘴软，所以{name}会温柔一点催你。',
+                    '再来一口……然后你也再做一题，很公平。'
+                ],
+                colaTreat: [
+                    '咕嘟……气泡挺有精神。可惜你还没开始。',
+                    '喝完了。现在{name}比你清醒一点点，真让人担心。',
+                    '冰冰的。再做一道题，给今天留点像样的痕迹。'
+                ],
+                headpat: [
+                    '嗯……可以。手挺暖的，脑子也顺便热起来吧。',
+                    '再摸一下就去学习。你看，借口都替你准备好了。',
+                    '舒服是舒服……但你不会以为这样就算学习了吧。'
+                ],
+                headpatEaster: [
+                    { message: '看你这么认真……我是说，摸得这么认真，再给你两秒。', mode: 'headpatGentle', anim: 'headpat' },
+                    { message: '手慢了。你做选择题的时候也这么慢吗？', mode: 'headpatPlayful', anim: 'hop' },
+                    { message: '毛都顺完了，进度条还没动。很会抓重点嘛。', mode: 'headpatAnnoyed', anim: 'headpatAnnoyed' }
+                ],
+                sleepWake: [
+                    '醒了……{name}只是闭眼监督，效果可能比你睁眼学习好一点。',
+                    '别摇了。你先做完一题，{name}就考虑把另一只眼也睁开。'
+                ],
+                defaultReview: [
+                    '【{label}】还没忘干净，趁现在捞一下。',
+                    '复习不累，重新学一遍才累。你选一个。',
+                    '【{label}】正在悄悄变陌生。放心，它跑得没你快。',
+                    '回去看一眼吧。你不看，它可就要在考试里看你了。'
+                ],
+                defaultExam: [
+                    '紧张可以，手别停。停太久，紧张会以为自己赢了。',
+                    '一题一题来。反正题目排着队，你也逃不掉。',
+                    '{name}负责保持平静，你负责别把会的题做错。'
+                ],
+                defaultRecent: [
+                    '【{label}】刚学过。趁它还认识你，再见一面吧。',
+                    '刚从【{label}】出来就想休息？你的切换速度倒是很快。',
+                    '【{label}】的记忆还热着。放凉了可得重新加热。'
+                ],
+                defaultIdle: [
+                    '慢慢来没关系，完全不来就有一点关系。',
+                    '别急，知识不会跑。倒是你的注意力快跑没影了。',
+                    '可以再发呆十秒。十秒后还不开始，{name}就当你在挑战自制力。',
+                    '{name}看起来没催你，不代表没记住你摸鱼了多久。',
+                    '先做一道。做完还想逃的话……那就再做一道。',
+                    '别看{name}。看题。{name}又不会变成答案。'
+                ]
+            },
+            dialogUnlocks: {
+                2: { welcome: ['又来了。看来你不是三分钟热度，是五分钟以上。'] },
+                3: { defaultIdle: ['不知道学什么就随便点。你犹豫的时间已经够做一道题了。'] },
+                4: {
+                    headpatExtras: {
+                        0: ['{name}没有躲，只把脑袋又往你手心挪了半寸。'],
+                        1: ['{name}眯着眼没说话，看起来已经默认你可以多摸一会儿。']
+                    }
+                },
+                5: { defaultReview: ['最近肯回头复习了。很好，至少错误开始认识你了。'] },
+                6: { treatExtras: { 0: ['{name}慢吞吞收下零食，又把学习入口推回你面前。'] } },
+                7: { defaultExam: ['你紧张的时候比平时诚实多了。放心，{name}陪你把题做完。'] },
+                8: { sleepWakeExtras: { 0: ['这次{name}醒得很快，大概已经习惯你总在需要时来找它。'] } },
+                9: {
+                    defaultRecent: ['【{label}】做得不错。别骄傲，{name}只是不想夸得太明显。'],
+                    defaultIdle: ['今天不催你。你知道该做什么……不知道的话，{name}还是会提醒。']
+                },
+                10: {
+                    welcome: ['你终于把坚持变成习惯了。很好，这样{name}就能放心偷懒一点。'],
+                    defaultIdle: [
+                        '{name}躺着，你学习。我们都做自己擅长的事。',
+                        '走到这里还愿意继续，很不错。别骄傲，{name}只是不想夸得太明显。'
+                    ]
+                }
+            }
+        },
+        miku: {
+            id: 'miku',
+            label: 'miku',
+            species: 'miku',
+            defaultName: 'miku',
+            levelTitles: MIKU_LEVEL_TITLES,
+            levelUnlockLabels: MIKU_LEVEL_UNLOCK_LABELS,
+            moodLabels: MIKU_MOOD_LABELS,
+            moodLabelVariants: MIKU_MOOD_LABEL_VARIANTS,
+            pixelFrames: createPixelFrameMap(MIKU_PIXEL_FRAMES),
+            silentDialogs: true,
+            dialogs: {
+                welcome: [],
+                treat: [],
+                colaTreat: [],
+                headpat: [],
+                headpatEaster: [],
+                sleepWake: [],
+                defaultReview: [],
+                defaultExam: [],
+                defaultRecent: [],
+                defaultIdle: []
+            },
+            dialogUnlocks: {}
         },
         daodun: {
             id: 'daodun',
@@ -1507,6 +1836,19 @@
         return PET_PROFILES[petId] || PET_PROFILES[DEFAULT_PET_ID];
     }
 
+    function getPetSkinOptions(petId) {
+        const petProfile = getPetProfile(petId);
+        const skins = petProfile && petProfile.skins && typeof petProfile.skins === 'object'
+            ? petProfile.skins
+            : {};
+        return Object.values(skins).filter((skin) => skin && skin.id);
+    }
+
+    function normalizePetSkinId(petId, rawValue) {
+        const normalized = String(rawValue || 'default').trim() || 'default';
+        return getPetSkinOptions(petId).some((skin) => skin.id === normalized) ? normalized : 'default';
+    }
+
     function getPetDefaultName(petId) {
         return getPetProfile(petId).defaultName;
     }
@@ -1525,6 +1867,14 @@
             return '';
         }
         return Array.from(trimmed).slice(0, MAX_NAME_LENGTH).join('');
+    }
+
+    function normalizeStoredUserName(rawValue) {
+        const trimmed = String(rawValue || '').replace(/[\u0000-\u001f\u007f]/g, '').trim();
+        if (!trimmed) {
+            return '';
+        }
+        return Array.from(trimmed).slice(0, MAX_USER_NAME_LENGTH).join('');
     }
 
     function createDefaultPersistentPetState() {
@@ -1550,6 +1900,7 @@
     function createDefaultPersistentPetSettings() {
         return {
             customName: '',
+            skinId: 'default',
             anchorX: null,
             anchorY: null,
             collapsed: true
@@ -1565,6 +1916,8 @@
         return {
             activePetId: DEFAULT_PET_ID,
             followOutsideHome: DEFAULT_FOLLOW_OUTSIDE_HOME,
+            userName: '',
+            userNamePromptCount: 0,
             petProfiles
         };
     }
@@ -1591,6 +1944,7 @@
             ...createDefaultPersistentPetSettings(),
             ...source,
             customName: normalizeStoredPetName(source.customName),
+            skinId: String(source.skinId || 'default').trim() || 'default',
             anchorX: normalizeStoredAnchor(source.anchorX),
             anchorY: normalizeStoredAnchor(source.anchorY),
             collapsed: source.collapsed !== false
@@ -1737,17 +2091,6 @@
         return variants[index] || variants[0] || '';
     }
 
-    function pickSeededArrayItem(items, seed) {
-        if (!Array.isArray(items) || items.length === 0) {
-            return null;
-        }
-        if (items.length === 1) {
-            return items[0] || null;
-        }
-        const index = hashDialogSeed(seed, items.length) % items.length;
-        return items[index] || items[0] || null;
-    }
-
     function resolvePetDialog(templateOrFactory, petName, extra = {}) {
         const resolvedSource = typeof templateOrFactory === 'function'
             ? templateOrFactory({ name: petName, ...extra })
@@ -1770,41 +2113,11 @@
         };
     }
 
-    function createRichDialogPayload(segments) {
-        const normalizedSegments = Array.isArray(segments)
-            ? segments
-                .map((segment) => {
-                    if (!segment || typeof segment !== 'object') {
-                        return null;
-                    }
-                    if (segment.type === 'grammar-token') {
-                        const label = String(segment.label || '').trim();
-                        const grammarId = String(segment.grammarId || '').trim();
-                        if (!label || !grammarId) {
-                            return null;
-                        }
-                        return {
-                            type: 'grammar-token',
-                            label,
-                            grammarId
-                        };
-                    }
-                    const text = String(segment.text || '');
-                    if (!text) {
-                        return null;
-                    }
-                    return {
-                        type: 'text',
-                        text
-                    };
-                })
-                .filter(Boolean)
-            : [];
-
+    function createUserNamePromptPayload(text) {
         return {
-            kind: 'rich',
-            text: normalizedSegments.map((segment) => segment.type === 'grammar-token' ? segment.label : segment.text).join(''),
-            segments: normalizedSegments
+            kind: 'user-name-prompt',
+            text: String(text || ''),
+            segments: []
         };
     }
 
@@ -1815,8 +2128,8 @@
         if (typeof value === 'string') {
             return createPlainDialogPayload(value);
         }
-        if (value.kind === 'rich' && Array.isArray(value.segments)) {
-            return createRichDialogPayload(value.segments);
+        if (value && value.kind === 'user-name-prompt' && typeof value.text === 'string') {
+            return createUserNamePromptPayload(value.text);
         }
         if (typeof value.text === 'string') {
             return createPlainDialogPayload(value.text);
@@ -1948,6 +2261,8 @@
             return {
                 activePetId: isPetVisible(parsed.activePetId) ? parsed.activePetId : DEFAULT_PET_ID,
                 followOutsideHome: parsed.followOutsideHome === true,
+                userName: normalizeStoredUserName(parsed.userName),
+                userNamePromptCount: Math.max(0, Number(parsed.userNamePromptCount) || 0),
                 petProfiles
             };
         }
@@ -1956,6 +2271,8 @@
         return {
             activePetId: DEFAULT_PET_ID,
             followOutsideHome: parsed.followOutsideHome === true,
+            userName: normalizeStoredUserName(parsed.userName),
+            userNamePromptCount: Math.max(0, Number(parsed.userNamePromptCount) || 0),
             petProfiles
         };
     }
@@ -1964,10 +2281,13 @@
         storageSetItem(PET_SETTINGS_KEY, JSON.stringify({
             activePetId: getActivePetId(settings),
             followOutsideHome: settings && settings.followOutsideHome === true,
+            userName: normalizeStoredUserName(settings && settings.userName),
+            userNamePromptCount: Math.max(0, Number(settings && settings.userNamePromptCount) || 0),
             petProfiles: getPetIds().reduce((accumulator, petId) => {
                 const petSettings = ensurePetSettingsBucket(settings, petId);
                 accumulator[petId] = {
                     customName: normalizeStoredPetName(petSettings.customName),
+                    skinId: normalizePetSkinId(petId, petSettings.skinId),
                     anchorX: normalizeStoredAnchor(petSettings.anchorX),
                     anchorY: normalizeStoredAnchor(petSettings.anchorY),
                     collapsed: petSettings.collapsed !== false
@@ -2586,285 +2906,6 @@
         };
     }
 
-    function getGrammarRepo() {
-        return window.GrammarDB && window.GrammarDB.repo ? window.GrammarDB.repo : null;
-    }
-
-    function isGrammarReminderEnabled(config, petProfile) {
-        return Boolean(config && config.enableGrammarIdleCards)
-            && petProfile
-            && ['shiba', 'cat'].includes(petProfile.id);
-    }
-
-    function isGrammarActivityItem(item) {
-        if (!item) {
-            return false;
-        }
-        const text = `${item.label || ''} ${item.statusText || ''} ${item.href || ''}`.toLowerCase();
-        return /语法|文法|grammar|textbook|教材|sort/.test(text);
-    }
-
-    function getGrammarActivityText(item) {
-        return `${item && item.label ? item.label : ''} ${item && item.statusText ? item.statusText : ''} ${item && item.href ? item.href : ''}`;
-    }
-
-    function extractLevelsFromText(text) {
-        const matches = String(text || '').match(/\bN[1-5]\b/g) || [];
-        return [...new Set(matches.map((match) => match.trim()))];
-    }
-
-    function extractLessonNumbersFromText(text) {
-        const matches = String(text || '').match(/第\s*(\d+)\s*[課课]/g) || [];
-        return [...new Set(matches.map((match) => {
-            const numeric = match.match(/(\d+)/);
-            return numeric ? Number(numeric[1]) : NaN;
-        }).filter((value) => Number.isFinite(value)))];
-    }
-
-    function isLevelScopedGrammarActivityItem(item) {
-        return isGrammarActivityItem(item) && extractLevelsFromText(getGrammarActivityText(item)).length > 0;
-    }
-
-    function isTextbookGrammarActivityItem(item) {
-        if (!isLevelScopedGrammarActivityItem(item)) {
-            return false;
-        }
-        return /教材|textbook/.test(getGrammarActivityText(item).toLowerCase());
-    }
-
-    function getPrimaryGrammarLevelFromSignals(signals) {
-        const signalList = Array.isArray(signals) ? signals : [];
-        for (let index = 0; index < signalList.length; index += 1) {
-            const levels = extractLevelsFromText(getGrammarActivityText(signalList[index]));
-            if (levels.length) {
-                return levels[0];
-            }
-        }
-        return '';
-    }
-
-    function getPrimaryGrammarLessonFromSignals(signals) {
-        const signalList = Array.isArray(signals) ? signals : [];
-        for (let index = 0; index < signalList.length; index += 1) {
-            const lessons = extractLessonNumbersFromText(`${signalList[index] && signalList[index].label ? signalList[index].label : ''} ${signalList[index] && signalList[index].statusText ? signalList[index].statusText : ''}`);
-            if (lessons.length) {
-                return lessons[0];
-            }
-        }
-        return null;
-    }
-
-    function finalizeGrammarReminderPool(items) {
-        const normalizedItems = Array.isArray(items)
-            ? items.filter((item) => item && item.id && item.title)
-            : [];
-        const conciseItems = normalizedItems.filter((item) => String(item.title || '').trim().length <= 16);
-        return conciseItems.length ? conciseItems : normalizedItems;
-    }
-
-    function buildGrammarReminderPools(allItems, currentLevel, currentLesson) {
-        const globalItems = finalizeGrammarReminderPool(allItems);
-        const levelItems = currentLevel
-            ? finalizeGrammarReminderPool(allItems.filter((item) => String(item.level || '').trim() === currentLevel))
-            : [];
-        const lessonItems = currentLevel && Number.isFinite(currentLesson)
-            ? finalizeGrammarReminderPool(allItems.filter((item) => (
-                String(item.level || '').trim() === currentLevel
-                && Number(item.lessonNumber) === Number(currentLesson)
-            )))
-            : [];
-
-        return {
-            lesson: lessonItems,
-            level: levelItems,
-            global: globalItems
-        };
-    }
-
-    function getWeightedGrammarReminderPools(pools) {
-        const normalizedPools = pools && typeof pools === 'object' ? pools : {};
-        let lessonWeight = 0;
-        let levelWeight = 0;
-        let globalWeight = GRAMMAR_REMINDER_GLOBAL_WEIGHT;
-
-        if (Array.isArray(normalizedPools.level) && normalizedPools.level.length) {
-            levelWeight += GRAMMAR_REMINDER_LEVEL_WEIGHT;
-        } else {
-            globalWeight += GRAMMAR_REMINDER_LEVEL_WEIGHT;
-        }
-
-        if (Array.isArray(normalizedPools.lesson) && normalizedPools.lesson.length) {
-            lessonWeight += GRAMMAR_REMINDER_LESSON_WEIGHT;
-        } else if (Array.isArray(normalizedPools.level) && normalizedPools.level.length) {
-            levelWeight += GRAMMAR_REMINDER_LESSON_WEIGHT;
-        } else {
-            globalWeight += GRAMMAR_REMINDER_LESSON_WEIGHT;
-        }
-
-        return [
-            { key: 'lesson', weight: lessonWeight, items: normalizedPools.lesson || [] },
-            { key: 'level', weight: levelWeight, items: normalizedPools.level || [] },
-            { key: 'global', weight: globalWeight, items: normalizedPools.global || [] }
-        ].filter((pool) => pool.weight > 0 && Array.isArray(pool.items) && pool.items.length);
-    }
-
-    function pickWeightedGrammarReminderPool(pools, seed) {
-        const weightedPools = getWeightedGrammarReminderPools(pools);
-        if (!weightedPools.length) {
-            return null;
-        }
-        if (weightedPools.length === 1) {
-            return weightedPools[0];
-        }
-
-        const totalWeight = weightedPools.reduce((sum, pool) => sum + pool.weight, 0);
-        if (totalWeight <= 0) {
-            return weightedPools[0];
-        }
-
-        let gate = hashDialogSeed(seed, totalWeight) % totalWeight;
-        for (let index = 0; index < weightedPools.length; index += 1) {
-            const pool = weightedPools[index];
-            if (gate < pool.weight) {
-                return pool;
-            }
-            gate -= pool.weight;
-        }
-        return weightedPools[weightedPools.length - 1];
-    }
-
-    function pickGrammarReminderItem(items, seed, selectionState, poolKey) {
-        if (!Array.isArray(items) || !items.length) {
-            return null;
-        }
-
-        let candidates = items;
-        const lastReminderId = selectionState && selectionState.lastGrammarReminderPoolKey === poolKey
-            ? String(selectionState.lastGrammarReminderId || '').trim()
-            : '';
-
-        if (lastReminderId && items.length > 1) {
-            const filteredItems = items.filter((item) => String(item && item.id ? item.id : '').trim() !== lastReminderId);
-            if (filteredItems.length) {
-                candidates = filteredItems;
-            }
-        }
-
-        const nextItem = pickSeededArrayItem(candidates, seed);
-        if (nextItem && selectionState) {
-            selectionState.lastGrammarReminderPoolKey = poolKey;
-            selectionState.lastGrammarReminderId = String(nextItem.id || '').trim();
-        }
-        return nextItem;
-    }
-
-    function getGrammarReminderCandidates(summary, activeSection) {
-        const repo = getGrammarRepo();
-        if (!repo || typeof repo.getCanonicalGrammar !== 'function') {
-            return {
-                pools: {
-                    lesson: [],
-                    level: [],
-                    global: []
-                },
-                currentLevel: '',
-                currentLesson: null,
-                grammarSignals: []
-            };
-        }
-
-        const allItems = repo.getCanonicalGrammar({})
-            .filter((item) => item && item.id && item.title && item.meaning && item.connection && item.desc && Array.isArray(item.examples) && item.examples.length);
-
-        const signals = [
-            summary && summary.recommendedNext,
-            ...((summary && Array.isArray(summary.recentActivities)) ? summary.recentActivities : [])
-        ].filter(Boolean);
-        const grammarSignals = signals.filter(isLevelScopedGrammarActivityItem);
-        const textbookGrammarSignals = grammarSignals.filter(isTextbookGrammarActivityItem);
-        const currentLevel = getPrimaryGrammarLevelFromSignals(textbookGrammarSignals) || getPrimaryGrammarLevelFromSignals(grammarSignals);
-        const currentLesson = getPrimaryGrammarLessonFromSignals(textbookGrammarSignals);
-
-        return {
-            pools: buildGrammarReminderPools(allItems, currentLevel, currentLesson),
-            currentLevel,
-            currentLesson,
-            grammarSignals,
-            activeSection
-        };
-    }
-
-    function buildGrammarReminderPayload(summary, activeSection, config, petProfile, options = {}) {
-        if (!isGrammarReminderEnabled(config, petProfile)) {
-            return null;
-        }
-
-        const seedSuffix = options && options.seedSuffix ? `:${options.seedSuffix}` : '';
-
-        const {
-            pools,
-            grammarSignals,
-            currentLevel,
-            currentLesson
-        } = getGrammarReminderCandidates(summary, activeSection);
-        const selectedPool = pickWeightedGrammarReminderPool(
-            pools,
-            `grammar-pool:${petProfile.id}:${activeSection || 'home'}:${currentLevel || 'all'}:${Number.isFinite(currentLesson) ? currentLesson : 'none'}:${summary && summary.visitStreak}:${grammarSignals.length}${seedSuffix}`
-        );
-        if (!selectedPool || !selectedPool.items.length) {
-            return null;
-        }
-
-        const grammarItem = pickGrammarReminderItem(
-            selectedPool.items,
-            `grammar-item:${petProfile.id}:${selectedPool.key}:${activeSection || 'home'}:${currentLevel || 'all'}:${Number.isFinite(currentLesson) ? currentLesson : 'none'}:${summary && summary.visitStreak}:${summary && summary.reviewPressure && summary.reviewPressure.total}:${grammarSignals.length}${seedSuffix}`,
-            options.grammarSelectionState,
-            selectedPool.key
-        );
-        if (!grammarItem) {
-            return null;
-        }
-
-        const templatePool = HOMEPAGE_GRAMMAR_TEMPLATES[petProfile.id] || HOMEPAGE_GRAMMAR_TEMPLATES.shiba;
-        const templateFactory = pickSeededArrayItem(
-            templatePool,
-            `grammar-template:${grammarItem.id}:${summary && summary.visitStreak}:${summary && summary.reviewPressure && summary.reviewPressure.total}${seedSuffix}`
-        );
-        if (typeof templateFactory !== 'function') {
-            return null;
-        }
-
-        return createRichDialogPayload(templateFactory({
-            label: {
-                id: grammarItem.id,
-                title: grammarItem.title
-            }
-        }));
-    }
-
-    function getHomepageIdleChannel(summary, activeSection, config, petProfile, options = {}) {
-        if (!isGrammarReminderEnabled(config, petProfile)) {
-            return 'fallback';
-        }
-        const seedSuffix = options && options.seedSuffix ? `:${options.seedSuffix}` : '';
-        const gateSeed = hashDialogSeed(
-            'homepage-idle-channel',
-            petProfile.id,
-            activeSection || 'home',
-            summary && summary.visitStreak,
-            summary && summary.reviewPressure && summary.reviewPressure.total,
-            summary && Array.isArray(summary.recentActivities) ? summary.recentActivities.length : 0,
-            seedSuffix
-        ) % 100;
-        if (gateSeed < HOMEPAGE_IDLE_PRIMARY_CHANCE) {
-            return 'idle';
-        }
-        if (gateSeed < HOMEPAGE_IDLE_PRIMARY_CHANCE + HOMEPAGE_LEARNING_REMINDER_CHANCE) {
-            return 'learning';
-        }
-        return 'grammar';
-    }
-
     function pickSectionEntryBubble(summary, activeSection, petProfile, petName, options = {}) {
         const sectionDialogs = SECTION_ENTRY_DIALOGS[petProfile.id] || SECTION_ENTRY_DIALOGS.shiba;
         const normalizedSection = activeSection || 'daily';
@@ -2884,50 +2925,6 @@
         const bucketKey = normalizedSection === 'favorites' ? 'favorites' : 'daily';
         return resolvePetDialog(sectionDialogs[bucketKey], petName, {
             seed: `section-entry:${petProfile.id}:${bucketKey}${seedSuffix}`
-        });
-    }
-
-    function pickLightStudyReminderBubble(summary, activeSection, petProfile, petName, options = {}) {
-        const seedSuffix = options && options.seedSuffix ? `:${options.seedSuffix}` : '';
-        if (activeSection === 'exam') {
-            if (summary.reviewPressure.hasBacklog) {
-                return resolveMergedDialogVariants(
-                    petProfile,
-                    petName,
-                    'defaultReview',
-                    `learning-review:${petProfile.id}:${summary.recommendedNext.label}:${summary.reviewPressure.total}:${summary.visitStreak}${seedSuffix}`,
-                    {
-                        label: summary.recommendedNext.label,
-                        levelXp: summary.levelXp
-                    }
-                );
-            }
-
-            if (summary.recentActivities.length > 0) {
-                return resolveMergedDialogVariants(
-                    petProfile,
-                    petName,
-                    'defaultRecent',
-                    `learning-recent:${petProfile.id}:${summary.recentActivities[0].label}:${summary.visitStreak}${seedSuffix}`,
-                    {
-                        label: summary.recentActivities[0].label,
-                        levelXp: summary.levelXp
-                    }
-                );
-            }
-
-            return resolveMergedDialogVariants(
-                petProfile,
-                petName,
-                'defaultExam',
-                `learning-exam:${petProfile.id}:${summary.visitStreak}:${summary.reviewPressure.total}${seedSuffix}`,
-                { levelXp: summary.levelXp }
-            );
-        }
-
-        const templates = LIGHT_STUDY_REMINDER_DIALOGS[petProfile.id] || LIGHT_STUDY_REMINDER_DIALOGS.shiba;
-        return resolvePetDialog(templates, petName, {
-            seed: `learning-idle:${petProfile.id}:${activeSection || 'daily'}:${summary.visitStreak}${seedSuffix}`
         });
     }
 
@@ -2963,25 +2960,6 @@
     function pickDefaultBubble(summary, activeSection, petProfile, petName, config, options = {}) {
         const seedSuffix = options && options.seedSuffix ? `:${options.seedSuffix}` : '';
         const levelXp = summary && summary.levelXp;
-        if (isGrammarReminderEnabled(config, petProfile)) {
-            const channel = getHomepageIdleChannel(summary, activeSection, config, petProfile, options);
-            if (channel === 'grammar') {
-                const grammarReminder = buildGrammarReminderPayload(summary, activeSection, config, petProfile, options);
-                if (grammarReminder) {
-                    return grammarReminder;
-                }
-            }
-            if (channel === 'learning') {
-                return pickLightStudyReminderBubble(summary, activeSection, petProfile, petName, options);
-            }
-            return resolveMergedDialogVariants(
-                petProfile,
-                petName,
-                'defaultIdle',
-                `idle:${petProfile.id}:${summary.visitStreak}:${summary.reviewPressure.total}:${activeSection || 'none'}${seedSuffix}`,
-                { levelXp }
-            );
-        }
         if (summary.reviewPressure.hasBacklog) {
             return resolveMergedDialogVariants(petProfile, petName, 'defaultReview', `review:${petProfile.id}:${summary.recommendedNext.label}:${summary.reviewPressure.total}:${summary.visitStreak}${seedSuffix}`, {
                 label: summary.recommendedNext.label,
@@ -3050,6 +3028,27 @@
         const width = Math.round(rect.width) || (window.innerWidth <= 768 ? 248 : 288);
         const height = Math.round(rect.height) || (window.innerWidth <= 768 ? 74 : 86);
         const inset = getInset();
+        const anchorSelector = String(config && config.defaultAnchorSelector ? config.defaultAnchorSelector : '').trim();
+
+        if (anchorSelector && window.innerWidth > 768) {
+            const anchorTarget = document.querySelector(anchorSelector);
+            if (anchorTarget) {
+                const anchorRect = anchorTarget.getBoundingClientRect();
+                const containerSelector = String(config && config.defaultAnchorContainerSelector
+                    ? config.defaultAnchorContainerSelector
+                    : '').trim();
+                const anchorContainer = containerSelector ? anchorTarget.closest(containerSelector) : null;
+                const containerRect = anchorContainer ? anchorContainer.getBoundingClientRect() : anchorRect;
+                const anchorGap = Math.max(0, Number(config && config.defaultAnchorGap) || 18);
+
+                return getClampedAnchor(
+                    root,
+                    containerRect.left + ((containerRect.width - width) / 2),
+                    anchorRect.bottom + anchorGap
+                );
+            }
+        }
+
         let rightOffset = inset;
 
         if (window.innerWidth > 768) {
@@ -3095,37 +3094,65 @@
             <div class="home-pet">
                 <section class="home-pet-panel" aria-live="polite">
                     <div class="home-pet-panel-head">
-                        <div class="home-pet-title-row">
-                            <button type="button" class="home-pet-name-button" data-pet-name-button aria-label="修改柴犬名字">
-                                <span data-pet-name></span>
-                            </button>
-                            <button
-                                type="button"
-                                class="home-pet-species-button"
-                                data-pet-collection-trigger
-                                aria-haspopup="dialog"
-                                aria-expanded="false"
-                                aria-label="打开宠物收藏"
-                                >
-                                <span data-pet-species-label></span>
-                            </button>
-                            <label class="home-pet-name-editor" data-pet-name-editor hidden>
-                                <input
-                                    class="home-pet-name-input"
-                                    data-pet-name-input
-                                    type="text"
-                                    maxlength="${MAX_NAME_LENGTH}"
-                                    aria-label="输入柴犬名字"
-                                >
-                            </label>
+                        <span class="home-pet-panel-avatar" aria-hidden="true">
+                            <span class="home-pet-panel-sprite" data-pet-panel-sprite></span>
+                        </span>
+                        <div class="home-pet-profile-copy">
+                            <div class="home-pet-title-row">
+                                <button type="button" class="home-pet-name-button" data-pet-name-button aria-label="修改柴犬名字">
+                                    <span data-pet-name></span>
+                                </button>
+                                <span class="home-pet-profile-tags">
+                                    <button
+                                        type="button"
+                                        class="home-pet-species-button"
+                                        data-pet-collection-trigger
+                                        aria-haspopup="dialog"
+                                        aria-expanded="false"
+                                        aria-label="打开宠物收藏"
+                                        >
+                                        <span data-pet-species-label></span>
+                                    </button>
+                                    <span class="home-pet-pill home-pet-pill--accent" data-pet-mood></span>
+                                </span>
+                                <label class="home-pet-name-editor" data-pet-name-editor hidden>
+                                    <input
+                                        class="home-pet-name-input"
+                                        data-pet-name-input
+                                        type="text"
+                                        maxlength="${MAX_NAME_LENGTH}"
+                                        aria-label="输入柴犬名字"
+                                    >
+                                </label>
+                            </div>
                         </div>
-                        <span class="home-pet-pill home-pet-pill--accent" data-pet-mood></span>
                     </div>
                     <div class="home-pet-meta">
-                        <button type="button" class="home-pet-action" data-pet-headpat>摸摸头</button>
-                        <button type="button" class="home-pet-action" data-pet-treat>喂肉干</button>
-                        <button type="button" class="home-pet-action home-pet-action--special" data-pet-cola hidden>喂可乐</button>
-                        <button type="button" class="home-pet-action home-pet-action--toggle" data-pet-leash>牵绳</button>
+                        <button type="button" class="home-pet-action home-pet-action--primary" data-pet-headpat>
+                            <svg class="home-pet-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.2c-4.8-2.9-8-5.8-8-9.6A4.6 4.6 0 0 1 12 7.4a4.6 4.6 0 0 1 8 3.2c0 3.8-3.2 6.7-8 9.6Z"/><path d="M8.1 4.8v2.7M12 3.8v2.6M15.9 4.8v2.7"/></svg>
+                            <span>摸摸头</span>
+                        </button>
+                        <button type="button" class="home-pet-action" data-pet-treat>
+                            <svg class="home-pet-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.1 8.2a2.7 2.7 0 1 1-3.8-3.8 2.7 2.7 0 0 1 3.8 0l9.8 9.8a2.7 2.7 0 1 1 3.8 3.8 2.7 2.7 0 0 1-3.8 0L7.1 8.2Z"/><path d="M6.1 7.2 4.2 9.1"/></svg>
+                            <span>喂肉干</span>
+                        </button>
+                        <button type="button" class="home-pet-action home-pet-action--special" data-pet-cola hidden>
+                            <svg class="home-pet-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8l1 16H7L8 4Z"/><path d="M9 8h7M10 2h5"/></svg>
+                            <span>喂可乐</span>
+                        </button>
+                        <button type="button" class="home-pet-action home-pet-action--toggle" data-pet-leash>
+                            <svg class="home-pet-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.4 14.6 7 17a3.5 3.5 0 0 1-5-5l3-3a3.5 3.5 0 0 1 5 0"/><path d="m14.6 9.4 2.4-2.4a3.5 3.5 0 0 1 5 5l-3 3a3.5 3.5 0 0 1-5 0M8.5 15.5l7-7"/></svg>
+                            <span data-pet-leash-label>牵绳</span>
+                            <span class="home-pet-action-switch" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                    <div class="home-pet-skin-picker" data-pet-skin-picker hidden>
+                        <span class="home-pet-skin-label">外观</span>
+                        <div class="home-pet-skin-options" data-pet-skin-options></div>
+                    </div>
+                    <div class="home-pet-learning-head">
+                        <span>继续学习</span>
+                        <small>最近记录</small>
                     </div>
                     <ul class="home-pet-activities" data-pet-activities></ul>
                 </section>
@@ -3143,34 +3170,6 @@
                         <button type="button" class="home-pet-collection-close" data-pet-collection-close aria-label="关闭宠物图鉴">&times;</button>
                     </div>
                     <div class="home-pet-collection-grid" data-pet-collection-grid></div>
-                </div>
-            </div>
-            <div class="home-pet-grammar-overlay" data-pet-grammar-overlay hidden>
-                <div class="home-pet-grammar-dialog" role="dialog" aria-modal="true" aria-label="语法速查卡">
-                    <button type="button" class="home-pet-grammar-close" data-pet-grammar-close aria-label="关闭语法速查卡">&times;</button>
-                    <div class="home-pet-grammar-head">
-                        <h3 class="home-pet-grammar-title" data-pet-grammar-title></h3>
-                        <div class="home-pet-grammar-badges" data-pet-grammar-badges></div>
-                        <div class="home-pet-grammar-hint" data-pet-grammar-hint></div>
-                    </div>
-                    <div class="home-pet-grammar-body">
-                        <section class="home-pet-grammar-section">
-                            <span class="home-pet-grammar-label">意味</span>
-                            <div class="home-pet-grammar-value home-pet-grammar-value--highlight" data-pet-grammar-meaning></div>
-                        </section>
-                        <section class="home-pet-grammar-section">
-                            <span class="home-pet-grammar-label">接续</span>
-                            <div class="home-pet-grammar-value home-pet-grammar-value--connection" data-pet-grammar-connection></div>
-                        </section>
-                        <section class="home-pet-grammar-section">
-                            <span class="home-pet-grammar-label">解説</span>
-                            <div class="home-pet-grammar-value" data-pet-grammar-desc></div>
-                        </section>
-                        <section class="home-pet-grammar-section">
-                            <span class="home-pet-grammar-label">例句</span>
-                            <div class="home-pet-grammar-example" data-pet-grammar-example></div>
-                        </section>
-                    </div>
                 </div>
             </div>
         `;
@@ -3217,13 +3216,12 @@
         let spriteFrameTimer = null;
         let activeSpritePetId = '';
         let activeSpriteAnim = '';
-        let idleRotationTimer = null;
+        let activeSpriteSequenceComplete = false;
         let isNameEditing = false;
         let dragState = null;
         let justDragged = false;
         let summary = null;
         let visitMeta = null;
-        let activeGrammarPeekId = '';
 
         function createRuntimeStateForPet(petId) {
             return {
@@ -3239,6 +3237,9 @@
                 headpatEasterCooldownUntil: 0,
                 ballPoseCooldownUntil: 0,
                 lastBallPoseCheckAt: 0,
+                idleVariantAnim: '',
+                idleVariantCooldownUntil: 0,
+                lastIdleVariantCheckAt: 0,
                 interactionMode: 'normal',
                 interactionModeUntil: 0,
                 interactionTimer: null,
@@ -3247,9 +3248,6 @@
                 levelToastTimer: null,
                 practiceReactionKey: '',
                 practiceReactionAt: 0,
-                idleRotationTick: 0,
-                lastGrammarReminderId: '',
-                lastGrammarReminderPoolKey: '',
                 welcomePending: shouldShowWelcome(ensurePetStateBucket(state, petId)),
                 welcomeLocked: false
             };
@@ -3266,7 +3264,9 @@
             petSettings.anchorY = null;
         });
 
+        const configuredDockSide = String(config && config.dockSide ? config.dockSide : 'right').trim().toLowerCase();
         root.className = 'home-pet-root';
+        root.dataset.dockSide = configuredDockSide === 'left' ? 'left' : 'right';
         root.innerHTML = buildMarkup();
 
         const nameEl = root.querySelector('[data-pet-name]');
@@ -3281,21 +3281,27 @@
         const moodEl = root.querySelector('[data-pet-mood]');
         const activitiesEl = root.querySelector('[data-pet-activities]');
         const bubbleEl = root.querySelector('[data-pet-bubble]');
-        const grammarOverlayEl = root.querySelector('[data-pet-grammar-overlay]');
-        const grammarCloseEl = root.querySelector('[data-pet-grammar-close]');
-        const grammarTitleEl = root.querySelector('[data-pet-grammar-title]');
-        const grammarBadgesEl = root.querySelector('[data-pet-grammar-badges]');
-        const grammarHintEl = root.querySelector('[data-pet-grammar-hint]');
-        const grammarMeaningEl = root.querySelector('[data-pet-grammar-meaning]');
-        const grammarConnectionEl = root.querySelector('[data-pet-grammar-connection]');
-        const grammarDescEl = root.querySelector('[data-pet-grammar-desc]');
-        const grammarExampleEl = root.querySelector('[data-pet-grammar-example]');
         const spriteEl = root.querySelector('[data-pet-sprite]');
+        const panelSpriteEl = root.querySelector('[data-pet-panel-sprite]');
         const toggleEl = root.querySelector('[data-pet-toggle]');
         const headpatBtn = root.querySelector('[data-pet-headpat]');
         const treatBtn = root.querySelector('[data-pet-treat]');
         const colaBtn = root.querySelector('[data-pet-cola]');
         const leashBtn = root.querySelector('[data-pet-leash]');
+        const leashLabelEl = root.querySelector('[data-pet-leash-label]');
+        const skinPickerEl = root.querySelector('[data-pet-skin-picker]');
+        const skinOptionsEl = root.querySelector('[data-pet-skin-options]');
+
+        function getPetSkinId(petId) {
+            return normalizePetSkinId(petId, getPetSettingsById(petId).skinId);
+        }
+
+        function getPetPixelFrames(petId) {
+            const petProfile = getPetProfile(petId);
+            const skinId = getPetSkinId(petId);
+            const skin = petProfile.skins && petProfile.skins[skinId];
+            return skin && skin.pixelFrames ? skin.pixelFrames : petProfile.pixelFrames;
+        }
 
         function clearSpriteFrameTimer() {
             if (spriteFrameTimer) {
@@ -3304,10 +3310,26 @@
             }
             activeSpritePetId = '';
             activeSpriteAnim = '';
+            activeSpriteSequenceComplete = false;
         }
 
-        function getPixelFrameEntryForAnim(petProfile, animKey) {
-            return petProfile.pixelFrames[animKey] || petProfile.pixelFrames.cheer || petProfile.pixelFrames.idle;
+        function getPixelFrameEntryForAnim(petProfile, animKey, petId = petProfile.id) {
+            const pixelFrames = getPetPixelFrames(petId);
+            return pixelFrames[animKey] || pixelFrames.cheer || pixelFrames.idle;
+        }
+
+        function renderPanelPetAvatar(petProfile, petId) {
+            if (!panelSpriteEl || getCurrentPetId() !== petId) {
+                return;
+            }
+            const idleEntry = getPixelFrameEntryForAnim(petProfile, 'idle', petId);
+            if (idleEntry && idleEntry.type === 'image' && Array.isArray(idleEntry.framePaths) && idleEntry.framePaths[0]) {
+                panelSpriteEl.innerHTML = buildImageFrameHtml(idleEntry.framePaths[0], petAssetBaseUrl);
+                return;
+            }
+            panelSpriteEl.innerHTML = idleEntry && Array.isArray(idleEntry.frames)
+                ? (idleEntry.frames[0] || '')
+                : '';
         }
 
         function renderPetAnimFrame(petProfile, animKey, petId, { forceRestart = false } = {}) {
@@ -3326,10 +3348,13 @@
                 return frames[index] || frames[0] || '';
             };
             const nextFrame = getFrameMarkup(0);
+            const renderFrameMarkup = (markup) => {
+                spriteEl.innerHTML = markup;
+            };
             const shouldKeepSequence = !forceRestart
                 && activeSpritePetId === petId
                 && activeSpriteAnim === animKey
-                && spriteFrameTimer;
+                && (spriteFrameTimer || activeSpriteSequenceComplete);
 
             root.dataset.anim = animKey;
             if (shouldKeepSequence) {
@@ -3337,11 +3362,13 @@
             }
 
             clearSpriteFrameTimer();
-            spriteEl.innerHTML = nextFrame;
+            renderFrameMarkup(nextFrame);
             activeSpritePetId = petId;
             activeSpriteAnim = animKey;
+            activeSpriteSequenceComplete = false;
 
             if (frameCount <= 1 || !(Number(frameEntry.interval) > 0)) {
+                activeSpriteSequenceComplete = true;
                 return;
             }
 
@@ -3356,13 +3383,14 @@
                 frameIndex += 1;
                 if (frameIndex >= frameCount) {
                     if (frameEntry.loop === false) {
-                        clearSpriteFrameTimer();
+                        spriteFrameTimer = null;
+                        activeSpriteSequenceComplete = true;
                         return;
                     }
                     frameIndex = 0;
                 }
 
-                spriteEl.innerHTML = getFrameMarkup(frameIndex);
+                renderFrameMarkup(getFrameMarkup(frameIndex));
                 spriteFrameTimer = setTimeout(tick, frameEntry.interval);
             };
 
@@ -3432,6 +3460,51 @@
             return getDisplayPetName(settings, getCurrentPetId());
         }
 
+        function getCurrentUserName() {
+            return normalizeStoredUserName(settings.userName);
+        }
+
+        function getUserNamePromptText(promptCount = 1) {
+            const petName = getCurrentPetName();
+            const userName = getCurrentUserName();
+            if (userName) {
+                return `${petName}现在叫你“${userName}”。想换一个称呼吗？`;
+            }
+            if (promptCount <= 1) {
+                return `欢迎来到这里！我是${petName}。以后该怎么称呼你呢？`;
+            }
+            if (promptCount === 2) {
+                return `又见面啦！${petName}还不知道你的名字，今天愿意告诉我吗？`;
+            }
+            return `还没决定称呼吗？写下你喜欢的名字就好，${petName}以后就这样叫你。`;
+        }
+
+        function getPersonalizedWelcomeText() {
+            const userName = getCurrentUserName();
+            const petName = getCurrentPetName();
+            if (!userName) {
+                return '';
+            }
+            const petId = getCurrentPetId();
+            const variants = petId === 'cat'
+                ? [
+                    `哦，你来了，${userName}。${petName}已经替你留好位置了。`,
+                    `欢迎回来，${userName}。今天也让${petName}陪你一会儿吧。`
+                ]
+                : petId === 'daodun'
+                    ? [
+                        `欢迎回来，${userName}。${petName}已进入陪学守护模式。`,
+                        `${userName}，身份确认。${petName}继续为你守护。`
+                    ]
+                    : [
+                        `${userName}，你回来啦！${petName}已经摇着尾巴等你很久了。`,
+                        `欢迎回来，${userName}。今天也让${petName}陪你一起学吧！`,
+                        `见到你真好，${userName}。${petName}已经准备好陪你出发啦。`
+                    ];
+            const visitSeed = Math.max(0, Number(getCurrentPetState().totalVisits) || 0);
+            return pickSeededDialogItem(variants, `user-welcome:${petId}:${visitSeed}`);
+        }
+
         function setFollowOutsideHomeEnabled(nextValue) {
             settings.followOutsideHome = Boolean(nextValue);
             persistSettings();
@@ -3448,151 +3521,41 @@
         function renderBubbleContent(payload) {
             const resolved = normalizeDialogPayload(payload);
             bubbleEl.innerHTML = '';
-            bubbleEl.dataset.interactive = resolved.kind === 'rich' && resolved.segments.some((segment) => segment.type === 'grammar-token') ? 'true' : 'false';
+            bubbleEl.dataset.interactive = 'false';
 
             if (!resolved.text) {
                 return;
             }
 
-            if (resolved.kind !== 'rich' || !resolved.segments.length) {
-                bubbleEl.textContent = resolved.text;
+            if (resolved.kind === 'user-name-prompt') {
+                bubbleEl.dataset.interactive = 'true';
+                bubbleEl.innerHTML = `
+                    <p class="home-pet-user-name-message">${escapeHtml(resolved.text)}</p>
+                    <form class="home-pet-user-name-form" data-pet-user-name-form>
+                        <input
+                            class="home-pet-user-name-input"
+                            data-pet-user-name-input
+                            type="text"
+                            maxlength="${MAX_USER_NAME_LENGTH}"
+                            value="${escapeHtml(getCurrentUserName())}"
+                            placeholder="输入你的名字"
+                            autocomplete="nickname"
+                            aria-label="输入你的用户名"
+                        >
+                        <div class="home-pet-user-name-actions">
+                            <button type="submit" class="home-pet-user-name-save">记住我</button>
+                            <button type="button" class="home-pet-user-name-later" data-pet-user-name-later>稍后再说</button>
+                        </div>
+                        <span class="home-pet-user-name-error" data-pet-user-name-error aria-live="polite"></span>
+                    </form>
+                `;
                 return;
             }
 
-            resolved.segments.forEach((segment) => {
-                if (segment.type === 'grammar-token') {
-                    const tokenEl = document.createElement('button');
-                    tokenEl.type = 'button';
-                    tokenEl.className = 'home-pet-bubble-token';
-                    tokenEl.textContent = segment.label;
-                    tokenEl.setAttribute('data-pet-grammar-token', segment.grammarId);
-                    tokenEl.setAttribute('aria-label', `查看语法 ${segment.label}`);
-                    bubbleEl.appendChild(tokenEl);
-                    return;
-                }
-
-                const textEl = document.createElement('span');
-                textEl.textContent = segment.text;
-                bubbleEl.appendChild(textEl);
-            });
+            bubbleEl.textContent = resolved.text;
         }
 
-        function closeGrammarPeek() {
-            activeGrammarPeekId = '';
-            if (grammarOverlayEl) {
-                grammarOverlayEl.hidden = true;
-            }
-        }
-
-        function renderGrammarPeek(grammarItem) {
-            if (!grammarItem || !grammarOverlayEl) {
-                return false;
-            }
-
-            const currentPetId = getCurrentPetId();
-            grammarTitleEl.textContent = String(grammarItem.title || '').trim();
-            const badges = [
-                String(grammarItem.level || '').trim(),
-                Number.isFinite(Number(grammarItem.lessonNumber)) ? `第${Number(grammarItem.lessonNumber)}课` : '',
-                String(grammarItem.bookLabel || '').trim()
-            ].filter(Boolean);
-            grammarBadgesEl.innerHTML = badges.map((badge) => `<span class="home-pet-grammar-badge">${escapeHtml(badge)}</span>`).join('');
-            if (grammarHintEl) {
-                grammarHintEl.textContent = GRAMMAR_PEEK_HINTS[currentPetId] || GRAMMAR_PEEK_HINTS.shiba;
-            }
-            grammarMeaningEl.textContent = String(grammarItem.meaning || '').trim() || '暂无';
-            grammarConnectionEl.textContent = String(grammarItem.connection || '').trim() || '暂无';
-            grammarDescEl.innerHTML = String(grammarItem.desc || '').trim() || '暂无解説';
-
-            const firstExample = Array.isArray(grammarItem.examples) && grammarItem.examples.length
-                ? grammarItem.examples[0]
-                : null;
-            if (firstExample && (firstExample.jp || firstExample.cn)) {
-                grammarExampleEl.innerHTML = '';
-                const exampleJpEl = document.createElement('div');
-                exampleJpEl.className = 'home-pet-grammar-example-jp';
-                exampleJpEl.innerHTML = String(firstExample.jp || '').trim() || '暂无例句';
-                grammarExampleEl.appendChild(exampleJpEl);
-
-                if (firstExample.cn) {
-                    const exampleCnEl = document.createElement('div');
-                    exampleCnEl.className = 'home-pet-grammar-example-cn';
-                    exampleCnEl.textContent = String(firstExample.cn || '').trim();
-                    grammarExampleEl.appendChild(exampleCnEl);
-                }
-            } else {
-                grammarExampleEl.textContent = '暂无例句';
-            }
-
-            collectionOpen = false;
-            if (collectionPanelEl) {
-                collectionPanelEl.hidden = true;
-            }
-            if (collectionTriggerEl) {
-                collectionTriggerEl.setAttribute('aria-expanded', 'false');
-                collectionTriggerEl.classList.remove('is-open');
-            }
-            grammarOverlayEl.hidden = false;
-            activeGrammarPeekId = grammarItem.id;
-            return true;
-        }
-
-        function openGrammarPeek(grammarId) {
-            const repo = getGrammarRepo();
-            if (!repo || typeof repo.getGrammarById !== 'function') {
-                return false;
-            }
-            const entry = repo.getGrammarById(grammarId);
-            return renderGrammarPeek(entry);
-        }
-
-        function isHomepageIdleRotationEnabled(petId = getCurrentPetId()) {
-            return Boolean(config && config.enableGrammarIdleCards)
-                && ['shiba', 'cat'].includes(petId)
-                && !isPracticeQuietSurface();
-        }
-
-        function shouldPauseHomepageIdleRotation(petId = getCurrentPetId()) {
-            if (!isHomepageIdleRotationEnabled(petId)) {
-                return true;
-            }
-            const runtime = getPetRuntime(petId);
-            const petSettings = getPetSettingsById(petId);
-            return Boolean(
-                modalOpen
-                || collectionOpen
-                || isNameEditing
-                || activeGrammarPeekId
-                || !petSettings.collapsed
-                || runtime.welcomeLocked
-                || runtime.interactionMode !== 'normal'
-                || (runtime.dialogSource && runtime.dialogSource.kind !== 'default')
-            );
-        }
-
-        function clearIdleRotationTimer() {
-            if (idleRotationTimer) {
-                clearTimeout(idleRotationTimer);
-                idleRotationTimer = null;
-            }
-        }
-
-        function scheduleHomepageIdleRotation() {
-            clearIdleRotationTimer();
-            const petId = getCurrentPetId();
-            if (shouldPauseHomepageIdleRotation(petId)) {
-                return;
-            }
-            idleRotationTimer = window.setTimeout(() => {
-                const runtime = getPetRuntime(petId);
-                runtime.idleRotationTick += 1;
-                if (getCurrentPetId() === petId) {
-                    sync('idle-rotation');
-                }
-            }, HOMEPAGE_IDLE_ROTATION_MS);
-        }
-
-        function collapseInteractivePanel(options = {}) {
+        function collapseInteractivePanel() {
             const petId = getCurrentPetId();
             const petSettings = getCurrentPetSettings();
             let didChange = false;
@@ -3604,10 +3567,6 @@
             }
             if (collectionOpen) {
                 collectionOpen = false;
-                didChange = true;
-            }
-            if (options.closeGrammar && activeGrammarPeekId) {
-                closeGrammarPeek();
                 didChange = true;
             }
             if (isNameEditing) {
@@ -3741,7 +3700,8 @@
         }
 
         function getCollectionPetIcon(petProfile, assetBaseUrl = DEFAULT_HOME_PET_ASSET_BASE_URL) {
-            const idleEntry = petProfile && petProfile.pixelFrames && petProfile.pixelFrames.idle;
+            const pixelFrames = petProfile ? getPetPixelFrames(petProfile.id) : null;
+            const idleEntry = pixelFrames && pixelFrames.idle;
             if (idleEntry && idleEntry.type === 'image' && Array.isArray(idleEntry.framePaths) && idleEntry.framePaths[0]) {
                 return buildImageFrameHtml(idleEntry.framePaths[0], assetBaseUrl);
             }
@@ -3772,6 +3732,24 @@
                         <span class="home-pet-collection-item-title">${escapeHtml(petProfile.label)}</span>
                         <span class="home-pet-collection-item-meta">${escapeHtml(statusText)}</span>
                     </button>
+                `;
+            }).join('');
+        }
+
+        function renderSkinOptions() {
+            const petId = getCurrentPetId();
+            const options = getPetSkinOptions(petId);
+            const activeSkinId = getPetSkinId(petId);
+            skinPickerEl.hidden = options.length < 2;
+            skinOptionsEl.innerHTML = options.map((skin) => {
+                const isActive = skin.id === activeSkinId;
+                return `
+                    <button
+                        type="button"
+                        class="home-pet-skin-option${isActive ? ' is-active' : ''}"
+                        data-pet-skin-option="${escapeHtml(skin.id)}"
+                        aria-pressed="${isActive ? 'true' : 'false'}"
+                    >${escapeHtml(skin.label)}</button>
                 `;
             }).join('');
         }
@@ -3833,9 +3811,23 @@
             const activeSummary = summaryOverride || buildSummaryForPet(petId);
             const activeSection = sectionOverride !== undefined ? sectionOverride : getCurrentSection();
 
+            if (dialogSource.kind === 'user-name-prompt') {
+                return createUserNamePromptPayload(getUserNamePromptText(dialogSource.promptCount));
+            }
+            if (dialogSource.kind === 'user-welcome') {
+                return getPersonalizedWelcomeText();
+            }
+
+            if (petProfile.silentDialogs) {
+                return '';
+            }
+
             switch (dialogSource.kind) {
-                case 'welcome':
-                    return pickWelcomeBubble(getPetStateById(petId), petProfile, petName);
+                case 'welcome': {
+                    const welcomeText = pickWelcomeBubble(getPetStateById(petId), petProfile, petName);
+                    const userName = getCurrentUserName();
+                    return userName ? `${userName}，${welcomeText}` : welcomeText;
+                }
                 case 'section-entry':
                     return pickSectionEntryBubble(activeSummary, activeSection, petProfile, petName, options);
                 case 'headpat': {
@@ -3870,10 +3862,7 @@
                     return resolvePetDialog(dialogSource.message, petName);
                 case 'default':
                 default:
-                    return pickDefaultBubble(activeSummary, activeSection, petProfile, petName, config, {
-                        ...options,
-                        grammarSelectionState: options.grammarSelectionState || getPetRuntime(petId)
-                    });
+                    return pickDefaultBubble(activeSummary, activeSection, petProfile, petName, config, options);
             }
         }
 
@@ -3896,6 +3885,10 @@
 
         function getColaOverflowDialog(petId) {
             return COLA_OVERFLOW_DIALOGS[petId] || COLA_OVERFLOW_DIALOGS.shiba;
+        }
+
+        function getDazedInteractionDialog(petId) {
+            return DAZED_INTERACTION_DIALOGS[petId] || DAZED_INTERACTION_DIALOGS.default;
         }
 
         function setDialogSourceForPet(petId, source, summaryOverride, sectionOverride, options = {}) {
@@ -3940,8 +3933,10 @@
         function showInteractionDialog(message, nextAnim, syncReason) {
             const petId = getCurrentPetId();
             const runtime = getCurrentPetRuntime();
+            const petProfile = getPetProfile(petId);
+            const displayMessage = petProfile.silentDialogs ? '' : message;
             runtime.dialogSource = { kind: 'fixed', message };
-            assignRuntimeDialog(petId, message);
+            assignRuntimeDialog(petId, displayMessage);
             renderBubbleContent(runtime.currentDialogPayload);
             if (nextAnim) {
                 setAnim(nextAnim, petId);
@@ -4005,6 +4000,9 @@
             if (runtime.interactionMode === 'ballPose') {
                 return 'ball';
             }
+            if (runtime.interactionMode === 'idleVariant') {
+                return runtime.idleVariantAnim || 'idle';
+            }
             if (runtime.interactionMode === 'headpatGentle') {
                 return 'blink';
             }
@@ -4012,8 +4010,7 @@
                 return 'hop';
             }
             if (runtime.interactionMode === 'headpatAnnoyed') {
-                const petProfile = getPetProfile(petId);
-                return petProfile.pixelFrames.headpatAnnoyed ? 'headpatAnnoyed' : 'idle';
+                return getPetPixelFrames(petId).headpatAnnoyed ? 'headpatAnnoyed' : 'idle';
             }
             const petProfile = getPetProfile(petId);
             const petState = getPetStateById(petId);
@@ -4088,7 +4085,7 @@
         }
 
         function maybeTriggerBallPose(petId, runtime, baseMood) {
-            if (!['shiba', 'cat'].includes(petId) || runtime.interactionMode !== 'normal' || baseMood !== 'idle') {
+            if (!['shiba', 'cat', 'capybara'].includes(petId) || runtime.interactionMode !== 'normal' || baseMood !== 'idle') {
                 return false;
             }
 
@@ -4111,13 +4108,38 @@
             return true;
         }
 
+        function maybeTriggerIdleVariant(petId, runtime, baseMood) {
+            if (petId !== 'shiba' || runtime.interactionMode !== 'normal' || baseMood !== 'idle') {
+                return false;
+            }
+
+            const now = Date.now();
+            if (runtime.idleVariantCooldownUntil && now < runtime.idleVariantCooldownUntil) {
+                return false;
+            }
+            if (runtime.lastIdleVariantCheckAt && (now - runtime.lastIdleVariantCheckAt) < IDLE_VARIANT_CHECK_INTERVAL_MS) {
+                return false;
+            }
+
+            runtime.lastIdleVariantCheckAt = now;
+            if (Math.random() >= IDLE_VARIANT_TRIGGER_CHANCE) {
+                return false;
+            }
+
+            runtime.idleVariantAnim = Math.random() < 0.72 ? 'idleLook' : 'idleStretch';
+            runtime.idleVariantCooldownUntil = now + IDLE_VARIANT_COOLDOWN_MS;
+            setInteractionMode('idleVariant', IDLE_VARIANT_DURATION_MS, petId);
+            setAnim(runtime.idleVariantAnim, petId);
+            return true;
+        }
+
         function handleDazedInteraction(event) {
             if (event) {
                 event.preventDefault();
                 event.stopImmediatePropagation();
             }
             clearWelcomeLock({ keepCurrentDialog: true });
-            showInteractionDialog('吧唧吧唧', 'sleepy', 'dazed-interaction');
+            showInteractionDialog(getDazedInteractionDialog(getCurrentPetId()), 'sleepy', 'dazed-interaction');
             return true;
         }
 
@@ -4135,8 +4157,9 @@
                 resetSleepWakeChain(petId);
                 runtime.sessionHeadpatChainCount = 1;
                 runtime.lastHeadpatAt = Date.now();
-                runtime.dialogSource = { kind: 'fixed', message: '吧唧吧唧' };
-                assignRuntimeDialog(petId, '吧唧吧唧');
+                const dazedDialog = getDazedInteractionDialog(petId);
+                runtime.dialogSource = { kind: 'fixed', message: dazedDialog };
+                assignRuntimeDialog(petId, resolvePetDialog(dazedDialog, getCurrentPetName()));
                 setInteractionMode('dazed', DAZED_DURATION_MS, petId);
                 renderBubbleContent(runtime.currentDialogPayload);
                 setAnim('sleepy', petId);
@@ -4160,36 +4183,31 @@
             'reward',
             'leash',
             'blink',
+            'headpat',
             'headpatAnnoyed',
             'thinking'
         ]);
 
         function pickPetAnim(petId, preferredAnims, fallbackAnim = 'idle') {
-            const petProfile = getPetProfile(petId);
+            const pixelFrames = getPetPixelFrames(petId);
             const candidates = Array.isArray(preferredAnims) ? preferredAnims : [preferredAnims];
-            const matched = candidates.find((animKey) => animKey && petProfile.pixelFrames[animKey]);
+            const matched = candidates.find((animKey) => animKey && pixelFrames[animKey]);
             if (matched) {
                 return matched;
             }
-            return petProfile.pixelFrames[fallbackAnim] ? fallbackAnim : 'idle';
+            return pixelFrames[fallbackAnim] ? fallbackAnim : 'idle';
         }
 
-        function getTemporaryAnimDuration(animKey) {
-            if (animKey === 'hop') {
-                return 620;
+        function getTemporaryAnimDuration(petId, animKey) {
+            if (!TEMPORARY_ANIM_KEYS.has(animKey)) {
+                return 0;
             }
-            if (animKey === 'cheer' || animKey === 'reward' || animKey === 'leash') {
-                return 820;
-            }
-            if (animKey === 'cola'
-                || animKey === 'eat'
-                || animKey === 'sad'
-                || animKey === 'blink'
-                || animKey === 'headpatAnnoyed'
-                || animKey === 'thinking') {
-                return 980;
-            }
-            return 0;
+            const petProfile = getPetProfile(petId);
+            const frameEntry = getPixelFrameEntryForAnim(petProfile, animKey);
+            const frameCount = frameEntry && Array.isArray(frameEntry.frames) ? frameEntry.frames.length : 1;
+            const interval = Math.max(0, Number(frameEntry && frameEntry.interval) || 0);
+            const sequenceDuration = interval > 0 ? interval * Math.max(1, frameCount) : 0;
+            return clamp(sequenceDuration + 180, 820, 1600);
         }
 
         function setAnim(nextAnim, petId = getCurrentPetId()) {
@@ -4210,7 +4228,7 @@
                 motionTimer = null;
             }
 
-            const duration = getTemporaryAnimDuration(resolvedAnim);
+            const duration = getTemporaryAnimDuration(petId, resolvedAnim);
             if (duration > 0) {
                 const targetPetId = petId;
                 motionTimer = setTimeout(() => {
@@ -4592,6 +4610,128 @@
                         perfect_clear: ['这一轮表现还挺整齐。本喵{name}今天就不骂你了。'],
                         reward_hit: ['奖励到了，去看。']
                     }
+                },
+                capybara: {
+                    vocabulary: {
+                        enter: ['先认清词义。慢一点没关系，靠猜就有一点关系。'],
+                        answer_correct: ['对了。看来刚才的发呆是在蓄力。', '这个词记住了，先别急着把它忘掉。'],
+                        answer_wrong: ['这个词又溜走了。它跑得不快，是你没抓。', '选得很果断，可惜词义不奖励果断。'],
+                        streak: ['连对了几次。保持住，别突然恢复平时的水平。'],
+                        near_clear: ['只剩几个词。现在停下，会显得很没耐心。'],
+                        clear: ['这轮词汇做完了。你可以歇一下，{name}可以继续歇。'],
+                        perfect_clear: ['全对。今天暂时找不到吐槽你的地方。']
+                    },
+                    grammar: {
+                        enter: ['先看结构。表面看起来顺眼的，通常最会骗人。'],
+                        answer_correct: ['接续对了。看来你没有只看语感。'],
+                        answer_wrong: ['结构没接上。别急着怪题，它还没来得及怪你。'],
+                        streak: ['语法开始连起来了。脑子今天愿意上班。'],
+                        near_clear: ['最后几题。稳一点，别让前面的努力白忙。'],
+                        clear: ['这一轮理顺了。看吧，慢慢来也能到。'],
+                        perfect_clear: ['一题没错。{name}决定少说一句风凉话作为奖励。']
+                    },
+                    grammar_sort: {
+                        enter: ['先找句子骨架。乱塞的话，句子也会想躺平。'],
+                        answer_correct: ['顺序对了，这句话终于肯好好站着了。'],
+                        answer_wrong: ['排得很有想法，只是原句没有这么想。'],
+                        clear: ['排序做完了。你的逻辑今天还算整齐。'],
+                        perfect_clear: ['顺序全对。看来你的注意力还没完全跑掉。']
+                    },
+                    grammar_kakujyo: {
+                        enter: ['格助词看前后关系。别把每个空都当抽签。'],
+                        answer_correct: ['助词放对了，关系也就顺了。'],
+                        answer_wrong: ['这里的关系拧住了。再看一眼，别硬拽。'],
+                        clear: ['格助词收完了。比{name}预想得省心一点。'],
+                        perfect_clear: ['全对。今天的路标一个都没踩歪。']
+                    },
+                    textbook: {
+                        enter: ['教材翻开了。现在只差你别把眼神翻走。'],
+                        review: ['补漏洞不丢脸。假装没看见才比较费事。'],
+                        answer_correct: ['这个文法点接住了，先放稳再往下。'],
+                        answer_wrong: ['还没吃透。再嚼一下，别整块吞。'],
+                        streak: ['节奏不错。{name}就先不提醒你别得意。'],
+                        near_clear: ['快收尾了。最后几题最喜欢等人松懈。'],
+                        clear: ['这一课收下来了。进度条终于肯动了。'],
+                        perfect_clear: ['整课都很稳。看来{name}躺着监督也挺有效。'],
+                        stage_clear: ['这一段结束。你可以伸懒腰，别顺势睡过去。'],
+                        stage_perfect_clear: ['这一段全对。很好，今天的脑子很给面子。']
+                    },
+                    reading: {
+                        enter: ['先抓主线。细节很多，但不是每个都值得你迷路。'],
+                        answer_correct: ['线索抓到了。看来眼睛确实在看文章。'],
+                        answer_wrong: ['这条线索漏过去了。它没藏，只是你走得太快。'],
+                        streak: ['阅读节奏还在。保持住，别突然开始看空气。'],
+                        near_clear: ['剩最后几题。文章都坚持到这里了，你也可以。'],
+                        clear: ['读完了。长归长，终点还是会来的。'],
+                        perfect_clear: ['整篇全对。{name}承认你今天看得很认真。']
+                    },
+                    reading_short: {
+                        enter: ['短文先找关键词。篇幅短，不代表能闭眼选。'],
+                        answer_correct: ['关键点抓到了，没被短篇骗到。'],
+                        answer_wrong: ['看得太快了。短文也需要你停一下。']
+                    },
+                    reading_middle: {
+                        enter: ['中篇看段落关系。别每段都认识，合起来就装陌生。'],
+                        answer_correct: ['段落接上了，逻辑也就出来了。'],
+                        answer_wrong: ['这两段还没连起来。回去看看谁在承接谁。']
+                    },
+                    reading_long: {
+                        enter: ['长文慢慢走。主线不丢，绕一点也能回来。'],
+                        answer_correct: ['主线抓得稳，这题自然跑不掉。'],
+                        answer_wrong: ['被细节带远了。回到主线，别继续观光。']
+                    },
+                    reading_info: {
+                        enter: ['先定位再找答案。漫无目的地翻，也算一种运动。'],
+                        answer_correct: ['位置找对了，信息就没地方躲。'],
+                        answer_wrong: ['定位偏了。换个关键词，别和这一页耗感情。']
+                    },
+                    listening: {
+                        enter: ['耳朵打开。听不清可以重来，没听就选比较难解释。'],
+                        answer_correct: ['听到了。看来声音没有从另一边跑出去。'],
+                        answer_wrong: ['这句滑过去了。再听一次，它又不会嫌烦。'],
+                        streak: ['连续听对了。耳朵今天比注意力可靠。'],
+                        near_clear: ['快结束了。最后几句别提前关机。'],
+                        clear: ['这一组听完了。你的耳朵可以短暂休息。'],
+                        perfect_clear: ['全听对了。{name}决定把安静也算作奖励。']
+                    },
+                    listening_immediate: {
+                        enter: ['即时应答先抓语气。反应快，不等于随便按得快。'],
+                        answer_correct: ['回应接对了，这次反应挺像回事。'],
+                        answer_wrong: ['语气没接住。再听听对方到底想让你做什么。']
+                    },
+                    listening_task: {
+                        enter: ['先弄清任务。否则听完一圈，只会更忙。'],
+                        answer_correct: ['人物和任务对上了。'],
+                        answer_wrong: ['任务关系混了。先把谁做什么重新排一下。']
+                    },
+                    listening_summary: {
+                        enter: ['先抓大意。细节可以晚点来，主旨不会等太久。'],
+                        answer_correct: ['大意抓到了，没有被碎信息拖走。'],
+                        answer_wrong: ['听得太碎了。退一步，看看整段到底在说什么。']
+                    },
+                    listening_point: {
+                        enter: ['盯住关键词。重点一般不会主动坐到你面前。'],
+                        answer_correct: ['重点听到了，省得{name}再提醒。'],
+                        answer_wrong: ['关键词漏了。重听时别让注意力先下班。']
+                    },
+                    listening_integrated: {
+                        enter: ['信息有点多。先分开，再慢慢放回一起。'],
+                        answer_correct: ['几条关系都接住了，今天状态确实不错。'],
+                        answer_wrong: ['线索缠在一起了。拆开听，别凭直觉硬抱。']
+                    },
+                    reward: {
+                        reward_hit: ['奖励到了。先高兴一下，别顺便把学习忘了。', '有奖励。看来认真偶尔真的会被发现。']
+                    },
+                    general: {
+                        enter: ['开始吧。慢可以，停着不算。'],
+                        answer_correct: ['对了。看来刚才的发呆是在蓄力。'],
+                        answer_wrong: ['选得很有勇气，可惜答案不奖励勇气。'],
+                        streak: ['节奏不错。保持住，别突然恢复平时的水平。'],
+                        near_clear: ['就剩几题了。现在逃跑会显得很没耐心。'],
+                        clear: ['做完了。你可以休息，{name}可以继续休息。'],
+                        perfect_clear: ['全对。今天暂时找不到吐槽你的地方。'],
+                        reward_hit: ['奖励到了。去看看，回来记得继续。']
+                    }
                 }
             };
 
@@ -4701,11 +4841,10 @@
             runtime.practiceReactionKey = `lottery:${normalized.title || ''}:${normalized.rarity || ''}`;
             clearWelcomeLock({ keepCurrentDialog: true });
             setInteractionMode('normal', PRACTICE_MAJOR_DURATION_MS, petId);
-            const petProfile = getPetProfile(petId);
             const shouldCelebrate = normalized.didUnlockColaTreat || normalized.isNew || normalized.isRare;
             showInteractionDialog(
                 message,
-                shouldCelebrate && petProfile.pixelFrames.reward ? 'reward' : 'blink',
+                shouldCelebrate && getPetPixelFrames(petId).reward ? 'reward' : 'blink',
                 'lottery'
             );
             return true;
@@ -4753,7 +4892,6 @@
                 return;
             }
 
-            closeGrammarPeek();
             collectionOpen = false;
             if (collectionPanelEl) {
                 collectionPanelEl.hidden = true;
@@ -4810,7 +4948,24 @@
             visitMeta = getVisitMetaSnapshot(petId);
             summary = buildLearningSummary(config, petState, visitMeta);
 
-            if (reason === 'boot' && runtime.welcomePending) {
+            if (reason === 'boot' && isHomeSurface() && !getCurrentUserName()) {
+                settings.userNamePromptCount = Math.max(0, Number(settings.userNamePromptCount) || 0) + 1;
+                savePetSettings(settings);
+                runtime.dialogSource = {
+                    kind: 'user-name-prompt',
+                    promptCount: settings.userNamePromptCount
+                };
+                assignRuntimeDialog(petId, resolveDialogSourceForPet(petId, runtime.dialogSource, summary, currentSection));
+                runtime.welcomePending = false;
+                runtime.welcomeLocked = true;
+            } else if (reason === 'boot' && isHomeSurface() && getCurrentUserName()) {
+                runtime.dialogSource = { kind: 'user-welcome' };
+                assignRuntimeDialog(petId, resolveDialogSourceForPet(petId, runtime.dialogSource, summary, currentSection));
+                petState.lastWelcomedAt = Date.now();
+                runtime.welcomePending = false;
+                runtime.welcomeLocked = true;
+                savePetState(state);
+            } else if (reason === 'boot' && runtime.welcomePending) {
                 if (quietPracticeSurface) {
                     runtime.dialogSource = { kind: 'default' };
                     assignRuntimeDialog(petId, '');
@@ -4859,14 +5014,6 @@
                 }
             } else if (reason === 'name' || reason === 'interaction' || reason === 'treat' || reason === 'headpat' || reason === 'sleeping-interaction' || reason === 'sleeping-wake' || reason === 'dazed-interaction' || reason === 'treat-cooldown') {
                 assignRuntimeDialog(petId, resolveDialogSourceForPet(petId, runtime.dialogSource, summary, currentSection));
-            } else if (reason === 'idle-rotation' && !runtime.welcomeLocked && runtime.interactionMode === 'normal') {
-                setDialogSourceForPet(
-                    petId,
-                    { kind: 'default' },
-                    summary,
-                    currentSection,
-                    { seedSuffix: `rotate-${runtime.idleRotationTick}` }
-                );
             } else if (!runtime.currentDialog) {
                 if (quietPracticeSurface) {
                     runtime.dialogSource = { kind: 'default' };
@@ -4884,10 +5031,7 @@
                             petId,
                             runtime.dialogSource,
                             summary,
-                            currentSection,
-                            runtime.dialogSource.kind === 'default'
-                                ? { seedSuffix: `rotate-${runtime.idleRotationTick}` }
-                                : {}
+                            currentSection
                         )
                     );
                 }
@@ -4901,7 +5045,22 @@
             if ((!isExpanded || isCrossPageSurface()) && collectionOpen) {
                 collectionOpen = false;
             }
-            maybeTriggerBallPose(petId, runtime, summary.mood);
+            const shouldCheckIdleSurprises = [
+                'boot',
+                'toggle',
+                'interaction-timeout',
+                'resize',
+                'settings-sync',
+                'pet-switch',
+                'skin-switch',
+                'collection',
+                'modal',
+                'welcome-cleared'
+            ].includes(reason);
+            if (shouldCheckIdleSurprises) {
+                maybeTriggerBallPose(petId, runtime, summary.mood);
+                maybeTriggerIdleVariant(petId, runtime, summary.mood);
+            }
             const visualMood = getVisualMood(petId, summary.mood);
             nameEl.textContent = petName;
             if (!isNameEditing) {
@@ -4915,10 +5074,12 @@
             collectionTriggerEl.classList.toggle('is-open', collectionOpen);
             collectionPanelEl.hidden = !collectionOpen;
             renderCollectionCards();
+            renderSkinOptions();
+            renderPanelPetAvatar(petProfile, petId);
             moodEl.textContent = getDisplayedMoodLabel(petId, summary.mood);
-            colaBtn.hidden = !['shiba', 'cat'].includes(petId);
+            colaBtn.hidden = !['shiba', 'cat', 'capybara'].includes(petId);
             leashBtn.hidden = !isHomeSurface();
-            leashBtn.textContent = isFollowOutsideHomeEnabled(settings) ? '牵绳中' : '牵绳';
+            leashLabelEl.textContent = isFollowOutsideHomeEnabled(settings) ? '牵绳中' : '牵绳';
             leashBtn.classList.toggle('is-active', isFollowOutsideHomeEnabled(settings));
             renderActivities(activitiesEl, summary.recentActivities, summary.recommendedNext);
             root.dataset.expanded = String(isExpanded);
@@ -4929,6 +5090,7 @@
             root.dataset.draggable = String(isHomeSurface() && petSettings.collapsed && !modalOpen);
             root.dataset.practiceQuiet = String(quietPracticeSurface);
             root.dataset.species = petProfile.species;
+            root.dataset.skin = getPetSkinId(petId);
             toggleEl.setAttribute('aria-expanded', String(isExpanded));
             toggleEl.setAttribute('aria-label', `${isExpanded ? '收起' : '打开'}${petProfile.label}陪学面板`);
             const bubblePayload = runtime.currentDialogPayload && runtime.currentDialogPayload.text
@@ -4938,28 +5100,19 @@
             root.dataset.bubbleVisible = String(shouldShowBubble);
             renderBubbleContent(shouldShowBubble ? bubblePayload : createPlainDialogPayload(''));
 
-            const hasGrammarToken = shouldShowBubble
-                && Array.isArray(bubblePayload.segments)
-                && bubblePayload.segments.some((segment) => segment && segment.type === 'grammar-token');
-            const nextVisualMood = hasGrammarToken && petProfile.pixelFrames.thinking && runtime.interactionMode === 'normal'
-                ? 'thinking'
-                : visualMood;
-
             if (!TEMPORARY_ANIM_KEYS.has(runtime.animState)) {
-                setAnim(nextVisualMood, petId);
+                setAnim(visualMood, petId);
             } else {
                 renderPetAnimFrame(petProfile, runtime.animState, petId);
             }
 
             applyAnchorPosition();
-            scheduleHomepageIdleRotation();
         }
 
         function setModalState(isOpen) {
             modalOpen = Boolean(isOpen);
             if (modalOpen) {
                 collectionOpen = false;
-                closeGrammarPeek();
             }
             sync('modal');
         }
@@ -5083,7 +5236,7 @@
                 return;
             }
 
-            const passiveControl = event.target.closest('[data-pet-collection-trigger], [data-pet-collection], [data-pet-name-button], [data-pet-name-editor], [data-pet-bubble], [data-pet-grammar-overlay]');
+            const passiveControl = event.target.closest('[data-pet-collection-trigger], [data-pet-collection], [data-pet-name-button], [data-pet-name-editor], [data-pet-bubble]');
             if (passiveControl) {
                 return;
             }
@@ -5110,7 +5263,6 @@
             awardInteractionXp();
             clearWelcomeLock({ keepCurrentDialog: true });
             collectionOpen = false;
-            closeGrammarPeek();
             if (isCrossPageSurface()) {
                 sync('toggle');
                 return;
@@ -5125,19 +5277,55 @@
             sync('toggle');
         });
 
+        bubbleEl.addEventListener('submit', (event) => {
+            const form = event.target.closest('[data-pet-user-name-form]');
+            if (!form) {
+                return;
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            const input = form.querySelector('[data-pet-user-name-input]');
+            const errorEl = form.querySelector('[data-pet-user-name-error]');
+            const userName = normalizeStoredUserName(input ? input.value : '');
+            if (!userName) {
+                if (errorEl) {
+                    errorEl.textContent = '先写下一个想让我称呼你的名字吧。';
+                }
+                if (input) {
+                    input.focus();
+                }
+                return;
+            }
+
+            settings.userName = userName;
+            savePetSettings(settings);
+            window.dispatchEvent(new CustomEvent(USER_PROFILE_CHANGED_EVENT, {
+                detail: { userName }
+            }));
+            showInteractionDialog(`记住啦！欢迎你，${userName}。以后${getCurrentPetName()}就这样叫你。`, 'cheer', 'interaction');
+        });
+
+        bubbleEl.addEventListener('click', (event) => {
+            const laterButton = event.target.closest('[data-pet-user-name-later]');
+            if (!laterButton) {
+                return;
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            showInteractionDialog(`没关系，下次见面时再告诉${getCurrentPetName()}吧。`, 'idle', 'interaction');
+        });
+
         leashBtn.addEventListener('click', () => {
             const petId = getCurrentPetId();
             const nextValue = !isFollowOutsideHomeEnabled(settings);
             awardInteractionXp();
             clearWelcomeLock({ keepCurrentDialog: true });
             collectionOpen = false;
-            closeGrammarPeek();
             setFollowOutsideHomeEnabled(nextValue);
             if (nextValue) {
                 setDialogSourceForPet(petId, { kind: 'fixed', message: FOLLOW_OUTSIDE_HOME_DIALOGS[petId] || FOLLOW_OUTSIDE_HOME_DIALOGS.shiba }, summary, getCurrentSection());
                 setInteractionMode('normal', INTERACTION_CHAIN_MS, petId);
-                const petProfile = getPetProfile(petId);
-                setAnim(petProfile.pixelFrames.leash ? 'leash' : (petId === 'cat' ? 'hop' : 'cheer'), petId);
+                setAnim(getPetPixelFrames(petId).leash ? 'leash' : (petId === 'cat' ? 'hop' : 'cheer'), petId);
             } else if (getCurrentPetRuntime().interactionMode === 'normal') {
                 setDialogSourceForPet(petId, { kind: 'default' }, summary, getCurrentSection());
                 setAnim(getVisualMood(petId, summary.mood), petId);
@@ -5198,9 +5386,10 @@
             if (!['headpatGentle', 'headpatPlayful', 'headpatAnnoyed'].includes(runtime.interactionMode)) {
                 const headpatAnim = runtime.sessionHeadpatChainCount >= 4
                     ? pickPetAnim(petId, ['headpatAnnoyed', 'sad', 'hop'], 'idle')
-                    : pickPetAnim(petId, ['blink', 'cheer'], 'idle');
+                    : pickPetAnim(petId, ['headpat', 'blink', 'cheer'], 'idle');
                 setAnim(headpatAnim, petId);
             }
+            sync('headpat');
         });
 
         treatBtn.addEventListener('click', () => {
@@ -5259,7 +5448,6 @@
             event.stopPropagation();
             awardInteractionXp();
             clearWelcomeLock({ keepCurrentDialog: true });
-            closeGrammarPeek();
             if (isNameEditing) {
                 finishNameEdit(true);
             }
@@ -5276,32 +5464,6 @@
                 closeCollection();
             }
         });
-
-        bubbleEl.addEventListener('click', (event) => {
-            const grammarToken = event.target.closest('[data-pet-grammar-token]');
-            if (!grammarToken) {
-                return;
-            }
-            event.preventDefault();
-            event.stopPropagation();
-            clearWelcomeLock({ keepCurrentDialog: true });
-            collectionOpen = false;
-            openGrammarPeek(grammarToken.getAttribute('data-pet-grammar-token'));
-        });
-
-        if (grammarCloseEl) {
-            grammarCloseEl.addEventListener('click', () => {
-                closeGrammarPeek();
-            });
-        }
-
-        if (grammarOverlayEl) {
-            grammarOverlayEl.addEventListener('click', (event) => {
-                if (event.target === grammarOverlayEl) {
-                    closeGrammarPeek();
-                }
-            });
-        }
 
         collectionGridEl.addEventListener('click', (event) => {
             const optionButton = event.target.closest('[data-pet-collection-option]');
@@ -5326,7 +5488,6 @@
                 motionTimer = null;
             }
 
-            closeGrammarPeek();
             collectionOpen = false;
             settings.activePetId = nextPetId;
             if (wasExpanded) {
@@ -5342,10 +5503,35 @@
             sync('pet-switch');
         });
 
+        skinOptionsEl.addEventListener('click', (event) => {
+            const optionButton = event.target.closest('[data-pet-skin-option]');
+            if (!optionButton) {
+                return;
+            }
+
+            const petId = getCurrentPetId();
+            const nextSkinId = normalizePetSkinId(petId, optionButton.getAttribute('data-pet-skin-option'));
+            const petSettings = getCurrentPetSettings();
+            if (nextSkinId === getPetSkinId(petId)) {
+                return;
+            }
+
+            if (motionTimer) {
+                clearTimeout(motionTimer);
+                motionTimer = null;
+            }
+            clearSpriteFrameTimer();
+            petSettings.skinId = nextSkinId;
+            const runtime = getCurrentPetRuntime();
+            runtime.animState = getVisualMood(petId, summary.mood);
+            persistSettings();
+            sync('skin-switch');
+        });
+
         colaBtn.addEventListener('click', () => {
             const petId = getCurrentPetId();
             const runtime = getCurrentPetRuntime();
-            if (!['shiba', 'cat'].includes(petId)) {
+            if (!['shiba', 'cat', 'capybara'].includes(petId)) {
                 return;
             }
 
@@ -5400,7 +5586,7 @@
                 clearWelcomeLock({ keepCurrentDialog: true });
             }
             if (sectionSwitch || homepageEntry) {
-                const didCollapse = collapseInteractivePanel({ closeGrammar: Boolean(sectionSwitch || homepageEntry) });
+                const didCollapse = collapseInteractivePanel();
                 if (didCollapse) {
                     sync(sectionSwitch ? 'section-change' : 'collection');
                 }
@@ -5457,6 +5643,37 @@
             recordStudyLaunch,
             reactToPractice,
             reactToLotteryResult,
+            getUserName() {
+                return getCurrentUserName();
+            },
+            requestUserName() {
+                if (!isHomeSurface()) {
+                    return false;
+                }
+                if (!getCurrentUserName()) {
+                    settings.userNamePromptCount = Math.max(0, Number(settings.userNamePromptCount) || 0) + 1;
+                    savePetSettings(settings);
+                }
+                const runtime = getCurrentPetRuntime();
+                runtime.dialogSource = {
+                    kind: 'user-name-prompt',
+                    promptCount: Math.max(1, Number(settings.userNamePromptCount) || 1)
+                };
+                runtime.welcomeLocked = true;
+                assignRuntimeDialog(
+                    getCurrentPetId(),
+                    resolveDialogSourceForPet(getCurrentPetId(), runtime.dialogSource, summary, getCurrentSection())
+                );
+                sync('user-name-prompt');
+                window.setTimeout(() => {
+                    const input = bubbleEl.querySelector('[data-pet-user-name-input]');
+                    if (input) {
+                        input.focus();
+                        input.select();
+                    }
+                }, 0);
+                return true;
+            },
             awardLabXp(petId, amount) {
                 const targetPetId = typeof petId === 'string' && petId.trim() ? petId.trim() : getCurrentPetId();
                 const reward = awardBondXp(targetPetId, amount);
@@ -5468,7 +5685,6 @@
                 window.removeEventListener('storage', storageHandler);
                 window.removeEventListener('resize', resizeHandler);
                 document.removeEventListener('click', handlePageInteraction, true);
-                clearIdleRotationTimer();
                 clearSpriteFrameTimer();
                 if (motionTimer) {
                     clearTimeout(motionTimer);
@@ -5484,6 +5700,9 @@
     }
 
     window.HomePetSystem = {
+        getUserName() {
+            return normalizeStoredUserName(loadPetSettings().userName);
+        },
         shouldMountOnSurface(surfaceType = 'home') {
             return shouldMountOnSurfaceType(surfaceType);
         },
@@ -5508,7 +5727,6 @@
                 pageShellSelector: '.page-shell, .page-content, .question-block, .container, main, body',
                 getActiveSection: () => String(config.activeSection || 'exam'),
                 isPracticeQuietSurface: () => true,
-                enableGrammarIdleCards: false,
                 surfaceType: config.surfaceType || 'practice',
                 ...config
             };

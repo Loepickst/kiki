@@ -9534,13 +9534,13 @@
       "sourceNumericId": 61,
       "searchTags": "可能性 逻辑合理推断 客观根据推断 可能性与推測 按理说会... / 理应...",
       "compareWith": [],
-      "tryCenterId": 3114,
+      "tryCenterId": 3061,
       "sourcePage": "test/Try！N2.html",
       "sourceId": 61
     }
   },
   {
-    "id": "n3-061",
+    "id": "n3-114",
     "level": "N3",
     "bookKey": "try-n3",
     "bookLabel": "Try! N3 文法",
@@ -11137,6 +11137,2600 @@
       "tryCenterId": 3113,
       "sourcePage": "test/Try！N2.html",
       "sourceId": 113
+    }
+  },
+  {
+    "id": "supp-n1-review-001",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～間",
+    "meaning": "在……期间（一直）",
+    "connection": "名词+の / 动词辞书形・ている形 / い形容词辞书形 / な形容词な + 間",
+    "desc": "表示在某个持续的时间段内，某种状态或动作自始至终一直持续。前后项通常都是表示持续性动作或状态的表达。",
+    "examples": [
+      {
+        "jp": "<b><ruby>夏休み<rt>なつやすみ</rt></ruby>の<span style='color:#d64045'><ruby>間<rt>あいだ</rt></ruby></span>、<ruby>毎日<rt>まいにち</rt></ruby><ruby>図書<rt>としょ</rt></ruby><ruby>館<rt>かん</rt></ruby>で<ruby>勉強<rt>べんきょう</rt></ruby>した。</b>",
+        "cn": "在暑假期间，每天都在图书馆学习。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-002",
+      "supp-n1-review-003",
+      "n3-081"
+    ],
+    "kana": "あいだ",
+    "romaji": "aida",
+    "legacy": {
+      "searchId": 4001,
+      "sourceNumericId": 1,
+      "searchTags": "～間 間 あいだ aida 在……期间（一直） 时间与顺序 持续期间",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 1
+    }
+  },
+  {
+    "id": "supp-n1-review-002",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～間に",
+    "meaning": "在……期间（发生了某事）",
+    "connection": "名词+の / 动词辞书形・ている形・ない形 / い形容词辞书形 / な形容词な + 間に",
+    "desc": "表示在某个持续的时间段内的某一个瞬间或短暂的时间点上，发生了另一种动作或变化。后项多为瞬间性动作或偶然发生的事件。",
+    "examples": [
+      {
+        "jp": "<b><ruby>留守<rt>るす</rt></ruby>の<span style='color:#d64045'><ruby>間<rt>あいだ</rt></ruby>に</span>、<ruby>友達<rt>ともだち</rt></ruby>が<ruby>訪ね<rt>たずね</rt></ruby>てきた。</b>",
+        "cn": "没在家的期间，朋友来访了。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-001",
+      "supp-n1-review-003",
+      "n3-081"
+    ],
+    "kana": "あいだに",
+    "romaji": "aidani",
+    "legacy": {
+      "searchId": 4002,
+      "sourceNumericId": 2,
+      "searchTags": "～間に 間に あいだに aidani 在……期间（发生了某事） 时间与顺序 期间内发生",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 2
+    }
+  },
+  {
+    "id": "supp-n1-review-003",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～途中（で）",
+    "meaning": "在……途中",
+    "connection": "名词+の / 动词辞书形・ている形 + 途中（で）",
+    "desc": "表示在前往某个地点的路途中，或者某件事情还在进行、尚未完成的阶段，发生了其他的动作或情况。多用于描述中途被打断或中途插入了其他事件。",
+    "examples": [
+      {
+        "jp": "<b><ruby>会社<rt>かいしゃ</rt></ruby>へ<ruby>行く<rt>いく</rt></ruby><span style='color:#d64045'><ruby>途中<rt>とちゅう</rt></ruby>で</span>、<ruby>偶然<rt>ぐうぜん</rt></ruby><ruby>昔<rt>むかし</rt></ruby>の<ruby>友達<rt>ともだち</rt></ruby>に<ruby>会っ<rt>あっ</rt></ruby>た。</b>",
+        "cn": "去公司的路上偶然遇到了以前的朋友。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-001",
+      "supp-n1-review-002",
+      "n3-081"
+    ],
+    "kana": "とちゅう（で）",
+    "romaji": "tochuu(de)",
+    "legacy": {
+      "searchId": 4003,
+      "sourceNumericId": 3,
+      "searchTags": "～途中（で） 途中（で） ～途中で ～途中 とちゅう（で） tochuu(de) 在……途中 时间与顺序 进行途中",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 3
+    }
+  },
+  {
+    "id": "supp-n1-review-004",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～とても～ない",
+    "meaning": "怎么也不…… / 很难……",
+    "connection": "とても + 动词ない形（多搭配可能动词的否定形式）",
+    "desc": "表示由于受到客观条件或自身能力的限制，认为某件事情很难实现或难以做到。",
+    "examples": [
+      {
+        "jp": "<b>こんなにたくさんの<ruby>料理<rt>りょうり</rt></ruby>は、<ruby>一人<rt>ひとり</rt></ruby>では<span style='color:#d64045'>とても<ruby>食べ<rt>たべ</rt></ruby>きれない</span>。</b>",
+        "cn": "这么多的菜，一个人怎么也吃不完。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-009",
+      "n3-091"
+    ],
+    "kana": "とてもない",
+    "romaji": "totemonai",
+    "legacy": {
+      "searchId": 4004,
+      "sourceNumericId": 4,
+      "searchTags": "～とても〜ない とてもない totemonai 怎么也不…… / 很难…… 否定 能力上难以实现",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 4
+    }
+  },
+  {
+    "id": "supp-n1-review-005",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ている（经历・记录）",
+    "meaning": "曾经…… / 有过……的经历",
+    "connection": "动词て形 + いる",
+    "desc": "用于客观陈述过去的经历、历史事实或留存的记录。与侧重于个人主观体验的「〜たことがある」相比，该用法多出现在新闻报道、人物履历介绍或相对正式的书面语中，用来指出某个事件在过去发生过，且这一事实作为一种客观记录保留至今。常与「かつて」「以前」「過去に」等表示过去的时间词汇呼应使用。",
+    "examples": [
+      {
+        "jp": "<b>この<ruby>町<rt>まち</rt></ruby>は<ruby>過去<rt>かこ</rt></ruby>に<ruby>何<rt>なん</rt></ruby><ruby>度<rt>ど</rt></ruby>も<ruby>大きな<rt>おおきな</rt></ruby><ruby>水害<rt>すいがい</rt></ruby>を<ruby>経験<rt>けいけん</rt></ruby>し<span style='color:#d64045'>ている</span>。</b>",
+        "cn": "这座小镇过去经历过好几次大水灾。"
+      }
+    ],
+    "related": [
+      "n3-018"
+    ],
+    "kana": "ている",
+    "romaji": "teiru",
+    "legacy": {
+      "searchId": 4005,
+      "sourceNumericId": 5,
+      "searchTags": "～ている（经历、记录） ている teiru 曾经…… / 有过……的经历 状态与结果 经历与客观记录",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 5
+    }
+  },
+  {
+    "id": "supp-n1-review-006",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ずにいる",
+    "meaning": "一直没有……",
+    "connection": "动词ない形（去掉「ない」） + ずにいる（※「する」变为「せずにいる」）",
+    "desc": "表示在一段时间内持续处于没有进行某个动作的状态。常用来描述有意维持这种不作为的状态，或者内心情感上有所抑制的情况。",
+    "examples": [
+      {
+        "jp": "<b><ruby>彼<rt>かれ</rt></ruby>はそのことについて、<ruby>誰<rt>だれ</rt></ruby>にも<ruby>言わ<rt>いわ</rt></ruby><span style='color:#d64045'>ずにいる</span>。</b>",
+        "cn": "关于那件事，他一直没有对任何人说。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-007",
+      "n3-008"
+    ],
+    "kana": "ずにいる",
+    "romaji": "zuniiru",
+    "legacy": {
+      "searchId": 4006,
+      "sourceNumericId": 6,
+      "searchTags": "～ずにいる ずにいる zuniiru 一直没有…… 状态与结果 持续不做",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 6
+    }
+  },
+  {
+    "id": "supp-n1-review-007",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ずに済む",
+    "meaning": "不用……就行",
+    "connection": "动词ない形（去掉「ない」）+ ずに済む（注：「する」变为「せずに済む」）",
+    "desc": "表示原本预料中需要进行某项麻烦、消耗精力或让人有负担的动作，但因为某种原因最终没有做就顺利解决了。",
+    "examples": [
+      {
+        "jp": "<b><ruby>友達<rt>ともだち</rt></ruby>が<ruby>車<rt>くるま</rt></ruby>で<ruby>送っ<rt>おくっ</rt></ruby>てくれたので、<ruby>雨<rt>あめ</rt></ruby>の<ruby>中<rt>なか</rt></ruby>を<ruby>歩か<rt>あるか</rt></ruby><span style='color:#d64045'>ずに<ruby>済ん<rt>すん</rt></ruby>だ</span>。</b>",
+        "cn": "朋友开车送了我，所以不用在雨中步行了。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-006",
+      "n3-008"
+    ],
+    "kana": "ずにすむ",
+    "romaji": "zunisumu",
+    "legacy": {
+      "searchId": 4007,
+      "sourceNumericId": 7,
+      "searchTags": "～ずに済む ずに済む ～ずにすむ ずにすむ zunisumu 不用……就行 状态与结果 免去原定行为",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 7
+    }
+  },
+  {
+    "id": "supp-n1-review-008",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～と引き換えに",
+    "meaning": "以……为交换",
+    "connection": "名词 + と引き換えに",
+    "desc": "表示交出前项的事物，以此来换取后项的事物。多用于描述伴随实物交易、付出代价或作出让步的客观情况。前后两项通常具有对等的价值。",
+    "examples": [
+      {
+        "jp": "<b><ruby>古い<rt>ふるい</rt></ruby>スマートフォンの<ruby>回収<rt>かいしゅう</rt></ruby><span style='color:#d64045'>と<ruby>引き換え<rt>ひきかえ</rt></ruby>に</span>、<ruby>新しい<rt>あたらしい</rt></ruby><ruby>機種<rt>きしゅ</rt></ruby>の<ruby>割引<rt>わりびき</rt></ruby>を<ruby>受け<rt>うけ</rt></ruby>られる。</b>",
+        "cn": "以回收旧智能手机为交换享受新机型的折扣。"
+      }
+    ],
+    "related": [
+      "n1-038"
+    ],
+    "kana": "とひきかえに",
+    "romaji": "tohikikaeni",
+    "legacy": {
+      "searchId": 4008,
+      "sourceNumericId": 8,
+      "searchTags": "～と引き換えに と引き換えに とひきかえに tohikikaeni 以……为交换 比较与伴随 交换与代价",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 8
+    }
+  },
+  {
+    "id": "supp-n1-review-009",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～やむを得ない",
+    "meaning": "迫不得已",
+    "connection": "作为い形容词使用（可直接修饰名词如「やむを得ない事情」，或置于句尾作谓语）",
+    "desc": "表示由于客观原因或外部条件限制，很难有其他的解决办法，只能采取某种行动或接受某种状态。多用于说明无奈之举或情理之中的妥协。",
+    "examples": [
+      {
+        "jp": "<b><ruby>台風<rt>たいふう</rt></ruby>の<ruby>接近<rt>せっきん</rt></ruby>により、<ruby>明日<rt>あす</rt></ruby>のイベントを<ruby>中止<rt>ちゅうし</rt></ruby>するのは<span style='color:#d64045'>やむを<ruby>得<rt>え</rt></ruby>ない</span>。</b>",
+        "cn": "由于台风逼近，取消明天的活动也是迫不得已。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-004",
+      "n2-155"
+    ],
+    "kana": "やむをえない",
+    "romaji": "yamuwoenai",
+    "legacy": {
+      "searchId": 4009,
+      "sourceNumericId": 9,
+      "searchTags": "～やむを得ない やむを得ない やむをえない yamuwoenai 迫不得已 状态与结果 客观上迫不得已",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 9
+    }
+  },
+  {
+    "id": "supp-n1-review-010",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ところ（做后发现）",
+    "meaning": "做了……结果发现……",
+    "connection": "动词た形 ＋ところ",
+    "desc": "表示在进行前项动作之后，得知了某种新情况或新事实。后项多带有出乎意料或顺其自然的语感。",
+    "examples": [
+      {
+        "jp": "<b><ruby>病院<rt>びょういん</rt></ruby>で<ruby>検査<rt>けんさ</rt></ruby>を<ruby>受け<rt>うけ</rt></ruby>た<span style='color:#d64045'>ところ</span>、<ruby>特に<rt>とくに</rt></ruby><ruby>異常<rt>いじょう</rt></ruby>はなかった。</b>",
+        "cn": "在医院接受检查之后，发现没有什么异常。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-011",
+      "supp-n1-review-013",
+      "n3-081"
+    ],
+    "kana": "ところ",
+    "romaji": "tokoro",
+    "legacy": {
+      "searchId": 4010,
+      "sourceNumericId": 10,
+      "searchTags": "～ところ ところ tokoro 做了……结果发现…… 时间与顺序 动作后发现",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 10
+    }
+  },
+  {
+    "id": "supp-n1-review-011",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～なり（之后持续）",
+    "meaning": "……之后就一直……",
+    "connection": "动词た形 + なり",
+    "desc": "表示做了某动作之后，该动作产生的结果或状态持续保持原样，且后续并未发生通常预期的改变或动作。后半句常接续否定形式或表示状态持续的表达，多用于描述与往常不同、不太理想或令人担忧的状况。",
+    "examples": [
+      {
+        "jp": "<b><ruby>彼<rt>かれ</rt></ruby>は<ruby>朝<rt>あさ</rt></ruby>、<ruby>家<rt>いえ</rt></ruby>を<ruby>出<rt>で</rt></ruby>た<span style='color:#d64045'>なり</span>、<ruby>夜<rt>よる</rt></ruby>になっても<ruby>帰っ<rt>かえっ</rt></ruby>てこない。</b>",
+        "cn": "他早上出门后就一直没有回来。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-010",
+      "supp-n1-review-013",
+      "n3-081"
+    ],
+    "kana": "なり",
+    "romaji": "nari",
+    "legacy": {
+      "searchId": 4011,
+      "sourceNumericId": 11,
+      "searchTags": "～なり なり nari ……之后就一直…… 时间与顺序 动作后状态持续",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 11
+    }
+  },
+  {
+    "id": "supp-n1-review-012",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ては（反复）",
+    "meaning": "一……就……",
+    "connection": "动词て形 ＋ は",
+    "desc": "用于描述同一动作或现象的反复出现。前项动作发生时，通常伴随发生后项的动作或状态。多用于讲述个人习惯或规律性的现象。",
+    "examples": [
+      {
+        "jp": "<b><ruby>祖父<rt>そふ</rt></ruby>は<ruby>昔<rt>むかし</rt></ruby>の<ruby>写真<rt>しゃしん</rt></ruby>を<ruby>見<rt>み</rt></ruby><span style='color:#d64045'>ては</span>、<ruby>当時<rt>とうじ</rt></ruby>の<ruby>思い出<rt>おもいで</rt></ruby>を<ruby>語る<rt>かたる</rt></ruby>。</b>",
+        "cn": "祖父一看以前的照片就讲述当时的回忆。"
+      }
+    ],
+    "related": [
+      "n3-081"
+    ],
+    "kana": "ては",
+    "romaji": "teha",
+    "legacy": {
+      "searchId": 4012,
+      "sourceNumericId": 12,
+      "searchTags": "〜ては ては teha 一……就…… 时间与顺序 动作反复发生",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 12
+    }
+  },
+  {
+    "id": "supp-n1-review-013",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～て初めて",
+    "meaning": "直到……才……",
+    "connection": "动词て形 + 初めて",
+    "desc": "表示经历了前项的事情之后，才终于意识到或发生了后项的事情。后项通常表示某种新的发现、觉悟或状态的改变。",
+    "examples": [
+      {
+        "jp": "<b><ruby>親<rt>おや</rt></ruby>になっ<span style='color:#d64045'>て<ruby>初めて<rt>はじめて</rt></ruby></span>、<ruby>親<rt>おや</rt></ruby>の<ruby>苦労<rt>くろう</rt></ruby>がわかった。</b>",
+        "cn": "做了父母之后才体会到父母的辛苦。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-010",
+      "supp-n1-review-011",
+      "n3-081"
+    ],
+    "kana": "てはじめて",
+    "romaji": "tehajimete",
+    "legacy": {
+      "searchId": 4013,
+      "sourceNumericId": 13,
+      "searchTags": "～て初めて て初めて てはじめて tehajimete 直到……才…… 时间与顺序 经历后才认识",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 13
+    }
+  },
+  {
+    "id": "supp-n1-review-014",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ことになっている",
+    "meaning": "定好了……／规定了……",
+    "connection": "动词辞书形 / 动词ない形 + ことになっている",
+    "desc": "用于表示某个客观遵守的情况或规定好的规则，约定。",
+    "examples": [
+      {
+        "jp": "<b>で、20<ruby>歳<rt>さい</rt></ruby><ruby>未満<rt>みまん</rt></ruby>はお<ruby>酒<rt>さけ</rt></ruby>を<ruby>飲ん<rt>のん</rt></ruby>ではいけない<span style='color:#d64045'>ことになっている</span>。</b>",
+        "cn": "法律规定未满20岁禁止饮酒。"
+      }
+    ],
+    "related": [
+      "n2-136"
+    ],
+    "kana": "ことになっている",
+    "romaji": "kotoninatteiru",
+    "legacy": {
+      "searchId": 4014,
+      "sourceNumericId": 14,
+      "searchTags": "～ことになっている ことになっている kotoninatteiru 定好了……／规定了…… 状态与结果 客观规定与约定",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 14
+    }
+  },
+  {
+    "id": "supp-n1-review-015",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ては（负面条件）",
+    "meaning": "如果...的话",
+    "connection": "动词て形 + は / い形容词くて + は / な形容词・名词 + では",
+    "desc": "用于假设一种状况或行为的发生，并顺理成章地引出由此造成的消极结果。后项常接不理想的事态、负面评价或困难的局面。",
+    "examples": [
+      {
+        "jp": "<b>そんなに<ruby>毎日<rt>まいにち</rt></ruby><ruby>遊ん<rt>あそん</rt></ruby>でい<span style='color:#d64045'>ては</span>、<ruby>試験<rt>しけん</rt></ruby>に<ruby>落ちる<rt>おちる</rt></ruby>。</b>",
+        "cn": "如果每天那么玩的话，考试会落榜的。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-016",
+      "supp-n1-review-019",
+      "n2-243"
+    ],
+    "kana": "ては",
+    "romaji": "teha",
+    "legacy": {
+      "searchId": 4015,
+      "sourceNumericId": 15,
+      "searchTags": "～ては ては teha 如果...的话 条件与假定 导致负面结果",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 15
+    }
+  },
+  {
+    "id": "supp-n1-review-016",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～だけでは",
+    "meaning": "仅仅……的话 / 光靠……",
+    "connection": "名词 / 动词普通体 / い形容词普通体 / な形容词词干+な/である + だけでは",
+    "desc": "表示如果仅仅具备前项的单一条件或程度，无法达到期望的结果。后项常伴随着否定表达或消极的评价，说明目前的条件尚不充足。",
+    "examples": [
+      {
+        "jp": "<b><ruby>知識<rt>ちしき</rt></ruby>がある<span style='color:#d64045'>だけでは</span>、この<ruby>仕事<rt>しごと</rt></ruby>はうまくできない。</b>",
+        "cn": "光有知识是做不好这份工作的。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-015",
+      "supp-n1-review-019",
+      "n2-243"
+    ],
+    "kana": "だけでは",
+    "romaji": "dakedeha",
+    "legacy": {
+      "searchId": 4016,
+      "sourceNumericId": 16,
+      "searchTags": "～だけでは だけでは dakedeha 仅仅……的话 / 光靠…… 条件与假定 仅凭条件不足",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 16
+    }
+  },
+  {
+    "id": "supp-n1-review-017",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～だけ無駄",
+    "meaning": "……也是徒劳",
+    "connection": "动词辞书形 + だけ + 無駄（或「損」「骨折り」等表示徒劳的词汇）",
+    "desc": "常与表示无益、白费力气或损失的词汇搭配使用，用于客观描述某种行为没有实际意义，或者表达说话人认为不值得去做某事的看法。",
+    "examples": [
+      {
+        "jp": "<b><ruby>彼<rt>かれ</rt></ruby>は<ruby>全く<rt>まったく</rt></ruby><ruby>聞く<rt>きく</rt></ruby><ruby>耳<rt>みみ</rt></ruby>を<ruby>持た<rt>もた</rt></ruby>ないので、これ<ruby>以上<rt>いじょう</rt></ruby><ruby>言う<rt>いう</rt></ruby><span style='color:#d64045'>だけ<ruby>無駄<rt>むだ</rt></ruby></span>だ。</b>",
+        "cn": "他根本听不进去，再说也是徒劳。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-018",
+      "n2-141"
+    ],
+    "kana": "だけむだ",
+    "romaji": "dakemuda",
+    "legacy": {
+      "searchId": 4017,
+      "sourceNumericId": 17,
+      "searchTags": "～だけ無駄 だけ無駄 だけむだ dakemuda ……也是徒劳 主张与评价 做了也是徒劳",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 17
+    }
+  },
+  {
+    "id": "supp-n1-review-018",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～だけでも",
+    "meaning": "哪怕只是…… / 光是……就",
+    "connection": "名词 / 动词普通体 + だけでも",
+    "desc": "表示仅仅具备一个最低限度的条件、动作或极其少量的程度，也足以引起后项的结果或产生某种强烈的情感。",
+    "examples": [
+      {
+        "jp": "<b>その<ruby>事故<rt>じこ</rt></ruby>のことは、<ruby>想像<rt>そうぞう</rt></ruby>する<span style='color:#d64045'>だけでも</span><ruby>恐ろしい<rt>おそろしい</rt></ruby>。</b>",
+        "cn": "关于那场事故，光是想象一下觉得可怕。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-017",
+      "n3-102"
+    ],
+    "kana": "だけでも",
+    "romaji": "dakedemo",
+    "legacy": {
+      "searchId": 4018,
+      "sourceNumericId": 18,
+      "searchTags": "～だけでも だけでも dakedemo 哪怕只是…… / 光是……就 限定与程度 最低限度也足够",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 18
+    }
+  },
+  {
+    "id": "supp-n1-review-019",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ないと",
+    "meaning": "如果不……的话",
+    "connection": "动词ない形 / い形容词く・ない / な形容词・名词で・ない + と",
+    "desc": "表示假定前项动作不发生或状态不成立，则后项会随之产生某种不理想、消极或不便的自然结果。后项常常接续负面事态的描述。",
+    "examples": [
+      {
+        "jp": "<b><ruby>急い<rt>いそい</rt></ruby>で<ruby>駅<rt>えき</rt></ruby>に<ruby>向かわ<rt>むかわ</rt></ruby><span style='color:#d64045'>ないと</span>、<ruby>最終<rt>さいしゅう</rt></ruby><ruby>電車<rt>でんしゃ</rt></ruby>に<ruby>間に合わ<rt>まにあわ</rt></ruby>ない。</b>",
+        "cn": "如果不赶紧去车站的话，会赶不上末班车。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-015",
+      "supp-n1-review-016",
+      "n2-243"
+    ],
+    "kana": "ないと",
+    "romaji": "naito",
+    "legacy": {
+      "searchId": 4019,
+      "sourceNumericId": 19,
+      "searchTags": "～ないと ないと naito 如果不……的话 条件与假定 不满足则有后果",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 19
+    }
+  },
+  {
+    "id": "supp-n1-review-020",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ことで（原因）",
+    "meaning": "由于... / 因为...",
+    "connection": "动词普通体 / い形容词普通体 / な形容词な / 名词である + ことで",
+    "desc": "表示引发后项事态或结果的原因。前项通常为已经发生的客观事实或状态，后项为该事实直接导致的结果。",
+    "examples": [
+      {
+        "jp": "<b><ruby>電車<rt>でんしゃ</rt></ruby>が<ruby>遅れ<rt>おくれ</rt></ruby>た<span style='color:#d64045'>ことで</span>、<ruby>会議<rt>かいぎ</rt></ruby>に<ruby>間に合わ<rt>まにあわ</rt></ruby>なかった。</b>",
+        "cn": "由于电车晚点，没赶上会议。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-021",
+      "n2-193"
+    ],
+    "kana": "ことで",
+    "romaji": "kotode",
+    "legacy": {
+      "searchId": 4020,
+      "sourceNumericId": 20,
+      "searchTags": "～ことで ことで kotode 由于... / 因为... 原因与理由 客观原因",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 20
+    }
+  },
+  {
+    "id": "supp-n1-review-021",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ことで（手段）",
+    "meaning": "通过…… / 借由……",
+    "connection": "动词普通体 + ことで",
+    "desc": "表示实现某个目的或达成某种结果的具体方法与手段。前项通常为有意识的具体行为，后项为该行为带来的结果或变化。",
+    "examples": [
+      {
+        "jp": "<b><ruby>毎日<rt>まいにち</rt></ruby>ジョギングをする<span style='color:#d64045'>ことで</span>、<ruby>体力<rt>たいりょく</rt></ruby>を<ruby>維持<rt>いじ</rt></ruby>している。</b>",
+        "cn": "通过每天慢跑来维持体力。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-020",
+      "n2-265"
+    ],
+    "kana": "ことで",
+    "romaji": "kotode",
+    "legacy": {
+      "searchId": 4021,
+      "sourceNumericId": 21,
+      "searchTags": "～ことで ことで kotode 通过…… / 借由…… 依据与视角 实现目的的手段",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 21
+    }
+  },
+  {
+    "id": "supp-n1-review-022",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～を受けて",
+    "meaning": "承接……、应……",
+    "connection": "名词 + を受けて",
+    "desc": "表示在接到某项通知、要求，或者受到某个前项事件的影响后，随之采取了相应的行动或做出了某种决定。多用于新闻报道、商务公文等较为正式的书面场合。",
+    "examples": [
+      {
+        "jp": "<b><ruby>住民<rt>じゅうみん</rt></ruby>からの<ruby>強い<rt>つよい</rt></ruby><ruby>要望<rt>ようぼう</rt></ruby><span style='color:#d64045'>を<ruby>受け<rt>うけ</rt></ruby>て</span>、<ruby>市<rt>し</rt></ruby>は<ruby>新しい<rt>あたらしい</rt></ruby><ruby>公園<rt>こうえん</rt></ruby>を<ruby>建設<rt>けんせつ</rt></ruby>することにした。</b>",
+        "cn": "顺应居民的强烈要求，市政府决定建设一座新公园。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-025",
+      "supp-n1-review-026",
+      "n2-193"
+    ],
+    "kana": "をうけて",
+    "romaji": "woukete",
+    "legacy": {
+      "searchId": 4022,
+      "sourceNumericId": 22,
+      "searchTags": "～を受けて を受けて をうけて woukete 承接……、应…… 原因与理由 承接影响采取行动",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 22
+    }
+  },
+  {
+    "id": "supp-n1-review-023",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ところから（原因・由来）",
+    "meaning": "因为……",
+    "connection": "动词、形容词普通体 / 名词+の/である / な形容词+な/である + ところから",
+    "desc": "用于引出事物的起因、名字的由来或作出某种判断的客观依据。",
+    "examples": [
+      {
+        "jp": "<b><ruby>顔<rt>かお</rt></ruby>が<ruby>黒い<rt>くろい</rt></ruby><span style='color:#d64045'>ところから</span>、クロという<ruby>名前<rt>なまえ</rt></ruby>がつけられた。</b>",
+        "cn": "因为脸黑被取名为小黑。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-024",
+      "n2-193"
+    ],
+    "kana": "ところから",
+    "romaji": "tokorokara",
+    "legacy": {
+      "searchId": 4023,
+      "sourceNumericId": 23,
+      "searchTags": "〜ところから ところから tokorokara 因为…… 原因与理由 原因与名称由来",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 23
+    }
+  },
+  {
+    "id": "supp-n1-review-024",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ところから（判断依据）",
+    "meaning": "从……来看",
+    "connection": "动词 / い形容词普通体 + ところから；な形容词な / である + ところから；名词である + ところから",
+    "desc": "表示得出某个结论或做出某种推断的客观依据。",
+    "examples": [
+      {
+        "jp": "<b><ruby>道<rt>みち</rt></ruby>が<ruby>濡れ<rt>ぬれ</rt></ruby>ている<span style='color:#d64045'>ところから</span>、<ruby>昨夜<rt>さくや</rt></ruby><ruby>雨<rt>あめ</rt></ruby>が<ruby>降っ<rt>ふっ</rt></ruby>たと<ruby>思わ<rt>おもわ</rt></ruby>れる。</b>",
+        "cn": "从路面湿着来看，昨晚下了雨。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-023",
+      "n2-265"
+    ],
+    "kana": "ところから",
+    "romaji": "tokorokara",
+    "legacy": {
+      "searchId": 4024,
+      "sourceNumericId": 24,
+      "searchTags": "～ところから ところから tokorokara 从……来看 依据与视角 判断的客观依据",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 24
+    }
+  },
+  {
+    "id": "supp-n1-review-025",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ことだし",
+    "meaning": "既然……",
+    "connection": "名词+の/である / な形容词+な/である / い形容词、动词普通体 + ことだし",
+    "desc": "用于在众多理由中举出一个较为具有代表性或显而易见的理由，以此作为后项采取某种行动、提出建议或作出决定的契机。",
+    "examples": [
+      {
+        "jp": "<b><ruby>雨<rt>あめ</rt></ruby>もやんだ<span style='color:#d64045'>ことだし</span>、そろそろ<ruby>出かけ<rt>でかけ</rt></ruby>ましょう。</b>",
+        "cn": "既然雨也停了，我们差不多出门吧。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-022",
+      "supp-n1-review-026",
+      "n2-193"
+    ],
+    "kana": "ことだし",
+    "romaji": "kotodashi",
+    "legacy": {
+      "searchId": 4025,
+      "sourceNumericId": 25,
+      "searchTags": "〜ことだし ことだし kotodashi 既然…… 原因与理由 列举代表性理由",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 25
+    }
+  },
+  {
+    "id": "supp-n1-review-026",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～によるところが大きい",
+    "meaning": "很大程度上归功于……",
+    "connection": "名词 + によるところが大きい",
+    "desc": "表示取得某种成果或引发某种现象的主要原因，很大一部分归结于前项事物。多用于评价积极的结果，强调前项要素在其中起到了关键作用或做出了重要贡献。",
+    "examples": [
+      {
+        "jp": "<b><ruby>今回<rt>こんかい</rt></ruby>のプロジェクトが<ruby>成功<rt>せいこう</rt></ruby>したのは、チーム<ruby>全員<rt>ぜんいん</rt></ruby>の<ruby>協力<rt>きょうりょく</rt></ruby><span style='color:#d64045'>によるところが<ruby>大きい<rt>おおきい</rt></ruby></span>。</b>",
+        "cn": "这次项目的成功，很大程度上归功于团队全体成员的合作。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-022",
+      "supp-n1-review-025",
+      "n2-193"
+    ],
+    "kana": "によるところがおおきい",
+    "romaji": "niyorutokorogaookii",
+    "legacy": {
+      "searchId": 4026,
+      "sourceNumericId": 26,
+      "searchTags": "～によるところが大きい によるところが大きい によるところがおおきい niyorutokorogaookii 很大程度上归功于…… 原因与理由 主要归因",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 26
+    }
+  },
+  {
+    "id": "supp-n1-review-027",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～は（こそ）～したが",
+    "meaning": "确实……了，但是……",
+    "connection": "名词 / 动词连用形（去掉「ます」） / 动词辞书形 + こと + は + 同一动词的た形（或「したが」） + が",
+    "desc": "表示退让或部分承认某事实。承认前项的动作已经发生，但随后在后半句引出带有转折意味的结果或补充说明。多用于虽然采取了某种行动或做出了努力，却没有达到预期结果的语境。",
+    "examples": [
+      {
+        "jp": "<b><ruby>努力<rt>どりょく</rt></ruby><span style='color:#d64045'>こそしたが</span>、<ruby>目標<rt>もくひょう</rt></ruby>を<ruby>達成<rt>たっせい</rt></ruby>するには<ruby>至ら<rt>いたら</rt></ruby>なかった。</b>",
+        "cn": "确实努力了，但是没能达成目标。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-028",
+      "supp-n1-review-029",
+      "n2-143"
+    ],
+    "kana": "は（こそ）したが",
+    "romaji": "ha(koso)shitaga",
+    "legacy": {
+      "searchId": 4027,
+      "sourceNumericId": 27,
+      "searchTags": "～は（こそ）～したが は（こそ）したが ha(koso)shitaga 确实……了，但是…… 逆接与让步 承认事实后转折",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 27
+    }
+  },
+  {
+    "id": "supp-n1-review-028",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～だろうに／～でしょうに",
+    "meaning": "原本会……",
+    "connection": "动词普通体 / い形容词普通体 / な形容词词干 / 名词 + だろうに",
+    "desc": "用于表达说话人对与期待或常理相反的事实感到遗憾、惋惜或同情。前半句常伴随假设条件，描述本该发生或期望发生的情况，但实际结果往往与之相反，未能如愿。",
+    "examples": [
+      {
+        "jp": "<b>もう<ruby>少し<rt>すこし</rt></ruby><ruby>早く<rt>はやく</rt></ruby><ruby>家<rt>いえ</rt></ruby>を<ruby>出れ<rt>でれ</rt></ruby>ば、<ruby>電車<rt>でんしゃ</rt></ruby>に<ruby>間に合っ<rt>まにあっ</rt></ruby>た<span style='color:#d64045'>だろうに</span>。</b>",
+        "cn": "如果再早一点出门就能赶上电车了。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-027",
+      "supp-n1-review-029",
+      "n2-143"
+    ],
+    "kana": "だろうに／でしょうに",
+    "romaji": "darouni/deshouni",
+    "legacy": {
+      "searchId": 4028,
+      "sourceNumericId": 28,
+      "searchTags": "～だろうに/～でしょうに だろうに／でしょうに darouni/deshouni 原本会…… 逆接与让步 与期待相反的遗憾",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 28
+    }
+  },
+  {
+    "id": "supp-n1-review-029",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～はいいが",
+    "meaning": "……倒是挺好，但是……",
+    "connection": "动词普通体 / い形容词普通体 / な形容词（带「な」）/ 名词（带「な」） + のはいいが （※动词た形可直接接续：动词た形 + はいいが）",
+    "desc": "首先在前项承认某件事本身是好的、可以接受的或没有问题的，随后在后项提出由此引发的困难、担忧或不理想的结果。",
+    "examples": [
+      {
+        "jp": "<b><ruby>新しい<rt>あたらしい</rt></ruby>パソコンを<ruby>買っ<rt>かっ</rt></ruby>た<span style='color:#d64045'>はいいが</span>、<ruby>使い<rt>つかい</rt></ruby><ruby>方<rt>かた</rt></ruby>が<ruby>全く<rt>まったく</rt></ruby>わからない。</b>",
+        "cn": "买了新电脑倒是挺好，但是完全不知道怎么用。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-027",
+      "supp-n1-review-028",
+      "n2-143"
+    ],
+    "kana": "はいいが",
+    "romaji": "haiiga",
+    "legacy": {
+      "searchId": 4029,
+      "sourceNumericId": 29,
+      "searchTags": "～はいいが はいいが haiiga ……倒是挺好，但是…… 逆接与让步 先认可后指出问题",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 29
+    }
+  },
+  {
+    "id": "supp-n1-review-030",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～がらみ",
+    "meaning": "牵涉到……、与……有关",
+    "connection": "名词 + がらみ",
+    "desc": "表示与前项事物相关联或纠缠在一起。通常用于描述带有麻烦、消极色彩或情况复杂的事件及纠纷，如涉及金钱、酒精、利益、人际关系等。",
+    "examples": [
+      {
+        "jp": "<b><ruby>最近<rt>さいきん</rt></ruby>、<ruby>金<rt>かね</rt></ruby><span style='color:#d64045'>がらみ</span>の<ruby>事件<rt>じけん</rt></ruby>が<ruby>増え<rt>ふえ</rt></ruby>ている。</b>",
+        "cn": "最近与钱有关的案件增加了。"
+      }
+    ],
+    "related": [
+      "n3-022"
+    ],
+    "kana": "がらみ",
+    "romaji": "garami",
+    "legacy": {
+      "searchId": 4030,
+      "sourceNumericId": 30,
+      "searchTags": "～がらみ がらみ garami 牵涉到……、与……有关 对象与关联 牵涉复杂事项",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 30
+    }
+  },
+  {
+    "id": "supp-n1-review-031",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ように（依照）",
+    "meaning": "按照……",
+    "connection": "动词辞书形・た形・ている形 + ように / 名词 + の + ように",
+    "desc": "表示后项的动作是以某人所说、所知的事物或某种客观记录作为依据来执行的。",
+    "examples": [
+      {
+        "jp": "<b><ruby>説明<rt>せつめい</rt></ruby><ruby>書<rt>しょ</rt></ruby>に<ruby>書い<rt>かい</rt></ruby>てある<span style='color:#d64045'>ように</span>、<ruby>家具<rt>かぐ</rt></ruby>を<ruby>組み立てる<rt>くみたてる</rt></ruby>。</b>",
+        "cn": "按照说明书上写的那样组装家具。"
+      }
+    ],
+    "related": [
+      "n2-265"
+    ],
+    "kana": "ように",
+    "romaji": "youni",
+    "legacy": {
+      "searchId": 4031,
+      "sourceNumericId": 31,
+      "searchTags": "～ように ように youni 按照…… 依据与视角 依照信息执行",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 31
+    }
+  },
+  {
+    "id": "supp-n1-review-032",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～かというと／～かといえば",
+    "meaning": "要说是否……",
+    "connection": "动词普通体 / い形容词普通体 / な形容词（だ） / 名词（だ） + かというと",
+    "desc": "表示提出一个预设的疑问，随后给出与通常预期不同或部分否定的回答。后半句多接续否定表达（如「そうではない」「とは限らない」等）。另外，当与疑问词（如「なぜ」「どうして」等）搭配使用时，用于引出并解释原因。",
+    "examples": [
+      {
+        "jp": "<b>お<ruby>金<rt>かね</rt></ruby>があれば<ruby>幸せ<rt>しあわせ</rt></ruby><span style='color:#d64045'>かというと</span>、そうではない。</b>",
+        "cn": "要说有钱是否就幸福，并非如此。"
+      }
+    ],
+    "related": [
+      "n2-141"
+    ],
+    "kana": "かというと／かといえば",
+    "romaji": "katoiuto/katoieba",
+    "legacy": {
+      "searchId": 4032,
+      "sourceNumericId": 32,
+      "searchTags": "～かというと/ ～かといえば かというと／かといえば ～かというと ～かといえば katoiuto/katoieba 要说是否…… 主张与评价 提出问题后修正预期",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 32
+    }
+  },
+  {
+    "id": "supp-n1-review-033",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～とも～とも",
+    "meaning": "既不能说是……也不能说是……",
+    "connection": "名词 / 动词普通体 / い形容词普通体 / な形容词词干 + とも + 名词 / 动词普通体 / い形容词普通体 / な形容词词干 + とも（通常后接「つかない」「言えない」「わからない」等否定表达）",
+    "desc": "用于表示某事物的状态或性质含糊不清，难以明确界定究竟属于前者还是后者。常与表示“无法分辨”、“难以断定”的词汇搭配使用。",
+    "examples": [
+      {
+        "jp": "<b>それは<span style='color:#d64045'><ruby>犬<rt>いぬ</rt></ruby>とも<ruby>猫<rt>ねこ</rt></ruby>とも</span>つかない<ruby>不思議<rt>ふしぎ</rt></ruby>な<ruby>動物<rt>どうぶつ</rt></ruby>だった。</b>",
+        "cn": "那是只分不清是猫是狗的奇怪动物。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-034",
+      "supp-n1-review-035",
+      "n2-259"
+    ],
+    "kana": "ともとも",
+    "romaji": "tomotomo",
+    "legacy": {
+      "searchId": 4033,
+      "sourceNumericId": 33,
+      "searchTags": "〜とも〜とも ともとも tomotomo 既不能说是……也不能说是…… 举例与递进 两者均难断定",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 33
+    }
+  },
+  {
+    "id": "supp-n1-review-034",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～などして",
+    "meaning": "采取……等方式 / 通过……等手段",
+    "connection": "名词 / 动词て形 + などして",
+    "desc": "用于举出一种或数种作为手段、方法或应对措施的动作。暗示除此之外还有其他的途径或办法。多用于说明为了解决问题、度过时间或达成某种目的时所采取的具体行动。",
+    "examples": [
+      {
+        "jp": "<b>わからない<ruby>言葉<rt>ことば</rt></ruby>は、<ruby>辞書<rt>じしょ</rt></ruby>を<ruby>引く<rt>ひく</rt></ruby><span style='color:#d64045'>などして</span><ruby>自分<rt>じぶん</rt></ruby>で<ruby>調べ<rt>しらべ</rt></ruby>てください。</b>",
+        "cn": "不懂的词汇请通过查阅字典等方式自行了解。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-033",
+      "supp-n1-review-035",
+      "n2-259"
+    ],
+    "kana": "などして",
+    "romaji": "nadoshite",
+    "legacy": {
+      "searchId": 4034,
+      "sourceNumericId": 34,
+      "searchTags": "～などして などして nadoshite 采取……等方式 / 通过……等手段 举例与递进 列举手段",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 34
+    }
+  },
+  {
+    "id": "supp-n1-review-035",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～だけでなく",
+    "meaning": "不仅……而且……",
+    "connection": "名词 / 动词、い形容词普通体 / な形容词な・である + だけでなく",
+    "desc": "表示某事物不局限于前项所提及的范围，还同时包含后项的情况。用于追加补充说明，后半句通常会配合使用提示助词「も」来引出递进或并列的内容。",
+    "examples": [
+      {
+        "jp": "<b>このレストランは<ruby>料理<rt>りょうり</rt></ruby>が<ruby>美味しい<rt>おいしい</rt></ruby><span style='color:#d64045'>だけでなく</span>、サービスも<ruby>素晴らしい<rt>すばらしい</rt></ruby>。</b>",
+        "cn": "这家餐厅不仅菜品好吃，服务也很出色。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-033",
+      "supp-n1-review-034",
+      "n2-259"
+    ],
+    "kana": "だけでなく",
+    "romaji": "dakedenaku",
+    "legacy": {
+      "searchId": 4035,
+      "sourceNumericId": 35,
+      "searchTags": "～だけでなく だけでなく dakedenaku 不仅……而且…… 举例与递进 追加递进",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 35
+    }
+  },
+  {
+    "id": "supp-n1-review-036",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～は～で",
+    "meaning": "……自有……的（情况 / 道理 / 优点等）",
+    "connection": "名词 + は + 同一名词 + で",
+    "desc": "前后使用同一个名词，表示虽然存在其他客观情况，但该事物本身也有其独特的情况、立场、价值或苦衷。",
+    "examples": [
+      {
+        "jp": "<b><ruby>都会<rt>とかい</rt></ruby>の<ruby>生活<rt>せいかつ</rt></ruby>は<ruby>便利<rt>べんり</rt></ruby>だが、<span style='color:#d64045'><ruby>田舎<rt>いなか</rt></ruby>は<ruby>田舎<rt>いなか</rt></ruby>で</span><ruby>良<rt>よ</rt></ruby>さがある。</b>",
+        "cn": "城市生活很方便，但乡下自有乡下的好处。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-037",
+      "supp-n1-review-040",
+      "n2-141"
+    ],
+    "kana": "はで",
+    "romaji": "hade",
+    "legacy": {
+      "searchId": 4036,
+      "sourceNumericId": 36,
+      "searchTags": "～は〜で はで hade ……自有……的（情况 / 道理 / 优点等） 主张与评价 事物自有其情况",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 36
+    }
+  },
+  {
+    "id": "supp-n1-review-037",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～までになる",
+    "meaning": "到了……的地步",
+    "connection": "动词辞书形 / 动词可能形 + までになる",
+    "desc": "表示经过一段时间的发展、变化或努力，状态达到了一种相对较高或极端的程度。",
+    "examples": [
+      {
+        "jp": "<b><ruby>毎日<rt>まいにち</rt></ruby><ruby>練習<rt>れんしゅう</rt></ruby>したおかげで、<ruby>日本<rt>にほん</rt></ruby>の<ruby>新聞<rt>しんぶん</rt></ruby>が<ruby>読める<rt>よめる</rt></ruby><span style='color:#d64045'>までになった</span>。</b>",
+        "cn": "多亏了每天练习，现在到了能看懂日文报纸的地步。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-036",
+      "supp-n1-review-040",
+      "n3-102"
+    ],
+    "kana": "までになる",
+    "romaji": "madeninaru",
+    "legacy": {
+      "searchId": 4037,
+      "sourceNumericId": 37,
+      "searchTags": "～までになる までになる madeninaru 到了……的地步 限定与程度 发展到某种地步",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 37
+    }
+  },
+  {
+    "id": "supp-n1-review-038",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～おきに",
+    "meaning": "每隔……",
+    "connection": "数量词 + おきに",
+    "desc": "表示在特定的时间、距离等间隔之后重复发生某事。语意上更强调中间空出的间隔跨度。",
+    "examples": [
+      {
+        "jp": "<b>この<ruby>薬<rt>くすり</rt></ruby>は、6<ruby>時間<rt>じかん</rt></ruby><span style='color:#d64045'>おきに</span><ruby>飲ん<rt>のん</rt></ruby>でください。</b>",
+        "cn": "这种药请每隔6小时服用一次。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-039",
+      "n3-102"
+    ],
+    "kana": "おきに",
+    "romaji": "okini",
+    "legacy": {
+      "searchId": 4038,
+      "sourceNumericId": 38,
+      "searchTags": "～おきに おきに okini 每隔…… 限定与程度 按间隔反复",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 38
+    }
+  },
+  {
+    "id": "supp-n1-review-039",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ごとに",
+    "meaning": "每……",
+    "connection": "名词 / 动词辞书形 / 数量词 + ごとに",
+    "desc": "表示某个动作或现象规律性地反复发生，或者指代事物毫无遗漏的每一个个体。",
+    "examples": [
+      {
+        "jp": "<b>オリンピックは4<ruby>年<rt>ねん</rt></ruby><span style='color:#d64045'>ごとに</span><ruby>開催<rt>かいさい</rt></ruby>される。</b>",
+        "cn": "奥运会每4年举办一次。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-038",
+      "n3-102"
+    ],
+    "kana": "ごとに",
+    "romaji": "gotoni",
+    "legacy": {
+      "searchId": 4039,
+      "sourceNumericId": 39,
+      "searchTags": "～ごとに ごとに gotoni 每…… 限定与程度 每次或每个",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 39
+    }
+  },
+  {
+    "id": "supp-n1-review-040",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～でしかない",
+    "meaning": "只不过是……",
+    "connection": "名词 + でしかない",
+    "desc": "表示对事物的程度、性质或范围进行限定，强调仅仅处于这一状态，而不具备更高的价值或更深层的含义。多带有一种轻视、无奈或消极的语感，与「〜にすぎない」用法相似。",
+    "examples": [
+      {
+        "jp": "<b>それは<ruby>彼<rt>かれ</rt></ruby>の<ruby>個人<rt>こじん</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>意見<rt>いけん</rt></ruby><span style='color:#d64045'>でしかなく</span>、<ruby>事実<rt>じじつ</rt></ruby>を<ruby>反映<rt>はんえい</rt></ruby>しているわけではない。</b>",
+        "cn": "那只不过是他个人的意见，并未反映事实。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-036",
+      "supp-n1-review-037",
+      "n3-102"
+    ],
+    "kana": "でしかない",
+    "romaji": "deshikanai",
+    "legacy": {
+      "searchId": 4040,
+      "sourceNumericId": 40,
+      "searchTags": "～でしかない でしかない deshikanai 只不过是…… 限定与程度 只不过是",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 40
+    }
+  },
+  {
+    "id": "supp-n1-review-041",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～分には",
+    "meaning": "只要……的话",
+    "connection": "动词普通体 / い形容词普通体 / な形容词（带「な」） / 名词 + の + 分には",
+    "desc": "用于限定某种行为或状态的范围。表示如果仅仅是在这个范围或程度内，就不会产生问题或者可以接受。",
+    "examples": [
+      {
+        "jp": "<b>この<ruby>古い<rt>ふるい</rt></ruby>パソコンは、<ruby>文章<rt>ぶんしょう</rt></ruby>を<ruby>入力<rt>にゅうりょく</rt></ruby>する<span style='color:#d64045'><ruby>分<rt>ぶん</rt></ruby>には</span><ruby>全く<rt>まったく</rt></ruby><ruby>問題<rt>もんだい</rt></ruby>なく<ruby>使える<rt>つかえる</rt></ruby>。</b>",
+        "cn": "这台旧电脑只要用来输入文章是完全没有问题的。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-036",
+      "supp-n1-review-037",
+      "n3-102"
+    ],
+    "kana": "ぶんには",
+    "romaji": "bunniha",
+    "legacy": {
+      "searchId": 4041,
+      "sourceNumericId": 41,
+      "searchTags": "～分には 分には ぶんには bunniha 只要……的话 限定与程度 限定在可接受范围",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 41
+    }
+  },
+  {
+    "id": "supp-n1-review-042",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～てよかった",
+    "meaning": "……真是太好了",
+    "connection": "动词て形 + よかった（否定形式为：动词ない形（去掉「ない」）+ なくて + よかった）",
+    "desc": "表示事情发生后，说话人感到庆幸、安心的心理状态。说明由于该动作或状态的发生，带来了良好的结果。其否定形式用于表示因某事没有发生而感到庆幸。",
+    "examples": [
+      {
+        "jp": "<b><ruby>雨<rt>あめ</rt></ruby>が<ruby>降る<rt>ふる</rt></ruby><ruby>前<rt>まえ</rt></ruby>に<ruby>家<rt>いえ</rt></ruby>に<ruby>帰れ<rt>かえれ</rt></ruby><span style='color:#d64045'>てよかった</span>。</b>",
+        "cn": "能在下雨前回到家真是太好了。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-043",
+      "supp-n1-review-044",
+      "n3-113"
+    ],
+    "kana": "てよかった",
+    "romaji": "teyokatta",
+    "legacy": {
+      "searchId": 4042,
+      "sourceNumericId": 42,
+      "searchTags": "～てよかった てよかった teyokatta ……真是太好了 情感与决心 事后庆幸",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 42
+    }
+  },
+  {
+    "id": "supp-n1-review-043",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～といっても過言ではない",
+    "meaning": "说……也不为过",
+    "connection": "动词普通体 / い形容词普通体 / な形容词普通体 / 名词普通体 + といっても過言ではない（名词和な形容词多省略「だ」）",
+    "desc": "表示强调，认为对某事物的评价、描述或判断虽然听起来或许有些夸张，但实际上是非常符合客观事实的。常用于表达极高的赞誉、严厉的批评或得出强烈的结论。",
+    "examples": [
+      {
+        "jp": "<b>この<ruby>発明<rt>はつめい</rt></ruby>は、<ruby>今<rt>こん</rt></ruby><ruby>世紀<rt>せいき</rt></ruby><ruby>最大<rt>さいだい</rt></ruby>の<ruby>発見<rt>はっけん</rt></ruby>だ<span style='color:#d64045'>といっても<ruby>過言<rt>かごん</rt></ruby>ではない</span>。</b>",
+        "cn": "说这项发明是本世纪最伟大的发现也不为过。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-042",
+      "supp-n1-review-044",
+      "n2-141"
+    ],
+    "kana": "といってもかごんではない",
+    "romaji": "toittemokagondehanai",
+    "legacy": {
+      "searchId": 4043,
+      "sourceNumericId": 43,
+      "searchTags": "～といっても過言ではない といっても過言ではない といってもかごんではない toittemokagondehanai 说……也不为过 主张与评价 强调评价并不过分",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 43
+    }
+  },
+  {
+    "id": "supp-n1-review-044",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ことにある",
+    "meaning": "在于……",
+    "connection": "动词辞书形 / い形容词普通体 / な形容词な / 名词の + ことにある",
+    "desc": "用于指出某事物的核心、本质、原因、目的或重点所在。说明前面提到的概念或主语的关键点，就体现在「こと」所指代的内容中。",
+    "examples": [
+      {
+        "jp": "<b>このゲームの<ruby>面白<rt>おもしろ</rt></ruby>さは、<ruby>仲間<rt>なかま</rt></ruby>と<ruby>協力<rt>きょうりょく</rt></ruby>して<ruby>敵<rt>てき</rt></ruby>を<ruby>倒す<rt>たおす</rt></ruby><span style='color:#d64045'>ことにある</span>。</b>",
+        "cn": "这款游戏的趣味在于与伙伴合作击败敌人。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-042",
+      "supp-n1-review-043",
+      "n2-141"
+    ],
+    "kana": "ことにある",
+    "romaji": "kotoniaru",
+    "legacy": {
+      "searchId": 4044,
+      "sourceNumericId": 44,
+      "searchTags": "～ことにある ことにある kotoniaru 在于…… 主张与评价 指出核心所在",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 44
+    }
+  },
+  {
+    "id": "supp-n1-review-045",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～はしない",
+    "meaning": "并不会……",
+    "connection": "动词连用形（去掉「ます」）/ 动词第三类（サ变动词）词干 + はしない",
+    "desc": "表示强烈的否定。相比于普通的否定表达「〜ない」，在此处加入提示助词「は」，起到了强调否定的作用。常用于主观上极力否认某动作的发生，或者客观上推测某情况发生的概率极低。",
+    "examples": [
+      {
+        "jp": "<b>いくら<ruby>疲れ<rt>つかれ</rt></ruby>ていても、<ruby>途中<rt>とちゅう</rt></ruby>で<ruby>諦め<rt>あきらめ</rt></ruby><span style='color:#d64045'>はしない</span>。</b>",
+        "cn": "无论怎么疲惫，并不会在半途放弃。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-046",
+      "supp-n1-review-047",
+      "n3-091"
+    ],
+    "kana": "はしない",
+    "romaji": "hashinai",
+    "legacy": {
+      "searchId": 4045,
+      "sourceNumericId": 45,
+      "searchTags": "～はしない はしない hashinai 并不会…… 否定 强调不会发生",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 45
+    }
+  },
+  {
+    "id": "supp-n1-review-046",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～もしない",
+    "meaning": "连……都不……",
+    "connection": "动词连用形（去掉「ます」）/ 动词第三类（サ变动词）词干 + もしない",
+    "desc": "表示强烈的否定，强调连最基本的动作都没有进行。多含有说话人不满、责备或惊讶等主观情绪，语气比普通的否定形式更重。",
+    "examples": [
+      {
+        "jp": "<b><ruby>彼<rt>かれ</rt></ruby>は<ruby>自分<rt>じぶん</rt></ruby>で<ruby>調べ<rt>しらべ</rt></ruby><span style='color:#d64045'>もしない</span>で、すぐに<ruby>人<rt>ひと</rt></ruby>に<ruby>聞く<rt>きく</rt></ruby>。</b>",
+        "cn": "他连查都不自己查，就直接问别人。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-045",
+      "supp-n1-review-047",
+      "n3-091"
+    ],
+    "kana": "もしない",
+    "romaji": "moshinai",
+    "legacy": {
+      "searchId": 4046,
+      "sourceNumericId": 46,
+      "searchTags": "～もしない もしない moshinai 连……都不…… 否定 连基本动作也不做",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 46
+    }
+  },
+  {
+    "id": "supp-n1-review-047",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～はないだろう",
+    "meaning": "……不合适吧",
+    "connection": "动词普通体 + の + はないだろう / 名词 + はないだろう",
+    "desc": "用于对某人的言行或某件事的处理方式表达不满或责备，认为该行为超出了常识或情理可接受的范围，属于不恰当的做法。多见于口语表达，常与「いくらなんでも」「それにしても」等词汇搭配使用。",
+    "examples": [
+      {
+        "jp": "<b>いくら<ruby>忙しい<rt>いそがしい</rt></ruby>からといって、<ruby>約束<rt>やくそく</rt></ruby>をすっぽかすの<span style='color:#d64045'>はないだろう</span>。</b>",
+        "cn": "无论怎么忙，直接爽约也是不合适吧。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-045",
+      "supp-n1-review-046",
+      "n2-141"
+    ],
+    "kana": "はないだろう",
+    "romaji": "hanaidarou",
+    "legacy": {
+      "searchId": 4047,
+      "sourceNumericId": 47,
+      "searchTags": "～はないだろう はないだろう hanaidarou ……不合适吧 主张与评价 认为行为不合适",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 47
+    }
+  },
+  {
+    "id": "supp-n1-review-048",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～では（信息来源）",
+    "meaning": "根据……",
+    "connection": "名词 + では",
+    "desc": "用于提示获取信息的具体来源或出处。在句法结构上，后项通常会搭配「〜そうだ」「〜ということだ」「〜らしい」等表示传闻或客观陈述的表达方式，以转述从该来源获得的信息。",
+    "examples": [
+      {
+        "jp": "<b><ruby>天気<rt>てんき</rt></ruby><ruby>予報<rt>よほう</rt></ruby><span style='color:#d64045'>では</span>、<ruby>明日<rt>あす</rt></ruby>は<ruby>午後<rt>ごご</rt></ruby>から<ruby>雨<rt>あめ</rt></ruby>になるそうだ。</b>",
+        "cn": "根据天气预报，明天下午好像会下雨。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-049",
+      "n3-003"
+    ],
+    "kana": "では",
+    "romaji": "deha",
+    "legacy": {
+      "searchId": 4048,
+      "sourceNumericId": 48,
+      "searchTags": "～では では deha 根据…… 传闻与引用 提示信息出处",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 48
+    }
+  },
+  {
+    "id": "supp-n1-review-049",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～とされている",
+    "meaning": "被认为……",
+    "connection": "普通体 + とされている（注：名词和な形容词有时也可直接接续）",
+    "desc": "表示社会上广泛接受的观点、常识或学术上的普遍见解。用于客观地陈述一般性的看法。",
+    "examples": [
+      {
+        "jp": "<b>この<ruby>成分<rt>せいぶん</rt></ruby>は、<ruby>健康<rt>けんこう</rt></ruby>に<ruby>良い<rt>よい</rt></ruby><span style='color:#d64045'>とされている</span>。</b>",
+        "cn": "这种成分被认为对健康有益。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-048",
+      "n3-003"
+    ],
+    "kana": "とされている",
+    "romaji": "tosareteiru",
+    "legacy": {
+      "searchId": 4049,
+      "sourceNumericId": 49,
+      "searchTags": "～とされている とされている tosareteiru 被认为…… 传闻与引用 社会普遍认定",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 49
+    }
+  },
+  {
+    "id": "supp-n1-review-050",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～てくれる（反语）",
+    "meaning": "竟然（给我）……",
+    "connection": "动词て形 + くれる",
+    "desc": "该句型原本用于表示接受他人的恩惠，但在特定语境下，当他人的行为或事物的状态给说话人造成困扰、损害或带来不快时，可作为反语使用。通过这种看似感谢的表达方式，传达说话人内心的不满、责备或讽刺之情。",
+    "examples": [
+      {
+        "jp": "<b><ruby>忙しい<rt>いそがしい</rt></ruby><ruby>時<rt>とき</rt></ruby>に<ruby>限っ<rt>かぎっ</rt></ruby>て、<ruby>彼<rt>かれ</rt></ruby>は<ruby>余計<rt>よけい</rt></ruby>な<ruby>仕事<rt>しごと</rt></ruby>を<ruby>増やし<rt>ふやし</rt></ruby><span style='color:#d64045'>てくれる</span>。</b>",
+        "cn": "偏偏在忙碌的时候，他给我增加了多余的工作。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-051",
+      "n3-113"
+    ],
+    "kana": "てくれる",
+    "romaji": "tekureru",
+    "legacy": {
+      "searchId": 4050,
+      "sourceNumericId": 50,
+      "searchTags": "～てくれる てくれる tekureru 竟然（给我）…… 情感与决心 反语表达不满",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 50
+    }
+  },
+  {
+    "id": "supp-n1-review-051",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～思いをする",
+    "meaning": "感到……",
+    "connection": "い形容词 / な形容词（+な） / 动词た形 + 思いをする",
+    "desc": "表示亲身经历并体会到了某种主观的情感或状态。常用于描述令人印象深刻的心理感受，多搭配表示情感的词汇，如「痛い」「嫌な」「辛い」「恥ずかしい」等。",
+    "examples": [
+      {
+        "jp": "<b><ruby>人前<rt>ひとまえ</rt></ruby>で<ruby>転ん<rt>ころん</rt></ruby>で、<ruby>恥ずかしい<rt>はずかしい</rt></ruby><span style='color:#d64045'><ruby>思い<rt>おもい</rt></ruby>をした</span>。</b>",
+        "cn": "在众人面前摔倒，觉得很羞耻。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-050",
+      "n3-113"
+    ],
+    "kana": "おもいをする",
+    "romaji": "omoiwosuru",
+    "legacy": {
+      "searchId": 4051,
+      "sourceNumericId": 51,
+      "searchTags": "～思いをする 思いをする おもいをする omoiwosuru 感到…… 情感与决心 亲身感受到",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 51
+    }
+  },
+  {
+    "id": "supp-n1-review-052",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～てほしい",
+    "meaning": "希望……做……",
+    "connection": "动词て形 + ほしい（否定形式为：动词ない形 + でほしい）",
+    "desc": "表示说话人期望对方或第三者去执行某个动作，或者保持某种状态。 句式：Aが　Bに　Vてほしい。",
+    "examples": [
+      {
+        "jp": "<b>この<ruby>本<rt>ほん</rt></ruby>はとても<ruby>面白い<rt>おもしろい</rt></ruby>ので、あなたにも<span style='color:#d64045'><ruby>読ん<rt>よん</rt></ruby>でほしい</span>。</b>",
+        "cn": "这本书非常有趣，希望你也能读一下。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-053",
+      "supp-n1-review-054",
+      "n3-113"
+    ],
+    "kana": "てほしい",
+    "romaji": "tehoshii",
+    "legacy": {
+      "searchId": 4052,
+      "sourceNumericId": 52,
+      "searchTags": "～てほしい てほしい tehoshii 希望……做…… 情感与决心 希望他人行动",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 52
+    }
+  },
+  {
+    "id": "supp-n1-review-053",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～てほしいものです",
+    "meaning": "真希望……",
+    "connection": "动词て形 / 动词ない形 + ないで + ほしいものです",
+    "desc": "表示说话人强烈的愿望或期盼。相比于单纯的「〜てほしい」，加上「ものです」后带有更浓厚的感情色彩，常带有感叹或感慨的语气，表达一种由衷的期盼。",
+    "examples": [
+      {
+        "jp": "<b><ruby>早く<rt>はやく</rt></ruby><ruby>平和<rt>へいわ</rt></ruby>な<ruby>世界<rt>せかい</rt></ruby>になっ<span style='color:#d64045'>てほしいものです</span>。</b>",
+        "cn": "真希望早日变成和平的世界。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-052",
+      "supp-n1-review-054",
+      "n3-113"
+    ],
+    "kana": "てほしいものです",
+    "romaji": "tehoshiimonodesu",
+    "legacy": {
+      "searchId": 4053,
+      "sourceNumericId": 53,
+      "searchTags": "～てほしいものです てほしいものです tehoshiimonodesu 真希望…… 情感与决心 强烈而由衷的愿望",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 53
+    }
+  },
+  {
+    "id": "supp-n1-review-054",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ように（祈愿）",
+    "meaning": "希望……",
+    "connection": "动词ます形 / 动词ません + ように",
+    "desc": "表示说话人对未来某种结果的期盼或祈求。常用于向神明许愿、个人的内心祈祷，或者向他人表达祝愿等场合。",
+    "examples": [
+      {
+        "jp": "<b><ruby>家族<rt>かぞく</rt></ruby>が<ruby>健康<rt>けんこう</rt></ruby>で<ruby>過ごせ<rt>すごせ</rt></ruby>ます<span style='color:#d64045'>ように</span>。</b>",
+        "cn": "希望家人能健康生活。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-052",
+      "supp-n1-review-053",
+      "n3-113"
+    ],
+    "kana": "ように",
+    "romaji": "youni",
+    "legacy": {
+      "searchId": 4054,
+      "sourceNumericId": 54,
+      "searchTags": "～ように ように youni 希望…… 情感与决心 祈祷未来结果",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 54
+    }
+  },
+  {
+    "id": "supp-n1-review-055",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ようと思う",
+    "meaning": "打算……",
+    "connection": "动词意志形 + と思う",
+    "desc": "表示说话人想要进行某项动作的意志或计划。陈述的是当前的决定或想法。通常用于描述第一人称的意愿，如果陈述第三人称的意愿，一般采用「〜ようと思っている」的形式。",
+    "examples": [
+      {
+        "jp": "<b><ruby>明日<rt>あす</rt></ruby>からはもっと<ruby>早く<rt>はやく</rt></ruby><ruby>起き<rt>おき</rt></ruby><span style='color:#d64045'>ようと<ruby>思う<rt>おもう</rt></ruby></span>。</b>",
+        "cn": "明天起打算早点起床。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-056",
+      "n3-113"
+    ],
+    "kana": "ようとおもう",
+    "romaji": "youtoomou",
+    "legacy": {
+      "searchId": 4055,
+      "sourceNumericId": 55,
+      "searchTags": "～ようと思う ようと思う ようとおもう youtoomou 打算…… 情感与决心 当前意志与打算",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 55
+    }
+  },
+  {
+    "id": "supp-n1-review-056",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ようにする",
+    "meaning": "尽量做到……",
+    "connection": "动词辞书形 / 动词ない形 + ようにする",
+    "desc": "表示主观上为了达到某个目的或养成某种习惯，而在日常中有意识地、持续地努力去做或不去做某事。",
+    "examples": [
+      {
+        "jp": "<b><ruby>健康<rt>けんこう</rt></ruby>のために、<ruby>毎日<rt>まいにち</rt></ruby><ruby>野菜<rt>やさい</rt></ruby>を<ruby>食べる<rt>たべる</rt></ruby><span style='color:#d64045'>ようにしている</span>。</b>",
+        "cn": "为了健康，我尽量每天都吃蔬菜。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-055",
+      "n3-113"
+    ],
+    "kana": "ようにする",
+    "romaji": "younisuru",
+    "legacy": {
+      "searchId": 4056,
+      "sourceNumericId": 56,
+      "searchTags": "～ようにする ようにする younisuru 尽量做到…… 情感与决心 有意识地坚持",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 56
+    }
+  },
+  {
+    "id": "supp-n1-review-057",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～てはならない",
+    "meaning": "不可……",
+    "connection": "动词て形 + はならない",
+    "desc": "表示禁止。通常基于社会常识、道德规范、法律法规或组织纪律，指出某种行为是不妥当或不被允许的。多用于书面语、正式规定以及郑重的告诫或训诫中。",
+    "examples": [
+      {
+        "jp": "<b><ruby>個人<rt>こじん</rt></ruby>の<ruby>利益<rt>りえき</rt></ruby>のために、<ruby>社会<rt>しゃかい</rt></ruby>のルールを<ruby>破っ<rt>やぶっ</rt></ruby><span style='color:#d64045'>てはならない</span>。</b>",
+        "cn": "不可为了个人利益而破坏社会规则。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-058",
+      "supp-n1-review-075",
+      "n3-055"
+    ],
+    "kana": "てはならない",
+    "romaji": "tehanaranai",
+    "legacy": {
+      "searchId": 4057,
+      "sourceNumericId": 57,
+      "searchTags": "～てはならない てはならない tehanaranai 不可…… 指示与忠告 正式禁止",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 57
+    }
+  },
+  {
+    "id": "supp-n1-review-058",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～たらどうですか",
+    "meaning": "……怎么样",
+    "connection": "动词た形 + らどうですか",
+    "desc": "用于向对方提出建议或劝告。在对方感到困惑、遇到问题或寻求意见时，提出一个具体的解决方式或行动方案供对方参考。 注意：口语中常会省略成「てみたら？」。",
+    "examples": [
+      {
+        "jp": "<b><ruby>熱<rt>ねつ</rt></ruby>があるなら、<ruby>早く<rt>はやく</rt></ruby><ruby>病院<rt>びょういん</rt></ruby>に<ruby>行っ<rt>いっ</rt></ruby><span style='color:#d64045'>たらどうですか</span>。</b>",
+        "cn": "既然发烧了，早点去医院看看怎么样。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-057",
+      "supp-n1-review-075",
+      "n3-055"
+    ],
+    "kana": "たらどうですか",
+    "romaji": "taradoudesuka",
+    "legacy": {
+      "searchId": 4058,
+      "sourceNumericId": 58,
+      "searchTags": "～たらどうですか たらどうですか taradoudesuka ……怎么样 指示与忠告 提出具体建议",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 58
+    }
+  },
+  {
+    "id": "supp-n1-review-059",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～させてあげる",
+    "meaning": "让别人做…",
+    "connection": "动词使役て形 + あげる",
+    "desc": "表示说话人（或主语）允许、同意他人做某事，或者主动为他人创造做某事的机会。",
+    "examples": [
+      {
+        "jp": "<b><ruby>子ども<rt>こども</rt></ruby>が<ruby>遊び<rt>あそび</rt></ruby>たがっていたので、<ruby>公園<rt>こうえん</rt></ruby>で<span style='color:#d64045'><ruby>遊ば<rt>あそば</rt></ruby>せてあげた</span>。</b>",
+        "cn": "孩子想玩，我就让他在公园玩了。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-060",
+      "supp-n1-review-078",
+      "n3-012"
+    ],
+    "kana": "させてあげる",
+    "romaji": "saseteageru",
+    "legacy": {
+      "searchId": 4059,
+      "sourceNumericId": 59,
+      "searchTags": "～させてあげる させてあげる saseteageru 让别人做… 授受与敬语 允许他人做",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 59
+    }
+  },
+  {
+    "id": "supp-n1-review-060",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "お～になる",
+    "meaning": "做……（尊敬语）",
+    "connection": "お + 动词ます形（去掉「ます」） + になる",
+    "desc": "用于表达对动作主体的敬意。通常针对长辈、上司或客户等需要给予尊重的对象使用，通过这种形式来抬高对方的动作或状态。",
+    "examples": [
+      {
+        "jp": "<b><ruby>社長<rt>しゃちょう</rt></ruby>は<ruby>新しい<rt>あたらしい</rt></ruby><ruby>計画<rt>けいかく</rt></ruby>について<span style='color:#d64045'>お<ruby>話し<rt>はなし</rt></ruby>になりました</span>。</b>",
+        "cn": "社长谈论了关于新计划的事情。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-059",
+      "supp-n1-review-078",
+      "n3-012"
+    ],
+    "kana": "おになる",
+    "romaji": "oninaru",
+    "legacy": {
+      "searchId": 4060,
+      "sourceNumericId": 60,
+      "searchTags": "お〜になる おになる oninaru 做……（尊敬语） 授受与敬语 尊敬语句型",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 60
+    }
+  },
+  {
+    "id": "supp-n1-review-061",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ごたえ",
+    "meaning": "值得……",
+    "connection": "动词第一连用形 + ごたえ",
+    "desc": "表示某个动作执行后能带来充分的满足感、实质性的反应或效果。",
+    "examples": [
+      {
+        "jp": "<b>このドキュメンタリー<ruby>映画<rt>えいが</rt></ruby>は<ruby>内容<rt>ないよう</rt></ruby>が<ruby>深く<rt>ふかく</rt></ruby>、<ruby>見<rt>み</rt></ruby><span style='color:#d64045'>ごたえ</span>がある。</b>",
+        "cn": "这部纪录片内容深刻，值得一看。"
+      }
+    ],
+    "related": [
+      "n2-223"
+    ],
+    "kana": "ごたえ",
+    "romaji": "gotae",
+    "legacy": {
+      "searchId": 4061,
+      "sourceNumericId": 61,
+      "searchTags": "～ごたえ ごたえ gotae 值得…… 状态与结果 动作带来满足感",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 61
+    }
+  },
+  {
+    "id": "supp-n1-review-062",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～とする／～とします（假设设定）",
+    "meaning": "假设……",
+    "connection": "普通体 ＋ とします",
+    "desc": "用于人为设定一个虚构的前提或条件，以便在此基础上展开推演、探讨或提问。",
+    "examples": [
+      {
+        "jp": "<b><ruby>仮<rt>かり</rt></ruby>に、ここに<ruby>百<rt>ひゃく</rt></ruby><ruby>万<rt>まん</rt></ruby><ruby>円<rt>えん</rt></ruby>がある<span style='color:#d64045'>とします</span>。</b>",
+        "cn": "假设这里有一百万日元。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-063",
+      "supp-n1-review-064",
+      "n2-243"
+    ],
+    "kana": "とする／とします",
+    "romaji": "tosuru/toshimasu",
+    "legacy": {
+      "searchId": 4062,
+      "sourceNumericId": 62,
+      "searchTags": "～とする/～とします とする／とします ～とする ～とします tosuru/toshimasu 假设…… 条件与假定 人为设定假设",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 62
+    }
+  },
+  {
+    "id": "supp-n1-review-063",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～となると／～となれば",
+    "meaning": "如果是……",
+    "connection": "名词 / 动词普通体 / い形容词普通体 / な形容词普通体 + となると",
+    "desc": "用于假定某种情况或提出某个特定话题，后项陈述在此前提下通常会引发的判断、态度变化或实际结果。",
+    "examples": [
+      {
+        "jp": "<b>いざ<ruby>自分<rt>じぶん</rt></ruby>で<ruby>料理<rt>りょうり</rt></ruby>を<ruby>作る<rt>つくる</rt></ruby><span style='color:#d64045'>となると</span>、<ruby>何<rt>なに</rt></ruby>から<ruby>始めれ<rt>はじめれ</rt></ruby>ばいいか<ruby>迷っ<rt>まよっ</rt></ruby>てしまう。</b>",
+        "cn": "如果是真的要自己做饭，就会不知从何做起。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-062",
+      "supp-n1-review-064",
+      "n2-243"
+    ],
+    "kana": "となると／となれば",
+    "romaji": "tonaruto/tonareba",
+    "legacy": {
+      "searchId": 4063,
+      "sourceNumericId": 63,
+      "searchTags": "～となると/ ～となれば となると／となれば ～となると ～となれば tonaruto/tonareba 如果是…… 条件与假定 面临具体情况时",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 63
+    }
+  },
+  {
+    "id": "supp-n1-review-064",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～とあっては／～とあれば",
+    "meaning": "既然是……",
+    "connection": "名词 / 动词普通体 / い形容词普通体 / な形容词词干（或带「だ」） + とあっては",
+    "desc": "提出一个较为特殊的条件或重大的情况作为前项。表示在面临这种特别的局面时，通常难以维持普通的应对方式。后半句多接续表示难以拒绝、只能接受或采取特别行动的表达方式。",
+    "examples": [
+      {
+        "jp": "<b><ruby>社長<rt>しゃちょう</rt></ruby>からの<ruby>直接<rt>ちょくせつ</rt></ruby>の<ruby>頼み<rt>たのみ</rt></ruby><span style='color:#d64045'>とあっては</span>、<ruby>引き受け<rt>ひきうけ</rt></ruby>ないわけにはいかない。</b>",
+        "cn": "既然是社长直接的请求，就无法拒绝。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-062",
+      "supp-n1-review-063",
+      "n2-243"
+    ],
+    "kana": "とあっては／とあれば",
+    "romaji": "toatteha/toareba",
+    "legacy": {
+      "searchId": 4064,
+      "sourceNumericId": 64,
+      "searchTags": "～とあっては/ ～とあれば とあっては／とあれば ～とあっては ～とあれば toatteha/toareba 既然是…… 条件与假定 面对特殊条件",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 64
+    }
+  },
+  {
+    "id": "supp-n1-review-065",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～として／～としている（以……为由）",
+    "meaning": "以……为由 / 将……作为原因",
+    "connection": "动词普通体 / い形容词普通体 / な形容词（带「だ」）/ 名词（带「だ」） + として / としている",
+    "desc": "用于引出某项决定、判断或行动背后的客观原因与依据。通常用于陈述第三方（如政府、法院、企业、警察等组织机构）所主张的理由，或说明某种现象的起因。属于正式的书面语，广泛见于新闻报道、官方声明及公文中。",
+    "examples": [
+      {
+        "jp": "<b><ruby>裁判<rt>さいばん</rt></ruby><ruby>所<rt>しょ</rt></ruby>は、<ruby>証拠<rt>しょうこ</rt></ruby>が<ruby>不<rt>ふ</rt></ruby><ruby>十分<rt>じゅうぶん</rt></ruby>だ<span style='color:#d64045'>として</span>、<ruby>原告<rt>げんこく</rt></ruby>の<ruby>訴え<rt>うったえ</rt></ruby>を<ruby>退け<rt>しりぞけ</rt></ruby>た。</b>",
+        "cn": "法院以证据不足为由驳回了原告的诉讼。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-022",
+      "supp-n1-review-025",
+      "n2-193"
+    ],
+    "kana": "として／としている",
+    "romaji": "toshite/toshiteiru",
+    "legacy": {
+      "searchId": 4065,
+      "sourceNumericId": 65,
+      "searchTags": "〜として / 〜としている として／としている ～として ～としている toshite/toshiteiru 以……为由 / 将……作为原因 原因与理由 正式说明理由",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 65
+    }
+  },
+  {
+    "id": "supp-n1-review-066",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～に向けて（朝目标准备）",
+    "meaning": "为了……",
+    "connection": "名词 + に向けて",
+    "desc": "表示以某个特定的事件、日期或大目标为方向，开展相应的准备或努力。",
+    "examples": [
+      {
+        "jp": "<b><ruby>来月<rt>らいげつ</rt></ruby>の<ruby>大会<rt>たいかい</rt></ruby><span style='color:#d64045'>に<ruby>向け<rt>むけ</rt></ruby>て</span>、<ruby>選手<rt>せんしゅ</rt></ruby>たちは<ruby>厳しい<rt>きびしい</rt></ruby><ruby>練習<rt>れんしゅう</rt></ruby>を<ruby>続け<rt>つづけ</rt></ruby>ている。</b>",
+        "cn": "为了下个月的大会，选手们在持续进行严格的训练。"
+      }
+    ],
+    "related": [
+      "n3-082"
+    ],
+    "kana": "にむけて",
+    "romaji": "nimukete",
+    "legacy": {
+      "searchId": 4066,
+      "sourceNumericId": 66,
+      "searchTags": "～に向けて に向けて にむけて nimukete 为了…… 对象与关联 朝目标开展准备",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 66
+    }
+  },
+  {
+    "id": "supp-n1-review-067",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～ほどではない",
+    "meaning": "没有达到……的程度",
+    "connection": "名词 / 动词普通体 / い形容词普通体 / な形容词（带「な」） + ほどではない",
+    "desc": "用于描述某事物的状态、数量或程度，表示虽然存在某种情况，但尚未达到前项所列举的那种较高或极端的水平。",
+    "examples": [
+      {
+        "jp": "<b><ruby>風邪<rt>かぜ</rt></ruby>を<ruby>引い<rt>ひい</rt></ruby>て<ruby>咳<rt>せき</rt></ruby>が<ruby>出る<rt>でる</rt></ruby>が、<ruby>病院<rt>びょういん</rt></ruby>へ<ruby>行く<rt>いく</rt></ruby><span style='color:#d64045'>ほどではない</span>。</b>",
+        "cn": "感冒咳嗽了，但没有达到去医院的程度。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-036",
+      "supp-n1-review-037",
+      "n3-102"
+    ],
+    "kana": "ほどではない",
+    "romaji": "hododehanai",
+    "legacy": {
+      "searchId": 4067,
+      "sourceNumericId": 67,
+      "searchTags": "～ほどではない ほどではない hododehanai 没有达到……的程度 限定与程度 未达到所举程度",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 67
+    }
+  },
+  {
+    "id": "supp-n1-review-068",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～に対して（对比）",
+    "meaning": "与……相对",
+    "connection": "名词 + に対して\n句子普通体（な形容词な/である・名词な/である）+ の + に対して",
+    "desc": "用于将两个具有明显差异或处于对立面的事物、特征、倾向进行对比。前后两项通常列举出截然不同的情况，以客观凸显两者之间的反差。",
+    "examples": [
+      {
+        "jp": "<b><ruby>兄<rt>あに</rt></ruby>が<ruby>活発<rt>かっぱつ</rt></ruby>なの<span style='color:#d64045'>に<ruby>対し<rt>たいし</rt></ruby>て</span>、<ruby>弟<rt>おとうと</rt></ruby>はおとなしい。</b>",
+        "cn": "哥哥很活泼，而弟弟却很安静。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-069",
+      "n2-143"
+    ],
+    "kana": "にたいして",
+    "romaji": "nitaishite",
+    "legacy": {
+      "searchId": 4068,
+      "sourceNumericId": 68,
+      "searchTags": "～に対して に対して にたいして nitaishite 与……相对 逆接与让步 客观对比两项",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 68
+    }
+  },
+  {
+    "id": "supp-n1-review-069",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～に対して（比例）",
+    "meaning": "每……",
+    "connection": "数量词 + に対して",
+    "desc": "表示比例、基准或分配的配额。",
+    "examples": [
+      {
+        "jp": "<b><ruby>学生<rt>がくせい</rt></ruby>20<ruby>人<rt>にん</rt></ruby><span style='color:#d64045'>に<ruby>対し<rt>たいし</rt></ruby>て</span>、<ruby>先生<rt>せんせい</rt></ruby>が1<ruby>人<rt>にん</rt></ruby><ruby>配置<rt>はいち</rt></ruby>されています。</b>",
+        "cn": "每20名学生配备1名老师。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-068",
+      "n3-102"
+    ],
+    "kana": "にたいして",
+    "romaji": "nitaishite",
+    "legacy": {
+      "searchId": 4069,
+      "sourceNumericId": 69,
+      "searchTags": "～に対して に対して にたいして nitaishite 每…… 限定与程度 比例与配额",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 69
+    }
+  },
+  {
+    "id": "supp-n1-review-070",
+    "level": "N2",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～とは（定义）",
+    "meaning": "所谓……",
+    "connection": "名词 + とは",
+    "desc": "用于对前项的词汇、事物或概念进行定义与解释，说明其具体内容。后文常与「〜のことだ」或「〜という意味だ」等句型搭配使用。",
+    "examples": [
+      {
+        "jp": "<b><ruby>人生<rt>じんせい</rt></ruby><span style='color:#d64045'>とは</span>、<ruby>自分<rt>じぶん</rt></ruby>を<ruby>探す<rt>さがす</rt></ruby><ruby>旅<rt>たび</rt></ruby>である。</b>",
+        "cn": "所谓人生，就是寻找自我的旅程。"
+      }
+    ],
+    "related": [
+      "n1-029"
+    ],
+    "kana": "とは",
+    "romaji": "toha",
+    "legacy": {
+      "searchId": 4070,
+      "sourceNumericId": 70,
+      "searchTags": "～とは とは toha 所谓…… 主张与评价 定义概念",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 70
+    }
+  },
+  {
+    "id": "supp-n1-review-071",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～くらい／～ぐらい（只有）",
+    "meaning": "只有……",
+    "connection": "名词 ＋ くらい",
+    "desc": "表示在说话人的主观认知或评价中，某事物达到了最高程度，或者是极具代表性的唯一存在。",
+    "examples": [
+      {
+        "jp": "<b>そんな<ruby>難しい<rt>むずかしい</rt></ruby><ruby>仕事<rt>しごと</rt></ruby>ができるのは、<ruby>君<rt>きみ</rt></ruby><span style='color:#d64045'>ぐらい</span>だ。</b>",
+        "cn": "能胜任那么难的工作的，只有你。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-036",
+      "supp-n1-review-037",
+      "n3-102"
+    ],
+    "kana": "くらいわるぐらい",
+    "romaji": "kuraiwarugurai",
+    "legacy": {
+      "searchId": 4071,
+      "sourceNumericId": 71,
+      "searchTags": "～くらい / ～ぐらい くらい／ぐらい ～くらい ～ぐらい くらいわるぐらい kuraiwarugurai 只有…… 限定与程度 主观上的唯一代表",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 71
+    }
+  },
+  {
+    "id": "supp-n1-review-072",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～らしい／～らしく（外部信息推测）",
+    "meaning": "好像...",
+    "connection": "名词 / 动词普通体 / い形容词普通体 / な形容词词干 + らしい（在句子中顿或修饰用言时变为「らしく」）",
+    "desc": "表示说话人基于看到的客观现象、听到的传闻或获得的信息等外部事实所做出的推测。",
+    "examples": [
+      {
+        "jp": "<b><ruby>隣<rt>となり</rt></ruby>の<ruby>部屋<rt>へや</rt></ruby>に<ruby>誰<rt>だれ</rt></ruby>もいない<span style='color:#d64045'>らしく</span>、とても<ruby>静か<rt>しずか</rt></ruby>だ。</b>",
+        "cn": "隔壁房间好像没有人，非常安静。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-073",
+      "n3-061"
+    ],
+    "kana": "らしい／らしく",
+    "romaji": "rashii/rashiku",
+    "legacy": {
+      "searchId": 4072,
+      "sourceNumericId": 72,
+      "searchTags": "〜らしい / 〜らしく らしい／らしく ～らしい ～らしく rashii/rashiku 好像... 可能性 根据外部信息推测",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 72
+    }
+  },
+  {
+    "id": "supp-n1-review-073",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～んじゃない／～のではないか（推测）",
+    "meaning": "难道不是……吗 / 可能是……吧",
+    "connection": "动词普通体 / い形容词普通体 / な形容词词干+な / 名词+な + のではないか / んじゃない",
+    "desc": "用于委婉地表达说话人的意见、推测或主张。虽然形式上为否定疑问，但实际上表达的是倾向于肯定的看法。",
+    "examples": [
+      {
+        "jp": "<b><ruby>彼<rt>かれ</rt></ruby>はもうその<ruby>事実<rt>じじつ</rt></ruby>を<ruby>知っ<rt>しっ</rt></ruby>ている<span style='color:#d64045'>のではないか</span>。</b>",
+        "cn": "他可能已经知道那个事实了吧。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-072",
+      "n3-061"
+    ],
+    "kana": "んじゃない／のではないか",
+    "romaji": "njanai/nodehanaika",
+    "legacy": {
+      "searchId": 4073,
+      "sourceNumericId": 73,
+      "searchTags": "～んじゃない / ～のではないか んじゃない／のではないか ～んじゃない ～のではないか njanai/nodehanaika 难道不是……吗 / 可能是……吧 可能性 委婉提出推测",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 73
+    }
+  },
+  {
+    "id": "supp-n1-review-074",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～がる（情感表现）",
+    "meaning": "觉得…… / 表现出……的样子",
+    "connection": "い形容词（去掉「い」） / な形容词词干 / 动词たい（去掉「い」） + がる",
+    "desc": "用于描述第三人称的情感、感觉或欲望。表示说话人通过观察对方的外在表象或言行举止，判断出对方处于某种心理或生理状态。通常不用于第一人称的主观感受表达。",
+    "examples": [
+      {
+        "jp": "<b><ruby>彼<rt>かれ</rt></ruby>は<ruby>犬<rt>いぬ</rt></ruby>をとても<ruby>怖<rt>こわ</rt></ruby><span style='color:#d64045'>がる</span>。</b>",
+        "cn": "他非常怕狗。"
+      }
+    ],
+    "related": [
+      "n3-014"
+    ],
+    "kana": "がる",
+    "romaji": "garu",
+    "legacy": {
+      "searchId": 4074,
+      "sourceNumericId": 74,
+      "searchTags": "～がる がる garu 觉得…… / 表现出……的样子 情感与决心 第三人称情感表现",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 74
+    }
+  },
+  {
+    "id": "supp-n1-review-075",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～じゃない／～んじゃない（禁止）",
+    "meaning": "不该……",
+    "connection": "动词辞书形 + じゃない / んじゃない",
+    "desc": "用于口语，表示强烈的禁止、命令或责备。多用于长辈对晚辈、上级对下级等带有训斥或警告意味的语境中，语气较为严厉，与「〜してはいけない」的作用相近。",
+    "examples": [
+      {
+        "jp": "<b><ruby>他人<rt>たにん</rt></ruby>の<ruby>悪口<rt>わるぐち</rt></ruby>を<ruby>言う<rt>いう</rt></ruby><span style='color:#d64045'>んじゃない</span>。</b>",
+        "cn": "不该说别人的坏话。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-057",
+      "supp-n1-review-058",
+      "n3-055"
+    ],
+    "kana": "じゃない／んじゃない",
+    "romaji": "janai/njanai",
+    "legacy": {
+      "searchId": 4075,
+      "sourceNumericId": 75,
+      "searchTags": "～じゃない/ ～んじゃない じゃない／んじゃない ～じゃない ～んじゃない janai/njanai 不该…… 指示与忠告 口语禁止与责备",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 75
+    }
+  },
+  {
+    "id": "supp-n1-review-076",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～といい／～ばいい／～たらいい（愿望・建议）",
+    "meaning": "要是……就好了",
+    "connection": "动词辞书形 / 动词ない形 + といい",
+    "desc": "表示说话人对某种尚未发生的状态或事情抱有期望，期盼能够出现理想的结果。常用于表达个人的愿望，或者向对方提出温和的建议。",
+    "examples": [
+      {
+        "jp": "<b><ruby>疲れ<rt>つかれ</rt></ruby>ているなら、<ruby>今日<rt>きょう</rt></ruby>は<ruby>無理<rt>むり</rt></ruby>をせずに<ruby>早く<rt>はやく</rt></ruby><ruby>休む<rt>やすむ</rt></ruby><span style='color:#d64045'>といい</span>。</b>",
+        "cn": "既然累了，今天不要勉强，早点休息比较好。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-057",
+      "supp-n1-review-058",
+      "n3-055"
+    ],
+    "kana": "といい／ばいい／たらいい",
+    "romaji": "toii/baii/taraii",
+    "legacy": {
+      "searchId": 4076,
+      "sourceNumericId": 76,
+      "searchTags": "～といい/～ばいい/～たらいい といい／ばいい／たらいい ～といい ～ばいい ～たらいい toii/baii/taraii 要是……就好了 指示与忠告 温和愿望与建议",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 76
+    }
+  },
+  {
+    "id": "supp-n1-review-077",
+    "level": "N1",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～じゃないか（号召）",
+    "meaning": "一起……吧／让我们……吧",
+    "connection": "动词意向形（〜よう / 〜おう） + じゃないか",
+    "desc": "场景４：向对方提出积极的建议，呼吁对方一起行动。多用于男性口语或较有气势的号召中。",
+    "examples": [
+      {
+        "jp": "<b>みんなで<ruby>力<rt>ちから</rt></ruby>を<ruby>合わせ<rt>あわせ</rt></ruby>て、この<ruby>困難<rt>こんなん</rt></ruby>を<ruby>乗り越えよう<rt>のりこえよう</rt></ruby><span style='color:#d64045'>じゃないか</span>。</b>",
+        "cn": "咱们齐心协力共渡难关吧。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-057",
+      "supp-n1-review-058",
+      "n3-055"
+    ],
+    "kana": "じゃないか",
+    "romaji": "janaika",
+    "legacy": {
+      "searchId": 4077,
+      "sourceNumericId": 77,
+      "searchTags": "～じゃないか じゃないか janaika 一起……吧／让我们……吧 指示与忠告 呼吁共同采取行动",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 77
+    }
+  },
+  {
+    "id": "supp-n1-review-078",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～させてくれる（情感引发）",
+    "meaning": "让（我）感到…… / 引起（我）的……",
+    "connection": "名词（引发物）は + 情感、思考类动词的使役て形 + くれる",
+    "desc": "表示某件事物（如书籍、音乐、风景、经历等）作为诱因，触动了说话人的内心，使其产生特定的情感体验、思考或回忆。",
+    "examples": [
+      {
+        "jp": "<b>この<ruby>美しい<rt>うつくしい</rt></ruby><ruby>景色<rt>けしき</rt></ruby>は、<ruby>日々<rt>ひび</rt></ruby>のストレスを<ruby>忘れ<rt>わすれ</rt></ruby><span style='color:#d64045'>させてくれる</span>。</b>",
+        "cn": "这美丽的景色让我忘记了日常的压力。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-059",
+      "supp-n1-review-060",
+      "n3-012"
+    ],
+    "kana": "させてくれる",
+    "romaji": "sasetekureru",
+    "legacy": {
+      "searchId": 4078,
+      "sourceNumericId": 78,
+      "searchTags": "～させてくれる（情感引发） させてくれる sasetekureru 让（我）感到…… / 引起（我）的…… 授受与敬语 事物触发情感",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 78
+    }
+  },
+  {
+    "id": "supp-n1-review-079",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～はずだった（预期落空）",
+    "meaning": "本应该……",
+    "connection": "普通体（名词＋の / な形容词＋な） ＋ はずだった",
+    "desc": "表示根据过去的约定、计划或某种客观情况进行推断，预期原本会发生某事，但实际产生的结果却与预先的设想不符。",
+    "examples": [
+      {
+        "jp": "<b><ruby>彼<rt>かれ</rt></ruby>は<ruby>今日<rt>きょう</rt></ruby>のパーティーに<ruby>参加<rt>さんか</rt></ruby>する<span style='color:#d64045'>はずだった</span>が、<ruby>急用<rt>きゅうよう</rt></ruby>で<ruby>来<rt>こ</rt></ruby>られなくなった。</b>",
+        "cn": "他本应该参加今天的聚会的，因为有急事来不了了。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-080",
+      "n3-061"
+    ],
+    "kana": "はずだった",
+    "romaji": "hazudatta",
+    "legacy": {
+      "searchId": 4079,
+      "sourceNumericId": 79,
+      "searchTags": "～はずだった はずだった hazudatta 本应该…… 可能性 过去预期未实现",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 79
+    }
+  },
+  {
+    "id": "supp-n1-review-080",
+    "level": "N3",
+    "bookKey": "n1-review-supplement",
+    "bookLabel": "其他",
+    "lesson": "N1语法复习补充",
+    "lessonNumber": 1,
+    "title": "～べきだった（后悔）",
+    "meaning": "本应该……",
+    "connection": "动词辞书形 + べきだった（※「する」也可直接接续为「すべきだった」）",
+    "desc": "表示对过去未能实施的动作产生反省或懊悔。说明基于常识、职责或当时的客观情况，采取某种行动是较为妥当的，但实际上并没有那么做。",
+    "examples": [
+      {
+        "jp": "<b>わからないことがあったら、もっと<ruby>早く<rt>はやく</rt></ruby><ruby>先生<rt>せんせい</rt></ruby>に<ruby>相談<rt>そうだん</rt></ruby>する<span style='color:#d64045'>べきだった</span>。</b>",
+        "cn": "有不懂的地方，本应该早点找老师商量的。"
+      }
+    ],
+    "related": [
+      "supp-n1-review-079",
+      "n3-055"
+    ],
+    "kana": "べきだった",
+    "romaji": "bekidatta",
+    "legacy": {
+      "searchId": 4080,
+      "sourceNumericId": 80,
+      "searchTags": "～べきだった べきだった bekidatta 本应该…… 主张与评价 对过去行为后悔",
+      "compareWith": [],
+      "sourcePage": "N1语法复习文档.pages",
+      "sourceId": 80
     }
   }
 ];
