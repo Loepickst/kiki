@@ -29,7 +29,7 @@
         ? new URL("./", currentScript.src)
         : new URL("./shared/", window.location.href);
     const siteRoot = new URL("../", sharedBase);
-    const cssHref = new URL("word-bank.css?v=20260714f", sharedBase).href;
+    const cssHref = new URL("word-bank.css?v=20260714g", sharedBase).href;
 
     let activeSelection = null;
     let selectionTimer = 0;

@@ -17,7 +17,7 @@
         }
         const link = document.createElement("link");
         link.rel = "stylesheet";
-        link.href = new URL("unified-header.css?v=20260714a", sharedBase).href;
+        link.href = new URL("unified-header.css?v=20260714b", sharedBase).href;
         link.dataset.kikiUnifiedHeaderStyle = "true";
         document.head.appendChild(link);
     }
