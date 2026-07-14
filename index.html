@@ -4904,7 +4904,7 @@
     </style>
     <link rel="stylesheet" href="shared/site-fonts.css">
     <link rel="stylesheet" href="shared/home-pet.css?v=20260713-capybara-v1">
-    <link rel="stylesheet" href="shared/word-bank.css?v=20260714f">
+    <link rel="stylesheet" href="shared/word-bank.css?v=20260714g">
     <style>
         :root {
             --site-font-ui: "Noto Sans SC", "Noto Sans JP", "PingFang SC", "Hiragino Sans", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -9667,7 +9667,7 @@
     <script src="shared/grammar-db-resources.js"></script>
     <script src="shared/grammar-db-repo.js"></script>
     <script src="shared/word-bank-presets.js?v=20260714a"></script>
-    <script src="shared/word-bank.js?v=20260714f"></script>
+    <script src="shared/word-bank.js?v=20260714g"></script>
     <script>
         const DAILY_READING_CATEGORY_DEFINITIONS = [
             { id: "essay", label: "随笔", labelJa: "エッセイ" },
@@ -10664,7 +10664,7 @@
         let wordBankPanelDirty = false;
         let wordBankQuery = "";
         let wordBankActiveSource = "all";
-        let wordBankOriginFilter = "all";
+        let wordBankOriginFilter = "official";
         let wordBankSort = "recent";
         let wordBankSearchTimer = 0;
         let siteSearchQuery = "";
@@ -11877,6 +11877,21 @@
             { id: "uncategorized", label: "未分类" }
         ];
 
+        const WORD_BANK_SOURCE_GROUPS = [
+            {
+                id: "official",
+                label: "kiの收藏",
+                description: "官方词汇收藏",
+                categories: ["all", "movie", "article", "news", "textbook", "uncategorized"]
+            },
+            {
+                id: "personal",
+                label: "我の收藏",
+                description: "我添加的词汇",
+                categories: ["all", "movie", "article", "news", "textbook", "custom", "uncategorized"]
+            }
+        ];
+
         function getWordBankSourceCategory(entry) {
             const explicit = String(entry && entry.sourceCategory || "").trim().toLowerCase();
             if (WORD_BANK_SOURCE_CATEGORIES.some((category) => category.id === explicit)) {
@@ -11900,6 +11915,11 @@
         function getWordBankSourceLabel(sourceId) {
             const category = WORD_BANK_SOURCE_CATEGORIES.find((item) => item.id === sourceId);
             return category ? category.label : "未分类";
+        }
+
+        function getWordBankSourceGroup(groupId) {
+            return WORD_BANK_SOURCE_GROUPS.find((group) => group.id === groupId)
+                || WORD_BANK_SOURCE_GROUPS[0];
         }
 
         function isOfficialWordBankEntry(entry) {
@@ -12493,7 +12513,7 @@
             return `
                 <div class="word-bank-empty">
                     <h3 class="word-bank-empty-title">${hasEntries ? "没有找到符合条件的词条" : "还没有保存词条"}</h3>
-                    <p class="word-bank-empty-copy">${hasEntries ? "试试切换来源或收录范围。" : "在学习页面框选文字，或手动新增一条。"}</p>
+                    <p class="word-bank-empty-copy">${hasEntries ? "试试切换收藏分类或具体来源。" : "在学习页面框选文字，或手动新增一条。"}</p>
                     ${hasEntries ? "" : `<button type="button" class="word-bank-action word-bank-action--primary" data-word-bank-add>添加词汇</button>`}
                 </div>
             `;
@@ -12504,21 +12524,53 @@
             if (!WORD_BANK_SOURCE_CATEGORIES.some((category) => category.id === wordBankActiveSource)) {
                 wordBankActiveSource = "all";
             }
+            if (!WORD_BANK_SOURCE_GROUPS.some((group) => group.id === wordBankOriginFilter)) {
+                wordBankOriginFilter = "official";
+            }
             const filteredEntries = getFilteredWordBankEntries(entries);
-            const originEntries = entries.filter((entry) => isWordBankOriginMatched(entry));
-            const sourceButtons = WORD_BANK_SOURCE_CATEGORIES.map((category) => {
-                const isActive = category.id === wordBankActiveSource;
-                const count = category.id === "all"
-                    ? originEntries.length
-                    : originEntries.filter((entry) => getWordBankSourceCategory(entry) === category.id).length;
+            const sourceGroups = WORD_BANK_SOURCE_GROUPS.map((group) => {
+                const groupEntries = entries.filter((entry) => group.id === "official"
+                    ? isOfficialWordBankEntry(entry)
+                    : !isOfficialWordBankEntry(entry));
+                const isGroupActive = group.id === wordBankOriginFilter;
+                const categoryButtons = group.categories.map((categoryId) => {
+                    const category = WORD_BANK_SOURCE_CATEGORIES.find((item) => item.id === categoryId);
+                    if (!category) {
+                        return "";
+                    }
+                    const isActive = isGroupActive && category.id === wordBankActiveSource;
+                    const count = category.id === "all"
+                        ? groupEntries.length
+                        : groupEntries.filter((entry) => getWordBankSourceCategory(entry) === category.id).length;
+                    return `
+                        <button type="button" class="word-bank-source-button${isActive ? " is-active" : ""}" data-word-bank-origin="${group.id}" data-word-bank-source="${category.id}" aria-pressed="${isActive ? "true" : "false"}">
+                            <span>${category.label}</span>
+                            <small>${count}</small>
+                        </button>
+                    `;
+                }).join("");
+
                 return `
-                    <button type="button" class="word-bank-source-button${isActive ? " is-active" : ""}" data-word-bank-source="${category.id}" aria-pressed="${isActive ? "true" : "false"}">
-                        <span>${category.label}</span>
-                        <small>${count}</small>
-                    </button>
+                    <details class="word-bank-source-group${isGroupActive ? " is-active" : ""}"${isGroupActive ? " open" : ""}>
+                        <summary>
+                            <span class="word-bank-source-group-copy">
+                                <strong>${group.label}</strong>
+                                <small>${group.description}</small>
+                            </span>
+                            <span class="word-bank-source-group-meta">
+                                <b>${groupEntries.length}</b>
+                                <i aria-hidden="true"></i>
+                            </span>
+                        </summary>
+                        <div class="word-bank-source-submenu">${categoryButtons}</div>
+                    </details>
                 `;
             }).join("");
+            const activeSourceGroup = getWordBankSourceGroup(wordBankOriginFilter);
             const activeSourceLabel = getWordBankSourceLabel(wordBankActiveSource);
+            const activeCollectionLabel = wordBankActiveSource === "all"
+                ? activeSourceGroup.label
+                : `${activeSourceGroup.label} · ${activeSourceLabel}`;
 
             return `
                 <div class="word-bank-board" data-word-bank-panel>
@@ -12543,17 +12595,12 @@
                     <div class="word-bank-library">
                         <aside class="word-bank-source-directory" aria-label="词汇来源分类">
                             <h3>来源</h3>
-                            <div class="word-bank-source-list">${sourceButtons}</div>
+                            <div class="word-bank-source-list">${sourceGroups}</div>
                         </aside>
-                        <section class="word-bank-collection" aria-label="${escapeHtml(activeSourceLabel)}">
+                        <section class="word-bank-collection" aria-label="${escapeHtml(activeCollectionLabel)}">
                             <div class="word-bank-collection-toolbar">
-                                <h3>${escapeHtml(activeSourceLabel)}</h3>
+                                <h3>${escapeHtml(activeCollectionLabel)}</h3>
                                 <div class="word-bank-view-filters">
-                                    <select data-word-bank-origin-filter aria-label="收录范围">
-                                        <option value="all"${wordBankOriginFilter === "all" ? " selected" : ""}>收录范围：全部</option>
-                                        <option value="official"${wordBankOriginFilter === "official" ? " selected" : ""}>收录范围：网站收录</option>
-                                        <option value="personal"${wordBankOriginFilter === "personal" ? " selected" : ""}>收录范围：我的收录</option>
-                                    </select>
                                     <select data-word-bank-sort aria-label="词条排序">
                                         <option value="recent"${wordBankSort === "recent" ? " selected" : ""}>最近添加</option>
                                         <option value="oldest"${wordBankSort === "oldest" ? " selected" : ""}>最早添加</option>
@@ -14069,9 +14116,10 @@
             const siteWordTarget = event.target.closest("[data-site-search-word-id]");
             if (siteWordTarget) {
                 event.preventDefault();
+                const targetEntry = getWordBankEntry(siteWordTarget.getAttribute("data-site-search-word-id"));
                 wordBankQuery = siteWordTarget.getAttribute("data-site-search-word-query") || siteSearchQuery;
                 wordBankActiveSource = "all";
-                wordBankOriginFilter = "all";
+                wordBankOriginFilter = targetEntry && !isOfficialWordBankEntry(targetEntry) ? "personal" : "official";
                 wordBankPanelDirty = true;
                 renderSection("word-bank", true, true);
                 return;
@@ -14165,6 +14213,7 @@
             const wordBankSourceTarget = event.target.closest("[data-word-bank-source]");
             if (wordBankSourceTarget) {
                 event.preventDefault();
+                wordBankOriginFilter = wordBankSourceTarget.getAttribute("data-word-bank-origin") || "official";
                 wordBankActiveSource = wordBankSourceTarget.getAttribute("data-word-bank-source") || "all";
                 refreshWordBankPanel();
                 return;
