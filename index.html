@@ -4905,7 +4905,7 @@
     </style>
     <link rel="stylesheet" href="shared/site-fonts.css">
     <link rel="stylesheet" href="shared/home-pet.css?v=20260713-capybara-v1">
-    <link rel="stylesheet" href="shared/word-bank.css?v=20260714i">
+    <link rel="stylesheet" href="shared/word-bank.css?v=20260715-layout-fix1">
     <style>
         :root {
             --site-font-ui: "Noto Sans SC", "Noto Sans JP", "PingFang SC", "Hiragino Sans", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -10333,6 +10333,71 @@
                 min-height: 0;
                 max-height: none;
             }
+
+            body.home-dashboard-redesign:not(.is-home-view) .page-shell {
+                height: var(--desktop-home-frame-height, auto);
+                min-height: var(--desktop-home-frame-height, 0);
+                max-height: var(--desktop-home-frame-height, none);
+            }
+
+            body.home-dashboard-redesign:not(.is-home-view) .app-workspace {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                min-height: 0;
+                overflow: hidden;
+            }
+
+            body.home-dashboard-redesign:not(.is-home-view) .topbar {
+                flex: 0 0 auto;
+            }
+
+            body.home-dashboard-redesign:not(.is-home-view) .page-main {
+                flex: 1 1 auto;
+                min-height: 0;
+                overflow: hidden;
+            }
+
+            body.home-dashboard-redesign:not(.is-home-view) .content-column,
+            body.home-dashboard-redesign:not(.is-home-view) .panel-stage,
+            body.home-dashboard-redesign:not(.is-home-view) .content-panel {
+                height: 100%;
+                min-height: 0;
+            }
+
+            body.home-dashboard-redesign:not(.is-home-view) .content-panel {
+                overflow-x: hidden;
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                scrollbar-color: rgba(91, 126, 77, 0.28) transparent;
+                scrollbar-width: thin;
+            }
+
+            body.home-dashboard-redesign:not(.is-home-view) .content-panel:has(.feature-panel[data-section="word-bank"].is-active) {
+                overflow: hidden;
+            }
+
+            body.home-dashboard-redesign:not(.is-home-view) .content-panel:has(.feature-panel[data-section="word-bank"].is-active) .feature-panels,
+            body.home-dashboard-redesign .feature-panel[data-section="word-bank"].is-active,
+            body.home-dashboard-redesign .feature-panel[data-section="word-bank"].is-active .word-bank-board {
+                height: 100%;
+                min-height: 0;
+            }
+
+            body.home-dashboard-redesign .feature-panel[data-section="word-bank"].is-active {
+                display: grid;
+                grid-template-rows: auto minmax(0, 1fr);
+                overflow: hidden;
+            }
+
+            body.home-dashboard-redesign .feature-panel[data-section="word-bank"].is-active .word-bank-board {
+                grid-template-rows: auto minmax(0, 1fr);
+            }
+
+            body.home-dashboard-redesign .feature-panel[data-section="word-bank"].is-active .word-bank-library {
+                height: auto;
+                min-height: 0;
+            }
         }
     </style>
 </head>
@@ -10838,7 +10903,7 @@
     <script src="shared/grammar-db-resources.js"></script>
     <script src="shared/grammar-db-repo.js"></script>
     <script src="shared/word-bank-presets.js?v=20260715-notes1"></script>
-    <script src="shared/word-bank.js?v=20260715-notes1"></script>
+    <script src="shared/word-bank.js?v=20260715-layout-fix1"></script>
     <script>
         const DAILY_READING_CATEGORY_DEFINITIONS = [
             { id: "essay", label: "随笔", labelJa: "エッセイ" },
@@ -11797,6 +11862,7 @@
         const noticePanel = document.getElementById("notice-panel");
         const contentPanel = document.getElementById("content-panel");
         const featurePanels = document.getElementById("feature-panels");
+        const pageShell = document.querySelector(".page-shell");
         const sponsorBtn = document.getElementById("sponsor-btn");
         const sponsorModal = document.getElementById("sponsor-modal");
         const supportGrid = document.getElementById("support-grid");
@@ -15162,6 +15228,21 @@
             });
         }
 
+        function syncDesktopHomeFrameHeight() {
+            if (!pageShell || window.innerWidth <= 1366 || !document.body.classList.contains("is-home-view")) {
+                return;
+            }
+
+            const frameHeight = Math.ceil(pageShell.getBoundingClientRect().height);
+            if (frameHeight > 0) {
+                document.documentElement.style.setProperty("--desktop-home-frame-height", `${frameHeight}px`);
+            }
+        }
+
+        function scheduleDesktopHomeFrameSync() {
+            window.requestAnimationFrame(syncDesktopHomeFrameHeight);
+        }
+
         function renderNotice(syncHash = true) {
             activeSection = null;
             activeSectionPath = [];
@@ -15173,6 +15254,7 @@
             setActiveSwitch(null);
             noticePanel.classList.remove("is-hidden");
             contentPanel.classList.add("is-hidden");
+            scheduleDesktopHomeFrameSync();
             syncHomePet("section-change");
             if (syncHash) {
                 syncSectionHash(null);
@@ -15183,6 +15265,8 @@
             if (!HOME_SECTIONS[sectionKey]) {
                 return;
             }
+
+            syncDesktopHomeFrameHeight();
 
             const validSectionPath = getValidSectionPath(sectionKey, sectionPath);
             activeSection = sectionKey;
@@ -15844,6 +15928,15 @@
             renderSectionPanel("daily", activeSectionPath);
             showSectionPanel("daily", false, activeSectionPath);
         });
+
+        window.addEventListener("load", scheduleDesktopHomeFrameSync, { once: true });
+        window.addEventListener("resize", () => {
+            if (window.innerWidth <= 1366) {
+                document.documentElement.style.removeProperty("--desktop-home-frame-height");
+                return;
+            }
+            scheduleDesktopHomeFrameSync();
+        }, { passive: true });
 
         mountStaticIcons();
         renderSupportCards();
