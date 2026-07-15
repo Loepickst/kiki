@@ -643,6 +643,7 @@
     const MUMU_SHIBA_ASSET_VERSION = '20260714-bandana-panting-v2';
     const MIANMIAN_ASSET_VERSION = '20260711-ragdoll-v3';
     const MYTHIC_SKIN_ASSET_VERSION = '20260711-expression-v1';
+    const NEKOMATA_ASSET_VERSION = '20260715-silver-yokai-v2';
     const CAPYBARA_ASSET_VERSION = '20260713-lazy-v1';
 
     function escapeHtmlAttribute(value) {
@@ -734,7 +735,7 @@
 
     function nekomataFrames(action, count) {
         return Array.from({ length: count }, (_, index) => (
-            `assets/pets-optimized/nekomata/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.webp?v=${MYTHIC_SKIN_ASSET_VERSION}`
+            `assets/pets-optimized/nekomata/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.webp?v=${NEKOMATA_ASSET_VERSION}`
         ));
     }
 
@@ -3028,6 +3029,9 @@
         const width = Math.round(rect.width) || (window.innerWidth <= 768 ? 248 : 288);
         const height = Math.round(rect.height) || (window.innerWidth <= 768 ? 74 : 86);
         const inset = getInset();
+        const mobileBottomInset = window.innerWidth <= 767
+            ? Math.max(inset, Number(config && config.mobileBottomInset) || inset)
+            : inset;
         const anchorSelector = String(config && config.defaultAnchorSelector ? config.defaultAnchorSelector : '').trim();
 
         if (anchorSelector && window.innerWidth > 768) {
@@ -3061,7 +3065,7 @@
 
         return {
             left: clamp(window.innerWidth - width - rightOffset, inset, Math.max(inset, window.innerWidth - width - inset)),
-            top: clamp(window.innerHeight - height - inset, inset, Math.max(inset, window.innerHeight - height - inset))
+            top: clamp(window.innerHeight - height - mobileBottomInset, inset, Math.max(inset, window.innerHeight - height - mobileBottomInset))
         };
     }
 
