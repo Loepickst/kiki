@@ -5,9 +5,10 @@
         return;
     }
 
-    const VERSION = "1.6.3";
+    const VERSION = "1.7.1";
     const STORAGE_KEY = "kikiWordBankEntriesV1";
-    const PRESET_IMPORTED_KEY = "kikiWordBankPresetsImportedV2";
+    const PRESET_IMPORTED_KEY = "kikiWordBankPresetsImportedV3";
+    const NOTES_CLEARED_KEY = "kikiWordBankNotesClearedV1";
     const STYLE_ID = "kiki-word-bank-style";
     const FLOAT_ID = "kiki-word-bank-float";
     const MODAL_ID = "kiki-word-bank-modal";
@@ -29,7 +30,7 @@
         ? new URL("./", currentScript.src)
         : new URL("./shared/", window.location.href);
     const siteRoot = new URL("../", sharedBase);
-    const cssHref = new URL("word-bank.css?v=20260714g", sharedBase).href;
+    const cssHref = new URL("word-bank.css?v=20260715-layout-fix1", sharedBase).href;
 
     let activeSelection = null;
     let selectionTimer = 0;
@@ -696,6 +697,37 @@
         }
     }
 
+    function clearExistingNotesOnce() {
+        try {
+            if (localStorage.getItem(NOTES_CLEARED_KEY) === "true") {
+                return;
+            }
+
+            const entries = loadEntries();
+            let cleared = 0;
+            const nextEntries = entries.map((entry) => {
+                if (!entry.note) {
+                    return entry;
+                }
+                cleared += 1;
+                return {
+                    ...entry,
+                    note: ""
+                };
+            });
+
+            if (cleared > 0) {
+                saveEntries(nextEntries, {
+                    action: "clear-notes",
+                    cleared
+                });
+            }
+            localStorage.setItem(NOTES_CLEARED_KEY, "true");
+        } catch (error) {
+            // Keep the word bank available when storage is disabled.
+        }
+    }
+
     function exportEntries() {
         return JSON.stringify({
             version: 2,
@@ -854,6 +886,8 @@
                                                 <option value="一段动词・自动词">一段动词・自动词</option>
                                                 <option value="一段动词・他动词">一段动词・他动词</option>
                                                 <option value="サ变动词">サ变动词</option>
+                                                <option value="サ变动词・自动词">サ变动词・自动词</option>
+                                                <option value="サ变动词・他动词">サ变动词・他动词</option>
                                                 <option value="い形容词">い形容词</option>
                                                 <option value="な形容词">な形容词</option>
                                                 <option value="副词">副词</option>
@@ -1683,6 +1717,7 @@
         setupCanonicalBackLinks();
         initSelectionCapture();
         ensurePresetsImported();
+        clearExistingNotesOnce();
 
         const warmEditor = () => {
             if (!document.getElementById(MODAL_ID)) {
@@ -1717,6 +1752,7 @@
         __version: VERSION,
         STORAGE_KEY,
         PRESET_IMPORTED_KEY,
+        NOTES_CLEARED_KEY,
         loadEntries,
         saveEntries,
         normalizeEntry,
