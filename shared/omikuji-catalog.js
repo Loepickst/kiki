@@ -13,6 +13,28 @@
         SR: "#00897b",
         R: "#f57c00"
     });
+    const FOIL_CONFIG = Object.freeze({
+        pityThreshold: 50,
+        rates: Object.freeze({
+            R: 0.03,
+            SR: 0.03,
+            SSR: 0.05,
+            UR: 0.08,
+            KR: 0.10
+        })
+    });
+    const limitedEvents = Object.freeze([
+        {
+            id: "foil_once_2026_07",
+            type: "guaranteed_foil_once",
+            title: "必闪卡",
+            label: "一次性道具",
+            desc: "使用后，下一张可闪卡必为闪卡。",
+            deliveryMode: "consumable_card",
+            quantity: 1,
+            status: "active"
+        }
+    ]);
 
     const THEME_SET_BY_CARD_ID = Object.freeze({});
 
@@ -42,6 +64,21 @@
         return LEGACY_PRACTICE_REWARD_ID_MAP[normalizedValue] || normalizedValue;
     }
 
+    function getCollectionVariantCounts(entry, fallbackCount = 0) {
+        const totalCount = Math.max(0, Number.parseInt(fallbackCount, 10) || 0);
+        const variants = entry && entry.variants;
+        let normalCount = Math.max(0, Number.parseInt(variants && variants.normalCount, 10) || 0);
+        const foilCount = Math.max(0, Number.parseInt(variants && variants.foilCount, 10) || 0);
+
+        if (!variants || typeof variants !== "object" || Array.isArray(variants)) {
+            normalCount = totalCount;
+        } else if (normalCount + foilCount < totalCount) {
+            normalCount += totalCount - normalCount - foilCount;
+        }
+
+        return { normalCount, foilCount };
+    }
+
     function mergeCollectionMetaEntry(baseEntry, incomingEntry) {
         const count = Number.parseInt(incomingEntry && incomingEntry.count, 10);
         if (!Number.isInteger(count) || count <= 0) {
@@ -59,7 +96,16 @@
 
         const firstObtainedAt = Number(incomingEntry.firstObtainedAt);
         const lastObtainedAt = Number(incomingEntry.lastObtainedAt);
+        const baseVariants = getCollectionVariantCounts(nextEntry, nextEntry.count);
+        const incomingVariants = getCollectionVariantCounts(incomingEntry, count);
         nextEntry.count += count;
+        nextEntry.variants = {
+            normalCount: baseVariants.normalCount + incomingVariants.normalCount,
+            foilCount: baseVariants.foilCount + incomingVariants.foilCount
+        };
+        nextEntry.preferredVariant = incomingEntry.preferredVariant === "foil" || nextEntry.preferredVariant === "foil"
+            ? "foil"
+            : "normal";
         if (Number.isFinite(firstObtainedAt) && firstObtainedAt > 0) {
             nextEntry.firstObtainedAt = nextEntry.firstObtainedAt
                 ? Math.min(nextEntry.firstObtainedAt, firstObtainedAt)
@@ -76,6 +122,12 @@
             nextEntry.hiddenStage2UnlockedAt = nextEntry.hiddenStage2UnlockedAt
                 ? Math.min(nextEntry.hiddenStage2UnlockedAt, hiddenStage2UnlockedAt)
                 : hiddenStage2UnlockedAt;
+        }
+        const hiddenStage3UnlockedAt = Number(incomingEntry.hiddenStage3UnlockedAt);
+        if (Number.isFinite(hiddenStage3UnlockedAt) && hiddenStage3UnlockedAt > 0) {
+            nextEntry.hiddenStage3UnlockedAt = nextEntry.hiddenStage3UnlockedAt
+                ? Math.min(nextEntry.hiddenStage3UnlockedAt, hiddenStage3UnlockedAt)
+                : hiddenStage3UnlockedAt;
         }
         return nextEntry;
     }
@@ -105,6 +157,10 @@
         { id: "f32", rarity: "KR", title: "天吉", desc: "知识中的私语，细细聆听，那是日语之神对你的回应。", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}tianji.png` },
         { id: "f45", rarity: "KR", title: "武吉", desc: "学累了，就稍作片刻休息吧", weight: 3, color: "#000000", icon: `${EX_CARD_ASSET_BASE}wuji.png` },
         { id: "f46", rarity: "KR", title: "哦吉", desc: "哦？能力考嘛，面白い。", weight: 3, color: "#000000", icon: "takarakuji/ohji.webp" },
+        { id: "practice_yaji_max", rarity: "KR", title: "丫吉", desc: "去背你的单词，别抢我的肉啦。", weight: 3, color: "#000000", icon: "takarakuji/yaji2.png", themeSetId: "exam_good_luck" },
+        { id: "practice_gaoji_max", rarity: "KR", title: "高吉", desc: "文字里的故事，就如怀中的手办一样温暖。", weight: 3, color: "#000000", icon: "takarakuji/gaoji.png", themeSetId: "exam_good_luck" },
+        { id: "practice_geji_max", rarity: "KR", title: "🐦吉", desc: "读到关键句时，线索像小鸟一样轻轻落回掌心，整篇文章也会突然明朗。", weight: 3, color: "#000000", icon: "takarakuji/geji2.png", themeSetId: "exam_good_luck" },
+        { id: "practice_anji_max", rarity: "KR", title: "安吉", desc: "天気がいいから、散歩しましょう", weight: 3, color: "#000000", icon: "takarakuji/anji.png", themeSetId: "exam_good_luck" },
         { id: "worldcup_kaiji", rarity: "SP", title: "凯吉", desc: "纵使一无所有，也要努力拼尽到底", weight: 1, color: "#9c27b0", icon: "takarakuji/worldcup_kaiji.png", isSpecial: true, unlockPoolId: "ki_world_cup_journey", poolRole: "followup", unlockRequirement: { type: "card_owned", cardId: "theme_worldcup_mengji" } },
         { id: "worldcup_meiji", rarity: "SP", title: "梅吉", desc: "全场的欢声，是对“王”的庆祝", weight: 1, color: "#9c27b0", icon: "takarakuji/meiji.png", isSpecial: true, unlockPoolId: "ki_world_cup_journey", poolRole: "followup", unlockRequirement: { type: "card_owned", cardId: "theme_worldcup_mengji" } },
         { id: "worldcup_luoji", rarity: "SP", title: "罗吉", desc: "只要心在，其他都不是问题", weight: 1, color: "#9c27b0", icon: "takarakuji/worldcup_luoji.png", isSpecial: true, unlockPoolId: "ki_world_cup_journey", poolRole: "followup", unlockRequirement: { type: "card_owned", cardId: "theme_worldcup_mengji" } },
@@ -131,13 +187,13 @@
         { id: "f10", rarity: "SR", title: "蝴吉", desc: "飞舞的思绪！如蝶一般，“漂亮”的拿下今天的知识吧。", weight: 10, color: "#00897b", icon: `${EX_CARD_ASSET_BASE}chongji.png` },
         { id: "f3", rarity: "SR", title: "猴吉", desc: "做不了真“大圣”，也能拥有“大圣”心，先得敢想，才能真成！", weight: 10, color: "#388e3c", icon: `${EX_CARD_ASSET_BASE}houji.png`, hiddenStage2: { unlockCount: 10, icon: "takarakuji/stage2_houji.png" } },
         { id: "f36", rarity: "SR", title: "挠吉", desc: "是玩还是学，this is a question！", weight: 10, color: "#388e3c", icon: `${EX_CARD_ASSET_BASE}naoji.png` },
-        { id: "f6", rarity: "SR", title: "熊吉", desc: "学饿了就吃点，吃饱了就休息，那学习呢？学习就明天再说吧。", weight: 10, color: "#7b1fa2", icon: `${EX_CARD_ASSET_BASE}xiongji.png` },
+        { id: "f6", rarity: "SR", title: "熊吉", desc: "学饿了就吃点，吃饱了就休息，那学习呢？学习就明天再说吧。", weight: 10, color: "#7b1fa2", icon: `${EX_CARD_ASSET_BASE}xiongji.png`, hiddenStage2: { unlockCount: 10, icon: "takarakuji/stage2_xiongji.webp" } },
         { id: "f14", rarity: "SR", title: "燕吉", desc: "每天只衔一个词，日积月累，也能筑起坚不可摧的语言之巢。", weight: 10, color: "#7b1fa2", icon: `${EX_CARD_ASSET_BASE}yanji.png` },
         { id: "f17", rarity: "SR", title: "牛吉", desc: "纵使当下如对牛弹琴般不得要领，耐下性子温故知新，笨功夫自有回响。", weight: 10, color: "#546e7a", icon: `${EX_CARD_ASSET_BASE}niuji.png`, hiddenStage2: { unlockCount: 10, icon: "takarakuji/stage2_niuji.png" } },
         { id: "f24", rarity: "SR", title: "兔吉", desc: "兔起鹘落般的进步，恰恰蕴藏在从一到十、踏踏实实的研磨之中。", weight: 10, color: "#00897b", icon: `${EX_CARD_ASSET_BASE}tuji.png` },
         { id: "f29", rarity: "SR", title: "狈吉", desc: "他人眼中的“奸”，也可以是真正的“友”。", weight: 10, color: "#546e7a", icon: `${EX_CARD_ASSET_BASE}beiji.png` },
         { id: "f33", rarity: "SR", title: "碌吉", desc: "答完你的，答你的，一个一个来。", weight: 10, color: "#7b1fa2", icon: `${EX_CARD_ASSET_BASE}luji3.png` },
-        { id: "f5", rarity: "R", title: "犬吉", desc: "温故而知新。比起新内容，今天更适合把之前的错题翻出来‘叙叙旧’哦！", weight: 30, color: "#f57c00", icon: `${EX_CARD_ASSET_BASE}quanji.png`, hiddenStage2: { unlockCount: 10, icon: "takarakuji/stage2_quanji.png" } },
+        { id: "f5", rarity: "R", title: "犬吉", desc: "温故而知新。比起新内容，今天更适合把之前的错题翻出来‘叙叙旧’哦！", weight: 30, color: "#f57c00", icon: `${EX_CARD_ASSET_BASE}quanji.png`, hiddenStage2: { unlockCount: 10, icon: "takarakuji/stage2_quanji.png" }, hiddenStage3: { requiresStage2: true, triggerRate: 0.1, icon: "takarakuji/stage3_quanji.webp" } },
         { id: "f4", rarity: "R", title: "鼠吉", desc: "一点一滴地搬运，终能囤满语言的粮仓。", weight: 30, color: "#1976d2", icon: `${EX_CARD_ASSET_BASE}shuji.png`, hiddenStage2: { unlockCount: 10, icon: "takarakuji/stage2_shuji.png" } },
         { id: "f11", rarity: "R", title: "狐吉", desc: "🍵普普通通、平平淡淡的一天。按部就班地背单词吧，没有波澜也是一种幸福。", weight: 30, color: "#8d6e63", icon: `${EX_CARD_ASSET_BASE}pingji.png`, hiddenStage2: { unlockCount: 10, icon: "takarakuji/stage2_huji.png" } },
         { id: "f15", rarity: "R", title: "龟吉", desc: "要想“快”，先得“慢”，只有学会了放平心态去细细打磨，“快”便会自然出现。", weight: 30, color: "#8d6e63", icon: `${EX_CARD_ASSET_BASE}guiji.png`, hiddenStage2: { unlockCount: 10, icon: "takarakuji/stage2_guiji.png" } },
@@ -169,10 +225,6 @@
     ];
 
     const practiceRewardFortunes = [
-        { id: "practice_anji_max", rarity: "MR", title: "安吉", desc: "天気がいいから、散歩しましょう", color: "#4E5FA8", icon: "takarakuji/anji.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" },
-        { id: "practice_yaji_max", rarity: "MR", title: "丫吉", desc: "去背你的单词，别抢我的肉啦。", color: "#8A5A35", icon: "takarakuji/yaji2.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" },
-        { id: "practice_geji_max", rarity: "MR", title: "🐦吉", desc: "读到关键句时，线索像小鸟一样轻轻落回掌心，整篇文章也会突然明朗。", color: "#2F7B67", icon: "takarakuji/geji2.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" },
-        { id: "practice_gaoji_max", rarity: "MR", title: "高吉", desc: "文字里的故事，就如怀中的手办一样温暖。", color: "#7A5C9E", icon: "takarakuji/gaoji.png", isRewardOnly: true, acquireMode: "growth", themeSetId: "exam_good_luck" },
         { id: "practice_ciji_past_vocab", rarity: "MR", title: "词吉", desc: "指尖跃动的假名，是对你努力的回应", color: "#A85A3D", icon: "takarakuji/ciji.png", isRewardOnly: true, acquireMode: "growth" }
     ];
 
@@ -401,6 +453,11 @@
         unlockPools,
         rarityOrder: [...RARITY_ORDER],
         rarityColors: { ...RARITY_COLORS },
+        foilConfig: {
+            pityThreshold: FOIL_CONFIG.pityThreshold,
+            rates: { ...FOIL_CONFIG.rates }
+        },
+        limitedEvents,
         collectionCatalog,
         safeParseJSON,
         getCollectionMeta,
