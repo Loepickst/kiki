@@ -5601,7 +5601,23 @@
         };
         document.addEventListener('click', handlePageInteraction, true);
 
+        function isPetTextFieldActive() {
+            const activeElement = document.activeElement;
+            if (!activeElement || !root.contains(activeElement)) {
+                return false;
+            }
+            return activeElement.matches(
+                '[data-pet-user-name-input], [data-pet-name-input], input, textarea, select, [contenteditable="true"]'
+            );
+        }
+
         const resizeHandler = () => {
+            if (isPetTextFieldActive()) {
+                // Opening a mobile keyboard resizes the viewport. Re-rendering the
+                // bubble here would replace the focused input and close the keyboard.
+                applyAnchorPosition();
+                return;
+            }
             sync('resize');
         };
         window.addEventListener('resize', resizeHandler);
