@@ -70,10 +70,10 @@
         { id: 'sp_yingji1', rarity: 'SP', title: '赢吉', desc: '相信自己，会赢的！', color: '#9c27b0', icon: 'takarakuji/yingji1.png', isRewardOnly: true, acquireMode: 'achievement' }
     ]);
     const PRACTICE_REWARD_FORTUNES = Object.freeze([
-        { id: 'practice_anji_max', rarity: 'MR', title: '安吉', desc: '天気がいいから、散歩しましょう', color: '#4E5FA8', icon: 'takarakuji/anji.png', isRewardOnly: true },
-        { id: 'practice_yaji_max', rarity: 'MR', title: '丫吉', desc: '去背你的单词，别抢我的肉啦。', color: '#8A5A35', icon: 'takarakuji/yaji2.png', isRewardOnly: true },
-        { id: 'practice_geji_max', rarity: 'MR', title: '🐦吉', desc: '读到关键句时，线索像小鸟一样轻轻落回掌心，整篇文章也会突然明朗。', color: '#2F7B67', icon: 'takarakuji/geji2.png', isRewardOnly: true },
-        { id: 'practice_gaoji_max', rarity: 'MR', title: '高吉', desc: '文字里的故事，就如怀中的手办一样温暖。', color: '#7A5C9E', icon: 'takarakuji/gaoji.png', isRewardOnly: true },
+        { id: 'practice_anji_max', rarity: 'KR', title: '安吉', desc: '天気がいいから、散歩しましょう', color: '#000000', icon: 'takarakuji/anji.png', isRewardOnly: true },
+        { id: 'practice_yaji_max', rarity: 'KR', title: '丫吉', desc: '去背你的单词，别抢我的肉啦。', color: '#000000', icon: 'takarakuji/yaji2.png', isRewardOnly: true },
+        { id: 'practice_geji_max', rarity: 'KR', title: '🐦吉', desc: '读到关键句时，线索像小鸟一样轻轻落回掌心，整篇文章也会突然明朗。', color: '#000000', icon: 'takarakuji/geji2.png', isRewardOnly: true },
+        { id: 'practice_gaoji_max', rarity: 'KR', title: '高吉', desc: '文字里的故事，就如怀中的手办一样温暖。', color: '#000000', icon: 'takarakuji/gaoji.png', isRewardOnly: true },
         { id: 'practice_shengji_max', rarity: 'MR', title: '胜吉', desc: '烟火在夜空里炸开的时候，努力终于有了形状。一步一步走到最后，也会迎来属于自己的合格时刻。', color: '#C96A2A', icon: 'takarakuji/shengji.png', isRewardOnly: true },
         { id: 'practice_ciji_past_vocab', rarity: 'MR', title: '词吉', desc: '指尖跃动的假名，是对你努力的回应', color: '#A85A3D', icon: 'takarakuji/ciji.png', isRewardOnly: true }
     ]);
@@ -391,6 +391,12 @@
             nextEntry.hiddenStage2UnlockedAt = nextEntry.hiddenStage2UnlockedAt
                 ? Math.min(nextEntry.hiddenStage2UnlockedAt, hiddenStage2UnlockedAt)
                 : hiddenStage2UnlockedAt;
+        }
+        const hiddenStage3UnlockedAt = Number(incomingEntry.hiddenStage3UnlockedAt);
+        if (Number.isFinite(hiddenStage3UnlockedAt) && hiddenStage3UnlockedAt > 0) {
+            nextEntry.hiddenStage3UnlockedAt = nextEntry.hiddenStage3UnlockedAt
+                ? Math.min(nextEntry.hiddenStage3UnlockedAt, hiddenStage3UnlockedAt)
+                : hiddenStage3UnlockedAt;
         }
         return nextEntry;
     }
