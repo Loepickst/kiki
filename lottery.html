@@ -2781,6 +2781,13 @@
     <script src="shared/home-pet.js?v=20260717-ronin-unlock1"></script>
     <script>
         const MAX_DAILY_COUNT = 3;
+        const LOTTERY_TIME_ZONE = 'Asia/Shanghai';
+        const LOTTERY_DAY_FORMATTER = new Intl.DateTimeFormat('en-US', {
+            timeZone: LOTTERY_TIME_ZONE,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        });
         const COLLECTION_KEY = 'omikujiCollection';
         const COLLECTION_META_KEY = 'omikujiCollectionMeta_v1';
         const LAST_OBTAINED_KEY = 'omikujiLastObtained_v1';
@@ -3038,22 +3045,100 @@
             return migratedEntry;
         }
 
-        function getTodayString() {
-            const d = new Date();
-            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        function getTodayString(timestamp = Date.now()) {
+            const parts = LOTTERY_DAY_FORMATTER.formatToParts(new Date(timestamp));
+            const dateParts = parts.reduce((acc, part) => {
+                if (part.type === 'year' || part.type === 'month' || part.type === 'day') {
+                    acc[part.type] = part.value;
+                }
+                return acc;
+            }, {});
+            return `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
+        }
+
+        function isValidLotteryDate(value) {
+            return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
+        }
+
+        function normalizeDailyState(state, fallbackDate = getTodayString()) {
+            const source = state && typeof state === 'object' && !Array.isArray(state) ? state : {};
+            const date = isValidLotteryDate(source.date) ? source.date : fallbackDate;
+            const lastSeenDate = isValidLotteryDate(source.lastSeenDate) ? source.lastSeenDate : date;
+            return {
+                date,
+                count: Math.min(MAX_DAILY_COUNT, Math.max(0, Number.parseInt(source.count, 10) || 0)),
+                lastSeenDate: [date, lastSeenDate].sort().pop(),
+                timeZone: LOTTERY_TIME_ZONE
+            };
+        }
+
+        function getDailyGuardDate(state) {
+            const normalized = normalizeDailyState(state);
+            return [normalized.date, normalized.lastSeenDate].sort().pop();
         }
 
         function getDailyState() {
             const today = getTodayString();
             const stored = safeParseJSON(localStorage.getItem('lotteryState_v2'), null);
-            if (stored && stored.date === today) {
-                return stored;
+            if (!stored || typeof stored !== 'object' || Array.isArray(stored)) {
+                return normalizeDailyState({ date: today, count: 0, lastSeenDate: today }, today);
             }
-            return { date: today, count: 0 };
+            const normalized = normalizeDailyState(stored, today);
+            const guardDate = getDailyGuardDate(normalized);
+
+            if (today < guardDate) {
+                return normalizeDailyState({
+                    ...normalized,
+                    date: guardDate,
+                    lastSeenDate: guardDate
+                }, guardDate);
+            }
+
+            if (today > guardDate) {
+                return normalizeDailyState({ date: today, count: 0, lastSeenDate: today }, today);
+            }
+
+            return normalizeDailyState({
+                ...normalized,
+                date: today,
+                lastSeenDate: today
+            }, today);
         }
 
         function saveDailyState(count) {
-            localStorage.setItem('lotteryState_v2', JSON.stringify({ date: getTodayString(), count }));
+            const today = getTodayString();
+            const baseState = normalizeDailyState(currentState || getDailyState(), today);
+            const guardDate = [today, baseState.date, baseState.lastSeenDate].sort().pop();
+            const nextState = normalizeDailyState({
+                date: guardDate,
+                count,
+                lastSeenDate: guardDate
+            }, guardDate);
+            currentState = nextState;
+            localStorage.setItem('lotteryState_v2', JSON.stringify(nextState));
+        }
+
+        function mergeDailyStates(currentDailyState, incomingDailyState) {
+            const today = getTodayString();
+            const current = normalizeDailyState(currentDailyState, today);
+            const incoming = normalizeDailyState(incomingDailyState, today);
+            const currentGuardDate = getDailyGuardDate(current);
+            const incomingGuardDate = getDailyGuardDate(incoming);
+            const targetDate = [today, currentGuardDate, incomingGuardDate].sort().pop();
+            const statesOnTargetDate = [
+                { state: current, guardDate: currentGuardDate },
+                { state: incoming, guardDate: incomingGuardDate }
+            ].filter((entry) => entry.guardDate === targetDate);
+            const relevantStates = targetDate > today
+                ? [current, incoming]
+                : statesOnTargetDate.map((entry) => entry.state);
+            const count = relevantStates.reduce((max, state) => Math.max(max, state.count), 0);
+
+            return normalizeDailyState({
+                date: targetDate,
+                count,
+                lastSeenDate: targetDate
+            }, targetDate);
         }
 
         function getFoilState() {
@@ -4072,10 +4157,14 @@
                 getLimitedEventState(),
                 payload.data.omikujiLimitedEventState_v1
             );
+            const mergedDailyState = mergeDailyStates(
+                getDailyState(),
+                payload.data.lotteryState_v2
+            );
             writeBackupStorageValue(COLLECTION_KEY, payload.data.omikujiCollection);
             writeBackupStorageValue(COLLECTION_META_KEY, payload.data.omikujiCollectionMeta_v1);
             writeBackupStorageValue(LAST_OBTAINED_KEY, payload.data.omikujiLastObtained_v1);
-            writeBackupStorageValue('lotteryState_v2', payload.data.lotteryState_v2);
+            writeBackupStorageValue('lotteryState_v2', mergedDailyState);
             writeBackupStorageValue(SPECIAL_POOL_KEY, payload.data.specialPoolState_v1);
             writeBackupStorageValue(FOIL_STATE_KEY, payload.data.omikujiFoilState_v1);
             writeBackupStorageValue(LIMITED_EVENT_STATE_KEY, mergedLimitedEventState);
