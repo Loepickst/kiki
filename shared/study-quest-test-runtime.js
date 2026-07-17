@@ -34,7 +34,7 @@
         { id: 'f8', rarity: 'UR', title: '神吉', desc: '⛩️考神附体！今天直觉准得可怕，做阅读题一抓一个准，就算蒙的也全对！', weight: 1, color: '#d4af37', icon: 'https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/takarakuji/shenji.png' },
         { id: 'f7', rarity: 'UR', title: '玉吉', desc: '一尾便是一重境界。熬过漫长的沉淀与枯燥的练习，终能修得灵动的语感。', weight: 3, color: '#F44336', icon: 'https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/takarakuji/huji.png' },
         { id: 'f16', rarity: 'UR', title: '鹿吉', desc: '步履从容，一步一印，语感自然如影随形。', weight: 1, color: '#e6b422', icon: 'https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/takarakuji/luji2.png' },
-        { id: 'f22', rarity: 'UR', title: '友吉', desc: '切磋琢磨之友，乃求学路上的不灭之光。', weight: 1, color: '#d4af37', icon: 'https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/takarakuji/xueji.png' },
+        { id: 'f22', rarity: 'UR', title: '学吉', desc: '切磋琢磨之友，乃求学路上的不灭之光。', weight: 1, color: '#d4af37', icon: 'https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/takarakuji/xueji.png' },
         { id: 'f30', rarity: 'UR', title: '狮吉', desc: '即使是幼小的“可爱”，终有一天也可成为草原的王！（😆）', weight: 1, color: '#d4af37', icon: 'https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/takarakuji/shiji.png' },
         { id: 'f35', rarity: 'UR', title: '绯吉', desc: '软软的狗耳朵，可是为听八卦而生的哦！', weight: 1, color: '#d4af37', icon: 'https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/takarakuji/feiji.png' },
         { id: 'f2', rarity: 'SSR', title: '虎吉', desc: '运气爆棚！干什么都是如虎添翼，チョロいもんだぜ！', weight: 5, color: '#d32f2f', icon: 'https://cdn.jsdelivr.net/gh/Loepickst/kiki@main/takarakuji/huyan.png' },
@@ -391,12 +391,6 @@
             nextEntry.hiddenStage2UnlockedAt = nextEntry.hiddenStage2UnlockedAt
                 ? Math.min(nextEntry.hiddenStage2UnlockedAt, hiddenStage2UnlockedAt)
                 : hiddenStage2UnlockedAt;
-        }
-        const hiddenStage3UnlockedAt = Number(incomingEntry.hiddenStage3UnlockedAt);
-        if (Number.isFinite(hiddenStage3UnlockedAt) && hiddenStage3UnlockedAt > 0) {
-            nextEntry.hiddenStage3UnlockedAt = nextEntry.hiddenStage3UnlockedAt
-                ? Math.min(nextEntry.hiddenStage3UnlockedAt, hiddenStage3UnlockedAt)
-                : hiddenStage3UnlockedAt;
         }
         return nextEntry;
     }

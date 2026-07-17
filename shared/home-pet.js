@@ -11,6 +11,8 @@
     const LOTTERY_COLLECTION_KEY = 'study_quest_test_v1_omikujiCollection';
     const LOTTERY_COLLECTION_META_KEY = 'study_quest_test_v1_omikujiCollectionMeta_v1';
     const LOTTERY_LAST_OBTAINED_KEY = 'study_quest_test_v1_omikujiLastObtained_v1';
+    const RONIN_SKIN_UNLOCK_CARD_ID = 'f45';
+    const RONIN_SKIN_UNLOCK_VARIANT = 'foil';
     const MAX_NAME_LENGTH = 8;
     const MAX_USER_NAME_LENGTH = 16;
     const USER_PROFILE_CHANGED_EVENT = 'kiki-user-profile:changed';
@@ -356,6 +358,7 @@
     };
     const TREAT_COOLDOWN_DIALOGS = {
         shiba: '打咩！肚子已经圆滚滚了，再吃要变成猪犬了🐷',
+        ronin: '够了。行路之人，不可贪食。',
         cat: '拿走拿走，本喵现在看什么都像猫条，连看你都觉得反胃。',
         capybara: '够了。再喂下去，{name}就只能用体重压住退出按钮了。',
         daodun: '补给槽已经充满，刀盾暂时不需要追加能量。'
@@ -376,12 +379,14 @@
     const IDLE_VARIANT_DURATION_MS = 3200;
     const COLA_TREAT_LOCKED_DIALOGS = {
         shiba: '汪？你还没解锁可乐呢！{name}只能咽咽口水假装喝过了……',
+        ronin: '壶中无茶，莫拿空盏戏我。',
         cat: '喵？说好的猫薄荷呢？你想拿空气糊弄本喵吗！',
         capybara: '没有可乐？那你点得这么熟练，是在测试{name}的想象力吗？',
         daodun: '{name}检测到特殊补给尚未解锁，继续保持待命。'
     };
     const HEADPAT_FALLBACK_DIALOGS = {
         shiba: '略略略~ 你摸不到！快去把专注力放在书本上！',
+        ronin: '心神不定，何谈出手？先将书中之事做好。',
         cat: '喵呜，扑空了吧？把这股劲头拿去翻书更划算。',
         capybara: '摸不到。别急，书本不会躲，你先去碰它。',
         daodun: '{name}轻轻格挡了一下，像是在提醒你继续专注。'
@@ -391,6 +396,11 @@
             4: '喂喂，再说一次，{name}这叫毛茸茸，不叫胖！不能再吃了！',
             5: '你再喂，{name}连屏幕都挤不下了……（扭头拒绝）',
             sleep: '呼噜……碳水让人犯困……{name}先睡为敬，你加油学……Zzz'
+        },
+        ronin: {
+            4: '腹中已满，莫再添了。',
+            5: '再递，便留作明日干粮。',
+            sleep: '食饱神倦。容我小憩片刻。'
         },
         cat: {
             4: '喂，你是打算把我喂成橘猫那种体型吗？拿走，本喵要保持身材！',
@@ -415,6 +425,7 @@
     };
     const COLA_OVERFLOW_DIALOGS = {
         shiba: '今天的快乐额度快被你灌满啦。',
+        ronin: '茶过三巡，反乱心神。止。',
         cat: '不行了……再吸脑子都要变成毛线球了……喵呜……',
         capybara: '再喝就不叫提神，叫逃避困意了。这个{name}熟。',
         daodun: '{name}的能量读数已经满格，建议暂停特殊补给。'
@@ -431,9 +442,13 @@
     const PRACTICE_MAJOR_DURATION_MS = 2400;
     const FOLLOW_OUTSIDE_HOME_DIALOGS = {
         shiba: '要出去玩啦！{name}已经把牵绳叼好了，我们边逛边学！',
+        ronin: '既要同行，便跟紧。',
         cat: '要出去玩啦？……那就把{name}也带上吧，别走丢了。',
         capybara: '要出去玩啦。放心，{name}会跟着你，也会记得你在哪一页偷懒。',
         daodun: '要出去巡护啦，{name}已经切换到随行守护。'
+    };
+    const STOP_FOLLOW_OUTSIDE_HOME_DIALOGS = {
+        ronin: '便在此处歇脚。'
     };
     const SECTION_ENTRY_DIALOGS = {
         shiba: {
@@ -452,6 +467,24 @@
             favorites: [
                 '慢慢挑，挑到顺眼的那一个我们就开跑。',
                 '收藏页也行，先选一个你想碰的入口。'
+            ]
+        },
+        ronin: {
+            daily: [
+                '既至，便从眼前一题起。',
+                '书已展，莫误时辰。'
+            ],
+            examRecent: [
+                '前路断于【{label}】，今日接上。',
+                '【{label}】尚有余势，续上便是。'
+            ],
+            examFallback: [
+                '临阵先静心。辨清虚实，再落笔。',
+                '备考如临阵，莫先乱了阵脚。'
+            ],
+            favorites: [
+                '既已收入囊中，便择一项磨锋。',
+                '莫在旧物之间踌躇，选定便行。'
             ]
         },
         cat: {
@@ -530,6 +563,28 @@
             ordinary: [
                 '今天这签算稳稳落地，我们接着往前走吧。',
                 '平稳的一签也挺好，至少手气没有掉线。'
+            ]
+        },
+        ronin: {
+            unlock: [
+                '机缘已至，收下。',
+                '此物与你有缘，莫要辜负。'
+            ],
+            rare: [
+                '此签不凡。藏好，莫露锋芒。',
+                '气运临身，亦须守心。'
+            ],
+            new: [
+                '新物入囊，往后自有用处。',
+                '未曾见过。收好。'
+            ],
+            duplicate: [
+                '旧物重逢，亦是缘法。',
+                '又见此物。留着便是。'
+            ],
+            ordinary: [
+                '签已落定，莫为得失乱心。',
+                '平签而已，继续前行。'
             ]
         },
         cat: {
@@ -645,6 +700,7 @@
     const MYTHIC_SKIN_ASSET_VERSION = '20260711-expression-v1';
     const NEKOMATA_ASSET_VERSION = '20260715-silver-yokai-v2';
     const CAPYBARA_ASSET_VERSION = '20260713-lazy-v1';
+    const RONIN_SHIBA_ASSET_VERSION = '20260717-ronin-v2';
 
     function escapeHtmlAttribute(value) {
         return String(value || '')
@@ -736,6 +792,12 @@
     function nekomataFrames(action, count) {
         return Array.from({ length: count }, (_, index) => (
             `assets/pets-optimized/nekomata/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.webp?v=${NEKOMATA_ASSET_VERSION}`
+        ));
+    }
+
+    function roninShibaFrames(action, count) {
+        return Array.from({ length: count }, (_, index) => (
+            `assets/pets-optimized/ronin-shiba/frames/${action}/frame-${String(index + 1).padStart(2, '0')}.webp?v=${RONIN_SHIBA_ASSET_VERSION}`
         ));
     }
 
@@ -1170,6 +1232,24 @@
         reward: imageSequence(okamiFrames('reward', 4), 180, false),
         leash: imageSequence(okamiFrames('leash', 4), 180, false)
     };
+    const RONIN_SHIBA_PIXEL_FRAMES = {
+        idle: imageSequence(roninShibaFrames('idle_breathe', 6), 300, true, { pingPong: true, startHold: 2, endHold: 1 }),
+        blink: imageSequence(roninShibaFrames('blink', 4), 210, false, { returnToStart: true }),
+        idleLook: imageSequence(roninShibaFrames('idle_look', 4), 340, false, { pingPong: true, returnToStart: true, startHold: 1 }),
+        idleStretch: imageSequence(roninShibaFrames('idle_adjust', 6), 250, false, { returnToStart: true, endHold: 1 }),
+        cheer: imageSequence(roninShibaFrames('happy', 4), 210, false, { returnToStart: true }),
+        hop: imageSequence(roninShibaFrames('play', 6), 170, false, { returnToStart: true }),
+        ball: imageSequence(roninShibaFrames('play', 6), 190, false, { returnToStart: true }),
+        eat: imageSequence(roninShibaFrames('eat', 5), 210, false, { returnToStart: true }),
+        sleepy: imageSequence(roninShibaFrames('sleepy_wake', 6), 240, false, { returnToStart: true }),
+        sleep: imageSequence(roninShibaFrames('sleep', 4), 380, true, { pingPong: true, startHold: 1 }),
+        cola: imageSequence(roninShibaFrames('cola', 6), 210, false, { returnToStart: true }),
+        sad: imageSequence(roninShibaFrames('sad', 6), 230, false, { returnToStart: true }),
+        headpatAnnoyed: imageSequence(roninShibaFrames('headpat_annoyed', 6), 220, false, { returnToStart: true }),
+        thinking: imageSequence(roninShibaFrames('thinking', 4), 270, false, { returnToStart: true }),
+        reward: imageSequence(roninShibaFrames('reward', 4), 210, false, { returnToStart: true }),
+        leash: imageSequence(roninShibaFrames('leash', 4), 210, false, { returnToStart: true })
+    };
     const NEKOMATA_PIXEL_FRAMES = {
         idle: imageSequence(nekomataFrames('idle', 4), 260, true, { pingPong: true, startHold: 1 }),
         blink: imageSequence(nekomataFrames('blink', 4), 180, false),
@@ -1215,7 +1295,90 @@
             pixelFrames: createPixelFrameMap(SHIBA_PIXEL_FRAMES, SHIBA_FRAME_OPTIONS),
             skins: {
                 default: { id: 'default', label: '赤柴' },
-                okami: { id: 'okami', label: '大神', pixelFrames: createPixelFrameMap(OKAMI_PIXEL_FRAMES) }
+                okami: { id: 'okami', label: '大神', pixelFrames: createPixelFrameMap(OKAMI_PIXEL_FRAMES) },
+                ronin: {
+                    id: 'ronin',
+                    label: '浪客',
+                    unlockRequirement: {
+                        type: 'lotteryCardVariant',
+                        cardId: RONIN_SKIN_UNLOCK_CARD_ID,
+                        variant: RONIN_SKIN_UNLOCK_VARIANT,
+                        label: '武吉（闪）'
+                    },
+                    dialogKey: 'ronin',
+                    pixelFrames: createPixelFrameMap(RONIN_SHIBA_PIXEL_FRAMES),
+                    actionLabels: {
+                        headpat: '碰斗笠',
+                        treat: '递饭团',
+                        cola: '斟粗茶',
+                        leash: '同行',
+                        leashActive: '同行中'
+                    },
+                    dialogs: {
+                        welcome: [
+                            '既至，便坐。莫误时辰。',
+                            '长路未尽，今日仍当精进。',
+                            '书已展，便莫空手而归。',
+                            '风起了。该上路了。'
+                        ],
+                        defaultIdle: [
+                            '心浮，则意乱。',
+                            '莫观我，观书。',
+                            '锋刃久置尚且会钝，何况记忆。',
+                            '若无去处，便从眼前一题起。',
+                            '歇息无妨，荒废不可。'
+                        ],
+                        defaultRecent: [
+                            '【{label}】余温尚在，续上便是。',
+                            '前路断于【{label}】，今日接上。',
+                            '方才所习尚未沉淀，再走一遍。',
+                            '脚印未散，莫在此时回头。'
+                        ],
+                        defaultReview: [
+                            '旧误不除，终成后患。',
+                            '温故非退，乃是磨锋。',
+                            '【{label}】仍有破绽，回去补上。',
+                            '同一处失手，不该再有第二回。'
+                        ],
+                        defaultExam: [
+                            '临阵先静心。',
+                            '题有虚实，辨清再落笔。',
+                            '胜负未定，莫先乱了阵脚。',
+                            '锋芒当藏于鞘中，答案亦然。看准再出手。'
+                        ],
+                        headpat: [
+                            '莫动斗笠。',
+                            '放手。',
+                            '三息之内，收手。',
+                            '扰人清静，可不是好习惯。'
+                        ],
+                        headpatEaster: [
+                            { message: '……罢了。只此一回。', mode: 'headpatGentle', anim: 'blink' },
+                            { message: '身法迟缓，连一片帽檐也捉不住。', mode: 'headpatPlayful', anim: 'hop' },
+                            { message: '再扰清静，刀鞘可不认人。', mode: 'headpatAnnoyed', anim: 'headpatAnnoyed' }
+                        ],
+                        treat: [
+                            '饭团留下。',
+                            '尚可入口。',
+                            '此情，记下了。',
+                            '行路之前，确该补些气力。'
+                        ],
+                        colaTreat: [
+                            '粗茶清苦，正合我意。',
+                            '一盏醒神，足矣。',
+                            '茶尽，心明。继续。',
+                            '滋味虽淡，倒也能解一路风尘。',
+                            '好茶不在贵，在于饮后心静。'
+                        ],
+                        sleepWake: [
+                            '风声未歇，何故唤我？',
+                            '不过闭目听风。',
+                            '清梦方至，便被你扰了。',
+                            '既已醒来，便说说下一程去何处。'
+                        ]
+                    },
+                    dialogUnlocks: {}
+                }
             },
             dialogs: {
                 welcome: [
@@ -1845,9 +2008,48 @@
         return Object.values(skins).filter((skin) => skin && skin.id);
     }
 
+    function isLotteryCardVariantOwned(cardId, variant) {
+        const normalizedCardId = String(cardId || '').trim();
+        if (!normalizedCardId) {
+            return false;
+        }
+
+        const meta = safeParseJSON(storageGetItem(LOTTERY_COLLECTION_META_KEY), {});
+        const entry = meta && typeof meta === 'object' && !Array.isArray(meta)
+            ? meta[normalizedCardId]
+            : null;
+        if (!entry || Number(entry.count) <= 0) {
+            return false;
+        }
+
+        if (variant === 'foil') {
+            return Number(entry.variants && entry.variants.foilCount) > 0;
+        }
+        if (variant === 'normal') {
+            return Number(entry.variants && entry.variants.normalCount) > 0;
+        }
+        return true;
+    }
+
+    function isPetSkinUnlocked(petId, skinId) {
+        const skin = getPetSkinOptions(petId).find((option) => option.id === skinId);
+        if (!skin) {
+            return false;
+        }
+
+        const requirement = skin.unlockRequirement;
+        if (!requirement) {
+            return true;
+        }
+        if (requirement.type === 'lotteryCardVariant') {
+            return isLotteryCardVariantOwned(requirement.cardId, requirement.variant);
+        }
+        return false;
+    }
+
     function normalizePetSkinId(petId, rawValue) {
         const normalized = String(rawValue || 'default').trim() || 'default';
-        return getPetSkinOptions(petId).some((skin) => skin.id === normalized) ? normalized : 'default';
+        return isPetSkinUnlocked(petId, normalized) ? normalized : 'default';
     }
 
     function getPetDefaultName(petId) {
@@ -2908,7 +3110,8 @@
     }
 
     function pickSectionEntryBubble(summary, activeSection, petProfile, petName, options = {}) {
-        const sectionDialogs = SECTION_ENTRY_DIALOGS[petProfile.id] || SECTION_ENTRY_DIALOGS.shiba;
+        const dialogKey = petProfile.dialogKey || petProfile.id;
+        const sectionDialogs = SECTION_ENTRY_DIALOGS[dialogKey] || SECTION_ENTRY_DIALOGS.shiba;
         const normalizedSection = activeSection || 'daily';
         const seedSuffix = options && options.seedSuffix ? `:${options.seedSuffix}` : '';
 
@@ -2929,8 +3132,8 @@
         });
     }
 
-    function buildLotteryReactionMessage(petId, detail, petName) {
-        const dialogPool = LOTTERY_RESULT_DIALOGS[petId] || LOTTERY_RESULT_DIALOGS.shiba;
+    function buildLotteryReactionMessage(petId, detail, petName, dialogKey = petId) {
+        const dialogPool = LOTTERY_RESULT_DIALOGS[dialogKey] || LOTTERY_RESULT_DIALOGS[petId] || LOTTERY_RESULT_DIALOGS.shiba;
         const normalizedDetail = detail && typeof detail === 'object' ? detail : {};
         const title = String(normalizedDetail.title || '').trim();
         const rarity = String(normalizedDetail.rarity || '').trim();
@@ -2939,7 +3142,7 @@
             || /SSR|SP|限定|隐藏|隱藏|稀有|超吉|大吉|レア|rare/i.test(combinedMeta);
 
         let bucketKey = 'ordinary';
-        if (normalizedDetail.didUnlockColaTreat) {
+        if (normalizedDetail.didUnlockColaTreat || normalizedDetail.didUnlockRoninSkin) {
             bucketKey = 'unlock';
         } else if (normalizedDetail.isNew && isRare) {
             bucketKey = 'rare';
@@ -2954,7 +3157,7 @@
         return resolvePetDialog(dialogPool[bucketKey] || dialogPool.ordinary, petName, {
             title,
             rarity,
-            seed: `lottery:${petId}:${bucketKey}:${title}:${rarity}`
+            seed: `lottery:${dialogKey}:${bucketKey}:${title}:${rarity}`
         });
     }
 
@@ -3044,11 +3247,17 @@
                 const anchorContainer = containerSelector ? anchorTarget.closest(containerSelector) : null;
                 const containerRect = anchorContainer ? anchorContainer.getBoundingClientRect() : anchorRect;
                 const anchorGap = Math.max(0, Number(config && config.defaultAnchorGap) || 18);
+                const anchorPlacement = String(config && config.defaultAnchorPlacement
+                    ? config.defaultAnchorPlacement
+                    : 'below').trim().toLowerCase();
+                const anchorTop = anchorPlacement === 'above'
+                    ? anchorRect.top - height - anchorGap
+                    : anchorRect.bottom + anchorGap;
 
                 return getClampedAnchor(
                     root,
                     containerRect.left + ((containerRect.width - width) / 2),
-                    anchorRect.bottom + anchorGap
+                    anchorTop
                 );
             }
         }
@@ -3262,12 +3471,6 @@
             return accumulator;
         }, {});
 
-        getPetIds().forEach((petId) => {
-            const petSettings = ensurePetSettingsBucket(settings, petId);
-            petSettings.anchorX = null;
-            petSettings.anchorY = null;
-        });
-
         const configuredDockSide = String(config && config.dockSide ? config.dockSide : 'right').trim().toLowerCase();
         root.className = 'home-pet-root';
         root.dataset.dockSide = configuredDockSide === 'left' ? 'left' : 'right';
@@ -3292,6 +3495,9 @@
         const treatBtn = root.querySelector('[data-pet-treat]');
         const colaBtn = root.querySelector('[data-pet-cola]');
         const leashBtn = root.querySelector('[data-pet-leash]');
+        const headpatLabelEl = headpatBtn.querySelector('span');
+        const treatLabelEl = treatBtn.querySelector('span');
+        const colaLabelEl = colaBtn.querySelector('span');
         const leashLabelEl = root.querySelector('[data-pet-leash-label]');
         const skinPickerEl = root.querySelector('[data-pet-skin-picker]');
         const skinOptionsEl = root.querySelector('[data-pet-skin-options]');
@@ -3300,10 +3506,44 @@
             return normalizePetSkinId(petId, getPetSettingsById(petId).skinId);
         }
 
-        function getPetPixelFrames(petId) {
+        function getPetSkin(petId) {
             const petProfile = getPetProfile(petId);
             const skinId = getPetSkinId(petId);
-            const skin = petProfile.skins && petProfile.skins[skinId];
+            return petProfile.skins && petProfile.skins[skinId]
+                ? petProfile.skins[skinId]
+                : null;
+        }
+
+        function getPetDialogKey(petId) {
+            const skin = getPetSkin(petId);
+            return skin && skin.dialogKey ? skin.dialogKey : petId;
+        }
+
+        function getPetDialogProfile(petId) {
+            const petProfile = getPetProfile(petId);
+            const skin = getPetSkin(petId);
+            if (!skin || !skin.dialogs) {
+                return petProfile;
+            }
+            return {
+                ...petProfile,
+                dialogKey: skin.dialogKey || skin.id,
+                dialogs: {
+                    ...petProfile.dialogs,
+                    ...skin.dialogs
+                },
+                dialogUnlocks: skin.dialogUnlocks || {}
+            };
+        }
+
+        function getPetActionLabels(petId) {
+            const skin = getPetSkin(petId);
+            return skin && skin.actionLabels ? skin.actionLabels : {};
+        }
+
+        function getPetPixelFrames(petId) {
+            const petProfile = getPetProfile(petId);
+            const skin = getPetSkin(petId);
             return skin && skin.pixelFrames ? skin.pixelFrames : petProfile.pixelFrames;
         }
 
@@ -3747,13 +3987,20 @@
             skinPickerEl.hidden = options.length < 2;
             skinOptionsEl.innerHTML = options.map((skin) => {
                 const isActive = skin.id === activeSkinId;
+                const isUnlocked = isPetSkinUnlocked(petId, skin.id);
+                const unlockLabel = skin.unlockRequirement && skin.unlockRequirement.label
+                    ? `抽到${skin.unlockRequirement.label}后解锁`
+                    : '尚未解锁';
                 return `
                     <button
                         type="button"
-                        class="home-pet-skin-option${isActive ? ' is-active' : ''}"
+                        class="home-pet-skin-option${isActive ? ' is-active' : ''}${isUnlocked ? '' : ' is-locked'}"
                         data-pet-skin-option="${escapeHtml(skin.id)}"
                         aria-pressed="${isActive ? 'true' : 'false'}"
-                    >${escapeHtml(skin.label)}</button>
+                        aria-label="${escapeHtml(isUnlocked ? skin.label : `${skin.label}，${unlockLabel}`)}"
+                        title="${escapeHtml(isUnlocked ? skin.label : unlockLabel)}"
+                        ${isUnlocked ? '' : 'disabled'}
+                    >${escapeHtml(skin.label)}${isUnlocked ? '' : '<span class="home-pet-skin-lock" aria-hidden="true">锁</span>'}</button>
                 `;
             }).join('');
         }
@@ -3810,7 +4057,7 @@
 
         function resolveDialogSourceForPet(petId, source, summaryOverride, sectionOverride, options = {}) {
             const dialogSource = source && typeof source === 'object' ? source : { kind: 'default' };
-            const petProfile = getPetProfile(petId);
+            const petProfile = getPetDialogProfile(petId);
             const petName = getDisplayPetName(settings, petId);
             const activeSummary = summaryOverride || buildSummaryForPet(petId);
             const activeSection = sectionOverride !== undefined ? sectionOverride : getCurrentSection();
@@ -3871,24 +4118,24 @@
         }
 
         function getTreatCooldownDialog(petId) {
-            return TREAT_COOLDOWN_DIALOGS[petId] || TREAT_COOLDOWN_DIALOGS.shiba;
+            return TREAT_COOLDOWN_DIALOGS[getPetDialogKey(petId)] || TREAT_COOLDOWN_DIALOGS.shiba;
         }
 
         function getColaLockedDialog(petId) {
-            return COLA_TREAT_LOCKED_DIALOGS[petId] || COLA_TREAT_LOCKED_DIALOGS.shiba;
+            return COLA_TREAT_LOCKED_DIALOGS[getPetDialogKey(petId)] || COLA_TREAT_LOCKED_DIALOGS.shiba;
         }
 
         function getHeadpatFallbackDialog(petId) {
-            return HEADPAT_FALLBACK_DIALOGS[petId] || HEADPAT_FALLBACK_DIALOGS.shiba;
+            return HEADPAT_FALLBACK_DIALOGS[getPetDialogKey(petId)] || HEADPAT_FALLBACK_DIALOGS.shiba;
         }
 
         function getTreatOverfeedDialog(petId, stage) {
-            const petDialogs = TREAT_OVERFEED_DIALOGS[petId] || TREAT_OVERFEED_DIALOGS.shiba;
+            const petDialogs = TREAT_OVERFEED_DIALOGS[getPetDialogKey(petId)] || TREAT_OVERFEED_DIALOGS.shiba;
             return petDialogs[stage] || petDialogs.sleep;
         }
 
         function getColaOverflowDialog(petId) {
-            return COLA_OVERFLOW_DIALOGS[petId] || COLA_OVERFLOW_DIALOGS.shiba;
+            return COLA_OVERFLOW_DIALOGS[getPetDialogKey(petId)] || COLA_OVERFLOW_DIALOGS.shiba;
         }
 
         function getDazedInteractionDialog(petId) {
@@ -4068,7 +4315,7 @@
                 return false;
             }
 
-            const petProfile = getPetProfile(petId);
+            const petProfile = getPetDialogProfile(petId);
             const easterPool = Array.isArray(petProfile.dialogs.headpatEaster) ? petProfile.dialogs.headpatEaster : [];
             if (!easterPool.length) {
                 return false;
@@ -4493,6 +4740,19 @@
                         reward_hit: ['有奖励！快去看看！']
                     }
                 },
+                ronin: {
+                    general: {
+                        enter: ['审题如观敌，先辨虚实。', '屏息凝神，莫要妄动。'],
+                        answer_correct: ['这一式，尚可。', '落点无误。', '看得准，出手也稳。'],
+                        answer_wrong: ['锋芒偏了。重来。', '破绽在前，你却未曾看见。', '心急则剑乱。再审一遍。'],
+                        review: ['旧伤不愈，终会误事。', '回头磨去这一处钝口。'],
+                        streak: ['气势已成，莫断。', '招式渐稳。继续。'],
+                        near_clear: ['仅余数步，守住心神。', '阵眼已现，莫在此处失手。'],
+                        clear: ['此阵已破。', '收势。这一程结束了。'],
+                        perfect_clear: ['招无虚发。很好。', '未露半分破绽，算你过关。'],
+                        reward_hit: ['此物与你有缘，收下。', '机缘已至，莫让它久候。']
+                    }
+                },
                 cat: {
                     vocabulary: {
                         enter: ['先把词义认清，笨蛋。别一上来就瞎猜，本喵{name}看着呢。'],
@@ -4739,7 +4999,8 @@
                 }
             };
 
-            const dialogMap = practiceDialogMap[petId] || practiceDialogMap.shiba;
+            const practiceDialogKey = getPetDialogKey(petId);
+            const dialogMap = practiceDialogMap[practiceDialogKey] || practiceDialogMap[petId] || practiceDialogMap.shiba;
             const phaseKey = moduleKey === 'textbook' && normalized.mode === 'stage' && (phase === 'clear' || phase === 'perfect_clear')
                 ? `stage_${phase}`
                 : phase;
@@ -4836,7 +5097,7 @@
                 return false;
             }
 
-            const message = buildLotteryReactionMessage(petId, normalized, getCurrentPetName());
+            const message = buildLotteryReactionMessage(petId, normalized, getCurrentPetName(), getPetDialogKey(petId));
             if (!message) {
                 return false;
             }
@@ -4845,7 +5106,7 @@
             runtime.practiceReactionKey = `lottery:${normalized.title || ''}:${normalized.rarity || ''}`;
             clearWelcomeLock({ keepCurrentDialog: true });
             setInteractionMode('normal', PRACTICE_MAJOR_DURATION_MS, petId);
-            const shouldCelebrate = normalized.didUnlockColaTreat || normalized.isNew || normalized.isRare;
+            const shouldCelebrate = normalized.didUnlockColaTreat || normalized.didUnlockRoninSkin || normalized.isNew || normalized.isRare;
             showInteractionDialog(
                 message,
                 shouldCelebrate && getPetPixelFrames(petId).reward ? 'reward' : 'blink',
@@ -5083,7 +5344,13 @@
             moodEl.textContent = getDisplayedMoodLabel(petId, summary.mood);
             colaBtn.hidden = !['shiba', 'cat', 'capybara'].includes(petId);
             leashBtn.hidden = !isHomeSurface();
-            leashLabelEl.textContent = isFollowOutsideHomeEnabled(settings) ? '牵绳中' : '牵绳';
+            const actionLabels = getPetActionLabels(petId);
+            headpatLabelEl.textContent = actionLabels.headpat || '摸摸头';
+            treatLabelEl.textContent = actionLabels.treat || '喂肉干';
+            colaLabelEl.textContent = actionLabels.cola || '喂可乐';
+            leashLabelEl.textContent = isFollowOutsideHomeEnabled(settings)
+                ? (actionLabels.leashActive || '牵绳中')
+                : (actionLabels.leash || '牵绳');
             leashBtn.classList.toggle('is-active', isFollowOutsideHomeEnabled(settings));
             renderActivities(activitiesEl, summary.recentActivities, summary.recommendedNext);
             root.dataset.expanded = String(isExpanded);
@@ -5327,11 +5594,19 @@
             collectionOpen = false;
             setFollowOutsideHomeEnabled(nextValue);
             if (nextValue) {
-                setDialogSourceForPet(petId, { kind: 'fixed', message: FOLLOW_OUTSIDE_HOME_DIALOGS[petId] || FOLLOW_OUTSIDE_HOME_DIALOGS.shiba }, summary, getCurrentSection());
+                const dialogKey = getPetDialogKey(petId);
+                setDialogSourceForPet(petId, { kind: 'fixed', message: FOLLOW_OUTSIDE_HOME_DIALOGS[dialogKey] || FOLLOW_OUTSIDE_HOME_DIALOGS.shiba }, summary, getCurrentSection());
                 setInteractionMode('normal', INTERACTION_CHAIN_MS, petId);
                 setAnim(getPetPixelFrames(petId).leash ? 'leash' : (petId === 'cat' ? 'hop' : 'cheer'), petId);
             } else if (getCurrentPetRuntime().interactionMode === 'normal') {
-                setDialogSourceForPet(petId, { kind: 'default' }, summary, getCurrentSection());
+                const dialogKey = getPetDialogKey(petId);
+                const stopFollowingMessage = STOP_FOLLOW_OUTSIDE_HOME_DIALOGS[dialogKey];
+                setDialogSourceForPet(
+                    petId,
+                    stopFollowingMessage ? { kind: 'fixed', message: stopFollowingMessage } : { kind: 'default' },
+                    summary,
+                    getCurrentSection()
+                );
                 setAnim(getVisualMood(petId, summary.mood), petId);
             }
             sync('leash');
@@ -5509,7 +5784,7 @@
 
         skinOptionsEl.addEventListener('click', (event) => {
             const optionButton = event.target.closest('[data-pet-skin-option]');
-            if (!optionButton) {
+            if (!optionButton || optionButton.disabled) {
                 return;
             }
 

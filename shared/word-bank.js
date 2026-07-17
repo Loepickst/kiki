@@ -5,10 +5,11 @@
         return;
     }
 
-    const VERSION = "1.7.1";
+    const VERSION = "1.8.1";
     const STORAGE_KEY = "kikiWordBankEntriesV1";
     const PRESET_IMPORTED_KEY = "kikiWordBankPresetsImportedV3";
     const NOTES_CLEARED_KEY = "kikiWordBankNotesClearedV1";
+    const FURIGANA_SYNC_KEY = "kikiWordBankFuriganaSyncedV1";
     const STYLE_ID = "kiki-word-bank-style";
     const FLOAT_ID = "kiki-word-bank-float";
     const MODAL_ID = "kiki-word-bank-modal";
@@ -30,7 +31,7 @@
         ? new URL("./", currentScript.src)
         : new URL("./shared/", window.location.href);
     const siteRoot = new URL("../", sharedBase);
-    const cssHref = new URL("word-bank.css?v=20260715-layout-fix1", sharedBase).href;
+    const cssHref = new URL("word-bank.css?v=20260716-furigana-tts1", sharedBase).href;
 
     let activeSelection = null;
     let selectionTimer = 0;
@@ -40,6 +41,7 @@
     let previewFrame = 0;
     let activeCardEntry = null;
     let cardReturnFocus = null;
+    let activeSpeechUtterance = null;
 
     function ensureStyle() {
         const styleById = document.getElementById(STYLE_ID);
@@ -477,6 +479,7 @@
         const usage = normalizeMultiline(rawEntry && rawEntry.usage, 360);
         const collocations = normalizeLearningList(rawEntry && rawEntry.collocations, 8, 48);
         const example = normalizeMultiline(rawEntry && rawEntry.example, 520);
+        const exampleRuby = normalizeMultiline(rawEntry && rawEntry.exampleRuby, 1200);
         const exampleZh = normalizeMultiline(rawEntry && rawEntry.exampleZh, 520);
         const relatedWords = normalizeLearningList(rawEntry && rawEntry.relatedWords, 8, 48);
         const note = normalizeMultiline(rawEntry && rawEntry.note, 520);
@@ -509,6 +512,7 @@
             usage,
             collocations,
             example,
+            exampleRuby,
             exampleZh,
             relatedWords,
             note,
@@ -694,6 +698,50 @@
             importPresets();
         } catch (error) {
             // The word bank still works when storage is unavailable; presets can be imported later.
+        }
+    }
+
+    function syncPresetFuriganaOnce() {
+        try {
+            if (localStorage.getItem(FURIGANA_SYNC_KEY) === "true") {
+                return;
+            }
+
+            const presetById = new Map(getPresets().map((entry) => [entry.id, entry]));
+            const entries = loadEntries();
+            let updated = 0;
+            const nextEntries = entries.map((entry) => {
+                const preset = presetById.get(entry.id);
+                if (!preset) {
+                    return entry;
+                }
+
+                const patch = {};
+                if (!entry.exampleRuby && preset.exampleRuby && entry.example === preset.example) {
+                    patch.exampleRuby = preset.exampleRuby;
+                }
+                if (entry.partOfSpeech === "サ变动词" && preset.partOfSpeech.includes("・")) {
+                    patch.partOfSpeech = preset.partOfSpeech;
+                }
+                if (!Object.keys(patch).length) {
+                    return entry;
+                }
+                updated += 1;
+                return {
+                    ...entry,
+                    ...patch
+                };
+            });
+
+            if (updated > 0) {
+                saveEntries(nextEntries, {
+                    action: "sync-furigana",
+                    updated
+                });
+            }
+            localStorage.setItem(FURIGANA_SYNC_KEY, "true");
+        } catch (error) {
+            // Keep existing saved words available when storage is disabled.
         }
     }
 
@@ -883,11 +931,14 @@
                                                 <option value="名词">名词</option>
                                                 <option value="五段动词・自动词">五段动词・自动词</option>
                                                 <option value="五段动词・他动词">五段动词・他动词</option>
+                                                <option value="五段动词・自・他动词">五段动词・自・他动词</option>
                                                 <option value="一段动词・自动词">一段动词・自动词</option>
                                                 <option value="一段动词・他动词">一段动词・他动词</option>
+                                                <option value="一段动词・自・他动词">一段动词・自・他动词</option>
                                                 <option value="サ变动词">サ变动词</option>
                                                 <option value="サ变动词・自动词">サ变动词・自动词</option>
                                                 <option value="サ变动词・他动词">サ变动词・他动词</option>
+                                                <option value="サ变动词・自・他动词">サ变动词・自・他动词</option>
                                                 <option value="い形容词">い形容词</option>
                                                 <option value="な形容词">な形容词</option>
                                                 <option value="副词">副词</option>
@@ -932,6 +983,10 @@
                                         <textarea class="kiki-word-bank-textarea kiki-word-bank-textarea--example" id="kiki-word-bank-example" name="example" placeholder="例：鏡の前で服装を整えてから出かけた。"></textarea>
                                     </label>
                                     <label class="kiki-word-bank-field">
+                                        <span class="kiki-word-bank-label">例句注音 <small>汉字后用 [假名] 标注</small></span>
+                                        <textarea class="kiki-word-bank-textarea kiki-word-bank-textarea--compact" id="kiki-word-bank-example-ruby" name="exampleRuby" placeholder="例：鏡[かがみ]の前[まえ]で服装[ふくそう]を整[ととの]えてから出[で]かけた。"></textarea>
+                                    </label>
+                                    <label class="kiki-word-bank-field">
                                         <span class="kiki-word-bank-label">中文译文</span>
                                         <textarea class="kiki-word-bank-textarea kiki-word-bank-textarea--compact" id="kiki-word-bank-example-zh" name="exampleZh" placeholder="例：在镜子前整理好服装后出门了。"></textarea>
                                     </label>
@@ -947,11 +1002,11 @@
                                             <p>记录常见搭配、近义词和自己的记忆提示。</p>
                                         </div>
                                     </div>
-                                    <label class="kiki-word-bank-field">
+                                    <label class="kiki-word-bank-field kiki-word-bank-field--collocations">
                                         <span class="kiki-word-bank-label">常见搭配</span>
                                         <input class="kiki-word-bank-input" id="kiki-word-bank-collocations" name="collocations" maxlength="360" placeholder="用逗号分隔">
                                     </label>
-                                    <label class="kiki-word-bank-field">
+                                    <label class="kiki-word-bank-field kiki-word-bank-field--related">
                                         <span class="kiki-word-bank-label">近义词</span>
                                         <input class="kiki-word-bank-input" id="kiki-word-bank-related" name="relatedWords" maxlength="360" placeholder="用逗号分隔">
                                     </label>
@@ -987,13 +1042,13 @@
                                     <small id="kiki-word-bank-preview-example-zh"></small>
                                     </div>
                                 </section>
-                                <section class="kiki-word-bank-card-section">
+                                <section class="kiki-word-bank-card-section kiki-word-bank-card-section--collocations">
                                     <div class="kiki-word-bank-card-label">常见搭配</div>
-                                    <div class="kiki-word-bank-card-chips" id="kiki-word-bank-preview-collocations"></div>
+                                    <div class="kiki-word-bank-card-chips kiki-word-bank-card-chips--collocations" id="kiki-word-bank-preview-collocations"></div>
                                 </section>
-                                <section class="kiki-word-bank-card-section">
+                                <section class="kiki-word-bank-card-section kiki-word-bank-card-section--related">
                                     <div class="kiki-word-bank-card-label">近义词</div>
-                                    <div class="kiki-word-bank-card-chips" id="kiki-word-bank-preview-related"></div>
+                                    <div class="kiki-word-bank-card-chips kiki-word-bank-card-chips--related" id="kiki-word-bank-preview-related"></div>
                                 </section>
                                 <section class="kiki-word-bank-card-section">
                                     <div class="kiki-word-bank-card-label">备注</div>
@@ -1079,6 +1134,9 @@
                             <div class="kiki-word-card-term-line">
                                 <h2 class="kiki-word-card-word" id="kiki-word-card-word">词形</h2>
                                 <div class="kiki-word-card-meta" id="kiki-word-card-meta"></div>
+                                <button type="button" class="kiki-word-card-speak" data-word-card-speak aria-label="朗读单词" aria-pressed="false">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.2v5.6h3.6l4.5 3.7V5.5L7.6 9.2z"></path><path d="M15.5 8.3a5.2 5.2 0 0 1 0 7.4M18.2 5.7a8.8 8.8 0 0 1 0 12.6"></path></svg>
+                                </button>
                             </div>
                         </header>
                         <section class="kiki-word-card-section kiki-word-card-section--meaning">
@@ -1090,13 +1148,13 @@
                             <p id="kiki-word-card-example"></p>
                             <small id="kiki-word-card-example-zh"></small>
                         </section>
-                        <section class="kiki-word-card-section" data-word-card-list-block>
+                        <section class="kiki-word-card-section kiki-word-card-section--collocations" data-word-card-list-block>
                             <span>常见搭配</span>
-                            <div class="kiki-word-card-list" id="kiki-word-card-collocations"></div>
+                            <div class="kiki-word-card-list kiki-word-card-list--collocations" id="kiki-word-card-collocations"></div>
                         </section>
-                        <section class="kiki-word-card-section" data-word-card-list-block>
+                        <section class="kiki-word-card-section kiki-word-card-section--related" data-word-card-list-block>
                             <span>近义词</span>
-                            <div class="kiki-word-card-list" id="kiki-word-card-related"></div>
+                            <div class="kiki-word-card-list kiki-word-card-list--related" id="kiki-word-card-related"></div>
                         </section>
                         <section class="kiki-word-card-section" data-word-card-block>
                             <span>备注</span>
@@ -1126,6 +1184,9 @@
                 openEditor(entry, { editing: true });
             }
         });
+        modal.querySelector("[data-word-card-speak]").addEventListener("click", (event) => {
+            speakWord(activeCardEntry, event.currentTarget);
+        });
 
         return modal;
     }
@@ -1135,6 +1196,95 @@
         if (target) {
             target.textContent = value || fallback;
         }
+    }
+
+    function renderFurigana(target, annotatedText, fallbackText = "") {
+        if (!target) {
+            return;
+        }
+
+        const source = normalizeMultiline(annotatedText, 1200) || normalizeMultiline(fallbackText, 1200);
+        target.replaceChildren();
+        if (!source) {
+            return;
+        }
+
+        const pattern = /([\u3400-\u9fff々〆ヵヶ]+)\[([^\]\n]+)\]/g;
+        let cursor = 0;
+        let match = pattern.exec(source);
+        while (match) {
+            if (match.index > cursor) {
+                target.appendChild(document.createTextNode(source.slice(cursor, match.index)));
+            }
+            const ruby = document.createElement("ruby");
+            const rb = document.createElement("rb");
+            const rt = document.createElement("rt");
+            rb.textContent = match[1];
+            rt.textContent = match[2];
+            ruby.append(rb, rt);
+            target.appendChild(ruby);
+            cursor = pattern.lastIndex;
+            match = pattern.exec(source);
+        }
+        if (cursor < source.length) {
+            target.appendChild(document.createTextNode(source.slice(cursor)));
+        }
+    }
+
+    function resetSpeechUi() {
+        const button = document.querySelector(`#${CARD_MODAL_ID} [data-word-card-speak]`);
+        if (!button) {
+            return;
+        }
+        button.classList.remove("is-speaking");
+        button.setAttribute("aria-pressed", "false");
+    }
+
+    function cancelSpeech() {
+        if ("speechSynthesis" in window) {
+            window.speechSynthesis.cancel();
+        }
+        activeSpeechUtterance = null;
+        resetSpeechUi();
+    }
+
+    function speakWord(entry, button) {
+        if (!entry || !button) {
+            return;
+        }
+        if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
+            showToast("当前浏览器暂不支持语音朗读。");
+            return;
+        }
+        if (button.classList.contains("is-speaking")) {
+            cancelSpeech();
+            return;
+        }
+
+        cancelSpeech();
+        const utterance = new window.SpeechSynthesisUtterance(entry.word || entry.reading);
+        utterance.lang = "ja-JP";
+        utterance.rate = 0.86;
+        utterance.pitch = 1;
+        const japaneseVoice = window.speechSynthesis.getVoices()
+            .find((voice) => /^ja(?:-|_)/i.test(voice.lang));
+        if (japaneseVoice) {
+            utterance.voice = japaneseVoice;
+        }
+        utterance.addEventListener("start", () => {
+            button.classList.add("is-speaking");
+            button.setAttribute("aria-pressed", "true");
+        });
+        const finish = () => {
+            if (activeSpeechUtterance === utterance) {
+                activeSpeechUtterance = null;
+                resetSpeechUi();
+            }
+        };
+        utterance.addEventListener("end", finish);
+        utterance.addEventListener("error", finish);
+        activeSpeechUtterance = utterance;
+        window.speechSynthesis.speak(utterance);
     }
 
     function updateWordLengthClass(target, value) {
@@ -1178,6 +1328,12 @@
     function populateCardModal(modal, entry) {
         setCardText(modal, "#kiki-word-card-word", entry.word, "未命名词条");
         updateWordLengthClass(modal.querySelector("#kiki-word-card-word"), entry.word);
+        const speakButton = modal.querySelector("[data-word-card-speak]");
+        if (speakButton) {
+            const label = `朗读${entry.word || "单词"}`;
+            speakButton.setAttribute("aria-label", label);
+            speakButton.setAttribute("title", label);
+        }
         setCardText(modal, "#kiki-word-card-reading", entry.reading);
         const reading = modal.querySelector("#kiki-word-card-reading");
         if (reading) {
@@ -1192,7 +1348,7 @@
         renderCardItems(modal, "#kiki-word-card-related", entry.relatedWords || []);
         setCardBlock(modal, "#kiki-word-card-note", entry.note);
 
-        setCardText(modal, "#kiki-word-card-example", entry.example);
+        renderFurigana(modal.querySelector("#kiki-word-card-example"), entry.exampleRuby, entry.example);
         setCardText(modal, "#kiki-word-card-example-zh", entry.exampleZh);
         const exampleBlock = modal.querySelector("[data-word-card-example]");
         if (exampleBlock) {
@@ -1230,6 +1386,7 @@
             return;
         }
 
+        cancelSpeech();
         modal.classList.remove("is-open");
         modal.setAttribute("aria-hidden", "true");
         activeCardEntry = null;
@@ -1298,6 +1455,7 @@
         const meaning = normalizeMultiline(getFieldValue(modal, "#kiki-word-bank-meaning"), 1200);
         const collocations = normalizeLearningList(getFieldValue(modal, "#kiki-word-bank-collocations"), 8, 48);
         const example = normalizeMultiline(getFieldValue(modal, "#kiki-word-bank-example"), 520);
+        const exampleRuby = normalizeMultiline(getFieldValue(modal, "#kiki-word-bank-example-ruby"), 1200);
         const exampleZh = normalizeMultiline(getFieldValue(modal, "#kiki-word-bank-example-zh"), 520);
         const relatedWords = normalizeLearningList(getFieldValue(modal, "#kiki-word-bank-related"), 8, 48);
         const note = normalizeMultiline(getFieldValue(modal, "#kiki-word-bank-note"), 520);
@@ -1315,7 +1473,11 @@
         renderPreviewItems(modal.querySelector("#kiki-word-bank-preview-collocations"), collocations);
         renderPreviewItems(modal.querySelector("#kiki-word-bank-preview-related"), relatedWords);
 
-        setPreviewText(modal, "#kiki-word-bank-preview-example", example, "例句会显示在这里。");
+        renderFurigana(
+            modal.querySelector("#kiki-word-bank-preview-example"),
+            exampleRuby,
+            example || "例句会显示在这里。"
+        );
         setPreviewText(modal, "#kiki-word-bank-preview-example-zh", exampleZh);
 
         const completionChecks = [
@@ -1389,6 +1551,7 @@
         setFieldValue(modal, "#kiki-word-bank-meaning", rawEntry.meaning || [rawEntry.meaningZh, rawEntry.meaningJa].filter(Boolean).join("\n"));
         setFieldValue(modal, "#kiki-word-bank-collocations", learningListToInput(rawEntry.collocations));
         setFieldValue(modal, "#kiki-word-bank-example", rawEntry.example);
+        setFieldValue(modal, "#kiki-word-bank-example-ruby", rawEntry.exampleRuby);
         setFieldValue(modal, "#kiki-word-bank-example-zh", rawEntry.exampleZh);
         setFieldValue(modal, "#kiki-word-bank-related", learningListToInput(rawEntry.relatedWords));
         setFieldValue(modal, "#kiki-word-bank-note", rawEntry.note);
@@ -1490,6 +1653,7 @@
             usage: editorState && editorState.usage,
             collocations: getFieldValue(modal, "#kiki-word-bank-collocations"),
             example: getFieldValue(modal, "#kiki-word-bank-example"),
+            exampleRuby: getFieldValue(modal, "#kiki-word-bank-example-ruby"),
             exampleZh: getFieldValue(modal, "#kiki-word-bank-example-zh"),
             relatedWords: getFieldValue(modal, "#kiki-word-bank-related"),
             note: getFieldValue(modal, "#kiki-word-bank-note"),
@@ -1717,6 +1881,7 @@
         setupCanonicalBackLinks();
         initSelectionCapture();
         ensurePresetsImported();
+        syncPresetFuriganaOnce();
         clearExistingNotesOnce();
 
         const warmEditor = () => {
@@ -1753,6 +1918,7 @@
         STORAGE_KEY,
         PRESET_IMPORTED_KEY,
         NOTES_CLEARED_KEY,
+        FURIGANA_SYNC_KEY,
         loadEntries,
         saveEntries,
         normalizeEntry,
