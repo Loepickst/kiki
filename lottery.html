@@ -2777,7 +2777,7 @@
         </div>
     </div>
 
-    <script src="shared/omikuji-catalog.js?v=20260720-renji-foil1"></script>
+    <script src="shared/omikuji-catalog.js?v=20260721-renji-copy1"></script>
     <script src="shared/home-pet.js?v=20260717-ronin-unlock1"></script>
     <script>
         const MAX_DAILY_COUNT = 3;
@@ -2820,8 +2820,8 @@
         const omikujiCatalogApi = window.OmikujiCatalog || null;
         const foilConfig = omikujiCatalogApi && omikujiCatalogApi.foilConfig
             ? omikujiCatalogApi.foilConfig
-            : { pityThreshold: 50, duplicateRate: 0.10 };
-        const FOIL_PITY_THRESHOLD = Math.max(1, Number(foilConfig.pityThreshold) || 50);
+            : { pityThreshold: 60, duplicateRate: 0.10 };
+        const FOIL_PITY_THRESHOLD = Math.max(1, Number(foilConfig.pityThreshold) || 60);
         const FOIL_DUPLICATE_RATE = Math.min(1, Math.max(0, Number(foilConfig.duplicateRate) || 0.10));
         const limitedEvents = omikujiCatalogApi && Array.isArray(omikujiCatalogApi.limitedEvents)
             ? omikujiCatalogApi.limitedEvents
@@ -4123,6 +4123,7 @@
 
             return {
                 version: Number(payload.version) || 1,
+                mode: payload.mode === 'unlock_all_cards' ? 'unlock_all_cards' : 'restore',
                 exportedAt: Number.isFinite(Number(payload.exportedAt)) ? Number(payload.exportedAt) : Date.now(),
                 source: 'lottery',
                 data: {
@@ -4153,6 +4154,42 @@
         }
 
         function applyLotteryBackup(payload) {
+            if (payload.mode === 'unlock_all_cards') {
+                const currentMeta = migrateLegacyCollectionIfNeeded();
+                const nextMeta = { ...currentMeta };
+                const unlockedAt = Number.isFinite(Number(payload.exportedAt))
+                    ? Number(payload.exportedAt)
+                    : Date.now();
+                let addedCount = 0;
+
+                payload.data.omikujiCollection.forEach((rawId) => {
+                    const id = normalizeFortuneId(rawId);
+                    const fortune = omikujiCatalogApi && typeof omikujiCatalogApi.getFortuneById === 'function'
+                        ? omikujiCatalogApi.getFortuneById(id)
+                        : null;
+                    if (!fortune || (nextMeta[id] && Number(nextMeta[id].count) > 0)) {
+                        return;
+                    }
+
+                    nextMeta[id] = {
+                        count: 1,
+                        variants: { normalCount: 1, foilCount: 0 },
+                        preferredVariant: 'normal',
+                        firstObtainedAt: unlockedAt,
+                        lastObtainedAt: unlockedAt,
+                        isNew: false,
+                        rarity: fortune.rarity,
+                        title: fortune.title,
+                        source: 'unlock_patch'
+                    };
+                    addedCount += 1;
+                });
+
+                saveCollectionMeta(nextMeta);
+                saveCollection(getUnlockedIdsFromMeta(nextMeta));
+                return { mode: 'unlock_all_cards', addedCount };
+            }
+
             const mergedLimitedEventState = mergeLimitedEventStates(
                 getLimitedEventState(),
                 payload.data.omikujiLimitedEventState_v1
@@ -4169,6 +4206,7 @@
             writeBackupStorageValue(FOIL_STATE_KEY, payload.data.omikujiFoilState_v1);
             writeBackupStorageValue(LIMITED_EVENT_STATE_KEY, mergedLimitedEventState);
             migrateLegacyCollectionIfNeeded();
+            return { mode: 'restore', addedCount: 0 };
         }
 
         function setActionButtonLabel(desktopLabel, mobileLabel = desktopLabel) {
@@ -5114,14 +5152,19 @@
                 const text = await file.text();
                 const parsed = parseLotteryBackup(text);
                 const payload = validateLotteryBackup(parsed);
-                const shouldImport = window.confirm('导入后会覆盖当前本地数据记录，确定继续吗？');
+                const isUnlockPatch = payload.mode === 'unlock_all_cards';
+                const shouldImport = window.confirm(isUnlockPatch
+                    ? '将补齐所有尚未解锁的卡片，现有收藏和抽签记录不会改变。确定继续吗？'
+                    : '导入后会覆盖当前本地数据记录，确定继续吗？');
                 if (!shouldImport) {
                     return;
                 }
 
-                applyLotteryBackup(payload);
+                const importResult = applyLotteryBackup(payload);
                 refreshLotteryUIAfterImport();
-                showBackupToast('数据记录已恢复');
+                showBackupToast(isUnlockPatch
+                    ? `全卡片图鉴已补齐${importResult.addedCount ? ` · 新增 ${importResult.addedCount} 张` : ''}`
+                    : '数据记录已恢复');
             } catch (error) {
                 showBackupToast(error && error.message ? error.message : '导入失败', 'error');
             } finally {
