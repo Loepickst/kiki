@@ -33,7 +33,7 @@
             itemId: 'foilTicket',
             title: '闪卡券',
             description: '使用后，下一张支持闪卡的抽签结果必为闪卡。',
-            cost: 100,
+            cost: 50,
             currency: 'cardPoints',
             quantity: 1,
             limit: Object.freeze({ type: 'monthly', count: 2 }),
