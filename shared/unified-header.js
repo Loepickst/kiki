@@ -17,16 +17,20 @@
         }
         const link = document.createElement("link");
         link.rel = "stylesheet";
-        link.href = new URL("unified-header.css?v=20260714b", sharedBase).href;
+        link.href = new URL("unified-header.css?v=20260723a", sharedBase).href;
         link.dataset.kikiUnifiedHeaderStyle = "true";
         document.head.appendChild(link);
     }
 
-    function normalizedPath() {
-        return decodeURIComponent(window.location.pathname)
+    function projectPath(url) {
+        return decodeURIComponent(url.pathname)
             .replace(/^\/+/, "")
             .replace(/^.*?(?=(?:daily|exam|designs)\/)/, "")
             .toLowerCase();
+    }
+
+    function normalizedPath() {
+        return projectPath(window.location);
     }
 
     function sectionConfig(path) {
@@ -45,22 +49,36 @@
         if (path.startsWith("daily/culture/music/")) {
             return { title: "歌曲里的日语", backLabel: "返回日本文化", hash: "#daily/daily-culture", type: "reading" };
         }
+        if (path.startsWith("daily/culture/anime/") || path.startsWith("daily/culture/mahjong/")) {
+            return { title: "二次元の世界", backLabel: "返回二次元の世界", hash: "#daily/daily-culture/culture-anime-world", type: "reading" };
+        }
         if (path.startsWith("daily/culture/")) {
             return { title: "日本文化", backLabel: "返回日常学习", hash: "#daily", type: "reading" };
         }
         if (path.startsWith("daily/search/")) {
             return { title: path.endsWith("try.html") ? "Try! 思维导图" : "语法搜索", backLabel: "返回日常学习", hash: "#daily", type: "study" };
         }
-        if (path.includes("复合格助词") || path.includes("形式名词")) {
-            return { title: path.includes("复合格助词") ? "复合格助词" : "形式名词", backLabel: "返回语法学习", hash: "#daily/daily-grammar", type: "study" };
+        if (path.includes("复合格助词")) {
+            return { title: "复合格助词", backLabel: "返回语法学习", hash: "#daily/daily-grammar", type: "study" };
         }
         if (path.startsWith("daily/grammar/")) {
             const grammarTitles = {
                 "change.html": "動詞の活用",
-                "kakujyo.html": "格助詞理解",
+                "word-classes.html": "文法理解",
+                "particle-concept.html": "文法理解",
+                "kakujyo.html": "文法理解",
+                "fukujoshi.html": "文法理解",
+                "heiretsujoshi.html": "文法理解",
+                "teijijyoshi.html": "文法理解",
+                "setsuzokujoshi.html": "文法理解",
+                "shujoshi.html": "文法理解",
+                "sentence-structure.html": "文法理解",
+                "sentence-structure-practice.html": "文法理解",
+                "conjunction.html": "文法理解",
+                "formal-nouns.html": "文法理解",
                 "kakujyo_practice.html": "格助詞練習",
                 "敬语.html": "敬語学習",
-                "sentence-builder.html": "语句构造"
+                "conditional-comparison.html": "仮定表現"
             };
             const fileName = path.split("/").pop();
             return { title: grammarTitles[fileName] || "语法学习", backLabel: "返回语法学习", hash: "#daily/daily-grammar", type: "study" };
@@ -108,6 +126,57 @@
         return target.href;
     }
 
+    function hasReturnSource() {
+        return new URL(window.location.href).searchParams.has("return");
+    }
+
+    function currentPageReturnValue() {
+        return `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    }
+
+    function shouldCarryGrammarReturn(anchor) {
+        if (!(anchor instanceof HTMLAnchorElement)) return false;
+        if (anchor.closest(".kiki-unified-header, [data-kiki-header-source-hidden='true']")) return false;
+        if (anchor.matches(".reading-head-back, .reading-site-back, .compound-back-link, .compound-header-back, .header-back-control, .ss-back, .wc-back, .te-aux-back, #back-to-reading-index, .back-btn, .header-btn")) return false;
+        if (anchor.hasAttribute("download")) return false;
+
+        const rawHref = anchor.getAttribute("href") || "";
+        if (!rawHref || rawHref.startsWith("#") || /^(?:javascript:|mailto:|tel:)/i.test(rawHref)) return false;
+
+        let target;
+        try {
+            target = new URL(rawHref, window.location.href);
+        } catch (error) {
+            return false;
+        }
+
+        if (target.origin !== window.location.origin) return false;
+
+        const sourcePath = normalizedPath();
+        const targetPath = projectPath(target);
+        if (!sourcePath.startsWith("daily/grammar/")) return false;
+        if (!/^daily\/grammar\/(?:foundation|particles|expressions)\/.+\.html$/i.test(targetPath)) return false;
+        if (target.pathname === window.location.pathname) return false;
+        return true;
+    }
+
+    function carryGrammarReturn(anchor) {
+        if (!shouldCarryGrammarReturn(anchor)) return;
+        const target = new URL(anchor.getAttribute("href"), window.location.href);
+        target.searchParams.set("return", currentPageReturnValue());
+        anchor.href = target.href;
+    }
+
+    function enableGrammarReturnChain(path) {
+        if (!path.startsWith("daily/grammar/")) return;
+
+        document.querySelectorAll("a[href]").forEach(carryGrammarReturn);
+        document.addEventListener("click", (event) => {
+            const anchor = event.target instanceof Element ? event.target.closest("a[href]") : null;
+            if (anchor) carryGrammarReturn(anchor);
+        }, true);
+    }
+
     function findSourceHeader() {
         const selectors = [
             ".reading-site-header",
@@ -133,6 +202,7 @@
             ".reading-head-back",
             ".compound-header-back",
             ".header-back-control",
+            ".ss-back",
             "#back-to-reading-index",
             ".back-btn",
             ".header-btn"
@@ -169,7 +239,7 @@
         const directControls = Array.from(source.children).filter((element) => {
             if (!(element instanceof HTMLElement)) return false;
             if (!element.matches("a, button")) return false;
-            return !element.matches(".reading-head-back, .reading-site-back, .compound-header-back, .header-back-control, #back-to-reading-index, .back-btn, .header-btn");
+            return !element.matches(".reading-head-back, .reading-site-back, .compound-header-back, .header-back-control, .ss-back, #back-to-reading-index, .back-btn, .header-btn");
         });
         if (directControls.length) {
             const wrapper = document.createElement("div");
@@ -186,6 +256,7 @@
 
     function prepareBackElement(existing, config) {
         let back = existing || document.createElement("a");
+        const backLabel = hasReturnSource() ? "返回上一学习页" : config.backLabel;
         if (back.tagName !== "A") {
             const replacement = document.createElement("a");
             replacement.id = back.id;
@@ -194,9 +265,57 @@
         }
         back.classList.add("kiki-unified-back");
         back.href = returnTarget(config);
-        back.setAttribute("aria-label", config.backLabel);
-        back.innerHTML = `${arrowMarkup()}<span class="kiki-unified-back-label">${config.backLabel}</span>`;
+        back.setAttribute("aria-label", backLabel);
+        back.innerHTML = `${arrowMarkup()}<span class="kiki-unified-back-label">${backLabel}</span><span class="kiki-unified-back-label-mobile" aria-hidden="true">返回</span>`;
         return back;
+    }
+
+    function isPracticeAction(control) {
+        if (!(control instanceof HTMLElement)) return false;
+        const text = (control.textContent || "").replace(/\s+/g, "");
+        if (text.includes("练习") || text.includes("練習")) return true;
+
+        if (control instanceof HTMLAnchorElement) {
+            const href = control.getAttribute("href") || "";
+            return /(?:practice|练习|練習|\/test\/)/i.test(href);
+        }
+        return false;
+    }
+
+    function keepOnlyGrammarPracticeActions(container, path) {
+        if (!container || !path.startsWith("daily/grammar/")) return;
+
+        container.querySelectorAll("a, button, .nav-item").forEach((control) => {
+            if (!isPracticeAction(control)) {
+                control.remove();
+            }
+        });
+    }
+
+    function mobileActionLabel(control) {
+        const explicit = control.getAttribute("data-mobile-label");
+        if (explicit) return explicit;
+
+        const text = (control.textContent || "").replace(/[→←]/g, "").trim();
+        if (!text) return "";
+        if (text.includes("练习")) return "练习";
+        if (text.includes("讲解") || text.includes("理解")) return "讲解";
+        if (text.includes("语句构造")) return "构造";
+        if (text.includes("复合格助词")) return "练习";
+        if (text.includes("进入")) return text.replace("进入", "").slice(0, 4) || "进入";
+        return text.slice(0, 4);
+    }
+
+    function prepareActionLabels(container) {
+        if (!container) return;
+        container.querySelectorAll("a, button, .nav-item").forEach((control) => {
+            if (!(control instanceof HTMLElement)) return;
+            if (control.closest(".reading-settings-popover")) return;
+            const label = mobileActionLabel(control);
+            if (label) {
+                control.setAttribute("data-kiki-mobile-label", label);
+            }
+        });
     }
 
     function shouldHideSource(source) {
@@ -220,9 +339,11 @@
         ensureStylesheet();
         const path = normalizedPath();
         const config = sectionConfig(path);
+        enableGrammarReturnChain(path);
         const source = findSourceHeader();
         const existingBack = findBackElement(source);
         const actionContainer = findActionContainer(source);
+        keepOnlyGrammarPracticeActions(actionContainer, path);
         const header = document.createElement("header");
         header.className = `kiki-unified-header kiki-unified-header--${config.type}`;
         header.setAttribute("data-kiki-unified-header", config.type);
@@ -250,6 +371,7 @@
         const right = document.createElement("div");
         right.className = "kiki-unified-header-right";
         if (actionContainer) {
+            prepareActionLabels(actionContainer);
             right.appendChild(actionContainer);
         }
 

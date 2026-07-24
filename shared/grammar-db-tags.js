@@ -5786,6 +5786,30 @@
     "legacy": {
       "searchId": 4080
     }
+  },
+  {
+    "id": "supp-formal-noun-001",
+    "macro": "逆接与让步",
+    "category": "表面印象与实际不同",
+    "keyword": "看似……实际上……",
+    "firstKana": "よ",
+    "sourceMacro": "逆接与让步",
+    "sourceCategory": "表面印象与实际不同",
+    "legacy": {
+      "searchId": 4084
+    }
+  },
+  {
+    "id": "supp-formal-noun-002",
+    "macro": "依据与视角",
+    "category": "任凭或依照前项行事",
+    "keyword": "任凭……；照……那样",
+    "firstKana": "が",
+    "sourceMacro": "依据与视角",
+    "sourceCategory": "任凭或依照前项行事",
+    "legacy": {
+      "searchId": 4085
+    }
   }
 ];
 })();

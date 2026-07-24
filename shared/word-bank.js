@@ -5,11 +5,12 @@
         return;
     }
 
-    const VERSION = "1.8.1";
+    const VERSION = "1.11.1";
     const STORAGE_KEY = "kikiWordBankEntriesV1";
-    const PRESET_IMPORTED_KEY = "kikiWordBankPresetsImportedV3";
+    const PRESET_IMPORTED_KEY = "kikiWordBankPresetsImportedV7";
     const NOTES_CLEARED_KEY = "kikiWordBankNotesClearedV1";
     const FURIGANA_SYNC_KEY = "kikiWordBankFuriganaSyncedV1";
+    const MULTI_SENSE_SYNC_KEY = "kikiWordBankMultiSenseSyncedV1";
     const STYLE_ID = "kiki-word-bank-style";
     const FLOAT_ID = "kiki-word-bank-float";
     const MODAL_ID = "kiki-word-bank-modal";
@@ -17,10 +18,17 @@
     const TOAST_ID = "kiki-word-bank-toast";
     const MAX_ENTRIES = 600;
     const MAX_SOURCE_TEXT = 700;
+    const CIRCLED_NUMBERS = ["❶", "❷", "❸", "❹", "❺", "❻", "❼", "❽", "❾", "❿"];
+    const MULTI_SENSE_PRESET_IDS = new Set([
+        "kiki-exam-20260723-potsunto",
+        "kiki-exam-20260723-rikimu"
+    ]);
     const SOURCE_CATEGORIES = new Set([
         "movie",
+        "novel",
         "article",
         "news",
+        "exam",
         "textbook",
         "custom",
         "uncategorized"
@@ -31,7 +39,7 @@
         ? new URL("./", currentScript.src)
         : new URL("./shared/", window.location.href);
     const siteRoot = new URL("../", sharedBase);
-    const cssHref = new URL("word-bank.css?v=20260716-furigana-tts1", sharedBase).href;
+    const cssHref = new URL("word-bank.css?v=20260724-atamagonashi1", sharedBase).href;
 
     let activeSelection = null;
     let selectionTimer = 0;
@@ -139,8 +147,14 @@
         if (/(movie|anime|drama|影视|动画|动漫|电影|电视剧|ドラマ)/i.test(haystack)) {
             return "movie";
         }
+        if (/(novel|小说|小説|文学)/i.test(haystack)) {
+            return "novel";
+        }
         if (/(news|新闻|ニュース)/i.test(haystack)) {
             return "news";
+        }
+        if (/(jlpt|past[-_ ]?exam|真题|真題|過去問|本試験)/i.test(haystack)) {
+            return "exam";
         }
         if (/(textbook|try[-_ ]?n[12]|教材|课文|教科书)/i.test(haystack)) {
             return "textbook";
@@ -234,7 +248,8 @@
             return "#daily/daily-light-read";
         }
 
-        if (/^daily\/grammar\/(change|kakujyo|kakujyo_practice|敬语|sentence-builder)\.html$/.test(path)) {
+        if (/^daily\/grammar\/(?:foundation|particles|expressions)\/[^/]+\.html$/.test(path)
+            || /^daily\/grammar\/(change|kakujyo|kakujyo_practice|敬语)\.html$/.test(path)) {
             return "#daily/daily-grammar";
         }
 
@@ -259,10 +274,6 @@
         }
 
         if (/^exam\/grammar\/复合格助词\.html$/.test(path)) {
-            return "#daily/daily-grammar";
-        }
-
-        if (/^exam\/grammar\/形式名词\.html$/.test(path)) {
             return "#daily/daily-grammar";
         }
 
@@ -745,6 +756,45 @@
         }
     }
 
+    function syncPresetMultiSenseOnce() {
+        try {
+            if (localStorage.getItem(MULTI_SENSE_SYNC_KEY) === "true") {
+                return;
+            }
+
+            const presetById = new Map(getPresets().map((entry) => [entry.id, entry]));
+            const entries = loadEntries();
+            let updated = 0;
+            const nextEntries = entries.map((entry) => {
+                if (!MULTI_SENSE_PRESET_IDS.has(entry.id) || entry.updatedAt !== entry.createdAt) {
+                    return entry;
+                }
+                const preset = presetById.get(entry.id);
+                if (!preset || splitDisplayItems(preset.meaning).length < 2) {
+                    return entry;
+                }
+                updated += 1;
+                return {
+                    ...entry,
+                    meaning: preset.meaning,
+                    example: preset.example,
+                    exampleRuby: preset.exampleRuby,
+                    exampleZh: preset.exampleZh
+                };
+            });
+
+            if (updated > 0) {
+                saveEntries(nextEntries, {
+                    action: "sync-multi-sense",
+                    updated
+                });
+            }
+            localStorage.setItem(MULTI_SENSE_SYNC_KEY, "true");
+        } catch (error) {
+            // Keep existing saved words available when storage is disabled.
+        }
+    }
+
     function clearExistingNotesOnce() {
         try {
             if (localStorage.getItem(NOTES_CLEARED_KEY) === "true") {
@@ -963,8 +1013,8 @@
                                         </div>
                                     </div>
                                     <label class="kiki-word-bank-field">
-                                        <span class="kiki-word-bank-label">核心含义 <b>*</b><small>中文 / 日本語均可</small></span>
-                                        <textarea class="kiki-word-bank-textarea kiki-word-bank-textarea--meaning" id="kiki-word-bank-meaning" name="meaning" placeholder="例：整理、弄整齐；準備を整える"></textarea>
+                                        <span class="kiki-word-bank-label">核心含义 <b>*</b><small>中文 / 日本語均可 · 多个含义每行填写1项</small></span>
+                                        <textarea class="kiki-word-bank-textarea kiki-word-bank-textarea--meaning" id="kiki-word-bank-meaning" name="meaning" placeholder="每行填写一个含义，系统会自动显示 ❶❷"></textarea>
                                     </label>
                                 </section>
                             </div>
@@ -975,19 +1025,19 @@
                                         <span class="kiki-word-bank-section-number">例</span>
                                         <div>
                                             <h3 id="kiki-word-bank-section-example">例句</h3>
-                                            <p>记录一条能直接说明词义与用法的句子。</p>
+                                            <p>多个义项时，按含义顺序每行填写1条例句。</p>
                                         </div>
                                     </div>
                                     <label class="kiki-word-bank-field">
-                                        <span class="kiki-word-bank-label">日文例句 / 原文</span>
+                                        <span class="kiki-word-bank-label">日文例句 / 原文 <small>每行对应一个含义</small></span>
                                         <textarea class="kiki-word-bank-textarea kiki-word-bank-textarea--example" id="kiki-word-bank-example" name="example" placeholder="例：鏡の前で服装を整えてから出かけた。"></textarea>
                                     </label>
                                     <label class="kiki-word-bank-field">
-                                        <span class="kiki-word-bank-label">例句注音 <small>汉字后用 [假名] 标注</small></span>
+                                        <span class="kiki-word-bank-label">例句注音 <small>每行对应例句 · 汉字后用 [假名] 标注</small></span>
                                         <textarea class="kiki-word-bank-textarea kiki-word-bank-textarea--compact" id="kiki-word-bank-example-ruby" name="exampleRuby" placeholder="例：鏡[かがみ]の前[まえ]で服装[ふくそう]を整[ととの]えてから出[で]かけた。"></textarea>
                                     </label>
                                     <label class="kiki-word-bank-field">
-                                        <span class="kiki-word-bank-label">中文译文</span>
+                                        <span class="kiki-word-bank-label">中文译文 <small>每行对应例句</small></span>
                                         <textarea class="kiki-word-bank-textarea kiki-word-bank-textarea--compact" id="kiki-word-bank-example-zh" name="exampleZh" placeholder="例：在镜子前整理好服装后出门了。"></textarea>
                                     </label>
                                 </section>
@@ -1031,16 +1081,9 @@
                                         <div class="kiki-word-bank-card-meta" id="kiki-word-bank-preview-meta"></div>
                                     </div>
                                 </header>
-                                <section class="kiki-word-bank-card-section">
-                                    <div class="kiki-word-bank-card-label">含义</div>
-                                    <div class="kiki-word-bank-card-meaning" id="kiki-word-bank-preview-meaning">填写含义后会显示在这里。</div>
-                                </section>
-                                <section class="kiki-word-bank-card-section">
-                                    <div class="kiki-word-bank-card-label">例句</div>
-                                    <div class="kiki-word-bank-card-example" id="kiki-word-bank-preview-example-wrap">
-                                    <div id="kiki-word-bank-preview-example">例句会显示在这里。</div>
-                                    <small id="kiki-word-bank-preview-example-zh"></small>
-                                    </div>
+                                <section class="kiki-word-bank-card-section kiki-word-bank-card-section--senses">
+                                    <div class="kiki-word-bank-card-label">含义与例句</div>
+                                    <div class="kiki-word-bank-sense-stack is-preview" id="kiki-word-bank-preview-senses"></div>
                                 </section>
                                 <section class="kiki-word-bank-card-section kiki-word-bank-card-section--collocations">
                                     <div class="kiki-word-bank-card-label">常见搭配</div>
@@ -1139,14 +1182,9 @@
                                 </button>
                             </div>
                         </header>
-                        <section class="kiki-word-card-section kiki-word-card-section--meaning">
-                            <span>含义</span>
-                            <strong id="kiki-word-card-meaning">暂无释义</strong>
-                        </section>
-                        <section class="kiki-word-card-example" data-word-card-example>
-                            <span>例句</span>
-                            <p id="kiki-word-card-example"></p>
-                            <small id="kiki-word-card-example-zh"></small>
+                        <section class="kiki-word-card-section kiki-word-card-section--senses">
+                            <span>含义与例句</span>
+                            <div class="kiki-word-sense-stack" id="kiki-word-card-senses"></div>
                         </section>
                         <section class="kiki-word-card-section kiki-word-card-section--collocations" data-word-card-list-block>
                             <span>常见搭配</span>
@@ -1198,37 +1236,205 @@
         }
     }
 
-    function renderFurigana(target, annotatedText, fallbackText = "") {
-        if (!target) {
-            return;
-        }
-
-        const source = normalizeMultiline(annotatedText, 1200) || normalizeMultiline(fallbackText, 1200);
-        target.replaceChildren();
+    function splitDisplayItems(value, limit = 1200) {
+        const source = normalizeMultiline(value, limit);
         if (!source) {
-            return;
+            return [];
+        }
+        return source
+            .split(/\n+/)
+            .map((item) => item.replace(/^\s*(?:[❶❷❸❹❺❻❼❽❾❿]|\d+[.、])\s*/, "").trim())
+            .filter(Boolean);
+    }
+
+    function getDisplayNumber(index) {
+        return CIRCLED_NUMBERS[index] || `${index + 1}.`;
+    }
+
+    function escapeRegExp(value) {
+        return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function getTargetRanges(text, word) {
+        const source = String(text || "");
+        const targetWord = normalizeText(word, 80);
+        if (!source || !targetWord) {
+            return [];
         }
 
-        const pattern = /([\u3400-\u9fff々〆ヵヶ]+)\[([^\]\n]+)\]/g;
-        let cursor = 0;
-        let match = pattern.exec(source);
-        while (match) {
-            if (match.index > cursor) {
-                target.appendChild(document.createTextNode(source.slice(cursor, match.index)));
+        const ranges = [];
+        const addMatches = (pattern) => {
+            let match = pattern.exec(source);
+            while (match) {
+                ranges.push([match.index, match.index + match[0].length]);
+                if (!match[0]) {
+                    pattern.lastIndex += 1;
+                }
+                match = pattern.exec(source);
             }
+        };
+
+        addMatches(new RegExp(escapeRegExp(targetWord), "g"));
+        if (ranges.length) {
+            return ranges;
+        }
+
+        let stem = targetWord;
+        if (/(?:する|くる)$/.test(stem)) {
+            stem = stem.slice(0, -2);
+        } else if (/[うくぐすつぬぶむる]$/.test(stem)) {
+            stem = stem.slice(0, -1);
+        }
+        if (stem && /[\u3400-\u9fff々〆ヵヶ]/.test(stem)) {
+            addMatches(new RegExp(`${escapeRegExp(stem)}[ぁ-ゖー]*`, "g"));
+        }
+        return ranges;
+    }
+
+    function getHighlightWrapper(target, rangeIndex, wrappers) {
+        if (wrappers.has(rangeIndex)) {
+            return wrappers.get(rangeIndex);
+        }
+        const strong = document.createElement("strong");
+        strong.className = "kiki-word-example-target";
+        wrappers.set(rangeIndex, strong);
+        target.appendChild(strong);
+        return strong;
+    }
+
+    function appendHighlightedText(target, text, offset, ranges, wrappers) {
+        let cursor = 0;
+        const end = offset + text.length;
+        ranges.forEach(([rangeStart, rangeEnd], rangeIndex) => {
+            const start = Math.max(rangeStart, offset);
+            const finish = Math.min(rangeEnd, end);
+            if (start >= finish) {
+                return;
+            }
+            const localStart = start - offset;
+            const localEnd = finish - offset;
+            if (localStart > cursor) {
+                target.appendChild(document.createTextNode(text.slice(cursor, localStart)));
+            }
+            getHighlightWrapper(target, rangeIndex, wrappers)
+                .appendChild(document.createTextNode(text.slice(localStart, localEnd)));
+            cursor = localEnd;
+        });
+        if (cursor < text.length) {
+            target.appendChild(document.createTextNode(text.slice(cursor)));
+        }
+    }
+
+    function appendFurigana(target, source, options = {}) {
+        const rubyPattern = /([\u3400-\u9fff々〆ヵヶ]+)\[([^\]\n]+)\]/g;
+        const visibleSource = source.replace(
+            /([\u3400-\u9fff々〆ヵヶ]+)\[([^\]\n]+)\]/g,
+            "$1"
+        );
+        const ranges = getTargetRanges(visibleSource, options.highlightWord);
+        const highlightWrappers = new Map();
+        let sourceCursor = 0;
+        let visibleCursor = 0;
+        let match = rubyPattern.exec(source);
+        while (match) {
+            if (match.index > sourceCursor) {
+                const plainText = source.slice(sourceCursor, match.index);
+                appendHighlightedText(target, plainText, visibleCursor, ranges, highlightWrappers);
+                visibleCursor += plainText.length;
+            }
+
             const ruby = document.createElement("ruby");
             const rb = document.createElement("rb");
             const rt = document.createElement("rt");
             rb.textContent = match[1];
             rt.textContent = match[2];
             ruby.append(rb, rt);
-            target.appendChild(ruby);
-            cursor = pattern.lastIndex;
-            match = pattern.exec(source);
+
+            const rubyEnd = visibleCursor + match[1].length;
+            const rangeIndex = ranges.findIndex(
+                ([start, end]) => start < rubyEnd && end > visibleCursor
+            );
+            if (rangeIndex >= 0) {
+                getHighlightWrapper(target, rangeIndex, highlightWrappers).appendChild(ruby);
+            } else {
+                target.appendChild(ruby);
+            }
+
+            visibleCursor = rubyEnd;
+            sourceCursor = rubyPattern.lastIndex;
+            match = rubyPattern.exec(source);
         }
-        if (cursor < source.length) {
-            target.appendChild(document.createTextNode(source.slice(cursor)));
+        if (sourceCursor < source.length) {
+            appendHighlightedText(
+                target,
+                source.slice(sourceCursor),
+                visibleCursor,
+                ranges,
+                highlightWrappers
+            );
         }
+    }
+
+    function renderSenseGroups(target, data = {}, options = {}) {
+        if (!target) {
+            return;
+        }
+
+        const meanings = splitDisplayItems(data.meaning || options.meaningFallback || "暂无释义");
+        const examples = splitDisplayItems(data.example, 520);
+        const annotatedExamples = splitDisplayItems(data.exampleRuby, 1200);
+        const translations = splitDisplayItems(data.exampleZh, 520);
+        const isMultiple = meanings.length > 1;
+        target.replaceChildren();
+        target.classList.toggle("is-multiple", isMultiple);
+
+        meanings.forEach((meaning, index) => {
+            const item = document.createElement("div");
+            item.className = "kiki-word-sense-item";
+
+            const meaningBlock = document.createElement("div");
+            meaningBlock.className = "kiki-word-sense-meaning";
+            if (isMultiple) {
+                const marker = document.createElement("b");
+                marker.className = "kiki-word-sense-marker";
+                marker.textContent = getDisplayNumber(index);
+                meaningBlock.appendChild(marker);
+            }
+            const meaningText = document.createElement("p");
+            meaningText.textContent = meaning;
+            meaningBlock.appendChild(meaningText);
+            item.appendChild(meaningBlock);
+
+            const exampleText = annotatedExamples[index] || examples[index] || "";
+            const translation = translations[index] || "";
+            if (exampleText || translation) {
+                const exampleBlock = document.createElement("div");
+                exampleBlock.className = "kiki-word-sense-example";
+                const label = document.createElement("span");
+                label.className = "kiki-word-sense-example-label";
+                label.textContent = "例句";
+                exampleBlock.appendChild(label);
+
+                if (exampleText) {
+                    const japanese = document.createElement("p");
+                    japanese.className = "kiki-word-sense-example-ja";
+                    appendFurigana(japanese, exampleText, {
+                        highlightWord: data.word
+                    });
+                    exampleBlock.appendChild(japanese);
+                }
+                if (translation) {
+                    const translated = document.createElement("small");
+                    translated.className = "kiki-word-sense-example-zh";
+                    translated.textContent = translation;
+                    exampleBlock.appendChild(translated);
+                }
+                item.appendChild(exampleBlock);
+            } else {
+                item.classList.add("has-no-example");
+            }
+            target.appendChild(item);
+        });
     }
 
     function resetSpeechUi() {
@@ -1343,17 +1549,17 @@
             entry.partOfSpeech,
             entry.accent ? `音调 ${entry.accent}` : ""
         ]);
-        setCardText(modal, "#kiki-word-card-meaning", entry.meaning || entry.meaningZh || entry.meaningJa, "暂无释义");
+        const meaning = entry.meaning || entry.meaningZh || entry.meaningJa;
+        renderSenseGroups(modal.querySelector("#kiki-word-card-senses"), {
+            word: entry.word,
+            meaning,
+            example: entry.example,
+            exampleRuby: entry.exampleRuby,
+            exampleZh: entry.exampleZh
+        });
         renderCardItems(modal, "#kiki-word-card-collocations", entry.collocations || []);
         renderCardItems(modal, "#kiki-word-card-related", entry.relatedWords || []);
         setCardBlock(modal, "#kiki-word-card-note", entry.note);
-
-        renderFurigana(modal.querySelector("#kiki-word-card-example"), entry.exampleRuby, entry.example);
-        setCardText(modal, "#kiki-word-card-example-zh", entry.exampleZh);
-        const exampleBlock = modal.querySelector("[data-word-card-example]");
-        if (exampleBlock) {
-            exampleBlock.hidden = !(entry.example || entry.exampleZh);
-        }
 
     }
 
@@ -1463,7 +1669,15 @@
         setPreviewText(modal, "#kiki-word-bank-preview-word", word, "词形");
         updateWordLengthClass(modal.querySelector("#kiki-word-bank-preview-word"), word);
         setPreviewText(modal, "#kiki-word-bank-preview-reading", reading, "假名读音");
-        setPreviewText(modal, "#kiki-word-bank-preview-meaning", meaning, "填写含义后会显示在这里。");
+        renderSenseGroups(modal.querySelector("#kiki-word-bank-preview-senses"), {
+            word,
+            meaning,
+            example,
+            exampleRuby,
+            exampleZh
+        }, {
+            meaningFallback: "填写含义后会显示在这里。"
+        });
         setPreviewText(modal, "#kiki-word-bank-preview-note", note, "尚未填写备注。");
 
         renderPreviewItems(modal.querySelector("#kiki-word-bank-preview-meta"), [
@@ -1472,13 +1686,6 @@
         ]);
         renderPreviewItems(modal.querySelector("#kiki-word-bank-preview-collocations"), collocations);
         renderPreviewItems(modal.querySelector("#kiki-word-bank-preview-related"), relatedWords);
-
-        renderFurigana(
-            modal.querySelector("#kiki-word-bank-preview-example"),
-            exampleRuby,
-            example || "例句会显示在这里。"
-        );
-        setPreviewText(modal, "#kiki-word-bank-preview-example-zh", exampleZh);
 
         const completionChecks = [
             Boolean(word),
@@ -1882,6 +2089,7 @@
         initSelectionCapture();
         ensurePresetsImported();
         syncPresetFuriganaOnce();
+        syncPresetMultiSenseOnce();
         clearExistingNotesOnce();
 
         const warmEditor = () => {
@@ -1919,6 +2127,7 @@
         PRESET_IMPORTED_KEY,
         NOTES_CLEARED_KEY,
         FURIGANA_SYNC_KEY,
+        MULTI_SENSE_SYNC_KEY,
         loadEntries,
         saveEntries,
         normalizeEntry,

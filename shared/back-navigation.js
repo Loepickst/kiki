@@ -80,7 +80,8 @@
             return "#daily/daily-light-read";
         }
 
-        if (/^daily\/grammar\/(change|kakujyo|kakujyo_practice|敬语|sentence-builder)\.html$/.test(path)) {
+        if (/^daily\/grammar\/(?:foundation|particles|expressions)\/[^/]+\.html$/.test(path)
+            || /^daily\/grammar\/(change|kakujyo|kakujyo_practice|敬语)\.html$/.test(path)) {
             return "#daily/daily-grammar";
         }
 
@@ -105,10 +106,6 @@
         }
 
         if (/^exam\/grammar\/复合格助词\.html$/.test(path)) {
-            return "#daily/daily-grammar";
-        }
-
-        if (/^exam\/grammar\/形式名词\.html$/.test(path)) {
             return "#daily/daily-grammar";
         }
 

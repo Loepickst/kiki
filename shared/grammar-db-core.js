@@ -781,7 +781,7 @@
     "lessonNumber": 3,
     "title": "～がてら",
     "meaning": "顺便… / 借…的机会",
-    "connection": "名词 / 动词ます形（去ます） + がてら",
+    "connection": "名词／动词第一连用形＋がてら",
     "desc": "表示<b>利用做某事（通常是移动）的机会</b>，顺便做另一件事。比「かたがた」<b>更口语化、更日常</b>。",
     "examples": [
       {
@@ -2452,7 +2452,7 @@
     "lessonNumber": 7,
     "title": "～まくる",
     "meaning": "拼命… / 一味地… / 胡乱…",
-    "connection": "动词ます形（去掉ます） + まくる",
+    "connection": "动词第一连用形＋まくる",
     "desc": "表示<b>“不顾一切地、反复地、猛烈地做某事”</b>。通常带有一种<b>粗鲁、充满活力或失去控制</b>的语感。",
     "examples": [
       {
@@ -2537,7 +2537,7 @@
     "lessonNumber": 8,
     "title": "～つ～つ",
     "meaning": "时而…时而… / 一会儿…一会儿…",
-    "connection": "动词ます形（去掉ます） + つ + 动词ます形（去掉ます） + つ",
+    "connection": "动词第一连用形＋つ＋动词第一连用形＋つ",
     "desc": "表示<b>两个相反的动作交替进行</b>。多以<b>惯用表达</b>使用，常见搭配有：<br>・「<b><ruby>行<rt>い</rt></ruby>きつ<ruby>戻<rt>もど</rt></ruby>りつ</b>」（走来走去/徘徊）<br>・「<b><ruby>浮<rt>う</rt></ruby>きつ<ruby>沈<rt>しず</rt></ruby>みつ</b>」（浮浮沉沉/起起落落）<br>・「<b><ruby>押<rt>お</rt></ruby>しつ<ruby>押<rt>お</rt></ruby>されつ</b>」（推推搡搡/互不相让）",
     "examples": [
       {
@@ -2680,7 +2680,7 @@
     "lessonNumber": 8,
     "title": "～ながらに / ～ながらの",
     "meaning": "保持…的状态 / 原原本本…",
-    "connection": "名词 / 动词ます形（去掉ます） + ながらに（して）",
+    "connection": "名词／动词第一连用形＋ながらに（して）",
     "desc": "表示<b>维持某种状态不变</b>。常配合特定词汇使用，如「<b><ruby>生<rt>う</rt></ruby>まれながらに</b>」（天生/生来）、「<b><ruby>居<rt>い</rt></ruby>ながらに</b>」（足不出户）、「<b><ruby>涙<rt>なみだ</rt></ruby>ながらに</b>」（流着泪）。",
     "examples": [
       {
@@ -2997,7 +2997,7 @@
     "lessonNumber": 8,
     "title": "～かねる",
     "meaning": "难以… / 不便… / 不能…",
-    "connection": "动词ます形（去掉ます） + かねる",
+    "connection": "动词第一连用形＋かねる",
     "desc": "表示<b>“因为某种心理抵触、社会立场或客观情势，很难那样做”</b>。常用于<b>委婉的拒绝</b>（难以答应、不知晓）或 表示<b>心理上无法忍受</b>（看不下去）。",
     "examples": [
       {
@@ -3147,7 +3147,7 @@
     "lessonNumber": 9,
     "title": "～ようによっては",
     "meaning": "取决于… / 根据…的不同而…",
-    "connection": "动词ます形（去掉ます） + ようによっては",
+    "connection": "动词第一连用形＋ようによっては",
     "desc": "表示<b>“做法、想法不同，结果也会随之改变”</b>。意为“全看怎么做/怎么想”。常搭配「<b><ruby>考<rt>かんが</rt></ruby>えようによっては</b>」（看你怎么想）。",
     "examples": [
       {
@@ -4078,7 +4078,7 @@
     "lessonNumber": 2,
     "title": "～ながら（も）",
     "meaning": "虽然…但是… / 尽管…却…",
-    "connection": "动词ます形（去掉ます） / 动词ない形 / い形 / な形 / 名词 + ながら（も）",
+    "connection": "动词第一连用形／动词ない形／い形／な形／名词＋ながら（も）",
     "desc": "表示逆接。常接在表示状态或心理的词后面，表达“<b>虽然处于某种不足或受限的状态，但实际上却与之相反</b>”的意思。",
     "examples": [
       {
@@ -13063,7 +13063,7 @@
     "lessonNumber": 1,
     "title": "お～になる",
     "meaning": "做……（尊敬语）",
-    "connection": "お + 动词ます形（去掉「ます」） + になる",
+    "connection": "お＋动词第一连用形＋になる",
     "desc": "用于表达对动作主体的敬意。通常针对长辈、上司或客户等需要给予尊重的对象使用，通过这种形式来抬高对方的动作或状态。",
     "examples": [
       {
@@ -13731,6 +13731,179 @@
       "compareWith": [],
       "sourcePage": "N1语法复习文档.pages",
       "sourceId": 80
+    }
+  },
+  {
+    "id": "supp-focus-particle-001",
+    "level": "N1",
+    "bookKey": "focus-particle-supplement",
+    "bookLabel": "其他",
+    "lesson": "提示助词相关语法",
+    "lessonNumber": 1,
+    "title": "～としか言いようがない",
+    "meaning": "只能说是……／除了……无法形容",
+    "connection": "引用内容 + としか言いようがない",
+    "desc": "表示说话人认为只有前项说法能够准确概括当前情况，除此之外找不到更合适的表达。常用于强烈评价，也可以表达惊讶、感叹、批评或无奈。",
+    "examples": [
+      {
+        "jp": "<b>この景色は、人の手では作れない芸術<span style='color:#d64045'>としか言いようがありません</span>。</b>",
+        "cn": "这片景色只能说是人力无法创造的艺术。"
+      },
+      {
+        "jp": "<b>あれだけの証拠を前にすれば、彼の説明は不自然だ<span style='color:#d64045'>としか言いようがありません</span>。</b>",
+        "cn": "面对那么多证据，只能说他的说明很不自然。"
+      }
+    ],
+    "related": [],
+    "kana": "としかいいようがない",
+    "romaji": "toshika iiyou ga nai",
+    "legacy": {
+      "searchId": 4081,
+      "sourceNumericId": 1,
+      "searchTags": "～としか言いようがない としか言えない としかいいようがない toshika iiyou ga nai 只能说是 除了无法形容 しか 提示助词 强烈评价 惊讶 感叹 无奈",
+      "compareWith": [],
+      "sourcePage": "teijijyoshi.html",
+      "sourceId": 1
+    }
+  },
+  {
+    "id": "supp-focus-particle-002",
+    "level": "N1",
+    "bookKey": "focus-particle-supplement",
+    "bookLabel": "其他",
+    "lesson": "提示助词相关语法",
+    "lessonNumber": 1,
+    "title": "ただでさえ～",
+    "meaning": "本来就已经……，再加上……",
+    "connection": "ただでさえ + 普通形",
+    "desc": "表示原有情况本来就已经达到较高程度，又出现新的因素，使这种情况进一步加重。多用于负担、困难等不理想的情况，后文常见「～のに」「～うえに」「～まで／～さえ」等追加表达。",
+    "examples": [
+      {
+        "jp": "<b><span style='color:#d64045'>ただでさえ</span>人手が足りないのに、今月は二人も退職しました。</b>",
+        "cn": "本来人手就不足，这个月又有两个人辞职了。"
+      },
+      {
+        "jp": "<b><span style='color:#d64045'>ただでさえ</span>道が混む時間帯に、事故まで起きてしまいました。</b>",
+        "cn": "本来就是道路拥堵的时段，甚至还发生了事故。"
+      }
+    ],
+    "related": [],
+    "kana": "ただでさえ",
+    "romaji": "tada de sae",
+    "legacy": {
+      "searchId": 4082,
+      "sourceNumericId": 2,
+      "searchTags": "ただでさえ～ ただでさえ tadadesae tada de sae 本来就已经 再加上 さえ 提示助词 追加 加重 负担 困难",
+      "compareWith": [],
+      "sourcePage": "teijijyoshi.html",
+      "sourceId": 2
+    }
+  },
+  {
+    "id": "supp-focus-particle-003",
+    "level": "N1",
+    "bookKey": "focus-particle-supplement",
+    "bookLabel": "其他",
+    "lesson": "提示助词相关语法",
+    "lessonNumber": 1,
+    "title": "今でこそ～が",
+    "meaning": "现在虽然……，但过去……",
+    "connection": "今でこそ + 普通形 + が／けれど（も）",
+    "desc": "用「今でこそ」突出现在已经成立的状态，再通过「が／けれど（も）」与过去完全不同的情况形成对比。常用于回顾变化或成长；根据上下文，「今でこそ」后也可以不立即出现转折助词。",
+    "examples": [
+      {
+        "jp": "<b><span style='color:#d64045'>今でこそ</span>一人で発表できます<span style='color:#d64045'>が</span>、以前は人前に立つだけで緊張していました。</b>",
+        "cn": "现在虽然已经能独自发表，但以前光是站在人前就会紧张。"
+      },
+      {
+        "jp": "<b>この地域は<span style='color:#d64045'>今でこそ</span>観光地として有名です<span style='color:#d64045'>が</span>、十年前は訪れる人がほとんどいませんでした。</b>",
+        "cn": "这一地区现在虽然已是著名景点，但十年前几乎没有游客。"
+      }
+    ],
+    "related": [],
+    "kana": "いまでこそ～が",
+    "romaji": "ima de koso ga",
+    "legacy": {
+      "searchId": 4083,
+      "sourceNumericId": 3,
+      "searchTags": "今でこそ～が 今でこそ いまでこそ imadekoso ima de koso ga 现在虽然 过去 こそ 提示助词 当前状态 今昔对比 回顾 变化",
+      "compareWith": [],
+      "sourcePage": "teijijyoshi.html",
+      "sourceId": 3
+    }
+  },
+  {
+    "id": "supp-formal-noun-001",
+    "level": "N2",
+    "bookKey": "formal-noun-supplement",
+    "bookLabel": "其他",
+    "lesson": "形式名词相关语法",
+    "lessonNumber": 1,
+    "title": "～ようでいて",
+    "meaning": "看似……，实际上……",
+    "connection": "动词普通形 / い形容词普通形 / な形容词词干＋な / 名词＋の ＋ ようでいて",
+    "desc": "表示从外表或第一印象看，前项似乎成立，<b>后项却说明实际情况与这种印象不同或相反</b>。常与「一見」「実は」「本当は」等词呼应。「～ようで」也可以表示相同的逆接关系。",
+    "examples": [
+      {
+        "jp": "<b>この仕事は簡単な<span style='color:#d64045'>ようでいて</span>、実際にやってみると細かな判断が必要だ。</b>",
+        "cn": "这项工作看似简单，实际做起来却需要细致的判断。"
+      },
+      {
+        "jp": "<b>彼は無口な<span style='color:#d64045'>ようでいて</span>、親しい友人の前ではよく話す。</b>",
+        "cn": "他看似沉默寡言，在亲近的朋友面前却很健谈。"
+      }
+    ],
+    "related": [
+      "n3-027",
+      "n3-042",
+      "n3-080"
+    ],
+    "kana": "ようでいて",
+    "romaji": "you de ite",
+    "legacy": {
+      "searchId": 4084,
+      "sourceNumericId": 1,
+      "searchTags": "～ようでいて ようで ようでいて youdeite 看似 实际 表面 印象 逆接 对比 よう 形式名词",
+      "compareWith": [],
+      "sourcePage": "formal-nouns.html",
+      "sourceId": 1
+    }
+  },
+  {
+    "id": "supp-formal-noun-002",
+    "level": "N2",
+    "bookKey": "formal-noun-supplement",
+    "bookLabel": "其他",
+    "lesson": "形式名词相关语法",
+    "lessonNumber": 1,
+    "title": "～がまま（に）",
+    "meaning": "任凭……；照……那样",
+    "connection": "动词辞书形 / 动词被动形 ＋ がまま（に）",
+    "desc": "表示不加改变地顺从前项的意志、感觉或事态，<b>后项按其所示方向发生</b>。与被动形连用时，常表示<b>不抵抗地任凭他人摆布</b>；与「思う・感じる」等动词连用时，表示<b>照自己的想法或感受行事</b>。",
+    "examples": [
+      {
+        "jp": "<b>彼は相手に言われる<span style='color:#d64045'>がままに</span>、契約書に署名してしまった。</b>",
+        "cn": "他任凭对方摆布，按照对方所说的在合同上签了字。"
+      },
+      {
+        "jp": "<b>子どもたちは思う<span style='color:#d64045'>がままに</span>、大きな紙へ絵を描いた。</b>",
+        "cn": "孩子们随心所欲地在大纸上画了画。"
+      }
+    ],
+    "related": [
+      "n3-047"
+    ],
+    "kana": "がままに",
+    "romaji": "ga mama ni",
+    "legacy": {
+      "searchId": 4085,
+      "sourceNumericId": 2,
+      "searchTags": "～がまま がままに mamani ga mama ni 任凭 按照 顺从 摆布 思うがまま 言われるがまま まま 形式名词",
+      "compareWith": [
+        "n3-047"
+      ],
+      "sourcePage": "formal-nouns.html",
+      "sourceId": 2
     }
   }
 ];
