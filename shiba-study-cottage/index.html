@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f1f0ec">
-  <meta name="description" content="和柴犬一起学习、休息，布置自己的像素小屋。">
+  <meta name="description" content="照顾柴犬、陪伴玩耍，布置它自己的像素小屋。">
   <title>柴柴学习小屋</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="style.css">
@@ -16,8 +16,7 @@
         <a id="home-link" class="home-link" href="../index.html" aria-label="出门" title="出门 · 返回主页"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5-7 7 7 7M3 12h18"/></svg><span>出门</span></a>
         <div class="brand"><canvas id="brand-shiba" width="32" height="32" aria-hidden="true"></canvas><h1>柴柴学习小屋</h1></div>
       </div>
-      <div class="stats" aria-label="学习与余额">
-        <div class="stat"><span class="stat-label">今日学习</span><strong><span id="today-minutes">0</span><small> 分钟</small></strong></div>
+      <div class="stats" aria-label="小屋余额">
         <div class="stat coins"><span data-icon="paw" aria-hidden="true"></span><strong><span id="coin-count">0</span></strong><span class="stat-label">爪印币</span></div>
       </div>
     </header>
@@ -25,8 +24,9 @@
     <main class="cottage-layout">
       <div class="room-column">
         <section class="game-frame" aria-label="柴犬小屋游戏">
-          <canvas id="game" width="384" height="288" tabindex="0" aria-label="小屋：点击地板走动，点击家具互动，点击柴犬摸摸。WASD 或方向键移动，Shift 快走，E 互动，B 布置，Esc 取消。">请使用支持 Canvas 的电脑浏览器。</canvas>
-          <div id="interaction" class="interaction" hidden><kbd>E</kbd><span></span></div>
+          <canvas id="game" width="384" height="288" tabindex="0" aria-label="宠物小屋：柴犬会自主活动。点击家具邀请互动，点击柴犬摸摸。B 布置，Esc 关闭面板或取消摆放。">请使用支持 Canvas 的电脑浏览器。</canvas>
+          <button id="wall-frame-button" type="button" aria-label="收藏相框：选择抽到的卡片" title="收藏相框 · 更换卡片"></button>
+          <div id="interaction" class="interaction" hidden><kbd>点</kbd><span></span></div>
           <div id="mode-label" class="mode-label" hidden><span data-icon="box"></span>布置中</div>
           <div id="toast" role="status" aria-live="polite" hidden></div>
         </section>
@@ -43,11 +43,28 @@
 
       <aside class="room-sidebar" aria-label="柴犬与家具">
         <section id="room-notebook" class="companion-card" aria-labelledby="companion-name">
-          <div class="companion-profile"><div class="portrait-frame"><canvas id="companion-portrait" width="32" height="32" aria-hidden="true"></canvas></div><div><h2 id="companion-name">木木</h2><p id="companion-status">陪着你</p></div></div>
-          <div class="care-actions" role="group" aria-label="照顾柴犬"><button data-care="pet"><span data-icon="heart"></span>摸摸</button><button data-care="water"><span data-icon="water"></span>喝水</button><button data-care="rest"><span data-icon="rest"></span>休息</button><button data-care="window"><span data-icon="sun"></span>看云</button></div>
-          <button id="study-button" class="button primary full"><span data-icon="book"></span>记录学习</button>
+          <div class="companion-profile">
+            <h2 id="companion-name">木木</h2>
+            <div class="portrait-frame"><canvas id="companion-portrait" width="32" height="32" aria-hidden="true"></canvas></div>
+            <p id="companion-status">陪着你</p>
+            <span id="relationship-label">慢慢熟悉</span>
+          </div>
+          <div class="pet-state" aria-label="柴犬状态">
+            <p id="pet-condition">精神不错</p>
+            <div id="pet-state-values" class="pet-state-values"></div>
+          </div>
         </section>
 
+        <section id="arcade-card" class="arcade-card" aria-label="日语小游戏">
+          <button id="arcade-button" class="arcade-entry" type="button">
+            <span class="arcade-kicker">小屋游艺室</span>
+            <img src="assets/ui/arcade.svg" width="128" height="160" alt="" class="arcade-machine">
+            <strong>玩一局，添一点喜欢</strong>
+            <span class="arcade-description">日语小游戏 · 赚爪印币</span>
+            <span class="arcade-start">开始游戏 <span aria-hidden="true">→</span></span>
+          </button>
+          <p class="arcade-daily">今日游戏收获 <strong id="arcade-today">0</strong><span> / 120 币</span></p>
+        </section>
         <section id="build-notebook" class="build-notebook" aria-labelledby="quick-inventory-title" hidden>
           <div class="note-heading"><h2 id="quick-inventory-title">选择家具</h2><span id="quick-count">4 件</span></div>
           <div class="catalog-tabs build-tabs" role="group" aria-label="筛选布置家具"><button data-build-filter="all" aria-pressed="true">全部</button><button data-build-filter="placed" aria-pressed="false">已摆放</button><button data-build-filter="stored" aria-pressed="false">收纳中</button></div>
@@ -61,13 +78,32 @@
     <div class="panel-heading"><h2 id="panel-title"></h2><button id="close-panel" class="close-button" aria-label="关闭">×</button></div>
     <div id="panel-body"></div>
   </dialog>
+  <dialog id="arcade-dialog" aria-labelledby="arcade-title">
+    <header class="arcade-header"><div><h2 id="arcade-title">小屋游艺室</h2><p id="arcade-status" role="status">选一项日语练习</p></div><button id="arcade-close" class="button secondary" type="button">回小屋</button></header>
+    <div id="arcade-picker"><p class="arcade-rules">答对 1 题得 1 币，完成一局后存入小屋。</p><div id="arcade-games" class="arcade-games"></div><p class="form-note">每局最多 20 币，每个北京时间自然日最多 120 币。提前退出不结算，达到上限仍可练习。</p><div id="arcade-recent" class="arcade-recent"></div></div>
+    <div id="arcade-play" hidden><p id="arcade-loading" role="status">正在打开游戏…</p><iframe id="arcade-frame" title="日语小游戏" sandbox="allow-scripts allow-same-origin allow-forms"></iframe></div>
+    <div id="arcade-save-error" role="alert" hidden><span></span><button id="arcade-retry" type="button" class="button secondary">重新保存奖励</button></div>
+    <div id="arcade-exit-confirm" hidden><p>这一局还没结算，退出将放弃本局奖励。</p><div><button id="arcade-stay" class="button primary" type="button">继续游戏</button><button id="arcade-leave" class="button secondary" type="button">退出本局</button></div></div>
+    <footer id="arcade-result-tools" hidden><button id="arcade-choose" class="button secondary" type="button">换个游戏</button><button id="arcade-shop" class="button primary" type="button">给柴柴买东西</button></footer>
+  </dialog>
   <noscript>请启用 JavaScript 后进入小屋。</noscript>
+  <script src="../shared/omikuji-catalog.js"></script>
   <script src="data.js"></script>
-  <script src="model.js"></script>
+  <script src="snacks.js"></script>
+  <script src="toys.js"></script><script src="model.js"></script>
+  <script src="character-data.js"></script>
+  <script src="environment.js"></script>
   <script src="art.js"></script>
+  <script src="assets/audio/bark-data.js"></script>
   <script src="audio.js"></script>
+  <script src="needs.js"></script>
+  <script src="relationship.js"></script>
+  <script src="sleep.js"></script>
   <script src="autonomy.js"></script>
   <script src="game.js"></script>
+  <script src="assets/wall-card-data.js"></script>
+  <script src="wall-cards.js"></script>
   <script src="ui.js"></script>
+  <script src="arcade.js"></script>
 </body>
 </html>

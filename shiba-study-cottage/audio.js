@@ -1,11 +1,46 @@
 (function(C){
   'use strict';
   class CottageAudio {
-    constructor(){this.context=null;this.sound=true;this.music=false;this.enabled=false;this.timer=null;this.notes=new Set();this.step=0;}
+    constructor(){this.context=null;this.sound=true;this.music=false;this.enabled=false;this.timer=null;this.notes=new Set();this.step=0;this.barkVoices=new Set();this.barkToken=0;this.barkBuffer=null;this.barkLoading=null;
+      this.resumePending=null;this.onError=()=>{};this.barkVolume=.55;}
     activate(){
-      try{if(!this.context){const AudioContext=window.AudioContext||window.webkitAudioContext;if(!AudioContext)return;this.context=new AudioContext();}this.enabled=true;if(this.context.state==='suspended')this.context.resume().catch(()=>{});this.syncMusic();}catch(error){/* Visual play remains usable without audio output. */}
+      try{if(!this.context){const AudioContext=window.AudioContext||window.webkitAudioContext;if(!AudioContext)return;this.context=new AudioContext();}this.enabled=true;
+        // Start resume inside the gesture, then wait for it before playing a voice.
+        if(this.context.state!=='running'&&!this.resumePending)this.resumePending=this.context.resume().catch(()=>{}).finally(()=>{this.resumePending=null;});
+        this.prepareBark();this.syncMusic();
+      }catch(error){/* bark() reports unavailable output without interrupting play. */}
     }
-    configure(settings){this.sound=settings.sound;this.music=settings.music;this.syncMusic();}
+    configure(settings){this.sound=settings.sound;this.music=settings.music;if(!this.sound)this.stopBark();this.syncMusic();}
+    prepareBark(){
+      if(!this.context)return Promise.resolve(null);
+      if(this.barkBuffer)return Promise.resolve(this.barkBuffer);
+      if(!this.barkLoading)this.barkLoading=Promise.resolve().then(()=>{
+        if(!C.BarkSample)throw new Error('Missing bark sample');
+        const bytes=Uint8Array.from(atob(C.BarkSample),c=>c.charCodeAt(0));
+        return this.context.decodeAudioData(bytes.buffer);
+      }).then(buffer=>this.barkBuffer=buffer).catch(()=>null).finally(()=>{this.barkLoading=null;});
+      return this.barkLoading;
+    }
+    stopBark(){
+      this.barkToken++;
+      for(const voice of this.barkVoices){try{voice.stop();}catch(error){}}
+      this.barkVoices.clear();
+    }
+    async bark(onStart=()=>{}){
+      this.stopBark();const token=this.barkToken;
+      if(document.hidden)return false;
+      if(!this.sound){onStart();return false;}
+      if(!this.context||!this.enabled){onStart();this.onError('声音尚未启动，请再点一下柴犬。');return false;}
+      let timeout;
+      const buffer=await Promise.race([Promise.all([this.prepareBark(),this.resumePending]).then(([buffer])=>buffer),new Promise(resolve=>timeout=setTimeout(()=>resolve(null),1800))]);clearTimeout(timeout);
+      if(token!==this.barkToken||document.hidden)return false;
+      if(!this.sound){onStart();return false;}
+      if(!buffer||this.context.state!=='running'){onStart();this.onError(!buffer?'叫声加载失败，请刷新小屋后重试。':'声音尚未启动，请再点一下柴犬。');return false;}
+      const source=this.context.createBufferSource(),gain=this.context.createGain();source.buffer=buffer;gain.gain.value=this.barkVolume;
+      source.connect(gain);gain.connect(this.context.destination);this.barkVoices.add(source);
+      source.onended=()=>{this.barkVoices.delete(source);source.disconnect();gain.disconnect();};
+      source.start();onStart();return true;
+    }
     tone(frequency,duration,volume,type='sine',offset=0){
       if(!this.context||!this.enabled||document.hidden)return;
       const ctx=this.context,osc=ctx.createOscillator(),gain=ctx.createGain(),start=ctx.currentTime+offset;
@@ -14,6 +49,7 @@
     }
     effect(kind){if(!this.sound)return;const notes={step:[[160,.055,.016,'triangle']],page:[[740,.07,.018,'triangle'],[520,.06,.013,'triangle',.07]],buy:[[523,.16,.03],[659,.17,.027,'sine',.1],[784,.3,.022,'sine',.2]],water:[[880,.12,.022],[1100,.14,.019,'sine',.13]],pet:[[660,.16,.02],[880,.22,.014,'sine',.1]],click:[[440,.075,.015]]};for(const n of notes[kind]||notes.click)this.tone(...n);}
     syncMusic(){
+      if(document.hidden)this.stopBark();
       const play=this.music&&this.enabled&&!document.hidden;
       if(play&&!this.timer){this.playBeat();this.timer=setInterval(()=>this.playBeat(),440);}
       if(!play&&this.timer){clearInterval(this.timer);this.timer=null;for(const osc of this.notes){try{osc.stop();}catch(error){}}this.notes.clear();}

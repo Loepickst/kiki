@@ -29,7 +29,20 @@
     if (state.coins < item.price) throw new Error('爪印币还不够，慢慢积累就好。');
     const next = clone(state);
     next.coins -= item.price; next.owned.push(id);
+    if(item.toy)next.toys=C.Toys.initial(next.toys);
     return next;
+  }
+  function arcadeStats(state,time=Date.now()) {
+    const rows=state.gameRuns||[],today=dayKey(time);
+    return {todayCoins:rows.filter(r=>dayKey(r.finishedAt)===today).reduce((n,r)=>n+r.reward,0),totalCoins:rows.reduce((n,r)=>n+r.reward,0),rounds:rows.length};
+  }
+  function rewardGame(state,round,time=Date.now()) {
+    if(!round||typeof round.id!=='string'||!round.id||round.id.length>120||!D.arcade.games.some(g=>g.id===round.game)||!Number.isInteger(round.correct)||round.correct<0||round.correct>2000)throw new Error('游戏结算信息不完整。');
+    if((state.gameRuns||[]).some(r=>r.id===round.id))throw new Error('这一局已经结算，没有重复发币。');
+    const reward=Math.max(0,Math.min(round.correct,D.arcade.roundCap,D.arcade.dailyCap-arcadeStats(state,time).todayCoins));
+    const next=clone(state);next.gameRuns=next.gameRuns||[];
+    next.gameRuns.push({id:round.id,game:round.game,correct:round.correct,reward,finishedAt:new Date(time).toISOString()});next.coins+=reward;
+    return {state:next,reward};
   }
   const rectFor = p => ({ x: p.x * 16, y: p.y * 16, w: F[p.id].w * 16, h: F[p.id].h * 16 });
   function obstacles(placements) {
@@ -40,7 +53,16 @@
     return !obstacles(placements).some(r => x + 5 > r.x && x - 5 < r.x + r.w && y + 4 > r.y && y - 4 < r.y + r.h);
   }
   function anchors(placements) {
-    return placements.filter(p => F[p.id].action).map(p => ({ id: p.id, name: F[p.id].name, action: F[p.id].action, anchor: { x: (p.x + F[p.id].w / 2) * 16, y: (p.y + F[p.id].h) * 16 + 8 } })).concat(D.fixed);
+    return placements.filter(p => F[p.id].action).map(p => {
+      const f=F[p.id],target={id:p.id,name:f.name,action:f.action,anchor:{x:(p.x+f.w/2)*16,y:(p.y+f.h)*16+8}};
+      if(f.approaches){
+        const options=f.approaches.map(a=>({x:p.x*16+a.x,y:p.y*16+a.y,direction:a.direction}));
+        // Use a real, reachable stance beside the bowl; no visual-only teleport.
+        const point=options.find(a=>findPath(placements,D.spawn,a))||options[0];
+        target.anchor={x:point.x,y:point.y};target.direction=point.direction;
+      }
+      return target;
+    }).concat(D.fixed);
   }
   const cellKey = (x, y) => `${x},${y}`;
   function clearSegment(from, to, placements) {
@@ -97,7 +119,7 @@
     }
     return seen;
   }
-  function validateLayout(placements, player) {
+  function validateLayout(placements, player, {allowLegacyWater=false}={}) {
     const ids = new Set();
     for (const p of placements) {
       const f = F[p.id];
@@ -119,8 +141,15 @@
     if (player && !canStand(player.x, player.y, placements)) return { ok: false, reason: '柴柴正站在这里，先给它留点空间。' };
     const seen = reachable(placements);
     for (const target of anchors(placements)) {
-      const a = target.anchor;
-      if (!canStand(a.x, a.y, placements) || !seen.has(cellKey(Math.floor(a.x / 16), Math.floor(a.y / 16)))) return { ok: false, reason: `要给「${target.name}」前面留出能走到的空间。` };
+      let a = target.anchor;
+      const accessible=p=>canStand(p.x,p.y,placements)&&seen.has(cellKey(Math.floor(p.x/16),Math.floor(p.y/16)));
+      // Read existing version-1 rooms without moving furniture or discarding saves.
+      // New placements must leave a side free; old front-only access remains loadable.
+      if(allowLegacyWater&&target.action==='drink'&&!accessible(a)){
+        const p=placements.find(p=>p.id===target.id);a={x:(p.x+.5)*16,y:(p.y+1)*16+8};
+      }
+      if(target.action==='play'&&!C.Toys.clear(a,placements,target.id))return {ok:false,reason:`给「${target.name}」留出一块能伸展、打滚的空地。`};
+      if(!accessible(a))return {ok:false,reason:`要给「${target.name}」${target.action==='drink'?'旁边':'前面'}留出能走到的空间。`};
     }
     if (player && !seen.has(cellKey(Math.floor(player.x / 16), Math.floor(player.y / 16)))) return { ok: false, reason: '这个位置会把柴柴困住，留一条通路吧。' };
     return { ok: true, reason: '可以放在这里 · 点击确认' };
@@ -134,12 +163,28 @@
     if (!check.ok) throw new Error(check.reason);
     return next;
   }
+  function validateRelationship(r){
+    const finite=v=>Number.isFinite(v)&&v>=0,level=v=>finite(v)&&v<=100;
+    if(!r||r.version!==1||!['affection','trust','comfort'].every(k=>level(r[k]))||!finite(r.clock)||!Number.isSafeInteger(r.serial)||r.serial<0||!finite(r.repairAt)||!r.cooldowns||Object.keys(D.relationship.initial.cooldowns).some(k=>!finite(r.cooldowns[k]))||!r.burst||!finite(r.burst.since)||!Number.isSafeInteger(r.burst.count)||r.burst.count<0||!Array.isArray(r.history)||r.history.length>D.relationship.historyLimit)throw new Error('相处记录无法读取。');
+    if(r.invitations!==undefined){
+      if(!r.invitations||typeof r.invitations!=='object'||Array.isArray(r.invitations)||Object.entries(r.invitations).some(([key,v])=>!D.relationship.invitations.actions.includes(key)||!v||typeof v.accepted!=='boolean'||!Number.isFinite(v.until)||v.until<0))throw new Error('互动邀请记录无法读取。');
+    }
+    const ids=new Set();
+    for(const e of r.history){
+      if(!e||!Number.isSafeInteger(e.id)||e.id<1||e.id>r.serial||ids.has(e.id)||!Object.prototype.hasOwnProperty.call(D.relationship.events,e.kind)||typeof e.at!=='string'||!Number.isFinite(Date.parse(e.at))||!e.delta||['affection','trust','comfort'].some(k=>!Number.isFinite(e.delta[k])||Math.abs(e.delta[k])>100))throw new Error('相处记录无法读取。');ids.add(e.id);
+    }
+  }
   function validateSave(value) {
     if (!value || value.version !== 1 || !Number.isSafeInteger(value.revision) || value.revision < 0 || typeof value.name !== 'string' || !value.name.trim() || value.name.length > 12 || !Number.isSafeInteger(value.coins) || value.coins < 0 || !Array.isArray(value.records) || !Array.isArray(value.owned) || !Array.isArray(value.placements)) throw new Error('存档格式无法读取。');
     if (!value.settings || typeof value.settings.sound !== 'boolean' || typeof value.settings.music !== 'boolean' || typeof value.lampOn !== 'boolean') throw new Error('存档设置无法读取。');
     // Older version-1 saves omit roam and use the enabled default without rewriting data.
     if (value.settings.roam !== undefined && typeof value.settings.roam !== 'boolean') throw new Error('自在活动设置无法读取。');
     if (new Set(value.owned).size !== value.owned.length || value.owned.some(id => !F[id]) || newState().owned.some(id => !value.owned.includes(id)) || value.placements.some(p => !value.owned.includes(p.id))) throw new Error('家具记录无法读取。');
+    if(value.needs!==undefined&&(!value.needs||typeof value.needs!=='object'||Array.isArray(value.needs)||['hunger','thirst'].some(k=>!Number.isFinite(value.needs[k])||value.needs[k]<0||value.needs[k]>100)))throw new Error('柴柴的饥渴状态无法读取。');
+    if(value.needs&&['energy','mood'].some(k=>value.needs[k]!==undefined&&(!Number.isFinite(value.needs[k])||value.needs[k]<0||value.needs[k]>100)))throw new Error('柴柴的状态无法读取。');
+    if(value.wallCard!==undefined&&value.wallCard!==null&&(typeof value.wallCard!=='string'||!value.wallCard.trim()||value.wallCard.length>120))throw new Error('相框记录无法读取。');
+    if(value.relationship!==undefined)validateRelationship(value.relationship);
+    if(value.toys!==undefined)C.Toys.validate(value.toys,value.owned);
     const ids = new Set(), days = new Map();
     let earned = 0;
     for (const r of value.records) {
@@ -149,8 +194,17 @@
       if (total > D.dailyCap) throw new Error('奖励记录无法读取。');
       days.set(day, total);
     }
-    const spent = value.owned.reduce((n, id) => n + (F[id].price || 0), 0);
-    if (earned - spent !== value.coins || !validateLayout(value.placements).ok) throw new Error('存档中的余额或布局无法读取。');
+    if(value.gameRuns!==undefined){
+      if(!Array.isArray(value.gameRuns))throw new Error('游戏奖励记录无法读取。');
+      const runs=new Set(),gameDays=new Map();
+      for(const r of value.gameRuns){
+        if(!r||typeof r.id!=='string'||!r.id||r.id.length>120||runs.has(r.id)||!D.arcade.games.some(g=>g.id===r.game)||!Number.isInteger(r.correct)||r.correct<0||r.correct>2000||!Number.isInteger(r.reward)||r.reward<0||r.reward>Math.min(r.correct,D.arcade.roundCap)||!Number.isFinite(Date.parse(r.finishedAt)))throw new Error('游戏奖励记录无法读取。');
+        runs.add(r.id);const day=dayKey(r.finishedAt),total=(gameDays.get(day)||0)+r.reward;if(total>D.arcade.dailyCap)throw new Error('游戏奖励超过当日上限。');gameDays.set(day,total);earned+=r.reward;
+      }
+    }
+    const snackSpent=value.snacks===undefined?0:C.Snacks.validate(value.snacks);
+    const spent = value.owned.reduce((n, id) => n + (F[id].price || 0), 0)+snackSpent;
+    if (earned - spent !== value.coins || !validateLayout(value.placements,null,{allowLegacyWater:true}).ok) throw new Error('存档中的余额或布局无法读取。');
     return clone(value);
   }
   class Store {
@@ -160,7 +214,7 @@
         const storage = this.provider();
         this.raw = storage.getItem(D.storageKey);
         if (this.raw !== null) this.state = validateSave(JSON.parse(this.raw));
-      } catch (error) { this.readOnly = true; onError('暂时无法读取存档。原存档已保留；可以在小屋走动，学习和购买暂不可用。请检查浏览器存储权限后刷新。'); }
+      } catch (error) { this.readOnly = true; onError('暂时无法读取存档。原存档已保留；记录与购买暂不可用。请检查浏览器存储权限后刷新。'); }
     }
     commit(next) {
       if (this.readOnly) throw new Error('存档暂时不可用，请检查浏览器设置后刷新。');
@@ -191,5 +245,5 @@
       return false;
     }
   }
-  C.Model = { clone, dayKey, newState, stats, recordStudy, buy, canStand, anchors, clearSegment, findPath, reachable, validateLayout, place, validateSave, Store };
+  C.Model = { clone, dayKey, newState, stats, recordStudy, rewardGame, arcadeStats, buy, canStand, anchors, clearSegment, findPath, reachable, validateLayout, place, validateSave, Store };
 })(globalThis.Cottage);
