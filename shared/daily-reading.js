@@ -1,5 +1,6 @@
 (function () {
     const FONT_KEY = "kikiDailyReadingFontScaleV1";
+    const FONT_FAMILY_KEY = "kikiDailyReadingFontFamilyV1";
     const FAVORITES_KEY = "kikiDailyReadingFavoritesV1";
     const RECENT_KEY = "kikiDailyReadingRecentV1";
     const SIDEBAR_KEY = "kikiDailyReadingSidebarV1";
@@ -99,6 +100,8 @@
         const content = document.createElement("div");
         content.className = "reading-sidebar-content";
         content.id = "reading-learning-sidebar-content";
+        content.setAttribute("role", "region");
+        content.setAttribute("aria-label", "本文词汇解释");
         buildStudyVocabulary(content);
         sidebar.replaceChildren(toolbar, content);
         // The DOM follows the visual order: auxiliary rail, then the article.
@@ -266,9 +269,38 @@
         const panel = picker.querySelector(".reading-font-popover");
         const slider = picker.querySelector("[data-reading-font-range]");
         const output = picker.querySelector("[data-reading-font-output]");
+        const fontOptions = Array.from(picker.querySelectorAll("[data-reading-font-family-option]"));
         const phoneScreen = window.matchMedia("(max-width: 720px)");
         let saved = "base";
+        let savedFamily = "sans";
         try { saved = localStorage.getItem(FONT_KEY) || "base"; } catch (error) {}
+        try { savedFamily = localStorage.getItem(FONT_FAMILY_KEY) || "sans"; } catch (error) {}
+
+        function syncFamily() {
+            if (savedFamily !== "classic") savedFamily = "sans";
+            document.body.setAttribute("data-reading-font-family", savedFamily);
+            fontOptions.forEach((option) => {
+                const selected = option.dataset.readingFontFamilyOption === savedFamily;
+                option.setAttribute("aria-checked", String(selected));
+                option.tabIndex = selected ? 0 : -1;
+            });
+            // Only opt-in readers need the existing Android Mincho webfont stylesheet.
+            // Apple/Windows prefer the native fonts at the front of the same stack.
+            if (savedFamily === "classic" && panel.dataset.readingClassicFontStylesheet
+                && !document.querySelector("[data-reading-classic-font-style]")) {
+                const link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = panel.dataset.readingClassicFontStylesheet;
+                link.setAttribute("data-reading-classic-font-style", "");
+                document.head.append(link);
+            }
+        }
+
+        function selectFamily(option) {
+            savedFamily = option.dataset.readingFontFamilyOption;
+            syncFamily();
+            try { localStorage.setItem(FONT_FAMILY_KEY, savedFamily); } catch (error) {}
+        }
 
         function syncSize() {
             const legacy = phoneScreen.matches
@@ -286,10 +318,26 @@
         function setOpen(open, restoreFocus = false) {
             panel.hidden = !open;
             trigger.setAttribute("aria-expanded", String(open));
-            if (open) slider.focus({ preventScroll: true });
+            if (open) (fontOptions.find((option) => option.getAttribute("aria-checked") === "true") || slider).focus({ preventScroll: true });
             else if (restoreFocus) trigger.focus({ preventScroll: true });
         }
         trigger.addEventListener("click", () => setOpen(panel.hidden));
+        fontOptions.forEach((option, index) => {
+            option.addEventListener("click", () => {
+                selectFamily(option);
+                option.focus({ preventScroll: true });
+            });
+            option.addEventListener("keydown", (event) => {
+                if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
+                event.preventDefault();
+                event.stopPropagation();
+                const nextIndex = event.key === "Home" ? 0 : event.key === "End" ? fontOptions.length - 1
+                    : (index + (["ArrowRight", "ArrowDown"].includes(event.key) ? 1 : -1) + fontOptions.length) % fontOptions.length;
+                const next = fontOptions[nextIndex];
+                selectFamily(next);
+                next.focus({ preventScroll: true });
+            });
+        });
         slider.addEventListener("input", () => {
             saved = slider.value;
             syncSize();
@@ -312,6 +360,7 @@
         } else {
             phoneScreen.addListener(syncSize);
         }
+        syncFamily();
         syncSize();
     }
 

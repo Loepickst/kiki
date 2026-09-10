@@ -2,8 +2,9 @@
     const COLLECTION_KEY = "omikujiCollection";
     const COLLECTION_META_KEY = "omikujiCollectionMeta_v1";
 
-    const RARITY_ORDER = Object.freeze(["EX", "MR", "SP", "KR", "UR", "SSR", "SR", "R"]);
+    const RARITY_ORDER = Object.freeze(["NR", "EX", "MR", "SP", "KR", "UR", "SSR", "SR", "R"]);
     const RARITY_COLORS = Object.freeze({
+        NR: "#89644F",
         EX: "#5B4BC4",
         MR: "#B7282E",
         SP: "#9c27b0",
@@ -327,7 +328,23 @@
         }
     ]);
 
+    // NR has its own fixed branch; never add these cards to weighted pools.
+    const nrDrawConfig = Object.freeze({ chance: 0.005 });
+    const nrFortunes = Object.freeze([
+        { id: 'nr_gaoyu', title: '高誉', icon: 'takarakuji/nr_gaoyu.webp', desc: '再刷一篇读解，等着我，雪菜' },
+        { id: 'nr_paoyu', title: '炮誉', icon: 'takarakuji/nr_paoyu.webp', desc: '朝着N1，开炮！' },
+        { id: 'nr_wenyu', title: '文誉', icon: 'takarakuji/nr_wenyu.webp', desc: 'いい天気だし，背单词しましょう' }
+    ].map(card => Object.freeze({ ...card, rarity: 'NR', color: RARITY_COLORS.NR,
+        weight: 0, isSpecial: true, isIndependentDraw: true, acquireMode: 'independent_draw', obtainable: true,
+        fullArt: true, previewAvailable: false, mysteryUntilObtained: true })));
+
+    function pickNRFortune(random = Math.random) {
+        if (random() >= nrDrawConfig.chance) return null;
+        return nrFortunes[Math.min(nrFortunes.length - 1, Math.max(0, Math.floor(random() * nrFortunes.length)))];
+    }
+
     const collectionCatalog = Object.freeze([
+        ...nrFortunes,
         ...achievementRewardFortunes,
         ...practiceRewardFortunes,
         ...themeRewardFortunes,
@@ -378,7 +395,7 @@
         return Object.keys(raw).reduce((acc, id) => {
             const normalizedId = normalizeFortuneId(id);
             const entry = raw[id];
-            if (!entry || typeof entry !== "object" || Array.isArray(entry) || !catalogById[normalizedId]) {
+            if (!entry || typeof entry !== "object" || Array.isArray(entry) || !isFortuneObtainable(catalogById[normalizedId])) {
                 return acc;
             }
 
@@ -404,7 +421,7 @@
             ? legacyCollection
                 .filter((id) => typeof id === "string" && id.trim())
                 .map((id) => normalizeFortuneId(id))
-                .filter((id) => catalogById[id])
+                .filter((id) => isFortuneObtainable(catalogById[id]))
                 .filter(Boolean)
             : [];
         return Array.from(new Set([...legacyIds, ...metaIds]));
@@ -423,6 +440,11 @@
     function getFortuneById(id) {
         const normalizedId = normalizeFortuneId(id);
         return normalizedId && catalogById[normalizedId] ? catalogById[normalizedId] : null;
+    }
+
+    function isFortuneObtainable(cardOrId) {
+        const card = typeof cardOrId === 'string' ? getFortuneById(cardOrId) : cardOrId;
+        return Boolean(card && card.obtainable !== false && card.acquireMode !== 'unavailable');
     }
 
     function getExclusiveArtVariant(cardId, variantId) {
@@ -506,6 +528,9 @@
         COLLECTION_KEY,
         COLLECTION_META_KEY,
         fortunes,
+        nrFortunes,
+        nrDrawConfig,
+        pickNRFortune,
         petRewardFortunes,
         achievementRewardFortunes,
         practiceRewardFortunes,
@@ -526,6 +551,7 @@
         getUnlockedFortuneIds,
         getUnlockedCatalog,
         getFortuneById,
+        isFortuneObtainable,
         getExclusiveArtVariant,
         getThemeSetById,
         getUnlockPoolById,

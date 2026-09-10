@@ -313,6 +313,14 @@
         return normalizeCustomContent(task.content, task.type) || getContent(task.type, task.contentId);
     }
 
+    // Read-only content lookup shared with the mobile homepage preview.
+    window.StudyPlanContent = Object.freeze({
+        resolve(task) {
+            const content = getTaskContent(task);
+            return content ? { title: content.title, chip: content.chip, url: content.url } : null;
+        }
+    });
+
     function createDefaultTasks(referenceDate) {
         const year = referenceDate.getFullYear();
         const month = referenceDate.getMonth();
@@ -424,6 +432,7 @@
         state.updatedAt = Date.now();
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            window.dispatchEvent(new CustomEvent('kiki:study-plan-changed'));
         } catch (error) {
             showToast('浏览器未能保存更改，请检查存储权限。');
         }

@@ -756,7 +756,7 @@
         if (catalogApi && typeof catalogApi.getFortuneById === 'function') {
             const catalogCard = catalogApi.getFortuneById(normalizedId);
             if (catalogCard) {
-                return catalogCard;
+                return catalogCard.obtainable === false || catalogCard.acquireMode === 'unavailable' ? null : catalogCard;
             }
         }
         return COLLECTION_CATALOG.find((card) => card.id === normalizedId) || null;
@@ -1323,6 +1323,10 @@
     }
 
     function recordCard(cardDefinition, obtainedAt) {
+        const catalogCard = global.OmikujiCatalog?.getFortuneById(cardDefinition?.id);
+        if (!cardDefinition || cardDefinition.obtainable === false || cardDefinition.acquireMode === 'unavailable' || catalogCard?.obtainable === false) {
+            throw new Error('这张卡暂未开放获取');
+        }
         const meta = getCollectionMeta();
         const existingRecord = meta[cardDefinition.id] || null;
         const now = Number(obtainedAt) || Date.now();

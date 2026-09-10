@@ -1,6 +1,7 @@
 (function initKikiInventory(global) {
     'use strict';
 
+    const storage = global.KikiLotteryTransactions?.storage || global.localStorage;
     const STORAGE_KEY = 'kikiInventory_v1';
     const STATE_VERSION = 1;
     const MIGRATION_VERSION = 1;
@@ -137,7 +138,7 @@
     }
 
     function getState() {
-        return normalizeState(safeParse(global.localStorage.getItem(STORAGE_KEY), null));
+        return normalizeState(safeParse(storage.getItem(STORAGE_KEY), null));
     }
 
     function dispatchChange(state, reason) {
@@ -152,7 +153,7 @@
     function saveState(source, reason = 'update') {
         const state = normalizeState(source);
         state.updatedAt = Date.now();
-        global.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        storage.setItem(STORAGE_KEY, JSON.stringify(state));
         dispatchChange(state, reason);
         return state;
     }
@@ -229,7 +230,8 @@
             : Math.max(1, countAfter - 1);
         const duplicateDelta = Math.max(0, countAfter - creditedCount);
         const multiplier = options.isFoilDuplicate ? 2 : 1;
-        const awarded = duplicateDelta * baseValue * multiplier;
+        const tarotMultiplier = Number.isFinite(options.tarotMultiplier) ? Math.max(0, options.tarotMultiplier) : 1;
+        const awarded = Math.floor(duplicateDelta * baseValue * multiplier * tarotMultiplier);
 
         state.creditedCardCounts[cardId] = Math.max(creditedCount, countAfter);
         if (awarded > 0) {
@@ -245,6 +247,17 @@
         }
         const saved = saveState(state, awarded > 0 ? 'duplicate-points' : 'duplicate-sync');
         return { awarded, balance: saved.wallet.cardPoints, multiplier };
+    }
+
+    function awardTarotPoints(id, amount) {
+        const state = getState();
+        if (!id || state.transactions.some(entry => entry.id === id)) return 0;
+        const awarded = toNonNegativeInteger(amount);
+        if (!awarded) return 0;
+        state.wallet.cardPoints += awarded;
+        appendTransaction(state, { id, type: 'tarot-bonus', amount: awarded });
+        saveState(state, 'tarot-bonus');
+        return awarded;
     }
 
     function getBalance() {
@@ -372,6 +385,7 @@
         baselineCollectionCounts,
         getDuplicatePointValue,
         awardDuplicate,
+        awardTarotPoints,
         getBalance,
         getItemCount,
         isEffectActive,
