@@ -3410,9 +3410,9 @@
         /* Mobile practice dock: reserve phone-keyboard space before sizing the question. */
         @media (max-width: 820px) {
             .practice-view {
-                --mobile-key-height: clamp(56px, 15vw, 64px);
+                --mobile-key-height: clamp(50px, 13.3vw, 54px);
                 --mobile-keyboard-height: calc(
-                    var(--mobile-key-height) + var(--mobile-key-height) + var(--mobile-key-height) + 42px
+                    var(--mobile-key-height) + var(--mobile-key-height) + var(--mobile-key-height) + 26px + max(10px, env(safe-area-inset-bottom))
                 );
             }
 
@@ -3451,7 +3451,7 @@
             .question-shell,
             .practice-view.is-brush-hit .question-shell {
                 top: calc(max(8px, env(safe-area-inset-top)) + 58px);
-                bottom: calc(max(8px, env(safe-area-inset-bottom)) + var(--mobile-keyboard-height) + 64px);
+                bottom: calc(var(--mobile-keyboard-height) + 62px);
                 padding: 12px 15px 9px;
                 border-radius: 18px;
             }
@@ -3523,16 +3523,19 @@
             }
 
             .romaji-keyboard {
-                right: 7px;
-                bottom: max(8px, env(safe-area-inset-bottom));
-                left: 7px;
-                gap: 9px;
-                padding: 11px 6px 12px;
-                border-radius: 18px;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                gap: 7px;
+                padding: 10px 6px max(10px, env(safe-area-inset-bottom));
+                border-right: 0;
+                border-bottom: 0;
+                border-left: 0;
+                border-radius: 18px 18px 0 0;
             }
 
             .romaji-keyboard-row {
-                gap: 5px;
+                gap: 4px;
             }
 
             .romaji-key {
@@ -3549,7 +3552,7 @@
 
             .practice-tools {
                 right: 7px;
-                bottom: calc(max(8px, env(safe-area-inset-bottom)) + var(--mobile-keyboard-height) + 8px);
+                bottom: calc(var(--mobile-keyboard-height) + 8px);
                 left: 7px;
                 gap: 8px;
             }
@@ -3566,6 +3569,73 @@
                 width: 30px;
                 height: 30px;
                 font-size: 15px;
+            }
+        }
+
+        /* Lightweight correct-answer feedback — same compact stamp as the reading games. */
+        .brush-feedback {
+            inset: auto;
+            top: 72px;
+            right: max(28px, calc((100vw - min(1240px, 74vw)) / 2));
+            left: auto;
+            width: 190px;
+            height: 76px;
+            display: block;
+            overflow: visible;
+            opacity: 0;
+            visibility: hidden;
+            transform: rotate(-5deg) scale(0.8);
+        }
+
+        .brush-feedback.is-active {
+            visibility: visible;
+            animation: compact-score-feedback 1.05s ease both;
+        }
+
+        .brush-feedback .stamp {
+            position: absolute;
+            inset: 5px 14px;
+            display: grid;
+            place-items: center;
+            border: 3px solid var(--red);
+            border-radius: 8px;
+            background: rgba(251, 248, 240, 0.92);
+            box-shadow: 0 5px 16px rgba(93, 41, 32, 0.12);
+            color: var(--red);
+            font: 900 24px/1 "YuKyokasho", "Klee", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+            text-align: center;
+        }
+
+        .brush-feedback small {
+            display: block;
+            margin-top: 4px;
+            font: 800 11px/1.35 var(--ui);
+            letter-spacing: 0.08em;
+        }
+
+        @keyframes compact-score-feedback {
+            0% { opacity: 0; transform: rotate(-13deg) scale(1.2); }
+            18%, 74% { opacity: 1; transform: rotate(-5deg) scale(1); }
+            100% { opacity: 0; transform: rotate(-3deg) translateY(-8px) scale(0.96); }
+        }
+
+        @media (max-width: 820px) {
+            .brush-feedback {
+                top: 54px;
+                right: 12px;
+                width: 124px;
+                height: 55px;
+            }
+
+            .brush-feedback .stamp {
+                inset: 4px 8px;
+                border-width: 2px;
+                font-size: 18px;
+            }
+
+            .brush-feedback small {
+                margin-top: 2px;
+                font-size: 8px;
             }
         }
 
@@ -3643,19 +3713,7 @@
             </div>
 
             <div class="brush-feedback" id="brushFeedback" aria-hidden="true">
-                <span class="brush-sweep" aria-hidden="true"></span>
-                <svg class="brush-enso" viewBox="0 0 200 200" aria-hidden="true">
-                    <path d="M150 42 C112 13 52 27 33 77 C13 130 53 177 111 171 C158 167 184 133 173 91 C166 63 143 45 115 42" pathLength="560" />
-                </svg>
-                <div class="brush-copy" lang="ja">
-                    <strong class="brush-judge">正解</strong>
-                    <span class="brush-seal">
-                        <strong id="brushCombo">1</strong>
-                        <small>連撃</small>
-                    </span>
-                    <span class="brush-points" id="brushPoints">+100 点</span>
-                </div>
-                <span class="ink-particles" id="inkParticles" aria-hidden="true"></span>
+                <div class="stamp" lang="ja"><span>正解<small id="brushPoints">＋100</small></span></div>
             </div>
 
             <div class="question-shell">
@@ -6303,7 +6361,6 @@
                 if (state.feedbackTimerId) window.clearTimeout(state.feedbackTimerId);
                 state.feedbackTimerId = 0;
                 $('brushFeedback').className = 'brush-feedback';
-                $('inkParticles').replaceChildren();
                 document.querySelector('[data-game-view="practice"]').classList.remove('is-brush-hit');
                 $('scoreWrap').classList.remove('is-punch');
                 $('streakWrap').classList.remove('is-punch');
@@ -6314,40 +6371,11 @@
                 state.advanceTimerId = 0;
             }
 
-            function brushEffectTier(streak) {
-                if (streak >= 10) return 4;
-                if (streak >= 7) return 3;
-                if (streak >= 4) return 2;
-                return 1;
-            }
-
             function showBrushFeedback(streak, awarded) {
                 clearBrushFeedback();
                 const layer = $('brushFeedback');
-                const particles = $('inkParticles');
-                const tier = brushEffectTier(streak);
-                const particleCount = Math.min(12 + (tier * 4) + Math.floor(streak / 2), 34);
-                const fragment = document.createDocumentFragment();
-
-                $('brushCombo').textContent = String(streak);
-                $('brushPoints').textContent = `+${awarded} 点`;
-                for (let index = 0; index < particleCount; index += 1) {
-                    const drop = document.createElement('i');
-                    const angle = ((360 / particleCount) * index) + ((index % 3) - 1) * 5;
-                    const distance = 88 + (index % 6) * 18 + tier * 13;
-                    const size = 4 + (index % 4) * 1.7;
-                    drop.className = `ink-drop${index % 5 === 0 ? ' is-vermilion' : ''}${index % 3 === 0 ? ' is-round' : ''}`;
-                    drop.style.setProperty('--ink-angle', `${angle}deg`);
-                    drop.style.setProperty('--ink-distance', `${distance}px`);
-                    drop.style.setProperty('--ink-size', `${size}px`);
-                    drop.style.setProperty('--ink-delay', `${(index % 5) * 13}ms`);
-                    fragment.appendChild(drop);
-                }
-                particles.appendChild(fragment);
-
-                layer.classList.add(`tier-${tier}`);
+                $('brushPoints').textContent = `＋${awarded}`;
                 void layer.offsetWidth;
-                document.querySelector('[data-game-view="practice"]').classList.add('is-brush-hit');
                 layer.classList.add('is-active');
                 $('scoreWrap').classList.add('is-punch');
                 $('streakWrap').classList.add('is-punch');
