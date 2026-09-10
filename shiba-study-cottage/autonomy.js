@@ -3,11 +3,11 @@
   const M=C.Model,D=C.Data;
   const activities={
     play:{weight:2.5,duration:[8.68,8.68],cooldown:60,going:'想去找小玩具。',doing:'正专心和玩具玩耍。'},
-    eat:{weight:1,duration:[2,2],cooldown:60,going:'肚子饿了，去零食架找口粮。',doing:'正在小口吃饭。'},
+    eat:{weight:1,duration:[3.2,3.2],cooldown:60,going:'肚子饿了，去狗粮盆吃饭。',doing:'正在小口吃饭。'},
     avoid:{weight:3,duration:[4,7],cooldown:45,going:'想找个安静的角落。',doing:'留一点距离，慢慢放松。'},
     company:{weight:2,duration:[4,7],cooldown:60,going:'想靠近你待一会儿。',doing:'抬头看看你，想要摸摸。'},
     window:{weight:2,duration:[6,10],cooldown:30,going:'想去窗边看看云。',doing:'正坐在窗边，慢慢看云飘过。'},
-    drink:{weight:2,duration:[2.48,2.48],cooldown:60,going:'想喝一小口水。',doing:'正在咕嘟咕嘟喝水。'},
+    drink:{weight:2,duration:[3.92,3.92],cooldown:60,going:'想喝一小口水。',doing:'正在咕嘟咕嘟喝水。'},
     sleep:{weight:1.6,duration:[D.sleep.minimum,D.sleep.maximum],cooldown:D.sleep.cooldown,going:'想找个舒服的地方歇一会儿。',doing:'缩成一小团，安心打着盹。'},
     wander:{weight:7,duration:[1.2,2.4],cooldown:0,going:'正在小屋里慢悠悠地散步。',doing:'停下来，好奇地看看四周。'},
     look:{weight:1.5,duration:[1.8,3.2],cooldown:12,doing:'竖起小耳朵，听听小屋里的声音。'},
@@ -60,7 +60,7 @@
       const g=this.game,result=[];
       for(const target of g.targets){
         // Only restful actions are allowed. Never dispatch the UI's onInteract callback.
-        const kind=target.action==='snacks'?'eat':target.action;if(!['window','drink','sleep','eat','play'].includes(kind))continue;
+        const kind=target.action;if(!['window','drink','sleep','eat','play'].includes(kind))continue;
         if(kind==='play'&&(!C.Toys.ready(g.needs.levels)||!C.Toys.clear(target.anchor,g.placements,target.id)))continue;
         if(kind==='eat'&&!g.needs?.wantsFood)continue;
         if(kind==='sleep'&&g.needs?.levels.energy>=70)continue;
@@ -168,7 +168,7 @@
       const g=this.game,a=this.activity;
       this.recentPlaces.push({x:g.player.x,y:g.player.y});if(this.recentPlaces.length>6)this.recentPlaces.shift();this.stationaryCount=0;
       if(a.target){
-        const target=g.targets.find(t=>t.id===a.id&&(t.action==='snacks'?'eat':t.action)===a.kind);
+        const target=g.targets.find(t=>t.id===a.id&&t.action===a.kind);
         if(!target||Math.hypot(g.player.x-target.anchor.x,g.player.y-target.anchor.y)>.5){this.finish();return;}
         if(!g.perform(a.kind,target,true)){this.finish();return;}
       }else if(a.kind==='sleep'){
