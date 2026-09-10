@@ -1263,6 +1263,8 @@
             flex-wrap: wrap;
         }
 
+        .collection-filter-mobile { display: none; }
+
         .collection-filter-btn {
             border: 1px solid var(--line);
             background: #FFF;
@@ -2711,32 +2713,54 @@
 
             .modal-tabs {
                 margin-bottom: 12px;
-                padding: 3px;
-                border: 1px solid var(--mobile-line);
-                border-radius: 10px;
-                background: #F7F7F5;
+                padding: 0;
+                border: 0;
+                border-radius: 0;
+                background: transparent;
             }
 
             .modal-tab {
                 min-height: 36px;
-                border-radius: 7px;
-                font-size: 12px;
+                min-width: 0;
+                padding: 10px 8px;
+                border-radius: var(--radius-md);
+                font-size: 13px;
+                line-height: 1.5;
+                white-space: nowrap;
             }
 
             .modal-tab.active {
-                background: #FFFFFF;
-                box-shadow: 0 1px 4px rgba(20, 24, 20, 0.08);
+                background: var(--accent);
+                color: #FFFFFF;
+                border-color: var(--accent);
+                box-shadow: 0 4px 12px rgba(25, 159, 177, 0.2);
             }
 
             .collection-toolbar {
-                gap: 10px;
+                flex-direction: row;
+                align-items: center;
+                flex-wrap: nowrap;
+                gap: 8px;
                 margin-bottom: 12px;
             }
 
             .collection-filters {
-                display: grid;
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-                gap: 5px;
+                display: none;
+            }
+
+            .collection-filter-mobile {
+                display: block;
+                flex: 0 0 auto;
+                width: 122px;
+                min-height: 36px;
+                padding: 6px 8px;
+                border: 1px solid var(--line);
+                border-radius: var(--radius-sm);
+                background-color: #FFFFFF;
+                color: var(--ink-soft);
+                font-family: var(--font-ui);
+                font-size: 12px;
+                line-height: 1.5;
             }
 
             .collection-filter-btn {
@@ -2747,7 +2771,6 @@
                 white-space: nowrap;
             }
 
-            .collection-stats,
             .theme-set-summary {
                 padding: 8px 10px;
                 border: 1px solid var(--mobile-line);
@@ -2756,6 +2779,18 @@
                 color: var(--mobile-muted);
                 font-size: 11px;
                 text-align: center;
+            }
+
+            .collection-stats {
+                flex: 0 0 auto;
+                margin-left: auto;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                color: var(--mobile-muted);
+                font-size: 11px;
+                line-height: 1.5;
+                white-space: nowrap;
             }
 
             .shop-summary {
@@ -3098,6 +3133,11 @@
 
             <section class="modal-panel active" data-modal-panel="collection">
                 <div class="collection-toolbar">
+                    <select class="collection-filter-mobile" id="collectionFilterMobile" aria-label="筛选图鉴卡片">
+                        <option value="all">全部卡片</option>
+                        <option value="unlocked">只看已解锁</option>
+                        <option value="locked">只看未解锁</option>
+                    </select>
                     <div class="collection-filters" id="collectionFilters">
                         <button type="button" class="collection-filter-btn active" data-collection-filter="all">全部</button>
                         <button type="button" class="collection-filter-btn" data-collection-filter="unlocked">只看已解锁</button>
@@ -3158,7 +3198,7 @@
     <script src="shared/kiki-inventory.js?v=20260910-effects29"></script>
     <script src="shared/home-pet.js?v=20260717-ronin-unlock1"></script>
     <script src="shared/lottery-tarot-effects.js?v=20260910-rest-day1"></script>
-    <script src="shared/lottery-tarot-rules.js?v=20260910-rest-day1"></script>
+    <script src="shared/lottery-tarot-rules.js?v=20260910-messages2"></script>
     <script src="shared/lottery-tarot-flow.js?v=20260910-nr-reveal1"></script>
     <script>
         (async function initializeLottery() {
@@ -3256,6 +3296,7 @@
         const shopPointsBalance = document.getElementById('shopPointsBalance');
         const shopGrid = document.getElementById('shopGrid');
         const collectionFilterButtons = Array.from(document.querySelectorAll('[data-collection-filter]'));
+        const collectionFilterMobile = document.getElementById('collectionFilterMobile');
         const modalTabButtons = Array.from(document.querySelectorAll('[data-modal-tab]'));
         const modalPanels = Array.from(document.querySelectorAll('[data-modal-panel]'));
 
@@ -4830,6 +4871,7 @@
         }
 
         function updateFilterButtons() {
+            collectionFilterMobile.value = currentCollectionFilter;
             collectionFilterButtons.forEach((button) => {
                 button.classList.toggle('active', button.dataset.collectionFilter === currentCollectionFilter);
             });
@@ -5662,6 +5704,11 @@
             button.addEventListener('click', () => {
                 setModalTab(button.dataset.modalTab || 'collection');
             });
+        });
+
+        collectionFilterMobile.addEventListener('change', () => {
+            currentCollectionFilter = collectionFilterMobile.value;
+            renderCollection();
         });
 
         collectionFilterButtons.forEach((button) => {
