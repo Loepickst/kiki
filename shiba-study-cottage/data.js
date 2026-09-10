@@ -49,7 +49,7 @@
     toys: { ids:['toyBasket','sniffMat','wobbleBird','petMirror'], rewardCooldown:90, autonomyCooldown:60,
       sequences:{wobbleBird:[{action:'sniff',seconds:1.8},{action:'idle',seconds:.8},{action:'sniff',seconds:1.8},{action:'idle',seconds:1.2}],petMirror:[{action:'idle',seconds:1},{action:'sniff',seconds:1.8},{action:'idle',seconds:1},{action:'scratch',seconds:2.18},{action:'idle',seconds:.8}],toyBasket:[{action:'sniff',seconds:1.8},{action:'stretch',seconds:2.4},{action:'roll',seconds:3.68},{action:'idle',seconds:.8}],sniffMat:[{action:'sniff',seconds:2.1},{action:'idle',seconds:.7},{action:'sniff',seconds:2.1},{action:'stretch',seconds:2.4}]} },
     relationship: {
-      initial: { version: 1, affection: 35, trust: 45, comfort: 75, clock: 0, serial: 0, history: [], cooldowns: { pet: 0, care: 0, greet: 0, penalty: 0, touch: 0 }, burst: { since: 0, count: 0 }, repairAt: 0 },
+      initial: { version: 1, affection: 20, trust: 20, comfort: 60, clock: 0, serial: 0, history: [], cooldowns: { pet: 0, care: 0, greet: 0, penalty: 0, touch: 0 }, burst: { since: 0, count: 0 }, repairAt: 0 },
       cooldown: { pet: 45, care: 120, greet: 30, penalty: 15, touch: 8 },
       historyLimit: 24, saveEvery: 30, comfortRecovery: .12, careSeconds: {sleep:15,window:6},
       invitations: {actions:['drink','snacks','sleep','window','play'],acceptance:[.3,.65,.85,.97,1],decisionSeconds:12},

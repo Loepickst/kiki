@@ -5,7 +5,7 @@
   const dayKey = (time = Date.now()) => new Date(new Date(time).getTime() + 8 * 3600000).toISOString().slice(0, 10);
   const newState = () => ({ version: 1, revision: 0, name: '木木', coins: 0, records: [], owned: ['desk', 'bed', 'water', 'welcomeRug'], placements: [
     { id: 'desk', x: 4, y: 6 }, { id: 'bed', x: 17, y: 7 }, { id: 'water', x: 17, y: 10 }, { id: 'welcomeRug', x: 9, y: 10 }
-  ], settings: { sound: true, music: false, roam: true }, lampOn: true });
+  ], settings: { sound: true, music: false, roam: true }, lampOn: true, relationship: clone(D.relationship.initial) });
   function stats(state, time = Date.now()) {
     const today = dayKey(time), rows = state.records.filter(r => dayKey(r.finishedAt) === today);
     return { todayMinutes: rows.reduce((n, r) => n + r.minutes, 0), todayCoins: rows.reduce((n, r) => n + r.reward, 0), totalMinutes: state.records.reduce((n, r) => n + r.minutes, 0), days: new Set(state.records.map(r => dayKey(r.finishedAt))).size };
@@ -215,6 +215,15 @@
         this.raw = storage.getItem(D.storageKey);
         if (this.raw !== null) this.state = validateSave(JSON.parse(this.raw));
       } catch (error) { this.readOnly = true; onError('暂时无法读取存档。原存档已保留；记录与购买暂不可用。请检查浏览器存储权限后刷新。'); }
+    }
+    initializeRelationship() {
+      // Like the card collection, this belongs to this browser and site, not a login.
+      // One complete cottage snapshot keeps relationship and care cooldowns together.
+      if (this.readOnly || (this.raw !== null && this.state.relationship !== undefined)) return false;
+      const next = clone(this.state);
+      if (next.relationship === undefined) next.relationship = clone(D.relationship.initial);
+      this.commit(next);
+      return true;
     }
     commit(next) {
       if (this.readOnly) throw new Error('存档暂时不可用，请检查浏览器设置后刷新。');
