@@ -5,14 +5,9 @@
  if(!session||parent===window)return;
  // Embedded mobile games share the host's return control instead of a second header.
  const style=document.createElement('style');
- style.textContent=`
- @media(max-width:820px){
+ style.textContent=`@media(max-width:820px){
   #exitButton,#exitBtn{visibility:hidden!important}
-  .practice-view .hud{position:fixed;top:max(13px,env(safe-area-inset-top));left:calc(max(20px,env(safe-area-inset-left)) + 56px);right:8px;width:calc(100vw - max(20px,env(safe-area-inset-left)) - 64px);max-width:none;height:48px;margin:0;justify-self:stretch}
   .result-view{min-height:100dvh;max-height:100dvh;overflow-y:auto;justify-content:safe center}.result-scroll{flex-shrink:0}
- }
- @media(max-width:390px),(max-width:820px) and (max-height:700px){
-  .practice-view .hud{top:max(8px,env(safe-area-inset-top));left:calc(max(20px,env(safe-area-inset-left)) + 52px);width:calc(100vw - max(20px,env(safe-area-inset-left)) - 60px);height:44px}
  }`;
  document.head.append(style);
  let round=null,correct=0,sequence=0;
@@ -23,5 +18,23 @@
   finish(){if(round){send('finish');round=null;}},
   cancel(){if(round){send('cancel');round=null;}}
  };
+ // Measure the original HUD; never take it out of the game's grid flow.
+ let layoutFrame=0,lastLayout='',resizeObserver,mutationObserver;
+ function reportLayout(){
+  layoutFrame=0;const hud=document.querySelector('.practice-view .hud'),r=hud?.getBoundingClientRect();
+  const layout=innerWidth<=820&&r?.width>0&&r.height>0?{x:r.left-r.height-8,y:r.top,size:r.height}:null;
+  const key=JSON.stringify(layout);if(key===lastLayout)return;lastLayout=key;
+  parent.postMessage({type:'cottage-arcade',session,event:'layout',layout},'*');
+ }
+ function queueLayout(){if(!layoutFrame)layoutFrame=requestAnimationFrame(reportLayout);}
+ function observeLayout(){
+  const hud=document.querySelector('.practice-view .hud');
+  resizeObserver=new ResizeObserver(queueLayout);if(hud)resizeObserver.observe(hud);
+  mutationObserver=new MutationObserver(queueLayout);mutationObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden','class','data-view']});
+  queueLayout();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observeLayout,{once:true});else observeLayout();
+ window.addEventListener('resize',queueLayout);
+ window.addEventListener('pagehide',()=>{cancelAnimationFrame(layoutFrame);resizeObserver?.disconnect();mutationObserver?.disconnect();window.removeEventListener('resize',queueLayout);});
  send('ready');
 })();

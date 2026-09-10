@@ -3,8 +3,8 @@
   const D = C.Data, F = D.furniture;
   const clone = value => JSON.parse(JSON.stringify(value));
   const dayKey = (time = Date.now()) => new Date(new Date(time).getTime() + 8 * 3600000).toISOString().slice(0, 10);
-  const newState = () => ({ version: 1, revision: 0, name: '木木', coins: 0, records: [], owned: ['desk', 'bed', 'water', 'welcomeRug'], placements: [
-    { id: 'desk', x: 4, y: 6 }, { id: 'bed', x: 17, y: 7 }, { id: 'water', x: 17, y: 10 }, { id: 'welcomeRug', x: 9, y: 10 }
+  const newState = () => ({ version: 1, revision: 0, name: '木木', coins: 0, records: [], owned: ['desk', 'bed', 'water', 'foodBowl', 'welcomeRug'], placements: [
+    { id: 'desk', x: 4, y: 6 }, { id: 'bed', x: 17, y: 7 }, { id: 'water', x: 17, y: 10 }, {id:'foodBowl',...F.foodBowl.defaultPosition}, { id: 'welcomeRug', x: 9, y: 10 }
   ], settings: { sound: true, music: false, roam: true }, lampOn: true, relationship: clone(D.relationship.initial) });
   function stats(state, time = Date.now()) {
     const today = dayKey(time), rows = state.records.filter(r => dayKey(r.finishedAt) === today);
@@ -179,7 +179,7 @@
     if (!value.settings || typeof value.settings.sound !== 'boolean' || typeof value.settings.music !== 'boolean' || typeof value.lampOn !== 'boolean') throw new Error('存档设置无法读取。');
     // Older version-1 saves omit roam and use the enabled default without rewriting data.
     if (value.settings.roam !== undefined && typeof value.settings.roam !== 'boolean') throw new Error('自在活动设置无法读取。');
-    if (new Set(value.owned).size !== value.owned.length || value.owned.some(id => !F[id]) || newState().owned.some(id => !value.owned.includes(id)) || value.placements.some(p => !value.owned.includes(p.id))) throw new Error('家具记录无法读取。');
+    if (new Set(value.owned).size !== value.owned.length || value.owned.some(id => !F[id]) || newState().owned.filter(id=>!F[id].giftOnUpgrade).some(id => !value.owned.includes(id)) || value.placements.some(p => !value.owned.includes(p.id))) throw new Error('家具记录无法读取。');
     if(value.needs!==undefined&&(!value.needs||typeof value.needs!=='object'||Array.isArray(value.needs)||['hunger','thirst'].some(k=>!Number.isFinite(value.needs[k])||value.needs[k]<0||value.needs[k]>100)))throw new Error('柴柴的饥渴状态无法读取。');
     if(value.needs&&['energy','mood'].some(k=>value.needs[k]!==undefined&&(!Number.isFinite(value.needs[k])||value.needs[k]<0||value.needs[k]>100)))throw new Error('柴柴的状态无法读取。');
     if(value.wallCard!==undefined&&value.wallCard!==null&&(typeof value.wallCard!=='string'||!value.wallCard.trim()||value.wallCard.length>120))throw new Error('相框记录无法读取。');
@@ -216,14 +216,23 @@
         if (this.raw !== null) this.state = validateSave(JSON.parse(this.raw));
       } catch (error) { this.readOnly = true; onError('暂时无法读取存档。原存档已保留；记录与购买暂不可用。请检查浏览器存储权限后刷新。'); }
     }
-    initializeRelationship() {
-      // Like the card collection, this belongs to this browser and site, not a login.
-      // One complete cottage snapshot keeps relationship and care cooldowns together.
-      if (this.readOnly || (this.raw !== null && this.state.relationship !== undefined)) return false;
-      const next = clone(this.state);
-      if (next.relationship === undefined) next.relationship = clone(D.relationship.initial);
-      this.commit(next);
-      return true;
+    initializeRoom() {
+      // A single local snapshot initializes new relationships and free starter gifts.
+      if (this.readOnly) return false;
+      const next = clone(this.state);let changed=this.raw===null;
+      if (next.relationship === undefined) { next.relationship=clone(D.relationship.initial);changed=true; }
+      if (!next.owned.includes('foodBowl')) {
+        next.owned.push('foodBowl');changed=true;
+        const water=next.placements.find(p=>p.id==='water'),preferred=water?{x:water.x+2,y:water.y}:F.foodBowl.defaultPosition;
+        const spots=[];
+        for(let y=D.bounds.top;y<D.bounds.bottom;y++)for(let x=D.bounds.left;x<D.bounds.right;x++)spots.push({id:'foodBowl',x,y});
+        spots.sort((a,b)=>(a.x-preferred.x)**2+(a.y-preferred.y)**2-((b.x-preferred.x)**2+(b.y-preferred.y)**2));
+        // Never move existing furniture or block an approach. A crowded room keeps the gift in storage.
+        const spot=spots.find(p=>validateLayout([...next.placements,p],null,{allowLegacyWater:true}).ok);
+        if(spot)next.placements.push(spot);
+      }
+      if(!changed)return false;
+      this.commit(next);return true;
     }
     commit(next) {
       if (this.readOnly) throw new Error('存档暂时不可用，请检查浏览器设置后刷新。');

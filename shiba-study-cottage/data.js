@@ -4,6 +4,7 @@
     desk: { name: '窗边矮桌', w: 4, h: 2, lift: 16, starter: true, description: '窗边放书和小物的矮木桌' },
     bed: { name: '软垫小窝', w: 3, h: 2, lift: 0, action: 'sleep', starter: true, description: '困了，就歇一会儿' },
     water: { name: '水碗', w: 1, h: 1, lift: 0, action: 'drink', approaches: [{ x: -6, y: 14, direction: 'right' }, { x: 22, y: 14, direction: 'left' }], starter: true, description: '咕嘟咕嘟，补充水分' },
+    foodBowl: { name: '狗粮盆', w: 1, h: 1, lift: 0, action: 'eat', starter: true, giftOnUpgrade: true, defaultPosition: {x:19,y:10}, approaches: [{x:-6,y:14,direction:'right'},{x:22,y:14,direction:'left'}], behavior: '饿了自己来吃', description: '常备免费狗粮，安心吃饱' },
     welcomeRug: { name: '初见地毯', w: 4, h: 3, lift: 0, rug: true, starter: true, description: '送给你们的第一份礼物' },
     toyBasket: { name: '滚滚球玩具篮', w: 2, h: 1, lift: 8, price: 30, action: 'play', toy: true, approaches: [{x:16,y:48,direction:'right'}], description: '一篮小玩具，留出空地就能玩' },
     sniffMat: { name: '嗅闻软垫', w: 3, h: 2, lift: 0, price: 30, rug: true, toy: true, action: 'play', approaches: [{x:24,y:24,direction:'right'}], description: '翻翻布条，闻闻藏起来的气味' },
@@ -15,7 +16,7 @@
     mug: { name: '马克杯摆件', w: 1, h: 1, lift: 0, price: 15, description: '杯子里装着慢悠悠的下午' },
     pawRug: { name: '柴爪地毯', w: 3, h: 2, lift: 0, rug: true, price: 15, description: '踩一踩，都是软乎乎' },
     lamp: { name: '落地暖灯', w: 1, h: 1, lift: 32, price: 40, action: 'lamp', description: '互动开关，留一盏暖灯' },
-    snackRack: { name: '零食架', w: 2, h: 1, lift: 32, price: 40, action: 'snacks', description: '常备口粮，饿了来吃一点' },
+    snackRack: { name: '零食架', w: 2, h: 1, lift: 32, price: 40, action: 'snacks', behavior: '挑选小零食喂它', description: '收藏零食，亲手喂一点喜欢' },
     shelf: { name: '矮书柜', w: 3, h: 1, lift: 16, price: 40, description: '给喜欢的书一个家' },
     sofa: { name: '双人小沙发', w: 4, h: 2, lift: 16, price: 80, action: 'sleep', description: '刚好够柴柴伸一个懒腰' },
     record: { name: '唱片柜', w: 2, h: 1, lift: 16, price: 80, action: 'music', description: '互动播放一段午后小调' }
@@ -52,7 +53,7 @@
       initial: { version: 1, affection: 20, trust: 20, comfort: 60, clock: 0, serial: 0, history: [], cooldowns: { pet: 0, care: 0, greet: 0, penalty: 0, touch: 0 }, burst: { since: 0, count: 0 }, repairAt: 0 },
       cooldown: { pet: 45, care: 120, greet: 30, penalty: 15, touch: 8 },
       historyLimit: 24, saveEvery: 30, comfortRecovery: .12, careSeconds: {sleep:15,window:6},
-      invitations: {actions:['drink','snacks','sleep','window','play'],acceptance:[.3,.65,.85,.97,1],decisionSeconds:12},
+      invitations: {actions:['drink','eat','snacks','sleep','window','play'],acceptance:[.3,.65,.85,.97,1],decisionSeconds:12},
       events: {
         pet: { text: '接受了一次温柔摸摸', affection: 1.5, trust: 1 },
         greet: { text: '愿意靠近闻闻你的手', affection: .5, trust: 1.5 },

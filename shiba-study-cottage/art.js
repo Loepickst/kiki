@@ -450,6 +450,14 @@
       oval(ctx,x+1,sy+5,14,10,'woodShadow');oval(ctx,x+2,sy+4,12,10,'wallShade');oval(ctx,x+2,sy+2,12,10,'cream');
       oval(ctx,x+3,sy+3,10,7,'blueDark');oval(ctx,x+4,sy+4,8,5,'blue');rect(ctx,x+5,sy+4,5,1,'blueLight');rect(ctx,x+4,sy+5,2,1,'white');rect(ctx,x+9,sy+7,2,1,'blueLight');
       rect(ctx,x+3,sy+10,9,2,'paper');rect(ctx,x+4,sy+10,3,1,'white');rect(ctx,x+9,sy+11,2,1,'blueDark');
+    }else if(id==='foodBowl'){
+      // 16×16 ceramic kibble bowl, 8 shared colors; light from upper left.
+      oval(ctx,x+1,sy+6,14,9,'woodShadow');oval(ctx,x+2,sy+4,12,10,'red');
+      oval(ctx,x+2,sy+2,12,10,'redLight');oval(ctx,x+3,sy+3,10,7,'cream');
+      oval(ctx,x+4,sy+4,8,5,'darkWood');
+      for(const [dx,dy] of [[4,5],[7,4],[10,5],[6,7],[9,7]]){rect(ctx,x+dx,sy+dy,2,2,'wood');rect(ctx,x+dx,sy+dy,1,1,'honey');}
+      rect(ctx,x+3,sy+10,9,2,'red');rect(ctx,x+4,sy+10,3,1,'redLight');
+      rect(ctx,x+6,sy+11,4,2,'cream');rect(ctx,x+7,sy+11,2,1,'white');
     }else if(id==='plant'){plant(ctx,x,sy);
     }else if(id==='books'){
       book(ctx,x+1,sy+10,14,5,'greenDark');rect(ctx,x+4,sy+12,9,1,'cream');book(ctx,x+3,sy+6,12,5,'red');rect(ctx,x+5,sy+8,7,1,'white');

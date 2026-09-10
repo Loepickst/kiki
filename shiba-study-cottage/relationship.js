@@ -67,7 +67,7 @@
       if(!R.invitations.actions.includes(action))return {accepted:true};
       this.sync();const s=this.data,n={...C.Data.needs.initial,...context.needs},t=C.Data.needs.thresholds;
       // Basic needs offer a route back to trust; the pet never has to earn access to water or rest.
-      const urgent=(action==='drink'&&n.thirst>=C.Data.needs.drinkThreshold)||(action==='snacks'&&n.hunger>=t.hungry)||(action==='sleep'&&n.energy<=t.tired);
+      const urgent=(action==='drink'&&n.thirst>=C.Data.needs.drinkThreshold)||(['snacks','eat'].includes(action)&&n.hunger>=t.hungry)||(action==='sleep'&&n.energy<=t.tired);
       const refuse=message=>({...this.decline(message),short:'暂时不想去'});
       if(!urgent){
         if(['sleep','settle'].includes(context.currentAction))return refuse('它还想睡一会儿，等睡醒再邀请吧。');
@@ -82,7 +82,7 @@
         const cached=s.invitations[action];
         if(cached&&s.clock<cached.until)accepted=cached.accepted;
         else{
-          const useful=(action==='drink'&&n.thirst>=35)||(action==='snacks'&&n.hunger>=35)||(action==='sleep'&&n.energy<=40)||(action==='window'&&n.mood<=40);
+          const useful=(action==='drink'&&n.thirst>=35)||(['snacks','eat'].includes(action)&&n.hunger>=35)||(action==='sleep'&&n.energy<=40)||(action==='window'&&n.mood<=40);
           const chance=Math.max(.1,Math.min(1,R.invitations.acceptance[this.stage.rank]+(useful?.25:0)-(s.comfort<50?.15:0)));
           accepted=this.random()<chance;
           s.invitations[action]={accepted,until:s.clock+R.invitations.decisionSeconds};this.dirty=true;this.flush();
