@@ -3028,6 +3028,7 @@
     <link rel="preload" as="image" href="assets/lottery-tarot-card-front.webp">
     <link rel="stylesheet" href="shared/lottery-tarot-flow.css?v=20260910-nr-reveal1">
     <link rel="stylesheet" href="shared/lottery-full-art.css?v=20260910-nr-jewel1">
+    <link rel="stylesheet" href="shared/lottery-nr-preview.css?v=20260922-2">
     <link rel="preload" as="font" href="shared/fonts/yuji-syuku/yuji-syuku-tarot-headings-v2.woff2" type="font/woff2" crossorigin>
 </head>
 <body class="kiki-unified-header-enabled lottery-tarot-page">
@@ -3193,6 +3194,7 @@
     </div>
 
     <script src="shared/lottery-full-art.js?v=20260910-nr-jewel1"></script>
+    <script src="shared/lottery-nr-preview.js?v=20260922-3"></script>
     <script src="shared/omikuji-catalog.js?v=20260910-nr-draw1"></script>
     <script src="shared/lottery-transactions.js?v=20260910-reroll32"></script>
     <script src="shared/kiki-inventory.js?v=20260910-effects29"></script>
@@ -4912,6 +4914,7 @@
             const displayFortune = getVariantDisplayFortune(fortune, entry, activeVariant);
             const isFoilDisplay = activeVariant === 'foil' && hasFoil;
 
+            window.KikiNRPreview?.clear();
             currentPreviewFortuneId = fortune.id;
 
             previewImage.src = displayFortune.icon;
@@ -4939,6 +4942,7 @@
             previewRarityBadge.classList.toggle('nr-rarity-badge', displayFortune.rarity === 'NR');
             previewRarityBadge.style.background = displayFortune.rarity === 'NR' ? '' : rarityColors[displayFortune.rarity] || displayFortune.color;
             previewDesc.textContent = displayFortune.desc;
+            if (displayFortune.rarity === 'NR') window.KikiNRPreview?.show(previewImage.parentElement, displayFortune);
 
             previewVariantSwitch.hidden = !hasFoil;
             previewVariantButtons.forEach((button) => {
@@ -5755,8 +5759,16 @@
             showBackupToast(`已兑换闪卡券 · 持有 ${result.itemCount} 张`);
         });
 
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && previewOverlay.classList.contains('active')) {
+                previewOverlay.classList.remove('active');
+                window.KikiNRPreview?.clear();
+            }
+        });
+
         previewClose.addEventListener('click', () => {
             previewOverlay.classList.remove('active');
+            window.KikiNRPreview?.clear();
         });
 
         previewVariantButtons.forEach((button) => {
@@ -5791,6 +5803,7 @@
         previewOverlay.addEventListener('click', (event) => {
             if (event.target === previewOverlay) {
                 previewOverlay.classList.remove('active');
+            window.KikiNRPreview?.clear();
             }
         });
 
