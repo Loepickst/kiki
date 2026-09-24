@@ -7,17 +7,37 @@
   <meta name="description" content="照顾柴犬、陪伴玩耍，布置它自己的像素小屋。">
   <title>柴柴学习小屋</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=snack-variety-1">
+  <link rel="stylesheet" href="shop-storefront.css?v=scroll-1">
+  <link rel="stylesheet" href="immersive-ui.css?v=world-scale-2">
+  <link rel="stylesheet" href="arcade-cabinet-ui.css?v=world-scale-2">
+  <script>
+    // Route only truly empty households to first adoption. Invalid/old saves stay in the cottage.
+    try {
+      const raw = localStorage.getItem('shibaStudyCottage.v1');
+      if (raw === null || JSON.parse(raw)?.awaitingAdoption === true) location.replace('pet-shop.html');
+    } catch (error) { /* Invalid saves stay in the cottage for recovery. */ }
+  </script>
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div class="brand-group">
         <a id="home-link" class="home-link" href="../index.html" aria-label="出门" title="出门 · 返回主页"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5-7 7 7 7M3 12h18"/></svg><span>出门</span></a>
-        <div class="brand"><canvas id="brand-shiba" width="32" height="32" aria-hidden="true"></canvas><h1>柴柴学习小屋</h1></div>
+        <h1 class="sr-only">柴柴学习小屋</h1>
       </div>
-      <div class="stats" aria-label="小屋余额">
+      <div class="stats" aria-label="小屋余额与宠物">
         <div class="stat coins"><span data-icon="paw" aria-hidden="true"></span><strong><span id="coin-count">0</span></strong><span class="stat-label">爪印币</span></div>
+        <div class="pet-hud">
+          <button id="pet-status-button" class="pet-status-button" type="button" aria-expanded="false" aria-controls="room-notebook" aria-label="查看宠物状态">
+            <canvas id="brand-shiba" width="32" height="32" aria-hidden="true"></canvas><span id="hud-pet-name">木木</span><span id="pet-attention" class="pet-attention" hidden aria-hidden="true">!</span><svg class="disclosure-mark" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+          </button>
+          <section id="room-notebook" class="companion-card hud-popover" aria-labelledby="companion-name" hidden>
+            <button id="close-pet-status" class="close-button" type="button" aria-label="收起宠物状态">×</button>
+            <div class="companion-profile"><h2 id="companion-name">木木</h2><div class="portrait-frame"><canvas id="companion-portrait" width="32" height="32" aria-hidden="true"></canvas></div><p id="companion-status">陪着你</p><span id="relationship-label">慢慢熟悉</span></div>
+            <div class="pet-state" aria-label="宠物状态"><p id="pet-condition">精神不错</p><div id="pet-state-values" class="pet-state-values"></div></div>
+          </section>
+        </div>
       </div>
     </header>
 
@@ -26,7 +46,9 @@
         <section class="game-frame" aria-label="柴犬小屋游戏">
           <canvas id="game" width="384" height="288" tabindex="0" aria-label="宠物小屋：柴犬会自主活动。点击家具邀请互动，点击柴犬摸摸。B 布置，Esc 关闭面板或取消摆放。">请使用支持 Canvas 的电脑浏览器。</canvas>
           <button id="wall-frame-button" type="button" aria-label="收藏相框：选择抽到的卡片" title="收藏相框 · 更换卡片"></button>
+          <button id="arcade-button" type="button" aria-label="小屋街机：选择游戏" title="小屋街机"><span class="sr-only">小屋街机</span></button>
           <div id="interaction" class="interaction" hidden><kbd>点</kbd><span></span></div>
+          <div id="scene-label" class="scene-label">小屋</div>
           <div id="mode-label" class="mode-label" hidden><span data-icon="box"></span>布置中</div>
           <div id="toast" role="status" aria-live="polite" hidden></div>
         </section>
@@ -38,40 +60,14 @@
         </section>
         <footer class="toolbar">
           <span id="save-state">本地存档</span>
-          <nav aria-label="小屋工具"><button id="journal-button" class="tool-button"><span data-icon="book"></span>手账</button><button id="shop-button" class="tool-button"><span data-icon="shop"></span>商店</button><button id="build-button" class="tool-button"><span data-icon="box"></span>布置</button><button id="room-inventory-button" class="tool-button"><span data-icon="storage"></span>收纳</button><button id="snapshot-button" class="tool-button icon-only" aria-label="给小屋拍照" title="拍照"><span data-icon="camera"></span></button><button id="settings-button" class="tool-button icon-only" aria-label="设置" title="设置"><span data-icon="settings"></span></button></nav>
+          <nav aria-label="小屋工具"><button id="journal-button" class="tool-button"><span data-icon="book"></span>手账</button><button id="shop-button" class="tool-button"><span data-icon="shop"></span>商店</button><button id="build-button" class="tool-button"><span data-icon="box"></span>布置</button><button id="room-inventory-button" class="tool-button"><span data-icon="storage"></span>收纳</button><button id="fullscreen-button" class="tool-button fullscreen-button" type="button" aria-label="进入全屏" aria-pressed="false" title="全屏"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6"/></svg><span id="fullscreen-label">全屏</span></button><div class="more-tools"><button id="more-button" class="tool-button" type="button" aria-expanded="false" aria-controls="more-menu"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>更多</button><div id="more-menu" class="hud-popover" hidden><button id="snapshot-button" class="tool-button" aria-label="给小屋拍照"><span data-icon="camera"></span>拍照</button><button id="settings-button" class="tool-button"><span data-icon="settings"></span>设置</button></div></div></nav>
         </footer>
-      </div>
-
-      <aside class="room-sidebar" aria-label="柴犬与家具">
-        <section id="room-notebook" class="companion-card" aria-labelledby="companion-name">
-          <div class="companion-profile">
-            <h2 id="companion-name">木木</h2>
-            <div class="portrait-frame"><canvas id="companion-portrait" width="32" height="32" aria-hidden="true"></canvas></div>
-            <p id="companion-status">陪着你</p>
-            <span id="relationship-label">慢慢熟悉</span>
-          </div>
-          <div class="pet-state" aria-label="柴犬状态">
-            <p id="pet-condition">精神不错</p>
-            <div id="pet-state-values" class="pet-state-values"></div>
-          </div>
-        </section>
-
-        <section id="arcade-card" class="arcade-card" aria-label="日语小游戏">
-          <button id="arcade-button" class="arcade-entry" type="button">
-            <span class="arcade-kicker">小屋游艺室</span>
-            <img src="assets/ui/arcade.svg" width="128" height="160" alt="" class="arcade-machine">
-            <strong>玩一局，添一点喜欢</strong>
-            <span class="arcade-description">日语小游戏 · 赚爪印币</span>
-            <span class="arcade-start">开始游戏 <span aria-hidden="true">→</span></span>
-          </button>
-          <p class="arcade-daily">今日游戏收获 <strong id="arcade-today">0</strong><span> / 120 币</span></p>
-        </section>
         <section id="build-notebook" class="build-notebook" aria-labelledby="quick-inventory-title" hidden>
           <div class="note-heading"><h2 id="quick-inventory-title">选择家具</h2><span id="quick-count">4 件</span></div>
           <div class="catalog-tabs build-tabs" role="group" aria-label="筛选布置家具"><button data-build-filter="all" aria-pressed="true">全部</button><button data-build-filter="placed" aria-pressed="false">已摆放</button><button data-build-filter="stored" aria-pressed="false">收纳中</button></div>
           <div id="quick-inventory" class="quick-inventory" aria-label="可布置的家具"></div>
         </section>
-      </aside>
+      </div>
     </main>
   </div>
 
@@ -81,7 +77,7 @@
   </dialog>
   <dialog id="arcade-dialog" aria-labelledby="arcade-title">
     <header class="arcade-header"><div><h2 id="arcade-title">小屋游艺室</h2><p id="arcade-status" role="status">选一项日语练习</p></div><button id="arcade-close" class="button secondary" type="button">回小屋</button></header>
-    <div id="arcade-picker"><p class="arcade-rules">答对 1 题得 1 币，完成一局后存入小屋。</p><div id="arcade-games" class="arcade-games"></div><p class="form-note">每局最多 20 币，每个北京时间自然日最多 120 币。提前退出不结算，达到上限仍可练习。</p><div id="arcade-recent" class="arcade-recent"></div></div>
+    <div id="arcade-picker"><div class="arcade-meter"><span>今日 <strong id="arcade-today">0</strong> / 120 币</span></div><div id="arcade-games" class="arcade-games"></div><div id="arcade-recent" class="arcade-recent"></div></div>
     <div id="arcade-play" hidden><p id="arcade-loading" role="status">正在打开游戏…</p><iframe id="arcade-frame" title="日语小游戏" sandbox="allow-scripts allow-same-origin allow-forms"></iframe></div>
     <div id="arcade-save-error" role="alert" hidden><span></span><button id="arcade-retry" type="button" class="button secondary">重新保存奖励</button></div>
     <div id="arcade-exit-confirm" hidden><p>这一局还没结算，退出将放弃本局奖励。</p><div><button id="arcade-stay" class="button primary" type="button">继续游戏</button><button id="arcade-leave" class="button secondary" type="button">退出本局</button></div></div>
@@ -89,22 +85,50 @@
   </dialog>
   <noscript>请启用 JavaScript 后进入小屋。</noscript>
   <script src="../shared/omikuji-catalog.js"></script>
-  <script src="data.js"></script>
-  <script src="snacks.js"></script>
-  <script src="toys.js"></script><script src="model.js"></script>
+  <script src="../shared/game-catalog.js?v=20260924-catalog-1"></script>
+  <script src="data.js?v=black-puppy-adoption-1"></script>
+  <script src="growth.js?v=black-puppy-adoption-1"></script>
+  <script src="snacks.js?v=black-puppy-adoption-1"></script>
+  <script src="snack-art.js?v=snack-variety-1"></script>
+  <script src="toys.js?v=mirrorcuriosity-1"></script><script src="model.js?v=account-readoption-1"></script>
+  <script src="pet-care.js?v=black-puppy-adoption-1"></script>
   <script src="character-data.js"></script>
-  <script src="environment.js"></script>
-  <script src="art.js"></script>
+  <script src="assets/shiba-puppy/puppy-data.js?v=puppy-run-6"></script>
+  <script src="ground-sleep.js?v=lively-shelter-12"></script>
+  <script src="puppy-nature.js?v=autumn-life-1"></script>
+  <script src="assets/black-shiba-puppy/data.js?v=mirrorcuriosity-1"></script>
+  <script src="black-puppy-preview.js?v=black-puppy-adoption-1"></script>
+  <script src="puppy-life.js?v=mirrorcuriosity-1"></script>
+  <script src="puppy-sneeze.js?v=sneeze-1"></script>
+  <script src="puppy-listen.js?v=listen-1"></script>
+  <script src="puppy-motion.js?v=lively-shelter-12"></script>
+  <script src="puppy-behavior.js?v=front-actions-1"></script>
+  <script src="environment.js?v=immersive-1"></script>
+  <script src="art.js?v=mirrorcuriosity-1"></script>
+  <script src="yard-furniture.js?v=world-scale-2"></script>
+  <script src="yard.js?v=world-scale-2"></script>
+  <script src="yard-weather.js?v=world-scale-2"></script>
+  <script src="yard-nature.js?v=world-scale-2"></script>
+  <script src="yard-treasure.js?v=grass-treasure-2"></script>
+  <script src="autumn-yard.js?v=world-scale-2"></script>
+  <script src="yard-wildlife.js?v=world-scale-2"></script>
+  <script src="assets/yard/outdoor-data.js?v=yard-interactions-2"></script>
+  <script src="character-motion.js?v=autumn-mischief-1"></script>
+  <script src="yard-interactions.js?v=care-time-10"></script>
+  <script src="yard-play.js?v=pineconepaw-1"></script>
   <script src="assets/audio/bark-data.js"></script>
-  <script src="audio.js"></script>
-  <script src="needs.js"></script>
-  <script src="relationship.js"></script>
-  <script src="sleep.js"></script>
-  <script src="autonomy.js"></script>
-  <script src="game.js"></script>
+  <script src="audio.js?v=homecoming-1"></script>
+  <script src="needs.js?v=care-time-10"></script>
+  <script src="relationship.js?v=care-time-10"></script>
+  <script src="sleep.js?v=desk-exit-1"></script>
+  <script src="autonomy.js?v=nest-1"></script>
+  <script src="homecoming.js?v=homecoming-1"></script>
+  <script src="room-arcade.js?v=world-scale-2"></script>
+  <script src="game.js?v=mirrorcuriosity-1"></script>
   <script src="assets/wall-card-data.js"></script>
   <script src="wall-cards.js"></script>
-  <script src="ui.js"></script>
-  <script src="arcade.js"></script>
+  <script src="immersive-ui.js?v=world-scale-2"></script>
+  <script src="ui.js?v=account-readoption-1"></script>
+  <script src="arcade.js?v=immersive-1"></script>
 </body>
 </html>

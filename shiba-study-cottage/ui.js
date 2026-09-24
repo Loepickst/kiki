@@ -23,17 +23,28 @@
     game.normalizePlayer();refreshCompanion();refreshControls();
   }
   function refreshCompanion(){
-    const s=store.state,labels={waking:'慢慢醒来',play:'玩得正起劲',idle:'陪着你',eat:'吃口粮中',walk:'散步中',settle:'找个舒服的位置',sleep:'睡得香香的',drink:'喝水中',sit:'看云中',celebrate:'为你摇尾巴',pet:'享受摸摸',stretch:'伸个懒腰',yawn:'打个哈欠',scratch:'挠挠头',sniff:'低头嗅嗅',roll:'翻滚玩耍'};
-    const activity=game.idleLife.activity,autonomous=game.idleLife.phase==='walking'?{play:'去找小玩具',avoid:'想静一静',eat:'去吃口粮',company:'想靠近你',wander:'散步中',window:'去窗边',drink:'去喝水',sleep:'去休息',roll:'找块空地'}:{play:'专心玩玩具',avoid:'留一点空间',eat:'吃口粮中',company:'想要摸摸',wander:'四处看看',look:'四处张望',window:'看云中',drink:'喝水中',sleep:'睡得香香的',stretch:labels.stretch,yawn:labels.yawn,scratch:labels.scratch,sniff:labels.sniff,roll:labels.roll};
-    $('companion-name').textContent=s.name;$('companion-status').textContent=game.isResting?(game.action==='waking'?(game.wakeReason==='bedtime'?'准备回窝':'闻到零食，慢慢醒来'):game.deepSleep?(game.sleepSession?.scheduled?'夜间熟睡':'熟睡中'):'打盹中'):game.blocked?'安静等你':game.build?'等你布置':game.invitationFeedback?.short|| (activity?autonomous[activity.kind]||labels[game.action]||labels.idle:labels[game.action]||labels.idle);
+    const s=store.state,labels={waking:'慢慢醒来',play:'玩一会儿，歇一会儿',groom:'舔爪洗脸',invite:'想邀请你玩',decline:'想留一点空间','offer-paw':'抬爪回应',idle:game.scene==='yard'?'在庭院里':'陪着你',eat:'吃口粮中',walk:'散步中',settle:'找个舒服的位置',sleep:'睡得香香的',drink:'喝水中',sit:'看云中',celebrate:'为你摇尾巴',pet:'享受摸摸',stretch:'伸个懒腰',yawn:'打个哈欠',scratch:'挠挠头',sniff:'低头嗅嗅',roll:'翻滚玩耍'};
+    const activity=game.idleLife.activity,autonomous=game.idleLife.phase==='walking'?{play:'去找小玩具',avoid:'想静一静',eat:'去吃口粮',company:'想靠近你',wander:'散步中',window:'去窗边',drink:'去喝水',sleep:'去休息',roll:'找块空地',sniff:'去闻闻香草',yard:'去庭院玩',inside:'准备回小屋'}:{play:'专心玩玩具',avoid:'留一点空间',eat:'吃口粮中',company:'想要摸摸',wander:'四处看看',look:'四处张望',window:'看云中',drink:'喝水中',sleep:'睡得香香的',stretch:labels.stretch,yawn:labels.yawn,scratch:labels.scratch,sniff:labels.sniff,roll:labels.roll};
+    $('companion-name').textContent=s.name;$('companion-status').textContent=game.isResting?(game.action==='waking'?(game.wakeReason==='bedtime'?'准备回窝':'闻到零食，慢慢醒来'):game.deepSleep?(game.sleepSession?.scheduled?'夜间熟睡':'熟睡中'):'打盹中'):game.blocked?'安静等你':game.build?'等你布置':game.invitationFeedback?.short||(activity?autonomous[activity.kind]||labels[game.action]||labels.idle:labels[game.action]||labels.idle);
+    if(!game.blocked&&!game.build&&game.action==='yardInteract')$('companion-status').textContent=C.YardInteractions.label(game);
+    else if(!game.blocked&&!game.build&&game.action==='outdoor')$('companion-status').textContent=C.YardPlay.label(game);
+    else if(!game.blocked&&!game.build&&game.action==='run')$('companion-status').textContent='在草地上小跑';
+    else if(!game.blocked&&!game.build&&activity?.kind==='outdoor'&&game.idleLife.phase==='walking')$('companion-status').textContent=C.YardPlay.routines[activity.routine].going;
+    else if(!game.blocked&&!game.build&&game.scene==='yard'&&game.action==='sit')$('companion-status').textContent=game.actionTarget?.id==='koiPond'?'在池边看鱼':'安静看庭院';
+    else if(!game.blocked&&!game.build&&game.scene==='yard'&&activity?.target&&game.idleLife.phase==='walking'&&F[activity.target.id]?.scene==='yard')$('companion-status').textContent=`去${activity.target.name}旁边`;
     refreshPetState();
+    C.ImmersiveUI?.sync();
   }
   function refreshPetState(){
+    C.ImmersiveUI?.sync();
     const n=game.needs,l=n.levels;
-    for(const id of ['brand-shiba','companion-portrait']){const c=$(id),ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);ctx.imageSmoothingEnabled=false;C.Art.dog(ctx,16,30,'down','idle',game.time,l.mood);}
-    $('relationship-label').textContent=game.relationship.label;$('relationship-label').title=game.relationship.stage.description+' 在手账的「相处手记」查看关系变化。';
+    const effectNote=document.querySelector('.snack-active');if(effectNote){const text=C.Snacks.effectSummary(store.state);effectNote.textContent=text;effectNote.hidden=!text;}
+    // The dialog covers this HUD; repaint it when the room is visible again.
+    if(game.blocked||document.hidden)return;
+    for(const id of ['brand-shiba','companion-portrait']){const c=$(id),ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);ctx.imageSmoothingEnabled=false;C.Art.dog(ctx,16,30,'down','idle',game.time,l.mood,game.growthStage);}
+    const growth=game.growth.summary;$('relationship-label').textContent=`${growth.label} · ${game.relationship.label}`;$('relationship-label').title=`共同生活 ${growth.days+1} 天，累计 ${growth.effectiveHours.toFixed(1)} 有效成长小时。${growth.next?.waitingForArt?'黑柴继续保持幼年形象，成长进度已保存，后续阶段开放时再继续长大。':growth.paused?'正在安心自理，完成一段有效陪伴后继续成长。':growth.next?`当前成长速度 ${growth.multiplier.toFixed(2)} 倍，距离${growth.next.label}还需约 ${growth.next.hours.toFixed(1)} 有效小时，且至少 ${growth.next.days} 天。`:'已经长成安静可靠的成年柴犬。'} 今日有效陪伴 ${growth.visits}/2。 ${game.relationship.stage.description} 在手账的「相处手记」查看关系变化。`;
     const condition=n.condition;
-    const missing=id=>!game.targets.some(t=>t.id===id);
+    const missing=id=>!store.state.placements.some(p=>p.id===id);
     const missingCare=condition.id==='thirsty'&&missing('water')?'需要摆出水碗':condition.id==='hungry'&&missing('foodBowl')?'需要摆出狗粮盆':'';
     $('pet-condition').textContent=game.isResting?(game.deepSleep?'安心熟睡':game.action==='waking'?(game.wakeReason==='bedtime'?'回窝继续睡':'闻到零食香味'):'慢慢放松'):store.state.settings.roam===false?'自在活动已暂停':missingCare||condition.label;
     $('pet-condition').dataset.attention=String(!!missingCare);
@@ -44,18 +55,23 @@
       $('pet-state-values').innerHTML=rows.map(([key,label,v])=>`<div class="pet-state-row"><span>${label}</span><meter min="0" max="100" value="${Math.round(v)}" aria-label="${label}"></meter><span>${Math.round(v)}</span></div>`).join('');
     }
     const hints={thirsty:missing('water')?'摆出水碗，柴柴才能去喝水。':'柴柴会自己去水碗喝水。',tired:'困了会找空地或小窝休息，白天更喜欢晒得到太阳的地方。',hungry:missing('foodBowl')?'在收纳里摆出免费狗粮盆，柴柴饿了就能自己吃。':'柴柴会到狗粮盆吃饭，不消耗小零食。',lonely:'摸摸它，陪它待一会儿。',content:'按自己的节奏，吃饭、休息和玩耍。'};
-    $('pet-condition').title=game.isResting?'睡醒后会自己活动；零食架里的小零食可以唤醒它。':store.state.settings.roam===false?'可在设置中开启自在活动；仍可点击家具邀请互动。':hints[condition.id];
+    $('pet-condition').title=game.isResting?'睡醒后会自己活动；零食架里的小零食可以唤醒它。':store.state.settings.roam===false?'可在设置中开启自在活动；仍可点击家具邀请互动。':game.scene==='yard'&&['thirsty','hungry'].includes(condition.id)?'有需要时会自己回到小屋吃饭或喝水。':hints[condition.id];
   }
   function refreshControls(){
-    $('wall-frame-button').hidden=!!game.build;
+    const outside=game.scene==='yard';$('scene-label').textContent=outside?'庭院':'小屋';document.body.dataset.scene=game.scene;
+    $('wall-frame-button').hidden=outside||!!game.build;
+    $('build-button').disabled=false;$('build-button').title=outside?'布置庭院':'布置小屋';
+    $('room-inventory-button').disabled=false;$('room-inventory-button').title=outside?'庭院装饰收纳':'家具收纳';
     renderQuickInventory();
+    C.ImmersiveUI?.sync();
   }
   function renderQuickInventory(){
-    const s=store.state,selected=game.build?.id,signature=JSON.stringify([s.owned,s.placements,selected,buildFilter]);
+    const s=store.state,selected=game.build?.id,signature=JSON.stringify([s.owned,game.furnishingPlacements,game.scene,selected,buildFilter]);
     if(signature===quickSignature)return;quickSignature=signature;
-    const ids=s.owned.filter(id=>buildFilter==='all'||(buildFilter==='placed')===s.placements.some(p=>p.id===id));
+    const ids=s.owned.filter(id=>(F[id].scene||'room')===game.scene&&(buildFilter==='all'||(buildFilter==='placed')===isPlaced(id)));
+    $('quick-inventory-title').textContent=game.scene==='yard'?'庭院装饰':'选择家具';
     $('quick-count').textContent=`${ids.length} 件`;
-    $('quick-inventory').innerHTML=ids.length?ids.map(id=>`<button class="quick-item ${selected===id?'selected':''}" data-quick-place="${id}" aria-pressed="${selected===id}"><canvas width="80" height="64" data-furniture="${id}" aria-hidden="true"></canvas><strong>${esc(F[id].name)}</strong><small>${s.placements.some(p=>p.id===id)?'已摆放':'收纳中'} · ${F[id].w}×${F[id].h} 格</small></button>`).join(''):'<p class="catalog-empty">暂无家具</p>';
+    $('quick-inventory').innerHTML=ids.length?ids.map(id=>`<button class="quick-item ${selected===id?'selected':''}" data-quick-place="${id}" aria-pressed="${selected===id}"><canvas width="80" height="64" data-furniture="${id}" aria-hidden="true"></canvas><strong>${esc(F[id].name)}</strong><small>${isPlaced(id)?'已摆放':'收纳中'} · ${M.sizeFor(displayPlacement(id)).w}×${M.sizeFor(displayPlacement(id)).h} 格</small></button>`).join(''):'<p class="catalog-empty">暂无装饰，去商店看看吧。</p>';
     document.querySelectorAll('[data-build-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.buildFilter===buildFilter)));
     $('quick-inventory').querySelectorAll('[data-quick-place]').forEach(b=>b.addEventListener('click',()=>{game.selectFurniture(b.dataset.quickPlace);game.canvas.focus();}));paintItems();
   }
@@ -63,7 +79,7 @@
     if(game.build){toast('先完成布置，再给小屋拍张照吧。');return;}
     const button=$('snapshot-button');button.disabled=true;
     try{
-      game.render();const photo=document.createElement('canvas');photo.width=1152;photo.height=864;const ctx=photo.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(game.canvas,0,0,1152,864);
+      game.render();const photo=document.createElement('canvas');photo.width=game.worldSize.width*3;photo.height=game.worldSize.height*3;const ctx=photo.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(game.canvas,0,0,photo.width,photo.height);
       photo.toBlob(blob=>{
         try{if(!blob)throw new Error('无法生成照片');const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`${store.state.name.replace(/[\\/:*?"<>|]/g,'')||'柴柴'}的小屋-${M.dayKey()}.png`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);toast('小屋照片已生成，请查看浏览器下载。');}
         catch(error){toast('照片没有生成成功，请再试一次。');}finally{button.disabled=false;}
@@ -72,10 +88,12 @@
   }
   function commit(next){try{store.commit(next);refresh(true);return true;}catch(error){refresh();throw error;}}
   function openPanel(type,title,html,wide=false){
-    if(!panel.open)lastFocus=document.activeElement;currentPanel=type;game.pause(true);$('panel-title').textContent=title;$('panel-body').innerHTML=html;panel.dataset.panel=type;panel.classList.toggle('wide',wide);renderIcons(panel);if(!panel.open)panel.showModal();audio.activate();audio.effect('page');
+    if(!panel.open)lastFocus=document.activeElement?.closest('#more-menu')?$('more-button'):document.activeElement;
+    C.ImmersiveUI?.closePanels();
+    currentPanel=type;game.pause(true);$('panel-title').textContent=title;$('panel-body').innerHTML=html;panel.dataset.panel=type;panel.classList.toggle('wide',wide);renderIcons(panel);if(!panel.open)panel.showModal();audio.activate();audio.effect('page');
   }
   function closePanel(){game.pause(false);panel.close();}
-  panel.addEventListener('close',()=>{if(panel.open)return;currentPanel='';game.pause(false);if(lastFocus?.isConnected)lastFocus.focus();else $('game').focus();});
+  panel.addEventListener('close',()=>{if(panel.open)return;currentPanel='';game.pause(false);refreshCompanion();if(lastFocus?.isConnected&&lastFocus.getClientRects().length)lastFocus.focus();else $('game').focus();});
   panel.addEventListener('click',e=>{if(e.target===panel){const r=panel.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closePanel();}});
   $('close-panel').addEventListener('click',closePanel);
   function openWallCards(){
@@ -95,33 +113,55 @@
     }));
   }
 
-  function itemCard(id,mode){
-    const f=F[id],owned=store.state.owned.includes(id),placed=store.state.placements.some(p=>p.id===id),missing=Math.max(0,(f.price||0)-store.state.coins);
-    const behavior=f.behavior||{toyBasket:'可玩耍',sniffMat:'可嗅闻',bed:'可休息',water:'可喝水',lamp:'灯光开关',sofa:'可趴卧',record:'音乐开关',snackRack:'挑选小零食'}[id]||(f.rug?'可铺在家具下方':'');
-    let action;
-    if(mode==='shop')action=owned?`<button class="button secondary" data-place="${id}">${placed?'移动':'摆放'}</button>`:`<button class="button ${missing?'secondary':'primary'}" data-buy="${id}" ${missing?'disabled':''}>${missing?`还差 ${missing} 币`:'购买'}</button>`;
-    else action=`<button class="button secondary" data-place="${id}">${placed?'移动':'摆放'}</button>`;
-    return `<article class="item-card"><div class="item-art"><canvas width="80" height="64" data-furniture="${id}" aria-label="${esc(f.name)}"></canvas></div><div class="item-info"><h3>${esc(f.name)}</h3><span class="item-size">${f.w} × ${f.h} 格${behavior?` · ${behavior}`:''}</span><span class="item-tag">${owned?(placed?'已摆放':'收纳中'):`${f.price} 爪印币`}</span>${action}</div></article>`;
+  function isPlaced(id){return (F[id].scene==='yard'?store.state.yardPlacements||[]:store.state.placements).some(p=>p.id===id);}
+  function shopPrice(value,unit=''){
+    return `<span class="store-price"><span data-icon="paw" aria-hidden="true"></span><strong>${value}</strong><span class="sr-only">爪印币</span>${unit?`<small>${unit}</small>`:''}</span>`;
   }
-  function paintItems(){document.querySelectorAll('[data-furniture]').forEach(canvas=>C.Art.icon(canvas,canvas.dataset.furniture));}
+  function itemCard(id,mode){
+    const f={...F[id],...M.sizeFor(displayPlacement(id))},owned=store.state.owned.includes(id),placed=isPlaced(id),missing=Math.max(0,(f.price||0)-store.state.coins);
+    const behavior=f.behavior||{toyBasket:'可玩耍',sniffMat:'可嗅闻',bed:'可休息',water:'可喝水',lamp:'灯光开关',sofa:'可趴卧',record:'音乐开关',snackRack:'挑选小零食'}[id]||(f.rug?'可铺在家具下方':'');
+    const action=`<button class="button secondary" data-place="${id}">${placed?'移动':'摆放'}</button>`;
+    if(mode==='shop'){
+      const label=owned?`${placed?'移动':'摆放'}${f.name}`:`购买${f.name}，${f.price} 爪印币${missing?`，还差 ${missing} 币`:''}`;
+      const purchase=owned?`<button class="button secondary" data-place="${id}" aria-label="${esc(label)}">${placed?'移动':'摆放'}</button>`:`<button class="button primary" data-buy="${id}" aria-label="${esc(label)}" ${missing?`disabled title="还差 ${missing} 爪印币"`:''}>${missing?'币不足':'购买'}</button>`;
+      return `<article class="item-card store-product${f.scene==='yard'?' yard-item':''}"><div class="item-art store-window" title="${esc(f.description||behavior)}"><canvas width="${f.scene==='yard'?160:80}" height="${f.scene==='yard'?128:64}" data-furniture="${id}" aria-label="${esc(f.name)}"></canvas>${owned?'<span class="store-owned">已拥有</span>':''}</div><div class="item-info"><h3>${esc(f.name)}</h3><p class="store-meta">${f.w} × ${f.h} 格</p><div class="store-card-bottom">${shopPrice(f.price)}${purchase}</div></div></article>`;
+    }
+    return `<article class="item-card${f.scene==='yard'?' yard-item':''}"><div class="item-art"><canvas width="${f.scene==='yard'?160:80}" height="${f.scene==='yard'?128:64}" data-furniture="${id}" aria-label="${esc(f.name)}"></canvas></div><div class="item-info"><h3>${esc(f.name)}</h3><span class="item-size">${f.scene==='yard'?'庭院 · ':''}${f.w} × ${f.h} 格${behavior?` · ${behavior}`:''}</span><span class="item-tag">${owned?(placed?'已摆放':'收纳中'):`${f.price} 爪印币`}</span>${action}</div></article>`;
+  }
+  function displayPlacement(id){return game.build?.candidate?.id===id?game.build.candidate:(F[id].scene==='yard'?game.yardPlacements:game.placements).find(p=>p.id===id)||{id,x:0,y:0};}
+  function paintItems(){
+    const canvases=[...document.querySelectorAll('[data-furniture]')];
+    canvases.forEach(canvas=>(F[canvas.dataset.furniture].scene==='yard'?C.YardArt:C.Art).icon(canvas,canvas.dataset.furniture,displayPlacement(canvas.dataset.furniture)));
+    const notice=$('yard-art-notice');if(!notice)return;
+    notice.hidden=C.YardArt.state.ready||!canvases.some(c=>F[c.dataset.furniture].scene==='yard');
+    notice.querySelector('span').textContent=C.YardArt.state.status==='error'?'庭院装饰图片未能加载，购买与摆放记录仍然保留。':'正在加载庭院装饰图片…';
+    const retry=notice.querySelector('button');retry.hidden=C.YardArt.state.status!=='error';retry.onclick=()=>C.YardArt.retry();
+  }
+  C.YardArt.ready.then(paintItems);
+  C.YardArt.subscribe?.(paintItems);
   function catalogMarkup(mode){
-    const filters=mode==='shop'?[['all','全部'],['furniture','家具'],['snacks','小零食'],['affordable','可购买'],['owned','已拥有']]:[['all','全部'],['placed','已摆放'],['stored','收纳中']];
-    return `<div class="catalog-tabs" role="group" aria-label="${mode==='shop'?'商店':'家具'}筛选">${filters.map(([key,label])=>`<button data-catalog-filter="${key}" aria-pressed="${key==='all'}">${label}</button>`).join('')}</div><p id="catalog-count" class="catalog-count" role="status"></p><div id="catalog-items" class="item-grid"></div>`;
+    const filters=mode==='shop'?[['all','全部'],['furniture','室内'],['yard','庭院'],['snacks','零食'],['affordable','可购买'],['owned','已拥有']]:[['all','全部'],['room','室内'],['yard','庭院'],['placed','已摆放'],['stored','收纳中']];
+    const tabs=`<div class="catalog-tabs" role="group" aria-label="${mode==='shop'?'商店':'家具'}筛选">${filters.map(([key,label])=>`<button data-catalog-filter="${key}" aria-pressed="${key==='all'}">${label}</button>`).join('')}</div>`;
+    const toolbar=mode==='shop'?`<div class="store-toolbar">${tabs}<div class="store-wallet" aria-label="爪印币余额"><span data-icon="paw" aria-hidden="true"></span><strong id="catalog-balance">${store.state.coins}</strong><small>爪印币</small></div></div>`:tabs;
+    return `${toolbar}<p id="catalog-count" class="catalog-count${mode==='shop'?' sr-only':''}" role="status"></p><div id="yard-art-notice" class="yard-art-notice" role="status" hidden><span></span><button type="button" class="button secondary">重试图片</button></div><div id="catalog-items" class="item-grid"></div>`;
   }
   function shopSnackCard(id){
     const item=C.Snacks.items[id],stock=C.Snacks.stock(store.state,id),limit=stock>=D.snacks.stockLimit,missing=Math.max(0,item.price-store.state.coins);
-    return `<article class="item-card" data-shop-snack="${id}"><div class="item-art"><canvas width="64" height="64" data-snack-art="${id}" aria-label="${esc(item.name)}"></canvas></div><div class="item-info"><h3>${esc(item.name)}</h3><span class="item-size">小零食 · 库存 ${stock} 份</span><span class="item-tag">${item.price} 爪印币 / 份</span><button class="button ${missing||limit?'secondary':'primary'}" data-catalog-snack="${id}" ${missing||limit?'disabled':''}>${limit?'库存已满':missing?`还差 ${missing} 币`:'买一份'}</button>${stock?`<button class="button primary" data-select-snack="${id}">拿一份喂它</button>`:''}</div></article>`;
+    const label=`购买一份${item.name}，${item.price} 爪印币${limit?'，库存已满':missing?`，还差 ${missing} 币`:''}`;
+    return `<article class="item-card store-product store-snack" data-shop-snack="${id}"><div class="item-art store-window"><canvas width="64" height="64" data-snack-art="${id}" aria-label="${esc(item.name)}"></canvas>${stock?`<span class="store-owned">库存 ${stock} 份</span>`:''}</div><div class="item-info"><h3>${esc(item.name)}</h3><details class="store-effects"><summary aria-label="查看${esc(item.name)}的效果">${esc(item.role)}<span aria-hidden="true">⌄</span></summary><p>${esc(C.Snacks.description(id))}</p></details><div class="store-card-bottom">${shopPrice(item.price,'/份')}<div class="store-card-actions"><button class="button primary" data-catalog-snack="${id}" aria-label="${esc(label)}" ${missing||limit?`disabled title="${limit?'库存已满':`还差 ${missing} 爪印币`}"`:''}>${limit?'已满':missing?'币不足':'买一份'}</button>${stock?`<button class="button secondary" data-select-snack="${id}" aria-label="喂一份${esc(item.name)}">喂食</button>`:''}</div></div></div></article>`;
   }
   function renderCatalog(mode,filter='all'){
     const s=store.state,all=mode==='shop'?Object.keys(F).filter(id=>F[id].price):s.owned;
     const ids=all.filter(id=>{
       if(filter==='snacks')return false;
+      if(filter==='yard')return F[id].scene==='yard';
+      if(filter==='room'||filter==='furniture')return F[id].scene!=='yard';
       if(filter==='affordable')return !s.owned.includes(id)&&s.coins>=F[id].price;
       if(filter==='owned')return s.owned.includes(id);
-      if(filter==='placed'||filter==='stored')return (filter==='placed')===s.placements.some(p=>p.id===id);
+      if(filter==='placed'||filter==='stored')return (filter==='placed')===isPlaced(id);
       return true;
     });
-    const snacks=mode==='shop'&&filter!=='furniture'?Object.keys(C.Snacks.items).filter(id=>filter==='affordable'?s.coins>=C.Snacks.items[id].price&&C.Snacks.stock(s,id)<D.snacks.stockLimit:filter==='owned'?C.Snacks.stock(s,id)>0:true):[];
+    const snacks=mode==='shop'&&!['furniture','yard','room'].includes(filter)?Object.keys(C.Snacks.items).filter(id=>filter==='affordable'?s.coins>=C.Snacks.items[id].price&&C.Snacks.stock(s,id)<D.snacks.stockLimit:filter==='owned'?C.Snacks.stock(s,id)>0:true):[];
     $('catalog-count').textContent=mode==='shop'?`${ids.length+snacks.length} 件商品`:`${ids.length} 件家具`;
     const balance=$('catalog-balance');if(balance)balance.textContent=s.coins;
     document.querySelectorAll('[data-catalog-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.catalogFilter===filter)));
@@ -138,22 +178,17 @@
     });
     $('catalog-items').querySelectorAll('[data-buy]').forEach(button=>button.addEventListener('click',()=>{
       button.disabled=true;const id=button.dataset.buy;
-      try{commit(M.buy(store.state,id));audio.effect('buy');closePanel();game.beginBuild();game.selectFurniture(id);toast(game.build?`已购买${F[id].name}，点击位置摆放。`:`已购买${F[id].name}，暂存收纳箱，等柴柴睡醒再摆放。`);}
+      try{commit(M.buy(store.state,id));audio.effect('buy');closePanel();if((F[id].scene||'room')===game.scene){game.selectFurniture(id);toast(game.build?`已购买${F[id].name}，点击位置摆放。`:`已购买${F[id].name}，已放入收纳箱。`);}else toast(`已购买${F[id].name}，放在收纳中，到${F[id].scene==='yard'?'庭院':'小屋'}后可摆放。`);}
       catch(error){toast(error.message);renderCatalog(mode,filter);}
     }));
   }
   function openShop(){
-    openPanel('shop','小屋商店',`<div class="shop-balance"><span>家具限购 1 件 · 零食可补货</span><strong><span id="catalog-balance">${store.state.coins}</span> <small>爪印币</small></strong></div>${catalogMarkup('shop')}`,true);
-    renderCatalog('shop');document.querySelectorAll('[data-catalog-filter]').forEach(b=>b.addEventListener('click',()=>renderCatalog('shop',b.dataset.catalogFilter)));
+    openPanel('shop','小屋商店',`<div class="store-interior">${catalogMarkup('shop')}</div>`,true);
+    renderCatalog('shop',game.scene==='yard'?'yard':'all');$('panel-body').scrollTop=0;
+    document.querySelectorAll('[data-catalog-filter]').forEach(b=>b.addEventListener('click',()=>{renderCatalog('shop',b.dataset.catalogFilter);$('panel-body').scrollTop=0;}));
   }
   function snackArt(canvas,id){
-    const g=canvas.getContext('2d');g.imageSmoothingEnabled=false;g.clearRect(0,0,64,64);g.save();g.scale(2,2);
-    const r=(x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(x,y,w,h);},c=D.snacks.items[id].color;
-    r(6,9,20,18,'#78634b');r(7,8,18,19,c);r(8,10,2,14,'#ecd0a0');r(8,6,16,4,'#897c65');r(9,7,14,1,'#d5c8a6');r(7,25,18,2,'#a17e53');r(11,13,11,8,'#fff0d1');
-    if(id==='chicken'){r(14,15,5,4,'#b9814c');r(16,14,4,3,'#c89358');r(12,18,3,1,'#c89358');}
-    else if(id==='pumpkin'){r(14,15,6,4,'#cf9044');r(15,14,4,6,'#dda94e');r(17,13,1,2,'#718464');}
-    else{r(14,15,5,4,'#859c9d');r(19,14,2,2,'#859c9d');r(19,18,2,2,'#859c9d');r(14,16,1,1,'#53696a');}
-    g.restore();
+    C.SnackArt.draw(canvas,id);
   }
   const snackCursors=new Map();
   function snackCursor(id){
@@ -170,8 +205,8 @@
   }
   function openSnacks(){
     const S=C.Snacks,s=store.state;
-    const tasteText={like:'很喜欢',neutral:'普通接受',dislike:'不太喜欢'};
-    openPanel('snacks','零食架',`<div class="shop-balance"><span>小小一份，慢慢认识它</span><strong>${s.coins} <small>爪印币</small></strong></div><div class="snack-grid">${Object.entries(S.items).map(([id,item])=>{const n=S.stock(s,id),taste=S.discovered(s,id);return `<article class="snack-card"><canvas width="64" height="64" data-snack-art="${id}" aria-label="${esc(item.name)}"></canvas><h3>${esc(item.name)}</h3><p class="snack-taste ${taste||''}">${tasteText[taste]||'口味待发现'}</p><p class="snack-stock">架上 <strong>${n}</strong> 份</p><button class="button secondary" data-buy-snack="${id}" ${s.coins<item.price||n>=D.snacks.stockLimit?'disabled':''}>${item.price} 币 · 买一份</button><button class="button primary" data-select-snack="${id}" ${!n?'disabled':''}>拿一份喂它</button></article>`;}).join('')}</div><details class="settings-help"><summary>怎样喂零食</summary><p>尝过才会记下口味。选一份零食后，点击柴犬即可原地喂食；睡着时会先慢慢醒来。吃完才扣一份，不喜欢、拒绝或中途取消都不扣库存。每种最多存 30 份。</p><p>每天前 3 次吃零食可获得心情增益，好感与信任沿用照料冷却。之后仍可吃，但不会反复刷关系。肚子饱了就晚些再来。</p></details><p id="snack-error" class="form-error" role="alert" hidden></p><button id="snack-memories" class="button secondary full">看看我们的回忆</button>`,true);
+    const tasteText={like:'很喜欢',neutral:'普通接受',dislike:'不太喜欢'},active=S.effectSummary(s);
+    openPanel('snacks','零食架',`<div class="shop-balance"><span>小小一份，慢慢认识它</span><strong>${s.coins} <small>爪印币</small></strong></div>${active?`<p class="snack-active">${esc(active)}</p>`:''}<div class="snack-grid">${Object.entries(S.items).map(([id,item])=>{const n=S.stock(s,id),taste=S.discovered(s,id);return `<article class="snack-card"><canvas width="64" height="64" data-snack-art="${id}" aria-label="${esc(item.name)}"></canvas><h3>${esc(item.name)}</h3><p class="snack-role">${esc(item.role)}</p><p class="snack-effect">${esc(S.description(id))}</p><p>${esc(item.description)}</p><p class="snack-taste ${taste||''}">${tasteText[taste]||'口味待发现'}</p><p class="snack-stock">架上 <strong>${n}</strong> 份</p><button class="button secondary" data-buy-snack="${id}" ${s.coins<item.price||n>=D.snacks.stockLimit?'disabled':''}>${item.price} 币 · 买一份</button><button class="button primary" data-select-snack="${id}" ${!n?'disabled':''}>拿一份喂它</button></article>`;}).join('')}</div><details class="settings-help"><summary>怎样喂零食</summary><p>尝过才会记下口味。选一份零食后，点击柴犬即可原地喂食；睡着时会先慢慢醒来。吃完才扣一份，不喜欢、拒绝或中途取消都不扣库存。每种最多存 30 份。</p><p>所有零食合计每天最多接受 3 份、至少间隔 1 小时；饥饿低于 20 时婉拒。不同零食共享心情递减和关系冷却。心情越高，实际收益越小。零食不能代替正餐、饮水、睡眠和陪伴。</p><p>成长营养逐分钟生效，不直接赠送成长小时；饥渴低于 65、精力高于 30、心情至少 35 且未进入长期托管时才发挥。成年后不再加成长。睡眠补给只在睡着时提高恢复速度，不立即回精力。所有限时效果按现实时间到期，同类不叠加、不续时，换口味也一样；成长最少 4 天进成长期、12 天成年不变。</p><p>食材名称与效果属于游戏设定，不是现实宠物喂养建议。</p></details><p id="snack-error" class="form-error" role="alert" hidden></p><button id="snack-memories" class="button secondary full">看看我们的回忆</button>`,true);
     document.querySelectorAll('[data-snack-art]').forEach(c=>snackArt(c,c.dataset.snackArt));
     bindSnackSelection();
     $('panel-body').querySelectorAll('[data-buy-snack]').forEach(button=>{
@@ -190,10 +225,10 @@
 
   function openInventory(){
     openPanel('inventory','小屋收纳',catalogMarkup('inventory'),true);
-    renderCatalog('inventory');document.querySelectorAll('[data-catalog-filter]').forEach(b=>b.addEventListener('click',()=>renderCatalog('inventory',b.dataset.catalogFilter)));
+    renderCatalog('inventory',game.scene==='yard'?'yard':'room');document.querySelectorAll('[data-catalog-filter]').forEach(b=>b.addEventListener('click',()=>renderCatalog('inventory',b.dataset.catalogFilter)));
   }
   function bindPlacementButtons(){
-    $('panel-body').querySelectorAll('[data-place]').forEach(button=>button.addEventListener('click',()=>{const id=button.dataset.place;closePanel();if(!game.build)game.beginBuild();game.selectFurniture(id);}));
+    $('panel-body').querySelectorAll('[data-place]').forEach(button=>button.addEventListener('click',()=>{const id=button.dataset.place;closePanel();game.selectFurniture(id);}));
   }
   const dateLabel=time=>new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(time));
   function journalTabs(active){return `<div class="catalog-tabs" role="group" aria-label="手账内容"><button data-journal-tab="relationship" aria-pressed="${active==='relationship'}">相处手记</button><button data-journal-tab="toys" aria-pressed="${active==='toys'}">玩具偏好</button><button data-journal-tab="memories" aria-pressed="${active==='memories'}">共同回忆</button></div>`;}
@@ -202,10 +237,10 @@
     const r=game.relationship,s=r.data,stage=r.stage;
     const values=[['好感',s.affection,'愿意与你亲近'],['信任',s.trust,'相信你会尊重它'],['自在',s.comfort,'此刻是否想互动']];
     const entries=s.history.map(e=>{
-      const changes=[['affection','好感'],['trust','信任'],['comfort','自在']].filter(([key])=>e.delta[key]!==0).map(([key,label])=>`${label} ${e.delta[key]>0?'+':''}${e.delta[key]}`).join(' · ');
+      const changes=[['affection','好感'],['trust','信任'],['comfort','自在']].filter(([key])=>e.delta[key]!==0).map(([key,label])=>`${label} ${e.delta[key]>0?'+':''}${+e.delta[key].toFixed(2)}`).join(' · ');
       return `<article class="journal-record"><p>${esc(D.relationship.events[e.kind].text)}</p><footer><span>${dateLabel(e.at)}</span><span>${esc(changes)}</span></footer></article>`;
     }).join('');
-    openPanel('relationship','小屋手账',`${journalTabs('relationship')}<div class="relationship-intro"><h3>${esc(store.state.name)} · ${esc(r.label)}</h3><p>${esc(stage.description)}</p></div><div class="journal-summary relationship-summary">${values.map(([label,value,hint])=>`<div><small>${label}</small><strong>${Math.round(value)}<span> / 100</span></strong><p>${hint}</p></div>`).join('')}</div><details class="settings-help relationship-help"><summary>怎样好好相处</summary><p>初次见面从「有点戒备」开始。好感、信任和相处记录保存在本地，已有进度会继续累计。照顾真正的需要、完成温柔摸摸，会增加好感与信任。熟悉后会主动靠近；戒备或不自在时，会保留距离。喝水、吃饭、休息与看云的邀请也会受关系影响：越亲近越愿意回应，关系较差时可能拒绝。真正口渴、饥饿或困倦时仍能接受对应照顾，自主吃喝不受关系限制。自在反映此刻想不想互动，摸摸后也需要缓一缓，安静相处会慢慢恢复。</p><p>第一次拒绝摸摸或家具邀请不会扣分。同类邀请在 12 秒内不重新抽取结果，反复点击不会更容易答应。在吃喝、睡觉或已经想静一静时，10 秒内连续打扰 3 次才会影响关系。留出约一分钟可见的安静时间，它会慢慢放松。</p><p>摸摸带来的关系提升每 45 秒一次，照顾每 120 秒一次。不在场、离线或没有签到不会降低关系；状态好坏也不会扣掉爪印币。最近保留 24 条相处记录。</p></details><h3 class="relationship-log-title">最近相处</h3><div id="relationship-history">${entries||'<p class="empty-note">还没有相处记录。让它慢慢认识你。</p>'}</div>`);
+    openPanel('relationship','小屋手账',`${journalTabs('relationship')}<div class="relationship-intro"><h3>${esc(store.state.name)} · ${esc(r.label)}</h3><p>${esc(stage.description)}</p></div><div class="journal-summary relationship-summary">${values.map(([label,value,hint])=>`<div><small>${label}</small><strong>${Math.round(value)}<span> / 100</span></strong><p>${hint}</p></div>`).join('')}</div><details class="settings-help relationship-help"><summary>怎样好好相处</summary><p>心情是此刻的感受，亲近与信任靠跨天相处建立。每天分 2–3 次陪伴，每次约 3–5 分钟；前台相处满 2 分钟，并完成两类被接受的互动，计为一次有效陪伴。两次至少间隔 2 小时，每日最多两次。今天有效陪伴 ${game.growth.summary.visits}/2${game.growth.summary.visits>=2?'，今天已充分陪伴，继续互动仍有回应。':'，不需要连续刷点击。'}</p><p>摸摸、陪玩、安静看景和小零食逐步改善心情；越接近满值，增加越少。同类互动半小时内递减，主动互动半小时最多提升 15 点。零食每日最多 3 份，至少间隔一小时；自己玩不会增加与你的关系。</p><p>亲近每日最多 +3、信任最多 +2.5。摸摸与问好的关系奖励间隔半小时，其他类型各间隔一小时。照料真正的饥渴和疲倦更有意义；休息至少实际完成 10 分钟才结算照料。成长参考持续的心情、精力、饮食和有效陪伴，通常约两周成年，不用刷满照料点。</p><p>离线会使用已摆放的饭碗和水碗自理，不消耗零食、不增加或扣除长期关系。缺席 48 小时后暂停成长，回来继续，不倒退。心情低时仍可以温柔问好、安静陪伴。首次拒绝不扣关系，连续打扰才会影响短期自在；留出空间只恢复自在，不能反复刷信任。</p></details><h3 class="relationship-log-title">最近相处</h3><div id="relationship-history">${entries||'<p class="empty-note">还没有相处记录。让它慢慢认识你。</p>'}</div>`);
     bindJournalTabs();
   }
   function openToyJournal(){
@@ -219,14 +254,14 @@
   }
   function openSettings(){
     const s=store.state;
-    openPanel('settings','小屋设置',`<form id="settings-form"><label class="form-field">柴犬名字<input id="name-input" value="${esc(s.name)}" maxlength="12" required autocomplete="off"></label><div class="setting-row"><label for="roam-input">自在活动<small>自主散步、喝水和休息</small></label><input type="checkbox" id="roam-input" ${s.settings.roam!==false?'checked':''}></div><div class="setting-row"><label for="sound-input">音效</label><input type="checkbox" id="sound-input" ${s.settings.sound?'checked':''}></div><div class="setting-row"><label for="music-input">背景音乐</label><input type="checkbox" id="music-input" ${s.settings.music?'checked':''}></div><p id="settings-error" class="form-error" role="alert" hidden></p><button class="button primary full" type="submit">保存设置</button></form><details class="settings-help"><summary>操作与存档</summary><div><p>柴犬会按自己的节奏活动。点击家具邀请互动，点击柴犬摸摸。</p><p><kbd>B</kbd> 布置 · <kbd>Esc</kbd> 取消摆放或关闭面板<br>布置时：<kbd>方向键</kbd> 微调 · <kbd>Enter</kbd> 放下 · <kbd>Z</kbd> 撤销</p><p>和抽卡收藏一样，小屋与关系保存在当前浏览器的本网站记录中，刷新会继续累计。切换账号不会分开存档，更换浏览器或设备不会自动同步；清理网站数据会清除进度。</p><p>点击互动家具可邀请柴犬前往；点击空地和移动键不会控制柴犬。背景音乐在主动操作后播放，离开标签页时暂停。</p></div></details>`);
+    openPanel('settings','小屋设置',`<form id="settings-form"><label class="form-field">柴犬名字<input id="name-input" value="${esc(s.name)}" maxlength="12" required autocomplete="off"></label><div class="setting-row"><label for="roam-input">自在活动<small>自主在小屋与庭院散步、喝水和休息</small></label><input type="checkbox" id="roam-input" ${s.settings.roam!==false?'checked':''}></div><div class="setting-row"><label for="sound-input">音效</label><input type="checkbox" id="sound-input" ${s.settings.sound?'checked':''}></div><div class="setting-row"><label for="music-input">背景音乐</label><input type="checkbox" id="music-input" ${s.settings.music?'checked':''}></div><p id="settings-error" class="form-error" role="alert" hidden></p><button class="button primary full" type="submit">保存设置</button></form><details class="settings-help"><summary>操作与存档</summary><div><p>柴犬会按自己的节奏活动。点击家具或场景物件邀请互动，点击柴犬摸摸。</p><p><kbd>B</kbd> 布置 · <kbd>Esc</kbd> 取消摆放或关闭面板<br>布置时：<kbd>方向键</kbd> 微调 · <kbd>Enter</kbd> 放下 · <kbd>Z</kbd> 撤销</p><p>和抽卡收藏一样，小屋、庭院位置与关系保存在当前浏览器的本网站记录中，刷新会继续累计。切换账号不会分开存档，更换浏览器或设备不会自动同步；清理网站数据会清除进度。</p><p>点击互动家具可邀请柴犬前往；点击空地和移动键不会控制柴犬。背景音乐在主动操作后播放，离开标签页时暂停。</p></div></details>`);
     $('settings-form').addEventListener('submit',e=>{e.preventDefault();try{const name=$('name-input').value.trim();if(!name||name.length>12)throw new Error('给柴柴取一个 1～12 个字的名字吧。');const next=M.clone(store.state);next.name=name;next.settings={...next.settings,sound:$('sound-input').checked,music:$('music-input').checked,roam:$('roam-input').checked};commit(next);audio.activate();closePanel();toast('设置已保存');}catch(error){$('settings-error').hidden=false;$('settings-error').textContent=error.message;}});
   }
   function buildChanged(){
-    $('wall-frame-button').hidden=!!game.build;
+    $('wall-frame-button').hidden=game.scene==='yard'||!!game.build;
     const b=game.build;$('build-bar').hidden=!b;$('mode-label').hidden=!b;$('build-button').classList.toggle('active',!!b);
     document.body.classList.toggle('building',!!b);
-    $('room-notebook').hidden=!!b;$('arcade-card').hidden=!!b;$('build-notebook').hidden=!b;refreshCompanion();renderQuickInventory();
+    $('build-notebook').hidden=!b;C.ImmersiveUI?.closePanels();refreshCompanion();renderQuickInventory();C.ImmersiveUI?.fit();
     $('undo-placement').disabled=!game.canUndo;
     $('store-button').hidden=!b?.id;$('cancel-place').hidden=!b?.id;$('game').style.cursor=b?'crosshair':'default';
     if(!b)return;
@@ -242,9 +277,10 @@
     else document.body.style.removeProperty('--treat-cursor');
   };
   $('cancel-treat').addEventListener('click',()=>{game.cancelTreatSelection();game.canvas.focus();});
-  game.onToast=toast;game.onBuildChange=buildChanged;game.onSave=(saved=true)=>refresh(saved);game.onActivity=refreshCompanion;game.onStatusChange=refreshCompanion;
+  game.onToast=toast;game.onBuildChange=buildChanged;game.onSave=(saved=true)=>refresh(saved);game.onActivity=refreshCompanion;game.onStatusChange=refreshCompanion;game.onSceneChange=()=>{quickSignature='';refreshCompanion();refreshControls();C.ImmersiveUI?.fit();};
   game.onInteract=target=>{
-    if(target.action==='snackShelf')openSnacks();
+    if(target.action==='arcade')C.Arcade?.open();
+    else if(target.action==='snackShelf')openSnacks();
     else if(target.action==='wallCard')openWallCards();
     else if(target.action==='shop')openShop();
     else if(target.action==='play')game.perform('play',target);
@@ -253,6 +289,9 @@
     else if(target.action==='eat')game.perform('eat',target);
     else if(target.action==='snacks')openSnacks();
     else if(target.action==='window')game.perform('window',target);
+    else if(target.action==='yard')game.switchScene('yard');
+    else if(target.action==='inside')game.switchScene('room');
+    else if(['sniff','roll'].includes(target.action))game.perform(target.action,target);
     else if(['lamp','music'].includes(target.action)){
       try{const next=M.clone(store.state);if(target.action==='lamp')next.lampOn=!next.lampOn;else next.settings.music=!next.settings.music;commit(next);audio.activate();toast(target.action==='lamp'?(next.lampOn?'灯光已开启':'灯光已关闭'):(next.settings.music?'音乐已开启':'音乐已暂停'));}catch(error){toast(error.message);}
     }
@@ -263,30 +302,30 @@
   // Let Enter activate navigation even when furniture placement uses Enter too.
   $('home-link').addEventListener('keydown',e=>e.stopPropagation());
   $('shop-button').addEventListener('click',openShop);$('snapshot-button').addEventListener('click',takePhoto);$('room-inventory-button').addEventListener('click',openInventory);
+  $('snapshot-button').addEventListener('click',()=>{C.ImmersiveUI?.closePanels();$('more-button').focus({preventScroll:true});});
   document.querySelectorAll('[data-build-filter]').forEach(b=>b.addEventListener('click',()=>{buildFilter=b.dataset.buildFilter;renderQuickInventory();}));
   $('build-button').addEventListener('click',()=>game.build?game.endBuild():game.beginBuild());
   $('inventory-button').addEventListener('click',openInventory);$('finish-build').addEventListener('click',()=>game.endBuild());$('cancel-place').addEventListener('click',()=>game.cancelPlacement());$('store-button').addEventListener('click',()=>game.storeSelected());
   $('undo-placement').addEventListener('click',()=>game.undoPlacement());
   function resize(){
-    const mobile=matchMedia('(max-width:700px)').matches;
-    const compact=window.innerHeight<=800,sidebar=window.innerWidth>=1160?292:0;
-    const roomWidth=mobile?document.querySelector('.app-shell').clientWidth-12:Math.min(1520,window.innerWidth-64)-sidebar-12;
-    const scale=mobile?Math.max(.5,roomWidth/384):Math.max(1,Math.min(3,Math.floor(Math.min(roomWidth/384,(window.innerHeight-(compact?112:136))/288))));
-    document.documentElement.style.setProperty('--scale',scale);document.documentElement.dataset.scale=mobile?'1':String(scale);
+    C.ImmersiveUI?.fit();
   }
   window.addEventListener('resize',resize);resize();
   window.addEventListener('storage',e=>{if(e.key===D.storageKey||e.key===null){
-    const business=state=>{const {needs,relationship,revision,...rest}=state;return JSON.stringify(rest);},before=business(store.state);
+    const business=state=>{const {needs,needsRecovery,relationship,care,growth,petPresence,ownerPresence,yardNature,revision,...rest}=state;return JSON.stringify(rest);},before=business(store.state);
     if(store.synchronize()){
-      game.needs.sync();game.relationship.sync();
+      if(store.state.awaitingAdoption){location.replace('pet-shop.html');return;}
+      game.needs.sync();game.relationship.sync();game.growth.sync();
       // Background care checkpoints leave the current pet journal open.
       if(before===business(store.state)){refresh();return;}
       game.cancelTreatSelection();game.clearAction();game.history=[];game.cancelPlacement();refresh();if(panel.open)closePanel();toast('另一扇小屋窗口更新了进度，已经同步。');
     }
   }});
   setInterval(refreshPetState,1000);
+  document.addEventListener('cottage:art-ready',()=>{refreshPetState();paintItems();});
   // Recalculate the Beijing-day counters without requiring a reload at midnight.
   setInterval(refresh,15000);
   refresh();game.canvas.focus({preventScroll:true});
   C.App={store,game,audio};
+  C.ImmersiveUI?.init(game);
 })(globalThis.Cottage);

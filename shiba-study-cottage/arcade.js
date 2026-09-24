@@ -3,18 +3,31 @@
  const {store,game}=C.App,M=C.Model,D=C.Data.arcade,$=id=>document.getElementById(id),dialog=$('arcade-dialog'),frame=$('arcade-frame');
  let selected=null,session=null,round=null,pending=null,loadingTimer=null,lastFocus=null,scrollPosition=null,viewportFrame=0;
  const uid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(36).slice(2)}`;
+ // The cabinet menu is presentation only. Keep the play surface, bridge and
+ // reward transaction unchanged; every game still launches the original page.
+ dialog.classList.add('arcade-cabinet');
+ $('arcade-picker').querySelectorAll(':scope > .arcade-rules, :scope > .form-note').forEach(el=>el.remove());
+ $('arcade-recent').hidden=true;
+ if(!$('arcade-picker').querySelector('#arcade-today')){
+  const meter=document.createElement('div');meter.className='arcade-meter';
+  const label=document.createElement('span');label.append('今日 ');
+  let today=$('arcade-today');if(!today){today=document.createElement('strong');today.id='arcade-today';}label.append(today,` / ${D.dailyCap} 币`);meter.append(label);$('arcade-picker').append(meter);
+ }
+ const meter=$('arcade-picker').querySelector('.arcade-meter')||$('arcade-today').parentElement;
+ const wallet=document.createElement('span');wallet.className='arcade-wallet';meter.append(wallet);
+ $('arcade-picker').append(meter);
  function setStatus(text){$('arcade-status').textContent=text;$('arcade-result-summary').textContent=text;}
  function refresh(){
-  const stats=M.arcadeStats(store.state);$('arcade-today').textContent=stats.todayCoins;
+  const stats=M.arcadeStats(store.state);$('arcade-today').textContent=stats.todayCoins;wallet.textContent=`余额 ${store.state.coins} 币`;
   if(!dialog.open||!$('arcade-play').hidden)return;
-  setStatus(`今日 ${stats.todayCoins} / ${D.dailyCap} 币 · 小屋余额 ${store.state.coins} 币`);
+  setStatus('SELECT GAME');
   const rows=(store.state.gameRuns||[]).slice(-3).reverse();$('arcade-recent').replaceChildren();
   if(rows.length){const title=document.createElement('h3');title.textContent='最近游玩';$('arcade-recent').append(title);}
   for(const row of rows){const p=document.createElement('p'),name=document.createElement('span'),reward=document.createElement('strong');name.textContent=`${D.games.find(g=>g.id===row.game).name} · 答对 ${row.correct} 题`;reward.textContent=`+${row.reward} 币`;p.append(name,reward);$('arcade-recent').append(p);}
  }
  function resetReturnLayout(){for(const key of ['x','y','size'])dialog.style.removeProperty('--arcade-return-'+key);}
  function unload(){resetReturnLayout();clearTimeout(loadingTimer);session=null;selected=null;round=null;pending=null;frame.inert=false;frame.src='about:blank';$('arcade-save-error').hidden=true;$('arcade-exit-confirm').hidden=true;}
- function picker(){unload();$('arcade-title').textContent='小屋游艺室';dialog.classList.remove('is-playing');$('arcade-play').hidden=true;$('arcade-picker').hidden=false;$('arcade-result-tools').hidden=true;refresh();$('arcade-games').querySelector('button')?.focus();}
+ function picker(){unload();$('arcade-title').textContent='小屋街机';dialog.classList.remove('is-playing');$('arcade-play').hidden=true;$('arcade-picker').hidden=false;$('arcade-result-tools').hidden=true;refresh();$('arcade-games').querySelector('button')?.focus();}
  // The visible viewport can change independently of layout height in mobile Safari.
  function syncViewport(){
   viewportFrame=0;if(!scrollPosition)return;
@@ -32,9 +45,15 @@
  function unlockPage(){
   if(!scrollPosition)return;cancelAnimationFrame(viewportFrame);viewportFrame=0;window.removeEventListener('resize',queueViewport);window.visualViewport?.removeEventListener('resize',queueViewport);window.visualViewport?.removeEventListener('scroll',queueViewport);for(const key of ['height','width','top','left'])dialog.style.removeProperty('--arcade-viewport-'+key);const position=scrollPosition;scrollPosition=null;document.documentElement.classList.remove('arcade-open');document.documentElement.style.removeProperty('--arcade-page-top');window.scrollTo(position.x,position.y);
  }
- function close(){unload();dialog.close();unlockPage();game.pause(false);lastFocus?.focus({preventScroll:true});}
+ function close(){
+  unload();dialog.close();unlockPage();game.pause(false);C.ImmersiveUI?.sync?.();
+  // The room hotspot is hidden while a modal is open. Restore its visibility
+  // before returning focus; a removed/occluded trigger falls back to the canvas.
+  const target=lastFocus?.isConnected&&!lastFocus.disabled&&lastFocus.getClientRects().length?lastFocus:game.canvas;
+  target?.focus({preventScroll:true});
+ }
  function requestClose(){if(round||pending){$('arcade-exit-confirm').hidden=false;$('arcade-stay').focus();}else close();}
- function open(){if(game.build||game.blocked)return;lastFocus=document.activeElement;lockPage();game.needs.flush();game.relationship.flush();game.pause(true);picker();dialog.showModal();refresh();}
+ function open(){if(game.build||game.blocked||dialog.open)return;lastFocus=document.activeElement;C.ImmersiveUI?.closePanels();lockPage();game.needs.flush();game.relationship.flush();game.pause(true);picker();dialog.showModal();refresh();$('arcade-games').querySelector('button')?.focus({preventScroll:true});}
  function launch(id){
   const item=D.games.find(g=>g.id===id);if(!item||pending)return;
   unload();selected=item;session=uid();dialog.classList.add('is-playing');$('arcade-title').textContent=item.name;
@@ -79,10 +98,26 @@
   }
   if(d.event==='cancel'){round=null;setStatus('本局未完成，没有结算奖励');$('arcade-result-tools').hidden=false;}
  }
- for(const item of D.games){const button=document.createElement('button');button.type='button';button.className='arcade-game';const mark=document.createElement('span'),copy=document.createElement('span'),title=document.createElement('strong'),subtitle=document.createElement('small');mark.className='arcade-game-mark';mark.textContent=item.mark;title.textContent=item.name;subtitle.textContent=item.subtitle+' · 2 分钟';copy.append(title,subtitle);button.append(mark,copy);button.addEventListener('click',()=>launch(item.id));$('arcade-games').append(button);}
+ for(const [index,item]of D.games.entries()){
+  const button=document.createElement('button');button.type='button';button.className='arcade-game';button.dataset.game=item.id;
+  const mark=document.createElement('span'),copy=document.createElement('span'),title=document.createElement('strong'),subtitle=document.createElement('small'),number=document.createElement('span'),arrow=document.createElement('span');
+  mark.className='arcade-game-mark';mark.textContent=item.mark;mark.setAttribute('aria-hidden','true');
+  copy.className='arcade-game-copy';title.textContent=item.name;subtitle.textContent=item.subtitle;
+  number.className='arcade-game-number';number.textContent=String(index+1).padStart(2,'0');number.setAttribute('aria-hidden','true');
+  arrow.className='arcade-game-arrow';arrow.textContent='▶';arrow.setAttribute('aria-hidden','true');
+  copy.append(title,subtitle);button.append(number,mark,copy,arrow);button.addEventListener('click',()=>launch(item.id));$('arcade-games').append(button);
+ }
+ $('arcade-games').addEventListener('keydown',e=>{
+  if(dialog.classList.contains('is-playing')||e.altKey||e.ctrlKey||e.metaKey)return;
+  const buttons=[...$('arcade-games').querySelectorAll('button')],index=buttons.indexOf(document.activeElement);if(index<0)return;
+  const columns=getComputedStyle($('arcade-games')).gridTemplateColumns.split(' ').length;
+  let next=index;
+  if(e.key==='ArrowLeft')next=index-1;else if(e.key==='ArrowRight')next=index+1;else if(e.key==='ArrowUp')next=index-columns;else if(e.key==='ArrowDown')next=index+columns;else if(e.key==='Home')next=0;else if(e.key==='End')next=buttons.length-1;else return;
+  e.preventDefault();buttons[Math.max(0,Math.min(buttons.length-1,next))].focus({preventScroll:true});
+ });
  $('arcade-button').addEventListener('click',open);$('arcade-close').addEventListener('click',requestClose);$('arcade-retry').addEventListener('click',settle);
  $('arcade-stay').onclick=()=>{$('arcade-exit-confirm').hidden=true;frame.focus({preventScroll:true});};$('arcade-leave').onclick=close;
- $('arcade-choose').onclick=()=>{picker();$('arcade-title').textContent='小屋游艺室';};$('arcade-shop').onclick=()=>{close();$('shop-button').click();};
+ $('arcade-choose').onclick=picker;$('arcade-shop').onclick=()=>{close();$('shop-button').click();};
  dialog.addEventListener('cancel',e=>{e.preventDefault();requestClose();});dialog.addEventListener('close',()=>{unlockPage();if(!$('panel').open)game.pause(false);});
  window.addEventListener('message',message);window.addEventListener('pagehide',()=>{unload();unlockPage();});
  C.Arcade={open,refresh};refresh();

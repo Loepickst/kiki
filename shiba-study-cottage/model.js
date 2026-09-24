@@ -3,9 +3,9 @@
   const D = C.Data, F = D.furniture;
   const clone = value => JSON.parse(JSON.stringify(value));
   const dayKey = (time = Date.now()) => new Date(new Date(time).getTime() + 8 * 3600000).toISOString().slice(0, 10);
-  const newState = () => ({ version: 1, revision: 0, name: '木木', coins: 0, records: [], owned: ['desk', 'bed', 'water', 'foodBowl', 'welcomeRug'], placements: [
-    { id: 'desk', x: 4, y: 6 }, { id: 'bed', x: 17, y: 7 }, { id: 'water', x: 17, y: 10 }, {id:'foodBowl',...F.foodBowl.defaultPosition}, { id: 'welcomeRug', x: 9, y: 10 }
-  ], settings: { sound: true, music: false, roam: true }, lampOn: true, relationship: clone(D.relationship.initial) });
+  const newState = () => ({ version: 1, revision: 0, name: '木木', coins: 0, records: [], owned: ['desk', 'bed', 'water', 'foodBowl', 'welcomeRug','arcadeMachine'], placements: [
+    { id: 'desk', x: 4, y: 6 }, { id: 'bed', x: 17, y: 7 }, { id: 'water', x: 17, y: 10 }, {id:'foodBowl',...F.foodBowl.defaultPosition}, { id: 'welcomeRug', x: 9, y: 10 }, {id:'arcadeMachine',...F.arcadeMachine.defaultPosition}
+  ], settings: { sound: true, music: false, roam: true }, lampOn: true, relationship: clone(D.relationship.initial), growth:C.Growth.initial() });
   function stats(state, time = Date.now()) {
     const today = dayKey(time), rows = state.records.filter(r => dayKey(r.finishedAt) === today);
     return { todayMinutes: rows.reduce((n, r) => n + r.minutes, 0), todayCoins: rows.reduce((n, r) => n + r.reward, 0), totalMinutes: state.records.reduce((n, r) => n + r.minutes, 0), days: new Set(state.records.map(r => dayKey(r.finishedAt))).size };
@@ -44,19 +44,70 @@
     next.gameRuns.push({id:round.id,game:round.game,correct:round.correct,reward,finishedAt:new Date(time).toISOString()});next.coins+=reward;
     return {state:next,reward};
   }
-  const rectFor = p => ({ x: p.x * 16, y: p.y * 16, w: F[p.id].w * 16, h: F[p.id].h * 16 });
+  const sizeFor = p => {const f=F[p.id]||p;return {w:f.w,h:f.h};};
+  const rectFor = p => {const s=sizeFor(p);return{x:p.x*16,y:p.y*16,w:s.w*16,h:s.h*16};};
+  const worldRect=(p,r)=>({...r,x:p.x*16+r.x,y:p.y*16+r.y});
+  const renderFor=p=>{const f=F[p.id],r=f.renderRect||{x:0,y:-f.lift,w:f.w*16,h:f.h*16+f.lift};return worldRect(p,r);};
+  const visualFor=p=>{const r=renderFor(p);return {...r,h:r.h+4};};
   function obstacles(placements) {
-    return placements.filter(p => !F[p.id].rug).map(rectFor).concat(D.fixed.filter(f => f.w).map(f => ({ x: f.x * 16, y: f.y * 16, w: f.w * 16, h: f.h * 16 })));
+    return placements.filter(p => !F[p.id].rug).flatMap(p=>F[p.id].collisions?F[p.id].collisions.map(r=>worldRect(p,r)):[rectFor(p)]).concat(D.fixed.filter(f => f.w).map(f => ({ x: f.x * 16, y: f.y * 16, w: f.w * 16, h: f.h * 16 })));
   }
   function canStand(x, y, placements) {
     if (x - 5 < D.bounds.left * 16 || x + 5 > D.bounds.right * 16 || y - 4 < D.bounds.top * 16 || y + 4 > D.bounds.bottom * 16) return false;
     return !obstacles(placements).some(r => x + 5 > r.x && x - 5 < r.x + r.w && y + 4 > r.y && y - 4 < r.y + r.h);
   }
-  function anchors(placements) {
+  function approachesFor(p,stage) {
+    const f=F[p.id];
+    let points=f.approaches||[{x:f.w*8,y:f.h*16+8,direction:'up'}];
+    if(stage==='puppy'&&p.id==='puppyChew'&&C.BlackPuppy?.enabled&&C.BlackPuppyData?.capabilities?.includes('chewtoy'))points=points.concat([{x:-8,y:12,direction:'right'},{x:40,y:12,direction:'left'}]);
+    if(stage==='puppy'&&p.id==='toyBasket'&&C.BlackPuppy?.enabled&&C.BlackPuppyData?.capabilities?.includes('basketrummage'))points=[{x:-8,y:8,direction:'right'},{x:40,y:8,direction:'left'},{x:16,y:24,direction:'up'}];
+    if(stage==='puppy'&&p.id==='petMirror'&&C.BlackPuppy?.enabled&&C.BlackPuppyData?.capabilities?.includes('mirrorcuriosity'))points=[{x:16,y:24,direction:'up'},{x:-5,y:8,direction:'right'},{x:37,y:8,direction:'left'}];
+    if(stage==='puppy'&&['drink','eat'].includes(f.action))points=points.map(a=>({...a,x:a.x<0?-5:21,y:8})).concat(points);
+    return points.map(a=>({x:p.x*16+a.x,y:p.y*16+a.y,direction:a.direction}));
+  }
+  // Choose an already-authored contact stance by actual route length. Compact
+  // puppy stances take priority; legacy geometry is only a crowded-room fallback.
+  function mealStance(placements,stage,id,start,pathTo,preferredDirection) {
+    const p=placements.find(p=>p.id===id);
+    if(!p||!['eat','drink'].includes(F[p.id].action))return null;
+    const options=approachesFor(p,stage),compactCount=stage==='puppy'?(F[p.id].approaches||[]).length:options.length;
+    const groups=[options.slice(0,compactCount),options.slice(compactCount)];
+    for(const group of groups){
+      let best=null;
+      for(const point of group){
+        if(!canStand(point.x,point.y,placements))continue;
+        const path=pathTo?pathTo(point):findPath(placements,start,point);if(!path)continue;
+        let distance=0,from=start;for(const next of path){distance+=Math.hypot(next.x-from.x,next.y-from.y);from=next;}
+        if(!best||distance<best.distance-.5||(Math.abs(distance-best.distance)<=.5&&point.direction===preferredDirection&&best.direction!==preferredDirection))best={anchor:{x:point.x,y:point.y},direction:point.direction,distance};
+      }
+      if(best)return best;
+    }
+    return null;
+  }
+  function playStance(placements,stage,id,start,pathTo,preferredDirection) {
+    const basket=id==='toyBasket'&&C.BlackPuppy?.enabled&&C.BlackPuppyData?.capabilities?.includes('basketrummage');
+    const mirror=id==='petMirror'&&C.BlackPuppy?.enabled&&C.BlackPuppyData?.capabilities?.includes('mirrorcuriosity');
+    if(stage!=='puppy'||!(['puppyPlush','wobbleBird'].includes(id)||id==='puppyChew'&&C.BlackPuppy?.enabled&&C.BlackPuppyData?.capabilities?.includes('chewtoy')||basket||mirror))return null;
+    const p=placements.find(p=>p.id===id);
+    if(!p)return null;
+    let best=null;
+    for(const point of approachesFor(p,stage)){
+      if(!canStand(point.x,point.y,placements)||C.Toys&&!C.Toys.clear(point,placements,id))continue;
+      const path=pathTo?pathTo(point):findPath(placements,start,point);
+      if(!path)continue;
+      let distance=0,from=start;
+      for(const next of path){distance+=Math.hypot(next.x-from.x,next.y-from.y);from=next;}
+      if(!best||distance<best.distance-.5||(Math.abs(distance-best.distance)<=.5&&point.direction===preferredDirection&&best.direction!==preferredDirection))best={anchor:{x:point.x,y:point.y},direction:point.direction,distance};
+    }
+    return best;
+  }
+  function anchors(placements,stage='adult') {
     return placements.filter(p => F[p.id].action).map(p => {
-      const f=F[p.id],target={id:p.id,name:f.name,action:f.action,anchor:{x:(p.x+f.w/2)*16,y:(p.y+f.h)*16+8}};
-      if(f.approaches){
-        const options=f.approaches.map(a=>({x:p.x*16+a.x,y:p.y*16+a.y,direction:a.direction}));
+      const f=F[p.id],target={id:p.id,name:f.name,action:f.action};
+      {
+        // Supplied puppy proportions: planted paws stay beside the bowl and the
+        // lowered muzzle meets its surface. Existing crowded layouts retain a fallback.
+        const options=approachesFor(p,stage);
         // Use a real, reachable stance beside the bowl; no visual-only teleport.
         const point=options.find(a=>findPath(placements,D.spawn,a))||options[0];
         target.anchor={x:point.x,y:point.y};target.direction=point.direction;
@@ -107,7 +158,7 @@
     return route;
   }
   function reachable(placements) {
-    const start = { x: 12, y: 15 }, seen = new Set(), queue = [start];
+    const start = { x: Math.floor(D.spawn.x/16), y: Math.floor(D.spawn.y/16) }, seen = new Set(), queue = [start];
     if (!canStand(start.x * 16 + 8, start.y * 16 + 8, placements)) return seen;
     seen.add(cellKey(start.x, start.y));
     for (let i = 0; i < queue.length; i++) {
@@ -123,9 +174,10 @@
     const ids = new Set();
     for (const p of placements) {
       const f = F[p.id];
-      if (!f || ids.has(p.id) || !Number.isInteger(p.x) || !Number.isInteger(p.y)) return { ok: false, reason: '家具位置无效。' };
+      if (!f || f.scene==='yard' || ids.has(p.id) || !Number.isInteger(p.x) || !Number.isInteger(p.y)) return { ok: false, reason: '家具位置无效。' };
       ids.add(p.id);
-      if (p.x < D.bounds.left || p.y < D.bounds.top || p.x + f.w > D.bounds.right || p.y + f.h > D.bounds.bottom) return { ok: false, reason: '请把家具放在木地板以内。' };
+      const size=sizeFor(p);
+      if (p.x < D.bounds.left || p.y < D.bounds.top || p.x + size.w > D.bounds.right || p.y + size.h > D.bounds.bottom) return { ok: false, reason: '请把家具放在木地板以内。' };
     }
     for (let i = 0; i < placements.length; i++) {
       const a = placements[i], fa = F[a.id];
@@ -133,11 +185,12 @@
       for (const b of placements.slice(i + 1).concat(D.fixed.filter(f => f.w))) {
         const fb = F[b.id] || b;
         if (fb.rug) continue;
-        if (a.x < b.x + fb.w && a.x + fa.w > b.x && a.y < b.y + fb.h && a.y + fa.h > b.y) return { ok: false, reason: '这里已经有家具了，换个位置试试。' };
+        const sa=sizeFor(a),sb=sizeFor(b);
+        if (a.x < b.x + sb.w && a.x + sa.w > b.x && a.y < b.y + sb.h && a.y + sa.h > b.y) return { ok: false, reason: '这里已经有家具了，换个位置试试。' };
       }
     }
     // Reserve both entrance tiles, including the actual spawn point.
-    if (!canStand(184, 248, placements) || !canStand(200, 248, placements) || !canStand(D.spawn.x, D.spawn.y, placements)) return { ok: false, reason: '给门口留一条回家的路吧。' };
+    if (!canStand(D.spawn.x-8, D.spawn.y, placements) || !canStand(D.spawn.x+8, D.spawn.y, placements) || !canStand(D.spawn.x, D.spawn.y, placements)) return { ok: false, reason: '给门口留一条回家的路吧。' };
     if (player && !canStand(player.x, player.y, placements)) return { ok: false, reason: '柴柴正站在这里，先给它留点空间。' };
     const seen = reachable(placements);
     for (const target of anchors(placements)) {
@@ -157,6 +210,13 @@
   function place(state, id, position, player) {
     if (!state.owned.includes(id)) throw new Error('先拥有这件家具，再把它放进小屋。');
     const next = clone(state);
+    if(F[id].scene==='yard'){
+      next.yardPlacements=(next.yardPlacements||[]).filter(p=>p.id!==id);
+      if(position)next.yardPlacements.push({id,x:position.x,y:position.y});
+      const check=C.Yard.validateLayout(next.yardPlacements,player);
+      if(!check.ok)throw new Error(check.reason);
+      return next;
+    }
     next.placements = next.placements.filter(p => p.id !== id);
     if (position) next.placements.push({ id, x: position.x, y: position.y });
     const check = validateLayout(next.placements, player);
@@ -174,19 +234,61 @@
       if(!e||!Number.isSafeInteger(e.id)||e.id<1||e.id>r.serial||ids.has(e.id)||!Object.prototype.hasOwnProperty.call(D.relationship.events,e.kind)||typeof e.at!=='string'||!Number.isFinite(Date.parse(e.at))||!e.delta||['affection','trust','comfort'].some(k=>!Number.isFinite(e.delta[k])||Math.abs(e.delta[k])>100))throw new Error('相处记录无法读取。');ids.add(e.id);
     }
   }
+  function validatePetPresence(p){
+    const finite=v=>Number.isFinite(v),date=v=>typeof v==='string'&&Number.isFinite(Date.parse(v));
+    const size=p?.scene==='yard'?(C.Yard||D):D;
+    if(!p||p.version!==1||!finite(p.x)||!finite(p.y)||p.x<0||p.x>(size.width||D.width)||p.y<0||p.y>(size.height||D.height)||!['up','down','left','right'].includes(p.direction)||!['idle','sleep'].includes(p.mode)||typeof p.scheduled!=='boolean'||typeof p.deep!=='boolean'||!finite(p.sleepAge)||p.sleepAge<0||p.sleepAge>86400||!date(p.savedAt)||(p.scene!==undefined&&!['room','yard'].includes(p.scene)))throw new Error('柴柴的位置记录无法读取。');
+    if(p.sleepTarget!==null&&(typeof p.sleepTarget!=='string'||!F[p.sleepTarget]||F[p.sleepTarget].action!=='sleep'))throw new Error('柴柴的休息位置无法读取。');
+    if(p.sleepTarget!==null&&(F[p.sleepTarget].scene||'room')!==(p.scene||'room'))throw new Error('柴柴的休息位置无法读取。');
+    if(p.sleepPose!==undefined&&p.sleepPose!==null&&!['ground','prone','curl','belly'].includes(p.sleepPose))throw new Error('柴柴的睡姿无法读取。');
+    if(p.wakeAt!==null&&!date(p.wakeAt))throw new Error('柴柴的睡眠记录无法读取。');
+    if(p.mode==='idle'&&(p.sleepTarget!==null||p.scheduled||p.deep||p.sleepAge!==0||p.wakeAt!==null))throw new Error('柴柴的在场状态无法读取。');
+    if(p.mode==='sleep'&&((p.scheduled&&p.wakeAt!==null)||(!p.scheduled&&p.wakeAt===null)))throw new Error('柴柴的睡眠记录无法读取。');
+  }
   function validateSave(value) {
     if (!value || value.version !== 1 || !Number.isSafeInteger(value.revision) || value.revision < 0 || typeof value.name !== 'string' || !value.name.trim() || value.name.length > 12 || !Number.isSafeInteger(value.coins) || value.coins < 0 || !Array.isArray(value.records) || !Array.isArray(value.owned) || !Array.isArray(value.placements)) throw new Error('存档格式无法读取。');
+    if (value.restartCredit !== undefined && (!Number.isSafeInteger(value.restartCredit) || value.restartCredit < 0)) throw new Error('重新领养的金币记录无法读取。');
+    if (value.awaitingAdoption !== undefined && (value.awaitingAdoption !== true || value.petIdentity !== undefined)) throw new Error('重新领养的状态无法读取。');
+    // Legacy households predate first-adoption records; never invent an identity for them.
+    if (value.petIdentity !== undefined) {
+      const pet=value.petIdentity;
+      if (!pet || pet.version !== 1 || typeof pet.id !== 'string' || !/^[a-zA-Z0-9-]{12,80}$/.test(pet.id) || pet.species !== 'dog' || !['red-shiba','black-shiba'].includes(pet.breed) || !['female','male'].includes(pet.sex) || typeof pet.adoptedAt !== 'string' || !Number.isFinite(Date.parse(pet.adoptedAt))) throw new Error('宠物的领养记录无法读取。');
+    }
+    // Retired orientation fields are read once, without resetting the pet or purchases.
+    for(const key of ['placements','yardPlacements']){
+      if(!Array.isArray(value[key])||!value[key].some(p=>p&&('rotation' in p||'facing' in p)))continue;
+      value=clone(value);const original=value[key],changed=new Set(original.filter(p=>p&&(p.rotation||p.facing==='left')).map(p=>p.id));
+      const clean=original.map(p=>{const q={...p};delete q.rotation;delete q.facing;return q;});
+      const valid=layout=>key==='placements'?validateLayout(layout,null,{allowLegacyWater:true}).ok:!!C.Yard?.validateLayout(layout).ok;
+      if(valid(clean)){value[key]=clean;continue;}
+      // If a restored wide item cannot fit, keep it owned in storage, never move others.
+      let kept=clean.filter(p=>!changed.has(p.id));
+      if(valid(kept))for(const p of clean.filter(p=>changed.has(p.id))){const ids=new Set([...kept,p].map(p=>p.id)),candidate=clean.filter(p=>ids.has(p.id));if(valid(candidate))kept=candidate;}
+      value[key]=kept;
+    }
     if (!value.settings || typeof value.settings.sound !== 'boolean' || typeof value.settings.music !== 'boolean' || typeof value.lampOn !== 'boolean') throw new Error('存档设置无法读取。');
     // Older version-1 saves omit roam and use the enabled default without rewriting data.
     if (value.settings.roam !== undefined && typeof value.settings.roam !== 'boolean') throw new Error('自在活动设置无法读取。');
     if (new Set(value.owned).size !== value.owned.length || value.owned.some(id => !F[id]) || newState().owned.filter(id=>!F[id].giftOnUpgrade).some(id => !value.owned.includes(id)) || value.placements.some(p => !value.owned.includes(p.id))) throw new Error('家具记录无法读取。');
+    if(value.yardPlacements!==undefined&&(!Array.isArray(value.yardPlacements)||value.yardPlacements.some(p=>!p||!value.owned.includes(p.id))||(value.yardPlacements.length&&(!C.Yard||!C.Yard.validateLayout(value.yardPlacements).ok))))throw new Error('庭院装饰布局无法读取。');
+    if(value.yardNature!==undefined&&!C.YardNature?.valid(value.yardNature))throw new Error('庭院草地记录无法读取。');
     if(value.needs!==undefined&&(!value.needs||typeof value.needs!=='object'||Array.isArray(value.needs)||['hunger','thirst'].some(k=>!Number.isFinite(value.needs[k])||value.needs[k]<0||value.needs[k]>100)))throw new Error('柴柴的饥渴状态无法读取。');
     if(value.needs&&['energy','mood'].some(k=>value.needs[k]!==undefined&&(!Number.isFinite(value.needs[k])||value.needs[k]<0||value.needs[k]>100)))throw new Error('柴柴的状态无法读取。');
+    if(value.needsRecovery!==undefined){
+      const r=value.needsRecovery,date=v=>typeof v==='string'&&Number.isFinite(Date.parse(v));
+      if(!value.needs||!r||r.version!==1||!date(r.accountedAt)||!['awake','nap','night'].includes(r.mode)||
+        (r.mode==='nap'?(!date(r.napUntil)||Date.parse(r.napUntil)-Date.parse(r.accountedAt)>(D.sleep.maximum+1)*1000):r.napUntil!==null))throw new Error('柴柴的恢复时间记录无法读取。');
+    }
     if(value.wallCard!==undefined&&value.wallCard!==null&&(typeof value.wallCard!=='string'||!value.wallCard.trim()||value.wallCard.length>120))throw new Error('相框记录无法读取。');
+    if(value.petPresence!==undefined)validatePetPresence(value.petPresence);
+    if(value.ownerPresence!==undefined&&!C.Homecoming?.valid(value.ownerPresence))throw new Error('主人回家记录无法读取。');
     if(value.relationship!==undefined)validateRelationship(value.relationship);
+    if(value.growth!==undefined)C.Growth.validate(value.growth);
+    if(value.care!==undefined)C.PetCare.validate(value.care);
+    C.Snacks.validateEffects(value.care?.snackEffects,value);
     if(value.toys!==undefined)C.Toys.validate(value.toys,value.owned);
     const ids = new Set(), days = new Map();
-    let earned = 0;
+    let earned = (value.restartCredit || 0) + (value.yardTreasure===undefined?0:C.YardTreasure.validate(value.yardTreasure));
     for (const r of value.records) {
       if (!r || typeof r.id !== 'string' || !r.id || ids.has(r.id) || typeof r.title !== 'string' || !r.title.trim() || r.title.length > 120 || !Number.isInteger(r.minutes) || r.minutes < 5 || r.minutes > 180 || !Number.isInteger(r.reward) || r.reward < 0 || r.reward > r.minutes || !Number.isFinite(Date.parse(r.finishedAt))) throw new Error('学习记录无法读取。');
       ids.add(r.id); earned += r.reward;
@@ -219,8 +321,9 @@
     initializeRoom() {
       // A single local snapshot initializes new relationships and free starter gifts.
       if (this.readOnly) return false;
-      const next = clone(this.state);let changed=this.raw===null;
+      const next = clone(this.state);let changed=this.raw===null||JSON.stringify(this.state)!==this.raw;
       if (next.relationship === undefined) { next.relationship=clone(D.relationship.initial);changed=true; }
+      if (next.growth === undefined) { next.growth=C.Growth.initial();changed=true; }
       if (!next.owned.includes('foodBowl')) {
         next.owned.push('foodBowl');changed=true;
         const water=next.placements.find(p=>p.id==='water'),preferred=water?{x:water.x+2,y:water.y}:F.foodBowl.defaultPosition;
@@ -229,6 +332,16 @@
         spots.sort((a,b)=>(a.x-preferred.x)**2+(a.y-preferred.y)**2-((b.x-preferred.x)**2+(b.y-preferred.y)**2));
         // Never move existing furniture or block an approach. A crowded room keeps the gift in storage.
         const spot=spots.find(p=>validateLayout([...next.placements,p],null,{allowLegacyWater:true}).ok);
+        if(spot)next.placements.push(spot);
+      }
+      if(!next.owned.includes('arcadeMachine')){
+        next.owned.push('arcadeMachine');changed=true;
+        const preferred=F.arcadeMachine.defaultPosition,spots=[],player=next.petPresence?.scene!=='yard'?next.petPresence:null;
+        for(let y=D.bounds.top;y<=D.bounds.bottom-F.arcadeMachine.h;y++)for(let x=D.bounds.left;x<=D.bounds.right-F.arcadeMachine.w;x++)spots.push({id:'arcadeMachine',x,y});
+        spots.sort((a,b)=>(a.x-preferred.x)**2+(a.y-preferred.y)**2-((b.x-preferred.x)**2+(b.y-preferred.y)**2));
+        // A free cabinet is added once. Existing furniture and a resting pet
+        // are never displaced; an already full room keeps it in storage.
+        const spot=spots.find(p=>validateLayout([...next.placements,p],player,{allowLegacyWater:true}).ok);
         if(spot)next.placements.push(spot);
       }
       if(!changed)return false;
@@ -263,5 +376,5 @@
       return false;
     }
   }
-  C.Model = { clone, dayKey, newState, stats, recordStudy, rewardGame, arcadeStats, buy, canStand, anchors, clearSegment, findPath, reachable, validateLayout, place, validateSave, Store };
+  C.Model = { clone, dayKey, newState, stats, recordStudy, rewardGame, arcadeStats, buy, sizeFor, rectFor, worldRect, renderFor, visualFor, canStand, anchors, mealStance, playStance, clearSegment, findPath, reachable, validateLayout, place, validateSave, Store };
 })(globalThis.Cottage);

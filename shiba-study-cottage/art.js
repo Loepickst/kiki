@@ -21,6 +21,16 @@
     rect(ctx,x+2,y,w-4,h,edge);rect(ctx,x,y+2,w,h-4,edge);
     rect(ctx,x+1,y+1,w-2,h-2,fill);
   }
+  function contactShadow(ctx,x,y,w,h,{lift=0,compact=false}={}) {
+    // A single lower-right light direction keeps every movable prop grounded.
+    // The shadow stays inside the footprint, so it never implies extra collision.
+    const inset=compact?2:Math.max(2,Math.min(5,Math.floor(w/10))),depth=compact?3:Math.min(7,4+Math.floor(lift/16));
+    ctx.save();ctx.globalAlpha=compact?.42:.34;
+    oval(ctx,x+inset+2,y+h-depth,w-inset*2-2,depth,'shadow');
+    ctx.globalAlpha=compact?.22:.18;
+    oval(ctx,x+inset+5,y+h-depth+1,Math.max(4,w-inset*2-5),Math.max(2,depth-2),'ink');
+    ctx.restore();
+  }
   function grain(ctx,x,y,w,seed,light='honey',shade='wood') {
     const n=Math.min(w-4,9+seed%13);
     rect(ctx,x+2,y,n,1,light);rect(ctx,x+n+2,y+1,Math.min(4,w-n-3),1,light);
@@ -53,7 +63,7 @@
     time=Math.max(0,time);
     const frame=reduced?0:Math.floor(time/1.8)%4;
     ctx.drawImage(windowFrames[frame],151,35);
-    if(environment.sunlight>0){ctx.save();ctx.globalAlpha=environment.sunlight;ctx.drawImage(dappleFrames[frame],128,96);ctx.restore();}
+    if(environment.sunlight>0){ctx.save();ctx.globalAlpha=environment.sunlight*.72;ctx.drawImage(dappleFrames[frame],128,96);ctx.restore();}
     // An occasional bird passes inside the left window pane, behind the wooden frame.
     if(reduced||environment.sunlight<.25)return;const phase=time%28;if(phase<8||phase>13)return;
     const x=172+Math.floor((phase-8)*5),y=52+Math.floor(Math.sin(phase*2));
@@ -81,9 +91,9 @@
     rect(ctx,tail-4,top+h+9,2,2,'woodShadow');rect(ctx,tail-4,top+h+9,1,1,'cream');
   }
   // 5×5 Z and 3×4 z glyphs, native pixels; a restrained repeating sleep caption.
-  function sleepText(ctx,x,y,age,reduced){
+  function sleepText(ctx,x,y,age,reduced,worldWidth=384){
     const rise=reduced?0:Math.floor(age/1.4)%3;
-    x=Math.max(8,Math.min(345,Math.round(x)+12));y=Math.max(12,Math.round(y)-29-rise);
+    x=Math.max(8,Math.min(worldWidth-39,Math.round(x)+12));y=Math.max(12,Math.round(y)-29-rise);
     const glyphs=['11111','00010','00100','01000','11111'];
     const small=['111','001','010','111'];
     for(let n=0;n<5;n++){
@@ -197,27 +207,46 @@
     rect(ctx,333,52,1,25,'greenDark');
   }
   function buildRoom(){
+    const left=D.bounds.left*16,right=D.bounds.right*16,top=D.bounds.top*16,bottom=D.bounds.bottom*16,width=right-left,height=bottom-top;
     rect(bg,0,0,384,288,'backdrop');
     for(let i=0;i<70;i++){
       const x=(i*97+13)%384,y=(i*43+11)%288;
-      if(x<21||x>362||y<25||y>268){rect(bg,x,y,3,1,i%3?'sage':'wallLight');if(i%4===0)rect(bg,x+1,y-2,1,2,'sage');}
+      if(x<left-11||x>right+10||y<25){rect(bg,x,y,3,1,i%3?'sage':'wallLight');if(i%4===0)rect(bg,x+1,y-2,1,2,'sage');}
     }
-    rect(bg,30,37,335,230,'sage');rect(bg,34,265,323,3,'sage');rect(bg,24,28,336,236,'darkWood');
-    rect(bg,30,34,324,62,'wall');rect(bg,32,36,320,55,'wallLight');
-    rect(bg,32,36,320,3,'wallShade');rect(bg,32,39,320,2,'wall');
-    for(let x=40;x<350;x+=8){rect(bg,x,42,1,44,'wall');if(x%24===16){rect(bg,x+3,46,1,2,'paper');rect(bg,x+3,77,1,2,'paper');}}
+    // A shallow moss-green tiled eave makes the open room read as a cottage,
+    // while remaining a stable architectural layer with no gameplay collision.
+    const roofLeft=left-7,roofRight=right+7,roofWidth=roofRight-roofLeft;
+    rect(bg,roofLeft+7,16,roofWidth-14,2,'greenDark');
+    rect(bg,roofLeft+3,18,roofWidth-6,3,'green');rect(bg,roofLeft,21,roofWidth,8,'greenDark');
+    rect(bg,roofLeft+2,21,roofWidth-4,2,'greenLight');rect(bg,roofLeft+1,28,roofWidth-2,2,'darkWood');
+    for(let x=roofLeft+4;x<roofRight-5;x+=18){
+      rect(bg,x,22,14,1,'sage');rect(bg,x+3,24,12,1,'green');rect(bg,x+8,26,9,1,'greenLight');
+      rect(bg,x+15,22,1,6,'greenDark');
+    }
+    for(const x of [left+10,right-14]){rect(bg,x,29,5,8,'darkWood');rect(bg,x+1,29,3,6,'woodLight');rect(bg,x+2,30,1,4,'honey');}
+    rect(bg,left-2,37,width+15,bottom-26,'sage');rect(bg,left+2,bottom+9,width+3,3,'sage');rect(bg,left-8,28,width+16,bottom-20,'darkWood');
+    rect(bg,left-2,34,width+4,62,'wall');rect(bg,left,36,width,55,'wallLight');
+    rect(bg,left,36,width,3,'wallShade');rect(bg,left,39,width,2,'wall');
+    for(let x=left+8;x<right-2;x+=8){rect(bg,x,42,1,44,'wall');if(x%24===16){rect(bg,x+3,46,1,2,'paper');rect(bg,x+3,77,1,2,'paper');}}
     // Quiet linen stipple and an inset rail distinguish plaster from the wood below.
     for(let i=0;i<45;i++){const x=35+(i*47)%312,y=43+(i*13)%43;rect(bg,x,y,1,1,'paper');}
-    rect(bg,32,85,320,1,'paper');rect(bg,32,86,320,1,'wallShade');
-    rect(bg,32,88,320,8,'wood');rect(bg,32,88,320,2,'woodLight');rect(bg,32,90,320,1,'honey');rect(bg,32,95,320,1,'darkWood');
-    rect(bg,32,96,320,160,'floor');
+    rect(bg,left,81,width,1,'paper');rect(bg,left,82,width,1,'wallShade');
+    // Low timber wainscoting adds a readable back plane behind movable props.
+    rect(bg,left,83,width,13,'woodShadow');rect(bg,left+1,84,width-2,11,'wood');
+    rect(bg,left+1,84,width-2,2,'woodLight');rect(bg,left+2,86,width-4,1,'honey');
+    for(let x=left+6;x<right-4;x+=32){
+      rect(bg,x,87,27,7,'darkWood');rect(bg,x+1,88,25,5,'woodLight');rect(bg,x+2,88,23,1,'honey');
+      rect(bg,x+2,91,20,1,'wood');rect(bg,x+25,89,1,4,'woodShadow');
+    }
+    rect(bg,left,94,width,2,'darkWood');rect(bg,left+2,94,width-4,1,'woodLight');
+    rect(bg,left,top,width,height,'floor');
     // Staggered boards have restrained, non-repeating grain clusters and knots.
-    for(let row=0;row<10;row++){
-      const y=96+row*16;
+    for(let row=0;row<height/16;row++){
+      const y=top+row*16;
       for(let i=-1;i<6;i++){
         const x=32+(row%2)*32+i*64,seed=row*13+(i+1)*7;
-        bg.save();bg.beginPath();bg.rect(32,y,320,16);bg.clip();
-        rect(bg,x,y,64,15,seed%7===0?'floorLight':'floor');rect(bg,x,y+15,64,1,'seam');
+        bg.save();bg.beginPath();bg.rect(left,y,width,16);bg.clip();
+        rect(bg,x,y,64,15,'floor');rect(bg,x,y+15,64,1,'seam');
         rect(bg,x,y,1,15,'seam');rect(bg,x+1,y+1,1,13,'floorLight');rect(bg,x+2,y,61,1,'floorLight');
         grain(bg,x+3,y+3,55,seed,'floorLight','seam');
         if(seed%5===1){const k=x+28+(seed%9);rect(bg,k,y+8,7,1,'seam');rect(bg,k-2,y+9,2,1,'seam');rect(bg,k+7,y+9,2,1,'seam');rect(bg,k,y+10,7,1,'seam');rect(bg,k+2,y+9,3,1,'wood');rect(bg,k-1,y+11,8,1,'floorLight');}
@@ -226,29 +255,22 @@
         bg.restore();
       }
     }
+    // Inlaid perimeter boards strengthen the doll-house depth without changing
+    // the playable bounds or covering the broad central walking lane.
+    rect(bg,left+3,top+3,width-6,1,'floorLight');rect(bg,left+3,top+4,width-6,1,'seam');
+    rect(bg,left+3,bottom-7,width-6,1,'seam');rect(bg,left+4,bottom-6,width-8,1,'floorLight');
+    for(const x of [left+3,right-5]){rect(bg,x,top+4,2,height-10,'seam');rect(bg,x+1,top+5,1,height-12,'floorLight');}
     // Sunlight is an independent real-time layer; never bake daylight into the floor.
-    rect(bg,32,96,320,1,'woodShadow');rect(bg,33,97,318,1,'seam');
-    for(let i=0;i<12;i++){rect(bg,34,101+i*13,1,7,'seam');rect(bg,350,106+i*12,2,6,'seam');}
+    rect(bg,left,top,width,1,'woodShadow');rect(bg,left+1,top+1,width-2,1,'seam');
+    for(let i=0;i<12;i++){rect(bg,left+2,top+5+i*13,1,7,'seam');rect(bg,right-2,top+10+i*12,2,6,'seam');}
     // Architectural frame, cut end grain and mortise details.
-    rect(bg,24,28,336,7,'woodShadow');rect(bg,26,29,332,2,'woodLight');rect(bg,29,30,327,1,'honey');
-    rect(bg,25,35,5,220,'wood');rect(bg,26,35,1,219,'woodLight');rect(bg,29,35,1,219,'woodShadow');
-    rect(bg,354,35,5,220,'woodShadow');rect(bg,355,35,1,219,'woodLight');rect(bg,30,96,2,160,'wallShade');rect(bg,352,96,2,160,'woodShadow');
-    for(const x of [26,355])for(const y of [38,88,246]){rect(bg,x,y,2,2,'darkWood');rect(bg,x,y,1,1,'honey');}
+    rect(bg,left-8,28,width+16,7,'woodShadow');rect(bg,left-6,29,width+12,2,'woodLight');rect(bg,left-3,30,width+7,1,'honey');
+    rect(bg,left-7,35,5,bottom-35,'wood');rect(bg,left-6,35,1,bottom-36,'woodLight');rect(bg,left-3,35,1,bottom-36,'woodShadow');
+    rect(bg,right+2,35,5,bottom-35,'woodShadow');rect(bg,right+3,35,1,bottom-36,'woodLight');rect(bg,left-2,top,2,height,'wallShade');rect(bg,right,top,2,height,'woodShadow');
+    for(const x of [left-6,right+3])for(const y of [38,88,bottom-10]){rect(bg,x,y,2,2,'darkWood');rect(bg,x,y,1,1,'honey');}
     windowUnderlay.getContext('2d').drawImage(background,151,35,116,58,0,0,116,58);
     windowView(bg);wallKeepsakes(bg);front(bg);
-    bevel(bg,174,266,36,10,'wallShade','shadow');rect(bg,176,267,32,2,'paper');rect(bg,177,269,30,3,'wall');
-    rect(bg,180,270,7,1,'wallLight');rect(bg,201,273,5,1,'shadow');rect(bg,176,275,31,1,'shadow');
-    for(const [x,y]of [[13,238],[367,219],[342,275],[38,272]]){
-      rect(bg,x,y,2,9,'green');leaf(bg,x,y+3,true,'green');rect(bg,x-2,y-2,6,2,'cream');rect(bg,x,y-4,2,6,'cream');rect(bg,x,y-2,2,2,'yellow');rect(bg,x+4,y+3,3,2,'wallLight');
-    }
-    // Moss islands and small warm stones frame the wooden threshold.
-    for(const [x,y,w]of [[8,180,12],[362,153,14],[13,267,15],[318,278,18],[56,278,20]]){
-      oval(bg,x,y,w,5,'sage');rect(bg,x+3,y-1,3,2,'moss');rect(bg,x+7,y+1,5,1,'greenLight');
-      rect(bg,x+1,y-3,1,3,'green');rect(bg,x+3,y-4,1,4,'green');
-    }
-    for(const [x,y,w]of [[169,282,8],[201,280,10],[222,273,6],[17,212,6],[361,251,9]]){
-      oval(bg,x,y,w,4,'shadow');oval(bg,x,y-1,w,4,'wallShade');rect(bg,x+2,y-1,w-4,1,'paper');
-    }
+    bevel(bg,174,bottom+9,36,6,'wallShade','shadow');rect(bg,176,bottom+10,32,1,'paper');rect(bg,177,bottom+12,30,1,'wall');
   }
   const windowFrames=[],dappleFrames=[];
   let ambientKey=null;
@@ -277,12 +299,8 @@
   // A permanent wall fixture: visible in every save, with no floor obstacle.
   function roomLamp(ctx,lit){
     const {x,y,lightX,lightY}=D.roomLamp;
-    if(lit){
-      ctx.save();ctx.globalAlpha=.07;oval(ctx,lightX-26,lightY-38,52,54,'#ffd895');
-      // A restrained pool preserves the plank texture beneath the warm light.
-      for(let row=0;row<42;row++){const w=18+Math.floor(row*.65);rect(ctx,lightX-w/2,96+row,w,1,'#f8cd83');}
-      ctx.restore();
-    }
+    // Illumination is applied once, after furniture/pets, by environmentLight.
+    // The fixture itself remains native pixel art with no hard-edged light cone.
     rect(ctx,x+5,y,4,19,'woodShadow');rect(ctx,x+6,y+1,2,16,'woodLight');
     rect(ctx,x+6,y+2,5,2,'darkWood');rect(ctx,x+10,y+3,2,3,'woodShadow');
     // Honey wood rims enclose a pleated paper shade and its small bulb.
@@ -294,38 +312,53 @@
     rect(ctx,x+5,y+18,3,2,lit?'#ffe6ad':'woodShadow');rect(ctx,x+6,y+20,1,2,'darkWood');
   }
   let lightingCache=null;
+  function lightPool(ctx,x,y,rx,ry,color,alpha){
+    ctx.save();ctx.translate(x,y);ctx.scale(rx,ry);
+    const gradient=ctx.createRadialGradient(0,0,0,0,0,1);
+    gradient.addColorStop(0,color);gradient.addColorStop(.32,color);gradient.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=gradient;ctx.globalAlpha=alpha;ctx.fillRect(-1,-1,2,2);ctx.restore();
+  }
   function environmentLight(ctx,state,items,lit){
-    const lamps=lit?items.filter(p=>p.id==='lamp'):[],key=state.key+':'+state.roomLampOn+':'+lamps.map(p=>p.x+','+p.y).join(';');
+    const lamps=lit?items.filter(p=>p.id==='lamp'):[],key=state.key+':'+state.roomLampOn+':'+JSON.stringify(lamps);
     if(lightingCache?.key!==key){
-      const layer=canvas(384,288),g=layer.getContext('2d');
-      g.globalAlpha=state.warmth;rect(g,0,0,384,288,'#eaa46e');
-      g.globalAlpha=state.darkness*(state.roomLampOn ? .84 : 1);rect(g,0,0,384,288,'#27374e');
-      // Stepped light pools reveal the same scene beneath, including the dog and
-      // furniture. The fixed wall lamp and manual floor lamps share this lighting pass.
+      const profile=C.Environment.lightProfile(state),layer=canvas(384,288),g=layer.getContext('2d'),warm=canvas(384,288),w=warm.getContext('2d');
+      g.globalAlpha=profile.roomShade;rect(g,0,0,384,288,profile.roomTint);
+      // Soft, cached occlusion masks reveal the original scene around each lamp.
+      // No per-frame image processing and no extra animation loop are necessary.
       g.globalCompositeOperation='destination-out';
+      g.save();w.save();
+      for(const context of [g,w]){context.beginPath();context.rect(D.bounds.left*16,35,(D.bounds.right-D.bounds.left)*16,D.bounds.bottom*16-35);context.clip();}
       if(state.roomLampOn){const {lightX:x,lightY:y}=D.roomLamp;
-        g.save();g.beginPath();g.rect(32,35,320,221);g.clip();
-        for(const [w,h,alpha]of [[114,128,.15],[82,102,.24],[50,70,.4]]){g.globalAlpha=alpha;oval(g,x-w/2,y-h/2,w,h,'#fff');}
-        g.restore();
+        lightPool(g,x,y+15,73,91,'#ffffff',.83);
+        lightPool(w,x,y+12,62,82,'#f5c88c',profile.lampWarmth);
       }
-      for(const p of lamps){const x=p.x*16+8,y=p.y*16-4;
-        for(const [w,h,alpha]of [[76,72,.18],[58,56,.26],[38,40,.4]]){g.globalAlpha=alpha;oval(g,x-w/2,y-h/2,w,h,'#fff');}
+      for(const p of lamps){const a={x:8,y:-4},x=p.x*16+a.x,y=p.y*16+a.y;
+        lightPool(g,x,y,51,51,'#ffffff',.84);
+        lightPool(w,x,y,43,44,'#f3c18b',profile.lampWarmth);
       }
-      g.globalCompositeOperation='source-over';g.globalAlpha=1;lightingCache={key,layer};
+      // The only dusk tint comes from the window, not an orange filter over UI
+      // or an indiscriminate yellow wash over the entire room.
+      if(profile.duskWarmth>0)lightPool(w,206,100,138,118,'#edb578',profile.duskWarmth);
+      g.restore();w.restore();g.globalCompositeOperation='source-over';g.globalAlpha=1;lightingCache={key,layer,warm};
     }
-    ctx.drawImage(lightingCache.layer,0,0);
+    ctx.save();ctx.globalCompositeOperation='multiply';ctx.drawImage(lightingCache.layer,0,0);
+    ctx.globalCompositeOperation='screen';ctx.drawImage(lightingCache.warm,0,0);ctx.restore();
   }
   function front(ctx){
-    for(const [x,w]of[[24,152],[208,152]]){
+    const left=D.bounds.left*16-8,right=D.bounds.right*16+8;
+    ctx.save();ctx.translate(0,D.bounds.bottom*16-256);
+    for(const [x,w]of[[left,176-left],[208,right-208]]){
       rect(ctx,x,256,w,8,'woodShadow');rect(ctx,x,256,w,3,'woodLight');rect(ctx,x+1,256,w-2,1,'honey');
       rect(ctx,x,260,w,1,'wood');rect(ctx,x,263,w,1,'darkWood');
       for(let i=12;i<w-8;i+=39){rect(ctx,x+i,258,16,1,'wood');rect(ctx,x+i+8,261,9,1,'darkWood');}
     }
     rect(ctx,176,256,32,3,'seam');rect(ctx,177,256,30,1,'floorLight');rect(ctx,176,259,32,5,'woodLight');rect(ctx,177,259,30,1,'honey');rect(ctx,178,262,28,1,'wood');
+    ctx.restore();
   }
   function rug(ctx,id,x,y,w,h){
     const warm=id==='pawRug',base=warm?'redLight':'green',edge=warm?'honey':'sage',shade=warm?'red':'greenDark';
-    rect(ctx,x+3,y+3,w-5,h-4,'shadow');rect(ctx,x+2,y+2,w-4,h-5,shade);
+    ctx.save();ctx.globalAlpha=.32;rect(ctx,x+5,y+5,w-7,h-4,'shadow');ctx.restore();
+    rect(ctx,x+2,y+2,w-4,h-5,shade);
     rect(ctx,x+3,y+2,w-6,h-6,base);
     for(let i=4;i<w-3;i+=3){rect(ctx,x+i,y,1,3,'paper');rect(ctx,x+i,y+h-4,1,4,'paper');rect(ctx,x+i+1,y+h-2,1,1,'wallShade');}
     rect(ctx,x+4,y+3,w-8,1,'paper');rect(ctx,x+4,y+h-6,w-8,1,edge);
@@ -344,6 +377,9 @@
         rect(ctx,cx-2,cy-2,5,5,'greenLight');rect(ctx,cx,cy,1,1,'cream');
       }
       for(let i=11;i<w-9;i+=7){rect(ctx,x+i,y+13,2,1,'greenLight');rect(ctx,x+i+2,y+34,2,1,'greenLight');}
+      // The first rug carries a restrained woven paw medallion at its center.
+      paw(ctx,x+Math.floor(w/2)-7,y+Math.floor(h/2)-7,'greenDark');
+      paw(ctx,x+Math.floor(w/2)-7,y+Math.floor(h/2)-8,'cream');
     }
   }
   // Toys use the existing warm room palette. Basket: 32×24; mat: 48×32; ball: 8×8.
@@ -385,9 +421,10 @@
     rect(ctx,x+2,y+18,5,10,'woodShadow');rect(ctx,x+3,y+18,2,8,'woodLight');rect(ctx,x+41,y+18,5,10,'woodShadow');rect(ctx,x+42,y+18,2,8,'wood');
     rect(ctx,x+8,y+24,32,2,'blueDark');rect(ctx,x+10,y+24,28,1,'blueLight');
   }
-  function wobbleBird(ctx,x,y,time=null){
+  function wobbleBird(ctx,x,y,time=null,stage='adult'){
+    const authored=time!==null&&stage==='puppy'?C.PuppyLife?.birdWobbleOffset(time):null;
     const moving=time!==null&&((time>.8&&time<2.3)||(time>3.4&&time<4.9));
-    const dx=moving?[0,1,2,1,0,-1,-2,-1][Math.floor(time/.12)%8]:0;
+    const dx=authored!==null&&authored!==undefined?authored:moving?[0,1,2,1,0,-1,-2,-1][Math.floor(time/.12)%8]:0;
     oval(ctx,x+1,y+11,14,5,'shadow');oval(ctx,x+2,y+5,12,9,'greenDark');oval(ctx,x+3,y+5,10,7,'green');rect(ctx,x+4,y+6,7,1,'sage');
     oval(ctx,x+3+dx,y-6,11,11,'woodShadow');oval(ctx,x+4+dx,y-6,9,9,'yellow');oval(ctx,x+3+dx,y-13,10,10,'woodShadow');oval(ctx,x+4+dx,y-13,8,8,'yellow');rect(ctx,x+5+dx,y-12,4,2,'cream');
     rect(ctx,x+dx,y-8,5,3,'orangeDark');rect(ctx,x+dx,y-8,4,1,'orangeLight');rect(ctx,x+6+dx,y-10,1,2,'darkWood');
@@ -398,7 +435,11 @@
     oval(ctx,x+3,y+10,27,7,'shadow');rect(ctx,x+6,y+3,3,11,'darkWood');rect(ctx,x+23,y+3,3,11,'darkWood');rect(ctx,x+7,y+4,1,9,'woodLight');
     oval(ctx,x+2,y-24,28,35,'darkWood');oval(ctx,x+3,y-24,26,33,'woodLight');oval(ctx,x+5,y-22,22,29,'woodShadow');oval(ctx,x+6,y-21,20,27,'blueDark');oval(ctx,x+7,y-20,18,25,'blueLight');
     if(time!==null){
-      const g=mirrorReflection.getContext('2d');g.clearRect(0,0,32,32);dog(g,16,31,'down','idle',time,75);
+      const g=mirrorReflection.getContext('2d');g.clearRect(0,0,32,32);
+      if(C.BlackPuppy?.enabled&&C.BlackPuppyData?.capabilities?.includes('mirrorcuriosity')){
+        const pose=C.Toys.pose('petMirror',time,'puppy');
+        g.save();g.translate(32,0);g.scale(-1,1);dog(g,16,31,'down',pose.action,pose.time,75,'puppy');g.restore();
+      }else dog(g,16,31,'down','idle',time,75);
       ctx.drawImage(mirrorReflection,0,0,32,32,x+8,y-13,16,16);
     }else{rect(ctx,x+11,y-16,2,10,'cream');rect(ctx,x+13,y-18,2,5,'cream');rect(ctx,x+20,y-5,2,6,'paper');}
     rect(ctx,x+6,y+12,21,2,'wood');rect(ctx,x+8,y+11,17,1,'honey');
@@ -412,7 +453,7 @@
     if(id==='toyBasket'){toyBasket(ctx,x,y);return;}
     if(f.rug){rug(ctx,id,x,y,w,h);return;}
     const sy=y-f.lift;
-    oval(ctx,x+2,y+h-4,w-3,6,'shadow');
+    contactShadow(ctx,x,y,w,h,{lift:f.lift,compact:w<=16&&h<=16});
     if(id==='desk'){
       // Legs, apron and dovetailed drawer sit below the solid oak top.
       for(const lx of [4,55]){rect(ctx,x+lx,sy+20,5,22,'darkWood');rect(ctx,x+lx,sy+22,3,18,'wood');rect(ctx,x+lx,sy+22,1,16,'honey');rect(ctx,x+lx,sy+39,5,2,'woodShadow');}
@@ -446,10 +487,12 @@
       for(let i=0;i<10;i++){const bx=6+i*4,by=23+Math.floor(Math.sin(i/9*Math.PI)*3);rect(ctx,x+bx,sy+by,2,2,'woodShadow');rect(ctx,x+bx,sy+by-1,1,1,'cream');}
       for(const [bx,by] of [[3,12],[3,16],[5,20],[8,5],[13,3],[36,5],[42,12],[41,18]]){rect(ctx,x+bx,sy+by,2,1,'cream');rect(ctx,x+bx+1,sy+by+1,1,2,'wood');}
       bevel(ctx,x+27,sy+8,12,10,'paper','red');rect(ctx,x+28,sy+9,9,6,'cream');rect(ctx,x+29,sy+9,7,1,'white');rect(ctx,x+29,sy+15,7,1,'wallShade');rect(ctx,x+28,sy+10,1,1,'wallShade');rect(ctx,x+36,sy+14,1,1,'wallShade');
+      paw(ctx,x+13,sy+10,'red',1);rect(ctx,x+16,sy+11,5,1,'pink');
     }else if(id==='water'){
       oval(ctx,x+1,sy+5,14,10,'woodShadow');oval(ctx,x+2,sy+4,12,10,'wallShade');oval(ctx,x+2,sy+2,12,10,'cream');
       oval(ctx,x+3,sy+3,10,7,'blueDark');oval(ctx,x+4,sy+4,8,5,'blue');rect(ctx,x+5,sy+4,5,1,'blueLight');rect(ctx,x+4,sy+5,2,1,'white');rect(ctx,x+9,sy+7,2,1,'blueLight');
       rect(ctx,x+3,sy+10,9,2,'paper');rect(ctx,x+4,sy+10,3,1,'white');rect(ctx,x+9,sy+11,2,1,'blueDark');
+      rect(ctx,x+6,sy+12,3,1,'blueDark');
     }else if(id==='foodBowl'){
       // 16×16 ceramic kibble bowl, 8 shared colors; light from upper left.
       oval(ctx,x+1,sy+6,14,9,'woodShadow');oval(ctx,x+2,sy+4,12,10,'red');
@@ -458,6 +501,7 @@
       for(const [dx,dy] of [[4,5],[7,4],[10,5],[6,7],[9,7]]){rect(ctx,x+dx,sy+dy,2,2,'wood');rect(ctx,x+dx,sy+dy,1,1,'honey');}
       rect(ctx,x+3,sy+10,9,2,'red');rect(ctx,x+4,sy+10,3,1,'redLight');
       rect(ctx,x+6,sy+11,4,2,'cream');rect(ctx,x+7,sy+11,2,1,'white');
+      rect(ctx,x+7,sy+12,2,1,'orangeDark');
     }else if(id==='plant'){plant(ctx,x,sy);
     }else if(id==='books'){
       book(ctx,x+1,sy+10,14,5,'greenDark');rect(ctx,x+4,sy+12,9,1,'cream');book(ctx,x+3,sy+6,12,5,'red');rect(ctx,x+5,sy+8,7,1,'white');
@@ -539,7 +583,19 @@
   // Direct extraction of the user-supplied sprite sheet. The transparent cell is
   // 48×48; the visible standing dog is ~28×26 and keeps the same world foot point.
   const animationMetadata=C.SuppliedShiba.metadata;
+  const puppyMetadata=C.PuppySprites;
   const atlas=canvas(...animationMetadata.imageSize),ac=atlas.getContext('2d');
+  let puppyAtlas=null,groundAtlas=null,natureAtlas=null;
+  if(typeof Image!=='undefined'&&C.PuppyNature){const im=new Image();im.onload=()=>{natureAtlas=im;C.PuppyNature.ready=true;document.dispatchEvent(new CustomEvent('cottage:art-ready'));};im.src=C.PuppyNature.image;}
+  const groundState={ready:false};
+  if(typeof Image!=='undefined'&&C.GroundSleep){const im=new Image();im.onload=()=>{groundAtlas=im;groundState.ready=true;document.dispatchEvent(new CustomEvent('cottage:art-ready'));};im.src=C.GroundSleep.image;}
+  const puppyState={ready:false};
+  const puppyReady=typeof Image==='undefined'?Promise.resolve(false):new Promise(resolve=>{
+    puppyAtlas=new Image();
+    puppyAtlas.onload=()=>{puppyState.ready=true;document.dispatchEvent(new CustomEvent('cottage:art-ready'));resolve(true);};
+    puppyAtlas.onerror=()=>resolve(false);
+    puppyAtlas.src=puppyMetadata.image;
+  });
   function buildAtlas(){
     const data=ac.createImageData(atlas.width,atlas.height),runs=C.SuppliedShiba.runs;
     const colors=animationMetadata.palette.map(hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)));
@@ -548,23 +604,45 @@
     }
     ac.putImageData(data,0,0);
   }
-  function dog(ctx,x,y,direction,action,time,mood=0){
+  function animationFor(action,direction='down',mood=0,growthStage='adult'){
+    if(C.BlackPuppy?.enabled)return C.BlackPuppy.resolve(action,direction,mood);
     const smiling=Number.isFinite(mood)&&mood>=C.Data.expressions.smileMood;
-    let key=['idle','walk','run'].includes(action)?`${action}-${direction}`:action;
+    let key=['idle','walk','run','stand','start','stop','rest'].includes(action)?`${action}-${direction}`:action;
     if(!smiling&&key==='idle-down')key='neutral-idle';
     if(!smiling&&['pet','yawn'].includes(key))key='neutral-pet';
-    const anim=animationMetadata.animations[key]||animationMetadata.animations['neutral-idle'];
+    if(growthStage==='puppy'){
+      if(C.PuppyNature?.ready&&C.PuppyNature.clips[key])return C.PuppyNature.clips[key];
+      if(C.GroundSleep?.clips[key])return groundState.ready?C.GroundSleep.clips[key]:puppyMetadata.animations[key.replace('-ground','-prone')];
+      if(action==='yawn')key='yawn';
+      if(action==='idle'&&direction==='down'&&mood<35)key='sad-idle';
+      if(['drink','eat','sniff'].includes(action)&&['left','right'].includes(direction)&&puppyMetadata.animations[action+'-side'])key=action+'-side';
+      if(key==='sit'&&(direction==='left'||direction==='right'))key='sit-side';
+      if(key==='sit'&&direction==='up')key='idle-up';
+      return puppyMetadata.animations[key]||puppyMetadata.animations['neutral-idle'];
+    }
+    return C.CharacterMotion?.resolve(key,direction,mood)||animationMetadata.animations[key]||animationMetadata.animations['neutral-idle'];
+  }
+  function animationDuration(action,direction='down',mood=0,growthStage='adult'){
+    const anim=animationFor(action,direction,mood,growthStage);
+    return anim.durations.reduce((sum,n)=>sum+n,0)/1000;
+  }
+  function dog(ctx,x,y,direction,action,time,mood=0,growthStage='adult',playbackClip=null){
+    const anim=growthStage==='puppy'&&playbackClip?playbackClip:animationFor(action,direction,mood,growthStage);
     const total=anim.durations.reduce((a,b)=>a+b,0),elapsed=Math.max(0,time*1000);
     let cursor=anim.loop?elapsed%total:Math.min(elapsed,total-1),i=0;while(cursor>=anim.durations[i]&&i<anim.frames.length-1){cursor-=anim.durations[i];i++;}
     // The last roll pose is a smiling sit; reuse its preceding neutral sit below threshold.
-    if(!smiling&&key==='roll'&&i===anim.frames.length-1)i--;
-    const f=anim.frames[i],[ox,oy]=animationMetadata.origin;
-    ctx.save();ctx.translate(Math.round(x),Math.round(y));if(anim.mirrorWithDirection&&direction==='left')ctx.scale(-1,1);
-    ctx.drawImage(atlas,f.x,f.y,f.w,f.h,-ox,-oy,f.w,f.h);ctx.restore();
+    const smiling=Number.isFinite(mood)&&mood>=C.Data.expressions.smileMood;
+    if(!C.BlackPuppy?.enabled&&growthStage!=='puppy'&&!smiling&&action==='roll'&&i===anim.frames.length-1)i--;
+    const f=anim.frames[i],metadata=C.BlackPuppy?.enabled||growthStage==='puppy'?puppyMetadata:animationMetadata,[ox,oy]=metadata.origin;
+    const source=f.atlas==='black-puppy'?puppyAtlas:f.atlas==='nature'?natureAtlas:f.atlas==='ground'?groundAtlas:growthStage==='puppy'?puppyAtlas:f.atlas==='motion'?C.CharacterMotion?.motionAtlas:f.atlas==='outdoor'?C.CharacterMotion?.atlas:atlas,[dx,dy]=anim.offsets?.[i]||[0,0];
+    if(!source)return;
+    const visualScale=!C.BlackPuppy?.enabled&&growthStage==='adolescent' ? .9 : 1;
+    ctx.save();ctx.imageSmoothingEnabled=false;ctx.translate(Math.round(x),Math.round(y));if(anim.mirrorWithDirection&&direction==='left')ctx.scale(-1,1);if(visualScale!==1)ctx.scale(visualScale,visualScale);
+    ctx.drawImage(source,f.x,f.y,f.w,f.h,-ox+dx,-oy+dy,f.w,f.h);ctx.restore();
   }
-  function bark(ctx,x,y,age,reduced=false){
+  function bark(ctx,x,y,age,reduced=false,worldWidth=384){
     if(age<0||age>=1.05)return;
-    const left=x>318,bx=Math.max(4,Math.min(353,Math.round(x)+(left?-38:9)));
+    const left=x>worldWidth-66,bx=Math.max(4,Math.min(worldWidth-31,Math.round(x)+(left?-38:9)));
     const rise=reduced?0:Math.min(2,Math.floor(age*5)),by=Math.max(4,Math.round(y)-47-rise);
     // Hand-pixelled 汪 + ! avoids antialiasing and font-dependent Chinese glyphs.
     const glyph=['10001111111','01000001000','00000001000','10000001000','01000111110','00000001000','00100001000','01000001000','10001111111'];
@@ -578,7 +656,8 @@
   function furnitureLife(ctx,p,time,reduced,music){
     if(reduced)return;
     time=Math.max(0,time);
-    const x=p.x*16,y=p.y*16-D.furniture[p.id].lift,beat=Math.floor(time*2)%4;
+    const f=D.furniture[p.id],r=C.Model.renderFor(p),x=0,y=0,beat=Math.floor(time*2)%4;
+    ctx.save();ctx.translate(r.x,r.y);ctx.scale(r.w/(f.w*16),r.h/(f.h*16+f.lift));
     if(p.id==='water'){
       rect(ctx,x+4,y+5,8,3,'blue');
       rect(ctx,x+5+(beat%2),y+5,3,1,'blueLight');rect(ctx,x+9,y+6+(beat>1?1:0),2,1,'blueLight');rect(ctx,x+4,y+5,1,1,'white');
@@ -593,6 +672,7 @@
       const points=[[10,4],[16,5],[16,7],[9,7]],a=points[beat];rect(ctx,x+a[0],y+a[1],2,1,'paper');
       if(time%7<3){const lift=Math.floor(time%7*2);rect(ctx,x+24,y-4-lift,1,5,'greenDark');rect(ctx,x+24,y-4-lift,3,1,'greenDark');oval(ctx,x+21,y-lift,4,2,'greenDark');}
     }
+    ctx.restore();
   }
   let glowCache=null;
   function lampGlow(ctx,x,y){
@@ -604,7 +684,7 @@
       const light=new Map(Object.entries({floor:'floorLight',floorLight:'honey',seam:'woodLight',woodLight:'honey',wood:'seam'}).map(([a,b])=>[toRGB(P[a]).join(','),toRGB(P[b])]));
       for(let py=0;py<24;py++)for(let px=0;px<40;px++){
         const i=(py*40+px)*4,inside=((px-19)/19)**2+((py-11)/11)**2<1;
-        if(!inside||left+px<32||left+px>=352||top+py<96||top+py>=256){data[i+3]=0;continue;}
+        if(!inside||left+px<D.bounds.left*16||left+px>=D.bounds.right*16||top+py<D.bounds.top*16||top+py>=D.bounds.bottom*16){data[i+3]=0;continue;}
         const next=light.get(`${data[i]},${data[i+1]},${data[i+2]}`);
         if(next){data[i]=next[0];data[i+1]=next[1];data[i+2]=next[2];}
       }
@@ -613,9 +693,40 @@
     ctx.drawImage(glowCache.canvas,x-12,y-4);
   }
   const cached=new Map();
-  function asset(id,lit=true){const key=id+lit;if(cached.has(key))return cached.get(key);const f=D.furniture[id],c=canvas(f.w*16,f.h*16+f.lift+4),ctx=c.getContext('2d');furniture(ctx,id,0,f.lift,lit);cached.set(key,c);return c;}
-  function drawFurniture(ctx,p,lit=true,playTime=null){if(playTime!==null&&p.id==='wobbleBird'){wobbleBird(ctx,p.x*16,p.y*16,playTime);return;}if(playTime!==null&&p.id==='petMirror'){petMirror(ctx,p.x*16,p.y*16,playTime);return;}const f=D.furniture[p.id];ctx.drawImage(asset(p.id,lit),p.x*16,p.y*16-f.lift);}
-  function icon(target,id){const ctx=target.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,target.width,target.height);const a=asset(id);const scale=Math.max(1,Math.min(2,Math.floor(Math.min(target.width/a.width,target.height/a.height))));ctx.drawImage(a,Math.floor((target.width-a.width*scale)/2),Math.floor((target.height-a.height*scale)/2),a.width*scale,a.height*scale);}
+  const propImages=new Map();
+  for(const [id,f]of Object.entries(D.furniture))if(f.asset&&typeof Image!=='undefined'){
+    const im=new Image();im.onload=()=>{propImages.set(id,im);cached.delete(id+true);cached.delete(id+false);document.dispatchEvent(new CustomEvent('cottage:art-ready'));};im.src=f.asset;
+  }
+  function asset(id,lit=true){const key=id+lit;if(cached.has(key))return cached.get(key);const f=D.furniture[id],c=canvas(f.w*16,f.h*16+f.lift+4),ctx=c.getContext('2d'),im=propImages.get(id);if(im)ctx.drawImage(im,0,0);else if(!f.asset)furniture(ctx,id,0,f.lift,lit);cached.set(key,c);return c;}
+  function puppyToy(ctx,x,y,id,time,direction='right'){const im=propImages.get('puppyBall');if(!['puppyBall','toyBasket'].includes(id)||!im)return;const pose=C.Toys.pose(id,time,'puppy'),scale=puppyMetadata.sceneScale||1,authored=C.BlackPuppy?.enabled&&C.BlackPuppyData?.capabilities?.includes('balltap'),offset=(authored?C.PuppyLife.ballOffsetAt(id,time,direction):pose.action==='puppy-ball'?C.PuppyLife.ballOffset(pose.time):[10,0]).map(n=>n*scale);ctx.drawImage(im,Math.round(x+offset[0])-8,Math.round(y+offset[1])-10);}
+  function puppyChewToy(ctx,x,y,direction='down'){
+    const im=propImages.get('puppyChew');if(!im)return;
+    const left=direction==='right'?x-1:direction==='left'?x-31:x-16;
+    ctx.drawImage(im,Math.round(left),Math.round(y-7));
+  }
+  function basketFrontRim(ctx,p){
+    const x=p.x*16,y=p.y*16;
+    rect(ctx,x+2,y+7,28,2,'honey');
+    rect(ctx,x+2,y+9,28,2,'wood');
+    for(let col=0;col<6;col++)rect(ctx,x+4+col*4,y+10,2,1,'woodLight');
+  }
+  function drawFurniture(ctx,p,lit=true,playTime=null,stage='adult'){
+    if(playTime!==null&&p.id==='wobbleBird'){wobbleBird(ctx,p.x*16,p.y*16,playTime,stage);return;}
+    if(playTime!==null&&p.id==='petMirror'){petMirror(ctx,p.x*16,p.y*16,playTime);return;}
+    const f=D.furniture[p.id],r=C.Model.renderFor(p),im=propImages.get(p.id);
+    if(f.asset){
+      if(!im)return;
+      if(p.id==='arcadeMachine')contactShadow(ctx,p.x*16,p.y*16,f.w*16,f.h*16,{lift:f.lift});
+      if(f.renderRect)ctx.drawImage(im,r.x,r.y,r.w,r.h);else ctx.drawImage(im,p.x*16,p.y*16-f.lift);
+    }else if(f.renderRect)ctx.drawImage(asset(p.id,lit),0,0,f.w*16,f.h*16+f.lift,r.x,r.y,r.w,r.h);
+    else ctx.drawImage(asset(p.id,lit),r.x,r.y);
+  }
+  function icon(target,id,p){
+    const ctx=target.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,target.width,target.height);
+    const f=D.furniture[id],a=asset(id),im=propImages.get(id);
+    if(f.renderRect){const r=f.renderRect,scale=Math.min(2,(target.width-4)/r.w,(target.height-4)/r.h),w=r.w*scale,h=r.h*scale,x=Math.floor((target.width-w)/2),y=Math.floor((target.height-h)/2);if(im)ctx.drawImage(im,x,y,w,h);else if(!f.asset)ctx.drawImage(a,0,0,f.w*16,f.h*16+f.lift,x,y,w,h);return;}
+    const scale=Math.max(1,Math.min(2,Math.floor(Math.min(target.width/a.width,target.height/a.height))));ctx.drawImage(a,Math.floor((target.width-a.width*scale)/2),Math.floor((target.height-a.height*scale)/2),a.width*scale,a.height*scale);
+  }
   buildRoom();buildAmbientFrames();buildAtlas();
-  C.Art={P,background,atlas,animationMetadata,dog,bark,toyPlay,sleepText,thoughtBubble,drawFurniture,front,mailbox,icon,rect,oval,paw,heart,ambience,furnitureLife,lampGlow,environmentLight,roomLamp};
+  C.Art={P,background,atlas,animationMetadata,puppyMetadata,puppyState,puppyReady,animationFor,animationDuration,dog,bark,toyPlay,puppyToy,puppyChewToy,basketFrontRim,propImages,sleepText,thoughtBubble,drawFurniture,front,mailbox,icon,rect,oval,paw,heart,ambience,furnitureLife,lampGlow,environmentLight,roomLamp};
 })(globalThis.Cottage);

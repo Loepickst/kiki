@@ -1,63 +1,47 @@
 (function(C){
   'use strict';
   const M=C.Model,N=C.Data.needs;
-  const initial=()=>({...N.initial});
-  // Foreground simulation only. Hunger/thirst are demand; energy/mood are reserves.
-  class PetNeeds {
-    constructor(store,onSaved=()=>{}){
-      this.store=store;this.onSaved=onSaved;this.levels=initial();this.baseline=null;this.elapsed=0;this.dirty=false;this.clock=0;this.nextPetAt=0;this.sync();
-    }
-    sync(){
-      const saved=this.store.state.needs,signature=JSON.stringify(saved||null);
-      if(signature===this.baseline)return;
-      this.baseline=signature;this.levels=Object.fromEntries(Object.entries(initial()).map(([key,value])=>[key,saved?.[key]??value]));this.dirty=false;this.elapsed=0;
-    }
+  let serial=0;
+  const event=(kind,user=false,targetId=null,needs={},now=Date.now())=>({id:globalThis.crypto?.randomUUID?.()||now+'-'+(++serial)+'-'+Math.random().toString(36).slice(2),kind,user,targetId,needs:{...needs},startedAt:now,completed:true});
+  class PetNeeds{
+    constructor(store,onSaved=()=>{},now=()=>Date.now()){this.store=store;this.onSaved=onSaved;this.now=now;this.context={action:'idle',quiet:true,foreground:false};this.preview=null;this.dirty=false;this.lastPreview=0;this.sync();store.petCare=this;}
+    sync(){this.levels={...N.initial,...this.store.state.needs};this.recovery=M.clone(this.store.state.needsRecovery||{version:1,accountedAt:new Date(this.now()).toISOString(),mode:'awake',napUntil:null});this.hasRecovery=!!this.store.state.needsRecovery;this.preview=null;this.dirty=false;}
     get wantsWater(){return this.levels.thirst>=N.drinkThreshold;}
     get wantsFood(){return this.levels.hunger>=N.thresholds.hungry;}
     get tired(){return this.levels.energy<=N.thresholds.tired;}
     get lonely(){return this.levels.mood<=N.thresholds.lonely;}
-    get condition(){
-      if(this.wantsWater)return {id:'thirsty',label:'有点口渴'};
-      if(this.tired)return {id:'tired',label:'想睡一会儿'};
-      if(this.wantsFood)return {id:'hungry',label:'肚子有点饿'};
-      if(this.lonely)return {id:'lonely',label:'想要陪伴'};
-      return {id:'content',label:this.levels.energy>=65&&this.levels.mood>=65?'精神不错':'悠闲自在'};
+    get condition(){return this.wantsWater?{id:'thirsty',label:'有点口渴'}:this.tired?{id:'tired',label:'想睡一会儿'}:this.wantsFood?{id:'hungry',label:'肚子有点饿'}:this.lonely?{id:'lonely',label:'想要陪伴'}:{id:'content',label:this.levels.energy>=65&&this.levels.mood>=65?'精神不错':'悠闲自在'};}
+    snapshot(now=this.now(),context=this.context){return C.PetCare.advance(this.store.state,now,context);}
+    update(dt,action='idle',session=null,foreground=true){
+      const now=this.now(),next={action,scheduled:!!session?.scheduled,napUntil:session?.endsAt,quiet:action!=='pet',foreground};
+      if(this.context.action!==action||this.context.foreground!==foreground)this.flush();this.context=next;
+      if(now-this.lastPreview<1000)return;this.lastPreview=now;
+      this.preview=this.snapshot(now);this.levels={...this.preview.needs};this.recovery=this.preview.needsRecovery;this.dirty=true;
+      if(!this.store.state.care||now-this.store.state.care.accountedAt>=30000)this.flush();
     }
-    change(key,amount){const next=Math.max(0,Math.min(100,this.levels[key]+amount));if(next!==this.levels[key]){this.levels[key]=next;this.dirty=true;}}
-    update(dt,action='idle'){
-      this.sync();if(!Number.isFinite(dt)||dt<=0)return;
-      this.clock+=dt;
-      const r=N.rates,play=['roll','stretch','play'].includes(action);
-      this.change('energy',(action==='sleep'?r.energySleep:action==='sit'?r.energySit:action==='walk'?r.energyWalk:play?r.energyPlay:r.energyAwake)*dt/60);
-      this.change('mood',(['sleep','sit'].includes(action)?r.moodRest:r.moodAwake)*dt/60);
-      // The caller advances once per visible frame; no wall-clock/offline catch-up.
-      for(const key of ['hunger','thirst']){
-        const next=Math.min(100,this.levels[key]+N.perMinute[key]*dt/60);
-        if(next!==this.levels[key]){this.levels[key]=next;this.dirty=true;}
-      }
-      this.elapsed+=dt;if(this.elapsed>=N.saveEvery)this.flush();
+    writeSnapshot(next,action,session,now=this.now()){
+      const s=this.snapshot(now,{...this.context,action,scheduled:!!session?.scheduled,napUntil:session?.endsAt});
+      for(const k of ['needs','needsRecovery','care','growth','relationship'])next[k]=s[k];
     }
-    drink(){
-      this.sync();this.levels.thirst=Math.max(0,this.levels.thirst-N.drinkRelief);this.dirty=true;return this.flush();
+    reconcile(now=this.now()){
+      if(this.store.readOnly)return false;
+      try{this.store.commit(this.snapshot(now,{offline:true,quiet:true}));this.sync();this.onSaved();return true;}catch{this.sync();return false;}
     }
-    complete(kind){
-      this.sync();
-      if(kind==='eat')this.change('hunger',-N.relief.food);
-      else if(kind==='pet'){
-        if(this.clock<this.nextPetAt)return false;
-        this.nextPetAt=this.clock+N.petCooldown;this.change('mood',N.relief.pet);
-      }else if(['roll','sniff','wander'].includes(kind)){
-        if(kind==='roll')this.change('mood',N.relief.play);
-      }else return false;
-      return this.flush();
+    transact(e,mutate=null){
+      if(this.store.readOnly)return false;const now=this.now();
+      try{let next=this.snapshot(now);if(mutate)next=mutate(next,now);else next=C.PetCare.settle(next,e,now);this.store.commit(next);this.sync();this.onSaved();return true;}catch(error){this.sync();throw error;}
     }
+    complete(kind,e){
+      const mapped=kind==='eat'?'food':kind==='roll'?'automatic':kind;
+      if(!['food','pet','greet','automatic'].includes(mapped))return false;
+      try{return this.transact(e||event(mapped,mapped==='pet'||mapped==='greet',null,this.levels,this.now()));}catch{return false;}
+    }
+    drink(e){try{return this.transact(e||event('water',false,null,this.levels,this.now()));}catch{return false;}}
     flush(){
-      // Merge with current business state and use Store's stale-window protection.
-      this.sync();this.elapsed=0;if(!this.dirty||this.store.readOnly)return false;
-      const next=M.clone(this.store.state);next.needs={...this.levels};
-      try{this.store.commit(next);this.baseline=JSON.stringify(this.store.state.needs);this.dirty=false;this.onSaved();return true;}
-      catch(error){this.sync();return false;}
+      if(this.store.readOnly)return false;const now=this.now();if(this.store.state.care&&now<=this.store.state.care.accountedAt)return false;
+      try{this.store.commit(this.snapshot(now));this.sync();this.onSaved();return true;}catch{this.sync();return false;}
     }
   }
-  C.PetNeeds=PetNeeds;
+  function nightSeconds(from,to){let total=0;from=Math.max(from,to-3*86400000);while(from<to){const end=Math.min(to,(Math.floor(from/3600000)+1)*3600000);if(C.PetCare.hour(from)<6)total+=(end-from)/1000;from=end;}return Math.min(21600,total);}
+  C.PetNeeds=PetNeeds;C.CareEvent=event;C.NeedsRecovery={nightSeconds};
 })(globalThis.Cottage);
