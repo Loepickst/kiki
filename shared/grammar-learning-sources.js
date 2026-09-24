@@ -138,7 +138,7 @@
       "〜かねる": "n1-106",
       "〜がち（がち）": "learn-affix-gachi",
       "〜気味（ぎみ）": "n3-099",
-      "〜げ": "learn-affix-ge",
+      "〜げ": "n2-228",
       "〜っぽい": "n3-096",
       "〜ぶる": "learn-affix-buru",
       "〜ぶり（ぶり / っぷり）": "learn-affix-buri",
@@ -181,7 +181,8 @@
   `.trim().split(/\s+/);
 
   const SUPPLEMENT_MERGES = {
-    "learn-te-shimau": "n3-020"
+    "learn-te-shimau": "n3-020",
+    "learn-affix-ge": "n2-228"
   };
 
   let nextSearchId = 900001;
@@ -349,7 +350,28 @@
     ["learn-conditional-tara", "N5", "～たら", "如果……／等……以后", "普通形过去式＋ら", "把前项看作已经成立的时间节点，再说明其后发生的结果，可用于具体假设、请求、命令和发现。", "conditional-expressions", "tara", ["駅に着いたら、電話してください。", "到车站以后，请给我打电话。"]],
     ["learn-conditional-nara", "N5", "～なら", "如果是……／既然谈到……", "普通形＋なら；名词・ナ形容词＋なら", "把对话中的信息、计划或判断设为前提，再给出建议、评价、请求或反应。", "conditional-expressions", "nara", ["京都へ行くなら、秋がおすすめです。", "如果要去京都，推荐秋天去。"]],
 
-    ["learn-dake-ni", "N2", "～だけに", "正因为……／正因为如此更……", "动词普通形／い形容词普通形／な形容词词干＋な／名词＋（である）＋だけに", "以前项已经成立的事实或客观条件为理由，表示正因为存在这一条件，后项的结果、感情或评价表现得更加明显或强烈。", "adverbial-particles", "", ["長い間楽しみにしていただけに、試合が中止になって本当に残念です。", "正因为期待了很久，比赛取消后才格外遗憾。"]],
+    ["learn-dake-ni", "N2", "～だけに", "正因为……；正因为如此更加……", "动词普通形／イ形容词普通形／ナ形容词词干＋な／名词＋（である）＋だけに", "表示前项是后项产生的原因。因为前项的程度高、影响大或情况特殊，所以后项的感受、评价或结果也更加明显。后项既可以是高兴、赞赏等正面内容，也可以是遗憾、失望或为难等负面内容。", "adverbial-particles", "", [
+      {
+        "jp": "<b><ruby>経<rt>けい</rt></ruby><ruby>験<rt>けん</rt></ruby>を<ruby>積<rt>つ</rt></ruby>んだ<ruby>人<rt>ひと</rt></ruby>の<ruby>意<rt>い</rt></ruby><ruby>見<rt>けん</rt></ruby><span style='color:#d64045'>だけに</span><ruby>重<rt>おも</rt></ruby>みがある。</b>",
+        "cn": "正因为是经验丰富之人的意见，所以很有分量。",
+        "source": { "original": "経験を積んだ人の意見だけに重みがある。", "name": "国立国语研究所「DAKE だけ（副助词）」", "url": "https://mmsrv.ninjal.ac.jp/kamus/data/item382.html", "type": "国立语言研究机构词典", "accessedAt": "2026-09-21" }
+      },
+      {
+        "jp": "<b>だめだと<ruby>思<rt>おも</rt></ruby>っていた<span style='color:#d64045'>だけに</span><ruby>受<rt>う</rt></ruby>かった<ruby>時<rt>とき</rt></ruby>はうれしかった。</b>",
+        "cn": "正因为原以为不行，得知通过时才格外高兴。",
+        "source": { "original": "だめだと思っていただけに受かった時はうれしかった。", "name": "国立国语研究所「DAKE だけ（副助词）」", "url": "https://mmsrv.ninjal.ac.jp/kamus/data/item382.html", "type": "国立语言研究机构词典", "accessedAt": "2026-09-21" }
+      },
+      {
+        "jp": "<b><ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>がわからない<span style='color:#d64045'>だけに</span>よけい<ruby>不<rt>ぶ</rt></ruby><ruby>気<rt>き</rt></ruby><ruby>味<rt>み</rt></ruby>である。</b>",
+        "cn": "正因为听不懂对方的话，才觉得更加可怕。",
+        "source": { "original": "言葉がわからないだけによけい不気味である。", "name": "国立国语研究所《现代语复合辞用例集》", "url": "https://repository.ninjal.ac.jp/record/2322/files/gdghgz_200103.pdf", "type": "国立语言研究机构资料", "accessedAt": "2026-09-21" }
+      },
+      {
+        "jp": "<b><ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>が<ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby><span style='color:#d64045'>だけに</span>、<ruby>叱<rt>しか</rt></ruby>るわけにもいかなかった。</b>",
+        "cn": "正因为对方是孩子，也不好斥责他。",
+        "source": { "original": "相手が子供だけに、叱るわけにもいかなかった。", "name": "国立国语研究所《现代语复合辞用例集》", "url": "https://repository.ninjal.ac.jp/record/2322/files/gdghgz_200103.pdf", "type": "国立语言研究机构资料", "accessedAt": "2026-09-21" }
+      }
+    ]],
     ["supp-dake-sufficient-n1", "N1", "～だけの", "足以……的……／够……的……", "动词辞书形／可能形＋だけの＋名词", "表示后面的名词具有足以完成前项动作的数量、能力或条件。前项常使用可能形，后面多接表示能力、时间或资源的名词。", "adverbial-particles", "", ["海外で一人で暮らせるだけの日本語力を身につけたいです。", "我想掌握足以独自在海外生活的日语能力。"]],
     ["supp-dake-corresponding-degree-n1", "N1", "～分だけ", "与……相应／……多少就……多少", "动词た形／名词＋の＋分だけ", "把前项所付出的数量、程度或产生的变化作为基准，表示后项也出现与之相应的结果或差异。", "adverbial-particles", "", ["毎日練習した分だけ、発音が自然になってきました。", "每天练习了多少，发音也就相应变得自然了。"]],
 
@@ -374,7 +396,9 @@
     desc: entry[5],
     sourceKey: entry[6],
     anchor: entry[7],
-    examples: [{ jp: entry[8][0], cn: entry[8][1] }]
+    examples: Array.isArray(entry[8]) && entry[8].every((example) => example && typeof example === "object")
+      ? entry[8]
+      : [{ jp: entry[8][0], cn: entry[8][1] }]
   }));
 
   const byId = new Map(core.map((item) => [item.id, item]));

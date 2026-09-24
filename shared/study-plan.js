@@ -3,9 +3,10 @@
 
     const STORAGE_KEY = 'kikiStudyPlan_v1';
     const AVATAR_STORAGE_KEY = 'kikiStudyPlanAvatar_v1';
+    const CALENDAR_ZOOM_STORAGE_KEY = 'kikiStudyPlanCalendarZoom_v1';
+    const CALENDAR_ZOOM_LEVELS = Object.freeze([100, 125, 150, 175]);
     const USER_PROFILE_CHANGED_EVENT = 'kiki-user-profile:changed';
     const STATE_VERSION = 1;
-    const LEVEL_XP = 120;
     const DEFAULT_CHARACTER_NAME = 'kiki';
     const AVATAR_MAX_FILE_SIZE = 12 * 1024 * 1024;
     const AVATAR_OUTPUT_SIZE = 512;
@@ -162,6 +163,9 @@
         calendarTitle: root.querySelector('[data-calendar-title]'),
         calendarGrid: root.querySelector('[data-calendar-grid]'),
         calendarScroll: root.querySelector('[data-calendar-scroll]'),
+        calendarZoomOut: root.querySelector('[data-calendar-zoom-out]'),
+        calendarZoomIn: root.querySelector('[data-calendar-zoom-in]'),
+        calendarZoomValue: root.querySelector('[data-calendar-zoom-value]'),
         prevButton: root.querySelector('[data-calendar-prev]'),
         nextButton: root.querySelector('[data-calendar-next]'),
         todayButton: root.querySelector('[data-calendar-today]'),
@@ -182,7 +186,6 @@
         mobilePlanDate: root.querySelector('[data-mobile-plan-date]'),
         mobileExamCountdown: root.querySelector('[data-mobile-exam-countdown]'),
         mobileMonthProgressCount: root.querySelector('[data-mobile-month-progress-count]'),
-        mobileCharacterLevel: root.querySelector('[data-mobile-character-level]'),
         mobileStudyStreakSecondary: root.querySelector('[data-mobile-study-streak-secondary]'),
         mobileProgressRing: root.querySelector('[data-mobile-plan-progress-ring]'),
         mobileProgressCount: root.querySelector('[data-mobile-plan-progress-count]'),
@@ -195,10 +198,6 @@
         targetLevelLabels: Array.from(root.querySelectorAll('[data-plan-target-label]')),
         dayTasksTitle: root.querySelector('[data-day-tasks-title]'),
         calendarToggleButtons: Array.from(root.querySelectorAll('[data-plan-calendar-toggle]')),
-        characterLevel: root.querySelector('[data-character-level]'),
-        characterXp: root.querySelector('[data-character-xp]'),
-        characterNextXp: root.querySelector('[data-character-next-xp]'),
-        characterXpBar: root.querySelector('[data-character-xp-bar]'),
         characterName: root.querySelector('[data-character-name]'),
         characterAvatar: root.querySelector('[data-character-avatar]'),
         characterAvatarChange: root.querySelector('[data-character-avatar-change]'),
@@ -226,6 +225,35 @@
 
     if (!elements.calendarGrid || !elements.taskForm) {
         return;
+    }
+
+    function loadCalendarZoom() {
+        try {
+            const stored = Number(localStorage.getItem(CALENDAR_ZOOM_STORAGE_KEY));
+            if (CALENDAR_ZOOM_LEVELS.includes(stored)) return stored;
+        } catch (_) {
+            // The calendar remains usable when browser storage is unavailable.
+        }
+        return window.matchMedia('(min-width: 1500px)').matches ? 125 : 100;
+    }
+
+    let calendarZoom = loadCalendarZoom();
+
+    function setCalendarZoom(value, persist = true) {
+        if (!CALENDAR_ZOOM_LEVELS.includes(value)) return;
+        calendarZoom = value;
+        root.style.setProperty('--plan-calendar-zoom', String(value / 100));
+        if (elements.calendarZoomValue) elements.calendarZoomValue.textContent = `${value}%`;
+        if (elements.calendarZoomOut) elements.calendarZoomOut.disabled = value === CALENDAR_ZOOM_LEVELS[0];
+        if (elements.calendarZoomIn) elements.calendarZoomIn.disabled = value === CALENDAR_ZOOM_LEVELS[CALENDAR_ZOOM_LEVELS.length - 1];
+        if (persist) {
+            try {
+                localStorage.setItem(CALENDAR_ZOOM_STORAGE_KEY, String(value));
+            } catch (_) {
+                // The selected zoom still applies for this visit.
+            }
+            if (window.innerWidth <= 800) renderCalendar();
+        }
     }
 
     function padNumber(value) {
@@ -1275,18 +1303,6 @@
 
     function renderGrowth() {
         const completedTasks = state.tasks.filter((task) => task.completed);
-        const completedMinutes = completedTasks.reduce((total, task) => total + task.minutes, 0);
-        const totalXp = completedMinutes * 2;
-        const level = Math.floor(totalXp / LEVEL_XP) + 1;
-        const levelXp = totalXp % LEVEL_XP;
-        elements.characterLevel.textContent = String(level);
-        if (elements.mobileCharacterLevel) {
-            elements.mobileCharacterLevel.textContent = String(level);
-        }
-        elements.characterXp.textContent = String(levelXp);
-        elements.characterNextXp.textContent = String(LEVEL_XP);
-        elements.characterXpBar.style.width = `${(levelXp / LEVEL_XP) * 100}%`;
-
         ADDABLE_TYPES.forEach((type) => {
             const minutes = completedTasks
                 .filter((task) => task.type === type)
@@ -1598,6 +1614,19 @@
         renderAll();
     });
 
+    if (elements.calendarZoomOut) {
+        elements.calendarZoomOut.addEventListener('click', () => {
+            const currentIndex = CALENDAR_ZOOM_LEVELS.indexOf(calendarZoom);
+            setCalendarZoom(CALENDAR_ZOOM_LEVELS[Math.max(0, currentIndex - 1)]);
+        });
+    }
+    if (elements.calendarZoomIn) {
+        elements.calendarZoomIn.addEventListener('click', () => {
+            const currentIndex = CALENDAR_ZOOM_LEVELS.indexOf(calendarZoom);
+            setCalendarZoom(CALENDAR_ZOOM_LEVELS[Math.min(CALENDAR_ZOOM_LEVELS.length - 1, currentIndex + 1)]);
+        });
+    }
+
     elements.calendarToggleButtons.forEach((button) => {
         button.addEventListener('click', () => {
             isMobileCalendarOpen = !isMobileCalendarOpen;
@@ -1654,6 +1683,10 @@
     });
     window.addEventListener('storage', (event) => {
         renderCharacterName();
+        if (event.key === CALENDAR_ZOOM_STORAGE_KEY) {
+            setCalendarZoom(loadCalendarZoom(), false);
+            return;
+        }
         if (event.key === AVATAR_STORAGE_KEY) {
             customAvatarUrl = loadCustomAvatarUrl();
             renderCharacterAvatar();
@@ -1675,6 +1708,7 @@
     renderContentOptions();
     syncMobileCalendarState();
     setPlanView('calendar');
+    setCalendarZoom(calendarZoom, false);
     saveState();
     renderAll();
 })();

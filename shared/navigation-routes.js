@@ -17,10 +17,10 @@
 })(typeof window === "undefined" ? null : window, function () {
     "use strict";
     const directories = Object.freeze({
-        "daily/grammar/index.html": "#daily/daily-grammar",
-        "daily/light-read/index.html": "#daily/daily-light-read",
-        "daily/light-read/daily/read_daily.html": "#daily/daily-light-read",
-        "daily/light-read/folklore/read_folklore.html": "#daily/daily-light-read",
+        "daily/grammar/index.html": "#exam/daily-grammar",
+        "daily/light-read/index.html": "#daily",
+        "daily/light-read/daily/read_daily.html": "#daily",
+        "daily/light-read/folklore/read_folklore.html": "#daily",
         "exam/vocabulary/index.html": "#exam/exam-vocabulary",
         "exam/vocabulary/n1/index.html": "#exam/exam-vocabulary",
         "exam/vocabulary/n2/index.html": "#exam/exam-vocabulary",
@@ -33,7 +33,7 @@
         "exam/listening/immediate-response/index.html": "#exam/exam-listening/exam-listening-response"
     });
     const aliases = Object.freeze({
-        "daily/culture/index.html": "index.html#daily/daily-culture",
+        "daily/culture/index.html": "index.html#daily",
         "exam/grammar/grammar/n2/index.html": "exam/grammar/grammar/index.html?level=N2",
         "exam/grammar/grammar/n3/index.html": "exam/grammar/grammar/index.html?level=N3",
         "exam/jlpt-reading/s/n2/index.html": "exam/jlpt-reading/index.html?level=N2&type=short&browse=year",
@@ -42,6 +42,7 @@
     });
 
     function canonicalize(value, base, root, depth = 0) {
+        const mobile = typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
         const url = new URL(value, base);
         const projectRoot = new URL(root);
         if (url.origin !== projectRoot.origin || !url.pathname.startsWith(projectRoot.pathname)) return url;
@@ -59,6 +60,19 @@
                     if (!result.searchParams.has(key)) result.searchParams.append(key, value);
                 }
                 if (url.hash) result.hash = url.hash;
+            }
+        }
+        if (mobile && result.pathname === new URL("index.html", projectRoot).pathname) {
+            if (path === "daily/grammar/index.html") result.hash = "daily/daily-grammar";
+            if (path.startsWith("daily/light-read/") && directories[path]) result.hash = "daily/daily-light-read";
+            if (path === "daily/culture/index.html") result.hash = "daily/daily-culture";
+        }
+        if (!mobile && (path === "index.html" || path === "")) {
+            const parts = result.hash.slice(1).split("/");
+            if (parts[0] === "daily" && ["daily-grammar", "exam-textbook"].includes(parts[1])) {
+                result.hash = ["exam", ...parts.slice(1)].join("/");
+            } else if (parts[0] === "daily") {
+                result.hash = "daily";
             }
         }
         // A return= URL is relative to its destination, not the source page.

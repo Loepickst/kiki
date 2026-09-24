@@ -4314,9 +4314,27 @@
     "lesson": "第2課 / 第12課",
     "lessonNumber": 2,
     "title": "～上で",
-    "meaning": "在…之后（再） / 在…方面",
-    "connection": "动词た形／名词＋の＋上で（之后）；动词辞书形／名词＋の＋上で（方面）",
-    "desc": "根据接续不同，有两种完全不同的用法：<br>1. <b>接た形</b>：表示先后顺序，即“在完成前项动作的基础/前提之上，再谨慎地做后项”。<br>2. <b>接辞书形</b>：表示“在做某事的过程中/范围内”，后项多接需要注意的重点、困难或建议。",
+    "meaning": "……之后再……；在……时／方面",
+    "connection": "动词た形／动作性名词＋の＋上で（完成之后）；动词辞书形／名词＋の＋上で（进行时・方面）",
+    "desc": "「～上で」有两种用法。接在动词た形后，表示完成前项后再做后项；接在动词辞书形后，表示进行某事时或在某方面。",
+    "usageSections": [
+      {
+        "key": "after-completion",
+        "title": "完成前项后，再进行后项",
+        "meaning": "……之后，再……",
+        "connection": "动词た形／动作性名词＋の＋上で",
+        "desc": "表示<b>先完成前项动作，再进行后项</b>。常用于作决定、办理手续等需要事先确认、商量或准备的场合，后项通常是有意志的动作。",
+        "exampleIndexes": [0, 2, 4, 5]
+      },
+      {
+        "key": "activity-aspect",
+        "title": "进行某事时／在某方面",
+        "meaning": "在……时；在……方面",
+        "connection": "动词辞书形／名词＋の＋上で",
+        "desc": "表示<b>在进行前项活动时，或从前项所示的方面来看</b>。后项常说明需要注意的事项、重要条件、困难或问题，不表示动作的先后。",
+        "exampleIndexes": [1, 3]
+      }
+    ],
     "examples": [
       {
         "jp": "<b><ruby>家族<rt>かぞく</rt></ruby>と<ruby>相談<rt>そうだん</rt></ruby>した<span style='color:#d64045'>上で</span>、お<ruby>返事<rt>へんじ</rt></ruby>いたします。</b>",
@@ -4333,7 +4351,7 @@
     "legacy": {
       "searchId": 142,
       "sourceNumericId": 142,
-      "searchTags": "前提 顺序 方面 范围",
+      "searchTags": "～上で 上で uede 之后再 完成之后 先后顺序 在进行时 在方面 方面 范围 前提 确认 商量 准备 注意 条件 困难",
       "compareWith": [],
       "tryCenterId": 2014
     }
@@ -5593,7 +5611,7 @@
     "title": "～というものだ / ～というものよ",
     "meaning": "也就是… / 这才叫…",
     "connection": "普通形＋というものだ／というものよ（※ナ形容词和名词多省略「だ」）",
-    "desc": "用于陈述说话人认为<b>理所当然的社会常理、普遍真理或事物本质</b>。句尾接续终助词「よ」构成「～というものよ」时，向听话人<b>主张、提醒或感叹的语气更为强烈</b>。",
+    "desc": "用于对前面提到的具体事实、行为或情况作出<b>总结性的评价或判断</b>，强调说话人根据这一具体情况所得出的看法。可用于肯定，也可用于批评或感叹。重点是<b>评价眼前的具体情况</b>，不是说明普遍规律。「～というものよ」在句末加入「よ」，提醒或强调的语气更强。",
     "examples": [
       {
         "jp": "<b><ruby>諦<rt>あきら</rt></ruby>めずに<ruby>頑<rt>がん</rt></ruby><ruby>張<rt>ば</rt></ruby>るのが、<ruby>若<rt>わか</rt></ruby>さ<span style='color:#d64045'>というものよ</span>。</b>",
@@ -6211,7 +6229,7 @@
     "title": "ご～願います / お～願います",
     "meaning": "请您… / 麻烦您…",
     "connection": "お＋动词ます形去掉「ます」＋願います／ご＋サ变名词＋願います",
-    "desc": "属于<b>尊他语</b>。用于在正式场合向对方提出<b>客观的请求或委托</b>，语气委婉且敬意程度极高。",
+    "desc": "用于在<b>正式场合</b>请求对方进行前项动作，常见于<b>通知、告示、广播和商务文件</b>。表达简洁、郑重，但有时带有<b>事务性的指示语气</b>。",
     "examples": [
       {
         "jp": "<b><span style='color:#d64045'>ご</span><ruby>確<rt>かく</rt></ruby><ruby>認<rt>にん</rt></ruby><span style='color:#d64045'><ruby>願<rt>ねが</rt></ruby>います</span>。</b>",
@@ -6267,7 +6285,7 @@
     "title": "～ばと思う / ～たらと思う",
     "meaning": "希望… / 如果能…就好了",
     "connection": "动词ば形＋と思う／动词た形＋らと思う",
-    "desc": "用于表达说话人内心的<b>愿望或期盼</b>。当用于向他人提出建议或请求时，由于没有直接要求对方，能起到<b>柔化语气、避免强加于人</b>的作用，带有一种高度委婉的语感。",
+    "desc": "表示说话人希望<b>前项所述的情况得以实现</b>。前项通常是尚未实现的理想状态。当前项涉及对方的行为时，也可以用来<b>间接表达邀请或请求</b>，语气比直接提出要求柔和。",
     "examples": [
       {
         "jp": "<b><ruby>早<rt>はや</rt></ruby>く<ruby>病<rt>びょう</rt></ruby><ruby>気<rt>き</rt></ruby>が<ruby>治<rt>なお</rt></ruby>れ<span style='color:#d64045'>ばと<ruby>思<rt>おも</rt></ruby>います</span>。</b>",
@@ -6380,27 +6398,139 @@
     "bookLabel": "Try! N2 文法",
     "lesson": "第9課",
     "lessonNumber": 9,
-    "title": "～ったら / ～てば",
-    "meaning": "提起… / 说起…呀",
-    "connection": "名词＋ったら／ってば",
-    "desc": "1. 用于提起亲近的人或熟悉的事物作为话题，后项多接续<b>评价、抱怨或责备</b>的内容。<br>2. 用于由于对方不听或不理解，从而带有情绪地<b>重复自己的主张</b>。",
+    "title": "～ったら",
+    "meaning": "说起……／都说了……",
+    "connection": "名词＋ったら／普通形・命令・请求表达＋ったら",
+    "desc": "「～ったら」是随意口语中的表达，主要有两种用法：一是把人物或事物提为话题并作带有感情色彩的评价；二是在对方没有理会时，重申已经说过的话。两种用法都带有说话人的情绪。",
+    "usageSections": [
+      {
+        "key": "topic-evaluation",
+        "title": "提示话题并作评价",
+        "meaning": "说起……／……真是的",
+        "connection": "名词＋ったら",
+        "desc": "把亲近的人或熟悉的事物提为话题，并对其作出评价。后项常表示抱怨、责备、惊讶、无奈等情绪，也可带有亲昵或赞叹的语气。",
+        "exampleIndexes": [0, 1]
+      },
+      {
+        "key": "repeat-insistence",
+        "title": "重申并催促对方",
+        "meaning": "都说了……／叫你……",
+        "connection": "普通形・命令・请求表达＋ったら",
+        "desc": "对方没有听清、没有理解或没有照做时，重复并加强已经说过的话。常带有催促、不耐烦或责备的语气。",
+        "exampleIndexes": [2]
+      }
+    ],
     "examples": [
       {
         "jp": "<b>うちの<ruby>弟<rt>おとうと</rt></ruby><span style='color:#d64045'>ったら</span>、いつも<ruby>宿<rt>しゅく</rt></ruby><ruby>題<rt>だい</rt></ruby>をしないで<ruby>遊<rt>あそ</rt></ruby>んでいる。</b>",
         "cn": "提起我弟弟呀，总是不做作业在玩。"
       },
       {
-        "jp": "<b>わかっている<span style='color:#d64045'>ってば</span>！もう<ruby>言<rt>い</rt></ruby>わないで。</b>",
-        "cn": "我都说了我知道了！别再说了。"
+        "jp": "<b><ruby>彼<rt>かれ</rt></ruby><span style='color:#d64045'>ったら</span><ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>ばっかりする。</b>",
+        "cn": "说起他呀，总是失败。",
+        "source": {
+          "original": "彼ったら失敗ばっかりする。",
+          "name": "甲南大学学术论文《日本語の主語小考》",
+          "url": "https://konan-u.repo.nii.ac.jp/record/1838/files/K01448.pdf",
+          "type": "大学学术论文",
+          "accessedAt": "2026-09-17"
+        }
+      },
+      {
+        "jp": "<b>もうよせ<span style='color:#d64045'>ったら</span>よせ。</b>",
+        "cn": "都叫你住手了，快住手。",
+        "source": {
+          "original": "もうよせったらよせ。",
+          "name": "精選版 日本国語大辞典「ったら」",
+          "url": "https://kotobank.jp/word/%E3%81%A4%E3%81%9F%E3%82%89-3214171",
+          "type": "权威国语辞典",
+          "accessedAt": "2026-09-17"
+        }
       }
     ],
-    "related": [],
-    "kana": "ったら / ってば",
-    "romaji": "ttara / tteba",
+    "related": ["n2-268"],
+    "kana": "ったら",
+    "romaji": "ttara",
     "legacy": {
       "searchId": 211,
       "sourceNumericId": 211,
-      "searchTags": "主题 责备 强调",
+      "searchTags": "～ったら ったら ttara 说起 提起 话题 亲近 评价 抱怨 责备 惊讶 无奈 亲昵 都说了 重复 强调 催促 不耐烦 口语",
+      "compareWith": [],
+      "tryCenterId": 2080
+    }
+  },
+  {
+    "id": "n2-268",
+    "level": "N2",
+    "bookKey": "try-n2",
+    "bookLabel": "Try! N2 文法",
+    "lesson": "第9課",
+    "lessonNumber": 9,
+    "title": "～ってば",
+    "meaning": "说起……／都说了……／喂……",
+    "connection": "名词＋ってば／普通形・命令・请求表达＋ってば",
+    "desc": "「～ってば」是关系亲近者之间使用的随意口语。可以把人物或事物提为话题，也可以重申自己的话或反复呼唤对方。语气通常比「～ったら」更直接。",
+    "usageSections": [
+      {
+        "key": "topic-evaluation",
+        "title": "提示或重新提出话题",
+        "meaning": "说起……／……真是的",
+        "connection": "名词＋ってば",
+        "desc": "把人物或事物作为话题提出，或把刚刚提到的内容重新拿出来说明。用于人物时，常伴随惊讶、批评、无奈或亲昵等情绪。",
+        "exampleIndexes": [0]
+      },
+      {
+        "key": "repeat-assertion",
+        "title": "重申自己的话",
+        "meaning": "都说了……／不是说……了吗",
+        "connection": "普通形・命令・请求表达＋ってば",
+        "desc": "对方没有听清、没有理解或不接受时，再次强调自己已经说过的内容。常带有焦急、不耐烦、抗议或催促的语气。",
+        "exampleIndexes": [1]
+      },
+      {
+        "key": "repeated-calling",
+        "title": "反复呼唤对方",
+        "meaning": "喂，……／都叫你了",
+        "connection": "人名・称呼＋ってば",
+        "desc": "已经呼唤过对方却没有得到回应时，接在人名或称呼后再次呼唤，用来引起对方注意。",
+        "exampleIndexes": [2]
+      }
+    ],
+    "examples": [
+      {
+        "jp": "<b><ruby>彼<rt>かれ</rt></ruby><span style='color:#d64045'>ってば</span><ruby>案<rt>あん</rt></ruby><ruby>外<rt>がい</rt></ruby><ruby>親<rt>しん</rt></ruby><ruby>切<rt>せつ</rt></ruby>なのよ。</b>",
+        "cn": "说起他呀，没想到还挺亲切的。",
+        "source": {
+          "original": "彼ってば案外親切なのよ。",
+          "name": "デジタル大辞泉「てば」",
+          "url": "https://kotobank.jp/word/%E3%81%A6%E3%81%B0-576593",
+          "type": "权威国语辞典",
+          "accessedAt": "2026-09-17"
+        }
+      },
+      {
+        "jp": "<b>わかっている<span style='color:#d64045'>ってば</span>！もう<ruby>言<rt>い</rt></ruby>わないで。</b>",
+        "cn": "我都说了我知道了！别再说了。"
+      },
+      {
+        "jp": "<b>ねえ、お<ruby>母<rt>かあ</rt></ruby>さん<span style='color:#d64045'>ってば</span>。</b>",
+        "cn": "喂，妈妈，我在叫你呢。",
+        "source": {
+          "original": "ねえ、お母さんってば。",
+          "name": "交通エコロジー・モビリティ財団 学习资料",
+          "url": "https://www.ecomo.or.jp/environment/report/data/traffic_work_result_18gakushu.pdf",
+          "type": "公益机构教育资料",
+          "accessedAt": "2026-09-17"
+        }
+      }
+    ],
+    "related": ["n2-211"],
+    "kana": "ってば",
+    "romaji": "tteba",
+    "legacy": {
+      "searchId": 268,
+      "sourceNumericId": 268,
+      "searchTags": "～ってば ってば tteba 说起 提起 话题 评价 亲近 惊讶 责备 都说了 重复 强调 主张 呼唤 催促 焦急 不耐烦 抗议 口语",
       "compareWith": [],
       "tryCenterId": 2080
     }
@@ -6422,7 +6552,7 @@
         "cn": "这扇门设计成有人靠近时就会自动打开。"
       }
     ],
-    "related": [],
+    "related": ["mainichi-n3-087"],
     "kana": "ようになっている",
     "romaji": "youninatteiru",
     "legacy": {
@@ -6838,17 +6968,46 @@
     "lesson": "第10課",
     "lessonNumber": 10,
     "title": "～まい",
-    "meaning": "绝不… / 大概不会…",
-    "connection": "动词辞书形／动词ます形去掉「ます」＋まい",
-    "desc": "1. 表示说话人内心强烈的<b>否定意志</b>。<br>2. 表示客观的<b>否定推测</b>。属于偏古风或生硬的书面表达。",
+    "meaning": "不打算……／大概不会……",
+    "connection": "五段动词辞书形＋まい／一段动词词干＋まい（也可用辞书形＋まい）／する→するまい・すまい／来る→来るまい",
+    "desc": "表示对尚未发生之事的否定。主语是说话人，且动作能够由本人决定时，表示<b>否定意志</b>；主语是他人，或事情不由说话人控制时，表示<b>否定推量</b>。具体用法需要根据主语和上下文判断。现代日语中多见于书面语或较郑重的表达，语气比「～ないつもりだ／～ないだろう」生硬。",
+    "usageSections": [
+      {
+        "key": "negative-intention",
+        "title": "否定意志",
+        "meaning": "不打算……／绝不……",
+        "connection": "意志动词＋まい",
+        "desc": "表示说话人决定不做某事。主语通常是第一人称，并经常省略。与「二度と」「決して」等词搭配时，表示坚定的决心。",
+        "exampleIndexes": [0, 2]
+      },
+      {
+        "key": "negative-conjecture",
+        "title": "否定推量",
+        "meaning": "大概不会……／想必不是……",
+        "connection": "动词＋まい",
+        "desc": "表示说话人根据当时的情况，推测某个动作、状态或事情不会发生、不会成立。相当于较书面、较生硬的「～ないだろう」。",
+        "exampleIndexes": [1]
+      }
+    ],
     "examples": [
       {
         "jp": "<b>もう<ruby>二<rt>に</rt></ruby><ruby>度<rt>ど</rt></ruby>とあの<ruby>店<rt>みせ</rt></ruby>には<ruby>行<rt>い</rt></ruby>く<span style='color:#d64045'>まい</span>。</b>",
-        "cn": "【意志】绝不再去那家店了。"
+        "cn": "再也不去那家店了。"
       },
       {
         "jp": "<b><ruby>誰<rt>だれ</rt></ruby>も<ruby>私<rt>わたし</rt></ruby>の<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちはわかる<span style='color:#d64045'>まい</span>。</b>",
-        "cn": "【推测】大概谁也不会明白我的心情吧。"
+        "cn": "大概谁也不会明白我的心情吧。"
+      },
+      {
+        "jp": "<b><ruby>何<rt>なに</rt></ruby>があっても<ruby>泣<rt>な</rt></ruby>く<span style='color:#d64045'>まい</span>と<ruby>決<rt>けっ</rt></ruby><ruby>心<rt>しん</rt></ruby>した。</b>",
+        "cn": "我下定决心，无论发生什么都不哭。",
+        "source": {
+          "original": "何があっても泣くまいと決心した。",
+          "name": "デジタル大辞泉「まい」",
+          "url": "https://kotobank.jp/word/%E3%81%BE%E3%81%84-632809",
+          "type": "权威国语辞典",
+          "accessedAt": "2026-09-18"
+        }
       }
     ],
     "related": [],
@@ -6857,7 +7016,7 @@
     "legacy": {
       "searchId": 224,
       "sourceNumericId": 224,
-      "searchTags": "否定 意志 推测",
+      "searchTags": "～まい まい mai 否定意志 决心 不打算 绝不 否定推量 大概不会 想必不是 ないつもり ないだろう 书面语 郑重",
       "compareWith": [],
       "tryCenterId": 2093
     }
@@ -6870,22 +7029,130 @@
     "lesson": "第10課",
     "lessonNumber": 10,
     "title": "～につけ",
-    "meaning": "每当…就…",
-    "connection": "动词辞书形／名词＋につけ",
-    "desc": "常搭配「見る、聞く」等词汇，表示每当看到或经历某事时，<b>必然会产生某种强烈的情感</b>。后项多接续表示思考或内心情感的词汇。",
+    "meaning": "每当……就……／每逢有事就……",
+    "connection": "动词辞书形＋につけ（て）／何か＋につけ（て）／何・何事＋につけても",
+    "desc": "表示某件事每次成为契机时，都会出现相同的感受、想法或反应。也可采用「何につけても」「何かにつけ（て）」「何事につけても」等固定形式，表示每逢有什么事情或在各种事情上都会如此。",
+    "usageSections": [
+      {
+        "key": "recurring-trigger",
+        "title": "每次以某事为契机",
+        "meaning": "每当……就……",
+        "connection": "动词辞书形＋につけ（て）",
+        "desc": "表示每次看到、听到或想到前项内容时，都会自然地产生后项的感受或想法。常与「見る」「聞く」「考える」「思う」等动词搭配，后项多为回忆、感慨、担忧等非意志性的心理反应。",
+        "exampleIndexes": [0, 3]
+      },
+      {
+        "key": "nanika-nanigoto",
+        "title": "何につけても／何か・何事につけ（て）（も）",
+        "meaning": "每逢有事……／在各种事情上……",
+        "connection": "何か＋につけ（て）／何・何事＋につけても",
+        "desc": "属于固定用法。「何につけ」通常以「何につけても」的形式使用；此外也常说「何かにつけ（て）」「何事につけても」。表示每当出现某种事情，或者无论涉及什么事情，都会反复出现后项所述的态度或行为。后项不一定是情感，也可以是习惯性的评价或行动。",
+        "exampleIndexes": [1, 2]
+      }
+    ],
     "examples": [
       {
         "jp": "<b>この<ruby>写<rt>しゃ</rt></ruby><ruby>真<rt>しん</rt></ruby>を<ruby>見<rt>み</rt></ruby>る<span style='color:#d64045'>につけ</span>、<ruby>学<rt>がく</rt></ruby><ruby>生<rt>せい</rt></ruby><ruby>時<rt>じ</rt></ruby><ruby>代<rt>だい</rt></ruby>を<ruby>思<rt>おも</rt></ruby>い<ruby>出<rt>だ</rt></ruby>す。</b>",
         "cn": "每当看到这张照片，就会想起学生时代。"
+      },
+      {
+        "jp": "<b><ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>人<rt>じん</rt></ruby>は<span style='color:#d64045'><ruby>何<rt>なに</rt></ruby>かにつけて</span>、<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>たちの<ruby>行<rt>こう</rt></ruby><ruby>為<rt>い</rt></ruby>を「<ruby>特<rt>とく</rt></ruby><ruby>殊<rt>しゅ</rt></ruby>」だとして「<ruby>反<rt>はん</rt></ruby><ruby>省<rt>せい</rt></ruby>」する。</b>",
+        "cn": "日本人每逢有什么事情，就会把自己的行为说成“特殊”并进行“反省”。",
+        "source": {
+          "original": "日本人は何かにつけて、自分たちの行為を「特殊」だとして「反省」する。",
+          "name": "国立国語研究所《現代語複合辞用例集》「～につけて・～つけ」",
+          "url": "https://repository.ninjal.ac.jp/record/2322/files/gdghgz_200103.pdf",
+          "type": "国家语言研究机构资料",
+          "accessedAt": "2026-09-18"
+        }
+      },
+      {
+        "jp": "<b><ruby>私<rt>わたし</rt></ruby>に<ruby>限<rt>かぎ</rt></ruby>らず、<ruby>人<rt>にん</rt></ruby><ruby>間<rt>げん</rt></ruby>は、<span style='color:#d64045'><ruby>何<rt>なに</rt></ruby>かにつけて</span>、<ruby>多<rt>た</rt></ruby><ruby>分<rt>ぶん</rt></ruby>に<ruby>自<rt>じ</rt></ruby><ruby>意<rt>い</rt></ruby><ruby>識<rt>しき</rt></ruby><ruby>過<rt>か</rt></ruby><ruby>剰<rt>じょう</rt></ruby>なのでしょう。</b>",
+        "cn": "不只是我，人恐怕总会在各种事情上表现得相当自我意识过剩。",
+        "source": {
+          "original": "私に限らず、人間は、何かにつけて、多分に自意識過剰なのでしょう。",
+          "name": "追手門学院大学 学长寄语《小正月と時間》",
+          "url": "https://www.otemon.ac.jp/guide/president-message/117.html",
+          "type": "大学官方网站",
+          "accessedAt": "2026-09-18"
+        }
+      },
+      {
+        "jp": "<b><ruby>本<rt>ほん</rt></ruby><ruby>学<rt>がく</rt></ruby>の<ruby>女<rt>じょ</rt></ruby><ruby>子<rt>し</rt></ruby><ruby>学<rt>がく</rt></ruby><ruby>生<rt>せい</rt></ruby>もごく<ruby>普<rt>ふ</rt></ruby><ruby>通<rt>つう</rt></ruby>に<ruby>使<rt>つか</rt></ruby>っているのを<ruby>聞<rt>き</rt></ruby>く<span style='color:#d64045'>につけ</span>、かつて<ruby>住<rt>す</rt></ruby>んでいた<ruby>首<rt>しゅ</rt></ruby><ruby>都<rt>と</rt></ruby><ruby>圏<rt>けん</rt></ruby>との<ruby>違<rt>ちが</rt></ruby>いを<ruby>感<rt>かん</rt></ruby>じます。</b>",
+        "cn": "每当听到本校女学生也很自然地使用这种说法，我就会感受到它与自己曾居住过的首都圈之间的差异。",
+        "source": {
+          "original": "本学の女子学生もごく普通に使っているのを聞くにつけ、かつて住んでいた首都圏との違いを感じます。",
+          "name": "圣母清心女子大学 日本语日本文学科《でーこんてーてーて》",
+          "url": "https://www.ndsu.ac.jp/blog/article/index.php?c=blog_view&pk=15753775792a15d8efd9fa2c758c6701d4d1ef3ea4",
+          "type": "大学官方网站",
+          "accessedAt": "2026-09-18"
+        }
       }
     ],
-    "related": [],
+    "related": ["n2-269"],
     "kana": "につけ",
     "romaji": "nitsuke",
     "legacy": {
       "searchId": 225,
       "sourceNumericId": 225,
-      "searchTags": "必然 触发 情感",
+      "searchTags": "～につけ ～につけて につけ につけて nitsuke 每当 每逢 契机 触发 感情 回忆 何につけ 何かにつけて 何事につけても 不论什么事情 各种事情 习惯性反应",
+      "compareWith": [],
+      "tryCenterId": 2094
+    }
+  },
+  {
+    "id": "n2-269",
+    "level": "N2",
+    "bookKey": "try-n2",
+    "bookLabel": "Try! N2 文法",
+    "lesson": "第10課",
+    "lessonNumber": 10,
+    "title": "～につけ～につけ",
+    "meaning": "无论……还是……／不管……还是……",
+    "connection": "动词辞书形／イ形容词／名词＋につけ＋动词辞书形／イ形容词／名词＋につけ",
+    "desc": "并列两个对立或属于同一范围的事例，表示<b>无论出现其中哪一种情况，后项都同样成立</b>。前后两项常构成明显的对照，如「良い／悪い」「喜び／悲しみ」「出かける／家にいる」。通过列举具有代表性的两种情况，也暗示其他情况同样不影响后项。属于较正式的表达。",
+    "examples": [
+      {
+        "jp": "<b><ruby>人<rt>ひと</rt></ruby>は<ruby>喜<rt>よろこ</rt></ruby>び<span style='color:#d64045'>につけ</span><ruby>悲<rt>かな</rt></ruby>しみ<span style='color:#d64045'>につけ</span>、<ruby>酒<rt>さけ</rt></ruby>を<ruby>友<rt>とも</rt></ruby>にします。</b>",
+        "cn": "人无论喜悦还是悲伤，都会以酒为伴。",
+        "source": {
+          "original": "人は喜びにつけ悲しみにつけ、酒を友にします。",
+          "name": "国立国語研究所《現代語複合辞用例集》「～につけて・～つけ」",
+          "url": "https://repository.ninjal.ac.jp/record/2322/files/gdghgz_200103.pdf",
+          "type": "国家语言研究机构资料",
+          "accessedAt": "2026-09-18"
+        }
+      },
+      {
+        "jp": "<b>いい<span style='color:#d64045'>につけ</span>、<ruby>悪<rt>わる</rt></ruby>い<span style='color:#d64045'>につけ</span>、<ruby>親<rt>おや</rt></ruby><ruby>子<rt>こ</rt></ruby>はよく<ruby>似<rt>に</rt></ruby>ると<ruby>言<rt>い</rt></ruby>われている。</b>",
+        "cn": "据说无论好的方面还是坏的方面，父母和孩子都会很相像。",
+        "source": {
+          "original": "いいにつけ、悪いにつけ、親子はよく似ると言われている。",
+          "name": "ジャパンタイムズ出版《文法 Buddy N2》例文资料",
+          "url": "https://bookclub2.japantimes.co.jp/download/files/buddy_N2_answer_kaitemiyou_1.pdf",
+          "type": "出版社教材",
+          "accessedAt": "2026-09-18"
+        }
+      },
+      {
+        "jp": "<b><ruby>妻<rt>つま</rt></ruby>は、<ruby>私<rt>わたし</rt></ruby>が<ruby>休<rt>きゅう</rt></ruby><ruby>日<rt>じつ</rt></ruby>に<ruby>出<rt>で</rt></ruby>かける<span style='color:#d64045'>につけ</span>、<ruby>家<rt>いえ</rt></ruby>にいる<span style='color:#d64045'>につけ</span>、<ruby>文<rt>もん</rt></ruby><ruby>句<rt>く</rt></ruby>を<ruby>言<rt>い</rt></ruby>っている。</b>",
+        "cn": "妻子不管我休息日出门还是待在家里，都会抱怨。",
+        "source": {
+          "original": "妻は、私が休日に出かけるにつけ、家にいるにつけ、文句を言っている。",
+          "name": "ジャパンタイムズ出版《文法 Buddy N2》例文资料",
+          "url": "https://bookclub2.japantimes.co.jp/download/files/buddy_N2_answer_kaitemiyou_1.pdf",
+          "type": "出版社教材",
+          "accessedAt": "2026-09-18"
+        }
+      }
+    ],
+    "related": ["n2-225"],
+    "kana": "につけにつけ",
+    "romaji": "nitsuke nitsuke",
+    "legacy": {
+      "searchId": 269,
+      "sourceNumericId": 269,
+      "searchTags": "～につけ～につけ につけにつけ nitsuke nitsuke 无论还是 不管还是 两种情况 对立列举 并列列举 良いにつけ悪いにつけ 喜びにつけ悲しみにつけ",
       "compareWith": [],
       "tryCenterId": 2094
     }
@@ -6956,13 +7223,28 @@
     "lesson": "第10課",
     "lessonNumber": 10,
     "title": "～げ",
-    "meaning": "好像… / 显得…",
-    "connection": "イ形容词词干／ナ形容词词干／动词ます形去掉「ます」＋げ",
-    "desc": "接在表示情感的词语后，表示从外观上观察到的<b>客观神态或样子</b>。不用于陈述说话人自身的内心情感。",
+    "meaning": "显得……／带有……的样子",
+    "connection": "イ形容词去掉「い」／ナ形容词词干＋げ；动词ます形去掉「ます」＋たげ（表示愿望）",
+    "desc": "接在表示情绪、感觉或状态的词后，表示从人物的<b>表情、态度或外观</b>可以看出某种样子。重点是观察者看到的外在表现，并不是直接断定当事人的内心感受。构成ナ形容词，可使用「～げだ」「～げな＋名词」「～げに＋动词」等形式；也可用于事物，表示给人某种视觉印象，如「涼しげな服」。",
     "examples": [
       {
         "jp": "<b><ruby>彼<rt>かの</rt></ruby><ruby>女<rt>じょ</rt></ruby>は<ruby>悲<rt>かな</rt></ruby>し<span style='color:#d64045'>げ</span>にうつむいていた。</b>",
         "cn": "她神情悲伤地低着头。"
+      },
+      {
+        "jp": "<b><ruby>彼<rt>かれ</rt></ruby>は<ruby>不<rt>ふ</rt></ruby><ruby>安<rt>あん</rt></ruby><span style='color:#d64045'>げな</span><ruby>表<rt>ひょう</rt></ruby><ruby>情<rt>じょう</rt></ruby>をしていました。</b>",
+        "cn": "他露出了不安的神情。"
+      },
+      {
+        "jp": "<b>ウガンダスタッフにも<ruby>私<rt>わたし</rt></ruby>にも、<ruby>人<rt>ひと</rt></ruby><ruby>々<rt>びと</rt></ruby>の<ruby>不<rt>ふ</rt></ruby><ruby>安<rt>あん</rt></ruby><span style='color:#d64045'>げな</span><ruby>表<rt>ひょう</rt></ruby><ruby>情<rt>じょう</rt></ruby>が<ruby>目<rt>め</rt></ruby>に<ruby>焼<rt>や</rt></ruby>き<ruby>付<rt>つ</rt></ruby>いた。</b>",
+        "cn": "那些人不安的神情，深深地印在乌干达工作人员和我的脑海里。",
+        "source": {
+          "original": "ウガンダスタッフにも私にも、人々の不安げな表情が目に焼き付いた。",
+          "name": "国际协力机构（JICA）《ウガンダ―難民とともに発展する国》",
+          "url": "https://www.jica.go.jp/information/publication/manga/__icsFiles/afieldfile/2026/02/06/uganda_refugee.pdf",
+          "type": "政府系机构资料",
+          "accessedAt": "2026-09-18"
+        }
       }
     ],
     "related": [],
@@ -6971,7 +7253,7 @@
     "legacy": {
       "searchId": 228,
       "sourceNumericId": 228,
-      "searchTags": "外观 神态 观察",
+      "searchTags": "～げ げ ge 显得 带有样子 外观 神态 表情 态度 视觉印象 悲しげ 不安げ 寂しげ 楽しげ 得意げ 涼しげ 意味ありげ 言いたげ げだ げな げに",
       "compareWith": [],
       "tryCenterId": 2097
     }
@@ -7185,23 +7467,51 @@
     "bookLabel": "Try! N2 文法",
     "lesson": "第11課",
     "lessonNumber": 11,
-    "title": "～だけあって",
-    "meaning": "不愧是… / 正因为…",
-    "connection": "普通形＋だけあって（※ナ形容词用「～な」、名词可直接接续）",
-    "desc": "表示后项的良好结果或极高评价，完全符合前项的客观条件或地位。带有<b>正因为如此，理所当然</b>的语感。",
+    "title": "～だけあって／～だけのことはある",
+    "meaning": "不愧是……；果然与……相称；确实没有白……",
+    "connection": "普通形＋だけあって／だけのことはある（※ナ形容词用「～な」、名词可直接接续）",
+    "desc": "两种形式都表示某人的<b>身份、经历、能力或付出</b>具有相应价值，实际表现或结果也与之相称，常带有“不愧是……”的评价语气。标准形式是「～だけのこと<b>は</b>ある」，不是「～だけのことがある」。",
+    "usageSections": [
+      {
+        "key": "dake-atte-result",
+        "title": "用「～だけあって」连接依据与相称的结果",
+        "meaning": "不愧是……；正因为具备……",
+        "connection": "普通形＋だけあって（※ナ形容词用「～な」、名词可直接接续）",
+        "desc": "前项提出值得肯定的身份、经历、能力或条件，后项说明与之相称、符合预期的<b>表现或结果</b>。常与「さすが」搭配。",
+        "exampleIndexes": [0, 3, 4]
+      },
+      {
+        "key": "dake-no-koto-wa-aru-evaluation",
+        "title": "用「～だけのことはある」作总结评价",
+        "meaning": "果然有相应价值；确实没有白……",
+        "connection": "普通形＋だけのことはある（※ナ形容词用「～な」、名词可直接接续；表示付出时常用动词た形）",
+        "desc": "多用于句末。说话人在看到实际成果后，确认前项的名声、经历或付出<b>确实产生了相应价值</b>。接在表示努力或尝试的动词た形后，还可表示这些付出没有白费。",
+        "exampleIndexes": [1, 2]
+      }
+    ],
     "examples": [
       {
         "jp": "<b><ruby>彼<rt>かれ</rt></ruby>はスポーツ<ruby>選<rt>せん</rt></ruby><ruby>手<rt>しゅ</rt></ruby><span style='color:#d64045'>だけあって</span>、<ruby>体<rt>たい</rt></ruby><ruby>格<rt>かく</rt></ruby>がいい。</b>",
         "cn": "他不愧是运动员，体格真好。"
+      },
+      {
+        "jp": "<b>さすがによく<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>した<span style='color:#d64045'>だけのことはある</span>。</b>",
+        "cn": "果然没有白费工夫认真学习。",
+        "source": { "original": "さすがによく勉強しただけのことはある。", "name": "国立国语研究所《日语教育语法语汇对照指导书》", "url": "https://www2.ninjal.ac.jp/takoni/DGG/DGG2.pdf", "type": "国立语言研究机构资料", "accessedAt": "2026-09-21" }
+      },
+      {
+        "jp": "<b>さすがJFの<ruby>研<rt>けん</rt></ruby><ruby>修<rt>しゅう</rt></ruby>を<ruby>繰<rt>く</rt></ruby>り<ruby>返<rt>かえ</rt></ruby>してきた<span style='color:#d64045'>だけのことはある</span>。</b>",
+        "cn": "不愧是反复参加过国际交流基金培训的。",
+        "source": { "original": "さすがJFの研修を繰り返してきただけのことはある。", "name": "国际交流基金日本语伙伴「コミュニケーションをとるということ」", "url": "https://asiawa.jpf.go.jp/partners/voice/blog/2017-09-05/", "type": "语言机构公开文章", "accessedAt": "2026-09-21" }
       }
     ],
     "related": [],
-    "kana": "だけあって",
-    "romaji": "dakeatte",
+    "kana": "だけあって／だけのことはある",
+    "romaji": "dake atte / dake no koto wa aru",
     "legacy": {
       "searchId": 236,
       "sourceNumericId": 236,
-      "searchTags": "原因 评价 顺接",
+      "searchTags": "～だけあって ～だけのことはある だけあって だけのことはある dake atte dake no koto wa aru 不愧是 果然 名不虚传 相称 符合预期 有价值 没有白费 原因 评价 顺接",
       "compareWith": [],
       "tryCenterId": 2105
     }
@@ -7213,25 +7523,108 @@
     "bookLabel": "Try! N2 文法",
     "lesson": "第11課",
     "lessonNumber": 11,
-    "title": "～にしろ～にしろ / ～にせよ～にせよ",
-    "meaning": "无论是…还是…",
-    "connection": "普通形1＋にしろ／にせよ＋普通形2＋にしろ／にせよ（※ナ形容词和名词多省略「だ」）",
-    "desc": "列举两个同类或对立的事物，表示<b>无论是哪种情况</b>，后项的结论、判断或要求都完全成立。",
+    "title": "～にしろ／～にせよ／～にしても／～にしたって",
+    "meaning": "即使……也……；无论……还是……都……",
+    "connection": "普通形＋にしろ／にせよ／にしても／にしたって；疑问词＋（格助词）＋普通形＋にしろ／にせよ／にしても／にしたって；普通形1＋にしろ／にせよ＋普通形2＋にしろ／にせよ（※ナ形容词和名词多省略「だ」，也可接「である」）",
+    "desc": "这些形式用于表示让步。单独使用时，先承认或假定前项成立，再说明后项的判断仍然不变；与疑问词搭配时，表示无论疑问词所指的是哪一种情况，后项都成立；成对使用时，则列举两种情况。「にしたって」较口语，「にせよ」较正式。",
+    "usageSections": [
+      {
+        "key": "single-concession",
+        "title": "单独使用：先承认一种情况",
+        "meaning": "即使……也……；无论……都……",
+        "connection": "普通形＋にしろ／にせよ／にしても／にしたって",
+        "desc": "先承认或假定前项成立，再说明即使如此，后项的判断、要求或意志仍然不变。「にしたって」较口语，「にせよ」较正式。",
+        "exampleIndexes": [1, 2, 4]
+      },
+      {
+        "key": "interrogative-concession",
+        "title": "搭配疑问词：表示任何一种情况",
+        "meaning": "无论谁／什么／哪里／哪一种……都……",
+        "connection": "疑问词＋（格助词）＋普通形＋にしろ／にせよ／にしても／にしたって",
+        "desc": "疑问词在这里不表示提问，而表示其范围内的任何一种情况都不影响后项。常见形式有「誰が～にせよ」「何を～にしても」「どこへ～にしろ」，以及「何にしろ」「いずれにせよ」「どちらにしても」等固定表达。",
+        "exampleIndexes": [3, 5]
+      },
+      {
+        "key": "paired-alternatives",
+        "title": "成对使用：列举两种情况",
+        "meaning": "无论是……还是……都……",
+        "connection": "普通形1＋にしろ／にせよ＋普通形2＋にしろ／にせよ",
+        "desc": "列举两个同类或对立的事项，表示无论属于哪一种情况，后项的结论、判断或要求都成立。前后通常使用相同形式。",
+        "exampleIndexes": [0, 6, 7]
+      }
+    ],
     "examples": [
       {
         "jp": "<b><ruby>行<rt>い</rt></ruby>く<span style='color:#d64045'>にしろ</span><ruby>行<rt>い</rt></ruby>かない<span style='color:#d64045'>にしろ</span>、<ruby>早<rt>はや</rt></ruby>く<ruby>連<rt>れん</rt></ruby><ruby>絡<rt>らく</rt></ruby>してください。</b>",
         "cn": "去还是不去，都请早点联系。"
+      },
+      {
+        "jp": "<b><ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>が<ruby>年<rt>とし</rt></ruby><ruby>下<rt>した</rt></ruby><span style='color:#d64045'>にしろ</span>、<ruby>最<rt>さい</rt></ruby><ruby>低<rt>てい</rt></ruby><ruby>限<rt>げん</rt></ruby>の<ruby>礼<rt>れい</rt></ruby><ruby>儀<rt>ぎ</rt></ruby>は<ruby>必<rt>ひつ</rt></ruby><ruby>要<rt>よう</rt></ruby>だ。</b>",
+        "cn": "即使对方年纪比自己小，最基本的礼貌也是必要的。",
+        "source": {
+          "original": "相手が年下にしろ、最低限の礼儀は必要だ。",
+          "name": "毎日のんびり日本語教師「～にしろ／～にしたって／～にせよ／～にしても」",
+          "url": "https://mainichi-nonbiri.com/grammar/n2-nishiro/",
+          "type": "日语教学资料",
+          "accessedAt": "2026-08-29"
+        }
+      },
+      {
+        "jp": "<b><ruby>部<rt>へ</rt></ruby><ruby>屋<rt>や</rt></ruby>を<ruby>借<rt>か</rt></ruby>りる<span style='color:#d64045'>にしたって</span><ruby>都<rt>と</rt></ruby><ruby>内<rt>ない</rt></ruby>ではとても<ruby>高<rt>たか</rt></ruby>くて、<ruby>不<rt>ふ</rt></ruby><ruby>可<rt>か</rt></ruby><ruby>能<rt>のう</rt></ruby>だ。</b>",
+        "cn": "即便要租房，在东京都内也贵得根本办不到。",
+        "source": {
+          "original": "部屋を借りるにしたって都内ではとても高くて、不可能だ。",
+          "name": "小学館『類語例解辞典』「としても」",
+          "url": "https://dictionary.goo.ne.jp/thsrs/17243/meaning/m0u/",
+          "type": "权威辞典例句",
+          "accessedAt": "2026-08-29"
+        }
+      },
+      {
+        "jp": "<b>だれが<ruby>社<rt>しゃ</rt></ruby><ruby>長<rt>ちょう</rt></ruby>に<ruby>選<rt>えら</rt></ruby>ばれる<span style='color:#d64045'>にせよ</span>、<ruby>前<rt>ぜん</rt></ruby><ruby>途<rt>と</rt></ruby>は<ruby>多<rt>た</rt></ruby><ruby>難<rt>なん</rt></ruby>だ。</b>",
+        "cn": "无论谁当选社长，前路都会困难重重。",
+        "source": {
+          "original": "だれが社長に選ばれるにせよ、前途は多難だ。",
+          "name": "小学館『類語例解辞典』「としても」",
+          "url": "https://dictionary.goo.ne.jp/thsrs/17243/meaning/m0u/",
+          "type": "权威辞典例句",
+          "accessedAt": "2026-08-29"
+        }
+      },
+      {
+        "jp": "<b><ruby>苦<rt>く</rt></ruby><ruby>労<rt>ろう</rt></ruby>はする<span style='color:#d64045'>にしても</span><ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>が<ruby>選<rt>えら</rt></ruby>んだ<ruby>道<rt>みち</rt></ruby>を<ruby>進<rt>すす</rt></ruby>みたい。</b>",
+        "cn": "即使会吃苦，我也想走自己选择的道路。",
+        "source": {
+          "original": "苦労はするにしても自分が選んだ道を進みたい。",
+          "name": "小学館『類語例解辞典』「としても」",
+          "url": "https://dictionary.goo.ne.jp/thsrs/17243/meaning/m0u/",
+          "type": "权威辞典例句",
+          "accessedAt": "2026-08-29"
+        }
+      },
+      {
+        "jp": "<b><ruby>新<rt>しん</rt></ruby><ruby>開<rt>かい</rt></ruby><ruby>地<rt>ち</rt></ruby>においては、<ruby>他<rt>た</rt></ruby><ruby>人<rt>にん</rt></ruby>と<ruby>信<rt>しん</rt></ruby><ruby>頼<rt>らい</rt></ruby><ruby>関<rt>かん</rt></ruby><ruby>係<rt>けい</rt></ruby>をもつことは、<span style='color:#d64045'><ruby>何<rt>なに</rt></ruby>をするにしても</span><ruby>決<rt>けっ</rt></ruby><ruby>定<rt>てい</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>重<rt>じゅう</rt></ruby><ruby>要<rt>よう</rt></ruby>なことである。</b>",
+        "cn": "在新开发地区，无论做什么，与他人建立信任关系都极其重要。",
+        "source": {
+          "original": "新開地においては、他人と信頼関係をもつことは、何をするにしても決定的に重要なことである。",
+          "name": "ジェトロ・アジア経済研究所『新開地における社会形成と農協』",
+          "url": "https://d-arch.ide.go.jp/je_archive/society/wp_unu_jpn88.html",
+          "type": "研究机构公开资料",
+          "accessedAt": "2026-09-21"
+        }
       }
     ],
     "related": [],
-    "kana": "にしろ〜にしろ",
-    "romaji": "nishiro~nishiro",
+    "kana": "～にしろ／～にせよ／～にしても／～にしたって",
+    "romaji": "ni shiro / ni seyo / ni shitemo / ni shitatte",
     "legacy": {
       "searchId": 237,
       "sourceNumericId": 237,
-      "searchTags": "并列 条件 无论",
+      "searchTags": "～にしろ ～にせよ ～にしても ～にしたって にしろ にせよ にしても にしたって ni shiro ni seyo ni shitemo ni shitatte 即使也 无论都 无论还是 并列 让步 假定 结论不变 疑问词 谁 什么 哪里 哪一个 誰が 何を どこへ 何にしろ いずれにせよ どちらにしても 口语 书面",
       "compareWith": [],
-      "tryCenterId": 2106
+      "tryCenterId": 2106,
+      "aliasCanonicalIds": ["mainichi-n2-030"],
+      "aliasSearchIds": [4148]
     }
   },
   {
@@ -7336,7 +7729,7 @@
     "title": "～ないことには",
     "meaning": "如果不…就（不能）…",
     "connection": "动词ない形／イ形容词词干＋く／ナ形容词・名词＋で＋ないことには",
-    "desc": "表示前项动作或状态是后项成立的<b>绝对必要前提</b>。后项常伴随否定、消极的内容。",
+    "desc": "表示<b>如果前项条件没有实现，后项就无法进行，或无法作出判断</b>。后项通常使用「～ない」「～できない」「～わからない」等否定表达。",
     "examples": [
       {
         "jp": "<b><ruby>実<rt>じつ</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>を<ruby>見<rt>み</rt></ruby><span style='color:#d64045'>ないことには</span>、<ruby>買<rt>か</rt></ruby>うかどうか<ruby>決<rt>き</rt></ruby>められない。</b>",
@@ -7394,7 +7787,7 @@
     "title": "～としたら / ～とすれば / ～とすると",
     "meaning": "如果…的话 / 假设…",
     "connection": "普通形＋としたら／とすれば／とすると",
-    "desc": "提出一个<b>纯粹的假定条件或尚未发生的情况</b>。后项多接续说话人的判断、评价、主张或询问。",
+    "desc": "表示<b>先假设前项成立，再根据这一假设说明后项的判断、结论或疑问</b>。可用于尚未确定的事情，也可假设与事实不同或可能性较低的情况。「としたら」较常用于会话；「とすれば」「とすると」较常用于根据假设进行推论。",
     "examples": [
       {
         "jp": "<b>もし<ruby>百<rt>ひゃく</rt></ruby><ruby>万<rt>まん</rt></ruby><ruby>円<rt>えん</rt></ruby>あった<span style='color:#d64045'>としたら</span>、<ruby>何<rt>なに</rt></ruby>に<ruby>使<rt>つか</rt></ruby>いますか。</b>",
@@ -13415,7 +13808,8 @@
     "related": [
       "supp-n1-review-055",
       "mainichi-n3-020",
-      "supp-n1-review-054"
+      "supp-n1-review-054",
+      "mainichi-n3-087"
     ],
     "kana": "ようにする",
     "romaji": "younisuru",
@@ -14104,37 +14498,6 @@
       "compareWith": [],
       "sourcePage": "N1语法复习文档.pages",
       "sourceId": 76
-    }
-  },
-  {
-    "id": "supp-n1-review-077",
-    "level": "N1",
-    "bookKey": "n1-review-supplement",
-    "bookLabel": "其他",
-    "lesson": "N1语法复习补充",
-    "lessonNumber": 1,
-    "title": "～じゃないか（号召）",
-    "meaning": "一起……吧／让我们……吧",
-    "connection": "动词意向形（〜よう／〜おう）＋じゃないか",
-    "desc": "场景４：向对方提出积极的建议，呼吁对方一起行动。多用于男性口语或较有气势的号召中。",
-    "examples": [
-      {
-        "jp": "<b>みんなで<ruby>力<rt>ちから</rt></ruby>を<ruby>合わせ<rt>あわせ</rt></ruby>て、この<ruby>困難<rt>こんなん</rt></ruby>を<ruby>乗り越えよう<rt>のりこえよう</rt></ruby><span style='color:#d64045'>じゃないか</span>。</b>",
-        "cn": "咱们齐心协力共渡难关吧。"
-      }
-    ],
-    "related": [
-      "n3-053"
-    ],
-    "kana": "じゃないか",
-    "romaji": "janaika",
-    "legacy": {
-      "searchId": 4077,
-      "sourceNumericId": 77,
-      "searchTags": "～じゃないか じゃないか janaika 一起……吧／让我们……吧 指示与忠告 呼吁共同采取行动",
-      "compareWith": [],
-      "sourcePage": "N1语法复习文档.pages",
-      "sourceId": 77
     }
   },
   {
@@ -18230,77 +18593,6 @@
       "compareWith": [],
       "sourcePage": "https://mainichi-nonbiri.com/grammar/n2-nihakedo/",
       "sourceId": 29
-    }
-  },
-  {
-    "id": "mainichi-n2-030",
-    "level": "N2",
-    "bookKey": "mainichi-n2-supplement",
-    "bookLabel": "其他",
-    "lesson": "N2语法补充",
-    "lessonNumber": 1,
-    "title": "～にしろ／～にしたって／～にせよ／～にしても",
-    "meaning": "即使……也……；无论……都……",
-    "connection": "普通形＋にしろ／にしたって／にせよ／にしても（名词・ナ形容词词干可接「である」）",
-    "desc": "先承认或假定前项成立，再说明<b>即使在这种情况下，后项的判断仍然不变</b>。常与「たとえ」「いくら」「どんなに」「誰が」等搭配。「にしたって」较口语，「にせよ」较正式、书面。",
-    "examples": [
-      {
-        "jp": "<b><ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>が<ruby>年<rt>とし</rt></ruby><ruby>下<rt>した</rt></ruby><span style='color:#d64045'>にしろ</span>、<ruby>最<rt>さい</rt></ruby><ruby>低<rt>てい</rt></ruby><ruby>限<rt>げん</rt></ruby>の<ruby>礼<rt>れい</rt></ruby><ruby>儀<rt>ぎ</rt></ruby>は<ruby>必<rt>ひつ</rt></ruby><ruby>要<rt>よう</rt></ruby>だ。</b>",
-        "cn": "即使对方年纪比自己小，最基本的礼貌也是必要的。",
-        "source": {
-          "original": "相手が年下にしろ、最低限の礼儀は必要だ。",
-          "name": "毎日のんびり日本語教師「～にしろ／～にしたって／～にせよ／～にしても」",
-          "url": "https://mainichi-nonbiri.com/grammar/n2-nishiro/",
-          "type": "日语教学资料",
-          "accessedAt": "2026-08-29"
-        }
-      },
-      {
-        "jp": "<b><ruby>部<rt>へ</rt></ruby><ruby>屋<rt>や</rt></ruby>を<ruby>借<rt>か</rt></ruby>りる<span style='color:#d64045'>にしたって</span><ruby>都<rt>と</rt></ruby><ruby>内<rt>ない</rt></ruby>ではとても<ruby>高<rt>たか</rt></ruby>くて、<ruby>不<rt>ふ</rt></ruby><ruby>可<rt>か</rt></ruby><ruby>能<rt>のう</rt></ruby>だ。</b>",
-        "cn": "即便要租房，在东京都内也贵得根本办不到。",
-        "source": {
-          "original": "部屋を借りるにしたって都内ではとても高くて、不可能だ。",
-          "name": "小学館『類語例解辞典』「としても」",
-          "url": "https://dictionary.goo.ne.jp/thsrs/17243/meaning/m0u/",
-          "type": "权威辞典例句",
-          "accessedAt": "2026-08-29"
-        }
-      },
-      {
-        "jp": "<b>だれが<ruby>社<rt>しゃ</rt></ruby><ruby>長<rt>ちょう</rt></ruby>に<ruby>選<rt>えら</rt></ruby>ばれる<span style='color:#d64045'>にせよ</span>、<ruby>前<rt>ぜん</rt></ruby><ruby>途<rt>と</rt></ruby>は<ruby>多<rt>た</rt></ruby><ruby>難<rt>なん</rt></ruby>だ。</b>",
-        "cn": "无论谁当选社长，前路都会困难重重。",
-        "source": {
-          "original": "だれが社長に選ばれるにせよ、前途は多難だ。",
-          "name": "小学館『類語例解辞典』「としても」",
-          "url": "https://dictionary.goo.ne.jp/thsrs/17243/meaning/m0u/",
-          "type": "权威辞典例句",
-          "accessedAt": "2026-08-29"
-        }
-      },
-      {
-        "jp": "<b><ruby>苦<rt>く</rt></ruby><ruby>労<rt>ろう</rt></ruby>はする<span style='color:#d64045'>にしても</span><ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>が<ruby>選<rt>えら</rt></ruby>んだ<ruby>道<rt>みち</rt></ruby>を<ruby>進<rt>すす</rt></ruby>みたい。</b>",
-        "cn": "即使会吃苦，我也想走自己选择的道路。",
-        "source": {
-          "original": "苦労はするにしても自分が選んだ道を進みたい。",
-          "name": "小学館『類語例解辞典』「としても」",
-          "url": "https://dictionary.goo.ne.jp/thsrs/17243/meaning/m0u/",
-          "type": "权威辞典例句",
-          "accessedAt": "2026-08-29"
-        }
-      }
-    ],
-    "related": [
-      "n2-237"
-    ],
-    "kana": "～にしろ／～にしたって／～にせよ／～にしても",
-    "romaji": "ni shiro / ni shitatte / ni seyo / ni shitemo",
-    "legacy": {
-      "searchId": 4148,
-      "sourceNumericId": 30,
-      "searchTags": "～にしろ ～にしたって ～にせよ ～にしても にしろ にしたって にせよ にしても ni shiro ni shitatte ni seyo ni shitemo 即使也 无论都 让步 假定 结论不变 口语 书面 たとえ いくら どんなに",
-      "compareWith": [],
-      "sourcePage": "https://mainichi-nonbiri.com/grammar/n2-nishiro/",
-      "sourceId": 30
     }
   },
   {
@@ -26689,6 +26981,187 @@
       "compareWith": [],
       "sourcePage": "https://mainichi-nonbiri.com/grammar/n1-narabetuda/",
       "sourceId": 48
+    }
+  },
+  {
+    "id": "mainichi-n3-086",
+    "level": "N3",
+    "bookKey": "mainichi-n3-supplement",
+    "bookLabel": "其他",
+    "lesson": "N3语法补充",
+    "lessonNumber": 1,
+    "title": "～ではないか／～じゃないか",
+    "meaning": "不是……吗；原来……；竟然……；让我们……吧",
+    "connection": "动词・イ形容词普通形＋ではないか／じゃないか；ナ形容词词干・名词＋ではないか／じゃないか；动词意向形＋ではないか／じゃないか",
+    "desc": "「ではないか」较郑重或偏书面，「じゃないか」多用于口语；礼貌形可用「ではありませんか／じゃないですか」。具体含义需要根据前项形式和使用场景判断。",
+    "usageSections": [
+      {
+        "key": "dewanaika-shared-recognition",
+        "title": "唤起双方已有的认识",
+        "meaning": "……不是大家都知道吗；……对吧",
+        "connection": "普通形＋じゃないですか／ではないですか",
+        "desc": "说话人认为前项是双方已经知道或容易认同的内容，用这一形式<b>确认共同认识</b>，并以此作为后续说明的前提。通常使用下降语调。",
+        "exampleIndexes": [0, 1]
+      },
+      {
+        "key": "dewanaika-discovery-exclamation",
+        "title": "表达意外发现或感叹",
+        "meaning": "原来……；竟然……；这不是……吗",
+        "connection": "普通形＋ではないか／じゃないか",
+        "desc": "用于看到预料之外的事实，或重新注意到某种情况时，表达<b>惊讶、感动或赞叹</b>。这里不是在询问对方。",
+        "exampleIndexes": [2, 3]
+      },
+      {
+        "key": "dewanaika-reproach-rebuttal",
+        "title": "提醒对方并表示责备或反驳",
+        "meaning": "不是已经……了吗；明明……",
+        "connection": "普通形＋ではないか／じゃないか",
+        "desc": "提醒对方回想已经说过、约定过或应当知道的事实，借此<b>责备对方没有遵守或否定该事实</b>。语气通常较强。",
+        "exampleIndexes": [4, 5]
+      },
+      {
+        "key": "dewanaika-emphatic-judgment",
+        "title": "强调判断并促使对方认同",
+        "meaning": "难道不正是……吗；我认为……不是吗",
+        "connection": "普通形＋ではないか／じゃないか",
+        "desc": "把自己的判断以反问形式提出，强调该判断有充分根据，并<b>促使听者重新考虑或表示认同</b>。正式论述中多用「ではないか」。",
+        "exampleIndexes": [6, 7]
+      },
+      {
+        "key": "dewanaika-volitional-invitation",
+        "title": "号召对方共同采取行动",
+        "meaning": "让我们……吧；一起……吧",
+        "connection": "动词意向形（～よう／～おう）＋ではないか／じゃないか",
+        "desc": "用于积极地邀请或号召听者和说话人一起行动。比「～ましょう」<b>更有号召力，也稍显郑重</b>，常见于演讲、倡议或带有气势的表达。",
+        "exampleIndexes": [8, 9]
+      }
+    ],
+    "examples": [
+      {
+        "jp": "<b><ruby>外<rt>がい</rt></ruby><ruby>食<rt>しょく</rt></ruby>って、やっぱりお<ruby>金<rt>かね</rt></ruby>がかかる<span style='color:#d64045'>じゃないですか</span>。</b>",
+        "cn": "在外面吃饭毕竟很花钱，对吧。",
+        "source": { "original": "外食って、やっぱりお金がかかるじゃないですか。", "name": "国际交流基金《いろどり 生活の日本語》初级2 第6课", "url": "https://www.irodori.jpf.go.jp/assets/data/pre-intermediate/pdf/ZZ_L06.pdf", "type": "语言机构教材", "accessedAt": "2026-09-11" }
+      },
+      {
+        "jp": "<b>すしって、<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby><ruby>中<rt>じゅう</rt></ruby>で<ruby>人<rt>にん</rt></ruby><ruby>気<rt>き</rt></ruby>がある<span style='color:#d64045'>じゃないですか</span>。</b>",
+        "cn": "寿司在全世界都很受欢迎，不是吗。",
+        "source": { "original": "すしって、世界中で人気があるじゃないですか。", "name": "国际交流基金《いろどり 生活の日本語》初级2 第6课", "url": "https://www.irodori.jpf.go.jp/assets/data/pre-intermediate/pdf/ZZ_L06.pdf", "type": "语言机构教材", "accessedAt": "2026-09-11" }
+      },
+      {
+        "jp": "<b>いつもは<ruby>頼<rt>たよ</rt></ruby>りない<ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>が、<ruby>病<rt>びょう</rt></ruby><ruby>気<rt>き</rt></ruby>の<ruby>私<rt>わたし</rt></ruby>を<ruby>一<rt>いっ</rt></ruby><ruby>生<rt>しょう</rt></ruby><ruby>懸<rt>けん</rt></ruby><ruby>命<rt>めい</rt></ruby><ruby>看<rt>かん</rt></ruby><ruby>病<rt>びょう</rt></ruby>してくれる<span style='color:#d64045'>ではないか</span>。</b>",
+        "cn": "平时不太可靠的孩子，竟然在我生病时拼命照顾我。",
+        "source": { "original": "いつもは頼りない子供が、病気の私を一生懸命看病してくれるではないか。", "name": "Iku老师日文「〜ではないか／じゃないか」", "url": "https://jp.ikuchannel.com/lessons/111-4-dehanaika", "type": "日语教学资料", "accessedAt": "2026-09-11" }
+      },
+      {
+        "jp": "<b>うわー、この<ruby>携<rt>けい</rt></ruby><ruby>帯<rt>たい</rt></ruby><ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby>、テレビが<ruby>見<rt>み</rt></ruby>られる<span style='color:#d64045'>じゃないか</span>。</b>",
+        "cn": "哇，这部手机竟然还能看电视。",
+        "source": { "original": "うわー、この携帯電話、テレビが見られるじゃないか。", "name": "TOPIA「じゃないですか」学习资料", "url": "https://www.topia.ne.jp/_files/00065917/awalife_may2007.pdf", "type": "公共日语学习资料", "accessedAt": "2026-09-11" }
+      },
+      {
+        "jp": "<b><ruby>昨<rt>きの</rt></ruby><ruby>日<rt>う</rt></ruby>、ちゃんと<ruby>言<rt>い</rt></ruby>った<span style='color:#d64045'>じゃないか</span>！</b>",
+        "cn": "昨天不是已经好好跟你说过了吗！",
+        "source": { "original": "昨日、ちゃんと言ったじゃないか！", "name": "高知市青年层方言意识调查", "url": "https://u-kochi.repo.nii.ac.jp/record/1099/files/11_%E6%A9%8B%E5%B0%BE_%E9%AB%98%E7%9F%A5%E5%B8%82%E8%8B%A5%E5%B9%B4%E5%B1%A4%E6%96%B9%E8%A8%80%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E3%83%8D%E3%82%AA%E6%96%B9%E8%A8%80.pdf", "type": "大学研究资料", "accessedAt": "2026-09-11" }
+      },
+      {
+        "jp": "<b><ruby>口<rt>くち</rt></ruby><ruby>約<rt>やく</rt></ruby><ruby>束<rt>そく</rt></ruby>とはいえちゃんと<ruby>約<rt>やく</rt></ruby><ruby>束<rt>そく</rt></ruby>した<span style='color:#d64045'>じゃないか</span>！</b>",
+        "cn": "虽说只是口头约定，但不是已经明确约好了吗！",
+        "source": { "original": "口約束とはいえちゃんと約束したじゃないか！", "name": "ファイナンシャルフィールド「口約束での贈与」", "url": "https://financial-field.com/inheritance/entry-13915/", "type": "正式日语文章", "accessedAt": "2026-09-11" }
+      },
+      {
+        "jp": "<b><ruby>利<rt>り</rt></ruby><ruby>用<rt>よう</rt></ruby><ruby>継<rt>けい</rt></ruby><ruby>続<rt>ぞく</rt></ruby>という<ruby>観<rt>かん</rt></ruby><ruby>点<rt>てん</rt></ruby>では、<ruby>機<rt>き</rt></ruby><ruby>能<rt>のう</rt></ruby>や<ruby>内<rt>ない</rt></ruby><ruby>容<rt>よう</rt></ruby>よりも、「<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>健<rt>けん</rt></ruby><ruby>康<rt>こう</rt></ruby>のため」<ruby>以<rt>い</rt></ruby><ruby>外<rt>がい</rt></ruby>の<ruby>観<rt>かん</rt></ruby><ruby>点<rt>てん</rt></ruby>から、<ruby>行<rt>こう</rt></ruby><ruby>動<rt>どう</rt></ruby>に<ruby>意<rt>い</rt></ruby><ruby>味<rt>み</rt></ruby><ruby>付<rt>づ</rt></ruby>けをすることが<ruby>重<rt>じゅう</rt></ruby><ruby>要<rt>よう</rt></ruby><span style='color:#d64045'>ではないか</span>。</b>",
+        "cn": "从持续使用的角度来看，比起功能和内容，从“为了自身健康”以外的角度赋予行动意义，难道不是更重要吗。",
+        "source": { "original": "利用継続という観点では、機能や内容よりも、「自分の健康のため」以外の観点から、行動に意味付けをすることが重要ではないか。", "name": "AMED「第5回予防・健康づくり領域の社会実装に向けたシンポジウム」", "url": "https://healthcare-service.amed.go.jp/symposium_fifth/report/", "type": "公共研究机构", "accessedAt": "2026-09-11" }
+      },
+      {
+        "jp": "<b>むしろ、<ruby>思<rt>おぼ</rt></ruby>し<ruby>召<rt>め</rt></ruby>しされたものに<ruby>価<rt>か</rt></ruby><ruby>値<rt>ち</rt></ruby>を<ruby>見<rt>み</rt></ruby><ruby>出<rt>いだ</rt></ruby>していくことが<ruby>重<rt>じゅう</rt></ruby><ruby>要<rt>よう</rt></ruby><span style='color:#d64045'>じゃないか</span>。</b>",
+        "cn": "更重要的，难道不是从命运所给予的事物中发现价值吗。",
+        "source": { "original": "むしろ、思し召しされたものに価値を見出していくことが重要じゃないか。", "name": "名古屋大学理学部「青雲―将来の理学部の学生へ」", "url": "https://www.philosophia.sci.nagoya-u.ac.jp/viewpoints/1156.html", "type": "大学公开文章", "accessedAt": "2026-09-11" }
+      },
+      {
+        "jp": "<b>みんなで<ruby>力<rt>ちから</rt></ruby>を<ruby>合<rt>あ</rt></ruby>わせて、この<ruby>困<rt>こん</rt></ruby><ruby>難<rt>なん</rt></ruby>を<span style='color:#d64045'><ruby>乗<rt>の</rt></ruby>り<ruby>越<rt>こ</rt></ruby>えようじゃないか</span>。</b>",
+        "cn": "让我们齐心协力，共同渡过这个难关吧。"
+      },
+      {
+        "jp": "<b>ボーナスもでたことだし、<ruby>旅<rt>りょ</rt></ruby><ruby>行<rt>こう</rt></ruby>に<span style='color:#d64045'><ruby>行<rt>い</rt></ruby>こうではないか</span>。</b>",
+        "cn": "奖金也发了，让我们去旅行吧。",
+        "source": { "original": "ボーナスもでたことだし、旅行に行こうではないか。", "name": "絵でわかる日本語「〜ようではないか」", "url": "https://www.edewakaru.com/archives/26947255.html", "type": "日语教学资料", "accessedAt": "2026-09-11" }
+      }
+    ],
+    "related": ["supp-n1-review-073", "n3-053"],
+    "kana": "～ではないか／～じゃないか／～じゃないですか／～ではありませんか／～ようではないか／～ようじゃないか",
+    "romaji": "dewa nai ka / ja nai ka / ja nai desu ka / dewa arimasen ka / you dewa nai ka / you ja nai ka",
+    "legacy": {
+      "searchId": 4282,
+      "sourceNumericId": 86,
+      "searchTags": "～ではないか ～じゃないか ～じゃないですか ～ではありませんか ～ではないですか ～じゃありませんか ～じゃん ～ようではないか ～ようじゃないか ～おうではないか ～おうじゃないか ではないか じゃないか dewa nai ka ja nai ka you dewa nai ka you ja nai ka 不是吗 对吧 原来是 竟然 意外 发现 感叹 感动 赞叹 确认 共有认识 提醒 责备 反驳 强调 判断 下降语调 一起吧 让我们吧 号召 邀请 倡议",
+      "compareWith": [],
+      "sourcePage": "user-request",
+      "sourceId": 86,
+      "aliasCanonicalIds": ["supp-n1-review-077"],
+      "aliasSearchIds": [4077]
+    }
+  },
+  {
+    "id": "mainichi-n3-087",
+    "level": "N3",
+    "bookKey": "mainichi-n3-supplement",
+    "bookLabel": "其他",
+    "lesson": "N3语法补充",
+    "lessonNumber": 1,
+    "title": "～ようになる",
+    "meaning": "开始……；变得会……；逐渐能够……",
+    "connection": "动词辞书形／动词可能形＋ようになる",
+    "desc": "表示动作所代表的<b>习惯、能力或状态</b>与过去相比发生了变化。重点在经过一段时间、练习、经验或环境变化后形成的结果；表示有意识地努力养成习惯时用「～ようにする」。原有习惯或状态不再持续时，通常用「～なくなる」。",
+    "usageSections": [
+      {
+        "key": "habit-change",
+        "title": "说明行为习惯发生变化",
+        "meaning": "开始……；逐渐养成……的习惯",
+        "connection": "动词辞书形＋ようになる",
+        "desc": "表示以前不经常做的动作，后来由于生活、环境或想法的变化而<b>成为新的习惯</b>。这里说明的是已经形成的变化，不强调当场作出的决定。",
+        "exampleIndexes": [0, 1]
+      },
+      {
+        "key": "ability-or-state-change",
+        "title": "说明能力或状态发生变化",
+        "meaning": "变得能……；逐渐会……",
+        "connection": "动词可能形／わかる／できる＋ようになる",
+        "desc": "表示经过学习、练习或条件改变后，以前不能实现的事情现在<b>能够实现</b>，或者某种状态开始成立。",
+        "exampleIndexes": [2, 3]
+      }
+    ],
+    "examples": [
+      {
+        "jp": "<b>Eメールを<ruby>始<rt>はじ</rt></ruby>めてから、<ruby>電<rt>でん</rt></ruby><ruby>話<rt>わ</rt></ruby>の<ruby>代<rt>か</rt></ruby>わりにEメールで<ruby>連<rt>れん</rt></ruby><ruby>絡<rt>らく</rt></ruby>をとる<span style='color:#d64045'>ようになりました</span>。</b>",
+        "cn": "开始使用电子邮件后，渐渐改用电子邮件而不是电话联系。",
+        "source": { "original": "Eメールを始めてから、電話の代わりにEメールで連絡をとるようになりました。", "name": "国际交流基金みんなの教材サイト「Vようになります」", "url": "https://www.kyozai.jpf.go.jp/kyozai/material/BTS00086/ja/render.do", "type": "语言机构教材", "accessedAt": "2026-09-19" }
+      },
+      {
+        "jp": "<b><ruby>母<rt>はは</rt></ruby>が<ruby>病<rt>びょう</rt></ruby><ruby>気<rt>き</rt></ruby>になってから、<ruby>弟<rt>おとうと</rt></ruby>は<ruby>洗<rt>せん</rt></ruby><ruby>濯<rt>たく</rt></ruby>や<ruby>掃<rt>そう</rt></ruby><ruby>除<rt>じょ</rt></ruby>を<ruby>手<rt>て</rt></ruby><ruby>伝<rt>つだ</rt></ruby>う<span style='color:#d64045'>ようになりました</span>。</b>",
+        "cn": "母亲生病后，弟弟开始帮忙洗衣服和打扫卫生了。",
+        "source": { "original": "母が病気になってから、弟は洗濯や掃除を手伝うようになりました。", "name": "国际交流基金みんなの教材サイト「Vようになります」", "url": "https://www.kyozai.jpf.go.jp/kyozai/material/BTS00086/ja/render.do", "type": "语言机构教材", "accessedAt": "2026-09-19" }
+      },
+      {
+        "jp": "<b><ruby>最<rt>さい</rt></ruby><ruby>近<rt>きん</rt></ruby>は、ほかの<ruby>人<rt>ひと</rt></ruby>にお<ruby>店<rt>みせ</rt></ruby>の<ruby>情<rt>じょう</rt></ruby><ruby>報<rt>ほう</rt></ruby>を<ruby>教<rt>おし</rt></ruby>えられる<span style='color:#d64045'>ようになりました</span>。</b>",
+        "cn": "最近已经能够把店铺的信息告诉别人了。",
+        "source": { "original": "最近は、ほかの人にお店の情報を教えられるようになりました。", "name": "国际交流基金《いろどり 生活の日本語》初级2 第17课", "url": "https://www.irodori.jpf.go.jp/assets/data/elementary02/pdf/Z_L17.pdf", "type": "语言机构教材", "accessedAt": "2026-09-19" }
+      },
+      {
+        "jp": "<b><ruby>衛<rt>えい</rt></ruby><ruby>星<rt>せい</rt></ruby><ruby>放<rt>ほう</rt></ruby><ruby>送<rt>そう</rt></ruby>が<ruby>始<rt>はじ</rt></ruby>まって、<ruby>世<rt>せ</rt></ruby><ruby>界<rt>かい</rt></ruby>のニュースがいつでも<ruby>見<rt>み</rt></ruby>られる<span style='color:#d64045'>ようになりました</span>。</b>",
+        "cn": "卫星电视开播后，变得随时都能看到世界新闻了。",
+        "source": { "original": "衛星放送が始まって、世界のニュースがいつでも見られるようになりました。", "name": "国际交流基金みんなの教材サイト「Vようになります」", "url": "https://www.kyozai.jpf.go.jp/kyozai/material/BTS00086/ja/render.do", "type": "语言机构教材", "accessedAt": "2026-09-19" }
+      }
+    ],
+    "related": ["supp-n1-review-056", "n2-212"],
+    "kana": "～ようになる",
+    "romaji": "you ni naru",
+    "legacy": {
+      "searchId": 4283,
+      "sourceNumericId": 87,
+      "searchTags": "～ようになる ようになる you ni naru youninaru 开始 变得会 能够 能力变化 状态变化 习惯变化 渐渐 逐渐 结果 Vようになる",
+      "compareWith": [],
+      "sourcePage": "https://www.kyozai.jpf.go.jp/kyozai/material/BTS00086/ja/render.do",
+      "sourceId": 87
     }
   }
 ];

@@ -1,4 +1,6 @@
 (function() {
+    // Keep the pet implementation and saved data intact while the site integration is paused.
+    const SITE_PET_INTEGRATION_ENABLED = false;
     const PET_STATE_KEY = 'study_quest_test_v1_kiki_pet_state_v1';
     const PET_SETTINGS_KEY = 'study_quest_test_v1_kiki_pet_settings_v1';
     const DEFAULT_SECTION = 'daily';
@@ -2505,6 +2507,9 @@
     }
 
     function shouldMountOnSurfaceType(surfaceType) {
+        if (!SITE_PET_INTEGRATION_ENABLED) {
+            return false;
+        }
         const normalizedSurfaceType = String(surfaceType || 'home').trim() || 'home';
         if (normalizedSurfaceType === 'home') {
             return true;

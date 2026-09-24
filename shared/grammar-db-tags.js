@@ -1722,11 +1722,11 @@
   {
     "id": "n2-142",
     "macro": "条件与假定",
-    "category": "条件・范围",
-    "keyword": "过程中",
+    "category": "动作完成后的先后与行为范围",
+    "keyword": "……之后再……；在……时／方面",
     "firstKana": "う",
     "sourceMacro": "条件与假定",
-    "sourceCategory": "条件・范围",
+    "sourceCategory": "动作完成后的先后与行为范围",
     "legacy": {
       "tryCenterId": 2014,
       "searchId": 142
@@ -2606,14 +2606,27 @@
   {
     "id": "n2-211",
     "macro": "主张与评价",
-    "category": "提示话题",
-    "keyword": "亲近者的责备无奈",
+    "category": "提示话题・重复强调",
+    "keyword": "情绪评价与重申催促",
     "firstKana": "っ",
     "sourceMacro": "评价与视角",
-    "sourceCategory": "提示话题",
+    "sourceCategory": "提示话题・重复强调",
     "legacy": {
       "tryCenterId": 2080,
       "searchId": 211
+    }
+  },
+  {
+    "id": "n2-268",
+    "macro": "主张与评价",
+    "category": "提示话题・重复强调",
+    "keyword": "话题提示、重申与呼唤",
+    "firstKana": "っ",
+    "sourceMacro": "评价与视角",
+    "sourceCategory": "提示话题・重复强调",
+    "legacy": {
+      "tryCenterId": 2080,
+      "searchId": 268
     }
   },
   {
@@ -2788,14 +2801,27 @@
   {
     "id": "n2-225",
     "macro": "时间与顺序",
-    "category": "契机・每次",
-    "keyword": "每当...就引发情感",
+    "category": "契机・反复",
+    "keyword": "每逢契机或每遇事情",
     "firstKana": "に",
     "sourceMacro": "时间与场景",
-    "sourceCategory": "契机・每次",
+    "sourceCategory": "契机・反复",
     "legacy": {
       "tryCenterId": 2094,
       "searchId": 225
+    }
+  },
+  {
+    "id": "n2-269",
+    "macro": "举例与递进",
+    "category": "并列・例举",
+    "keyword": "无论列举的哪种情况都相同",
+    "firstKana": "に",
+    "sourceMacro": "资格与举例",
+    "sourceCategory": "并列・例举",
+    "legacy": {
+      "tryCenterId": 2094,
+      "searchId": 269
     }
   },
   {
@@ -2827,11 +2853,11 @@
   {
     "id": "n2-228",
     "macro": "主张与评价",
-    "category": "样貌推测",
-    "keyword": "看起来似乎带有...情绪",
+    "category": "外在样态",
+    "keyword": "从表情态度看出某种样子",
     "firstKana": "げ",
     "sourceMacro": "评价与视角",
-    "sourceCategory": "样貌推测",
+    "sourceCategory": "外在样态",
     "legacy": {
       "tryCenterId": 2097,
       "searchId": 228
@@ -2931,11 +2957,11 @@
   {
     "id": "n2-236",
     "macro": "原因与理由",
-    "category": "符合期待",
-    "keyword": "不愧是/正因为",
+    "category": "身份、经历或付出与实际结果相称",
+    "keyword": "不愧是……；果然有相应价值；没有白……",
     "firstKana": "だ",
     "sourceMacro": "原因与理由",
-    "sourceCategory": "符合期待",
+    "sourceCategory": "身份、经历或付出与实际结果相称",
     "legacy": {
       "tryCenterId": 2105,
       "searchId": 236
@@ -2943,12 +2969,12 @@
   },
   {
     "id": "n2-237",
-    "macro": "举例与递进",
-    "category": "并列・例举",
-    "keyword": "不管A还是B都",
+    "macro": "逆接与让步",
+    "category": "单项让步、疑问词全面让步与两项并列让步",
+    "keyword": "即使……也……；无论谁／什么……都……；无论……还是……都……",
     "firstKana": "に",
-    "sourceMacro": "资格 with 举例",
-    "sourceCategory": "并列・例举",
+    "sourceMacro": "逆接与让步",
+    "sourceCategory": "单项让步、疑问词全面让步与两项并列让步",
     "legacy": {
       "tryCenterId": 2106,
       "searchId": 237
@@ -5661,18 +5687,6 @@
     }
   },
   {
-    "id": "supp-n1-review-077",
-    "macro": "指示与忠告",
-    "category": "呼吁共同采取行动",
-    "keyword": "一起……吧 让我们……吧",
-    "firstKana": "じ",
-    "sourceMacro": "指示与忠告",
-    "sourceCategory": "呼吁共同采取行动",
-    "legacy": {
-      "searchId": 4077
-    }
-  },
-  {
     "id": "supp-n1-review-078",
     "macro": "授受与敬语",
     "category": "事物触发情感",
@@ -6474,18 +6488,6 @@
     "sourceCategory": "先作有限度的肯定再补充保留意见",
     "legacy": {
       "searchId": 4147
-    }
-  },
-  {
-    "id": "mainichi-n2-030",
-    "macro": "逆接与让步",
-    "category": "承认或假定前项仍保持后项结论",
-    "keyword": "即使……也……；无论……都……",
-    "firstKana": "に",
-    "sourceMacro": "逆接与让步",
-    "sourceCategory": "承认或假定前项仍保持后项结论",
-    "legacy": {
-      "searchId": 4148
     }
   },
   {
@@ -7905,6 +7907,26 @@
     "sourceMacro": "条件、例外与判断改变",
     "sourceCategory": "只有特定条件或实际阶段需要作为例外处理",
     "legacy": { "searchId": 4280 }
+  },
+  {
+    "id": "mainichi-n3-086",
+    "macro": "确认、情感与话语态度",
+    "category": "以否定疑问形式唤起认识、表达态度或号召行动",
+    "keyword": "不是……吗；原来……；竟然……；让我们……吧",
+    "firstKana": "で",
+    "sourceMacro": "确认、情感与话语态度",
+    "sourceCategory": "以否定疑问形式唤起认识、表达态度或号召行动",
+    "legacy": { "searchId": 4282 }
+  },
+  {
+    "id": "mainichi-n3-087",
+    "macro": "变化、过程与结果",
+    "category": "习惯、能力或状态由原先情况逐渐发生变化",
+    "keyword": "开始……；变得会……；逐渐能够……",
+    "firstKana": "よ",
+    "sourceMacro": "变化、过程与结果",
+    "sourceCategory": "习惯、能力或状态由原先情况逐渐发生变化",
+    "legacy": { "searchId": 4283 }
   }
 ];
 })();
