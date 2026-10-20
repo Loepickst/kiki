@@ -26,12 +26,13 @@
     }
 
     function loadUnifiedReadingHeader() {
+        if (window.KikiUnifiedHeader) { window.KikiUnifiedHeader.init(); return; }
         if (!redesignScriptUrl || window.__kikiUnifiedHeaderLoaded || document.querySelector('[data-kiki-unified-header-loader]')) {
             return;
         }
 
         const loader = document.createElement('script');
-        loader.src = new URL('../../../shared/unified-header.js?v=20260813-reading-middle-title-1', redesignScriptUrl).href;
+        loader.src = new URL('../../../shared/unified-header-github-20261020.js?v=20260907-first-paint', redesignScriptUrl).href;
         loader.dataset.kikiUnifiedHeaderLoader = 'true';
         document.head.appendChild(loader);
     }
@@ -43,7 +44,7 @@
         if (document.querySelector('script[src*="reading-tools.js"]')) return;
 
         const loader = document.createElement('script');
-        loader.src = new URL('reading-tools.js?v=20260811-reading-single-source-1', redesignScriptUrl).href;
+        loader.src = new URL('reading-tools.js?v=20261011-scoped-lookup-3', redesignScriptUrl).href;
         loader.dataset.readingToolsLoader = 'true';
         loader.addEventListener('load', syncPracticeHeaderActions, { once: true });
         document.head.appendChild(loader);
@@ -901,7 +902,15 @@
             guide.className = 'reading-question-mentor__guide';
             copy.append(name, guide);
             mentor.append(avatar, copy);
-            heading.appendChild(mentor);
+            const guideDetails = document.createElement('details');
+            guideDetails.className = 'reading-mobile-guide';
+            const guideViewport = window.matchMedia('(max-width: 767px)');
+            guideDetails.open = !guideViewport.matches;
+            guideViewport.addEventListener('change', event => { guideDetails.open = !event.matches; });
+            const guideSummary = document.createElement('summary');
+            guideSummary.textContent = '解题提示';
+            guideDetails.append(guideSummary, mentor);
+            heading.appendChild(guideDetails);
         }
 
         const kaoruGuide = type === '/d/' || type === '/t/';
@@ -1186,11 +1195,28 @@
         ])).sort((left, right) => normalizeEvidenceText(evidenceText(left)).length - normalizeEvidenceText(evidenceText(right)).length);
 
         evidenceTexts.forEach((term) => {
-            const match = searchable.find((node) => {
+            const exactOrContainedMatch = searchable.find((node) => {
                 const candidate = normalizeEvidenceText(evidenceText(node));
-                return candidate.includes(term) || term.includes(candidate);
+                return candidate === term || candidate.includes(term);
             });
-            add(match);
+            if (exactOrContainedMatch && isBroadEvidenceContainer(exactOrContainedMatch)) {
+                add(wrapExactEvidenceText(exactOrContainedMatch, term));
+                return;
+            }
+            if (exactOrContainedMatch) {
+                add(exactOrContainedMatch);
+                return;
+            }
+
+            /* A legacy inline target may be slightly shorter than the newer
+               structured sentence.  It is safe only when it covers most of
+               that sentence; arbitrary short nodes must never win. */
+            const closeLegacyMatch = searchable.find((node) => {
+                if (isBroadEvidenceContainer(node)) return false;
+                const candidate = normalizeEvidenceText(evidenceText(node));
+                return candidate.length >= Math.ceil(term.length * .75) && term.includes(candidate);
+            });
+            add(closeLegacyMatch);
         });
         if (!result.length && selectorMatches.length) selectorMatches.slice(0, 2).forEach(add);
         return result;
@@ -1207,6 +1233,7 @@
             option.classList.add('reading-structured-option');
             option.dataset.readingAnalysisId = `${record.id || question.dataset.readingAnalysisId || 'reading'}-option-${optionIndex + 1}`;
             option.setAttribute('aria-expanded', 'false');
+            option.setAttribute('role', 'button');
             option.setAttribute('tabindex', '0');
 
             if (errorId) option.dataset.readingErrorType = errorId;
@@ -1250,6 +1277,24 @@
             }
 
             option.querySelectorAll(':scope > .reading-option-analysis').forEach((node) => node.remove());
+            option.querySelectorAll(':scope > .reading-option-analysis-hitarea').forEach((node) => node.remove());
+            const hitarea = document.createElement('span');
+            hitarea.className = 'reading-option-analysis-hitarea';
+            hitarea.setAttribute('aria-hidden', 'true');
+            const activateOptionAnalysis = (event) => {
+                if (!syncStructuredQuestionState(question)) return;
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                toggleStructuredOptionAnalysis(option);
+            };
+            /* Several legacy short-reading pages stop `click` while it is
+               still travelling through the capture phase.  Handle the
+               pointer press on the generated control itself so the modern
+               analysis drawer does not depend on that old event chain.  The
+               toggle helper de-duplicates the following synthetic click. */
+            hitarea.addEventListener('pointerdown', activateOptionAnalysis, true);
+            hitarea.addEventListener('click', activateOptionAnalysis);
+            option.appendChild(hitarea);
             const drawer = document.createElement('div');
             drawer.className = `reading-option-analysis${isCorrect ? ' is-correct' : ''}`;
 
@@ -1268,6 +1313,13 @@
 
     function toggleStructuredOptionAnalysis(option) {
         if (!option || !option.classList.contains('reading-structured-option')) return false;
+        /* Short-paper and shared analysis handlers can both observe the same
+           pointer activation.  Treat those duplicate deliveries as one user
+           action so a drawer cannot be opened and immediately closed again. */
+        const now = Date.now();
+        const lastToggleAt = Number(option.dataset.readingAnalysisToggleAt || 0);
+        if (now - lastToggleAt < 180) return true;
+        option.dataset.readingAnalysisToggleAt = String(now);
         const question = option.closest('.reading-option-analysis-question');
         const shouldOpen = !option.classList.contains('is-analysis-open');
         if (question) {
@@ -1295,6 +1347,16 @@
         if (!isStructuredQuestionSubmitted(question)) return false;
 
         question.querySelectorAll('.reading-structured-option').forEach((option, optionIndex) => {
+            const radio = option.querySelector('input[type="radio"]');
+            if (radio) {
+                /* The submitted short-paper flow intercepts option clicks
+                   before native radio activation, so the answer remains
+                   locked without relying on `disabled`.  Keeping a wrapped
+                   radio disabled makes WebKit suppress the label click and
+                   prevents the option-analysis drawer from opening. */
+                radio.disabled = false;
+                radio.setAttribute('tabindex', '-1');
+            }
             const isCorrect = option.dataset.readingAnswer === 'correct'
                 || option.classList.contains('is-correct')
                 || option.classList.contains('correct');
@@ -1335,9 +1397,15 @@
     function setupUnifiedAnalysisInteractions() {
         let evidenceSyncQueued = false;
         const syncAll = () => {
-            const submitted = Array.from(document.querySelectorAll('.reading-option-analysis-question'))
-                .some(syncStructuredQuestionState);
-            if (submitted && !evidenceSyncQueued) {
+            let submitted = false;
+            document.querySelectorAll('.reading-option-analysis-question').forEach((question) => {
+                if (syncStructuredQuestionState(question)) submitted = true;
+            });
+            const questions = Array.from(document.querySelectorAll('.reading-option-analysis-question'));
+            const evidenceReady = questions.length > 0 && questions.every((question) => (
+                question.querySelector('.reading-evidence-jump[data-reading-generated-jump="true"]')
+            ));
+            if (submitted && !evidenceReady && !evidenceSyncQueued) {
                 evidenceSyncQueued = true;
                 window.requestAnimationFrame(() => {
                     evidenceSyncQueued = false;
@@ -1346,7 +1414,11 @@
             }
         };
 
-        document.addEventListener('click', (event) => {
+        /* Capture on window, before the legacy document-level short-reading
+           handlers.  Some old handlers stop propagation at document, which
+           otherwise prevents the post-submit analysis drawer from receiving
+           a click at all. */
+        window.addEventListener('click', (event) => {
             const option = event.target.closest('.reading-structured-option');
             if (!option) return;
             const question = option.closest('.reading-option-analysis-question');
@@ -1356,7 +1428,7 @@
             toggleStructuredOptionAnalysis(option);
         }, true);
 
-        document.addEventListener('keydown', (event) => {
+        window.addEventListener('keydown', (event) => {
             if (!['Enter', ' '].includes(event.key)) return;
             const option = event.target.closest('.reading-structured-option');
             if (!option) return;
@@ -1373,7 +1445,6 @@
                 '.reading-option-analysis-question',
                 '.options',
                 '.options-group',
-                '.reading-structured-option',
                 '.explanation-box',
                 '.exp',
                 '.reading-cloze-explanation'
@@ -1413,6 +1484,41 @@
         document.querySelectorAll('.article-content').forEach((node) => node.classList.add('reading-editorial-copy'));
         document.querySelectorAll('.qa-section, .question-card, .qcard').forEach(normalizeQuestion);
         document.querySelectorAll('.question-section, .questions').forEach((node) => node.classList.add('reading-editorial-questions'));
+    }
+
+    function normalizeEmailDocuments() {
+        document.querySelectorAll('.article-content, .reading-editorial-copy').forEach((article) => {
+            const intro = Array.from(article.children).find((node) => (
+                node.classList && node.classList.contains('notice-intro') && /(?:E?メール|メ一ル)/.test(node.textContent || '')
+            ));
+            if (!intro) return;
+
+            article.classList.add('reading-email-source');
+            if (article.querySelector(':scope > .reading-paper-document--email')) return;
+
+            const sourceNodes = [];
+            let cursor = intro.nextElementSibling;
+            while (cursor) {
+                const next = cursor.nextElementSibling;
+                if (!cursor.classList.contains('reading-paper-notes')) sourceNodes.push(cursor);
+                cursor = next;
+            }
+            if (!sourceNodes.length) return;
+
+            const emailDocument = document.createElement('section');
+            emailDocument.className = 'reading-paper-document reading-paper-document--email reading-email-document--legacy';
+            emailDocument.setAttribute('aria-label', 'メール本文');
+
+            const toolbar = document.createElement('header');
+            toolbar.className = 'reading-email-toolbar';
+            toolbar.innerHTML = '<span class="reading-email-toolbar-label">MAIL</span>';
+
+            const emailBody = document.createElement('div');
+            emailBody.className = 'reading-email-body';
+            sourceNodes.forEach((node) => emailBody.appendChild(node));
+            emailDocument.append(toolbar, emailBody);
+            intro.insertAdjacentElement('afterend', emailDocument);
+        });
     }
 
     function translationFragments(translation) {
@@ -2094,6 +2200,81 @@
             .trim();
     }
 
+    function isBroadEvidenceContainer(node) {
+        return Boolean(node && node.matches([
+            '.article-content p',
+            '.reading-editorial-copy p',
+            '.poster-text-block',
+            '.info-box',
+            'td',
+            'li'
+        ].join(',')));
+    }
+
+    /* When two evidence sentences live in one paragraph, the legacy markup
+       wraps only the first.  Selecting the paragraph for the second sentence
+       paints the complete paragraph, so create a precise inline target from
+       the structured evidence text instead. */
+    function wrapExactEvidenceText(container, normalizedTerm) {
+        if (!container || !normalizedTerm || !isBroadEvidenceContainer(container)) return null;
+
+        const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
+            acceptNode(node) {
+                if (!node.nodeValue) return NodeFilter.FILTER_REJECT;
+                const parent = node.parentElement;
+                if (parent && parent.closest([
+                    'script',
+                    'style',
+                    '.sentence-badge',
+                    '.reading-evidence-index',
+                    '.inline-note-container',
+                    '.translation',
+                    '.article-translation',
+                    '.para-translation',
+                    '.reading-paper-note-ref'
+                ].join(','))) return NodeFilter.FILTER_REJECT;
+                return NodeFilter.FILTER_ACCEPT;
+            }
+        });
+
+        const characterMap = [];
+        let searchableText = '';
+        while (walker.nextNode()) {
+            const textNode = walker.currentNode;
+            for (let offset = 0; offset < textNode.nodeValue.length; offset += 1) {
+                const normalizedCharacter = normalizeEvidenceText(textNode.nodeValue[offset]);
+                if (!normalizedCharacter) continue;
+                for (let normalizedOffset = 0; normalizedOffset < normalizedCharacter.length; normalizedOffset += 1) {
+                    searchableText += normalizedCharacter[normalizedOffset];
+                    characterMap.push({ node: textNode, start: offset, end: offset + 1 });
+                }
+            }
+        }
+
+        const startIndex = searchableText.indexOf(normalizedTerm);
+        const endIndex = startIndex + normalizedTerm.length - 1;
+        if (startIndex < 0 || !characterMap[startIndex] || !characterMap[endIndex]) return null;
+
+        const start = characterMap[startIndex];
+        const end = characterMap[endIndex];
+        const existingStart = start.node.parentElement?.closest('.ks-target, .key-sentence');
+        const existingEnd = end.node.parentElement?.closest('.ks-target, .key-sentence');
+        if (existingStart && existingStart === existingEnd) return existingStart;
+
+        const range = document.createRange();
+        range.setStart(start.node, start.start);
+        range.setEnd(end.node, end.end);
+        const target = document.createElement('span');
+        target.className = 'ks-target target-ks reading-generated-evidence-target';
+        try {
+            target.appendChild(range.extractContents());
+            range.insertNode(target);
+            return target;
+        } catch (error) {
+            return null;
+        }
+    }
+
     function evidenceTermsForQuestion(question) {
         const correctOption = question.querySelector([
             '.option-item.is-correct',
@@ -2223,6 +2404,7 @@
         question.dataset.readingEvidenceNumber = number;
         question.dataset.readingEvidenceTone = tone;
 
+        const badgedContexts = new Set();
         uniqueTargets.forEach((target) => {
             const owners = new Set((target.dataset.readingEvidenceOwners || '').split(/\s+/).filter(Boolean));
             owners.add(owner);
@@ -2231,6 +2413,9 @@
             target.classList.add('reading-answer-evidence');
 
             const host = evidenceBadgeHost(target);
+            const badgeContext = host?.closest('p, .poster-text-block, .info-box, td, li') || host;
+            if (badgeContext && badgedContexts.has(badgeContext)) return;
+            if (badgeContext) badgedContexts.add(badgeContext);
             if (!host || host.querySelector(`:scope > .reading-evidence-index[data-reading-evidence-owner="${owner}"]`)) return;
             const badge = document.createElement('span');
             badge.className = 'reading-evidence-index';
@@ -2252,12 +2437,18 @@
         jump.dataset.readingEvidenceTone = tone;
         jump.setAttribute('aria-label', `定位第 ${displayedQuestionNumber} 题关键句`);
         jump.setAttribute('aria-pressed', 'false');
-        jump.addEventListener('click', (event) => {
+        const activateEvidenceJump = (event) => {
             event.preventDefault();
             event.stopPropagation();
             event.stopImmediatePropagation();
             focusQuestionEvidence(jump);
-        });
+        };
+        /* See the structured-option note above.  `pointerdown` reaches the
+           generated button before the legacy short-paper click handlers can
+           cancel it, while the click handler keeps keyboard/synthetic input
+           compatible. */
+        jump.addEventListener('pointerdown', activateEvidenceJump, true);
+        jump.addEventListener('click', activateEvidenceJump);
         jump.addEventListener('keydown', (event) => {
             if (!['Enter', ' '].includes(event.key)) return;
             event.preventDefault();
@@ -2282,29 +2473,39 @@
             (target.dataset.readingEvidenceOwners || '').split(/\s+/).includes(owner)
         ));
         if (!targets.length) return;
-        document.querySelectorAll('.reading-evidence-jump[aria-pressed="true"]').forEach((button) => button.setAttribute('aria-pressed', 'false'));
-        control.setAttribute('aria-pressed', 'true');
-        document.querySelectorAll('.reading-answer-evidence.reading-evidence-focus').forEach((target) => target.classList.remove('reading-evidence-focus'));
-        targets.forEach((target) => target.classList.add('reading-evidence-focus'));
+        const applyFocus = () => {
+            document.querySelectorAll('.reading-evidence-jump[aria-pressed="true"]').forEach((button) => button.setAttribute('aria-pressed', 'false'));
+            control.setAttribute('aria-pressed', 'true');
+            document.querySelectorAll('.reading-answer-evidence.reading-evidence-focus').forEach((target) => target.classList.remove('reading-evidence-focus'));
+            targets.forEach((target) => target.classList.add('reading-evidence-focus'));
+        };
+        applyFocus();
+        /* A legacy result callback may finish in the same task as the click.
+           Reassert the requested focus on the next frame so the visible
+           highlight always reflects the user's final action. */
+        window.requestAnimationFrame(applyFocus);
         const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
         targets[0].scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center', inline: 'nearest' });
     }
 
     function setupEvidenceJumpInteractions() {
-        document.addEventListener('click', (event) => {
+        window.addEventListener('click', (event) => {
             const control = event.target.closest('.reading-evidence-jump');
             if (!control) return;
             event.preventDefault();
             event.stopPropagation();
+            event.stopImmediatePropagation();
             focusQuestionEvidence(control);
-        });
-        document.addEventListener('keydown', (event) => {
+        }, true);
+        window.addEventListener('keydown', (event) => {
             if (!['Enter', ' '].includes(event.key)) return;
             const control = event.target.closest('.reading-evidence-jump');
             if (!control) return;
             event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
             focusQuestionEvidence(control);
-        });
+        }, true);
     }
 
     function highlightCorrectAnswerEvidence() {
@@ -2826,6 +3027,7 @@
     loadUnifiedReadingHeader();
     window.addEventListener('kiki-unified-header:ready', syncPracticeHeaderActions);
     normalizeLayout();
+    normalizeEmailDocuments();
     normalizeArticleTranslations();
     setupExamPaperFootnotes();
     loadReadingAnnotationTools();

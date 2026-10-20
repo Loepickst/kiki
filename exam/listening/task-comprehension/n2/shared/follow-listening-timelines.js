@@ -1917,7 +1917,13 @@ window.KijiN2TaskTimelineMap = {
     "endGuard": 0.06,
     "question": { "src": "../assets/audio/2020.12-5.mp3", "start": 4.86, "end": 14.16, "confidence": 1.0 },
     "lines": [
-      { "src": "../assets/audio/2020.12-5.mp3", "start": 16.24, "end": 52.60, "confidence": 1.0 }
+      { "src": "../assets/audio/2020.12-5.mp3", "start": 15.92, "end": 18.94, "confidence": 1.0 },
+      { "src": "../assets/audio/2020.12-5.mp3", "start": 19.34, "end": 30.16, "confidence": 1.0 },
+      { "src": "../assets/audio/2020.12-5.mp3", "start": 30.74, "end": 34.29, "confidence": 1.0 },
+      { "src": "../assets/audio/2020.12-5.mp3", "start": 34.66, "end": 40.15, "confidence": 1.0 },
+      { "src": "../assets/audio/2020.12-5.mp3", "start": 40.58, "end": 47.49, "confidence": 1.0 },
+      { "src": "../assets/audio/2020.12-5.mp3", "start": 47.90, "end": 50.88, "confidence": 1.0 },
+      { "src": "../assets/audio/2020.12-5.mp3", "start": 51.20, "end": 52.74, "confidence": 1.0 }
     ]
   },
   "2021.7-1": {
@@ -1975,7 +1981,14 @@ window.KijiN2TaskTimelineMap = {
     "endGuard": 0.06,
     "question": { "src": "../assets/audio/2021.7-4.mp3", "start": 2.61, "end": 11.99, "confidence": 1.0 },
     "lines": [
-      { "src": "../assets/audio/2021.7-4.mp3", "start": 15.90, "end": 52.48, "confidence": 1.0 }
+      { "src": "../assets/audio/2021.7-4.mp3", "start": 15.60, "end": 19.40, "confidence": 1.0 },
+      { "src": "../assets/audio/2021.7-4.mp3", "start": 20.02, "end": 28.32, "confidence": 1.0 },
+      { "src": "../assets/audio/2021.7-4.mp3", "start": 28.26, "end": 31.04, "confidence": 1.0 },
+      { "src": "../assets/audio/2021.7-4.mp3", "start": 31.42, "end": 35.80, "confidence": 1.0 },
+      { "src": "../assets/audio/2021.7-4.mp3", "start": 35.90, "end": 38.55, "confidence": 1.0 },
+      { "src": "../assets/audio/2021.7-4.mp3", "start": 38.98, "end": 43.72, "confidence": 1.0 },
+      { "src": "../assets/audio/2021.7-4.mp3", "start": 44.10, "end": 48.05, "confidence": 1.0 },
+      { "src": "../assets/audio/2021.7-4.mp3", "start": 48.52, "end": 52.61, "confidence": 1.0 }
     ]
   },
   "2021.7-5": {
@@ -2020,7 +2033,13 @@ window.KijiN2TaskTimelineMap = {
     "endGuard": 0.06,
     "question": { "src": "../assets/audio/2021.12-2.mp3", "start": 2.40, "end": 11.72, "confidence": 1.0 },
     "lines": [
-      { "src": "../assets/audio/2021.12-2.mp3", "start": 15.83, "end": 51.36, "confidence": 1.0 }
+      { "src": "../assets/audio/2021.12-2.mp3", "start": 15.82, "end": 18.94, "confidence": 1.0 },
+      { "src": "../assets/audio/2021.12-2.mp3", "start": 19.36, "end": 24.24, "confidence": 1.0 },
+      { "src": "../assets/audio/2021.12-2.mp3", "start": 24.56, "end": 27.56, "confidence": 1.0 },
+      { "src": "../assets/audio/2021.12-2.mp3", "start": 28.12, "end": 35.48, "confidence": 1.0 },
+      { "src": "../assets/audio/2021.12-2.mp3", "start": 35.82, "end": 42.45, "confidence": 1.0 },
+      { "src": "../assets/audio/2021.12-2.mp3", "start": 43.00, "end": 46.24, "confidence": 1.0 },
+      { "src": "../assets/audio/2021.12-2.mp3", "start": 46.90, "end": 51.50, "confidence": 1.0 }
     ]
   },
   "2021.12-3": {
@@ -2083,7 +2102,10 @@ window.KijiN2TaskTimelineMap = {
     "endGuard": 0.06,
     "question": { "src": "../assets/audio/2022.7-1.mp3", "start": 0.80, "end": 11.31, "confidence": 1.0 },
     "lines": [
-      { "src": "../assets/audio/2022.7-1.mp3", "start": 13.12, "end": 45.80, "confidence": 1.0 }
+      { "src": "../assets/audio/2022.7-1.mp3", "start": 12.84, "end": 22.66, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.7-1.mp3", "start": 23.22, "end": 35.96, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.7-1.mp3", "start": 36.62, "end": 43.93, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.7-1.mp3", "start": 44.34, "end": 45.81, "confidence": 1.0 }
     ]
   },
   "2022.7-2": {
@@ -2144,7 +2166,13 @@ window.KijiN2TaskTimelineMap = {
     "endGuard": 0.06,
     "question": { "src": "../assets/audio/2022.7-5.mp3", "start": 0.90, "end": 10.06, "confidence": 1.0 },
     "lines": [
-      { "src": "../assets/audio/2022.7-5.mp3", "start": 11.92, "end": 65.56, "confidence": 1.0 }
+      { "src": "../assets/audio/2022.7-5.mp3", "start": 11.64, "end": 16.50, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.7-5.mp3", "start": 17.18, "end": 20.39, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.7-5.mp3", "start": 21.06, "end": 34.37, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.7-5.mp3", "start": 35.26, "end": 41.28, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.7-5.mp3", "start": 42.02, "end": 46.77, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.7-5.mp3", "start": 47.64, "end": 62.18, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.7-5.mp3", "start": 63.04, "end": 65.58, "confidence": 1.0 }
     ]
   },
   "2022.12-1": {
@@ -2169,7 +2197,15 @@ window.KijiN2TaskTimelineMap = {
     "endGuard": 0.06,
     "question": { "src": "../assets/audio/2022.12-2.mp3", "start": 0.68, "end": 12.88, "confidence": 1.0 },
     "lines": [
-      { "src": "../assets/audio/2022.12-2.mp3", "start": 14.81, "end": 57.75, "confidence": 1.0 }
+      { "src": "../assets/audio/2022.12-2.mp3", "start": 16.30, "end": 18.38, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.12-2.mp3", "start": 18.66, "end": 20.00, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.12-2.mp3", "start": 20.44, "end": 22.52, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.12-2.mp3", "start": 23.08, "end": 27.36, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.12-2.mp3", "start": 27.98, "end": 35.10, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.12-2.mp3", "start": 35.86, "end": 41.20, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.12-2.mp3", "start": 41.40, "end": 43.70, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.12-2.mp3", "start": 44.24, "end": 53.30, "confidence": 1.0 },
+      { "src": "../assets/audio/2022.12-2.mp3", "start": 54.30, "end": 56.08, "confidence": 1.0 }
     ]
   },
   "2022.12-3": {
@@ -2221,6 +2257,162 @@ window.KijiN2TaskTimelineMap = {
       { "src": "../assets/audio/2022.12-5.mp3", "start": 62.19, "end": 63.95, "confidence": 1.0 },
       { "src": "../assets/audio/2022.12-5.mp3", "start": 64.18, "end": 76.27, "confidence": 1.0 },
       { "src": "../assets/audio/2022.12-5.mp3", "start": 76.63, "end": 79.03, "confidence": 1.0 }
+    ]
+  },
+  "2023.7-1": {
+    "sampleAccurate": true,
+    "fadeOut": 0.018,
+    "endGuard": 0.06,
+    "question": { "src": "../assets/audio/2023.7-1.mp3", "start": 3.62, "end": 16.45, "confidence": 1.0 },
+    "lines": [
+      { "src": "../assets/audio/2023.7-1.mp3", "start": 18.23, "end": 23.97, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-1.mp3", "start": 23.96, "end": 35.06, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-1.mp3", "start": 35.30, "end": 40.81, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-1.mp3", "start": 41.02, "end": 59.25, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-1.mp3", "start": 59.55, "end": 72.41, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-1.mp3", "start": 72.41, "end": 77.56, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-1.mp3", "start": 77.96, "end": 85.27, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-1.mp3", "start": 85.39, "end": 86.22, "confidence": 1.0 }
+    ]
+  },
+  "2023.7-2": {
+    "sampleAccurate": true,
+    "fadeOut": 0.018,
+    "endGuard": 0.06,
+    "question": { "src": "../assets/audio/2023.7-2.mp3", "start": 3.62, "end": 15.27, "confidence": 1.0 },
+    "lines": [
+      { "src": "../assets/audio/2023.7-2.mp3", "start": 17.06, "end": 22.76, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-2.mp3", "start": 23.07, "end": 29.68, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-2.mp3", "start": 30.01, "end": 38.85, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-2.mp3", "start": 38.90, "end": 39.42, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-2.mp3", "start": 39.95, "end": 53.76, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-2.mp3", "start": 53.78, "end": 54.90, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-2.mp3", "start": 55.62, "end": 68.79, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-2.mp3", "start": 69.12, "end": 70.04, "confidence": 1.0 }
+    ]
+  },
+  "2023.7-3": {
+    "sampleAccurate": true,
+    "fadeOut": 0.018,
+    "endGuard": 0.06,
+    "question": { "src": "../assets/audio/2023.7-3.mp3", "start": 3.62, "end": 13.30, "confidence": 1.0 },
+    "lines": [
+      { "src": "../assets/audio/2023.7-3.mp3", "start": 15.10, "end": 18.93, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-3.mp3", "start": 19.26, "end": 21.91, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-3.mp3", "start": 22.12, "end": 32.10, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-3.mp3", "start": 32.37, "end": 40.14, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-3.mp3", "start": 40.20, "end": 44.75, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-3.mp3", "start": 45.25, "end": 51.30, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-3.mp3", "start": 51.51, "end": 57.63, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-3.mp3", "start": 57.60, "end": 58.74, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-3.mp3", "start": 59.24, "end": 64.61, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-3.mp3", "start": 64.84, "end": 72.56, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-3.mp3", "start": 72.76, "end": 77.08, "confidence": 1.0 }
+    ]
+  },
+  "2023.7-4": {
+    "sampleAccurate": true,
+    "fadeOut": 0.018,
+    "endGuard": 0.06,
+    "question": { "src": "../assets/audio/2023.7-4.mp3", "start": 3.62, "end": 17.24, "confidence": 1.0 },
+    "lines": [
+      { "src": "../assets/audio/2023.7-4.mp3", "start": 19.05, "end": 26.06, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-4.mp3", "start": 26.12, "end": 42.02, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-4.mp3", "start": 42.12, "end": 42.66, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-4.mp3", "start": 43.04, "end": 48.27, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-4.mp3", "start": 48.65, "end": 55.77, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-4.mp3", "start": 56.01, "end": 61.93, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-4.mp3", "start": 62.09, "end": 67.12, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-4.mp3", "start": 67.22, "end": 78.08, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-4.mp3", "start": 78.29, "end": 79.67, "confidence": 1.0 }
+    ]
+  },
+  "2023.7-5": {
+    "sampleAccurate": true,
+    "fadeOut": 0.018,
+    "endGuard": 0.06,
+    "question": { "src": "../assets/audio/2023.7-5.mp3", "start": 3.62, "end": 14.49, "confidence": 1.0 },
+    "lines": [
+      { "src": "../assets/audio/2023.7-5.mp3", "start": 16.30, "end": 22.41, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-5.mp3", "start": 23.14, "end": 36.38, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.7-5.mp3", "start": 37.05, "end": 44.76, "confidence": 1.0 }
+    ]
+  },
+  "2023.12-1": {
+    "sampleAccurate": true,
+    "fadeOut": 0.018,
+    "endGuard": 0.06,
+    "question": { "src": "../assets/audio/2023.12-1.mp3", "start": 3.61, "end": 17.82, "confidence": 1.0 },
+    "lines": [
+      { "src": "../assets/audio/2023.12-1.mp3", "start": 19.61, "end": 32.41, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-1.mp3", "start": 32.75, "end": 37.57, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-1.mp3", "start": 37.78, "end": 50.86, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-1.mp3", "start": 51.23, "end": 64.83, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-1.mp3", "start": 65.15, "end": 68.44, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-1.mp3", "start": 68.78, "end": 73.46, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-1.mp3", "start": 73.71, "end": 74.67, "confidence": 1.0 }
+    ]
+  },
+  "2023.12-2": {
+    "sampleAccurate": true,
+    "fadeOut": 0.018,
+    "endGuard": 0.06,
+    "question": { "src": "../assets/audio/2023.12-2.mp3", "start": 3.62, "end": 14.50, "confidence": 1.0 },
+    "lines": [
+      { "src": "../assets/audio/2023.12-2.mp3", "start": 16.30, "end": 27.31, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-2.mp3", "start": 27.85, "end": 47.69, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-2.mp3", "start": 47.88, "end": 54.18, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-2.mp3", "start": 54.56, "end": 55.00, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-2.mp3", "start": 55.50, "end": 68.00, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-2.mp3", "start": 68.49, "end": 70.54, "confidence": 1.0 }
+    ]
+  },
+  "2023.12-3": {
+    "sampleAccurate": true,
+    "fadeOut": 0.018,
+    "endGuard": 0.06,
+    "question": { "src": "../assets/audio/2023.12-3.mp3", "start": 3.60, "end": 17.21, "confidence": 1.0 },
+    "lines": [
+      { "src": "../assets/audio/2023.12-3.mp3", "start": 18.99, "end": 27.84, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-3.mp3", "start": 28.43, "end": 40.47, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-3.mp3", "start": 41.40, "end": 46.27, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-3.mp3", "start": 47.17, "end": 53.61, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-3.mp3", "start": 54.63, "end": 60.72, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-3.mp3", "start": 61.59, "end": 67.27, "confidence": 1.0 }
+    ]
+  },
+  "2023.12-4": {
+    "sampleAccurate": true,
+    "fadeOut": 0.018,
+    "endGuard": 0.06,
+    "question": { "src": "../assets/audio/2023.12-4.mp3", "start": 3.61, "end": 14.97, "confidence": 1.0 },
+    "lines": [
+      { "src": "../assets/audio/2023.12-4.mp3", "start": 16.77, "end": 25.03, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-4.mp3", "start": 25.46, "end": 35.75, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-4.mp3", "start": 35.99, "end": 48.26, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-4.mp3", "start": 48.67, "end": 55.04, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-4.mp3", "start": 55.20, "end": 62.37, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-4.mp3", "start": 62.56, "end": 63.59, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-4.mp3", "start": 63.83, "end": 68.37, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-4.mp3", "start": 68.50, "end": 69.19, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-4.mp3", "start": 69.57, "end": 74.37, "confidence": 1.0 }
+    ]
+  },
+  "2023.12-5": {
+    "sampleAccurate": true,
+    "fadeOut": 0.018,
+    "endGuard": 0.06,
+    "question": { "src": "../assets/audio/2023.12-5.mp3", "start": 3.63, "end": 14.76, "confidence": 1.0 },
+    "lines": [
+      { "src": "../assets/audio/2023.12-5.mp3", "start": 16.54, "end": 29.97, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-5.mp3", "start": 30.47, "end": 36.57, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-5.mp3", "start": 36.81, "end": 40.28, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-5.mp3", "start": 40.75, "end": 49.92, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-5.mp3", "start": 50.19, "end": 53.79, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-5.mp3", "start": 54.04, "end": 59.98, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-5.mp3", "start": 60.53, "end": 63.68, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-5.mp3", "start": 63.88, "end": 72.57, "confidence": 1.0 },
+      { "src": "../assets/audio/2023.12-5.mp3", "start": 72.83, "end": 77.27, "confidence": 1.0 }
     ]
   }
 };

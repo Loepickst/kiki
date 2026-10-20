@@ -1,18 +1,93 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>N2 課題理解 - 2018</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
-    <link rel="stylesheet" href="../shared/follow-listening.css?v=20260814-n2-manual-2010-7-r1">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../shared/follow-listening.css?v=20260830-sentence-console-r2">
+    <link rel="stylesheet" href="../../../shared/listening-dictation.css?v=20261006-dictation-r16">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -118,17 +193,23 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../../../shared/study-quest-test-runtime.js"></script>
-    <script src="../../../../../shared/study-quest-test-boot.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
-    <script src="../shared/follow-listening-timelines.js?v=20260814-n2-manual-2010-7-r1"></script>
-    <script src="../shared/follow-listening.js?v=20260814-n2-follow-header-r2"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
+    <script src="../shared/follow-listening-timelines.js?v=20260902-n2-monologue-sentence-rebuild-r1"></script>
+    <script src="../shared/follow-listening.js?v=20261006-dictation-playback-r12"></script>
+    <script src="../../../shared/listening-dictation-kana.js?v=20261006-dictation-r16"></script>
+    <script src="../../../shared/listening-dictation-core.js?v=20261006-dictation-r16"></script>
+    <script src="../../../shared/listening-dictation-records.js?v=20261006-dictation-r16"></script>
+    <script src="../../../shared/../data/dictation-readings/generated/manifest.js?v=20261006-dictation-r16"></script>
+    <script src="../../../shared/listening-dictation-readings.js?v=20261006-dictation-r16"></script>
+    <script src="../../../shared/listening-dictation.js?v=20261006-dictation-r16"></script>
     <script>
         // --- Data Structure ---
         const examData = {
-  "N2-2018-07": {
+  "2018-07": {
     "label": "2018年7月 (N2)",
     "questions": [
       {
@@ -236,8 +317,8 @@
             },
             {
               "speaker": "女",
-              "text": "<span class=\"highlight-wrong explain-wrong\" data-explain=\"④男生表示邮件文案还没准备好，今天不用急着发邮件。\">④メールの方も私が送りますか</span>。",
-              "trans": "（电子邮件那边也由我来发吗？）"
+              "text": "はい。<span class=\"highlight-wrong explain-wrong\" data-explain=\"④男生表示邮件文案还没准备好，今天不用急着发邮件。\">④メールの方も私が送りますか</span>。",
+              "trans": "（好的。电子邮件那边也由我来发吗？）"
             },
             {
               "speaker": "男",
@@ -398,8 +479,8 @@
             },
             {
               "speaker": "男",
-              "text": "そうですね。<span class=\"highlight-wrong explain-wrong\" data-explain=\"④更改菜单并通知参加者是建立在“无法使用替代品”的条件下的后续处理方式。\">④メニューが変更になったら参加者にも知らせる</span>。",
-              "trans": "（是啊。要是真换了菜单，还得通知参加活动的市民们。）"
+              "text": "そうですね。",
+              "trans": "（是啊。）"
             }
           ]
         },
@@ -439,8 +520,43 @@
           "dialogue": [
             {
               "speaker": "男",
-              "text": "今日は大学合同勉強会にご参加いただき、ありがとうございます。これから世界が今抱えている諸問題についてグループ討論を行い、理解を深めていきます。みなさん、既にグループに分かれていますね。お配りしてある名簿に丸の付いている人が<span class=\"highlight-wrong explain-wrong\" data-explain=\"①组长的人选已经定好了，即名单上画了圈的人，不需要大家再讨论决定。\">①グループのリーダー</span>です。リーダーを中心に話し合いを進めていただきます。予めみなさんに選んでいただいた<span class=\"highlight-wrong explain-wrong\" data-explain=\"②主持人提到课题是大家事先选好的，也就是说选题环节已结束。\">②課題について議論</span>し、どのような対応ができるかグループごとに<span class=\"highlight-wrong explain-wrong\" data-explain=\"③汇总意见并发表是正式讨论结束后的环节，不会是一上来就做的事。\">③意見をまとめて発表してください</span>。本題に入る前に<span class=\"highlight-correct\">④自己紹介も兼ねてみなさんが今取り組んでいる研究テーマについて話してください。</span>リラックスしてから話し合いに入りましょう。",
-              "trans": "（感谢大家参加今天的大学联合学习会。接下来的时间里，我们将就世界当前面临的诸多问题进行小组讨论，加深理解。大家已经分好组了吧。发给大家的名单上，名字旁边画了圈的就是各组的组长。请以组长为中心推进讨论。大家就事先选好的课题展开探讨，并按小组汇总出能采取什么样的应对措施后上台发表。在进入正题之前，就当是兼顾自我介绍，请大家先谈谈自己目前正在研究的主题。大家先放松一下气氛，然后再进入正式讨论吧。）"
+              "text": "今日は大学合同勉強会にご参加いただき、ありがとうございます。",
+              "trans": "（感谢大家参加今天的大学联合学习会。）"
+            },
+            {
+              "speaker": "男",
+              "text": "これから世界が今抱えている諸問題についてグループ討論を行い、理解を深めていきます。",
+              "trans": "（接下来的时间里，我们将就世界当前面临的诸多问题进行小组讨论，加深理解。）"
+            },
+            {
+              "speaker": "男",
+              "text": "みなさん、既にグループに分かれていますね。",
+              "trans": "（大家已经分好组了吧。）"
+            },
+            {
+              "speaker": "男",
+              "text": "お配りしてある名簿に丸の付いている人が<span class=\"highlight-wrong explain-wrong\" data-explain=\"①组长的人选已经定好了，即名单上画了圈的人，不需要大家再讨论决定。\">①グループのリーダー</span>です。",
+              "trans": "（发给大家的名单上，名字旁边画了圈的就是各组的组长。）"
+            },
+            {
+              "speaker": "男",
+              "text": "リーダーを中心に話し合いを進めていただきます。",
+              "trans": "（请以组长为中心推进讨论。）"
+            },
+            {
+              "speaker": "男",
+              "text": "予めみなさんに選んでいただいた<span class=\"highlight-wrong explain-wrong\" data-explain=\"②主持人提到课题是大家事先选好的，也就是说选题环节已结束。\">②課題について議論</span>し、どのような対応ができるかグループごとに<span class=\"highlight-wrong explain-wrong\" data-explain=\"③汇总意见并发表是正式讨论结束后的环节，不会是一上来就做的事。\">③意見をまとめて発表してください</span>。",
+              "trans": "（大家就事先选好的课题展开探讨，并按小组汇总出能采取什么样的应对措施后上台发表。）"
+            },
+            {
+              "speaker": "男",
+              "text": "本題に入る前に<span class=\"highlight-correct\">④自己紹介も兼ねてみなさんが今取り組んでいる研究テーマについて話してください。</span>",
+              "trans": "（在进入正题之前，就当是兼顾自我介绍，请大家先谈谈自己目前正在研究的主题。）"
+            },
+            {
+              "speaker": "男",
+              "text": "リラックスしてから話し合いに入りましょう。",
+              "trans": "（大家先放松一下气氛，然后再进入正式讨论吧。）"
             }
           ]
         },
@@ -473,7 +589,7 @@
       }
     ]
   },
-          "N2-2018-12": {
+          "2018-12": {
     "label": "2018年12月 (N2)",
     "questions": [
       {
@@ -566,8 +682,28 @@
           "dialogue": [
             {
               "speaker": "女",
-              "text": "今日はお手伝いに集まってくださってありがとうございます。明後日の<span class=\"keyword\" data-tooltip=\"バザー：义卖会\">バザー</span>で皆さんに持ってきていただいた洋服を販売しますが、今日はその準備をします。えっと、お客さんが選びやすいように、<span class=\"highlight-correct\">①サイズ別に分類したいと思いますので、皆さんはその作業をお願いします。</span>もし少し<span class=\"keyword\" data-tooltip=\"しわ：褶皱\">皺</span>が気になるものがあっても、時間がありませんので、<span class=\"highlight-wrong explain-wrong\" data-explain=\"②负责人说明因为时间紧迫，即便衣服有褶皱也不会进行熨烫处理。\">②アイロンはかけずにそのまま出します</span>。なお、運営スタッフのほうで、<span class=\"highlight-wrong explain-wrong\" data-explain=\"③④定价和贴价格标签是运营人员的工作，不需要今天来帮忙的人插手。\">③④100円から500円の間で値段を付けて、値段ごとに色の違うシールを貼っておきます</span>ので、販売するときは間違えないようにしてください。",
-              "trans": "（感谢大家今天过来帮忙。后天的义卖活动上会出售大家捐来的衣服，今天我们来做前期准备。为了方便客人挑选，我们想按尺寸分类，这就拜托大家去做了。如果有衣服看着有点皱，因为没时间也就不熨了，直接拿出来卖。另外，运营人员这边会定好100到500日元的价格，并根据价格贴上不同颜色的标签，大家卖的时候留意别弄错了。）"
+              "text": "今日はお手伝いに集まってくださってありがとうございます。",
+              "trans": "（感谢大家今天过来帮忙。）"
+            },
+            {
+              "speaker": "女",
+              "text": "明後日の<span class=\"keyword\" data-tooltip=\"バザー：义卖会\">バザー</span>で皆さんに持ってきていただいた洋服を販売しますが、今日はその準備をします。",
+              "trans": "（后天的义卖活动上会出售大家捐来的衣服，今天我们来做前期准备。）"
+            },
+            {
+              "speaker": "女",
+              "text": "えっと、お客さんが選びやすいように、<span class=\"highlight-correct\">①サイズ別に分類したいと思いますので、皆さんはその作業をお願いします。</span>",
+              "trans": "（为了方便客人挑选，我们想按尺寸分类，这就拜托大家去做了。）"
+            },
+            {
+              "speaker": "女",
+              "text": "もし少し<span class=\"keyword\" data-tooltip=\"しわ：褶皱\">皺</span>が気になるものがあっても、時間がありませんので、<span class=\"highlight-wrong explain-wrong\" data-explain=\"②负责人说明因为时间紧迫，即便衣服有褶皱也不会进行熨烫处理。\">②アイロンはかけずにそのまま出します</span>。",
+              "trans": "（如果有衣服看着有点皱，因为没时间也就不熨了，直接拿出来卖。）"
+            },
+            {
+              "speaker": "女",
+              "text": "なお、運営スタッフのほうで、<span class=\"highlight-wrong explain-wrong\" data-explain=\"③④定价和贴价格标签是运营人员的工作，不需要今天来帮忙的人插手。\">③④100円から500円の間で値段を付けて、値段ごとに色の違うシールを貼っておきます</span>ので、販売するときは間違えないようにしてください。",
+              "trans": "（另外，运营人员这边会定好100到500日元的价格，并根据价格贴上不同颜色的标签，大家卖的时候留意别弄错了。）"
             }
           ]
         },
@@ -617,8 +753,8 @@
             },
             {
               "speaker": "女",
-              "text": "<span class=\"highlight-wrong explain-wrong\" data-explain=\"①去学校申请是可行方案之一，但男士本人目前住在海外，去不了现场。\">①大学に来て申請していただければ、その日にお渡しできます</span>。その場合はご本人であることが確認できるものをお持ちください。",
-              "trans": "（您本人来学校申请的话，当天就能给您。这种情况请带上能核实本人身份的证件。）"
+              "text": "はい。証明書でしたら、<span class=\"highlight-wrong explain-wrong\" data-explain=\"①去学校申请是可行方案之一，但男士本人目前住在海外，去不了现场。\">①大学に来て申請していただければ、その日にお渡しできます</span>。その場合はご本人であることが確認できるものをお持ちください。",
+              "trans": "（好的。如果是证明书，您本人来学校申请的话，当天就能给您。这种情况请带上能核实本人身份的证件。）"
             },
             {
               "speaker": "男",
@@ -647,7 +783,7 @@
             },
             {
               "speaker": "女",
-              "text": "すみませんが、インターネットでの申請は本人確認ができないので、...",
+              "text": "すみませんが、インターネットでの申請は本人確認ができないので。",
               "trans": "（不好意思，网上申请核实不了本人身份，所以……）"
             },
             {
@@ -865,7 +1001,7 @@
   }
 };
 
-        let currentExamKey = "N2-2018-07";
+        let currentExamKey = "2018-07";
 let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'task-comprehension';
@@ -888,10 +1024,10 @@ let currentQuestionIndex = 0;
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N2-${yearParam}` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -1113,7 +1249,7 @@ let currentQuestionIndex = 0;
             if (window.updateListeningPlayer) {
                 window.updateListeningPlayer({
                     title: `問題 ${data.id}`,
-                    audioSrc: data.audio,
+                    audioSrc: window.KijiListeningDictationReadings?.versionAudio(data.audio) || data.audio,
                     hasPrev: currentQuestionIndex > 0,
                     hasNext: currentQuestionIndex < total - 1
                 });
@@ -1235,7 +1371,8 @@ let currentQuestionIndex = 0;
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
 </body>
 </html>

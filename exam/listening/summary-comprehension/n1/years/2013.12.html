@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261016-summary-n1-2013-12-8108d2935b51">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,123 +192,315 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
 <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2013-12-概要理解": {
-                label: "2013年12月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2013.12-1.mp3",
-                        script: {
-                            question: "一番：会社の会議で男の人が話しています。男の人は何について話していますか。",
-                            questionTrans: "（第一题：在公司的会议上男人正在讲话。男人在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "本社ビルの屋上で木や花を育てはじめて５年がたちました。都会の小さな<span class=\"keyword\" onclick=\"showTooltip(event, 'オアシス（oasis）：绿洲。')\">オアシス</span>として、社員だけでなく、お客さまや近隣の方にも喜ばれています。", trans: "（总公司大楼的屋顶开始种植树木和花草已经过去5年了。作为都市中的小绿洲，不仅是员工，客户和附近的居民也很喜欢。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '男职员提到把屋顶作为出租农园借出，但这只是个“想法（アイディア）”，并且是为了引出后续要先在员工中招募人手进行实验，并不是在说明具体的“借出方法”，可以排除。')\">このたび、この屋上の一部を<span class=\"keyword\" onclick=\"showTooltip(event, 'レンタル（rental）：租赁，出租。')\">レンタル</span>農園として近隣住民の方々に<span class=\"keyword\" onclick=\"showTooltip(event, '貸（か）し出（だ）す：出租，借出。')\">貸し出す</span>というアイディアが出て、話が進んでいます。</span></span>", trans: "（这次，大家提出了将这屋顶的一部分作为出租农园借给附近居民的想法，目前事情正在推进中。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男职员用“因此（つきましては）”引出他真正想说的事情：【因此，首先想让员工试验性地种种蔬菜，从今天开始招募成员（つきましては、まずは社員で実験的に野菜を育ててみようと思っておりまして、今日からメンバーを募ります）】。这明确了这番话的目的是为了招募种蔬菜的员工，符合选项3。')\"><span class=\"keyword\" onclick=\"showTooltip(event, 'つきましては：因此，所以（商务/正式用语）。')\">つきましては</span>、まずは社員で実験的に野菜を育ててみようと思っておりまして、今日からメンバーを<span class=\"keyword\" onclick=\"showTooltip(event, '募（つの）る：招募，募集。')\">募ります</span>。</span></span>", trans: "（因此，首先想让员工试验性地种种蔬菜，从今天开始招募成员。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男职员并没有提及使用屋顶时的具体“规则”，排除。关于选项4，这里是在招募种菜的员工，虽然初学者也欢迎，但这只是个“实验”，而不是为了学习农业而开设的“进修/培训（研修）”，排除。')\">農業の経験がある人も、興味はあるけどという初心者も歓迎です。</span></span>", trans: "（有农业经验的人，以及有兴趣但没经验的初学者都欢迎。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "ビルの屋上を利用する際の規則", translation: "（利用大楼屋顶时的规则）", correct: false },
-                            { text: "レンタル農園の貸し出し方法", translation: "（出租农园的借出方法）", correct: false },
-                            { text: "野菜を作る社員の募集", translation: "（种蔬菜的员工的招募）", correct: true },
-                            { text: "農業について学ぶ研修", translation: "（学习关于农业的进修/培训）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        audio: "../assets/audio/2013.12-2.mp3",
-                        script: {
-                            question: "二番：ホテルの経営会議で、女の人が経営の改善について話しています。女の人は何を提案していますか。",
-                            questionTrans: "（第二题：在酒店的经营会议上，女人正在谈论关于经营的改善。女人提出了什么提案？）",
-                            dialogue: [
-                                { speaker: "女", text: "宿泊客が減少し、業績が<span class=\"keyword\" onclick=\"showTooltip(event, '落（お）ち込（こ）む：下降，低迷，情绪低落。')\">落ち込んでいる</span>今、経営の改善が必要です。", trans: "（在住宿客人减少、业绩低迷的现在，我们需要改善经营。）" },
-                                { speaker: "女", text: "そこで、提案したいのが、ホテル内にある直営レストランの<span class=\"keyword\" onclick=\"showTooltip(event, '見直（みなお）し：重新评估，调整。')\">見直し</span>です。", trans: "（因此，我想提议的是，重新评估（调整）酒店内的直营餐厅。）" },
-                                { speaker: "女", text: "このレストランは、朝食時以外はほとんど客の利用がなく、<span class=\"keyword\" onclick=\"showTooltip(event, '維持（いじ）：维持。')\">維持</span>費ばかりかかり、経営の<span class=\"keyword\" onclick=\"showTooltip(event, '負担（ふたん）：负担。')\">負担</span>になっております。", trans: "（这家餐厅除了早餐时间以外几乎没有客人光顾，光花维持费，已经成了经营的负担。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女人虽然提到了餐厅翻新，但她明确表示【与其期待……不如……（期待するよりも……）】，这说明她认为翻新不如合作来得好，排除了翻新这个选项。')\">レストラン<span class=\"keyword\" onclick=\"showTooltip(event, '改装（かいそう）：改装，翻新。')\">改装</span>などによる客の増加に期待するよりも</span></span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人在这里直接给出了她的核心提案：【我认为和专门做餐饮的公司合作，削减经费是上策（飲食専門の会社と提携し、経費を抑えるほうが得策だと考えます）】。后续内容都是在详细解释这个合作的具体方案（例如一楼变成家庭餐厅，给客人发早餐券等）。这完全符合选项3“将业务委托给专门做餐饮的公司”。')\">飲食専門の会社と<span class=\"keyword\" onclick=\"showTooltip(event, '提携（ていけい）：合作，协作。')\">提携</span>し、経費を抑えるほうが得策だと考えます。</span></span>", trans: "（与其期待通过餐厅翻新等方式来增加客流，我认为不如和专门做餐饮的公司合作，削减经费才是上策。）" },
-                                { speaker: "女", text: "たとえば、1階のレストランをファミリーレストランに<span class=\"keyword\" onclick=\"showTooltip(event, '委託（いたく）：委托。')\">委託</span>し、宿泊客には朝食クーポンを渡してそこを利用してもらうというのはどうでしょうか。", trans: "（例如，将1楼的餐厅委托给家庭餐厅（经营），发给住宿客人早餐券让他们去那里用餐，这个方案如何呢？）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中讲的是要把现在的“直营餐厅（直営レストラン）”委托出去，即“取消直营”，与选项“设置（設置）”正好相反，排除。关于选项4，女人提到【即使没有了直营餐厅服务也不会下降（直営レストランがなくともサービスの低下にはなりませんし）】，说明她关注的是维持现有服务水平，而不是去专门探讨“改善”对住宿客人的服务，可以排除。')\">これなら直営レストランがなくともサービスの低下にはなりませんし、委託先にとってもホテルの利用客が確実に自分の店の客になるので、双方に<span class=\"keyword\" onclick=\"showTooltip(event, 'メリット（merit）：优点，好处。')\">メリット</span>があると言えます。</span></span>", trans: "（这样的话，即使没有了直营餐厅服务也不会下降，对于被委托方来说，酒店的客人也肯定会成为自己店里的客人，可以说是双方都有好处。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "レストランの改装", translation: "（餐厅的翻新）", correct: false },
-                            { text: "直営レストランの設置", translation: "（直营餐厅的设置）", correct: false },
-                            { text: "飲食専門の会社への業務委託", translation: "（对专门做餐饮的公司的业务委托）", correct: true },
-                            { text: "宿泊客へのサービスの改善", translation: "（对住宿客人的服务改善）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        audio: "../assets/audio/2013.12-3.mp3",
-                        script: {
-                            question: "三番：講演会で、男の人が話しています。男の人は主に何について話していますか。",
-                            questionTrans: "（第三题：在演讲会上，男人正在讲话。男人主要在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "ええ、山川村で行われている山祭りは鎌倉時代に始まった伝統的なお祭りですが、ここ何年かは、つねに<span class=\"keyword\" onclick=\"showTooltip(event, '存続（そんぞく）：存续，继续存在。')\">存続</span>の危機が<span class=\"keyword\" onclick=\"showTooltip(event, '囁（ささや）く：私语，传言。')\">囁かれて</span>きました。その主な原因として、指摘されてきたのは、資金不足と人手不足です。", trans: "（是的，在山川村举行的山祭是始于镰仓时代的传统节日，但这几年，一直有传言说它面临着存续的危机。作为其主要原因被指出的，是资金不足和人手不足。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男人提到观光业走上正轨，是为了说明资金问题有了眉目，而不是探讨利用节日招揽游客，可以排除。')\">資金のほうは、ここ数年で観光業が<span class=\"keyword\" onclick=\"showTooltip(event, '軌道（きどう）に乗（の）る：走上正轨。')\">軌道に乗って</span>きたことなどもあり、<span class=\"keyword\" onclick=\"showTooltip(event, 'めどが立（た）つ：有眉目，有头绪。')\">めどが立っている</span>ようですが</span></span>、", trans: "（资金方面，由于近几年观光业走上正轨等原因，似乎已经有了眉目，）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人明确指出了当前面临的真正难题：【村子的人口流失完全没有停止的迹象，缺少能成为节日下一代接班人的年轻人（村の過疎化はいっこうに歯止めがかからず、祭りの次の担い手となる若者が不足しています）】。通篇都在探讨导致节日难以存续的具体困难，符合选项2。')\">村の<span class=\"keyword\" onclick=\"showTooltip(event, '過疎化（かそか）：过疏化，人口锐减。')\">過疎化</span>は<span class=\"keyword\" onclick=\"showTooltip(event, 'いっこうに：完全不，一点也不（常接否定）。')\">いっこうに</span><span class=\"keyword\" onclick=\"showTooltip(event, '歯止（はど）めがかかる：制止，遏制。')\">歯止めがかから</span>ず、祭りの次の<span class=\"keyword\" onclick=\"showTooltip(event, '担（にな）い手（て）：承担者，接班人。')\">担い手</span>となる若者が不足しています。</span></span>", trans: "（但是村子的人口流失完全没有停止的迹象，缺少能成为节日下一代接班人的年轻人。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，男人只是担忧【5年后10年后的存续都很困难（5年後10年後の存続が難しい）】，说明节日目前仍在举行，并没有终止，排除。关于选项1，第一句提到了历史，但那只是引出话题的背景，排除。')\">このような状況だと、5年後10年後の存続が難しいというのが現状です。</span></span>", trans: "（在这样的状况下，现状是5年后10年后的存续都很困难。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "伝統的な祭りの歴史", translation: "（传统节日的历史）", correct: false },
-                            { text: "祭りの存続にかかわる問題点", translation: "（关系到节日存续的问题点）", correct: true },
-                            { text: "祭りを利用した観光客の誘致", translation: "（利用节日招揽游客）", correct: false },
-                            { text: "祭りを中止した理由", translation: "（终止节日的理由）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        audio: "../assets/audio/2013.12-4.mp3",
-                        script: {
-                            question: "四番：テレビの経済番組で、レポーターが話しています。レポーターは何について話していますか。",
-                            questionTrans: "（第四题：在电视的经济节目中，记者正在讲话。记者在谈论什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "今話題のこちらの店では、コーヒーや紅茶を飲みながら、本をじっくり選び、購入することができます。店内の客の<span class=\"keyword\" onclick=\"showTooltip(event, '大半（たいはん）：大半，大部份。')\">大半</span>は女性です。", trans: "（在如今这家热门的店里，（顾客）可以一边喝着咖啡或红茶，一边仔细挑选、购买书籍。店里的客人大半都是女性。）" },
-                                { speaker: "女", text: "実は、こちらでは、店内の本棚やテーブルなどにも<span class=\"keyword\" onclick=\"showTooltip(event, '値札（ねふだ）：标价牌，价签。')\">値札</span>がついていて、<span class=\"keyword\" onclick=\"showTooltip(event, 'インテリア（interior）：室内装饰，室内陈设。')\">インテリア</span>を購入することもできます。", trans: "（其实在这里，店内的书架和桌子等也都带有价签，室内装饰品也是可以购买的。）" },
-                                { speaker: "女", text: "まるで家具の販売店のようです。", trans: "（简直就像是一家家具销售店。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，记者提到互联网普及导致连小说漫画都能在网上买到，这只是导致书店面临生存危机的大背景，而并非在探讨在网上卖书的技巧，可以排除。')\">インターネットが普及し、小説や漫画もインターネットで購入できてしまう現在、町の書店は生き残りをかけ、さまざまな工夫を<span class=\"keyword\" onclick=\"showTooltip(event, '余儀（よぎ）なくされる：被迫，不得不。')\">余儀なくされています</span>。</span></span>", trans: "（在互联网普及、连小说和漫画都能在网上买到的现在，城镇里的书店为了生存，不得不采取各种各样的方法。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '记者在最后点明了报道的核心：【在这里……推出了能一边喝茶一边选书的新销售方式，努力希望能让大家多少也能多光顾一下店里（こちらでは……新しい売り方を打ち出し、少しでも店に足を運んでほしいと努力をしているわけです）】。这说明整段报道都在介绍某书店为了吸引顾客而采取的销售策略，符合选项4。选项1和2虽然提到了女性和家具，但那只是该书店战略的一部分，不足以概括全文，均可排除。')\">こちらでは、女性に<span class=\"keyword\" onclick=\"showTooltip(event, 'ターゲット（target）を絞（しぼ）る：集中目标，锁定目标。')\">ターゲットを絞り</span>、お茶を飲みながら本を選べるという新しい売り方を<span class=\"keyword\" onclick=\"showTooltip(event, '打（う）ち出（だ）す：提出，表明。')\">打ち出し</span>、少しでも店に足を運んでほしいと努力をしているわけです。</span></span>", trans: "（在这里，他们将目标锁定在女性身上，推出了能一边喝茶一边选书的新销售方式，努力希望能让大家多少也能多光顾一下店里。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "女性向けの家具の売り方", translation: "（面向女性的家具销售方法）", correct: false },
-                            { text: "女性が購入する本の傾向", translation: "（女性购买书籍的倾向）", correct: false },
-                            { text: "インターネットで本を売るための工夫", translation: "（为了在网上卖书而采取的方法）", correct: false },
-                            { text: "ある書店の販売戦略", translation: "（某家书店的销售战略）", correct: true }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        audio: "../assets/audio/2013.12-5.mp3",
-                        script: {
-                            question: "五番：ラジオで男の人が話しています。男の人は何について話していますか。",
-                            questionTrans: "（第五题：在广播里男人正在讲话。男人在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "希少価値の高い金属を希少金属といいますが、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，男人明确表示【现在正在摸索不依赖开发新矿山来确保稀有金属的方法（現在新たな鉱山開発に頼らずに、希少金属を確保する方法が模索されています）】，排除了矿山开发这一途径。')\">現在新たな鉱山開発に頼らずに、希少金属を確保する方法が<span class=\"keyword\" onclick=\"showTooltip(event, '模索（もさく）：摸索，探寻。')\">模索</span>されています。</span></span>", trans: "（具有稀缺价值的金属被称为稀有金属，现在正在摸索不依赖开发新矿山来确保稀有金属的方法。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人引出核心话题：【其中，特别受到关注的是从废弃的手机等物品中回收的方法（その中でも、特に注目されているのが、廃棄された携帯電話などから回収する方法です）】。这符合选项1的主旨“稀有金属的回收利用”。')\">その中でも、特に注目されているのが、<span class=\"keyword\" onclick=\"showTooltip(event, '廃棄（はいき）：废弃，丢弃。')\">廃棄</span>された携帯電話などから<span class=\"keyword\" onclick=\"showTooltip(event, '回収（かいしゅう）：回收。')\">回収</span>する方法です。</span></span>実は、携帯電話などの電子機器には希少金属が多く含まれているのです。", trans: "（其中，特别受到关注的是从废弃的手机等物品中回收的方法。其实，手机等电子设备中含有大量的稀有金属。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男人提到专家估算日本电子设备中使用的稀有金属有些甚至超过了【世界储量的1成（世界の埋蔵量の1割を超える）】，但这只是为了说明废弃电子设备中含有大量稀有金属这一事实，并非整段讲话探讨的中心主题，可以排除。')\">専門家の<span class=\"keyword\" onclick=\"showTooltip(event, '試算（しさん）：估算，试算。')\">試算</span>によると、日本国内にある電子機器などに使われている希少金属の中には、世界の<span class=\"keyword\" onclick=\"showTooltip(event, '埋蔵量（まいぞうりょう）：储量，蕴藏量。')\">埋蔵量</span>の1割を超えるものもあるそうです。</span></span>", trans: "（据专家估算，在日本国内电子设备等中使用的稀有金属里，据说有些甚至超过了世界储量的1成。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在最后总结了自己的观点：【虽然从电子设备中再利用的成本非常高，但毕竟天然资源是有限的，我认为应该积极推进这样的举措（電子機器からの再利用はコストが非常に高いのですが……積極的にこうした取り組みを進めていくべきだと思います）】。这里再次呼应了从电子设备中“再利用（回收）”的话题，与选项1相符。关于选项4，文章探讨的是从废弃物中回收稀有金属，而不是废弃处理稀有金属本身，可排除。')\">電子機器からの再利用はコストが非常に高いのですが、天然資源には限りがあるわけで、積極的にこうした取り組みを進めていくべきだと思います。</span></span>", trans: "（虽然从电子设备中再利用的成本非常高，但毕竟天然资源是有限的，我认为应该积极推进这样的举措。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "希少金属のリサイクル", translation: "（稀有金属的回收利用）", correct: true },
-                            { text: "希少金属の鉱山開発", translation: "（稀有金属的矿山开发）", correct: false },
-                            { text: "世界の希少金属の埋蔵量", translation: "（世界稀有金属的储量）", correct: false },
-                            { text: "希少金属の廃棄処理", translation: "（稀有金属的废弃处理）", correct: false }
-                        ]
-                    }
-                ]
+  "2013-12": {
+    "label": "2013年12月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2013.12-1.mp3",
+        "script": {
+          "question": "会社の会議で男の人が話しています。",
+          "questionTrans": "（在公司的会议上男人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "本社ビルの屋上で木や花を育てはじめて５年がたちました。都会の小さな<span class=\"keyword\" onclick=\"showTooltip(event, 'オアシス（oasis）：绿洲。')\">オアシス</span>として、社員だけでなく、お客さまや近隣の方にも喜ばれています。",
+              "trans": "（总公司大楼的屋顶开始种植树木和花草已经过去5年了。作为都市中的小绿洲，不仅是员工，客户和附近的居民也很喜欢。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '男职员提到把屋顶作为出租农园借出，但这只是个“想法（アイディア）”，并且是为了引出后续要先在员工中招募人手进行实验，并不是在说明具体的“借出方法”，可以排除。')\">このたび、この屋上の一部を<span class=\"keyword\" onclick=\"showTooltip(event, 'レンタル（rental）：租赁，出租。')\">レンタル</span>農園として近隣住民の方々に<span class=\"keyword\" onclick=\"showTooltip(event, '貸（か）し出（だ）す：出租，借出。')\">貸し出す</span>というアイディアが出て、話が進んでいます。</span></span>",
+              "trans": "（这次，大家提出了将这屋顶的一部分作为出租农园借给附近居民的想法，目前事情正在推进中。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男职员用“因此（つきましては）”引出他真正想说的事情：【因此，首先想让员工试验性地种种蔬菜，从今天开始招募成员（つきましては、まずは社員で実験的に野菜を育ててみようと思っておりまして、今日からメンバーを募ります）】。这明确了这番话的目的是为了招募种蔬菜的员工，符合选项3。')\"><span class=\"keyword\" onclick=\"showTooltip(event, 'つきましては：因此，所以（商务/正式用语）。')\">つきましては</span>、まずは社員で実験的に野菜を育ててみようと思っておりまして、今日からメンバーを<span class=\"keyword\" onclick=\"showTooltip(event, '募（つの）る：招募，募集。')\">募ります</span>。</span></span>",
+              "trans": "（因此，首先想让员工试验性地种种蔬菜，从今天开始招募成员。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男职员并没有提及使用屋顶时的具体“规则”，排除。关于选项4，这里是在招募种菜的员工，虽然初学者也欢迎，但这只是个“实验”，而不是为了学习农业而开设的“进修/培训（研修）”，排除。')\">農業の経験がある人も、興味はあるけどという初心者も歓迎です。</span></span>",
+              "trans": "（有农业经验的人，以及有兴趣但没经验的初学者都欢迎。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人は何について話していますか。",
+              "trans": "（男人在谈论什么？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "ビルの屋上を利用する際の規則",
+            "translation": "（利用大楼屋顶时的规则）",
+            "correct": false
+          },
+          {
+            "text": "レンタル農園の貸し出し方法",
+            "translation": "（出租农园的借出方法）",
+            "correct": false
+          },
+          {
+            "text": "野菜を作る社員の募集",
+            "translation": "（种蔬菜的员工的招募）",
+            "correct": true
+          },
+          {
+            "text": "農業について学ぶ研修",
+            "translation": "（学习关于农业的进修/培训）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2013.12-2.mp3",
+        "script": {
+          "question": "ホテルの経営会議で、女の人が経営の改善について話しています。",
+          "questionTrans": "（在酒店的经营会议上，女人正在谈论关于经营的改善。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "宿泊客が減少し、業績が<span class=\"keyword\" onclick=\"showTooltip(event, '落（お）ち込（こ）む：下降，低迷，情绪低落。')\">落ち込んでいる</span>今、経営の改善が必要です。",
+              "trans": "（在住宿客人减少、业绩低迷的现在，我们需要改善经营。）"
+            },
+            {
+              "speaker": "女",
+              "text": "そこで、提案したいのが、ホテル内にある直営レストランの<span class=\"keyword\" onclick=\"showTooltip(event, '見直（みなお）し：重新评估，调整。')\">見直し</span>です。",
+              "trans": "（因此，我想提议的是，重新评估（调整）酒店内的直营餐厅。）"
+            },
+            {
+              "speaker": "女",
+              "text": "このレストランは、朝食時以外はほとんど客の利用がなく、<span class=\"keyword\" onclick=\"showTooltip(event, '維持（いじ）：维持。')\">維持</span>費ばかりかかり、経営の<span class=\"keyword\" onclick=\"showTooltip(event, '負担（ふたん）：负担。')\">負担</span>になっております。",
+              "trans": "（这家餐厅除了早餐时间以外几乎没有客人光顾，光花维持费，已经成了经营的负担。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女人虽然提到了餐厅翻新，但她明确表示【与其期待……不如……（期待するよりも……）】，这说明她认为翻新不如合作来得好，排除了翻新这个选项。')\">レストラン<span class=\"keyword\" onclick=\"showTooltip(event, '改装（かいそう）：改装，翻新。')\">改装</span>などによる客の増加に期待するよりも</span></span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人在这里直接给出了她的核心提案：【我认为和专门做餐饮的公司合作，削减经费是上策（飲食専門の会社と提携し、経費を抑えるほうが得策だと考えます）】。后续内容都是在详细解释这个合作的具体方案（例如一楼变成家庭餐厅，给客人发早餐券等）。这完全符合选项3“将业务委托给专门做餐饮的公司”。')\">飲食専門の会社と<span class=\"keyword\" onclick=\"showTooltip(event, '提携（ていけい）：合作，协作。')\">提携</span>し、経費を抑えるほうが得策だと考えます。</span></span>",
+              "trans": "（与其期待通过餐厅翻新等方式来增加客流，我认为不如和专门做餐饮的公司合作，削减经费才是上策。）"
+            },
+            {
+              "speaker": "女",
+              "text": "たとえば、1階のレストランをファミリーレストランに<span class=\"keyword\" onclick=\"showTooltip(event, '委託（いたく）：委托。')\">委託</span>し、宿泊客には朝食クーポンを渡してそこを利用してもらうというのはどうでしょうか。",
+              "trans": "（例如，将1楼的餐厅委托给家庭餐厅（经营），发给住宿客人早餐券让他们去那里用餐，这个方案如何呢？）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中讲的是要把现在的“直营餐厅（直営レストラン）”委托出去，即“取消直营”，与选项“设置（設置）”正好相反，排除。关于选项4，女人提到【即使没有了直营餐厅服务也不会下降（直営レストランがなくともサービスの低下にはなりませんし）】，说明她关注的是维持现有服务水平，而不是去专门探讨“改善”对住宿客人的服务，可以排除。')\">これなら直営レストランがなくともサービスの低下にはなりませんし、委託先にとってもホテルの利用客が確実に自分の店の客になるので、双方に<span class=\"keyword\" onclick=\"showTooltip(event, 'メリット（merit）：优点，好处。')\">メリット</span>があると言えます。</span></span>",
+              "trans": "（这样的话，即使没有了直营餐厅服务也不会下降，对于被委托方来说，酒店的客人也肯定会成为自己店里的客人，可以说是双方都有好处。）"
+            },
+            {
+              "speaker": "問",
+              "text": "女の人は何を提案していますか。",
+              "trans": "（女人提出了什么提案？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "レストランの改装",
+            "translation": "（餐厅的翻新）",
+            "correct": false
+          },
+          {
+            "text": "直営レストランの設置",
+            "translation": "（直营餐厅的设置）",
+            "correct": false
+          },
+          {
+            "text": "飲食専門の会社への業務委託",
+            "translation": "（对专门做餐饮的公司的业务委托）",
+            "correct": true
+          },
+          {
+            "text": "宿泊客へのサービスの改善",
+            "translation": "（对住宿客人的服务改善）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2013.12-3.mp3",
+        "script": {
+          "question": "講演会で、男の人が話しています。",
+          "questionTrans": "（在演讲会上，男人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "ええ、山川村で行われている山祭りは鎌倉時代に始まった伝統的なお祭りですが、ここ何年かは、つねに<span class=\"keyword\" onclick=\"showTooltip(event, '存続（そんぞく）：存续，继续存在。')\">存続</span>の危機が<span class=\"keyword\" onclick=\"showTooltip(event, '囁（ささや）く：私语，传言。')\">囁かれて</span>きました。その主な原因として、指摘されてきたのは、資金不足と人手不足です。",
+              "trans": "（是的，在山川村举行的山祭是始于镰仓时代的传统节日，但这几年，一直有传言说它面临着存续的危机。作为其主要原因被指出的，是资金不足和人手不足。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男人提到观光业走上正轨，是为了说明资金问题有了眉目，而不是探讨利用节日招揽游客，可以排除。')\">資金のほうは、ここ数年で観光業が<span class=\"keyword\" onclick=\"showTooltip(event, '軌道（きどう）に乗（の）る：走上正轨。')\">軌道に乗って</span>きたことなどもあり、<span class=\"keyword\" onclick=\"showTooltip(event, 'めどが立（た）つ：有眉目，有头绪。')\">めどが立っている</span>ようですが</span></span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人明确指出了当前面临的真正难题：【村子的人口流失完全没有停止的迹象，缺少能成为节日下一代接班人的年轻人（村の過疎化はいっこうに歯止めがかからず、祭りの次の担い手となる若者が不足しています）】。通篇都在探讨导致节日难以存续的具体困难，符合选项2。')\">村の<span class=\"keyword\" onclick=\"showTooltip(event, '過疎化（かそか）：过疏化，人口锐减。')\">過疎化</span>は<span class=\"keyword\" onclick=\"showTooltip(event, 'いっこうに：完全不，一点也不（常接否定）。')\">いっこうに</span><span class=\"keyword\" onclick=\"showTooltip(event, '歯止（はど）めがかかる：制止，遏制。')\">歯止めがかから</span>ず、祭りの次の<span class=\"keyword\" onclick=\"showTooltip(event, '担（にな）い手（て）：承担者，接班人。')\">担い手</span>となる若者が不足しています。</span></span>",
+              "trans": "（资金方面，由于近几年观光业走上正轨等原因，似乎已经有了眉目，但是村子的人口流失完全没有停止的迹象，缺少能成为节日下一代接班人的年轻人。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，男人只是担忧【5年后10年后的存续都很困难（5年後10年後の存続が難しい）】，说明节日目前仍在举行，并没有终止，排除。关于选项1，第一句提到了历史，但那只是引出话题的背景，排除。')\">このような状況だと、5年後10年後の存続が難しいというのが現状です。</span></span>",
+              "trans": "（在这样的状况下，现状是5年后10年后的存续都很困难。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人は主に何について話していますか。",
+              "trans": "（男人主要在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "伝統的な祭りの歴史",
+            "translation": "（传统节日的历史）",
+            "correct": false
+          },
+          {
+            "text": "祭りの存続にかかわる問題点",
+            "translation": "（关系到节日存续的问题点）",
+            "correct": true
+          },
+          {
+            "text": "祭りを利用した観光客の誘致",
+            "translation": "（利用节日招揽游客）",
+            "correct": false
+          },
+          {
+            "text": "祭りを中止した理由",
+            "translation": "（终止节日的理由）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2013.12-4.mp3",
+        "script": {
+          "question": "テレビの経済番組で、レポーターが話しています。",
+          "questionTrans": "（在电视的经济节目中，记者正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "今話題のこちらの店では、コーヒーや紅茶を飲みながら、本をじっくり選び、購入することができます。店内の客の<span class=\"keyword\" onclick=\"showTooltip(event, '大半（たいはん）：大半，大部份。')\">大半</span>は女性です。",
+              "trans": "（在如今这家热门的店里，（顾客）可以一边喝着咖啡或红茶，一边仔细挑选、购买书籍。店里的客人大半都是女性。）"
+            },
+            {
+              "speaker": "女",
+              "text": "実は、こちらでは、店内の本棚やテーブルなどにも<span class=\"keyword\" onclick=\"showTooltip(event, '値札（ねふだ）：标价牌，价签。')\">値札</span>がついていて、<span class=\"keyword\" onclick=\"showTooltip(event, 'インテリア（interior）：室内装饰，室内陈设。')\">インテリア</span>を購入することもできます。",
+              "trans": "（其实在这里，店内的书架和桌子等也都带有价签，室内装饰品也是可以购买的。）"
+            },
+            {
+              "speaker": "女",
+              "text": "まるで家具の販売店のようです。",
+              "trans": "（简直就像是一家家具销售店。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，记者提到互联网普及导致连小说漫画都能在网上买到，这只是导致书店面临生存危机的大背景，而并非在探讨在网上卖书的技巧，可以排除。')\">インターネットが普及し、小説や漫画もインターネットで購入できてしまう現在、町の書店は生き残りをかけ、さまざまな工夫を<span class=\"keyword\" onclick=\"showTooltip(event, '余儀（よぎ）なくされる：被迫，不得不。')\">余儀なくされています</span>。</span></span>",
+              "trans": "（在互联网普及、连小说和漫画都能在网上买到的现在，城镇里的书店为了生存，不得不采取各种各样的方法。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '记者在最后点明了报道的核心：【在这里……推出了能一边喝茶一边选书的新销售方式，努力希望能让大家多少也能多光顾一下店里（こちらでは……新しい売り方を打ち出し、少しでも店に足を運んでほしいと努力をしているわけです）】。这说明整段报道都在介绍某书店为了吸引顾客而采取的销售策略，符合选项4。选项1和2虽然提到了女性和家具，但那只是该书店战略的一部分，不足以概括全文，均可排除。')\">こちらでは、女性に<span class=\"keyword\" onclick=\"showTooltip(event, 'ターゲット（target）を絞（しぼ）る：集中目标，锁定目标。')\">ターゲットを絞り</span>、お茶を飲みながら本を選べるという新しい売り方を<span class=\"keyword\" onclick=\"showTooltip(event, '打（う）ち出（だ）す：提出，表明。')\">打ち出し</span>、少しでも店に足を運んでほしいと努力をしているわけです。</span></span>",
+              "trans": "（在这里，他们将目标锁定在女性身上，推出了能一边喝茶一边选书的新销售方式，努力希望能让大家多少也能多光顾一下店里。）"
+            },
+            {
+              "speaker": "問",
+              "text": "レポーターは何について話していますか。",
+              "trans": "（记者在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "女性向けの家具の売り方",
+            "translation": "（面向女性的家具销售方法）",
+            "correct": false
+          },
+          {
+            "text": "女性が購入する本の傾向",
+            "translation": "（女性购买书籍的倾向）",
+            "correct": false
+          },
+          {
+            "text": "インターネットで本を売るための工夫",
+            "translation": "（为了在网上卖书而采取的方法）",
+            "correct": false
+          },
+          {
+            "text": "ある書店の販売戦略",
+            "translation": "（某家书店的销售战略）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2013.12-5.mp3",
+        "script": {
+          "question": "ラジオで男の人が話しています。",
+          "questionTrans": "（在广播里男人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "希少価値の高い金属を希少金属といいますが、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，男人明确表示【现在正在摸索不依赖开发新矿山来确保稀有金属的方法（現在新たな鉱山開発に頼らずに、希少金属を確保する方法が模索されています）】，排除了矿山开发这一途径。')\">現在新たな鉱山開発に頼らずに、希少金属を確保する方法が<span class=\"keyword\" onclick=\"showTooltip(event, '模索（もさく）：摸索，探寻。')\">模索</span>されています。</span></span>",
+              "trans": "（具有稀缺价值的金属被称为稀有金属，现在正在摸索不依赖开发新矿山来确保稀有金属的方法。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人引出核心话题：【其中，特别受到关注的是从废弃的手机等物品中回收的方法（その中でも、特に注目されているのが、廃棄された携帯電話などから回収する方法です）】。这符合选项1的主旨“稀有金属的回收利用”。')\">その中でも、特に注目されているのが、<span class=\"keyword\" onclick=\"showTooltip(event, '廃棄（はいき）：废弃，丢弃。')\">廃棄</span>された携帯電話などから<span class=\"keyword\" onclick=\"showTooltip(event, '回収（かいしゅう）：回收。')\">回収</span>する方法です。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人引出核心话题：【其中，特别受到关注的是从废弃的手机等物品中回收的方法（その中でも、特に注目されているのが、廃棄された携帯電話などから回収する方法です）】。这符合选项1的主旨“稀有金属的回收利用”。')\"></span></span>実は、携帯電話などの電子機器には希少金属が多く含まれているのです。",
+              "trans": "（其中，特别受到关注的是从废弃的手机等物品中回收的方法。其实，手机等电子设备中含有大量的稀有金属。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男人提到专家估算日本电子设备中使用的稀有金属有些甚至超过了【世界储量的1成（世界の埋蔵量の1割を超える）】，但这只是为了说明废弃电子设备中含有大量稀有金属这一事实，并非整段讲话探讨的中心主题，可以排除。')\">専門家の<span class=\"keyword\" onclick=\"showTooltip(event, '試算（しさん）：估算，试算。')\">試算</span>によると、日本国内にある電子機器などに使われている希少金属の中には、世界の<span class=\"keyword\" onclick=\"showTooltip(event, '埋蔵量（まいぞうりょう）：储量，蕴藏量。')\">埋蔵量</span>の1割を超えるものもあるそうです。</span></span>",
+              "trans": "（据专家估算，在日本国内电子设备等中使用的稀有金属里，据说有些甚至超过了世界储量的1成。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在最后总结了自己的观点：【虽然从电子设备中再利用的成本非常高，但毕竟天然资源是有限的，我认为应该积极推进这样的举措（電子機器からの再利用はコストが非常に高いのですが……積極的にこうした取り組みを進めていくべきだと思います）】。这里再次呼应了从电子设备中“再利用（回收）”的话题，与选项1相符。关于选项4，文章探讨的是从废弃物中回收稀有金属，而不是废弃处理稀有金属本身，可排除。')\">電子機器からの再利用はコストが非常に高いのですが、天然資源には限りがあるわけで、積極的にこうした取り組みを進めていくべきだと思います。</span></span>",
+              "trans": "（虽然从电子设备中再利用的成本非常高，但毕竟天然资源是有限的，我认为应该积极推进这样的举措。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人は何について話していますか。",
+              "trans": "（男人在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "希少金属のリサイクル",
+            "translation": "（稀有金属的回收利用）",
+            "correct": true
+          },
+          {
+            "text": "希少金属の鉱山開発",
+            "translation": "（稀有金属的矿山开发）",
+            "correct": false
+          },
+          {
+            "text": "世界の希少金属の埋蔵量",
+            "translation": "（世界稀有金属的储量）",
+            "correct": false
+          },
+          {
+            "text": "希少金属の廃棄処理",
+            "translation": "（稀有金属的废弃处理）",
+            "correct": false
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2013-12-概要理解"; 
+        let currentExamKey = "2013-12"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -255,10 +522,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -597,8 +864,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-<script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+<script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261016-summary-n1-2013-12-8108d2935b51"></script>
+<script src="../shared/follow-listening.js?v=20261016-summary-n1-2013-12-8108d2935b51"></script>
+<script src="../shared/follow-listening-entry.js?v=20261016-summary-n1-2013-12-8108d2935b51"></script>
 </body>
 </html>

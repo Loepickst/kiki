@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261017-summary-n1-2018-12-6955b9e2c929">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,150 +192,397 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
     <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2018-12-概要理解": {
-                label: "2018年12月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2018.12-1.mp3",
-                        script: {
-                            question: "一番：旅行関連のイベントで旅行会社の男の人が話しています。男の人は主に何について話していますか。",
-                            questionTrans: "（第一题：在旅行相关的活动上，一位旅行公司的男人正在讲话。男人主要在谈论什么？）",
-                            dialogue: [
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '男人开头提到在机场丢失行李，但这只是为了引出自家新开发的旅行箱的话题背景，并不是专门报道“频繁发生的事件”，可以排除。')\">空港や<span class=\"keyword\" onclick=\"showTooltip(event, '旅先（たびさき）：旅行地，目的地。')\">旅先</span>での荷物の<span class=\"keyword\" onclick=\"showTooltip(event, '紛失（ふんしつ）：遗失，丢失。')\">紛失</span>、<span class=\"keyword\" onclick=\"showTooltip(event, '盗難（とうなん）：盗窃，失窃。')\">盗難</span>、不安ですよね。</span></span>", "trans": "（在机场或者旅行地弄丢行李或者被盗，会很不安对吧。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人点明了讲话的核心：介绍自家公司新开发的【与手机联动的旅行箱（携帯電話と連動した旅行用かばん）】。随后的内容都在详细说明它如何报警、如何追踪等具体功能。这完全符合选项1“新开发的产品功能”。')\">わが社では新たに携帯電話と<span class=\"keyword\" onclick=\"showTooltip(event, '連動（れんどう）：联动，相连。')\">連動</span>した旅行用かばんを開発しました。</span></span>", "trans": "（我们公司新开发了一款与手机联动的旅行箱。）" },
-                                { "speaker": "男", "text": "携帯から３０メートル離れると、<span class=\"keyword\" onclick=\"showTooltip(event, '双方（そうほう）：双方。')\">双方</span>で<span class=\"keyword\" onclick=\"showTooltip(event, '警告音（けいこくおん）：警告音，警报声。')\">警告音</span>が鳴り、<span class=\"keyword\" onclick=\"showTooltip(event, '事態（じたい）：事态，局势。')\">事態</span>を知らせます。", "trans": "（只要离开手机30米，双方就会发出警报声，通知您发生了状况。）" },
-                                { "speaker": "男", "text": "<span class=\"keyword\" onclick=\"showTooltip(event, '万（まん）が一（いち）：万一，万一发生。')\">万が一</span>、紛失もしくは持ち去られたとしても、ＧＰＳ発信機が<span class=\"keyword\" onclick=\"showTooltip(event, '搭載（とうさい）：搭载，装备。')\">搭載</span>されているので、携帯から位置を<span class=\"keyword\" onclick=\"showTooltip(event, '把握（はあく）：掌握，了解。')\">把握</span>、<span class=\"keyword\" onclick=\"showTooltip(event, '追跡（ついせき）：追踪。')\">追跡</span>できます。", "trans": "（万一遗失或者被人拿走，因为箱子上搭载了GPS发射器，所以可以从手机上掌握位置并进行追踪。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中并没有教大家“如何安全地拿包”。关于选项4，男人结尾虽然提醒不要勉强自己去追踪，但这只是针对这款产品功能的补充说明（警示），并不是在传授广泛意义上的“保护自身免受麻烦的方法”。')\">ただ盗難の際は危険を<span class=\"keyword\" onclick=\"showTooltip(event, '伴（ともな）う：伴随。')\">伴う</span>こともあるので、自力での<span class=\"keyword\" onclick=\"showTooltip(event, '無理（むり）：勉强，难以办到。')\">無理</span>な追跡は<span class=\"keyword\" onclick=\"showTooltip(event, 'くれぐれも：千万，恳切地（常接否定或请求）。')\">くれぐれも</span>なさらないように。</span></span>", "trans": "（只是遇到盗窃时可能会伴随危险，请千万不要勉强自己单枪匹马去追踪。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "新しく開発した製品の機能", "translation": "（新开发的产品的功能）", "correct": true },
-                            { "text": "空港でよく起きている事件", "translation": "（在机场经常发生的事件）", "correct": false },
-                            { "text": "かばんの安全な持ち方", "translation": "（包的安全拿法）", "correct": false },
-                            { "text": "旅先でトラブルから身を守る方法", "translation": "（在旅行地保护自身免受麻烦的方法）", "correct": false }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        audio: "../assets/audio/2018.12-2.mp3",
-                        script: {
-                            question: "二番：会社で男の人と在宅勤務を体験した女の人が話しています。在宅勤務制度の導入について、女の人はどう考えていますか。",
-                            questionTrans: "（第二题：在公司里，男人和体验过居家办公的女人正在聊天。关于居家办公制度的引入，女人是怎么想的？）",
-                            dialogue: [
-                                { "speaker": "男", "text": "前田さん、人事部が募集してた<span class=\"keyword\" onclick=\"showTooltip(event, '在宅勤務（ざいたくきんむ）：居家办公。')\">在宅勤務</span>体験やってみたんだって。制度を<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り入（い）れる：引进，采纳。')\">取り入れる</span>かどうかの<span class=\"keyword\" onclick=\"showTooltip(event, '試験的（しけんてき）：试验性的。')\">試験的な</span>ものだって聞いたけど。", "trans": "（前田，听说你参加了人事部招募的居家办公体验啊。我听说这是为了决定是否引进该制度的试验性活动。）" },
-                                { "speaker": "女", "text": "うん。たった1週間だけどね。いつも高齢の父を一人家において仕事に出るのは<span class=\"keyword\" onclick=\"showTooltip(event, '気（き）がかり：担心，挂念。')\">気がかり</span>だったんだけど。それがなくて仕事に<span class=\"keyword\" onclick=\"showTooltip(event, '打（う）ち込（こ）む：专心致志，全神贯注。')\">打ち込めた</span>。早く制度化されないかな。", "trans": "（嗯。虽然只有短短一周呢。以前总是留高龄的父亲一个人在家出去工作，心里总是很挂念。居家办公就没这个顾虑，能专心投入工作了。希望能早点制度化啊。）" },
-                                { "speaker": "男", "text": "働きやすくなる人、いるだろうね。", "trans": "（应该会有人因此觉得工作起来更方便了吧。）" },
-                                { "speaker": "女", "text": "だけど、体験してみて、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人用“但是（だけど）”进行转折，表明虽然自己希望早点制度化，但也觉得“不能就这么简单地引入（そう簡単に導入ってわけにはって思ったのも事実かな）”，也就是存在需要解决的问题。这符合选项3中的“改善问题点之后再引入”。')\">そう簡単に<span class=\"keyword\" onclick=\"showTooltip(event, '導入（どうにゅう）：引进，引入。')\">導入</span>ってわけにはって思ったのも事実かな。</span></span>", "trans": "（但是，体验过之后，觉得不能就这么简单地引入，这也是事实吧。）" },
-                                { "speaker": "男", "text": "えっ、そうなの。", "trans": "（哎，是这样吗？）" },
-                                { "speaker": "女", "text": "オフィスなら<span class=\"keyword\" onclick=\"showTooltip(event, '些細（ささい）：琐碎，细小。')\">些細な</span>ことでもすぐ誰かに<span class=\"keyword\" onclick=\"showTooltip(event, '気軽（きがる）：轻松，随便，不客气。')\">気軽に</span>聞いたりできるでしょう。家でとなると、<span class=\"keyword\" onclick=\"showTooltip(event, 'いちいち：逐一，一一。')\">いちいち</span>メールや電話で聞くのは<span class=\"keyword\" onclick=\"showTooltip(event, 'はばかられる（憚られる）：忌惮，顾忌，觉得不好意思。')\">はばかられて</span>、ほかの体験者もいいことばかり報告したわけじゃなさそうだし。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人明确指出了居家办公沟通不便的问题，并得出最终结论：【必须先将这些问题一个一个地扫除（解决）（まずはそういうのを一つずつクリアしていかないとってこと）】。这进一步印证了选项3“在改善问题点之后最好再引入”。')\">まずはそういうのを一つずつ<span class=\"keyword\" onclick=\"showTooltip(event, 'クリア（clear）：清除，解决，过关。')\">クリア</span>していかないとってこと。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '女人明确表示了存在不好开口沟通等问题，并非“没有问题”，排除了选项1和2。同时，女人一开始说自己能专心工作“希望能早点制度化”，结尾也只是说要先解决问题，说明她本身是支持引入的，只是反对现在“草率引入”，而不是主张“停止引入”，排除了选项4。')\"></span></span>", "trans": "（在办公室的话，就算是琐碎的小事也能马上轻松地问别人吧。要是在家的话，每件事都要发邮件或打电话去问，就会觉得有些不好意思，其他的体验者似乎也不是只报告了好的方面。总之就是必须先将这些问题一个一个地解决掉才行。）" },
-                                { "speaker": "男", "text": "体験した人じゃないと、わからないことってあるもんだよね。", "trans": "（有些事确实是只有体验过的人才会懂的呢。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "問題点はなく、早く導入したほうがいい", "translation": "（没有问题，最好早点引入）", "correct": false },
-                            { "text": "問題点はないが、導入しなくてもいい", "translation": "（没有问题，但不引入也行）", "correct": false },
-                            { "text": "問題点をかいぜんしてから、導入したほうがいい", "translation": "（改善问题之后，最好再引入）", "correct": true },
-                            { "text": "問題点があり、導入自体をやめたほうがいい", "translation": "（有问题，最好停止引入本身）", "correct": false }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        audio: "../assets/audio/2018.12-3.mp3",
-                        script: {
-                            question: "三番：講演会で、建築家が話しています。建築家は何について話していますか。",
-                            questionTrans: "（第三题：在演讲会上，建筑家正在讲话。建筑家在谈论什么？）",
-                            dialogue: [
-                                { "speaker": "男", "text": "物を作るのに、大切なことは、<span class=\"keyword\" onclick=\"showTooltip(event, '入念（にゅうねん）：细致，周密。')\">入念な</span>計画と準備であるといった人がいます。わたしも大いに<span class=\"keyword\" onclick=\"showTooltip(event, '賛同（さんどう）：赞同。')\">賛同</span>します。", "trans": "（有人说，在制造物品时，最重要的是周密的计划和准备。我也非常赞同。）" },
-                                { "speaker": "男", "text": "ただし、それは<span class=\"keyword\" onclick=\"showTooltip(event, '創造的（そうぞうてき）：创造性的。')\">創造的な</span>ものでない場合に<span class=\"keyword\" onclick=\"showTooltip(event, '限（かぎ）る：限于。')\">限ります</span>。", "trans": "（但是，这仅限于（制造的）不是创造性物品的情况。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '建筑家在肯定了准备的重要性后，紧接着用“但是（ただし）”进行了转折，指出【这仅限于不是创造性物品的情况】。随后全文都在讲述在将构想成型（即制造创造性物品）时，碰壁和失败是提供营养的必要过程，不要害怕失败。这完全符合选项4“制造创造性物品时重要的事情”。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '発想（はっそう）：构想，想法。')\">発想</span>を形にするには何度も壁にぶつかって、失敗しては<span class=\"keyword\" onclick=\"showTooltip(event, 'やり直（なお）す：重做，重新来过。')\">やり直す</span>。その過程が栄養となり、アイディアを発展させるのです。</span></span>", "trans": "（要想把构想化为实体，就会无数次碰壁，失败了再重来。那个过程会成为营养，让想法得到发展。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '建筑家提到现代人往往过于重视周密的准备和计划，但这恰恰是他认为在面对创造性工作时容易产生的“犹豫（躊躇）”误区，因此排除了选项1和选项3。')\">現代人は<span class=\"keyword\" onclick=\"showTooltip(event, 'とかく：动辄，往往。')\">とかく</span>入念な準備に<span class=\"keyword\" onclick=\"showTooltip(event, '重（おも）きを置（お）く：把重点放在……，重视。')\">重きを置き</span>、それが不完全なまま、次の<span class=\"keyword\" onclick=\"showTooltip(event, '工程（こうてい）：工序，工程。')\">工程</span>に進むことを<span class=\"keyword\" onclick=\"showTooltip(event, '躊躇（ちゅうちょ）：犹豫，踌躇。')\">躊躇</span>しがちですが。</span></span>", "trans": "（现代人往往把重点放在周密的准备上，如果准备不充分，就很容易对进入下一道工序感到犹豫。）" },
-                                { "speaker": "男", "text": "失敗はものづくりにおける必要な過程なのですから、恐れることはないのです。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中完全没有探讨关于发挥“个性（個性）”的话题，可以直接排除选项2。')\"></span></span>", "trans": "（因为失败是制造物品时必要的过程，所以没什么好害怕的。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "物づくりの準備でやっておくべきこと", "translation": "（在制造物品的准备阶段应该做的事）", "correct": false },
-                            { "text": "物づくりで個性を生かすことの必要性", "translation": "（在制造物品时发挥个性的必要性）", "correct": false },
-                            { "text": "計画的に物を作ることの重要性", "translation": "（有计划地制造物品的重要性）", "correct": false },
-                            { "text": "創造的なものを作るのに大事なこと", "translation": "（制造创造性物品时重要的事情）", "correct": true }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        audio: "../assets/audio/2018.12-4.mp3",
-                        script: {
-                            question: "四番：会社で社長が新たに管理職になった人たちに話しています。社長は何について話していますか。",
-                            questionTrans: "（第四题：在公司里，社长正在对新成为管理层的人们讲话。社长在谈论什么？）",
-                            dialogue: [
-                                { "speaker": "男", "text": "みなさん、管理職になると、今まで<span class=\"keyword\" onclick=\"showTooltip(event, '同僚（どうりょう）：同事。')\">同僚</span>だった仲間が部下に、友人<span class=\"keyword\" onclick=\"showTooltip(event, 'ライバル（rival）：竞争对手，对手。')\">ライバル</span>が自分の管理下に入るわけです。", "trans": "（各位，一旦成为管理层，迄今为止是同事的伙伴就会变成部下，朋友和竞争对手也会进入自己的管理之下。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '社长提到“无法像以前那样交往”是为了说明管理层立场的转变，而不是在教大家具体“如何巧妙交往”，排除选项1。')\">厳しく注意をしたり、組織の側に立って物を言わなければならなかったりと、これまでどおりの付き合いとは行かないこともあるでしょう。</span></span>", "trans": "（有时需要严厉地警告，或者需要站在组织的立场上说话，所以也会有无法像以前那样交往的情况吧。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中并没有列举和部下之间具体会发生什么样的“纠纷（トラブル）”，排除选项2。')\">そういった中でも、管理職というのは、部下を<span class=\"keyword\" onclick=\"showTooltip(event, '導（みちび）く：引导，指导。')\">導き</span>、しっかり結果を出さなくてはなりません。</span></span>", "trans": "（即使在那种情况下，所谓的管理层，就是需要引导部下，切实地拿出成果。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '虽然提到了“要努力激发部下干劲”，但这只是管理层应尽的责任之一，文中并未提供具体的“策略/对策（方策）”，排除选项3。')\">部下一人ひとりのやる気を引き出し、公平にかつ<span class=\"keyword\" onclick=\"showTooltip(event, '適正（てきせい）：适当，合理。')\">適正</span>に評価するようつとめること。</span></span>", "trans": "（要努力激发每一个部下的干劲，公平且适当地进行评价。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '整段话都是在叮嘱新管理层认清立场转变、做好评价和引导的本职工作，并在最后总结“请将我说的话铭记在心”。这对应了选项4“在拥有部下之际的思想准备”。')\">今、わたしが話したことは、しっかり<span class=\"keyword\" onclick=\"showTooltip(event, '肝（きも）に銘（めい）じる：铭记在心，牢记。')\">肝に銘じて</span>おいてください。</span></span>", "trans": "（现在我所说的话，请大家牢牢铭记在心。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "部下との上手な付き合い方", "translation": "（和部下巧妙交往的方法）", "correct": false },
-                            { "text": "部下との間で起きやすいトラブル", "translation": "（在和部下之间容易发生的纠纷）", "correct": false },
-                            { "text": "部下のやる気を引き出す方策", "translation": "（激发部下干劲的策略）", "correct": false },
-                            { "text": "部下を持つにあたっての心構え", "translation": "（在拥有部下之际的思想准备）", "correct": true }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        audio: "../assets/audio/2018.12-5.mp3",
-                        script: {
-                            question: "五番：テレビで女の人が話しています。女の人は何について話していますか。",
-                            questionTrans: "（第五题：在电视上女人正在讲话。女人在谈论什么？）",
-                            dialogue: [
-                                { "speaker": "女", "text": "キャッチボールには必ず相手が必要ですね。相手が上手にボールを受け取ってくれると、投げるほうも気持ちよく投げられるものです。", "trans": "（传接球的时候一定要有对手呢。如果对手能很好地接住球，投球的人也能投得很舒服。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人通过传接球的比喻引出核心话题：【对话也是一样，如果接收（听）的人不能很好地应答的话，就会变得很生硬（会話もこれと同様で、受け取る人がうまく受け答えしなければ、ギクシャクしてしまいます）】。后续全文都在探讨作为听者应该如何适时地给出不同类型的反馈，符合选项2“成为优秀倾听者的方法”。')\">会話もこれと<span class=\"keyword\" onclick=\"showTooltip(event, '同様（どうよう）：同样，一样。')\">同様</span>で、受け取る人がうまく<span class=\"keyword\" onclick=\"showTooltip(event, '受（う）け答（こた）え：应对，应答。')\">受け答え</span>しなければ、<span class=\"keyword\" onclick=\"showTooltip(event, 'ギクシャク：别扭，不圆滑，生硬。')\">ギクシャク</span>してしまいます。</span></span>", "trans": "（对话也和这个一样，如果接收的人不能很好地应答的话，就会变得很生硬。）" },
-                                { "speaker": "女", "text": "受け答えにはうんうん、それで、など<span class=\"keyword\" onclick=\"showTooltip(event, '青信号（あおしんごう）：绿灯。')\">青信号</span>のように、そのまま話を続けて、という意味のものもあれば、", "trans": "（应答中，既有像“嗯嗯”、“然后呢”这样如同绿灯一般，意思是“请继续说下去”的应答，）" },
-                                { "speaker": "女", "text": "どういう意味、ちょっと待って、など途中で相手の話を止める、黄色や赤の信号の<span class=\"keyword\" onclick=\"showTooltip(event, '役割（やくわり）を果（は）たす：起作用，发挥作用。')\">役割を果たす</span>ものもあります。", "trans": "（也有像“什么意思”、“等一下”这样中途打断对方说话，起到黄灯或红灯作用的应答。）" },
-                                { "speaker": "女", "text": "話している人に対して、いつも青信号がいいかというと、そうではありません。<span class=\"keyword\" onclick=\"showTooltip(event, 'いい加減（かげん）：敷衍，马马虎虎，随便。')\">いい加減な</span><span class=\"keyword\" onclick=\"showTooltip(event, '相槌（あいづち）：随声附和，搭腔。')\">相槌</span>や<span class=\"keyword\" onclick=\"showTooltip(event, '一本調子（いっぽんぢょうし）：单调，千篇一律。')\">一本調子</span>の対応では、話す人も話す<span class=\"keyword\" onclick=\"showTooltip(event, '意欲（いよく）：意愿，积极性。')\">意欲</span>を失ってしまいます。", "trans": "（但要说对说话的人是不是总是绿灯就好呢，其实并非如此。敷衍的附和或是单调的反应，会让说话的人也失去说话的意愿。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中提到传接球和交通灯（红黄绿灯）都只是为了生动形象地说明倾听时的应答技巧而使用的“比喻”，并非真的是在探讨体育运动（排除1）或交通规则（排除3）。另外，整段话关注的是倾听一方的技巧，而非讲述如何发表通俗易懂的讲话（排除4）。')\">黄色や赤の信号もうまく利用して、話の<span class=\"keyword\" onclick=\"showTooltip(event, '交通整理（こうつうせいり）：交通梳理，梳理。')\">交通整理</span>をしていくと、相手も気持ちよく話せるでしょう。</span></span>", "trans": "（如果能巧妙地利用黄灯和红灯，对对话进行“交通梳理”的话，对方也能说得很舒服吧。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "スポーツにおけるコミュニケーションの重要性", "translation": "（体育运动中交流的重要性）", "correct": false },
-                            { "text": "いい聞き手になる方法", "translation": "（成为优秀倾听者的方法）", "correct": true },
-                            { "text": "交通ルールの果たす役割", "translation": "（交通规则发挥的作用）", "correct": false },
-                            { "text": "人前でわかりやすく話をする方法", "translation": "（在人前通俗易懂地讲话的方法）", "correct": false }
-                        ]
-                    },
-                    {
-                        id: 6,
-                        audio: "../assets/audio/2018.12-6.mp3",
-                        script: {
-                            question: "六番：ラジオで専門家が車の自動走行について話しています。専門家は車の自動走行についてどんな意見を述べていますか。",
-                            questionTrans: "（第六题：在广播里，专家正在谈论汽车的自动驾驶。专家关于汽车的自动驾驶陈述了什么意见？）",
-                            dialogue: [
-                                { "speaker": "男", "text": "近年、高齢者による自動車運転の<span class=\"keyword\" onclick=\"showTooltip(event, '誤操作（ごそうさ）：误操作。')\">誤操作</span>、たとえば、<span class=\"keyword\" onclick=\"showTooltip(event, 'アクセル（accelerator）：油门。')\">アクセル</span>と<span class=\"keyword\" onclick=\"showTooltip(event, 'ブレーキ（brake）：刹车。')\">ブレーキ</span>の<span class=\"keyword\" onclick=\"showTooltip(event, '踏（ふ）み間違（まちが）い：踩错。')\">踏み間違い</span>などが<span class=\"keyword\" onclick=\"showTooltip(event, '多発（たはつ）：多发，频发。')\">多発</span>しています。", "trans": "（近年来，高龄者驾驶汽车的误操作，例如把油门当刹车踩错等事故频发。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '专家开头提到高龄者事故多发，是为了引出大众对自动驾驶期待高涨的背景，并没有主张“限制高龄者使用自动驾驶”，排除。')\">こうした中、自動走行への期待が高まり、開発が進んでいるわけですが、</span></span>", "trans": "（在这样的背景下，人们对自动驾驶的期待高涨，开发也在不断推进。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中提到自动驾驶“还有不清晰的地方”，是指大众对它的“认知”不清晰，而不是指自动驾驶技术本身的“安全性”不可信，排除。')\">何が自動でできて、何ができないのかなど、<span class=\"keyword\" onclick=\"showTooltip(event, '不透明（ふとうめい）：不透明，不清晰。')\">不透明</span>なところがあり、多くの人が自動走行というものを正確には<span class=\"keyword\" onclick=\"showTooltip(event, '捉（とら）える：捕捉，把握，认识。')\">捉えて</span>いないようで、</span></span>", "trans": "（但自动驾驶到底什么能自动做，什么不能做等，还有不清晰的地方，似乎很多人都没有准确地认识什么是自动驾驶。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中提到现在的技术只是“辅助”，并未完全达到自动行驶，但这只是陈述目前的“现状”，用来说明大众认知的偏差。专家的落脚点在于呼吁“共享正确知识”，而不是在探讨具体的“技术课题”，排除。')\">現状では、完全に自動で走るというところまでは行っておらず、<span class=\"keyword\" onclick=\"showTooltip(event, 'あくまでも：到底，彻底，始终。')\">あくまでも</span>運転手の<span class=\"keyword\" onclick=\"showTooltip(event, '補助（ほじょ）：辅助。')\">補助</span>にすぎないのですが。</span></span>", "trans": "（就现状而言，还没到完全自动行驶的地步，始终不过是驾驶员的辅助而已。）" },
-                                { "speaker": "男", "text": "そうとは思っていない方も多いんじゃないでしょうか。", "trans": "（但没这么想（以为是全自动）的人是不是也有很多呢？）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '专家指出现在很多人没有准确认识自动驾驶（认为已经是全自动，但其实只是辅助），并呼吁“迫切需要共享正确的信息和知识（正しい情報、知識の共有が待たれます）”，这正是在说人们的认知有偏差需要纠正。符合选项3。')\">正しい情報、知識の<span class=\"keyword\" onclick=\"showTooltip(event, '共有（きょうゆう）：共享。')\">共有</span>が<span class=\"keyword\" onclick=\"showTooltip(event, '待（ま）たれる：被期待，迫切需要。')\">待たれます</span>。</span></span>", "trans": "（迫切需要共享正确的信息和知识。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "高齢者の利用は危ないので、制限すべきだ", "translation": "（因为高龄者使用很危险，所以应该限制）", "correct": false },
-                            { "text": "一部安全性に信用できないところがある", "translation": "（在安全性上有一部分无法信任的地方）", "correct": false },
-                            { "text": "人々の認識にずれがあり、是正が必要だ", "translation": "（人们的认知存在偏差，需要纠正）", "correct": true },
-                            { "text": "実現に向けては、技術に多くの課題が残る", "translation": "（为了实现自动驾驶，技术上还残留着许多课题）", "correct": false }
-                        ]
-                    }
-                ]
+  "2018-12": {
+    "label": "2018年12月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2018.12-1.mp3",
+        "script": {
+          "question": "旅行関連のイベントで旅行会社の男の人が話しています。",
+          "questionTrans": "（在旅行相关的活动上，一位旅行公司的男人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '男人开头提到在机场丢失行李，但这只是为了引出自家新开发的旅行箱的话题背景，并不是专门报道“频繁发生的事件”，可以排除。')\">空港や<span class=\"keyword\" onclick=\"showTooltip(event, '旅先（たびさき）：旅行地，目的地。')\">旅先</span>での荷物の<span class=\"keyword\" onclick=\"showTooltip(event, '紛失（ふんしつ）：遗失，丢失。')\">紛失</span>、<span class=\"keyword\" onclick=\"showTooltip(event, '盗難（とうなん）：盗窃，失窃。')\">盗難</span>、不安ですよね。</span></span>",
+              "trans": "（在机场或者旅行地弄丢行李或者被盗，会很不安对吧。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人点明了讲话的核心：介绍自家公司新开发的【与手机联动的旅行箱（携帯電話と連動した旅行用かばん）】。随后的内容都在详细说明它如何报警、如何追踪等具体功能。这完全符合选项1“新开发的产品功能”。')\">わが社では新たに携帯電話と<span class=\"keyword\" onclick=\"showTooltip(event, '連動（れんどう）：联动，相连。')\">連動</span>した旅行用かばんを開発しました。</span></span>",
+              "trans": "（我们公司新开发了一款与手机联动的旅行箱。）"
+            },
+            {
+              "speaker": "男",
+              "text": "携帯から３０メートル離れると、<span class=\"keyword\" onclick=\"showTooltip(event, '双方（そうほう）：双方。')\">双方</span>で<span class=\"keyword\" onclick=\"showTooltip(event, '警告音（けいこくおん）：警告音，警报声。')\">警告音</span>が鳴り、<span class=\"keyword\" onclick=\"showTooltip(event, '事態（じたい）：事态，局势。')\">事態</span>を知らせます。",
+              "trans": "（只要离开手机30米，双方就会发出警报声，通知您发生了状况。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"keyword\" onclick=\"showTooltip(event, '万（まん）が一（いち）：万一，万一发生。')\">万が一</span>、紛失もしくは持ち去られたとしても、ＧＰＳ発信機が<span class=\"keyword\" onclick=\"showTooltip(event, '搭載（とうさい）：搭载，装备。')\">搭載</span>されているので、携帯から位置を<span class=\"keyword\" onclick=\"showTooltip(event, '把握（はあく）：掌握，了解。')\">把握</span>、<span class=\"keyword\" onclick=\"showTooltip(event, '追跡（ついせき）：追踪。')\">追跡</span>できます。",
+              "trans": "（万一遗失或者被人拿走，因为箱子上搭载了GPS发射器，所以可以从手机上掌握位置并进行追踪。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中并没有教大家“如何安全地拿包”。关于选项4，男人结尾虽然提醒不要勉强自己去追踪，但这只是针对这款产品功能的补充说明（警示），并不是在传授广泛意义上的“保护自身免受麻烦的方法”。')\">ただ盗難の際は危険を<span class=\"keyword\" onclick=\"showTooltip(event, '伴（ともな）う：伴随。')\">伴う</span>こともあるので、自力での<span class=\"keyword\" onclick=\"showTooltip(event, '無理（むり）：勉强，难以办到。')\">無理</span>な追跡は<span class=\"keyword\" onclick=\"showTooltip(event, 'くれぐれも：千万，恳切地（常接否定或请求）。')\">くれぐれも</span>なさらないように。</span></span>",
+              "trans": "（只是遇到盗窃时可能会伴随危险，请千万不要勉强自己单枪匹马去追踪。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人は主に何について話していますか。",
+              "trans": "（男人主要在谈论什么？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "新しく開発した製品の機能",
+            "translation": "（新开发的产品的功能）",
+            "correct": true
+          },
+          {
+            "text": "空港でよく起きている事件",
+            "translation": "（在机场经常发生的事件）",
+            "correct": false
+          },
+          {
+            "text": "かばんの安全な持ち方",
+            "translation": "（包的安全拿法）",
+            "correct": false
+          },
+          {
+            "text": "旅先でトラブルから身を守る方法",
+            "translation": "（在旅行地保护自身免受麻烦的方法）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2018.12-2.mp3",
+        "script": {
+          "question": "会社で男の人と在宅勤務を体験した女の人が話しています。",
+          "questionTrans": "（在公司里，男人和体验过居家办公的女人正在聊天。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "前田さん、人事部が募集してた<span class=\"keyword\" onclick=\"showTooltip(event, '在宅勤務（ざいたくきんむ）：居家办公。')\">在宅勤務</span>体験やってみたんだって。制度を<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り入（い）れる：引进，采纳。')\">取り入れる</span>かどうかの<span class=\"keyword\" onclick=\"showTooltip(event, '試験的（しけんてき）：试验性的。')\">試験的な</span>ものだって聞いたけど。",
+              "trans": "（前田，听说你参加了人事部招募的居家办公体验啊。我听说这是为了决定是否引进该制度的试验性活动。）"
+            },
+            {
+              "speaker": "女",
+              "text": "うん。たった1週間だけどね。いつも高齢の父を一人家において仕事に出るのは<span class=\"keyword\" onclick=\"showTooltip(event, '気（き）がかり：担心，挂念。')\">気がかり</span>だったんだけど。それがなくて仕事に<span class=\"keyword\" onclick=\"showTooltip(event, '打（う）ち込（こ）む：专心致志，全神贯注。')\">打ち込めた</span>。早く制度化されないかな。",
+              "trans": "（嗯。虽然只有短短一周呢。以前总是留高龄的父亲一个人在家出去工作，心里总是很挂念。居家办公就没这个顾虑，能专心投入工作了。希望能早点制度化啊。）"
+            },
+            {
+              "speaker": "男",
+              "text": "働きやすくなる人、いるだろうね。",
+              "trans": "（应该会有人因此觉得工作起来更方便了吧。）"
+            },
+            {
+              "speaker": "女",
+              "text": "だけど、体験してみて、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人用“但是（だけど）”进行转折，表明虽然自己希望早点制度化，但也觉得“不能就这么简单地引入（そう簡単に導入ってわけにはって思ったのも事実かな）”，也就是存在需要解决的问题。这符合选项3中的“改善问题点之后再引入”。')\">そう簡単に<span class=\"keyword\" onclick=\"showTooltip(event, '導入（どうにゅう）：引进，引入。')\">導入</span>ってわけにはって思ったのも事実かな。</span></span>",
+              "trans": "（但是，体验过之后，觉得不能就这么简单地引入，这也是事实吧。）"
+            },
+            {
+              "speaker": "男",
+              "text": "えっ、そうなの。",
+              "trans": "（哎，是这样吗？）"
+            },
+            {
+              "speaker": "女",
+              "text": "オフィスなら<span class=\"keyword\" onclick=\"showTooltip(event, '些細（ささい）：琐碎，细小。')\">些細な</span>ことでもすぐ誰かに<span class=\"keyword\" onclick=\"showTooltip(event, '気軽（きがる）：轻松，随便，不客气。')\">気軽に</span>聞いたりできるでしょう。家でとなると、<span class=\"keyword\" onclick=\"showTooltip(event, 'いちいち：逐一，一一。')\">いちいち</span>メールや電話で聞くのは<span class=\"keyword\" onclick=\"showTooltip(event, 'はばかられる（憚られる）：忌惮，顾忌，觉得不好意思。')\">はばかられて</span>、ほかの体験者もいいことばかり報告したわけじゃなさそうだし。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人明确指出了居家办公沟通不便的问题，并得出最终结论：【必须先将这些问题一个一个地扫除（解决）（まずはそういうのを一つずつクリアしていかないとってこと）】。这进一步印证了选项3“在改善问题点之后最好再引入”。')\">まずはそういうのを一つずつ<span class=\"keyword\" onclick=\"showTooltip(event, 'クリア（clear）：清除，解决，过关。')\">クリア</span>していかないとってこと。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '女人明确表示了存在不好开口沟通等问题，并非“没有问题”，排除了选项1和2。同时，女人一开始说自己能专心工作“希望能早点制度化”，结尾也只是说要先解决问题，说明她本身是支持引入的，只是反对现在“草率引入”，而不是主张“停止引入”，排除了选项4。')\"></span></span>",
+              "trans": "（在办公室的话，就算是琐碎的小事也能马上轻松地问别人吧。要是在家的话，每件事都要发邮件或打电话去问，就会觉得有些不好意思，其他的体验者似乎也不是只报告了好的方面。总之就是必须先将这些问题一个一个地解决掉才行。）"
+            },
+            {
+              "speaker": "男",
+              "text": "体験した人じゃないと、わからないことってあるもんだよね。",
+              "trans": "（有些事确实是只有体验过的人才会懂的呢。）"
+            },
+            {
+              "speaker": "問",
+              "text": "在宅勤務制度の導入について、女の人はどう考えていますか。",
+              "trans": "（关于居家办公制度的引入，女人是怎么想的？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "問題点はなく、早く導入したほうがいい",
+            "translation": "（没有问题，最好早点引入）",
+            "correct": false
+          },
+          {
+            "text": "問題点はないが、導入しなくてもいい",
+            "translation": "（没有问题，但不引入也行）",
+            "correct": false
+          },
+          {
+            "text": "問題点をかいぜんしてから、導入したほうがいい",
+            "translation": "（改善问题之后，最好再引入）",
+            "correct": true
+          },
+          {
+            "text": "問題点があり、導入自体をやめたほうがいい",
+            "translation": "（有问题，最好停止引入本身）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2018.12-3.mp3",
+        "script": {
+          "question": "講演会で、建築家が話しています。",
+          "questionTrans": "（在演讲会上，建筑家正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "物を作るのに、大切なことは、<span class=\"keyword\" onclick=\"showTooltip(event, '入念（にゅうねん）：细致，周密。')\">入念な</span>計画と準備であるといった人がいます。わたしも大いに<span class=\"keyword\" onclick=\"showTooltip(event, '賛同（さんどう）：赞同。')\">賛同</span>します。",
+              "trans": "（有人说，在制造物品时，最重要的是周密的计划和准备。我也非常赞同。）"
+            },
+            {
+              "speaker": "男",
+              "text": "ただし、それは<span class=\"keyword\" onclick=\"showTooltip(event, '創造的（そうぞうてき）：创造性的。')\">創造的な</span>ものでない場合に<span class=\"keyword\" onclick=\"showTooltip(event, '限（かぎ）る：限于。')\">限ります</span>。",
+              "trans": "（但是，这仅限于（制造的）不是创造性物品的情况。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '建筑家在肯定了准备的重要性后，紧接着用“但是（ただし）”进行了转折，指出【这仅限于不是创造性物品的情况】。随后全文都在讲述在将构想成型（即制造创造性物品）时，碰壁和失败是提供营养的必要过程，不要害怕失败。这完全符合选项4“制造创造性物品时重要的事情”。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '発想（はっそう）：构想，想法。')\">発想</span>を形にするには何度も壁にぶつかって、失敗しては<span class=\"keyword\" onclick=\"showTooltip(event, 'やり直（なお）す：重做，重新来过。')\">やり直す</span>。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '建筑家在肯定了准备的重要性后，紧接着用“但是（ただし）”进行了转折，指出【这仅限于不是创造性物品的情况】。随后全文都在讲述在将构想成型（即制造创造性物品）时，碰壁和失败是提供营养的必要过程，不要害怕失败。这完全符合选项4“制造创造性物品时重要的事情”。')\">その過程が栄養となり、アイディアを発展させるのです。</span></span>",
+              "trans": "（要想把构想化为实体，就会无数次碰壁，失败了再重来。那个过程会成为营养，让想法得到发展。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '建筑家提到现代人往往过于重视周密的准备和计划，但这恰恰是他认为在面对创造性工作时容易产生的“犹豫（躊躇）”误区，因此排除了选项1和选项3。')\">現代人は<span class=\"keyword\" onclick=\"showTooltip(event, 'とかく：动辄，往往。')\">とかく</span>入念な準備に<span class=\"keyword\" onclick=\"showTooltip(event, '重（おも）きを置（お）く：把重点放在……，重视。')\">重きを置き</span>、それが不完全なまま、次の<span class=\"keyword\" onclick=\"showTooltip(event, '工程（こうてい）：工序，工程。')\">工程</span>に進むことを<span class=\"keyword\" onclick=\"showTooltip(event, '躊躇（ちゅうちょ）：犹豫，踌躇。')\">躊躇</span>しがちですが。</span></span>",
+              "trans": "（现代人往往把重点放在周密的准备上，如果准备不充分，就很容易对进入下一道工序感到犹豫。）"
+            },
+            {
+              "speaker": "男",
+              "text": "失敗はものづくりにおける必要な過程なのですから、恐れることはないのです。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中完全没有探讨关于发挥“个性（個性）”的话题，可以直接排除选项2。')\"></span></span>",
+              "trans": "（因为失败是制造物品时必要的过程，所以没什么好害怕的。）"
+            },
+            {
+              "speaker": "問",
+              "text": "建築家は何について話していますか。",
+              "trans": "（建筑家在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "物づくりの準備でやっておくべきこと",
+            "translation": "（在制造物品的准备阶段应该做的事）",
+            "correct": false
+          },
+          {
+            "text": "物づくりで個性を生かすことの必要性",
+            "translation": "（在制造物品时发挥个性的必要性）",
+            "correct": false
+          },
+          {
+            "text": "計画的に物を作ることの重要性",
+            "translation": "（有计划地制造物品的重要性）",
+            "correct": false
+          },
+          {
+            "text": "創造的なものを作るのに大事なこと",
+            "translation": "（制造创造性物品时重要的事情）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2018.12-4.mp3",
+        "script": {
+          "question": "会社で社長が新たに管理職になった人たちに話しています。",
+          "questionTrans": "（在公司里，社长正在对新成为管理层的人们讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "みなさん、管理職になると、今まで<span class=\"keyword\" onclick=\"showTooltip(event, '同僚（どうりょう）：同事。')\">同僚</span>だった仲間が部下に、友人<span class=\"keyword\" onclick=\"showTooltip(event, 'ライバル（rival）：竞争对手，对手。')\">ライバル</span>が自分の管理下に入るわけです。",
+              "trans": "（各位，一旦成为管理层，迄今为止是同事的伙伴就会变成部下，朋友和竞争对手也会进入自己的管理之下。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '社长提到“无法像以前那样交往”是为了说明管理层立场的转变，而不是在教大家具体“如何巧妙交往”，排除选项1。')\">厳しく注意をしたり、組織の側に立って物を言わなければならなかったりと、これまでどおりの付き合いとは行かないこともあるでしょう。</span></span>",
+              "trans": "（有时需要严厉地警告，或者需要站在组织的立场上说话，所以也会有无法像以前那样交往的情况吧。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中并没有列举和部下之间具体会发生什么样的“纠纷（トラブル）”，排除选项2。')\">そういった中でも、管理職というのは、部下を<span class=\"keyword\" onclick=\"showTooltip(event, '導（みちび）く：引导，指导。')\">導き</span>、しっかり結果を出さなくてはなりません。</span></span>",
+              "trans": "（即使在那种情况下，所谓的管理层，就是需要引导部下，切实地拿出成果。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '虽然提到了“要努力激发部下干劲”，但这只是管理层应尽的责任之一，文中并未提供具体的“策略/对策（方策）”，排除选项3。')\">部下一人ひとりのやる気を引き出し、公平にかつ<span class=\"keyword\" onclick=\"showTooltip(event, '適正（てきせい）：适当，合理。')\">適正</span>に評価するようつとめること。</span></span>",
+              "trans": "（要努力激发每一个部下的干劲，公平且适当地进行评价。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '整段话都是在叮嘱新管理层认清立场转变、做好评价和引导的本职工作，并在最后总结“请将我说的话铭记在心”。这对应了选项4“在拥有部下之际的思想准备”。')\">今、わたしが話したことは、しっかり<span class=\"keyword\" onclick=\"showTooltip(event, '肝（きも）に銘（めい）じる：铭记在心，牢记。')\">肝に銘じて</span>おいてください。</span></span>",
+              "trans": "（现在我所说的话，请大家牢牢铭记在心。）"
+            },
+            {
+              "speaker": "問",
+              "text": "社長は何について話していますか。",
+              "trans": "（社长在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "部下との上手な付き合い方",
+            "translation": "（和部下巧妙交往的方法）",
+            "correct": false
+          },
+          {
+            "text": "部下との間で起きやすいトラブル",
+            "translation": "（在和部下之间容易发生的纠纷）",
+            "correct": false
+          },
+          {
+            "text": "部下のやる気を引き出す方策",
+            "translation": "（激发部下干劲的策略）",
+            "correct": false
+          },
+          {
+            "text": "部下を持つにあたっての心構え",
+            "translation": "（在拥有部下之际的思想准备）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2018.12-5.mp3",
+        "script": {
+          "question": "テレビで女の人が話しています。",
+          "questionTrans": "（在电视上女人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "キャッチボールには必ず相手が必要ですね。相手が上手にボールを受け取ってくれると、投げるほうも気持ちよく投げられるものです。",
+              "trans": "（传接球的时候一定要有对手呢。如果对手能很好地接住球，投球的人也能投得很舒服。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人通过传接球的比喻引出核心话题：【对话也是一样，如果接收（听）的人不能很好地应答的话，就会变得很生硬（会話もこれと同様で、受け取る人がうまく受け答えしなければ、ギクシャクしてしまいます）】。后续全文都在探讨作为听者应该如何适时地给出不同类型的反馈，符合选项2“成为优秀倾听者的方法”。')\">会話もこれと<span class=\"keyword\" onclick=\"showTooltip(event, '同様（どうよう）：同样，一样。')\">同様</span>で、受け取る人がうまく<span class=\"keyword\" onclick=\"showTooltip(event, '受（う）け答（こた）え：应对，应答。')\">受け答え</span>しなければ、<span class=\"keyword\" onclick=\"showTooltip(event, 'ギクシャク：别扭，不圆滑，生硬。')\">ギクシャク</span>してしまいます。</span></span>",
+              "trans": "（对话也和这个一样，如果接收的人不能很好地应答的话，就会变得很生硬。）"
+            },
+            {
+              "speaker": "女",
+              "text": "受け答えにはうんうん、それで、など<span class=\"keyword\" onclick=\"showTooltip(event, '青信号（あおしんごう）：绿灯。')\">青信号</span>のように、そのまま話を続けて、という意味のものもあれば、どういう意味、ちょっと待って、など途中で相手の話を止める、黄色や赤の信号の<span class=\"keyword\" onclick=\"showTooltip(event, '役割（やくわり）を果（は）たす：起作用，发挥作用。')\">役割を果たす</span>ものもあります。",
+              "trans": "（应答中，既有像“嗯嗯”、“然后呢”这样如同绿灯一般，意思是“请继续说下去”的应答，也有像“什么意思”、“等一下”这样中途打断对方说话，起到黄灯或红灯作用的应答。）"
+            },
+            {
+              "speaker": "女",
+              "text": "話している人に対して、いつも青信号がいいかというと、そうではありません。<span class=\"keyword\" onclick=\"showTooltip(event, 'いい加減（かげん）：敷衍，马马虎虎，随便。')\">いい加減な</span><span class=\"keyword\" onclick=\"showTooltip(event, '相槌（あいづち）：随声附和，搭腔。')\">相槌</span>や<span class=\"keyword\" onclick=\"showTooltip(event, '一本調子（いっぽんぢょうし）：单调，千篇一律。')\">一本調子</span>の対応では、話す人も話す<span class=\"keyword\" onclick=\"showTooltip(event, '意欲（いよく）：意愿，积极性。')\">意欲</span>を失ってしまいます。",
+              "trans": "（但要说对说话的人是不是总是绿灯就好呢，其实并非如此。敷衍的附和或是单调的反应，会让说话的人也失去说话的意愿。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中提到传接球和交通灯（红黄绿灯）都只是为了生动形象地说明倾听时的应答技巧而使用的“比喻”，并非真的是在探讨体育运动（排除1）或交通规则（排除3）。另外，整段话关注的是倾听一方的技巧，而非讲述如何发表通俗易懂的讲话（排除4）。')\">黄色や赤の信号もうまく利用して、話の<span class=\"keyword\" onclick=\"showTooltip(event, '交通整理（こうつうせいり）：交通梳理，梳理。')\">交通整理</span>をしていくと、相手も気持ちよく話せるでしょう。</span></span>",
+              "trans": "（如果能巧妙地利用黄灯和红灯，对对话进行“交通梳理”的话，对方也能说得很舒服吧。）"
+            },
+            {
+              "speaker": "問",
+              "text": "女の人は何について話していますか。",
+              "trans": "（女人在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "スポーツにおけるコミュニケーションの重要性",
+            "translation": "（体育运动中交流的重要性）",
+            "correct": false
+          },
+          {
+            "text": "いい聞き手になる方法",
+            "translation": "（成为优秀倾听者的方法）",
+            "correct": true
+          },
+          {
+            "text": "交通ルールの果たす役割",
+            "translation": "（交通规则发挥的作用）",
+            "correct": false
+          },
+          {
+            "text": "人前でわかりやすく話をする方法",
+            "translation": "（在人前通俗易懂地讲话的方法）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "audio": "../assets/audio/2018.12-6.mp3",
+        "script": {
+          "question": "ラジオで専門家が車の自動走行について話しています。",
+          "questionTrans": "（在广播里，专家正在谈论汽车的自动驾驶。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "近年、高齢者による自動車運転の<span class=\"keyword\" onclick=\"showTooltip(event, '誤操作（ごそうさ）：误操作。')\">誤操作</span>、たとえば、<span class=\"keyword\" onclick=\"showTooltip(event, 'アクセル（accelerator）：油门。')\">アクセル</span>と<span class=\"keyword\" onclick=\"showTooltip(event, 'ブレーキ（brake）：刹车。')\">ブレーキ</span>の<span class=\"keyword\" onclick=\"showTooltip(event, '踏（ふ）み間違（まちが）い：踩错。')\">踏み間違い</span>などが<span class=\"keyword\" onclick=\"showTooltip(event, '多発（たはつ）：多发，频发。')\">多発</span>しています。",
+              "trans": "（近年来，高龄者驾驶汽车的误操作，例如把油门当刹车踩错等事故频发。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '专家开头提到高龄者事故多发，是为了引出大众对自动驾驶期待高涨的背景，并没有主张“限制高龄者使用自动驾驶”，排除。')\">こうした中、自動走行への期待が高まり、開発が進んでいるわけですが、</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中提到自动驾驶“还有不清晰的地方”，是指大众对它的“认知”不清晰，而不是指自动驾驶技术本身的“安全性”不可信，排除。')\">何が自動でできて、何ができないのかなど、<span class=\"keyword\" onclick=\"showTooltip(event, '不透明（ふとうめい）：不透明，不清晰。')\">不透明</span>なところがあり、多くの人が自動走行というものを正確には<span class=\"keyword\" onclick=\"showTooltip(event, '捉（とら）える：捕捉，把握，认识。')\">捉えて</span>いないようで、</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中提到现在的技术只是“辅助”，并未完全达到自动行驶，但这只是陈述目前的“现状”，用来说明大众认知的偏差。专家的落脚点在于呼吁“共享正确知识”，而不是在探讨具体的“技术课题”，排除。')\">現状では、完全に自動で走るというところまでは行っておらず、<span class=\"keyword\" onclick=\"showTooltip(event, 'あくまでも：到底，彻底，始终。')\">あくまでも</span>運転手の<span class=\"keyword\" onclick=\"showTooltip(event, '補助（ほじょ）：辅助。')\">補助</span>にすぎないのですが。</span></span>",
+              "trans": "（在这样的背景下，人们对自动驾驶的期待高涨，开发也在不断推进。但自动驾驶到底什么能自动做，什么不能做等，还有不清晰的地方，似乎很多人都没有准确地认识什么是自动驾驶。就现状而言，还没到完全自动行驶的地步，始终不过是驾驶员的辅助而已。）"
+            },
+            {
+              "speaker": "男",
+              "text": "そうとは思っていない方も多いんじゃないでしょうか。",
+              "trans": "（但没这么想（以为是全自动）的人是不是也有很多呢？）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '专家指出现在很多人没有准确认识自动驾驶（认为已经是全自动，但其实只是辅助），并呼吁“迫切需要共享正确的信息和知识（正しい情報、知識の共有が待たれます）”，这正是在说人们的认知有偏差需要纠正。符合选项3。')\">正しい情報、知識の<span class=\"keyword\" onclick=\"showTooltip(event, '共有（きょうゆう）：共享。')\">共有</span>が<span class=\"keyword\" onclick=\"showTooltip(event, '待（ま）たれる：被期待，迫切需要。')\">待たれます</span>。</span></span>",
+              "trans": "（迫切需要共享正确的信息和知识。）"
+            },
+            {
+              "speaker": "問",
+              "text": "専門家は車の自動走行についてどんな意見を述べていますか。",
+              "trans": "（专家关于汽车的自动驾驶陈述了什么意见？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "高齢者の利用は危ないので、制限すべきだ",
+            "translation": "（因为高龄者使用很危险，所以应该限制）",
+            "correct": false
+          },
+          {
+            "text": "一部安全性に信用できないところがある",
+            "translation": "（在安全性上有一部分无法信任的地方）",
+            "correct": false
+          },
+          {
+            "text": "人々の認識にずれがあり、是正が必要だ",
+            "translation": "（人们的认知存在偏差，需要纠正）",
+            "correct": true
+          },
+          {
+            "text": "実現に向けては、技術に多くの課題が残る",
+            "translation": "（为了实现自动驾驶，技术上还残留着许多课题）",
+            "correct": false
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2018-12-概要理解"; 
+        let currentExamKey = "2018-12"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -282,10 +604,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -624,8 +946,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-    <script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261017-summary-n1-2018-12-6955b9e2c929"></script>
+<script src="../shared/follow-listening.js?v=20261017-summary-n1-2018-12-6955b9e2c929"></script>
+<script src="../shared/follow-listening-entry.js?v=20261017-summary-n1-2018-12-6955b9e2c929"></script>
 </body>
 </html>

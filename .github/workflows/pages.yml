@@ -1,0 +1,27 @@
+name: Publish selected Kiji to Pages
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+jobs:
+  pages:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/configure-pages@v5
+      - name: Assemble static Pages files
+        run: node scripts/prepare-pages.cjs
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - name: Publish after manual start
+        id: deployment
+        uses: actions/deploy-pages@v4

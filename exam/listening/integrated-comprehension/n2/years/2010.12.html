@@ -1,17 +1,93 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>統合理解 - 聴解練習 (N2 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20260904-integrated-r1">
+    <link rel="stylesheet" href="../../../shared/listening-dictation.css?v=20261007-dictation-r17">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,11 +193,19 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../../../shared/study-quest-test-runtime.js"></script>
-    <script src="../../../../../shared/study-quest-test-boot.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
+    <script src="../shared/follow-listening-timelines.js?v=20260904-integrated-2010-12-r2"></script>
+    <script src="../../../task-comprehension/n2/shared/follow-listening.js?v=20260904-integrated-map-r2"></script>
+    <script src="../../../shared/listening-dictation-kana.js?v=20261007-dictation-r17"></script>
+    <script src="../../../shared/listening-dictation-core.js?v=20261007-dictation-r17"></script>
+    <script src="../../../shared/listening-dictation-records.js?v=20261007-dictation-r17"></script>
+    <script src="../../../shared/../data/dictation-readings/generated/manifest.js?v=20261007-dictation-r17"></script>
+    <script src="../../../shared/listening-dictation-readings.js?v=20261007-dictation-r17"></script>
+    <script src="../../../shared/listening-dictation.js?v=20261007-dictation-r17"></script>
     <script>
         // --- 容错与模拟外部依赖 (防报错) ---
         if (!window.ListeningProgress) {
@@ -136,7 +220,7 @@
 
         // --- Data Structure ---
         const examData = {
-            "N2-2010-07-Integrated": {
+            "2010-07": {
                 label: "2010年7月 (N2 統合理解)",
                 questions: [
                     {
@@ -410,15 +494,15 @@
                     }
                 ]
             },
-            "N2-2010-12-Integrated": {
+            "2010-12": {
                 label: "2010年12月 (N2 統合理解)",
                 questions: [
                     {
                         id: 1,
                         audio: "../assets/audio/2010.12-1.mp3",
                         script: {
-                            question: "一番：先生が旅行会社の人と学校の校外学習について相談しています。校外学習はどこに行くことにしましたか。",
-                            questionTrans: "（第一题：老师正在和旅行社的工作人员商量学校课外学习的事情。他们决定去哪里进行课外学习？）",
+                            question: "一番：先生が旅行会社の人と学校の校外学習について相談しています。",
+                            questionTrans: "（第一题：老师正在和旅行社的工作人员商量学校课外学习的事情。）",
                             dialogue: [
                                 { 
                                     speaker: "男", 
@@ -464,6 +548,11 @@
                                     speaker: "男", 
                                     text: "そうですか。<span class=\"keyword\" onclick=\"showTooltip(event, '【やっぱりさっきの所にします】（还是决定去刚才那个地方）：最终决定表达。因人数超过50人限制排除了面包工厂，进而确定了前一个提案（汽车工厂）。')\">うちは80人ですから、やっぱりさっきの所にします。</span>", 
                                     trans: "（这样啊。我们有80个人，所以还是决定去刚才那个地方。）" 
+                                },
+                                {
+                                    speaker: "問題",
+                                    text: "校外学習はどこに行くことにしましたか。",
+                                    trans: "（课外学习决定去哪里？）"
                                 }
                             ]
                         },
@@ -498,8 +587,8 @@
                         id: 2,
                         audio: "../assets/audio/2010.12-2.mp3",
                         script: {
-                            question: "二番：家で母親と兄と妹が携帯電話の広告を見ながら話しています。妹はどの携帯電話を選びましたか。",
-                            questionTrans: "（第二题：在家里，母亲、哥哥和妹妹正看着手机广告交谈。妹妹选择了哪款手机？）",
+                            question: "二番：家で母親と兄と妹が携帯電話の広告を見ながら話しています。",
+                            questionTrans: "（第二题：在家里，母亲、哥哥和妹妹正看着手机广告交谈。）",
                             dialogue: [
                                 { 
                                     speaker: "兄", 
@@ -550,6 +639,11 @@
                                     speaker: "妹", 
                                     text: "それもそうか。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"keyword\" onclick=\"showTooltip(event, '【じゃ、これにしよう】（那，就选这个吧）：最终决定表达。接受了母亲的建议，最终决定选择功能最多的4号手机。')\">じゃ、これにしよう。</span></span>", 
                                     trans: "（说得也是。那，就选这个吧。）" 
+                                },
+                                {
+                                    speaker: "問題",
+                                    text: "妹はどの携帯電話を選びましたか。",
+                                    trans: "（妹妹选择了哪款手机？）"
                                 }
                             ]
                         },
@@ -691,7 +785,7 @@
             }
         };
 
-        let currentExamKey = "N2-2010-12-Integrated"; 
+        let currentExamKey = "2010-12"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'integrated-comprehension'; 
@@ -714,10 +808,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N2-${yearParam}-Integrated` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -1100,7 +1194,8 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
 </body>
 </html>

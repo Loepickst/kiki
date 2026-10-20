@@ -6,12 +6,85 @@
   numeral/counterword pronunciations in the NHK Japanese Accent Dictionary.
   This attribution is intentionally kept in source comments, not in the game UI.
 -->
-<html lang="ja">
+<html lang="ja" data-game-kind="reading">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no">
+<meta charset="utf-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no">
   <meta name="theme-color" content="#eee8da">
   <title>数詞道場｜数え方の稽古</title>
+  <script>
+    (()=>{const ua=navigator.userAgent||'';if(/iPad/i.test(ua)||(/Macintosh/i.test(ua)&&navigator.maxTouchPoints>1))document.documentElement.classList.add('is-ipad')})();
+  </script>
   <style>
     :root{
       --ink:#181915;--muted:#716e65;--red:#a33e31;--red-dark:#71281f;
@@ -540,9 +613,709 @@
       .practice-view .key.function,.practice-view .key.long{font-size:22px}
     }
 
+    /* iPad keeps the desktop-scale canvas, but needs the built-in touch keyboard. */
+    @media(min-width:821px){
+      html.is-ipad .practice-view{--ipad-key-height:clamp(52px,5vw,64px);border-width:2px}
+      html.is-ipad .practice-view .practice-shell{
+        grid-template-rows:64px minmax(0,1fr) auto;
+        padding:max(12px,env(safe-area-inset-top)) 12px 0
+      }
+      html.is-ipad .practice-view .hud{
+        width:calc(100% - 76px);
+        height:56px;
+        justify-self:end;
+        margin:0;
+        padding:0 22px;
+        border:1px solid rgba(28,29,26,.1);
+        border-radius:17px;
+        background:rgba(255,253,248,.94);
+        box-shadow:0 5px 18px rgba(40,27,22,.08)
+      }
+      html.is-ipad .practice-view .question-zone{padding:12px 18px 8px;align-items:stretch}
+      html.is-ipad .practice-view .question-card{width:min(870px,100%);height:100%;min-height:0;padding:40px 48px 28px}
+      html.is-ipad .practice-view .answer-area{
+        display:flex;
+        min-width:0;
+        flex-direction:column;
+        margin:0 -12px;
+        padding:0
+      }
+      html.is-ipad .practice-view .answer-line{
+        width:min(850px,calc(100% - 24px));
+        grid-template-columns:minmax(0,1fr) 106px;
+        margin:0 auto 5px
+      }
+      html.is-ipad .practice-view .feedback-line{height:20px;font-size:12px}
+      html.is-ipad .practice-view .mobile-actions{
+        order:2;
+        display:grid!important;
+        width:min(850px,calc(100% - 24px));
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:10px;
+        margin:6px auto 9px
+      }
+      html.is-ipad .practice-view .mobile-actions .skip-button,
+      html.is-ipad .practice-view .mobile-actions .hint-button{
+        position:static;
+        display:flex;
+        width:100%;
+        min-width:0;
+        min-height:52px;
+        align-items:center;
+        justify-content:center;
+        flex-direction:row;
+        gap:10px;
+        padding:0 16px;
+        border:1px solid rgba(28,29,26,.1);
+        border-radius:15px;
+        background:rgba(255,253,248,.94);
+        box-shadow:0 5px 16px rgba(40,27,22,.08);
+        font-size:13px
+      }
+      html.is-ipad .practice-view .mobile-actions .skip-button .circle,
+      html.is-ipad .practice-view .mobile-actions .hint-button .circle{width:34px;height:34px;margin:0;font-size:17px}
+      html.is-ipad .practice-view .exit-button{
+        position:fixed;
+        top:max(12px,env(safe-area-inset-top));
+        bottom:auto;
+        left:12px;
+        z-index:10;
+        display:grid;
+        width:56px;
+        min-width:56px;
+        height:56px;
+        place-items:center;
+        padding:0;
+        border:1px solid rgba(28,29,26,.1);
+        border-radius:17px;
+        background:rgba(255,253,248,.94);
+        box-shadow:0 5px 18px rgba(40,27,22,.08)
+      }
+      html.is-ipad .practice-view .exit-button>span:last-child{display:none}
+      html.is-ipad .practice-view .exit-button .circle{
+        width:auto;
+        height:auto;
+        margin:0;
+        background:transparent;
+        color:var(--ink);
+        font-family:var(--sans);
+        font-size:24px
+      }
+      html.is-ipad .practice-view .romaji-keyboard{
+        order:3;
+        display:flex;
+        width:100%;
+        margin:0;
+        padding:11px 10px max(12px,env(safe-area-inset-bottom));
+        gap:8px;
+        border-right:0;
+        border-bottom:0;
+        border-left:0;
+        border-radius:20px 20px 0 0;
+        touch-action:manipulation
+      }
+      html.is-ipad .practice-view .key-row{gap:7px}
+      html.is-ipad .practice-view .key{
+        height:var(--ipad-key-height);
+        border-radius:10px;
+        font-size:22px;
+        box-shadow:0 3px 0 rgba(40,27,22,.2)
+      }
+      html.is-ipad .practice-view .key.function,
+      html.is-ipad .practice-view .key.long{font-size:24px}
+    }
+
     @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}.question-card{transform:none}.result-scroll{clip-path:inset(0)}.result-content{opacity:1;transform:none}}
   </style>
-  <script src="shiba-study-cottage/arcade-bridge.js"></script>
+  <script src="shared/arcade-bridge-github-20261020.js"></script>
+  <script defer src="shared/game-navigation-bridge-github-20261020.js?v=arcade-nav-20261011-1"></script>
+<script id="gameScoringRuntime">
+/* The single scoring formula used by the existing games and server. */
+(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.GameScoring=api;})(globalThis,function(){
+  'use strict';
+  const levels={n5:100,n4:150,n3:220,n2:320,n1:450};
+  const forms={masu:100,te:100,ta:100,nai:100,pot:115,vol:115,pas:115,cau:115,imp:115,cpas:130};
+  let catalog={};
+  function base(game,question){
+    if(game==='kanji'||game==='katsuyo'){
+      const level=String(question.level||question.verb?.level||'').toLowerCase();
+      if(!levels[level])throw Error('题目缺少有效词汇等级');
+      if(game==='kanji')return levels[level];
+      const factor=forms[question.formId];if(!factor)throw Error('未知活用形式');
+      return Math.floor((levels[level]*factor+50)/100);
+    }
+    const value=question.baseScore??catalog[question.id];
+    if(![100,150,220,320,450].includes(value))throw Error('题目缺少基础分：'+question.id);
+    return value;
+  }
+  function points(baseScore,priorStreak,assisted=false){
+    if(!Number.isSafeInteger(baseScore)||baseScore<100||baseScore>585||!Number.isSafeInteger(priorStreak)||priorStreak<0)throw Error('无效计分参数');
+    return assisted?0:Math.floor((baseScore*(100+2*Math.min(priorStreak,5))+50)/100);
+  }
+  return Object.freeze({levels:Object.freeze(levels),forms:Object.freeze(forms),base,points,configure(values){catalog=Object.freeze({...values});}});
+});
+
+GameScoring.configure({"nr-11ac83eb4166":100,"nr-d7231803a27c":100,"nr-f7b7cfbc79aa":100,"nr-9e2d390773ca":100,"nr-b655e7edf5bb":100,"nr-c9ae1d04b6c3":100,"nr-f4d32acce41e":100,"nr-de0c2d06e5c7":100,"nr-ea39f1cccc2e":100,"nr-9a2af93535a8":100,"nr-65736623cd0f":100,"nr-544fb957a93d":100,"nr-4eab994d20d7":100,"nr-5b9a108b39d7":100,"nr-ba23fe1b8fec":100,"nr-7a6b0fd04d6d":100,"nr-9b28d735e0ea":100,"nr-1301436c8dfc":100,"nr-d4e15e91d845":100,"nr-7980e8a24895":100,"nr-a9e8bda35764":100,"nr-d22590945647":100,"nr-d3255a4d1ba7":100,"nr-2207d5a37cbb":100,"nr-4d6d6023b2b7":100,"nr-0e616128d4ce":100,"nr-f7870ec289d9":100,"nr-d6fcd8f8fea1":100,"nr-c71c8efcfba1":100,"nr-250a7b2af92a":100,"nr-fd6078c3bfe5":100,"nr-4fbbe3233d25":100,"nr-db252a432b3e":100,"nr-078225d6c781":100,"nr-31ac341bfe83":100,"nr-a107b6809896":100,"nr-a53552da6141":100,"nr-604cafa33c85":100,"nr-e158f458fdc9":100,"nr-9ed23f9d0477":100,"nr-b48a4e535733":100,"nr-3126d0639c44":100,"nr-752109d9ffa2":100,"nr-01d979f3f069":100,"nr-dd373c09bb6c":100,"nr-4e13848f1e14":100,"nr-1bd180e371db":100,"nr-68234fe2526a":100,"nr-9ed5436e24cb":100,"nr-fad1620f226f":100,"nr-8e7923f5b303":100,"nr-81d72c3e7656":100,"nr-4f15a36615e9":100,"nr-d782d0bf36ca":100,"nr-f0e3b29d2a31":100,"nr-9b3b90cbae21":100,"nr-dc985d792c53":100,"nr-56f4812d44b8":100,"nr-d81c52e5253f":100,"nr-f1406e041dfe":100,"nr-ae1f1b89995c":100,"nr-b0feccb7ed67":100,"nr-e81281f8416f":100,"nr-9431bde7edc4":100,"nr-a82c1b2aa73c":100,"nr-ccbe6484f841":100,"nr-f3e09dc30d95":100,"nr-b02f8110d3af":100,"nr-4c4ba27006a3":100,"nr-b11723110432":100,"nr-0035f6177dbd":100,"nr-a4b7372dc0f9":100,"nr-bc6f40394ee8":100,"nr-e14e394e6350":100,"nr-a0d32494b5a4":100,"nr-fbb602e322c5":100,"nr-84cbdbed972b":100,"nr-611548f05265":100,"nr-27cb85199268":100,"nr-143a16e38f51":100,"nr-dfb1001517dd":100,"nr-91cba4f9e615":100,"nr-a014a4b0cb3a":100,"nr-de9e45155333":100,"nr-311db82b5573":100,"nr-dc9f010f0a7a":100,"nr-127ee587c792":100,"nr-5ba5e553cf8a":100,"nr-cc6f1faeaae9":100,"nr-058ba89754b2":100,"nr-62fe6cfcb2d4":100,"nr-9f58093af4d4":100,"nr-0d75d6982b14":100,"nr-76277593582a":100,"nr-2abd6193af2d":100,"nr-57f57b62ab2b":100,"nr-d203251dc9e0":100,"nr-ba55e5157b4b":100,"nr-21696f2c13db":100,"nr-039f176007c3":100,"nr-764271cc3546":100,"nr-e4a29b03f910":100,"nr-40cb646b7fd8":150,"nr-0c24c19d7353":100,"nr-68817cdb9133":100,"nr-9007bee0b352":150,"nr-547a2637bbb5":100,"nr-962ef902a28a":150,"nr-7504e46cb40e":100,"nr-87c5662c7572":100,"nr-d8124d382efe":100,"nr-8b9d3e963547":150,"nr-c32e471b6838":100,"nr-a23cceda020d":100,"nr-a8091135e2b6":100,"nr-4d8ad77d8afa":100,"nr-d42b36055f6e":150,"nr-1dc2804a2b61":100,"nr-1ad0a6147c60":100,"nr-c66da1516e8e":100,"nr-1b36f26a046e":100,"nr-892ae0c8f714":100,"nr-a9040ad8da3a":100,"nr-7eff11cc969d":100,"nr-cb0c3a025e67":100,"nr-31e8ebb624e7":100,"nr-b1f5e79f870b":100,"nr-72e1af380abb":220,"nr-e70e0c2108ea":220,"nr-fbd9dbd526f7":220,"nr-98cbb0d5b42b":220,"nr-1aed9ff14118":220,"nr-fd456eb08b86":220,"nr-fd5e013cfcfd":220,"nr-15890ea65ee9":220,"nr-7397eb161e14":220,"nr-fa69c0b2fbaa":320,"nr-2d976d641867":220,"nr-28262adbf0a9":220,"nr-5aaa3dd2ba29":220,"nr-711dfea0b7de":220,"nr-9ce44c7e6036":220,"nr-b59c261ab648":220,"nr-066558bf3ad2":220,"nr-745d40bb6ab7":220,"nr-526829ca4345":320,"nr-4416de02f1a7":220,"nr-168cc3a99c62":100,"nr-1d3721d3e6a8":100,"nr-baf36778d157":100,"nr-c148682afa5d":150,"nr-ff0964f45b89":100,"nr-2774a25f051d":100,"nr-5ee09a69e67f":150,"nr-9f96c9a1653c":100,"nr-d96db06b6285":150,"nr-da2954f9fc26":100,"nr-7f691872abc6":100,"nr-6e764fb3940c":100,"nr-bad4f3d5e79c":150,"nr-57d4d69ab280":150,"nr-ace85e9f8b05":150,"nr-ad59388b86ba":150,"nr-acfb287f207d":150,"nr-de974956177d":150,"nr-29d55cb6f3b3":150,"nr-515172b4ee0f":150,"nr-eef3818ffcfc":150,"nr-287e9887cd36":150,"nr-978182e078ac":100,"nr-57c93a0c9d0a":100,"nr-7e563b691542":100,"nr-d1fb8c86edeb":150,"nr-c40c494e55f6":100,"nr-7b7b24fa9cf7":100,"nr-acfa6f8c5835":100,"nr-fac1b67df107":100,"nr-674916fa1305":100,"nr-5bcad4bf3bfb":150,"nr-012902dc6775":100,"nr-5c1b71379895":100,"nr-25cbe5ff938f":100,"nr-8b8c4a34e598":150,"nr-f94627f79f06":100,"nr-acec0e711f70":100,"nr-12e717f86dd3":100,"nr-5c3ae04eaa75":100,"nr-83ff87f33773":100,"nr-0888faeb6111":100,"nr-90606cec4fc5":100,"nr-7a7ceeef63ac":100,"nr-53abf9a94eca":100,"nr-dc999cfe19b3":100,"nr-2f599df5e4b0":100,"nr-523fbad076c9":150,"nr-743de77e68b9":100,"nr-8e339700a9ad":100,"nr-3449142d055f":150,"nr-b74f7131ae4c":100,"nr-0d12fafd9465":150,"nr-879cfce3ce2a":100,"nr-abe9bcbfbc49":100,"nr-04c5360280a8":100,"nr-8f6ff5a06b14":100,"nr-4f758203a9a2":150,"nr-299f11e45eba":100,"nr-e3c2f2aac0fb":100,"nr-0be7fa8ecb67":150,"nr-d5bfb00567b3":100,"nr-c9ae2c534847":150,"nr-7cd3f3cd534a":100,"nr-a97dcb8a8043":100,"nr-42b6cf123378":100,"nr-94e57809c87b":100,"nr-2244452f7c11":100,"nr-620c1917d62f":150,"nr-446bf3881e5d":100,"nr-2076c79834fd":150,"nr-b75ea5190ead":150,"nr-c62f94937992":100,"nr-c422888360fa":150,"nr-2e4d4918c2b6":100,"nr-24ee5c4f285f":150,"nr-347a9f8bc91e":100,"nr-36e494acdf14":150,"nr-3ccd1b41fe7e":150,"nr-591ffd7bb7d9":100,"nr-8802e0bdca9b":150,"nr-89e04b43c9a7":150,"nr-1535d66a964a":100,"nr-fd5c33271f2e":150,"nr-d1ddb43d9f78":100,"nr-4dab551508c8":150,"nr-3e948183414a":100,"nr-182494030f7d":150,"nr-b9cdaa6cba4f":150,"nr-d3614cd75978":100,"nr-7a5e2b0d8a0b":150,"nr-93d9e6c2617e":150,"nr-61d35dad0480":100,"nr-65914a0f4366":150,"nr-57a735859a65":100,"nr-a25b454d4460":150,"nr-70c71f2a55fb":100,"nr-cf5c521d0712":150,"nr-17eb65489f99":150,"nr-1455ac2d1688":100,"nr-1e40498b0fb6":150,"nr-e301e86f4368":150,"nr-3db9738a2595":100,"nr-09f10dbb652d":150,"nr-a16a05723ad2":100,"nr-36d384354f36":150,"nr-54a695920b34":100,"nr-642e3c4efc49":150,"nr-840784041106":150,"nr-3b8268ff289a":100,"nr-3d28825e88c4":150,"nr-60e78c520255":150,"nr-716ec642e992":100,"nr-2294ab69ca01":150,"nr-ba55dddeae8b":100,"nr-f96f43c40193":150,"nr-15c227b36879":100,"nr-1eaa258bffea":150,"nr-ecb1d7729b97":150,"nr-7a0dbed9f0ed":100,"nr-ce97cfa19b7a":150,"nr-4d9ba1637785":150,"nr-5d99e293119c":100,"nr-cd696d418d39":150,"nr-887594bb4953":100,"nr-b46b4165435f":150,"nr-4e84266aeeb2":100,"nr-f9a477ef4cd5":150,"nr-1a2e9afe0ced":150,"nr-4c2ca20d869c":150,"nr-60ccad7bec6a":150,"nr-a723c44daaef":150,"nr-56d45dcda1ea":150,"nr-a32156966716":100,"nr-a1f3ad129e2d":150,"nr-ce064a967f3d":150,"nr-4153ebcec357":150,"nr-ec2a110feee2":150,"nr-5d81092396ab":150,"nr-6876fc9e205d":100,"nr-a0748c4b0b0f":150,"nr-e6330849387e":100,"nr-be1b3765fc47":100,"nr-9d5b25a6da89":100,"nr-c6914673b022":100,"nr-a76207d36f17":100,"nr-56663dbc02eb":100,"nr-47f31e7c32aa":100,"nr-854374b6649b":100,"nr-e997bbeea90d":100,"nr-46b41c0e5ea1":150,"nr-0db816dc03e2":100,"nr-c78ea76663e7":100,"nr-48e962cce614":100,"nr-ed5b166c4654":100,"nr-836905c36632":100,"nr-4cc0481b6eb9":100,"nr-d2eb095a400b":150,"nr-9d0a65999e2f":100,"nr-f65fa67df9d5":100,"nr-06179950c230":100,"nr-f853bc754eab":100,"nr-4c63b74154b2":150,"nr-0e509a1d39b6":100,"nr-2dc811940f2b":100,"nr-fee4f5c08e18":100,"nr-c306b8f5c358":150,"nr-cf225d14856b":150,"nr-479049b8dd59":100,"nr-1a6882df7dc2":100,"nr-6a97fd662ae0":100,"nr-aa15131269df":100,"nr-15e1eb0b2b9c":150,"nr-516e9436bd3a":100,"nr-57cc646d91b4":100,"nr-714224655f09":100,"nr-b496010ec406":150,"nr-65ba33d36d4f":150,"nr-6ed5414f4371":100,"nr-f613329103ae":150,"nr-89edfc2ecce1":100,"nr-7c829e4f892c":100,"nr-5af47fa4e5b0":150,"nr-ee1a017d4670":100,"nr-bf627da484a4":100,"nr-a398a070b123":100,"nr-ba449709a5b6":150,"nr-80b01f7a161d":150,"nr-4be65ce252a3":100,"nr-ca5cc9fdb653":150,"nr-3ab684f0604e":100,"nr-ad50b44ccf94":100,"nr-c57e6426e6ff":150,"nr-99e60b6dc6b3":100,"nr-34b377f683bc":100,"nr-1fda6a9e5255":100,"nr-5f33a8d2ea5d":150,"nr-f07c2a20d1ba":100,"nr-21117a8a0cbc":100,"nr-814511490f51":100,"nr-ae0f7d9a15e6":100,"nr-78613a783df6":100,"nr-cc1edee07c8d":100,"nr-7e68ed0f120a":100,"nr-d432ee0062d0":100,"nr-1d2abaa70db5":100,"nr-7fe264022b5a":100,"nr-19001d75abd2":100,"nr-766b66f080c0":100,"nr-4640efd94c96":100,"nr-d98d9cb34af0":100,"nr-a16a461391a4":100,"nr-07c55614a8ef":100,"nr-c986df3f9559":100,"nr-41bd7db643a5":100,"nr-be372236b1cc":100,"nr-c80b0325dd68":100,"nr-663541a55f08":150,"nr-a7ba05de89eb":100,"nr-1da88d3898de":150,"nr-3a4543ea8036":100,"nr-e701c9e07c9f":100,"nr-7a748b276602":150,"nr-5c198b792464":100,"nr-000b0bf9ce17":150,"nr-88eb05236508":100,"nr-775a53af7f29":150,"nr-fa6b6af6bcae":150,"nr-d6f94a24dc0e":100,"nr-8bef6b6abf92":150,"nr-dcbcba183bf9":100,"nr-a2f56a186fb9":100,"nr-2d7cd2173b33":150,"nr-1bedbea3053a":100,"nr-e1667427f8de":150,"nr-3bdc0fb03e38":100,"nr-3af8d964b78e":150,"nr-ef0d12ba21f2":150,"nr-bc4c0057441b":100,"nr-a99a0c44c21b":100,"nr-c9345e2dfece":100,"nr-3b6b67f51a9c":100,"nr-ef24825b08f7":100,"nr-58224370057b":100,"nr-5418ee3f4bfb":150,"nr-0678227b5f8f":100,"nr-15602614f5ae":150,"nr-4703f235727e":150,"nr-aaf16c9576ac":100,"nr-f95034bbdd30":100,"nr-2438a48caeff":100,"nr-dd484dcfb382":100,"nr-cb25133d4051":100,"nr-33bb3a73bc6b":100,"nr-23f1542863e1":150,"nr-0d7640555813":100,"nr-db188152112b":150,"nr-ca119129a8b8":100,"nr-90b74b9f06bc":100,"nr-3fdca5573f87":100,"nr-d4e7a0fd3811":100,"nr-3b4591c5c3cc":100,"nr-8e5f941c321c":100,"nr-f2aeb1f5d7c9":100,"nr-dc3739eb6b88":100,"nr-9f5e20ca0076":100,"nr-a8c016f35e5b":100,"nr-4e19008a96d6":100,"nr-8dd77d629839":100,"nr-a19a8bb4592c":100,"nr-be7528d34179":100,"nr-b8457107d9a3":100,"nr-9993fafa089d":100,"nr-2bc8f65cbb17":100,"nr-23c46f1ed89c":100,"nr-5da2579dc1a5":100,"nr-fbc709298e28":100,"nr-3ebe1bc0662e":150,"nr-592d10fe588f":100,"nr-e976c851299b":100,"nr-250b0ab0f196":100,"nr-af448d790ea0":100,"nr-86bb7f11790a":150,"nr-2606d59436f9":100,"nr-b73dbec66b34":150,"nr-a6f2e8038b0e":100,"nr-5fa007895cca":150,"nr-19c1e5be0337":150,"nr-1e046facc202":100,"nr-0587c4895a1c":100,"nr-d6d0685bb767":100,"nr-de7a239949d6":100,"nr-dbe5e430033a":150,"nr-d05557038151":100,"nr-529d992dbacc":150,"nr-0be649a898d4":100,"nr-e4ee9249b2a9":150,"nr-33fba2f72a48":150,"nr-2272db357cca":100,"nr-9bec364b1c2c":100,"nr-76f7dd52e311":100,"nr-81fc66bb1094":100,"nr-a67f9600f39e":150,"nr-d7ce7a5ff76e":100,"nr-0a435389faff":100,"nr-0fb6dabeb68d":100,"nr-3694738ea04e":150,"nr-b54b8073aaa9":150,"nr-f1ad36ac2763":100,"nr-e3ab291e8a6c":100,"nr-067770a19cf4":100,"nr-0b0da493f61a":100,"nr-4fd2c442cfc0":150,"nr-9fb017d45048":100,"nr-f95878ff330b":100,"nr-76ab50c3fb57":100,"nr-5b7ce3579682":150,"nr-100a7a36fe69":150,"nr-d1c07ecfc0f1":100,"nr-61c64787bce5":150,"nr-1037123bfeb6":100,"nr-8af2590ad062":100,"nr-ae44fc5ff20e":150,"nr-3cf7cd900aee":100,"nr-6c6f659d7e98":150,"nr-f672a455cc4e":100,"nr-bd2127e4ac31":150,"nr-9b54393260d6":150,"nr-2943752d6601":100,"nr-7b1c8f266c57":150,"nr-4c05d8d36e3a":100,"nr-640a727765ca":100,"nr-20465e8c1f0a":150,"nr-13fbbca69046":100,"nr-b5625d171384":150,"nr-9ac562ddbe9b":100,"nr-ba82494981af":150,"nr-51729cc4a06d":150,"nr-ae23ae62f765":100,"nr-a1a33d9cc44e":100,"nr-f5540e101c18":100,"nr-470bd6ef6103":100,"nr-9410509ddb63":100,"nr-95c4044921fe":100,"nr-5699467102d2":150,"nr-65e0ad376740":100,"nr-48532cd3bd5e":150,"nr-c26b89fb54ef":150,"nr-d1ca72aeee55":100,"nr-a531f8a2095a":100,"nr-e118f0ff5458":100,"nr-998b93c3a0ff":100,"nr-2db1af62d2fc":100,"nr-3cd6883c3c7b":100,"nr-aac791316839":150,"nr-29b8f5db592e":100,"nr-8e353d386832":150,"nr-6823be8f5070":100,"nr-5789aab86678":100,"nr-06d8c640d9a6":100,"nr-118115612d19":150,"nr-b9ac591b56a3":100,"nr-e66bad16da5a":100,"nr-e1f764a1321d":100,"nr-2dceada8e0bc":100,"nr-d8bfac3e058e":100,"nr-30432d4a4879":100,"nr-52773e5777a8":100,"nr-6494a66aa9f5":100,"nr-a3b60a4f68fa":100,"nr-6b7c34feb95b":150,"nr-0adf2573719f":100,"nr-fa83f3866813":100,"nr-9f81fc229c3b":100,"nr-120b000fbfd9":100,"nr-be97cb12eeaf":100,"nr-1f2aa1c4152f":100,"nr-34a2109f9be8":100,"nr-f373f670318f":100,"nr-60a7f88e9b1f":100,"nr-e754a63e68e7":150,"nr-654b6b6764e8":100,"nr-06cc355b5f97":100,"nr-38c24014f0b9":100,"nr-ea205db26234":100,"nr-4f634a691099":100,"nr-3cb5bcbb9330":100,"nr-10f545f0fd18":100,"nr-4946da09fc57":100,"nr-a5d04e588d6c":100,"nr-8706fb11ba0e":150,"nr-f957ae043ab9":100,"nr-eb15c734245a":100,"nr-11576552bc6b":100,"nr-cde7453fe7bb":100,"nr-45bf1f39144e":100,"nr-88d7e74eab37":100,"nr-d24800955867":150,"nr-19c9fd7c16a2":100,"nr-a10ae05eca11":100,"nr-46944cfc3a57":100,"nr-fdcf15d99132":100,"nr-e691c72b81a5":100,"nr-a3ab2dbdaf68":100,"nr-c1d53537356e":150,"nr-2fe44fcfbb04":100,"nr-17d03190a61e":150,"nr-760e28960af6":150,"nr-905515ed0079":100,"nr-5679e75694e4":100,"nr-04899a465bef":100,"nr-5a4e16ca2221":100,"nr-c78c7bfc8b30":100,"nr-8bf4d2446fc7":100,"nr-facdcc40d288":150,"nr-83b4aa5f8dbe":100,"nr-7380f1ef9808":150,"nr-cab0e57f704f":150,"nr-b63e70d144ec":100,"nr-1f4ea8af2a9c":100,"nr-4a1162687934":100,"nr-206e2f1359fb":100,"nr-355414aa87bf":150,"nr-301f4b89a2f3":100,"nr-fd05dbae8a81":100,"nr-76d6f17bcea0":100,"nr-8663bcf9e496":150,"nr-86352c1a6eea":150,"nr-c1dfdfdd112c":100,"nr-da98f307d772":100,"nr-3c432f38d790":100,"nr-45a8c74c882c":100,"nr-318cba7df6b7":150,"nr-9e783586839b":100,"nr-a3fcb39d98a7":100,"nr-20f41acdfc59":100,"nr-0e39f8706ea3":150});
+</script>
+<script src="shared/game-ranking.js?v=score-start-retry-20261009-2" data-game="number"></script>
+<!-- shared-game-responsive:start -->
+<script id="gameResponsiveRuntime">
+/* Shared view classification only; answer handling stays in each game. */
+(function (root) {
+  'use strict';
+  const doc = root.document;
+  const media = query => root.matchMedia ? root.matchMedia(query).matches : false;
+  function usesTouchLayout() {
+    return root.innerWidth <= 1180 || Number(root.navigator.maxTouchPoints || 0) > 0 ||
+      media('(pointer: coarse)') || media('(any-pointer: coarse)') || !media('(pointer: fine)') ||
+      doc.documentElement.classList.contains('is-ipad');
+  }
+  function sync() {
+    const html = doc.documentElement;
+    const touch = usesTouchLayout();
+    html.setAttribute('data-game-ui', '2');
+    html.setAttribute('data-game-layout', root.innerWidth <= 767 ? 'phone' : touch ? 'tablet' : 'desktop');
+    html.setAttribute('data-game-touch', String(touch));
+    const keyboard = doc.getElementById('romajiKeyboard');
+    if (keyboard) keyboard.setAttribute('aria-hidden', String(!touch || Boolean(root.GameInputMode?.isSystem())));
+    root.GameInputMode?.sync();
+  }
+  function prepareQuestionLayout() {
+    const time = doc.getElementById('timeLeft') || doc.getElementById('timerText');
+    if (time?.parentElement) time.parentElement.setAttribute('aria-label', '残り時間（秒）');
+    const exit = doc.getElementById('exitButton') || doc.getElementById('exitBtn');
+    if (exit) {
+      exit.setAttribute('aria-label', '退場（退出本局）');
+      const label = exit.querySelector('span:last-child');
+      if (label) label.textContent = '退場';
+      const icon = exit.querySelector('.corner-icon, .circle, .tool-icon');
+      if (icon) { icon.textContent = '↩\uFE0E'; icon.setAttribute('aria-hidden', 'true'); }
+    }
+    const card = doc.querySelector('.practice-view .question-card, .practice-view .question-shell');
+    if (!card || card.querySelector('.game-question-content')) return;
+    const body = doc.createElement('div');
+    body.className = 'game-question-content';
+    const answer = doc.createElement('div');
+    answer.className = 'game-answer-content';
+    const status = doc.createElement('div');
+    status.className = 'game-answer-status';
+    const form = card.querySelector('.answer-form');
+    if (form) {
+      answer.appendChild(form);
+      for (const selector of ['.hint-text', '.feedback']) {
+        const node = card.querySelector(selector);
+        if (node) status.appendChild(node);
+      }
+    } else {
+      const area = doc.querySelector('.practice-view .answer-area');
+      if (area) for (const selector of ['.answer-line', '.feedback-line']) {
+        const node = area.querySelector(selector);
+        if (node) (selector === '.answer-line' ? answer : status).appendChild(node);
+      }
+    }
+    for (const node of Array.from(card.children)) {
+      if (!node.matches('.level-seal, .correct-fx')) body.appendChild(node);
+    }
+    card.appendChild(body);
+    if (answer.children.length) {
+      if (status.children.length) answer.appendChild(status);
+      card.appendChild(answer);
+    }
+    const choices = doc.querySelector('.practice-view .choice-grid');
+    if (choices && root.ResizeObserver) {
+      const observer = new root.ResizeObserver(entries => {
+        const height = entries[0] && entries[0].contentRect.height;
+        if (height > 0) doc.documentElement.style.setProperty('--game-choice-height', `${Math.ceil(height)}px`);
+      });
+      observer.observe(choices);
+    }
+    sync();
+  }
+  root.GameResponsive = Object.freeze({ usesTouchLayout, sync });
+  sync();
+  root.addEventListener('resize', sync, { passive: true });
+  root.addEventListener('orientationchange', sync, { passive: true });
+  doc.addEventListener('DOMContentLoaded', prepareQuestionLayout, { once: true });
+  for (const query of ['(pointer: coarse)', '(any-pointer: coarse)']) {
+    const listener = root.matchMedia && root.matchMedia(query);
+    if (listener && listener.addEventListener) listener.addEventListener('change', sync);
+  }
+})(window);
+</script>
+<style id="gameResponsiveStyles">
+/* Shared dojo CSS-pixel geometry, embedded in each game's build. */
+html[data-game-ui] {
+  --paper: #f6f3eb; --paper-light: #fcfaf5; --paper-deep: #eee8da;
+  --ink: #1c1d1a; --muted: #6d6c66; --red: #a34336; --red-dark: #7f3027;
+  --gold: #b48a32; --wood: #56392e; --wood-dark: #281b16; --tatami: #b7aa77;
+  --shoji: #efe8da; --green: #4d7255;
+  --cn: "Heiti SC", SimHei, "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --jp-ui: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+  --jp-display: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+  --sans: var(--jp-ui); --ui: var(--jp-ui); --serif: var(--jp-display);
+  --game-edge: 28px; --game-top: max(25px, env(safe-area-inset-top));
+  --game-header: 48px; --game-card-max: 900px; --game-input-height: 52px;
+  --game-key-height: 56px; --game-keyboard-height: 0px; --game-tools-height: 0px;
+  --game-answer-height: 94px; --game-bottom: max(24px, env(safe-area-inset-bottom));
+  --game-mascot-scale: 1.06;
+  min-width: 320px; color-scheme: light;
+}
+html[data-game-ui] body { min-width: 320px; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
+html[data-game-ui] .view { width: 100%; height: 100vh !important; height: 100dvh !important; min-height: 0 !important; max-height: none !important; overflow: hidden; }
+html[data-game-ui] [hidden] { display: none !important; }
+html[data-game-ui] :is(button, input) { font-family: var(--jp-ui); touch-action: manipulation; }
+html[data-game-ui] :is(button, input, summary, a):focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+html[data-game-ui] :is(.zh, [lang="zh-CN"], .home-lead, .home-description, .home-desc, .home-help p, .meaning, .sentence-meaning, .keigo-instruction, .keigo-feedback, .settings-note, .setting-note, .how-card p) { font-family: var(--cn) !important; }
+
+/* Shared entrance scroll: the original 活用道場 geometry. */
+html[data-game-ui] .home-view { display: grid; place-items: center; padding: 76px 5vw 60px !important; overflow-y: auto; overflow-x: hidden; }
+html[data-game-ui] .home-layout { display: grid !important; position: relative; width: min(1040px, 100%) !important; height: 508px !important; min-height: 508px; grid-template-columns: minmax(300px, .9fr) minmax(330px, .8fr) !important; gap: clamp(42px, 7vw, 92px) !important; align-items: center !important; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel) { display: flex !important; flex-direction: column; justify-content: center; position: relative; width: 100% !important; height: 508px !important; min-height: 508px !important; max-height: none !important; padding: 48px 34px !important; border: 0 !important; border-inline: 12px solid var(--wood) !important; background: var(--paper-light); box-shadow: 0 18px 48px #281b161f; text-align: center; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel)::before,
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel)::after { display: block !important; position: absolute; inset: auto -28px; width: auto; height: 20px; border-radius: 8px; background: linear-gradient(90deg, var(--wood-dark), var(--wood), var(--wood-dark)); content: ""; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel)::before { top: -10px; bottom: auto; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel)::after { top: auto; bottom: -10px; }
+html[data-game-ui][data-game-kind="reading"] { --game-mascot-scale: 1.14; }
+html[data-game-ui][data-game-kind="particle"] { --game-mascot-scale: 1.08; }
+html[data-game-ui] :is(.home-mascot, .home-shiba) { display: flex; width: min(650px, 100%) !important; height: 100% !important; margin: 0; align-self: end; align-items: flex-end; justify-content: center; transform: translate(-2%, 54px) scale(var(--game-mascot-scale)) !important; transform-origin: center bottom; }
+html[data-game-ui] :is(.home-mascot, .home-shiba) img { display: block; width: 100%; height: auto; max-height: 100%; object-fit: contain; object-position: center bottom; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel) > * { flex-shrink: 0; }
+html[data-game-ui] :is(.home-kicker, .home-copy > .eyebrow, .home-card > .eyebrow) { margin: 0 0 10px; font: 800 10px/1.3 var(--jp-ui); letter-spacing: .3em; }
+html[data-game-ui] .home-title { margin: 0; font: 900 clamp(54px, 6.4vw, 72px)/.96 var(--jp-display) !important; letter-spacing: -.04em; }
+html[data-game-ui] :is(.home-subtitle, .home-title small) { display: block; margin: 10px 0 0; font: 800 12px/1.4 var(--jp-ui); letter-spacing: .3em; }
+html[data-game-ui] :is(.home-lead, .home-description, .home-desc) { max-width: 410px; margin: 16px auto 0 !important; font-size: 14px; line-height: 1.7; color: var(--muted); }
+html[data-game-ui] .home-actions { width: min(340px, 100%); margin: 16px auto 0; }
+html[data-game-ui] .home-view :is(.primary-button, .primary-btn) { display: flex; align-items: center; justify-content: center; gap: 20px; width: min(340px, 100%); min-height: 60px; height: 60px; flex-shrink: 0; margin: 16px auto 0; padding: 0 20px; font: 800 15px/1.3 var(--jp-ui); }
+html[data-game-ui] .home-actions :is(.primary-button, .primary-btn) { margin-top: 0; }
+html[data-game-ui] .home-view :is(.primary-button, .primary-btn) .arrow { margin: 0; font-size: 20px; }
+html[data-game-ui] .home-view :is(.best-plaque, .best-score-panel) { position: static; width: min(340px, 100%); min-height: 46px; height: 46px; margin: 10px auto 0; padding: 6px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+html[data-game-ui] .home-view :is(.best-plaque, .best-score-panel) strong { font-size: 25px; }
+html[data-game-ui] :is(.home-help, .help-link, .home-view .text-button) { margin-top: 8px; font-size: 12px; }
+html[data-game-ui] :is(.home-help summary, .help-link, .home-view .text-button) { display: flex; align-items: center; justify-content: center; min-height: 44px; padding-block: 0; }
+html[data-game-ui] .home-layout:has(.home-help[open]),
+html[data-game-ui] .home-copy:has(.home-help[open]) { height: auto !important; }
+html[data-game-ui] :is(.settings-button, .gear) { position: fixed; top: max(22px, env(safe-area-inset-top)); right: max(24px, env(safe-area-inset-right)); width: 48px; height: 48px; min-height: 48px; z-index: 25; }
+html[data-game-ui] :is(.settings-button, .gear) svg { width: 23px; height: 23px; }
+html[data-game-ui] :is(.settings-close, .close-button, .close-btn, .settings-choice-content, .chip span) { min-height: 44px; }
+html[data-game-ui] :is(.settings-close, .close-button, .close-btn) { min-width: 44px; }
+
+/* Header, central card and input dock never scale the page or its touch targets. */
+html[data-game-ui] .practice-view { border: 0 !important; }
+html[data-game-ui] .practice-view .practice-shell { display: block !important; position: static !important; height: 100% !important; padding: 0 !important; }
+html[data-game-ui] .practice-view .practice-app-header { display: contents !important; }
+html[data-game-ui] .practice-view .hud { position: absolute !important; top: var(--game-top) !important; left: 50% !important; right: auto !important; bottom: auto !important; transform: translateX(-50%) !important; width: min(920px, calc(100% - 56px)) !important; height: var(--game-header) !important; min-height: var(--game-header) !important; margin: 0 !important; padding: 0 14px !important; display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 0 !important; border: 1px solid #56392e1f; border-radius: 14px; background: #fcfaf5e8; z-index: 10; }
+html[data-game-ui] .practice-view :is(.hud-item, .score, .timer, .streak, .hud-score, .hud-best, .timer-wrap) { display: flex !important; flex-wrap: wrap; align-items: baseline; justify-content: center !important; align-content: center; min-width: 0; width: auto !important; height: auto !important; margin: 0 !important; padding: 0 5px !important; gap: 5px; font: 700 12px/1.2 var(--jp-ui) !important; text-align: center; color: var(--muted); letter-spacing: 0; }
+html[data-game-ui] .practice-view :is(.hud-item, .score, .streak, .hud-score, .hud-best) strong { display: inline !important; font: 800 18px/1.1 var(--jp-ui) !important; color: var(--ink); letter-spacing: 0; }
+html[data-game-ui] .practice-view :is(.timer strong, .hud-time strong, .timer-text) { font: 800 23px/1.1 var(--jp-ui) !important; color: var(--ink); letter-spacing: 0; }
+html[data-game-ui] .practice-view :is(.timer small, .hud-time small, .timer-text::after) { font-size: 10px !important; }
+html[data-game-ui] .practice-view .timer-text::before { content: "残り "; font: 700 10px/1.2 var(--jp-ui); color: var(--muted); }
+html[data-game-ui] .practice-view .timer-text::after { content: " 秒"; font-family: var(--jp-ui); color: var(--muted); }
+html[data-game-ui] .practice-view .timer-bar { display: none !important; }
+html[data-game-ui] .practice-view .hud { font-variant-numeric: tabular-nums; }
+html[data-game-ui] .practice-view .question-zone { position: absolute !important; inset: calc(var(--game-top) + var(--game-header) + 16px) var(--game-edge) calc(var(--game-bottom) + var(--game-answer-height)) !important; display: flex !important; align-items: stretch !important; justify-content: center; min-height: 0 !important; padding: 0 !important; }
+html[data-game-ui] .practice-view :is(.question-card, .question-shell) { display: grid !important; grid-template-rows: minmax(0, 1fr) auto; align-items: stretch; width: min(var(--game-card-max), 100%) !important; height: 100% !important; min-width: 0; min-height: 0 !important; max-height: none !important; padding: 48px 32px 24px !important; border-radius: 22px; overflow: hidden !important; transform: none !important; justify-content: normal !important; }
+html[data-game-ui] .practice-view .game-question-content { display: flex; flex-direction: column; align-items: center; justify-content: safe center; min-width: 0; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; padding: 2px 0 8px; }
+html[data-game-ui] .practice-view .game-question-content > * { flex-shrink: 0; }
+html[data-game-ui] .practice-view .game-answer-content { min-width: 0; padding-top: 6px; background: var(--paper-light); }
+html[data-game-ui] .practice-view .game-answer-status { min-width: 0; min-height: 0; max-height: 4.5em; overflow-y: auto; }
+html[data-game-ui] .practice-view .game-answer-content :is(.answer-line, .answer-form) { width: 100%; }
+html[data-game-ui] .practice-view .game-answer-content :is(.feedback-line, .feedback, .hint-text) { max-height: 4.5em; overflow-y: auto; }
+html[data-game-ui] .practice-view .game-answer-content :is(.feedback-line, .feedback, .hint-text):empty { display: none; }
+html[data-game-ui][data-game-kind="reading"] { --game-answer-height: 0px; }
+html[data-game-ui] .practice-view .question-shell { position: absolute !important; top: calc(var(--game-top) + var(--game-header) + 16px) !important; bottom: calc(var(--game-bottom) + var(--game-tools-height)) !important; left: 50% !important; right: auto !important; transform: translateX(-50%) !important; width: min(var(--game-card-max), calc(100% - var(--game-edge) * 2)) !important; height: auto !important; display: flex; flex-direction: column; gap: 8px; }
+html[data-game-ui] .practice-view :is(.kanji-word, .verb-word) { flex-shrink: 0; min-height: 0 !important; max-width: 100%; width: auto; margin: 4px 0 0 !important; font: 900 clamp(64px, 6.8vw, 104px)/1.25 var(--jp-display) !important; letter-spacing: .035em; white-space: normal !important; overflow-wrap: anywhere; word-break: normal; }
+html[data-game-ui] .practice-view :is(.kanji-word, .verb-word).is-long { font-size: clamp(48px, 5.6vw, 80px) !important; }
+html[data-game-ui] .practice-view :is(.kanji-word, .verb-word).is-very-long { font-size: clamp(36px, 4.2vw, 60px) !important; }
+html[data-game-ui] .practice-view :is(.sentence, .keigo-expression, .keigo-expression.is-context) { max-width: 100%; margin: 0; font: 800 clamp(26px, 2.7vw, 36px)/1.65 var(--jp-display) !important; white-space: normal !important; overflow-wrap: anywhere; word-break: normal; }
+/* Phrase wrappers flow inline; only individual ruby words and the blank stay intact. */
+html[data-game-ui] .practice-view .sentence { display: block !important; width: 100%; min-width: 0; overflow: visible; text-align: center; }
+html[data-game-ui] .practice-view :is(.sentence-chunk, .sentence-tail) { display: inline !important; flex: initial; min-width: 0; white-space: normal !important; overflow-wrap: anywhere; word-break: normal; }
+html[data-game-ui] .practice-view .sentence .blank { display: inline-block; white-space: nowrap; }
+html[data-game-ui] .practice-view ruby { ruby-position: over; white-space: nowrap; }
+html[data-game-ui] .practice-view rt { font-size: .4em; line-height: 1; }
+html[data-game-ui] .practice-view :is(.meaning, .sentence-meaning, .keigo-instruction, .question-copy) { height: auto; min-height: 0; max-width: 100%; margin: 12px 0 0 !important; font-size: 14px !important; line-height: 1.6; overflow-wrap: anywhere; }
+html[data-game-ui] .practice-view .question-meta { position: static !important; min-height: 23px; margin: 0; font-size: 11px; }
+html[data-game-ui] .practice-view :is(.level-seal, .question-type) { font-size: 11px; }
+html[data-game-ui] .practice-view .level-seal { top: 12px; left: 14px; width: 30px; height: 30px; }
+html[data-game-ui] .practice-view .answer-area { position: absolute !important; inset: auto 0 var(--game-bottom) !important; display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+html[data-game-ui] .practice-view :is(.answer-line, .answer-form) { display: grid; grid-template-columns: minmax(0, 1fr) 90px; gap: 8px; width: min(var(--game-card-max), calc(100% - var(--game-edge) * 2)); margin: 0 auto 6px !important; padding: 0; flex-shrink: 0; }
+html[data-game-ui] .practice-view .answer-form { width: 100%; margin-top: 8px !important; }
+html[data-game-ui] .practice-view :is(.answer-field, .answer-display, .answer-input) { min-width: 0; }
+html[data-game-ui] .practice-view :is(.answer-display, .answer-input, .answer-submit, .judge-button) { height: var(--game-input-height) !important; min-height: var(--game-input-height) !important; border-radius: 12px; font-family: var(--jp-ui); }
+html[data-game-ui] .practice-view :is(.answer-display, .answer-input) { font-size: 22px; overflow-x: auto; white-space: nowrap; }
+html[data-game-ui] .practice-view :is(.feedback-line, .feedback, .hint-text, .reading-guide, .keigo-feedback) { height: auto !important; min-height: 20px; max-width: 100%; margin: 5px 0 0; font-size: 13px !important; line-height: 1.5; overflow-wrap: anywhere; }
+html[data-game-ui] .practice-view .romaji-keyboard { display: none !important; }
+html[data-game-ui] .practice-view :is(.practice-tools, .mobile-actions, .utility-stack) { position: static !important; display: contents !important; }
+html[data-game-ui] .practice-view :is(.corner-action, .utility-btn, .exit-btn) { min-width: 44px; min-height: 44px; font-family: var(--jp-ui); }
+html[data-game-ui] .practice-view :is(.exit-button, .exit-btn) { position: fixed !important; left: clamp(24px, 5vw, 72px) !important; right: auto !important; top: auto !important; bottom: var(--game-bottom) !important; width: 64px; }
+html[data-game-ui] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) { position: fixed !important; left: auto !important; right: clamp(24px, 5vw, 72px) !important; top: auto !important; bottom: var(--game-bottom) !important; width: 64px; }
+html[data-game-ui] .practice-view :is(.skip-button, #skipBtn) { bottom: calc(var(--game-bottom) + 84px) !important; }
+html[data-game-ui] .practice-view .practice-bottom { display: contents !important; }
+html[data-game-ui][data-game-kind="particle"] { --game-answer-height: 152px; }
+html[data-game-ui] .practice-view .particle-keyboard { position: absolute !important; left: 50%; bottom: var(--game-bottom); transform: translateX(-50%); width: min(650px, calc(100% - 220px)) !important; margin: 0 !important; padding: 10px 6px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 4px; }
+html[data-game-ui] .practice-view .particle-key { min-width: 0; height: 56px; min-height: 56px; font: 700 22px/1 var(--jp-ui); }
+html[data-game-ui][data-game-kind="choice"] { --game-answer-height: calc(var(--game-choice-height, 148px) + 16px); }
+html[data-game-ui] .practice-view .keigo-answer-area { position: absolute !important; inset: auto var(--game-edge) var(--game-bottom) !important; padding: 0 !important; }
+html[data-game-ui] .practice-view .choice-grid { width: min(780px, 100%); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+html[data-game-ui] .practice-view .choice-button { min-height: 68px; min-width: 0; padding: 12px 16px 12px 42px; font-size: 18px; line-height: 1.4; overflow-wrap: anywhere; }
+
+/* Nonblocking, right aligned score stamps. */
+html[data-game-ui] .practice-view :is(.brush-feedback, .correct-fx) { position: fixed !important; top: calc(var(--game-top) + var(--game-header) + 4px) !important; right: max(28px, calc((100vw - 920px) / 2)) !important; left: auto !important; bottom: auto !important; width: 150px !important; height: 58px !important; pointer-events: none !important; z-index: 15; }
+html[data-game-ui] .practice-view :is(.brush-feedback .stamp, .correct-copy) { position: absolute; inset: 4px; display: grid; place-items: center; padding: 4px 8px; border: 2px solid var(--red); border-radius: 7px; background: #fcfaf5e8; font-size: 20px; text-align: center; }
+html[data-game-ui] .practice-view .correct-copy strong { font-size: 20px; }
+html[data-game-ui] .practice-view .tea-ring { display: none; }
+
+/* Results retain scroll artwork; the record plaque has its own column. */
+html[data-game-ui] .result-view { display: grid; grid-template-columns: minmax(0, 430px) 154px; align-content: safe center; justify-content: center; align-items: center; gap: 24px; padding: 40px 28px; overflow-y: auto !important; overflow-x: hidden !important; }
+html[data-game-ui] .result-scroll { position: relative; width: 100% !important; height: auto !important; min-height: min(540px, calc(100dvh - 80px)) !important; margin: 0; padding: 0 !important; flex-shrink: 0; }
+html[data-game-ui] .scroll-sheet { width: calc(100% - 30px); min-height: inherit; margin: 0 auto; padding: 62px 34px 56px !important; }
+html[data-game-ui] .scroll-content { min-width: 0; }
+html[data-game-ui] .result-view :is(.result-title, #resultTitle) { font-size: clamp(36px, 5vw, 56px); }
+html[data-game-ui] .result-score { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 5px; margin: 18px 0; font-size: clamp(58px, 8vw, 84px) !important; overflow-wrap: anywhere; }
+html[data-game-ui] .result-score strong { max-width: 100%; font-size: inherit !important; overflow-wrap: anywhere; }
+html[data-game-ui] .result-score small { font-size: 16px; }
+html[data-game-ui] .result-best-plaque { position: relative !important; inset: auto !important; transform: none; width: 154px !important; min-height: 170px; margin: 0 !important; }
+html[data-game-ui] .result-actions :is(button, a) { width: 100%; height: auto !important; min-height: 48px !important; padding: 12px; font-size: 14px; line-height: 1.5; }
+html[data-game-ui] .result-view :is(.game-ranking-result, .game-ranking-retry, .game-ranking-login) { box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%; margin: 8px 0 0; font: 500 12px/1.5 var(--cn) !important; text-align: center; overflow-wrap: anywhere; }
+html[data-game-ui] .result-view .game-ranking-result { color: var(--muted); }
+html[data-game-ui] .result-view .game-ranking-result:empty { display: none; }
+html[data-game-ui] .result-view :is(.game-ranking-retry, .game-ranking-login) { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 12px; border: 1px solid #56392e33; border-radius: 8px; background: var(--paper-light); color: var(--red-dark); cursor: pointer; text-decoration: none; }
+
+/* Phone and tablet dock. Touch capability keeps this layout on wide iPads. */
+html[data-game-ui][data-game-touch="true"] {
+  --game-edge: 18px; --game-top: calc(env(safe-area-inset-top) + 8px);
+  --game-header: 44px; --game-card-max: 780px; --game-input-height: 48px;
+  --game-keyboard-height: calc(var(--game-key-height) * 3 + 36px + env(safe-area-inset-bottom));
+  --game-tools-height: 60px; --game-bottom: 0px;
+  --game-answer-height: calc(var(--game-keyboard-height) + var(--game-tools-height) + var(--game-input-height) + 32px);
+}
+html[data-game-ui][data-game-kind="reading"][data-game-touch="true"] { --game-answer-height: calc(var(--game-keyboard-height) + var(--game-tools-height)); }
+html[data-game-ui][data-game-touch="true"] .practice-view .hud { left: calc(var(--game-edge) + 56px) !important; right: var(--game-edge) !important; transform: none !important; width: auto !important; max-width: none; padding: 0 6px !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.hud-item, .score, .timer, .streak, .hud-score, .hud-best, .timer-wrap) { font-size: 10px !important; gap: 4px; padding: 0 2px !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.timer strong, .hud-time strong, .timer-text) { font-size: 22px !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.timer, .hud-time, .timer-wrap, .timer-text) { flex-wrap: nowrap !important; white-space: nowrap; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.exit-button, .exit-btn) { display: grid !important; place-items: center; position: fixed !important; top: var(--game-top) !important; left: var(--game-edge) !important; right: auto !important; bottom: auto !important; width: 44px !important; height: 44px !important; min-height: 44px !important; padding: 0 !important; border: 1px solid #56392e26; border-radius: 14px; background: var(--paper-light); z-index: 20; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.exit-button, .exit-btn) > span:last-child { display: none; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.exit-button .circle, .exit-button .corner-icon, .exit-btn .tool-icon) { width: 28px !important; height: 28px !important; margin: 0 !important; border-radius: 0; background: none; color: var(--ink); font: 700 24px/1 var(--jp-ui); }
+html[data-game-ui][data-game-touch="true"] .practice-view .question-zone { top: calc(var(--game-top) + var(--game-header) + 10px) !important; bottom: calc(var(--game-answer-height) + 8px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-card, .question-shell) { padding: 42px 24px 16px !important; border-radius: 18px; }
+html[data-game-ui][data-game-touch="true"] .practice-view .question-shell { top: calc(var(--game-top) + var(--game-header) + 10px) !important; bottom: calc(var(--game-keyboard-height) + var(--game-tools-height) + 8px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word) { font-size: clamp(48px, 7vw, 72px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-long { font-size: clamp(38px, 5.5vw, 56px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-very-long { font-size: clamp(28px, 4.5vw, 44px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.answer-line, .answer-form) { grid-template-columns: minmax(0, 1fr) 96px; }
+html[data-game-ui][data-game-touch="true"] .practice-view .answer-area { bottom: calc(var(--game-keyboard-height) + var(--game-tools-height)) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.answer-display, .answer-input) { font-size: 20px; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) { display: flex !important; flex-direction: row !important; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 9px; top: auto !important; bottom: calc(var(--game-keyboard-height) + 8px) !important; width: calc((100% - var(--game-edge) * 2 - 8px) / 2) !important; height: 44px !important; min-height: 44px !important; padding: 0 12px !important; border: 1px solid #56392e26; border-radius: 12px; background: var(--paper-light); font-size: 12px !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn) { left: var(--game-edge) !important; right: auto !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.hint-button, #hintBtn) { left: auto !important; right: var(--game-edge) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.corner-icon-wrap, .tool-icon-wrap) { position: relative; flex: 0 0 28px; width: 28px; height: 28px; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) :is(.circle, .corner-icon, .tool-icon) { position: relative; display: grid; place-items: center; flex: 0 0 28px; width: 28px !important; height: 28px !important; min-width: 28px; min-height: 28px; max-width: 28px; max-height: 28px; margin: 0 !important; padding: 0; border-radius: 50%; font: 900 15px/1 var(--jp-ui) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) > span:last-child { flex: 0 0 auto; white-space: nowrap; font: 800 12px/1.25 var(--jp-ui); }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.count, .corner-count, .tool-count) { position: absolute; top: -6px; right: -8px; width: 20px; height: 20px; min-width: 20px; border: 2px solid var(--paper); border-radius: 50%; background: var(--paper); color: var(--ink); display: grid; place-items: center; font: 800 10px/1 var(--jp-ui); }
+html[data-game-ui][data-game-touch="true"] .practice-view .romaji-keyboard { position: fixed !important; inset: auto 0 0 !important; display: flex !important; flex-direction: column; gap: 8px !important; width: 100% !important; max-width: none !important; height: var(--game-keyboard-height) !important; margin: 0 !important; padding: 10px 6px calc(10px + env(safe-area-inset-bottom)) !important; border: 0 !important; border-radius: 18px 18px 0 0; background: #ded9cc; box-shadow: 0 -1px 0 #56392e21; transform: none !important; z-index: 12; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.key-row, .romaji-keyboard-row) { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px !important; width: min(1024px, 100%); height: var(--game-key-height); margin: 0 auto; padding: 0; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.key-row, .romaji-keyboard-row):nth-child(3) { grid-template-columns: 1.28fr repeat(7, minmax(0, 1fr)) 1.28fr; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.key, .romaji-key) { width: 100%; min-width: 0; height: var(--game-key-height) !important; min-height: var(--game-key-height) !important; margin: 0; padding: 0; border: 0; border-radius: 9px; background: #fffdf8; box-shadow: 0 2px 0 #281b1633; color: var(--ink); font: 700 22px/1 var(--jp-ui) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.key.function, .romaji-key.is-function) { background: #c7c5c0; }
+html[data-game-ui][data-game-kind="particle"][data-game-touch="true"] { --game-keyboard-height: calc(var(--game-key-height) * 2 + 28px + env(safe-area-inset-bottom)); --game-answer-height: calc(var(--game-keyboard-height) + var(--game-tools-height)); }
+html[data-game-ui][data-game-touch="true"] .practice-view .particle-keyboard { position: fixed !important; inset: auto 0 0 !important; width: 100% !important; height: var(--game-keyboard-height); transform: none; padding: 10px max(6px, calc((100vw - 1024px) / 2)) calc(10px + env(safe-area-inset-bottom)); border: 0; border-radius: 18px 18px 0 0; background: #ded9cc; }
+html[data-game-ui][data-game-touch="true"] .practice-view .particle-key { height: var(--game-key-height); min-height: var(--game-key-height); }
+html[data-game-ui][data-game-kind="choice"][data-game-touch="true"] { --game-keyboard-height: 0px; --game-answer-height: calc(var(--game-choice-height, 148px) + 76px + env(safe-area-inset-bottom)); }
+html[data-game-ui][data-game-kind="choice"][data-game-touch="true"] .practice-view .keigo-answer-area { bottom: calc(60px + env(safe-area-inset-bottom)) !important; }
+html[data-game-ui][data-game-kind="choice"][data-game-touch="true"] .practice-view :is(.skip-button, .hint-button) { bottom: calc(8px + env(safe-area-inset-bottom)) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.brush-feedback, .correct-fx) { right: var(--game-edge) !important; width: 124px !important; height: 55px !important; }
+
+@media (max-width: 1023px) {
+  html[data-game-ui] .home-view { padding: calc(76px + env(safe-area-inset-top)) 30px calc(34px + env(safe-area-inset-bottom)) !important; }
+  html[data-game-ui] .home-layout { width: min(430px, 100%) !important; height: auto !important; min-height: 0; grid-template-columns: minmax(0, 1fr) !important; gap: 0 !important; }
+  html[data-game-ui] :is(.home-mascot, .home-shiba) { display: none !important; }
+  html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel) { height: auto !important; min-height: 508px !important; padding: 40px 24px !important; }
+  html[data-game-ui] .home-title { font-size: clamp(44px, 11vw, 64px) !important; }
+  html[data-game-ui] .home-view :is(.primary-button, .primary-btn) { min-height: 62px; height: auto; }
+  html[data-game-ui] .home-view :is(.best-plaque, .best-score-panel) { min-height: 58px; height: auto; }
+}
+@media (max-width: 767px) {
+  html[data-game-ui] { --game-edge: 12px; --game-key-height: 52px; --game-input-height: 46px; }
+  html[data-game-ui][data-game-touch="true"] { --game-edge: 12px; --game-key-height: 52px; --game-input-height: 46px; }
+  html[data-game-ui] .home-title { font-size: clamp(44px, 13vw, 58px) !important; }
+  html[data-game-ui] :is(.settings-button, .gear) { top: calc(12px + env(safe-area-inset-top)); right: 12px; width: 44px; height: 44px; min-height: 44px; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-card, .question-shell) { padding: 38px 15px 12px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word) { font-size: clamp(36px, 11vw, 56px) !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-long { font-size: clamp(29px, 9vw, 44px) !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-very-long { font-size: clamp(24px, 7.2vw, 36px) !important; }
+  html[data-game-ui] .practice-view :is(.sentence, .keigo-expression, .keigo-expression.is-context) { font-size: clamp(18px, 5.4vw, 22px) !important; line-height: 1.65; }
+  html[data-game-ui] .practice-view :is(.meaning, .sentence-meaning, .keigo-instruction, .question-copy) { margin-top: 8px !important; font-size: 12px !important; line-height: 1.5; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.answer-display, .answer-input) { font-size: 18px; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.answer-line, .answer-form) { grid-template-columns: minmax(0, 1fr) 76px; }
+  html[data-game-ui] .practice-view :is(.feedback-line, .feedback, .hint-text, .reading-guide, .keigo-feedback) { font-size: 12px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.key, .romaji-key) { font-size: 20px !important; }
+  html[data-game-ui] .practice-view .choice-grid { gap: 8px; }
+  html[data-game-ui] .practice-view .choice-button { min-height: 60px; padding: 10px 8px 10px 32px; border-radius: 10px; font-size: 14px; }
+  html[data-game-ui] .practice-view .choice-index { left: 7px; width: 20px; height: 20px; }
+  html[data-game-ui] .result-view { grid-template-columns: minmax(0, 400px); align-content: start; gap: 24px; padding: calc(28px + env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom)); }
+  html[data-game-ui] .result-scroll { min-height: 480px !important; }
+  html[data-game-ui] .scroll-sheet { width: calc(100% - 24px); padding: 55px 24px 49px !important; }
+  html[data-game-ui] .result-best-plaque { justify-self: center; width: min(260px, 100%) !important; min-height: 110px; }
+  html[data-game-ui] .result-score { font-size: clamp(50px, 14vw, 72px) !important; }
+  html[data-game-ui] :is(.modal, .settings-dialog) { max-width: 100%; }
+  html[data-game-ui] .modal { padding: 12px; }
+  html[data-game-ui] :is(.modal-card, .settings-form, .settings-body) { padding: 20px 16px; }
+}
+/* Keep a five-character time (120.0) on the same baseline as shorter times.
+   "秒" still identifies the timer; the redundant prefix remains accessible. */
+@media (max-width: 430px) {
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.timer, .hud-time) > span:first-child { position: absolute; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  html[data-game-ui][data-game-touch="true"] .practice-view .timer-text::before { content: none; }
+}
+@media (max-width: 359px) {
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.timer strong, .hud-time strong, .timer-text) { font-size: 20px !important; }
+}
+@media (max-height: 700px) {
+  html[data-game-ui][data-game-touch="true"] { --game-key-height: 48px; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-card, .question-shell) { padding-top: 32px !important; }
+  html[data-game-ui] .home-view { place-items: start center; }
+  html[data-game-ui] .result-view { align-content: start; }
+}
+/* Short landscape: the same question and answer nodes sit side by side. */
+@media (max-height: 480px) and (min-width: 600px) {
+  html[data-game-ui][data-game-touch="true"] { --game-key-height: 44px; --game-input-height: 44px; --game-tools-height: 52px; --game-edge: 12px; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-card, .question-shell) { grid-template-columns: minmax(0, 1fr) minmax(240px, .9fr); grid-template-rows: minmax(0, 1fr); gap: 12px; padding: 8px !important; }
+  html[data-game-ui][data-game-kind="particle"] .practice-view .question-card,
+  html[data-game-ui][data-game-kind="choice"] .practice-view .question-card { grid-template-columns: minmax(0, 1fr); }
+  html[data-game-ui][data-game-touch="true"] .practice-view .game-answer-content { display: grid; grid-template-rows: 44px minmax(0, 1fr); min-height: 0; height: 100%; padding: 0; overflow: hidden; }
+  html[data-game-ui][data-game-touch="true"] .practice-view .game-answer-content :is(.answer-line, .answer-form) { height: 44px; margin: 0 !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view .game-answer-status { max-height: none; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-meta, .level-seal, .question-copy, .question-type) { display: none; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word) { font-size: clamp(28px, 4vw, 44px) !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-long { font-size: 30px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-very-long { font-size: 24px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.meaning, .sentence-meaning, .keigo-instruction) { margin-top: 4px !important; font-size: 12px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) { bottom: calc(var(--game-keyboard-height) + 4px) !important; }
+  html[data-game-ui][data-game-kind="choice"][data-game-touch="true"] .practice-view :is(.skip-button, .hint-button) { bottom: calc(4px + env(safe-area-inset-bottom)) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-game-ui] *, html[data-game-ui] *::before, html[data-game-ui] *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition: none !important; scroll-behavior: auto !important; }
+  html[data-game-ui] :is(.result-scroll, .scroll-sheet, .scroll-content, .result-best-plaque) { opacity: 1 !important; clip-path: none !important; transform: none !important; }
+  html[data-game-ui] :is(.new-record-effect, .record-particles) { display: none !important; }
+}
+</style>
+<script id="gameInputModeRuntime">
+/* Device-local input preference. This module never submits scores or changes game rules. */
+(function (root) {
+  'use strict';
+  const doc = root.document;
+  const storageKey = 'kiki.game.input-method.v1';
+  let mode = 'builtin', adapter = null, input = null, field = null, hint = null;
+  let composing = false, committedAt = -Infinity, discardUntil = -Infinity, activeToken, frame = 0;
+  try { if (root.localStorage.getItem(storageKey) === 'system') mode = 'system'; } catch { /* Private browsing is supported. */ }
+  const isSystem = () => mode === 'system';
+  function normalize(value, script = 'hiragana') {
+    const kana = String(value || '').normalize('NFKC').trim();
+    return script === 'katakana'
+      ? kana.replace(/[ぁ-ゖ]/g, char => String.fromCharCode(char.charCodeAt(0) + 0x60))
+      : kana.replace(/[ァ-ヶ]/g, char => String.fromCharCode(char.charCodeAt(0) - 0x60));
+  }
+  function state() { return adapter.getState(); }
+  function viewport() {
+    frame = 0;
+    if (!adapter || !isSystem()) return;
+    const visible = root.visualViewport;
+    let top = visible?.offsetTop || 0, bottom = top + (visible?.height || root.innerHeight), offset = 0, current = root;
+    // A same-origin cottage/collection iframe may not receive a smaller visual
+    // viewport itself. Intersect with the host's visible area as well.
+    try {
+      for (let depth = 0; depth < 4 && current.parent !== current && current.frameElement; depth++) {
+        offset += current.frameElement.getBoundingClientRect().top;
+        current = current.parent;
+        const host = current.visualViewport, hostTop = host?.offsetTop || 0;
+        top = Math.max(top, hostTop - offset);
+        bottom = Math.min(bottom, hostTop + (host?.height || current.innerHeight) - offset);
+      }
+    } catch { /* Cross-origin hosts retain the local visual viewport fallback. */ }
+    const height = Math.max(0, Math.round(bottom - top));
+    doc.documentElement.style.setProperty('--game-device-height', `${height}px`);
+    doc.documentElement.style.setProperty('--game-device-top', `${Math.max(0, Math.round(top))}px`);
+    doc.documentElement.setAttribute('data-game-device-compact', String(height < 430));
+  }
+  function scheduleViewport() {
+    if (!frame) frame = root.requestAnimationFrame(viewport);
+  }
+  function sync() {
+    if (!adapter) return;
+    const current = state(), system = isSystem();
+    if (system && current.token !== activeToken) {
+      activeToken = current.token;
+      if (composing) {
+        // A skip can replace the question while the OS still has preedit text.
+        // Invalidate that composition before its delayed end/input events arrive.
+        discardUntil = Date.now() + 80; composing = false;
+        if (doc.activeElement === input) input.blur();
+      }
+    }
+    doc.documentElement.setAttribute('data-game-input', mode);
+    if (field) field.hidden = !system;
+    if (adapter.display) adapter.display.setAttribute('aria-hidden', String(system));
+    const keyboard = doc.getElementById('romajiKeyboard');
+    if (keyboard) {
+      keyboard.inert = system;
+      keyboard.setAttribute('aria-hidden', String(system || !root.GameResponsive?.usesTouchLayout()));
+    }
+    if (system) {
+      if (!current.active) {
+        composing = false;
+        if (doc.activeElement === input) input.blur();
+      }
+      // Never replace an IME's preedit text or move its caret during composition.
+      if (!composing && input.value !== current.value) input.value = current.value;
+      // Toggling DOM readOnly between answers dismisses some phone IMEs. Keep
+      // the field focused during feedback; beforeinput/input guards lock edits.
+      input.readOnly = !current.active;
+      input.setAttribute('aria-readonly', String(!current.active || !current.editable));
+      input.classList.toggle('is-correct', Boolean(current.correct));
+      input.classList.toggle('is-wrong', Boolean(current.wrong));
+      if (hint) { hint.textContent = current.hint || ''; field.classList.toggle('has-hint', Boolean(current.hint)); }
+      viewport();
+    } else if (adapter.input) {
+      input.readOnly = true;
+      input.setAttribute('aria-readonly', 'true');
+    }
+  }
+  function submit() {
+    if (!isSystem() || composing || Date.now() - committedAt < 80 || !state().active || adapter.submitButton.disabled) return;
+    adapter.onSubmit();
+  }
+  function mountSettings() {
+    const form = doc.getElementById('settingsForm');
+    const modal = doc.getElementById('settingsModal') || doc.getElementById('settingsDialog');
+    if (!form || !modal) return;
+    const section = doc.createElement('fieldset');
+    section.className = 'game-input-settings';
+    const legend = doc.createElement('legend'); legend.textContent = '输入方式'; section.appendChild(legend);
+    const choices = [];
+    for (const [value, label] of [['builtin', '游戏内置键盘'], ['system', '设备自带输入法']]) {
+      const item = doc.createElement('label'), radio = doc.createElement('input'), text = doc.createElement('span');
+      radio.type = 'radio'; radio.name = 'gameInputMethod'; radio.value = value;
+      text.textContent = label; item.appendChild(radio); item.appendChild(text); section.appendChild(item); choices.push(radio);
+    }
+    const note = doc.createElement('p'); note.textContent = '设备输入法：点击答案框输入日语，确认候选词后再按「判定」。'; section.appendChild(note);
+    const actions = form.querySelector('.modal-actions, .settings-actions');
+    form.insertBefore(section, actions);
+    const restore = () => { for (const radio of choices) radio.checked = radio.value === mode; };
+    restore(); doc.getElementById('settingsButton')?.addEventListener('click', restore);
+    // Game validation runs first. A rejected settings form remains open and must
+    // not commit this preference either. Closing/cancelling discards the draft.
+    form.addEventListener('submit', () => {
+      if (!(modal.hidden || modal.open === false)) return;
+      const selected = choices.find(radio => radio.checked)?.value;
+      mode = selected === 'system' ? 'system' : 'builtin';
+      try { root.localStorage.setItem(storageKey, mode); } catch { /* Keep the current-page preference. */ }
+      composing = false; committedAt = -Infinity; discardUntil = -Infinity;
+      adapter.onModeChange?.(); sync();
+    });
+  }
+  function register(options) {
+    if (adapter) throw Error('Input method already registered');
+    adapter = options;
+    if (adapter.input) input = adapter.input;
+    else {
+      field = doc.createElement('div'); field.className = 'game-device-field';
+      input = doc.createElement('input'); input.className = 'answer-input game-device-input'; input.id = 'gameDeviceInput';
+      hint = doc.createElement('span'); hint.className = 'game-device-hint'; hint.id = 'gameDeviceHint';
+      input.setAttribute('aria-describedby', hint.id);
+      field.appendChild(input); field.appendChild(hint);
+      adapter.display.parentNode.insertBefore(field, adapter.display);
+    }
+    input.type = 'text'; input.lang = 'ja';
+    input.setAttribute('inputmode', 'text'); input.setAttribute('enterkeyhint', 'done');
+    input.setAttribute('autocomplete', 'off'); input.setAttribute('autocorrect', 'off');
+    input.setAttribute('autocapitalize', 'off'); input.spellcheck = false;
+    if (!adapter.input) { input.placeholder = '日本語で入力'; input.setAttribute('aria-label', options.label); }
+    input.addEventListener('compositionstart', () => { if (isSystem()) composing = true; });
+    input.addEventListener('compositionend', () => {
+      if (!isSystem()) return;
+      composing = false; committedAt = Date.now();
+      if (Date.now() >= discardUntil && state().active && state().editable) adapter.onInput(input.value);
+      sync();
+    });
+    input.addEventListener('beforeinput', event => {
+      if (isSystem() && (!state().active || !state().editable)) event.preventDefault();
+    });
+    input.addEventListener('input', () => {
+      if (!isSystem()) return;
+      if (Date.now() >= discardUntil && state().active && state().editable) adapter.onInput(input.value);
+      sync();
+    });
+    input.addEventListener('keydown', event => {
+      if (!isSystem() || event.key === 'Escape') return;
+      // Let the browser own text, selection, deletion, shortcuts and candidates.
+      // Candidate Enter must not reach either a game handler or an implicit form submit.
+      event.stopImmediatePropagation();
+      if (event.isComposing || composing || event.keyCode === 229) { committedAt = Date.now(); return; }
+      if (event.key === 'Enter' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        event.preventDefault(); if (!event.repeat) submit();
+      }
+    }, true);
+    const guard = event => {
+      if (isSystem() && (composing || Date.now() - committedAt < 80)) { event.preventDefault(); event.stopImmediatePropagation(); }
+    };
+    adapter.submitButton.addEventListener('click', guard, true);
+    // Prevent a game tool from blurring the editable field / dismissing the IME.
+    for (const button of [adapter.submitButton, doc.getElementById('skipButton'), doc.getElementById('hintButton')]) {
+      button?.addEventListener('pointerdown', event => { if (isSystem() && doc.activeElement === input) event.preventDefault(); });
+    }
+    if (input.form) input.form.addEventListener('submit', event => {
+      if (!isSystem()) return;
+      event.preventDefault(); event.stopImmediatePropagation(); submit();
+    }, true);
+    root.addEventListener('resize', scheduleViewport, { passive: true });
+    root.visualViewport?.addEventListener('resize', scheduleViewport, { passive: true });
+    root.visualViewport?.addEventListener('scroll', scheduleViewport, { passive: true });
+    try {
+      let host = root;
+      for (let depth = 0; depth < 4 && host.parent !== host; depth++) {
+        host = host.parent;
+        host.visualViewport?.addEventListener('resize', scheduleViewport, { passive: true });
+        host.visualViewport?.addEventListener('scroll', scheduleViewport, { passive: true });
+        host.addEventListener('scroll', scheduleViewport, { passive: true });
+      }
+    } catch { /* Parent access is optional, never a prerequisite for input. */ }
+    mountSettings(); adapter.onModeChange?.(); sync();
+  }
+  root.GameInputMode = Object.freeze({ register, isSystem, normalize, sync });
+})(window);
+</script>
+<style id="gameInputModeStyles">
+/* Optional native IME. Built-in layouts retain the existing geometry. */
+.game-input-settings { min-width: 0; margin: 18px 0; padding: 0; border: 0; color: var(--ink); font: 600 14px/1.5 var(--cn, sans-serif); }
+.game-input-settings :is(legend, span, p) { font-family: var(--cn, sans-serif) !important; }
+.game-input-settings legend { margin-bottom: 8px; font: inherit; }
+.game-input-settings label { display: flex; align-items: center; gap: 10px; min-height: 44px; cursor: pointer; }
+.game-input-settings input { width: 18px; height: 18px; margin: 0; accent-color: var(--red); }
+.game-input-settings p { margin: 6px 0 0; font: 400 12px/1.6 var(--cn, sans-serif); color: var(--muted); }
+html[data-game-ui] .game-device-field[hidden] { display: none !important; }
+html[data-game-ui] .practice-view .game-device-field { position: relative; min-width: 0; height: var(--game-input-height); }
+html[data-game-ui] .practice-view .game-device-input { display: block; box-sizing: border-box; width: 100%; min-width: 0; margin: 0; padding: 4px 10px; border: 2px solid #56392e33; background: var(--paper-light, #fffdf8); color: var(--ink); text-align: center; font-weight: 600; outline-offset: 2px; }
+html[data-game-ui] .practice-view .game-device-input:focus { border-color: var(--ink); }
+html[data-game-ui] .practice-view .game-device-input.is-correct { border-color: var(--green, #63714b); color: var(--green, #63714b); }
+html[data-game-ui] .practice-view .game-device-input.is-wrong { border-color: var(--red); color: var(--red); }
+html[data-game-ui] .practice-view .game-device-hint { position: absolute; right: 8px; bottom: 2px; left: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; pointer-events: none; font: 500 12px/1.3 var(--jp-ui); color: var(--muted); }
+html[data-game-ui] .practice-view .has-hint .game-device-input { padding-bottom: 18px; }
+html[data-game-ui][data-game-input="system"] { --game-keyboard-height: 0px !important; }
+html[data-game-ui][data-game-input="system"] .practice-view :is(#answerDisplay, .romaji-keyboard) { display: none !important; }
+/* Position within the visible area, not behind a system keyboard. All controls
+   use the same parent coordinate system; there is no second keyboard spacer. */
+html[data-game-ui][data-game-input="system"][data-game-touch="true"] .practice-view {
+  position: absolute !important; top: var(--game-device-top, 0px) !important; right: 0 !important; bottom: auto !important; left: 0 !important;
+  height: var(--game-device-height, 100dvh) !important; min-height: 0 !important; max-height: none !important;
+}
+html[data-game-ui][data-game-input="system"][data-game-touch="true"] .practice-view :is(.hud, .exit-button, .skip-button, .hint-button, .brush-feedback, .correct-fx) { position: absolute !important; }
+html[data-game-ui][data-game-input="system"][data-game-touch="true"] .practice-view :is(.skip-button, .hint-button) { bottom: calc(8px + env(safe-area-inset-bottom)) !important; }
+html[data-game-ui][data-game-input="system"][data-game-touch="true"] { --game-tools-height: calc(60px + env(safe-area-inset-bottom)); }
+html[data-game-ui][data-game-input="system"][data-game-device-compact="true"] .practice-view :is(.question-card, .question-shell) { padding: 12px !important; }
+html[data-game-ui][data-game-input="system"][data-game-device-compact="true"] .practice-view :is(.level-seal, .question-meta, .question-copy) { display: none; }
+</style>
+<!-- shared-game-responsive:end -->
 </head>
 <body data-view="home">
   <main>
@@ -662,7 +1435,7 @@
 
     function loadJSON(key,fallback){try{return Object.assign(Array.isArray(fallback)?[]:{},fallback,JSON.parse(localStorage.getItem(key)||'null')||{});}catch{return fallback}}
     function saveJSON(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch{}}
-    function setView(name){game.view=name;for(const id of ['home','countdown','practice','ending','result'])$(`${id}View`).hidden=id!==name;document.body.dataset.view=name}
+    function setView(name){game.view=name;for(const id of ['home','countdown','practice','ending','result'])$(`${id}View`).hidden=id!==name;document.body.dataset.view=name;window.GameInputMode?.sync()}
     function openModal(id){$(id).hidden=false}function closeModal(id){$(id).hidden=true}
     function shuffle(list){const out=[...list];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
     function current(){return game.queue[game.index]}
@@ -713,22 +1486,22 @@
       return{kana,pending:rest,segments};
     }
     function deleteRomajiUnit(value){const raw=String(value||'');if(!raw)return'';const converted=convertRomaji(raw,false);if(converted.pending)return raw.slice(0,-1);const last=converted.segments.at(-1);return last?raw.slice(0,-last.raw.length):raw.slice(0,-1)}
-    function renderInput(){const converted=convertRomaji(game.romaji,false);$('answerKana').textContent=converted.kana;$('answerPending').textContent=converted.pending;$('judgeButton').disabled=game.answered||!game.romaji;return converted}
+    function renderInput(){const converted=window.GameInputMode?.isSystem()?{kana:game.romaji,pending:''}:convertRomaji(game.romaji,false);$('answerKana').textContent=converted.kana;$('answerPending').textContent=converted.pending;$('judgeButton').disabled=game.answered||!game.romaji.trim();window.GameInputMode?.sync();return converted}
     function enterKey(key){if(game.view!=='practice'||game.answered)return;game.romaji+=key;renderInput()}
     function backspace(){if(game.view!=='practice'||game.answered)return;game.romaji=deleteRomajiUnit(game.romaji);renderInput()}
 
-    function updateHud(){$('score').textContent=String(game.score);$('streak').textContent=String(game.streak);$('hintCount').textContent=String(game.hints);$('skipCount').textContent=String(game.skips);$('hintButton').disabled=game.hints<=0||game.answered||game.hintUsed;$('skipButton').disabled=game.skips<=0||game.answered}
+    function updateHud(){$('score').textContent=String(game.score);$('streak').textContent=String(game.streak);$('hintCount').textContent=String(game.hints);$('skipCount').textContent=String(game.skips);$('hintButton').disabled=game.hints<=0||game.answered||game.hintUsed;$('skipButton').disabled=game.skips<=0||game.answered;window.GameInputMode?.sync()}
     function renderQuestion(){
-      const q=current();if(!q)return;game.answered=false;game.hintUsed=false;game.romaji='';game.questionStartedAt=Date.now();$('judgeButton').textContent='判定';
+      const q=current();if(!q)return;window.GameRanking?.question(q.id);game.answered=false;game.hintUsed=false;game.romaji='';game.questionStartedAt=Date.now();$('judgeButton').textContent='判定';
       $('kanjiWord').textContent=q.prompt;$('meaning').textContent=q.meaning||'';$('levelSeal').textContent=categoryLabels[q.category]||'数';$('readingGuide').textContent='';$('feedbackLine').textContent='';$('feedbackLine').className='feedback-line';
       const length=[...q.prompt].length;$('kanjiWord').className=`kanji-word${length>=9?' is-very-long':length>=7?' is-long':''}`;$('answerDisplay').className='answer-display';$('romajiKeyboard').classList.remove('disabled');$('questionCard').style.setProperty('--approach','0');noteDraw(q);renderInput();updateHud();
     }
     function recordResult(q,result,elapsed){if(settings.mode!=='study')return;const stat=history[q.skillKey]||{correct:0,wrong:0,hint:0,skip:0,avg:0};stat[result]=(stat[result]||0)+1;if(elapsed){stat.avg=stat.avg?Math.round(stat.avg*.7+elapsed*.3):elapsed}history[q.skillKey]=stat;saveJSON(HISTORY_KEY,history)}
     function showBrush(points){clearTimeout(game.feedback);$('brushText').firstChild.textContent=game.streak>=10?'無双':game.streak>=5?'鮮烈':game.streak>=3?'連破':'見事';$('brushScore').textContent=`＋${points}`;const el=$('brushFeedback');el.classList.remove('is-active');void el.offsetWidth;el.classList.add('is-active');game.feedback=setTimeout(()=>el.classList.remove('is-active'),1100)}
-    function checkAnswer(){
-      if(game.answered)return;const q=current(),converted=convertRomaji(game.romaji,true),answer=normalizeKana(converted.kana);if(!answer)return;
-      const correct=q.answers.map(normalizeKana).includes(answer),elapsed=Math.max(0,Date.now()-game.questionStartedAt);game.answered=true;$('romajiKeyboard').classList.add('disabled');$('hintButton').disabled=true;$('skipButton').disabled=true;
-      if(correct){window.CottageArcade?.correct();game.streak++;const seconds=Math.floor(elapsed/1000),time=Math.max(0,TIME_WINDOW-seconds)*TIME_STEP,chain=Math.min((game.streak-1)*STREAK_STEP,MAX_STREAK),points=BASE+time+chain;game.score+=points;$('answerDisplay').classList.add('is-correct');$('feedbackLine').textContent=`正解　＋${points}点`;$('feedbackLine').classList.add('correct');recordResult(q,'correct',elapsed);showBrush(points);updateHud();game.advance=setTimeout(nextQuestion,760)}
+    async function checkAnswer(){
+      if(game.view!=='practice'||game.answered)return;if(Date.now()>=game.endsAt){finishGame();return;}const q=current(),converted=window.GameInputMode?.isSystem()?{kana:window.GameInputMode.normalize(game.romaji),pending:''}:convertRomaji(game.romaji,true),answer=normalizeKana(converted.kana);if(!answer)return;
+      window.GameRanking?.answer(answer);const correct=q.answers.map(normalizeKana).includes(answer),elapsed=Math.max(0,Date.now()-game.questionStartedAt);game.answered=true;$('romajiKeyboard').classList.add('disabled');$('hintButton').disabled=true;$('skipButton').disabled=true;
+      if(correct){window.CottageArcade?.correct();game.streak=game.hintUsed?0:game.streak+1;const points=GameScoring.points(GameScoring.base('number',q),Math.max(0,game.streak-1),game.hintUsed);game.score+=points;$('answerDisplay').classList.add('is-correct');$('feedbackLine').textContent=`正解　＋${points}点`;$('feedbackLine').classList.add('correct');recordResult(q,'correct',elapsed);showBrush(points);updateHud();game.advance=setTimeout(nextQuestion,760)}
       else{game.streak=0;$('answerDisplay').classList.add('is-wrong');$('answerKana').textContent=answer;$('answerPending').textContent='';$('feedbackLine').textContent=`正答：${q.answers.join('／')}`;$('feedbackLine').classList.add('wrong');recordResult(q,'wrong',elapsed);$('judgeButton').textContent='次へ';$('judgeButton').disabled=false;updateHud()}
     }
     function dominantRule(q){return ['sokuon','voicing','handakuon','special'].find(tag=>q.ruleTags.includes(tag))||q.ruleTags[0]||'regular'}
@@ -746,19 +1519,19 @@
       let roll=Math.random()*weighted.reduce((sum,item)=>sum+item[1],0);for(const [q,w]of weighted){roll-=w;if(roll<=0)return q}return weighted[weighted.length-1][0]
     }
     function appendNext(){game.queue.push(chooseQuestion())}
-    function nextQuestion(){clearTimeout(game.advance);game.advance=0;const previous=current();if(previous){game.recent.push({prompt:previous.prompt,skillKey:previous.skillKey,structure:structureKey(previous)});if(game.recent.length>5)game.recent.shift()}appendNext();game.index++;renderQuestion()}
+    function nextQuestion(){if(game.view!=='practice'||Date.now()>=game.endsAt)return;clearTimeout(game.advance);game.advance=0;const previous=current();if(previous){game.recent.push({prompt:previous.prompt,skillKey:previous.skillKey,structure:structureKey(previous)});if(game.recent.length>5)game.recent.shift()}appendNext();game.index++;renderQuestion()}
     function morae(reading){const small=/[ゃゅょぁぃぅぇぉゎ]/u,out=[];for(const char of [...reading]){if(small.test(char)&&out.length)out[out.length-1]+=char;else out.push(char)}return out}
-    function showHint(){if(game.answered||game.hints<=0||game.hintUsed)return;const q=current(),units=morae(q.reading);game.hints--;game.hintUsed=true;$('readingGuide').textContent=`${units[0]}…　${units.length}拍`;recordResult(q,'hint');updateHud()}
-    function skipQuestion(){if(game.answered||game.skips<=0)return;game.skips--;recordResult(current(),'skip');updateHud();nextQuestion()}
+    function showHint(){if(game.answered||game.hints<=0||game.hintUsed)return;const q=current(),units=morae(q.reading);window.GameRanking?.hint();game.hints--;game.hintUsed=true;game.streak=0;$('readingGuide').textContent=`${units[0]}…　${units.length}拍`;recordResult(q,'hint');updateHud()}
+    function skipQuestion(){if(game.answered||game.skips<=0)return;window.GameRanking?.skip();game.skips--;game.streak=0;recordResult(current(),'skip');updateHud();nextQuestion()}
 
     function updateTimer(){if(game.view!=='practice')return;const now=Date.now(),remaining=Math.max(0,game.endsAt-now),seconds=remaining/1000;$('timeLeft').textContent=seconds.toFixed(1);$('timerWrap').classList.toggle('is-urgent',seconds<=10);const approach=Math.min(1,(now-game.questionStartedAt)/10000),progress=Math.min(1,(DURATION-remaining)/DURATION);$('questionCard').style.setProperty('--approach',approach.toFixed(3));$('questionCard').style.setProperty('--time-progress',progress.toFixed(4));if(now>=game.endsAt)finishGame()}
-    function beginGame(){window.CottageArcade?.start();
-      game.pool=buildPool();if(!game.pool.length){setView('home');return}game.queue=[];game.index=0;game.score=0;game.streak=0;game.hints=MAX_HINTS;game.skips=MAX_SKIPS;game.recent=[];game.drawCounts={category:{},difficulty:{},rule:{}};appendNext();game.endsAt=Date.now()+DURATION;$('questionCard').style.setProperty('--time-progress','0');setView('practice');renderQuestion();clearInterval(game.timer);game.timer=setInterval(updateTimer,50);updateTimer()
+    async function beginGame(){window.GameRanking?.begin({categories:settings.categories,difficulties:settings.difficulties});window.CottageArcade?.start();
+      game.pool=buildPool();if(!game.pool.length){setView('home');return}game.queue=[];game.index=0;game.score=0;game.streak=0;game.hints=MAX_HINTS;game.skips=MAX_SKIPS;game.recent=[];game.drawCounts={category:{},difficulty:{},rule:{}};appendNext();game.endsAt=Date.now()+DURATION;window.GameRanking?.clock();$('questionCard').style.setProperty('--time-progress','0');setView('practice');renderQuestion();clearInterval(game.timer);game.timer=setInterval(updateTimer,50);updateTimer()
     }
-    function startCountdown(){clearInterval(game.timer);clearInterval(game.countdown);clearTimeout(game.advance);setView('countdown');$('countdownReady').textContent='よーい';let count=3;$('countdownNumber').textContent='3';$('countdownNumber').className='countdown-number is-pop';game.countdown=setInterval(()=>{count--;if(count>0){$('countdownNumber').classList.remove('is-pop');void $('countdownNumber').offsetWidth;$('countdownNumber').textContent=String(count);$('countdownNumber').classList.add('is-pop')}else{clearInterval(game.countdown);$('countdownReady').textContent='';$('countdownNumber').textContent='はじめ！';$('countdownNumber').className='countdown-number is-start is-pop';setTimeout(beginGame,560)}},1000)}
+    function startCountdown(){clearInterval(game.timer);clearInterval(game.countdown);clearTimeout(game.advance);setView('countdown');$('countdownReady').textContent='よーい';let count=3;$('countdownNumber').textContent='3';$('countdownNumber').className='countdown-number is-pop';game.countdown=setInterval(()=>{count--;if(count>0){$('countdownNumber').classList.remove('is-pop');void $('countdownNumber').offsetWidth;$('countdownNumber').textContent=String(count);$('countdownNumber').classList.add('is-pop')}else{clearInterval(game.countdown);$('countdownReady').textContent='';$('countdownNumber').textContent='はじめ！';$('countdownNumber').className='countdown-number is-start is-pop';game.countdown=setTimeout(beginGame,560)}},1000)}
     function prepareRecordEffect(isNew){$('resultBestLabel').textContent=isNew?'新記録':'自己最高';$('resultBestPanel').classList.toggle('is-new',isNew);const particles=$('recordParticles');particles.replaceChildren();if(!isNew)return;const fragment=document.createDocumentFragment();for(let index=0;index<42;index++){const drop=document.createElement('i'),angle=((360/42)*index)+((index%4)-1.5)*4,size=4+(index%5)*1.55;drop.className=`record-drop${index%5===0?' is-red':index%3===0?' is-gold':''}${index%4===0?' is-round':''}`;drop.style.setProperty('--record-angle',`${angle}deg`);drop.style.setProperty('--record-distance',`${126+(index%7)*23}px`);drop.style.setProperty('--record-size',`${size}px`);drop.style.setProperty('--record-delay',`${80+(index%6)*18}ms`);fragment.appendChild(drop)}particles.appendChild(fragment)}
-    function finishGame(){if(game.view!=='practice')return;window.CottageArcade?.finish();clearInterval(game.timer);clearTimeout(game.advance);clearTimeout(game.recordTimer);const isNew=game.score>best;if(isNew){best=game.score;try{localStorage.setItem(BEST_KEY,String(best))}catch{}}$('resultScore').textContent=String(game.score);$('resultBest').textContent=String(best);$('resultKicker').textContent=isNew?'自己最高を更新':'百二十秒の稽古';$('resultTitle').textContent=isNew?'新記録':'稽古終了';prepareRecordEffect(isNew);setView('ending');$('endingView').classList.add('is-active');setTimeout(()=>{setView('result');const view=$('resultView');view.className='view result-view is-unfurling';void view.offsetWidth;if(isNew&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)game.recordTimer=setTimeout(()=>view.classList.add('is-new-record'),1200)},900)}
-    function returnHome(){window.CottageArcade?.cancel();clearInterval(game.timer);clearInterval(game.countdown);clearTimeout(game.advance);$('homeBest').textContent=String(best);setView('home')}
+    async function finishGame(){if(game.view!=='practice')return;window.GameRanking?.finish();window.CottageArcade?.finish();clearInterval(game.timer);clearTimeout(game.advance);clearTimeout(game.recordTimer);const isNew=game.score>best;if(isNew){best=game.score;try{localStorage.setItem(BEST_KEY,String(best))}catch{}}$('resultScore').textContent=String(game.score);$('resultBest').textContent=String(best);$('resultKicker').textContent=isNew?'自己最高を更新':'百二十秒の稽古';$('resultTitle').textContent=isNew?'新記録':'稽古終了';prepareRecordEffect(isNew);setView('ending');$('endingView').classList.add('is-active');setTimeout(()=>{if(game.view!=='ending')return;setView('result');const view=$('resultView');view.className='view result-view is-unfurling';void view.offsetWidth;if(isNew&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)game.recordTimer=setTimeout(()=>view.classList.add('is-new-record'),1200)},900)}
+    function returnHome(){window.GameRanking?.cancel();window.CottageArcade?.cancel();clearInterval(game.timer);clearInterval(game.countdown);clearTimeout(game.advance);$('homeBest').textContent=String(best);setView('home')}
 
     function makeKeyboardButton(label,className='key'){const button=document.createElement('button');button.type='button';button.className=className;button.textContent=label;return button}
     function buildKeyboard(){for(const [row,chars]of [['keyRow1','qwertyuiop'],['keyRow2','asdfghjkl']]){const target=$(row);for(const char of chars){const button=makeKeyboardButton(char);button.dataset.key=char;target.appendChild(button)}if(row==='keyRow2'){const long=makeKeyboardButton('ー','key long');long.dataset.key='-';long.setAttribute('aria-label','長音');target.appendChild(long)}}const third=$('keyRow3'),shift=makeKeyboardButton('⇧','key function');shift.dataset.action='shift';shift.setAttribute('aria-label','大文字切替');third.appendChild(shift);for(const char of 'zxcvbnm'){const button=makeKeyboardButton(char);button.dataset.key=char;third.appendChild(button)}const back=makeKeyboardButton('⌫','key function');back.dataset.action='backspace';back.setAttribute('aria-label','一文字削除');third.appendChild(back)}
@@ -770,10 +1543,11 @@
     $('startButton').onclick=startCountdown;$('againButton').onclick=startCountdown;$('homeButton').onclick=returnHome;$('exitButton').onclick=returnHome;$('hintButton').onclick=showHint;$('skipButton').onclick=skipQuestion;
     $('judgeButton').onclick=()=>game.answered?nextQuestion():checkAnswer();
     $('romajiKeyboard').addEventListener('pointerdown',e=>{if(e.target.closest('.key'))e.preventDefault()});$('romajiKeyboard').addEventListener('click',e=>{const key=e.target.closest('.key');if(!key)return;if(key.dataset.action==='backspace')backspace();else if(key.dataset.action==='shift')setKeyboardShift(!$('romajiKeyboard').classList.contains('shifted'));else{enterKey(key.dataset.key);if($('romajiKeyboard').classList.contains('shifted'))setKeyboardShift(false)}});
-    document.addEventListener('keydown',e=>{if(game.view!=='practice')return;if(/^[a-zA-Z]$/.test(e.key)){e.preventDefault();enterKey(e.key.toLowerCase())}else if(e.key==='-'||e.key==="'"){e.preventDefault();enterKey(e.key)}else if(e.key==='Backspace'){e.preventDefault();backspace()}else if(e.key==='Enter'){e.preventDefault();game.answered?nextQuestion():checkAnswer()}});
+    document.addEventListener('keydown',e=>{if(game.view!=='practice'||window.GameInputMode?.isSystem()||e.isComposing||e.keyCode===229||e.ctrlKey||e.metaKey||e.altKey||e.defaultPrevented)return;if(/^[a-zA-Z]$/.test(e.key)){e.preventDefault();enterKey(e.key.toLowerCase())}else if(e.key==='-'||e.key==="'"){e.preventDefault();enterKey(e.key)}else if(e.key==='Backspace'){e.preventDefault();backspace()}else if(e.key==='Enter'){e.preventDefault();game.answered?nextQuestion():checkAnswer()}});
     $('settingsButton').onclick=()=>{renderSettings();$('settingsError').textContent='';openModal('settingsModal')};$('settingsClose').onclick=()=>closeModal('settingsModal');$('settingsForm').onsubmit=saveSettings;$('settingsReset').onclick=()=>{document.querySelectorAll('#settingsForm input[type="checkbox"]').forEach(el=>el.checked=true);$('settingsError').textContent=''};
     $('howButton').onclick=()=>openModal('howModal');$('howClose').onclick=()=>closeModal('howModal');
     for(const id of ['settingsModal','howModal'])$(id).addEventListener('click',e=>{if(e.target===$(id))closeModal(id)});
+    window.GameInputMode?.register({display:$('answerDisplay'),submitButton:$('judgeButton'),label:'数の読みを日本語で入力',getState:()=>({token:`${game.endsAt}:${game.index}:${game.questionStartedAt}`,active:game.view==='practice',editable:!game.answered,value:game.romaji,correct:$('answerDisplay').classList.contains('is-correct'),wrong:$('answerDisplay').classList.contains('is-wrong')}),onInput:value=>{game.romaji=value;renderInput()},onSubmit:()=>game.answered?nextQuestion():checkAnswer()});
   })();
   </script>
 </body>

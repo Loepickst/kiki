@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261017-summary-n1-2020-12-3875d28d5546">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,145 +192,387 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
 <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2020-12-概要理解": {
-                label: "2020年12月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2020.12-1.mp3", 
-                        script: {
-                            question: "一番：テレビで男のアナウンサーと教育評論家が話しています。教育評論家は何について話していますか。",
-                            questionTrans: "（第一题：在电视上，男播音员正在和教育评论家交谈。教育评论家在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "本日は教育評論家の川村さんにお話を<span class=\"keyword\" onclick=\"showTooltip(event, '伺（うかが）う：请教，打听，访问。')\">伺います</span>。川村さん、先日、大学生の生活時間調査の結果が発表されましたね。", trans: "（今天我们来请教教育评论家川村女士。川村女士，前几天发布了关于大学生生活时间的调查结果呢。）" },
-                                { speaker: "女", text: "ええ、調査結果の中で、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '评论家首先引出话题【有报告称回答一天中包含电子书在内完全没有阅读时间的大学生达到了5成（電子書籍を含む読書時間が一日にまったくないと答えた大学生が５割に登ったという報告がありましたね）】，从而指出【可以说远离阅读的现象正在加速（読書離れが加速していると言えます）】。这是整段谈话的现象背景。')\">電子書籍を含む読書時間が一日にまったくないと答えた大学生が５割に<span class=\"keyword\" onclick=\"showTooltip(event, '登（のぼ）る：达到（某种数量或程度）。')\">登った</span>という報告がありましたね。</span></span>読書離れが加速していると言えます。", trans: "（是的，调查结果中，有报告称回答一天中包含电子书在内完全没有阅读时间的大学生达到了5成。可以说远离阅读的现象正在加速。）" },
-                                { speaker: "男", text: "そうですか。", trans: "（这样啊。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着评论家开始分析原因，指出【最近的学生好像因为社团活动和打工变得很忙（最近の学生はサークルやアルバイトで忙しくなっているようです）】以及【生活费和交际费增加，所以打工的时间逐年增加（生活費や交際費がかさむということで、アルバイトの時間が年々増加していますし）】，这些都是阅读时间减少的具体社会背景，符合选项2。')\">読書はしたいが時間がないと答えた学生が多かったようですね。最近の学生はサークルやアルバイトで忙しくなっているようです。生活費や交際費が<span class=\"keyword\" onclick=\"showTooltip(event, '嵩（かさ）む：增大，增多，（费用等）增加。')\">かさむ</span>ということで、アルバイトの時間が<span class=\"keyword\" onclick=\"showTooltip(event, '年々（ねんねん）：逐年，年年。')\">年々</span>増加していますし。</span></span>", trans: "（回答想读书但没时间的学生好像很多呢。最近的学生好像因为社团活动和打工变得很忙。因为生活费和交际费增加，所以打工的时间逐年增加。）" },
-                                { speaker: "男", text: "読書離れは携帯電話やパソコンの<span class=\"keyword\" onclick=\"showTooltip(event, '普及（ふきゅう）：普及。')\">普及</span>も影響しているのでしょうか。", trans: "（远离阅读的现象，手机和电脑的普及也有影响吗？）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '对于播音员提出的手机和电脑普及的影响，评论家回应【虽然从这次的调查中没看出明确的关系（今回の調査からは明確な関係はみられませんでしたが）】，但这也属于对阅读时间减少背景的探讨。整段对话的核心都在分析大学生为什么不读书了，即“阅读时间减少的背景”。')\">そのような意見もよく聞かれますね。まあ、今回の調査からは明確な関係はみられませんでしたが。</span></span>", trans: "（那种意见也经常能听到呢。不过，从这次的调查中没看出明确的关系。）" },
-                                { speaker: "男", text: "そうですか。", trans: "（这样啊。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3和4，评论家在最后提到【为了锻炼思考能力，希望他们在学生时代读些哲学书和长篇文学作品等（思考力を鍛えるためにも学生のうちに哲学書や長編の文学作品など、読んで欲しいですけどね）】，这只是表达她对大学生的期望（目的和倾向），并非这段对话的主旨，排除。选项1“大学生的经济状况”虽然在打工原因中被提及，但它只是导致阅读时间减少的一个原因，并非核心话题。')\">本が売れなくなり、出版業界も苦労しているようです。思考力を<span class=\"keyword\" onclick=\"showTooltip(event, '鍛（きた）える：锻炼。')\">鍛える</span>ためにも学生のうちに哲学書や長編の文学作品など、読んで欲しいですけどね。</span></span>", trans: "（书卖不出去了，出版界好像也很辛苦。为了锻炼思考能力，我倒是希望他们在学生时代能读些哲学书和长篇文学作品等呢。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "大学生の経済的状況", translation: "（大学生的经济状况）", correct: false },
-                            { text: "大学生の読書時間減少の背景", translation: "（大学生阅读时间减少的背景）", correct: true },
-                            { text: "大学生の読書の目的", translation: "（大学生阅读的目的）", correct: false },
-                            { text: "大学生が読む本の傾向", translation: "（大学生阅读书籍的倾向）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        audio: "../assets/audio/2020.12-2.mp3",
-                        script: {
-                            question: "二番：会社で男の人と女の人が話しています。男の人は何について話していますか。",
-                            questionTrans: "（第二题：在公司里男人和女人正在交谈。男人在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "うちの部署毎月全体会議があるんだけど、毎回長くて<span class=\"keyword\" onclick=\"showTooltip(event, 'まいる：受不了，吃不消，吃亏。')\">まいっちゃう</span>よ。", trans: "（我们部门每个月都有全体会议，每次都很长，真是受不了啊。）" },
-                                { speaker: "女", text: "そっか。<span class=\"keyword\" onclick=\"showTooltip(event, '仕切（しき）る：主持，管理，掌管。')\">仕切る</span>人の<span class=\"keyword\" onclick=\"showTooltip(event, '手際（てぎわ）：手法，技巧，办事效率。')\">手際</span>の問題？", trans: "（这样啊。是主持会议的人手法的问题吗？）" },
-                                { speaker: "男", text: "うーん、それは、<span class=\"keyword\" onclick=\"showTooltip(event, '要領（ようりょう）：要领，要点。')\">要領</span>をよく進めるために、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男人确实提到主要成员为了顺利推进会议【会事先开个碰头会（前もって打ち合わせをしてるんだ）】，但这只是为了说明会议主持人的手法没问题，而不是他在整段对话中要表达的核心主题，可以排除。')\">主要メンバーの人たちが<span class=\"keyword\" onclick=\"showTooltip(event, '前（まえ）もって：预先，事先。')\">前もって</span><span class=\"keyword\" onclick=\"showTooltip(event, '打（う）ち合（あ）わせ：碰头，商量。')\">打ち合わせ</span>をしてるんだ。</span></span>だから、手際は悪くないんだけど、会議になると、結局議論が<span class=\"keyword\" onclick=\"showTooltip(event, '紛糾（ふんきゅう）：纠纷，纷乱，混乱。')\">紛糾</span>しちゃうんだ。", trans: "（嗯，那个嘛，为了能抓住要领顺利推进，主要成员们会事先开个碰头会。所以，手法倒是不差，但一到开会，结果讨论就会引起纠纷/混乱。）" },
-                                { speaker: "女", text: "そうなんだ。意見がいろいろ出てまとまらないってこと？", trans: "（这样啊。是各种意见层出不穷，无法统一的意思吗？）" },
-                                { speaker: "男", text: "うーん、っていうより、<span class=\"keyword\" onclick=\"showTooltip(event, '異議（いぎ）を唱（とな）える：提出异议。')\">異議を唱える</span>人たちがただ<span class=\"keyword\" onclick=\"showTooltip(event, '反論（はんろん）：反驳。')\">反論</span>するばっかりで。じゃあ、実際にどうしたらいいかっていうとこまで言わないから、話が<span class=\"keyword\" onclick=\"showTooltip(event, '集約（しゅうやく）：集中，汇集。')\">集約</span>されていかない感じかなあ。", trans: "（嗯，与其说是那样，不如说是提出异议的人总是一味地反驳。然而一到具体实际该怎么做，他们又不说了，所以感觉讨论总是无法集中起来啊。）" },
-                                { speaker: "女", text: "なるほどね。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，虽然女同事顺着话茬提到如果那样的话【可能很难得出结论呢（なかなか結論が出ないかもね）】，但男人并没有提出或谈论怎样才是理想的会议推进方式，可以排除。')\">それだと、なかなか結論が出ないかもね。</span></span>", trans: "（原来如此呢。那样的话，可能很难得出结论呢。）" },
-                                { speaker: "男", text: "そうなんだよ。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人通篇都在抱怨自己部门每月的全体会议时间太长，提出异议的人只是一味反驳却不提出具体方案，导致【结果变得无法收拾（結局収拾がつかなくなるんだよね）】。这说明他是在谈论自己部门会议存在的问题，符合选项1。此外，男人并没有提及自己在会议中的作用，也可以排除选项4。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '正論（せいろん）：正当的议论，大道理。')\">正論</span>を言いたいだけの人もいて、結局<span class=\"keyword\" onclick=\"showTooltip(event, '収拾（しゅうしゅう）：收拾，收拾局面。')\">収拾</span>がつかなくなるんだよね。</span></span>", trans: "（就是啊。也有的人只是想讲些大道理，结果就变得无法收拾了呢。）" },
-                                { speaker: "女", text: "そうなんだ。", trans: "（这样啊。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "自分の部署の会議の問題点", translation: "（自己部门会议存在的问题）", correct: true },
-                            { text: "理想的な会議の進め方", translation: "（理想的会议推进方式）", correct: false },
-                            { text: "会議の前の打ち合わせの必要性", translation: "（会前碰头会的必要性）", correct: false },
-                            { text: "会議における自分の役割", translation: "（自己在会议中的作用）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        audio: "../assets/audio/2020.12-3.mp3",
-                        script: {
-                            question: "三番：ラジオで作詞家が話しています。作詞家が伝えたいことはなんですか。",
-                            questionTrans: "（第三题：在广播里作词家正在讲话。作词家想传达的事情是什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "みなさんはせっかく<span class=\"keyword\" onclick=\"showTooltip(event, '浮（う）かぶ：浮现，想起。')\">浮かんだ</span>アイデアを忘れてしまって、悔しい思いをしたことはありませんか。", trans: "（大家有没有过好不容易浮现出点子却忘记了，感到很懊恼的经历呢？）" },
-                                { speaker: "男", text: "僕なんかしょっちゅうなんですが、でも最近それを<span class=\"keyword\" onclick=\"showTooltip(event, '克服（こくふく）：克服。')\">克服</span>しつつあるんです。", trans: "（像我可是经常这样，不过最近我正在逐渐克服这一点。）" },
-                                { speaker: "男", text: "僕は作詞する時日常の中で<span class=\"keyword\" onclick=\"showTooltip(event, 'ふと：偶然，忽然。')\">ふと</span>言葉が出てくるタイプなんですが、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '作词家分享了自己克服忘记点子的具体方法：【为了不放过那样的瞬间，我变得总是随身携带一个小笔记本了（そういう瞬間を逃さないようにするために、いつも小さいノートを持ち歩くようにしたんですよ）】。这正是不忘记点子的方法，符合选项4。')\">そういう瞬間を逃さないようにするために、いつも小さいノートを<span class=\"keyword\" onclick=\"showTooltip(event, '持（も）ち歩（ある）く：随身携带。')\">持ち歩く</span>ようにしたんですよ。</span></span>その時の思いつきがあとあと役立つかもしれませんからね。", trans: "（我是那种在作词时，日常生活中会忽然冒出词句的类型，为了不放过那样的瞬间，我变得总是随身携带一个小笔记本了。因为那时的灵感之后可能会派上用场呢。）" },
-                                { speaker: "男", "text": "まあ、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，作词家说【一开始是为了作词用的笔记本，但最近不仅如此……（最初は作詞のためのノートだったんですけど、最近はそれだけじゃなくて……）】，说明他不是单纯在讲作词的方法，而是分享一种记录灵感的方式，可以排除。')\">最初は作詞のためのノートだったんですけど、最近はそれだけじゃなくて、やってみたいこととか、今月の目標とか、思いついたことをなんでも<span class=\"keyword\" onclick=\"showTooltip(event, '書（か）き留（と）める：记下，写下。')\">書き留めて</span>おくノートとして使っています。</span></span>みなさんも一度お試し下さい。", "trans": "（嘛，虽然一开始是为了作词用的笔记本，但最近不仅如此，我还把它当作把想做的事、这个月的目标、想到的事情什么都记下来的笔记本在使用。大家也请试一次看看吧。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "忘れ物をなくす方法", translation: "（消除丢三落四毛病的方法）", correct: false },
-                            { text: "作詞をする方法", translation: "（作词的方法）", correct: false },
-                            { text: "アイデアを思いつく方法", "translation": "（想出点子的方法）", correct: false },
-                            { text: "アイデアを忘れない方法", translation: "（不忘记点子的方法）", correct: true }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        audio: "../assets/audio/2020.12-4.mp3",
-                        script: {
-                            question: "四番：和食のセミナーで食品会社の社員が話しています。社員は何について話していますか。",
-                            questionTrans: "（第四题：在和食研讨会上，食品公司的员工正在讲话。员工在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，员工在开头提到【味噌是以味噌汤为首的和食中不可或缺的调味料（味噌は味噌汁をはじめ和食に欠かせない調味料ですね）】，但这只是引入话题，并非整段讲话的主旨，可以排除。')\">味噌は味噌汁をはじめ和食に<span class=\"keyword\" onclick=\"showTooltip(event, '欠（か）かせない：不可或缺的。')\">欠かせない</span>調味料ですね。</span></span>", trans: "（味噌是以味噌汤为首的和食中不可或缺的调味料呢。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，员工提到虽然味噌有几种类型，但【不管哪种味噌……（どの味噌も……）】，说明他谈论的不是不同种类之间香气的差异，排除。')\">味噌には大豆味噌、米味噌、麦味噌といくつか種類がありますが、どの味噌も味噌汁などに使う場合は加熱しすぎないようにすると香りよく作れます。</span></span>", trans: "（味噌有大豆味噌、米味噌、麦味噌等几种类型，不管哪种味噌，在用于制作味噌汤等的时候，只要注意不要过度加热，就能散发出很好的香气。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，员工提到【味噌是发酵食品（味噌は発酵食品ですが）】，但并没有说明味噌具体是如何发酵的方法，可以排除。')\">味噌は発酵食品ですが、</span></span><span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '员工的核心是在解释味噌的香气成分：加热会使其气化产生香气，但【如果煮沸的话，那个成分就会挥发掉，让人感觉不到美味了（沸騰させてしまうとその成分が飛んでしまい、美味しさを感じさせなくなってしまいます）】。这通篇都是在说明味噌香气成分的特性，符合选项4。')\">発酵の過程で生じる香りの成分は加熱することで<span class=\"keyword\" onclick=\"showTooltip(event, '気体化（きたいか）：气化。')\">気体化</span>し、それが鼻に届くことで香りとして感じられるんです。<span class=\"keyword\" onclick=\"showTooltip(event, '沸騰（ふっとう）：沸騰。')\">沸騰</span>させてしまうとその成分が飛んでしまい、美味しさを感じさせなくなってしまいます。</span></span>", trans: "（味噌是发酵食品，发酵过程中产生的香气成分通过加热会气化，传到鼻子里就能被感受到作为香气。味噌汤如果煮沸了的话，那个成分就会挥发掉，让人感觉不到美味了。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "和食における味噌汁の役割", translation: "（味噌汤在和食中的作用）", correct: false },
-                            { text: "味噌の種類による香りの違い", translation: "（不同种类味噌的香气差异）", correct: false },
-                            { text: "味噌の発酵のさせかた", translation: "（味噌的发酵方法）", correct: false },
-                            { text: "味噌の香りの成分の特性", translation: "（味噌香气成分的特性）", correct: true }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        audio: "../assets/audio/2020.12-5.mp3",
-                        script: {
-                            question: "五番：テレビである病院の院長が話しています。院長は何について話していますか。",
-                            questionTrans: "（第五题：在电视上，某家医院的院长正在讲话。院长在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '院长开篇就指出【我们医院的走廊和病房里装饰着大约300幅画作（うちの病院は廊下や病室に約３００点の絵画を飾っています）】，引出在医院引入艺术的话题。')\">うちの病院は廊下や病室に<span class=\"keyword\" onclick=\"showTooltip(event, '約（やく）：大约，大概。')\">約</span>３００点の絵画を飾っています。</span></span>昨年購入しましたが、費用もかかりましたので、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，院长提到【在计划阶段，内部相关人员也有意见认为比起画作更应该购买医疗器械（計画の段階では内部関係者から絵より医療機器を購入すべきという意見もありました）】，这只是曾经内部的反对意见，并非院长本次谈话要提倡的必要性，可以排除。')\">計画の段階では内部関係者から絵より医療機器を購入すべきという意見もありました。</span></span>", trans: "（我们医院的走廊和病房里装饰着大约300幅画作。这是去年购买的，因为也花费了不少钱，所以在计划阶段，内部相关人员也有意见认为比起画作更应该购买医疗器械。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，虽然提到艺术对患者有“抚慰（癒し）”作用，但并没有说这是一种正式的“疾病治疗方法（病気の治療方法）”，可以排除。同时文中也完全没有提到选项2的“改善医院经营”，排除选项2。')\">ただ、今年行ったアンケートでは患者や家族の<span class=\"keyword\" onclick=\"showTooltip(event, '癒（いや）し：治愈，抚慰。')\">癒し</span>になっているなど、<span class=\"keyword\" onclick=\"showTooltip(event, '肯定的（こうていてき）：肯定的，积极的。')\">肯定的な</span>反応が<span class=\"keyword\" onclick=\"showTooltip(event, '大半（たいはん）：大半，大部份。')\">大半</span>でした。</span></span>職員にもこころの<span class=\"keyword\" onclick=\"showTooltip(event, 'ゆとり：宽裕，余地，从容。')\">ゆとり</span>が生まれています。", trans: "（不过，在今年进行的问卷调查中，大半都是“成为了患者和家属的抚慰”等积极的反馈。员工们的心里也产生了一份从容。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着院长列举了其他具体的艺术活动，如【开始与附近的美术大学合作的项目……举办面向患者的艺术教室以及作品展览会等（近くの美術大学と連携したプロジェクトも始めています……アート教室や作品の展覧会を開催したりしています）】。通篇都在讲述医院为了让大家接触艺术所做出的种种尝试，符合选项1。')\">さらに最近では、近くの美術大学と<span class=\"keyword\" onclick=\"showTooltip(event, '連携（れんけい）：合作，携手。')\">連携</span>したプロジェクトも始めています。例えば、職員も参加して<span class=\"keyword\" onclick=\"showTooltip(event, '待合室（まちあいしつ）：等候室，候诊室。')\">待合室</span>の窓ガラスを<span class=\"keyword\" onclick=\"showTooltip(event, '装飾（そうしょく）：装饰。')\">装飾</span>したり、患者さん向けのアート教室や作品の<span class=\"keyword\" onclick=\"showTooltip(event, '展覧会（てんらんかい）：展览会。')\">展覧会</span>を開催したりしています。</span></span>", trans: "（此外最近，我们还开始了与附近的美术大学合作的项目。例如，员工也参与进来装饰候诊室的玻璃窗，或者举办面向患者的艺术教室以及作品展览会等。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "病院で芸術にふれる機会を作る試み", translation: "（医院里创造接触艺术机会的尝试）", correct: true },
-                            { text: "病院の経営を改善する方策", translation: "（改善医院经营的对策）", correct: false },
-                            { text: "医療設備を充実させる必要性", translation: "（充实医疗设备的必要性）", correct: false },
-                            { text: "芸術を利用した病気の治療方法", translation: "（利用艺术治疗疾病的方法）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 6,
-                        audio: "../assets/audio/2020.12-6.mp3",
-                        script: {
-                            question: "六番：大学の考古学の授業で先生が話しています。先生は何について話していますか。",
-                            questionTrans: "（第六题：在大学的考古学课上，老师正在讲话。老师在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "みなさんは、<span class=\"keyword\" onclick=\"showTooltip(event, '遺跡（いせき）：遗迹，遗址。')\">遺跡</span><span class=\"keyword\" onclick=\"showTooltip(event, '発掘（はっくつ）：发掘，挖掘。')\">発掘</span>の現場を見たことがありますか。発掘は<span class=\"keyword\" onclick=\"showTooltip(event, '地道（じみち）な：踏实的，脚踏实地的。')\">地道な</span>作業の<span class=\"keyword\" onclick=\"showTooltip(event, '繰（く）り返（かえ）し：反复，重复。')\">繰り返し</span>ですが、世紀の大発見があった時にはニュースでも大きく<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り上（あ）げる：采纳，报道，提及。')\">取り上げられます</span>。古い書物に記述があっても実在したかどうか、その真理が<span class=\"keyword\" onclick=\"showTooltip(event, '定（さだ）か：确定，清楚。')\">定か</span>ではないものがたくさんあります。", trans: "（大家有见过遗迹发掘的现场吗？发掘工作虽然是踏实作业的不断重复，但在出现世纪大发现时也会被新闻大肆报道。有些东西虽然在古书中有所记载，但到底是否实际存在，其真相并不清楚的东西有很多。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师明确指出核心观点：【通过重新发掘埋在土里的遗迹，某种学说会被证明，或者相反被否定（土の中に埋もれていた遺跡が新たに発掘されることで、ある説が証明されたり、逆に否定されたりします）】，接着说历史甚至会被改写。这通篇都在阐述遗迹发掘带来的重大影响和价值，符合选项4的“发掘的意义”。')\">しかし、土の中に<span class=\"keyword\" onclick=\"showTooltip(event, '埋（うず）もれる：埋没，埋藏。')\">埋もれていた</span>遺跡が新たに発掘されることで、ある説が証明されたり、逆に否定されたりします。歴史が<span class=\"keyword\" onclick=\"showTooltip(event, '書（か）き換（か）える：改写，重新书写。')\">書き換えられる</span>といってもいいでしょう。</span></span>", trans: "（但是，通过重新发掘埋在土里的遗迹，某种学说会被证明，或者相反会被否定。甚至可以说是历史被改写了。）" },
-                                { speaker: "男", text: "例えば、わたしが小学校の時に習った時代区分と最新の時代区分とは異なっているものもあるんですよ。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，老师提到自己小时候学的时代划分与最新的不同，这是因为发掘带来了新的历史认知，并没有提及发掘方法的变化，可以排除。')\">小さな器の<span class=\"keyword\" onclick=\"showTooltip(event, '欠片（かけら）：碎片，碎块。')\">欠片</span>から<span class=\"keyword\" onclick=\"showTooltip(event, '遥（はる）か：遥远。')\">遥か</span>昔のことがわかるなんて、おもしろいと思いませんか。</span></span>", trans: "（比如，我小学时学的时代划分就和最新的时代划分有些是不同的哦。仅从一个小小的器物碎片就能了解到遥远过去的事情，不觉得很有趣吗？）" }
-                            ]
-                        },
-                        options: [
-                            { text: "遺跡の発掘方法の変化", translation: "（遗迹发掘方法的变化）", correct: false },
-                            { text: "古い書物の保存技術の進歩", translation: "（古书保存技术的进步）", correct: false },
-                            { text: "古い時代の文化の重要性", translation: "（古代文化的重要性）", correct: false },
-                            { text: "遺跡の発掘の意義", translation: "（遗迹发掘的意义）", correct: true }
-                        ]
-                    }
-                ]
+  "2020-12": {
+    "label": "2020年12月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2020.12-1.mp3",
+        "script": {
+          "question": "テレビで男のアナウンサーと教育評論家が話しています。",
+          "questionTrans": "（在电视上，男播音员正在和教育评论家交谈。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "本日は教育評論家の川村さんにお話を<span class=\"keyword\" onclick=\"showTooltip(event, '伺（うかが）う：请教，打听，访问。')\">伺います</span>。川村さん、先日、大学生の生活時間調査の結果が発表されましたね。",
+              "trans": "（今天我们来请教教育评论家川村女士。川村女士，前几天发布了关于大学生生活时间的调查结果呢。）"
+            },
+            {
+              "speaker": "女",
+              "text": "ええ、調査結果の中で、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '评论家首先引出话题【有报告称回答一天中包含电子书在内完全没有阅读时间的大学生达到了5成（電子書籍を含む読書時間が一日にまったくないと答えた大学生が５割に登ったという報告がありましたね）】，从而指出【可以说远离阅读的现象正在加速（読書離れが加速していると言えます）】。这是整段谈话的现象背景。')\">電子書籍を含む読書時間が一日にまったくないと答えた大学生が５割に<span class=\"keyword\" onclick=\"showTooltip(event, '登（のぼ）る：达到（某种数量或程度）。')\">登った</span>という報告がありましたね。</span></span>読書離れが加速していると言えます。",
+              "trans": "（是的，调查结果中，有报告称回答一天中包含电子书在内完全没有阅读时间的大学生达到了5成。可以说远离阅读的现象正在加速。）"
+            },
+            {
+              "speaker": "男",
+              "text": "そうですか。",
+              "trans": "（这样啊。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着评论家开始分析原因，指出【最近的学生好像因为社团活动和打工变得很忙（最近の学生はサークルやアルバイトで忙しくなっているようです）】以及【生活费和交际费增加，所以打工的时间逐年增加（生活費や交際費がかさむということで、アルバイトの時間が年々増加していますし）】，这些都是阅读时间减少的具体社会背景，符合选项2。')\">読書はしたいが時間がないと答えた学生が多かったようですね。最近の学生はサークルやアルバイトで忙しくなっているようです。生活費や交際費が<span class=\"keyword\" onclick=\"showTooltip(event, '嵩（かさ）む：增大，增多，（费用等）增加。')\">かさむ</span>ということで、アルバイトの時間が<span class=\"keyword\" onclick=\"showTooltip(event, '年々（ねんねん）：逐年，年年。')\">年々</span>増加していますし。</span></span>",
+              "trans": "（回答想读书但没时间的学生好像很多呢。最近的学生好像因为社团活动和打工变得很忙。因为生活费和交际费增加，所以打工的时间逐年增加。）"
+            },
+            {
+              "speaker": "男",
+              "text": "読書離れは携帯電話やパソコンの<span class=\"keyword\" onclick=\"showTooltip(event, '普及（ふきゅう）：普及。')\">普及</span>も影響しているのでしょうか。",
+              "trans": "（远离阅读的现象，手机和电脑的普及也有影响吗？）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '对于播音员提出的手机和电脑普及的影响，评论家回应【虽然从这次的调查中没看出明确的关系（今回の調査からは明確な関係はみられませんでしたが）】，但这也属于对阅读时间减少背景的探讨。整段对话的核心都在分析大学生为什么不读书了，即“阅读时间减少的背景”。')\">そのような意見もよく聞かれますね。まあ、今回の調査からは明確な関係はみられませんでしたが。</span></span>",
+              "trans": "（那种意见也经常能听到呢。不过，从这次的调查中没看出明确的关系。）"
+            },
+            {
+              "speaker": "男",
+              "text": "そうですか。",
+              "trans": "（这样啊。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3和4，评论家在最后提到【为了锻炼思考能力，希望他们在学生时代读些哲学书和长篇文学作品等（思考力を鍛えるためにも学生のうちに哲学書や長編の文学作品など、読んで欲しいですけどね）】，这只是表达她对大学生的期望（目的和倾向），并非这段对话的主旨，排除。选项1“大学生的经济状况”虽然在打工原因中被提及，但它只是导致阅读时间减少的一个原因，并非核心话题。')\">本が売れなくなり、出版業界も苦労しているようです。思考力を<span class=\"keyword\" onclick=\"showTooltip(event, '鍛（きた）える：锻炼。')\">鍛える</span>ためにも学生のうちに哲学書や長編の文学作品など、読んで欲しいですけどね。</span></span>",
+              "trans": "（书卖不出去了，出版界好像也很辛苦。为了锻炼思考能力，我倒是希望他们在学生时代能读些哲学书和长篇文学作品等呢。）"
+            },
+            {
+              "speaker": "問",
+              "text": "教育評論家は何について話していますか。",
+              "trans": "（教育评论家在谈论什么？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "大学生の経済的状況",
+            "translation": "（大学生的经济状况）",
+            "correct": false
+          },
+          {
+            "text": "大学生の読書時間減少の背景",
+            "translation": "（大学生阅读时间减少的背景）",
+            "correct": true
+          },
+          {
+            "text": "大学生の読書の目的",
+            "translation": "（大学生阅读的目的）",
+            "correct": false
+          },
+          {
+            "text": "大学生が読む本の傾向",
+            "translation": "（大学生阅读书籍的倾向）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2020.12-2.mp3",
+        "script": {
+          "question": "会社で男の人と女の人が話しています。",
+          "questionTrans": "（在公司里男人和女人正在交谈。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "うちの部署毎月全体会議があるんだけど、毎回長くて<span class=\"keyword\" onclick=\"showTooltip(event, 'まいる：受不了，吃不消，吃亏。')\">まいっちゃう</span>よ。",
+              "trans": "（我们部门每个月都有全体会议，每次都很长，真是受不了啊。）"
+            },
+            {
+              "speaker": "女",
+              "text": "そっか。<span class=\"keyword\" onclick=\"showTooltip(event, '仕切（しき）る：主持，管理，掌管。')\">仕切る</span>人の<span class=\"keyword\" onclick=\"showTooltip(event, '手際（てぎわ）：手法，技巧，办事效率。')\">手際</span>の問題？",
+              "trans": "（这样啊。是主持会议的人手法的问题吗？）"
+            },
+            {
+              "speaker": "男",
+              "text": "うーん、それは、<span class=\"keyword\" onclick=\"showTooltip(event, '要領（ようりょう）：要领，要点。')\">要領</span>をよく進めるために、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男人确实提到主要成员为了顺利推进会议【会事先开个碰头会（前もって打ち合わせをしてるんだ）】，但这只是为了说明会议主持人的手法没问题，而不是他在整段对话中要表达的核心主题，可以排除。')\">主要メンバーの人たちが<span class=\"keyword\" onclick=\"showTooltip(event, '前（まえ）もって：预先，事先。')\">前もって</span><span class=\"keyword\" onclick=\"showTooltip(event, '打（う）ち合（あ）わせ：碰头，商量。')\">打ち合わせ</span>をしてるんだ。</span></span>だから、手際は悪くないんだけど、会議になると、結局議論が<span class=\"keyword\" onclick=\"showTooltip(event, '紛糾（ふんきゅう）：纠纷，纷乱，混乱。')\">紛糾</span>しちゃうんだ。",
+              "trans": "（嗯，那个嘛，为了能抓住要领顺利推进，主要成员们会事先开个碰头会。所以，手法倒是不差，但一到开会，结果讨论就会引起纠纷/混乱。）"
+            },
+            {
+              "speaker": "女",
+              "text": "そうなんだ。意見がいろいろ出てまとまらないってこと？",
+              "trans": "（这样啊。是各种意见层出不穷，无法统一的意思吗？）"
+            },
+            {
+              "speaker": "男",
+              "text": "うーん、っていうより、<span class=\"keyword\" onclick=\"showTooltip(event, '異議（いぎ）を唱（とな）える：提出异议。')\">異議を唱える</span>人たちがただ<span class=\"keyword\" onclick=\"showTooltip(event, '反論（はんろん）：反驳。')\">反論</span>するばっかりで。じゃあ、実際にどうしたらいいかっていうとこまで言わないから、話が<span class=\"keyword\" onclick=\"showTooltip(event, '集約（しゅうやく）：集中，汇集。')\">集約</span>されていかない感じかなあ。",
+              "trans": "（嗯，与其说是那样，不如说是提出异议的人总是一味地反驳。然而一到具体实际该怎么做，他们又不说了，所以感觉讨论总是无法集中起来啊。）"
+            },
+            {
+              "speaker": "女",
+              "text": "なるほどね。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，虽然女同事顺着话茬提到如果那样的话【可能很难得出结论呢（なかなか結論が出ないかもね）】，但男人并没有提出或谈论怎样才是理想的会议推进方式，可以排除。')\">それだと、なかなか結論が出ないかもね。</span></span>",
+              "trans": "（原来如此呢。那样的话，可能很难得出结论呢。）"
+            },
+            {
+              "speaker": "男",
+              "text": "そうなんだよ。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人通篇都在抱怨自己部门每月的全体会议时间太长，提出异议的人只是一味反驳却不提出具体方案，导致【结果变得无法收拾（結局収拾がつかなくなるんだよね）】。这说明他是在谈论自己部门会议存在的问题，符合选项1。此外，男人并没有提及自己在会议中的作用，也可以排除选项4。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '正論（せいろん）：正当的议论，大道理。')\">正論</span>を言いたいだけの人もいて、結局<span class=\"keyword\" onclick=\"showTooltip(event, '収拾（しゅうしゅう）：收拾，收拾局面。')\">収拾</span>がつかなくなるんだよね。</span></span>",
+              "trans": "（就是啊。也有的人只是想讲些大道理，结果就变得无法收拾了呢。）"
+            },
+            {
+              "speaker": "女",
+              "text": "そうなんだ。",
+              "trans": "（这样啊。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人は何について話していますか。",
+              "trans": "（男人在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "自分の部署の会議の問題点",
+            "translation": "（自己部门会议存在的问题）",
+            "correct": true
+          },
+          {
+            "text": "理想的な会議の進め方",
+            "translation": "（理想的会议推进方式）",
+            "correct": false
+          },
+          {
+            "text": "会議の前の打ち合わせの必要性",
+            "translation": "（会前碰头会的必要性）",
+            "correct": false
+          },
+          {
+            "text": "会議における自分の役割",
+            "translation": "（自己在会议中的作用）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2020.12-3.mp3",
+        "script": {
+          "question": "ラジオで作詞家が話しています。",
+          "questionTrans": "（在广播里作词家正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "みなさんはせっかく<span class=\"keyword\" onclick=\"showTooltip(event, '浮（う）かぶ：浮现，想起。')\">浮かんだ</span>アイデアを忘れてしまって、悔しい思いをしたことはありませんか。",
+              "trans": "（大家有没有过好不容易浮现出点子却忘记了，感到很懊恼的经历呢？）"
+            },
+            {
+              "speaker": "男",
+              "text": "僕なんかしょっちゅうなんですが、でも最近それを<span class=\"keyword\" onclick=\"showTooltip(event, '克服（こくふく）：克服。')\">克服</span>しつつあるんです。",
+              "trans": "（像我可是经常这样，不过最近我正在逐渐克服这一点。）"
+            },
+            {
+              "speaker": "男",
+              "text": "僕は作詞する時日常の中で<span class=\"keyword\" onclick=\"showTooltip(event, 'ふと：偶然，忽然。')\">ふと</span>言葉が出てくるタイプなんですが、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '作词家分享了自己克服忘记点子的具体方法：【为了不放过那样的瞬间，我变得总是随身携带一个小笔记本了（そういう瞬間を逃さないようにするために、いつも小さいノートを持ち歩くようにしたんですよ）】。这正是不忘记点子的方法，符合选项4。')\">そういう瞬間を逃さないようにするために、いつも小さいノートを<span class=\"keyword\" onclick=\"showTooltip(event, '持（も）ち歩（ある）く：随身携带。')\">持ち歩く</span>ようにしたんですよ。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '作词家分享了自己克服忘记点子的具体方法：【为了不放过那样的瞬间，我变得总是随身携带一个小笔记本了（そういう瞬間を逃さないようにするために、いつも小さいノートを持ち歩くようにしたんですよ）】。这正是不忘记点子的方法，符合选项4。')\"></span></span>その時の思いつきがあとあと役立つかもしれませんからね。",
+              "trans": "（我是那种在作词时，日常生活中会忽然冒出词句的类型，为了不放过那样的瞬间，我变得总是随身携带一个小笔记本了。因为那时的灵感之后可能会派上用场呢。）"
+            },
+            {
+              "speaker": "男",
+              "text": "まあ、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，作词家说【一开始是为了作词用的笔记本，但最近不仅如此……（最初は作詞のためのノートだったんですけど、最近はそれだけじゃなくて……）】，说明他不是单纯在讲作词的方法，而是分享一种记录灵感的方式，可以排除。')\">最初は作詞のためのノートだったんですけど、最近はそれだけじゃなくて、やってみたいこととか、今月の目標とか、思いついたことをなんでも<span class=\"keyword\" onclick=\"showTooltip(event, '書（か）き留（と）める：记下，写下。')\">書き留めて</span>おくノートとして使っています。</span></span><span class=\"highlight-wrong\"><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，作词家说【一开始是为了作词用的笔记本，但最近不仅如此……（最初は作詞のためのノートだったんですけど、最近はそれだけじゃなくて……）】，说明他不是单纯在讲作词的方法，而是分享一种记录灵感的方式，可以排除。')\"></span></span>みなさんも一度お試し下さい。",
+              "trans": "（嘛，虽然一开始是为了作词用的笔记本，但最近不仅如此，我还把它当作把想做的事、这个月的目标、想到的事情什么都记下来的笔记本在使用。大家也请试一次看看吧。）"
+            },
+            {
+              "speaker": "問",
+              "text": "作詞家が伝えたいことはなんですか。",
+              "trans": "（作词家想传达的事情是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "忘れ物をなくす方法",
+            "translation": "（消除丢三落四毛病的方法）",
+            "correct": false
+          },
+          {
+            "text": "作詞をする方法",
+            "translation": "（作词的方法）",
+            "correct": false
+          },
+          {
+            "text": "アイデアを思いつく方法",
+            "translation": "（想出点子的方法）",
+            "correct": false
+          },
+          {
+            "text": "アイデアを忘れない方法",
+            "translation": "（不忘记点子的方法）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2020.12-4.mp3",
+        "script": {
+          "question": "和食のセミナーで食品会社の社員が話しています。",
+          "questionTrans": "（在和食研讨会上，食品公司的员工正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，员工在开头提到【味噌是以味噌汤为首的和食中不可或缺的调味料（味噌は味噌汁をはじめ和食に欠かせない調味料ですね）】，但这只是引入话题，并非整段讲话的主旨，可以排除。')\">味噌は味噌汁をはじめ和食に<span class=\"keyword\" onclick=\"showTooltip(event, '欠（か）かせない：不可或缺的。')\">欠かせない</span>調味料ですね。</span></span>",
+              "trans": "（味噌是以味噌汤为首的和食中不可或缺的调味料呢。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，员工提到虽然味噌有几种类型，但【不管哪种味噌……（どの味噌も……）】，说明他谈论的不是不同种类之间香气的差异，排除。')\">味噌には大豆味噌、米味噌、麦味噌といくつか種類がありますが、どの味噌も味噌汁などに使う場合は加熱しすぎないようにすると香りよく作れます。</span></span>",
+              "trans": "（味噌有大豆味噌、米味噌、麦味噌等几种类型，不管哪种味噌，在用于制作味噌汤等的时候，只要注意不要过度加热，就能散发出很好的香气。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，员工提到【味噌是发酵食品（味噌は発酵食品ですが）】，但并没有说明味噌具体是如何发酵的方法，可以排除。')\">味噌は発酵食品ですが、</span></span><span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '员工的核心是在解释味噌的香气成分：加热会使其气化产生香气，但【如果煮沸的话，那个成分就会挥发掉，让人感觉不到美味了（沸騰させてしまうとその成分が飛んでしまい、美味しさを感じさせなくなってしまいます）】。这通篇都是在说明味噌香气成分的特性，符合选项4。')\">発酵の過程で生じる香りの成分は加熱することで<span class=\"keyword\" onclick=\"showTooltip(event, '気体化（きたいか）：气化。')\">気体化</span>し、それが鼻に届くことで香りとして感じられるんです。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '员工的核心是在解释味噌的香气成分：加热会使其气化产生香气，但【如果煮沸的话，那个成分就会挥发掉，让人感觉不到美味了（沸騰させてしまうとその成分が飛んでしまい、美味しさを感じさせなくなってしまいます）】。这通篇都是在说明味噌香气成分的特性，符合选项4。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '沸騰（ふっとう）：沸騰。')\">沸騰</span>させてしまうとその成分が飛んでしまい、美味しさを感じさせなくなってしまいます。</span></span>",
+              "trans": "（味噌是发酵食品，发酵过程中产生的香气成分通过加热会气化，传到鼻子里就能被感受到作为香气。味噌汤如果煮沸了的话，那个成分就会挥发掉，让人感觉不到美味了。）"
+            },
+            {
+              "speaker": "問",
+              "text": "社員は何について話していますか。",
+              "trans": "（员工在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "和食における味噌汁の役割",
+            "translation": "（味噌汤在和食中的作用）",
+            "correct": false
+          },
+          {
+            "text": "味噌の種類による香りの違い",
+            "translation": "（不同种类味噌的香气差异）",
+            "correct": false
+          },
+          {
+            "text": "味噌の発酵のさせかた",
+            "translation": "（味噌的发酵方法）",
+            "correct": false
+          },
+          {
+            "text": "味噌の香りの成分の特性",
+            "translation": "（味噌香气成分的特性）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2020.12-5.mp3",
+        "script": {
+          "question": "テレビである病院の院長が話しています。",
+          "questionTrans": "（在电视上，某家医院的院长正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '院长开篇就指出【我们医院的走廊和病房里装饰着大约300幅画作（うちの病院は廊下や病室に約３００点の絵画を飾っています）】，引出在医院引入艺术的话题。')\">うちの病院は廊下や病室に<span class=\"keyword\" onclick=\"showTooltip(event, '約（やく）：大约，大概。')\">約</span>３００点の絵画を飾っています。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '院长开篇就指出【我们医院的走廊和病房里装饰着大约300幅画作（うちの病院は廊下や病室に約３００点の絵画を飾っています）】，引出在医院引入艺术的话题。')\"></span></span>昨年購入しましたが、費用もかかりましたので、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，院长提到【在计划阶段，内部相关人员也有意见认为比起画作更应该购买医疗器械（計画の段階では内部関係者から絵より医療機器を購入すべきという意見もありました）】，这只是曾经内部的反对意见，并非院长本次谈话要提倡的必要性，可以排除。')\">計画の段階では内部関係者から絵より医療機器を購入すべきという意見もありました。</span></span>",
+              "trans": "（我们医院的走廊和病房里装饰着大约300幅画作。这是去年购买的，因为也花费了不少钱，所以在计划阶段，内部相关人员也有意见认为比起画作更应该购买医疗器械。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，虽然提到艺术对患者有“抚慰（癒し）”作用，但并没有说这是一种正式的“疾病治疗方法（病気の治療方法）”，可以排除。同时文中也完全没有提到选项2的“改善医院经营”，排除选项2。')\">ただ、今年行ったアンケートでは患者や家族の<span class=\"keyword\" onclick=\"showTooltip(event, '癒（いや）し：治愈，抚慰。')\">癒し</span>になっているなど、<span class=\"keyword\" onclick=\"showTooltip(event, '肯定的（こうていてき）：肯定的，积极的。')\">肯定的な</span>反応が<span class=\"keyword\" onclick=\"showTooltip(event, '大半（たいはん）：大半，大部份。')\">大半</span>でした。</span></span><span class=\"highlight-wrong\"><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，虽然提到艺术对患者有“抚慰（癒し）”作用，但并没有说这是一种正式的“疾病治疗方法（病気の治療方法）”，可以排除。同时文中也完全没有提到选项2的“改善医院经营”，排除选项2。')\"></span></span>職員にもこころの<span class=\"keyword\" onclick=\"showTooltip(event, 'ゆとり：宽裕，余地，从容。')\">ゆとり</span>が生まれています。",
+              "trans": "（不过，在今年进行的问卷调查中，大半都是“成为了患者和家属的抚慰”等积极的反馈。员工们的心里也产生了一份从容。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着院长列举了其他具体的艺术活动，如【开始与附近的美术大学合作的项目……举办面向患者的艺术教室以及作品展览会等（近くの美術大学と連携したプロジェクトも始めています……アート教室や作品の展覧会を開催したりしています）】。通篇都在讲述医院为了让大家接触艺术所做出的种种尝试，符合选项1。')\">さらに最近では、近くの美術大学と<span class=\"keyword\" onclick=\"showTooltip(event, '連携（れんけい）：合作，携手。')\">連携</span>したプロジェクトも始めています。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着院长列举了其他具体的艺术活动，如【开始与附近的美术大学合作的项目……举办面向患者的艺术教室以及作品展览会等（近くの美術大学と連携したプロジェクトも始めています……アート教室や作品の展覧会を開催したりしています）】。通篇都在讲述医院为了让大家接触艺术所做出的种种尝试，符合选项1。')\">例えば、職員も参加して<span class=\"keyword\" onclick=\"showTooltip(event, '待合室（まちあいしつ）：等候室，候诊室。')\">待合室</span>の窓ガラスを<span class=\"keyword\" onclick=\"showTooltip(event, '装飾（そうしょく）：装饰。')\">装飾</span>したり、患者さん向けのアート教室や作品の<span class=\"keyword\" onclick=\"showTooltip(event, '展覧会（てんらんかい）：展览会。')\">展覧会</span>を開催したりしています。</span></span>",
+              "trans": "（此外最近，我们还开始了与附近的美术大学合作的项目。例如，员工也参与进来装饰候诊室的玻璃窗，或者举办面向患者的艺术教室以及作品展览会等。）"
+            },
+            {
+              "speaker": "問",
+              "text": "院長は何について話していますか。",
+              "trans": "（院长在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "病院で芸術にふれる機会を作る試み",
+            "translation": "（医院里创造接触艺术机会的尝试）",
+            "correct": true
+          },
+          {
+            "text": "病院の経営を改善する方策",
+            "translation": "（改善医院经营的对策）",
+            "correct": false
+          },
+          {
+            "text": "医療設備を充実させる必要性",
+            "translation": "（充实医疗设备的必要性）",
+            "correct": false
+          },
+          {
+            "text": "芸術を利用した病気の治療方法",
+            "translation": "（利用艺术治疗疾病的方法）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "audio": "../assets/audio/2020.12-6.mp3",
+        "script": {
+          "question": "大学の考古学の授業で先生が話しています。",
+          "questionTrans": "（在大学的考古学课上，老师正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "みなさんは、<span class=\"keyword\" onclick=\"showTooltip(event, '遺跡（いせき）：遗迹，遗址。')\">遺跡</span><span class=\"keyword\" onclick=\"showTooltip(event, '発掘（はっくつ）：发掘，挖掘。')\">発掘</span>の現場を見たことがありますか。発掘は<span class=\"keyword\" onclick=\"showTooltip(event, '地道（じみち）な：踏实的，脚踏实地的。')\">地道な</span>作業の<span class=\"keyword\" onclick=\"showTooltip(event, '繰（く）り返（かえ）し：反复，重复。')\">繰り返し</span>ですが、世紀の大発見があった時にはニュースでも大きく<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り上（あ）げる：采纳，报道，提及。')\">取り上げられます</span>。古い書物に記述があっても実在したかどうか、その真理が<span class=\"keyword\" onclick=\"showTooltip(event, '定（さだ）か：确定，清楚。')\">定か</span>ではないものがたくさんあります。",
+              "trans": "（大家有见过遗迹发掘的现场吗？发掘工作虽然是踏实作业的不断重复，但在出现世纪大发现时也会被新闻大肆报道。有些东西虽然在古书中有所记载，但到底是否实际存在，其真相并不清楚的东西有很多。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师明确指出核心观点：【通过重新发掘埋在土里的遗迹，某种学说会被证明，或者相反被否定（土の中に埋もれていた遺跡が新たに発掘されることで、ある説が証明されたり、逆に否定されたりします）】，接着说历史甚至会被改写。这通篇都在阐述遗迹发掘带来的重大影响和价值，符合选项4的“发掘的意义”。')\">しかし、土の中に<span class=\"keyword\" onclick=\"showTooltip(event, '埋（うず）もれる：埋没，埋藏。')\">埋もれていた</span>遺跡が新たに発掘されることで、ある説が証明されたり、逆に否定されたりします。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师明确指出核心观点：【通过重新发掘埋在土里的遗迹，某种学说会被证明，或者相反被否定（土の中に埋もれていた遺跡が新たに発掘されることで、ある説が証明されたり、逆に否定されたりします）】，接着说历史甚至会被改写。这通篇都在阐述遗迹发掘带来的重大影响和价值，符合选项4的“发掘的意义”。')\">歴史が<span class=\"keyword\" onclick=\"showTooltip(event, '書（か）き換（か）える：改写，重新书写。')\">書き換えられる</span>といってもいいでしょう。</span></span>",
+              "trans": "（但是，通过重新发掘埋在土里的遗迹，某种学说会被证明，或者相反会被否定。甚至可以说是历史被改写了。）"
+            },
+            {
+              "speaker": "男",
+              "text": "例えば、わたしが小学校の時に習った時代区分と最新の時代区分とは異なっているものもあるんですよ。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，老师提到自己小时候学的时代划分与最新的不同，这是因为发掘带来了新的历史认知，并没有提及发掘方法的变化，可以排除。')\">小さな器の<span class=\"keyword\" onclick=\"showTooltip(event, '欠片（かけら）：碎片，碎块。')\">欠片</span>から<span class=\"keyword\" onclick=\"showTooltip(event, '遥（はる）か：遥远。')\">遥か</span>昔のことがわかるなんて、おもしろいと思いませんか。</span></span>",
+              "trans": "（比如，我小学时学的时代划分就和最新的时代划分有些是不同的哦。仅从一个小小的器物碎片就能了解到遥远过去的事情，不觉得很有趣吗？）"
+            },
+            {
+              "speaker": "問",
+              "text": "先生は何について話していますか。",
+              "trans": "（老师在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "遺跡の発掘方法の変化",
+            "translation": "（遗迹发掘方法的变化）",
+            "correct": false
+          },
+          {
+            "text": "古い書物の保存技術の進歩",
+            "translation": "（古书保存技术的进步）",
+            "correct": false
+          },
+          {
+            "text": "古い時代の文化の重要性",
+            "translation": "（古代文化的重要性）",
+            "correct": false
+          },
+          {
+            "text": "遺跡の発掘の意義",
+            "translation": "（遗迹发掘的意义）",
+            "correct": true
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2020-12-概要理解"; 
+        let currentExamKey = "2020-12"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -277,10 +594,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -619,8 +936,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-<script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+<script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261017-summary-n1-2020-12-3875d28d5546"></script>
+<script src="../shared/follow-listening.js?v=20261017-summary-n1-2020-12-3875d28d5546"></script>
+<script src="../shared/follow-listening-entry.js?v=20261017-summary-n1-2020-12-3875d28d5546"></script>
 </body>
 </html>

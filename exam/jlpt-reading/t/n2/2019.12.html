@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情報検索 - 练习与解析</title>
+    <link rel="stylesheet" href="../../../../shared/domestic-fonts.css">
+
+    <link rel="stylesheet" href="../../shared/reading-content-redesign.css?v=20260907-first-paint">
+    <link rel="stylesheet" href="../../shared/reading-tools.css?v=20260809-14">
+    <link rel="stylesheet" href="../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+</head>
+<body id="top" class="kiki-unified-header-enabled reading-article-tools-page reading-tools-no-furigana reading-content-page reading-cloze-v2">
+
+    <header class="kiki-unified-header kiki-unified-header--practice" data-kiki-unified-header="practice" data-kiki-unified-header-host="reading-practice">
+    <div class="kiki-unified-header-left">
+        <a class="kiki-unified-brand" href="../../../../index.html" aria-label="返回 kiji 首页"><img src="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline" alt="kiji"></a>
+        <span class="kiki-unified-divider" aria-hidden="true"></span>
+        <a id="back-to-reading-index" class="kiki-unified-back" href="../../index.html?level=N2&type=search&browse=year" aria-label="返回上一页" data-kiki-dynamic-back>
+            <svg class="kiki-unified-back-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18 9 12l6-6"></path></svg>
+            <span class="kiki-unified-back-label">返回上一页</span>
+            <span class="kiki-unified-back-label-mobile" aria-hidden="true">返回</span>
+        </a>
+    </div>
+    <h1 class="kiki-unified-header-title">N2 · 情報検索</h1>
+    <div class="kiki-unified-header-right"><div class="top-actions top-bar-controls reading-editorial-actions"></div></div>
+</header>
+
+    <nav class="quick-nav sketch-box">
+        <a href="#top" class="nav-link">Top</a>
+        <div class="nav-divider"></div>
+        <a href="#poster-content" class="nav-link">案内</a>
+        <div class="nav-divider"></div>
+        <a href="#q1-card" class="nav-link">問1</a>
+        <a href="#q2-card" class="nav-link">問2</a>
+    </nav>
+
+    <div class="layout-container">
+        
+        <!-- 上部：海报区域 -->
+        <main class="article-section sketch-box" id="mainArticleContent">
+            <div class="article-meta">
+                <div class="meta-left">
+                    <span class="tag">N2 読解</span>
+                    <span class="article-title-info">2019年12月 · 情報検索</span>
+                </div>
+                <button class="translate-toggle-btn" onclick="toggleTranslation(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+                    参考訳
+                </button>
+            </div>
+            
+            <div class="poster-box" id="poster-content">
+                <div class="poster-main-title" style="text-align: center;">朝田市文化祭　参加者募集</div>
+                <div class="poster-intro" style="text-align: center;">
+                    11月2日（土）から11月4日（月）まで、朝田市民文化会館で行われる「朝田市文化祭」に参加しませんか。
+                </div>
+
+                <div class="article-translation">
+                    朝田市文化节　招募参加者<br>
+                    11月2日（周六）至11月4日（周一），朝田市民文化会馆将举办“朝田市文化节”，欢迎大家报名参加。
+                </div>
+
+                <div class="note-text" style="margin-top: 26px; font-weight: 700;">1．募集内容について</div>
+                <div class="table-responsive">
+                    <table class="availability-table" style="min-width: 760px;">
+                        <thead>
+                            <tr><th>内容</th><th>開催日時</th><th colspan="2">注意</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td rowspan="4">作品展示</td><td rowspan="3">11月2日（土）〜11月4日（月）<br>10時〜17時</td><td>絵画</td><td>72cm×65cmまで</td></tr>
+                            <tr><td>書道</td><td>150cm×95cmまで</td></tr>
+                            <tr><td>写真</td><td>41cm×60cmまで</td></tr>
+                            <tr><td colspan="3">※作品は1人1点のみです。未発表作品に限ります。</td></tr>
+                            <tr class="ks-target target-q1"><td>ダンス</td><td>11月2日（土）<br>13時〜17時</td><td colspan="2">・5人以上の団体でのみ出演可<br>・発表時間は4分以内</td></tr>
+                            <tr><td>音楽</td><td>11月3日（日）<br>13時〜17時</td><td colspan="2">・1人でも団体でも出演可<br>・発表時間は10分以内</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="note-text" style="margin-top: 16px;">応募資格：市内在住の方、市内に勤務先のある方、市内で文化活動を行っている方</div>
+
+                <div class="article-translation">
+                    【招募内容】作品展示为11月2日至4日10—17时；绘画、书法和照片分别有尺寸限制，每人限1件未发表作品。舞蹈为11月2日13—17时，仅限5人以上的团体，发表时间须在4分钟以内。音乐为11月3日13—17时，个人和团体均可，发表时间须在10分钟以内。<br>
+                    【报名资格】居住在市内、工作地点在市内，或在市内从事文化活动的人。
+                </div>
+
+                <div class="note-text" style="margin-top: 28px; font-weight: 700;">2．申し込みについて</div>
+                <div class="note-text" style="margin-top: 12px;"><strong>申し込み受付期間：</strong>2019年9月2日（月）〜9月13日（金）</div>
+                <ul class="note-list">
+                    <li>指定の申込書にご記入の上、事務所にご持参くださるか、ファクスまたは郵送でお願いします。（申込書は下記のウェブページからダウンロードが可能です。）</li>
+                    <li class="ks-target target-q1">ダンス、音楽に団体でお申し込みの場合、申込書に出演者全員の氏名を記入し、ご提出ください。申込書は1団体につき1枚です。なお、舞台リハーサルをご希望の場合は、3．の②の表をご覧ください。</li>
+                </ul>
+
+                <div class="article-translation">
+                    【报名】受理时间为2019年9月2日至9月13日。请填写指定申请表后送至事务所，或通过传真、邮寄提交。团体报名舞蹈或音乐时，必须在一张申请表上填写所有出演者的姓名。希望进行舞台彩排时，请查看第3项②的表格。
+                </div>
+
+                <div class="note-text" style="margin-top: 28px; font-weight: 700;">3．文化祭までの流れ</div>
+                <div class="note-text" style="margin-top: 12px;">①説明会（参加者ご本人、または団体の代表の方は必ずご出席ください。）</div>
+                <div class="note-text ks-target target-q2" style="margin-top: 10px;">
+                    月日：作品展示10月4日（金）、ダンス10月5日（土）、音楽10月6日（日）<br>
+                    時間：いずれも19時から<br>
+                    場所：朝田市民文化会館3階研修室
+                </div>
+
+                <div class="note-text" style="margin-top: 22px;">②準備・片付け、リハーサル</div>
+                <div class="table-responsive">
+                    <table class="availability-table" style="min-width: 700px;">
+                        <tbody>
+                            <tr class="ks-target target-q2"><td>作品展示</td><td>作品は11月2日（土）7時〜9時に運び入れ、11月4日（月）17時15分〜19時に片付けてください。</td></tr>
+                            <tr><td>ダンス<br>音楽</td><td>舞台リハーサルは、以下の日に15分以内でお願いします。<br>11月1日（金）9時〜17時</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="article-translation">
+                    【文化节前的流程】参加者本人或团体代表必须参加说明会。作品展示、舞蹈和音乐的说明会分别为10月4日、5日、6日，均从19时开始。作品须于11月2日7—9时搬入，并于11月4日17时15分至19时撤展。舞蹈和音乐的舞台彩排可在11月1日9—17时之间进行，每组不超过15分钟。
+                </div>
+
+                <div class="contact-info">
+                    朝田市文化祭実行委員会事務所（朝田市民文化会館内）<br>
+                    〒320-2745 朝田市広山30-1　電話 08-6400-500　ファクス 08-6400-5001<br>
+                    http://www.asada.lg.jp/bunkasai
+                </div>
+            </div>
+            
+        </main>
+
+        <!-- 下部：题目区域 -->
+        <aside class="question-section" id="quizForm">
+            <div class="question-card sketch-box" data-question="q1" id="q1-card">
+                <div class="q-header"><div class="q-number" style="background: var(--marker-blue);">1</div><div class="q-text-wrapper">
+                    <div class="q-text">ポリーさんは、朝田市のダンス教室の仲間と文化祭でダンスの発表をしたいと考えている。申し込みにあたって、注意しなければならないこととして合っているのはどれか。<br>
+                        <div class="source-jump-btn ks-theme-q1" onclick="jumpToTarget('q1')"><div class="ks-icon-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>クリックして案内内の出処へ移動</span></div></div>
+                    </div><div class="q-text-trans">（波莉想和朝田市舞蹈教室的伙伴一起在文化节上表演舞蹈。关于报名，需要注意的事项中正确的是哪一项？）</div>
+                </div></div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1"><input type="radio" name="q1" value="1" class="option-input"><div class="custom-radio">1</div><div class="option-content-wrapper"><div class="option-content">10分以内の発表時間で申し込まなければならない。</div><div class="option-trans">必须以10分钟以内的发表时间报名。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="2"><input type="radio" name="q1" value="2" class="option-input"><div class="custom-radio">2</div><div class="option-content-wrapper"><div class="option-content">事務所に直接行って申込書を提出しなければならない。</div><div class="option-trans">必须亲自去事务所提交申请表。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="3"><input type="radio" name="q1" value="3" class="option-input"><div class="custom-radio">3</div><div class="option-content-wrapper"><div class="option-content">1枚の申込書に出演者全員の名前を書かなければならない。</div><div class="option-trans">必须在一张申请表上填写所有出演者的姓名。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="4"><input type="radio" name="q1" value="4" class="option-input"><div class="custom-radio">4</div><div class="option-content-wrapper"><div class="option-content">事前の舞台リハーサルに出なければならない。</div><div class="option-trans">必须参加事前的舞台彩排。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                </div>
+            </div>
+
+            <div class="question-card sketch-box" data-question="q2" id="q2-card">
+                <div class="q-header"><div class="q-number" style="background: var(--marker-peach);">2</div><div class="q-text-wrapper">
+                    <div class="q-text">ザーリンさんは文化祭に申し込みをし、写真作品を展示することになった。この後、文化祭が始まるまでに、何をしなければならないか。<br>
+                        <div class="source-jump-btn ks-theme-q2" onclick="jumpToTarget('q2')"><div class="ks-icon-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>クリックして案内・表内の出処へ移動</span></div></div>
+                    </div><div class="q-text-trans">（扎林已经报名文化节，并确定展示摄影作品。在文化节开始前，他必须做什么？）</div>
+                </div></div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1"><input type="radio" name="q2" value="1" class="option-input"><div class="custom-radio">1</div><div class="option-content-wrapper"><div class="option-content">10月4日の説明会に行き、文化祭初日の前日の9時から17時の間に作品を運び入れる。</div><div class="option-trans">参加10月4日的说明会，并在文化节首日前一天9—17时之间搬入作品。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="2"><input type="radio" name="q2" value="2" class="option-input"><div class="custom-radio">2</div><div class="option-content-wrapper"><div class="option-content">10月4日の説明会に行き、文化祭初日の7時から9時の間に作品を運び入れる。</div><div class="option-trans">参加10月4日的说明会，并在文化节首日7—9时之间搬入作品。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="3"><input type="radio" name="q2" value="3" class="option-input"><div class="custom-radio">3</div><div class="option-content-wrapper"><div class="option-content">10月4日から6日のどれかの説明会に行き、文化祭初日の前日の9時から17時の間に作品を運び入れる。</div><div class="option-trans">参加10月4日至6日中的任一场说明会，并在文化节首日前一天9—17时之间搬入作品。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="4"><input type="radio" name="q2" value="4" class="option-input"><div class="custom-radio">4</div><div class="option-content-wrapper"><div class="option-content">10月4日から6日のどれかの説明会に行き、文化祭初日の7時から9時の間に作品を運び入れる。</div><div class="option-trans">参加10月4日至6日中的任一场说明会，并在文化节首日7—9时之间搬入作品。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                </div>
+            </div>
+            <div class="action-bar"><button type="button" class="submit-btn" id="submitBtn" onclick="submitAnswers()">答え合わせ</button></div>
+        </aside>
+
+    </div>
+
+    <!-- 词汇解释气泡 -->
+    <div id="vocabTooltip" class="vocab-tooltip"></div>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if(targetId === '#top') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+        });
+
+        function toggleTranslation(btn) {
+            if (!document.getElementById('mainArticleContent').classList.contains('reviewed')) {
+                alert("请先完成所有题目（点击「答え合わせ」提交），然后再查看译文哦！");
+                return;
+            }
+            
+            btn.classList.toggle('active');
+            const translations = document.querySelectorAll('.article-translation');
+            translations.forEach(el => {
+                el.classList.toggle('show');
+            });
+        }
+
+        const answerData = {
+            q1: {correct: "3", optAnalysis: {
+                "1": "【✖ 排除】舞蹈的发表时间规定为4分钟以内。10分钟以内是音乐表演的规定。",
+                "2": "【✖ 排除】申请表可以拿到事务所，也可以通过传真或邮寄提交，并非必须亲自前往事务所。",
+                "3": "【✔ 正解】团体报名舞蹈时，必须在申请表上填写所有出演者的姓名，而且每个团体只提交一张申请表。",
+                "4": "【✖ 排除】原文说的是“希望进行舞台彩排时”再查看相关安排，彩排并不是所有舞蹈参加者必须参加的项目。"
+            }},
+            q2: {correct: "2", optAnalysis: {
+                "1": "【✖ 排除】照片属于作品展示，参加10月4日的说明会是正确的；但作品应在文化节首日11月2日7时到9时搬入，不是前一天9时到17时。",
+                "2": "【✔ 正解】扎林参加的是作品展示，因此必须参加10月4日的说明会。作品展示的搬入时间是文化节首日11月2日7时到9时。两项条件都完全吻合。",
+                "3": "【✖ 排除】说明会必须参加与本人项目对应的日期。照片属于作品展示，只能参加10月4日的说明会；搬入时间也不是前一天。",
+                "4": "【✖ 排除】搬入时间正确，但说明会不能在10月4日至6日中任意选择。作品展示参加者必须参加10月4日的说明会。"
+            }}
+        };
+
+        document.querySelectorAll('.option-input').forEach(input => {
+            input.addEventListener('change', function() {
+                if (document.getElementById('submitBtn').disabled) return;
+
+                const name = this.name;
+                document.querySelectorAll(`input[name="${name}"]`).forEach(radio => {
+                    radio.closest('.option-label').classList.remove('selected');
+                });
+                
+                if(this.checked) {
+                    this.closest('.option-label').classList.add('selected');
+                }
+            });
+        });
+
+        // 选项点击展示独立解析的逻辑
+        document.querySelectorAll('.option-label').forEach(label => {
+            label.addEventListener('click', function(e) {
+                const group = this.closest('.options-group');
+                if(group.classList.contains('reviewed')) {
+                    const detailBox = this.querySelector('.option-detail-analysis');
+                    if(detailBox.classList.contains('show')) {
+                        detailBox.classList.remove('show');
+                    } else {
+                        group.querySelectorAll('.option-detail-analysis').forEach(box => box.classList.remove('show'));
+                        detailBox.classList.add('show');
+                    }
+                }
+            });
+        });
+
+        const vocabTooltip = document.getElementById('vocabTooltip');
+        document.querySelectorAll('.vocab-word').forEach(word => {
+            word.addEventListener('click', function(e) {
+                if (!document.getElementById('mainArticleContent').classList.contains('reviewed')) return;
+                
+                e.stopPropagation();
+                const reading = this.getAttribute('data-reading');
+                const meaning = this.getAttribute('data-meaning');
+                
+                vocabTooltip.innerHTML = `<span class="reading">${reading}</span><span class="meaning">${meaning}</span>`;
+                
+                const rect = this.getBoundingClientRect();
+                const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+                const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+                
+                vocabTooltip.style.left = `${rect.left + scrollX - 10}px`;
+                vocabTooltip.style.top = `${rect.top + scrollY - vocabTooltip.offsetHeight - 10}px`;
+                
+                vocabTooltip.classList.add('show');
+                setTimeout(() => {
+                    vocabTooltip.style.top = `${rect.top + scrollY - vocabTooltip.offsetHeight - 10}px`;
+                }, 10);
+            });
+        });
+
+        document.addEventListener('click', function() {
+            vocabTooltip.classList.remove('show');
+        });
+        
+        // 跳转逻辑函数
+        window.jumpToTarget = function(qName) {
+            const targetArticleSpans = document.querySelectorAll(`.target-${qName}`);
+            if (targetArticleSpans.length > 0) {
+                targetArticleSpans[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                targetArticleSpans.forEach(span => {
+                    span.classList.add(`revealed-${qName}`);
+                    span.classList.remove('flash-focus');
+                    void span.offsetWidth; 
+                    span.classList.add('flash-focus');
+                });
+            }
+        };
+
+        function submitAnswers() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+
+            if (!q1 || !q2) {
+                alert("すべての問いに答えてください。（请回答所有問題）");
+                return;
+            }
+
+            const userAnswers = { q1: q1.value, q2: q2.value };
+            let score = 0;
+
+            document.querySelectorAll('.option-input').forEach(input => {
+                input.disabled = true;
+                input.closest('.option-label').classList.add('disabled'); 
+            });
+            
+            document.querySelectorAll('.options-group').forEach(group => {
+                group.classList.add('reviewed');
+            });
+
+            document.getElementById('mainArticleContent').classList.add('reviewed');
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+
+            Object.keys(answerData).forEach(qName => {
+                const qCard = document.querySelector(`.question-card[data-question="${qName}"]`);
+                qCard.classList.add('reviewed');
+
+                const data = answerData[qName];
+                const correctVal = data.correct;
+                const userVal = userAnswers[qName];
+
+                qCard.querySelectorAll('.option-label').forEach(label => {
+                    const input = label.querySelector('.option-input');
+                    const optVal = input.value;
+                    
+                    if (optVal === correctVal) {
+                        label.classList.add('is-correct');
+                        label.querySelector('.custom-radio').innerHTML = '✔';
+                    }
+                    if (optVal === userVal && userVal !== correctVal) {
+                        label.classList.add('is-wrong');
+                        label.querySelector('.custom-radio').innerHTML = '✖';
+                    }
+                    
+                    const detailBox = label.querySelector('.option-detail-analysis');
+                    if (detailBox) {
+                        detailBox.innerText = data.optAnalysis[optVal];
+                    }
+                });
+
+                if (userVal === correctVal) {
+                    score++;
+                }
+
+                // 答题后不再直接高亮，由用户点击按钮触发
+            });
+
+            if (score === 2) {
+                btn.innerText = "全問正解！素晴らしい！";
+                btn.style.background = "var(--marker-mint)";
+                btn.style.color = "var(--green-pencil)";
+            } else {
+                btn.innerText = `完了 (${score}/2 正解)`;
+                btn.style.background = "var(--marker-peach)";
+                btn.style.color = "var(--red-pencil)";
+            }
+        }
+    </script>
+
+    <script src="../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="../../shared/reading-year-system.js?v=20260809-reading-mistakes"></script>
+    
+
+<script src="../../shared/reading-analysis-n2-search.js?v=20260902-n2-search-2"></script>
+<script src="../../shared/reading-practice-redesign.js?v=20261011-scoped-lookup-3"></script>
+<script src="../../shared/reading-tools.js?v=20261011-scoped-lookup-3"></script>
+<script src="../../shared/reading-dt-year-session.js?v=20260809-reading-mistakes"></script>
+    <script src="../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../shared/selection-dictionary.js?v=20261012-lookup-spelling-2" data-lookup-scope="reading"></script>
+</body>
+</html>
+

@@ -15,12 +15,85 @@
   https://github.com/tomoshi-app/tomoshi-dict-data
   Modifications: selected and shortened the first matching Chinese gloss for compact game display.
 -->
-<html lang="ja">
+<html lang="ja" data-game-kind="reading">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no">
+<meta charset="utf-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no">
   <meta name="theme-color" content="#eee8da">
   <title>漢字道場｜読みの稽古</title>
+  <script>
+    (()=>{const ua=navigator.userAgent||'';if(/iPad/i.test(ua)||(/Macintosh/i.test(ua)&&navigator.maxTouchPoints>1))document.documentElement.classList.add('is-ipad')})();
+  </script>
   <style>
     :root{
       --ink:#181915;--muted:#716e65;--red:#a33e31;--red-dark:#71281f;
@@ -549,9 +622,709 @@
       .practice-view .key.function,.practice-view .key.long{font-size:22px}
     }
 
+    /* iPad keeps the desktop-scale canvas, but needs the built-in touch keyboard. */
+    @media(min-width:821px){
+      html.is-ipad .practice-view{--ipad-key-height:clamp(52px,5vw,64px);border-width:2px}
+      html.is-ipad .practice-view .practice-shell{
+        grid-template-rows:64px minmax(0,1fr) auto;
+        padding:max(12px,env(safe-area-inset-top)) 12px 0
+      }
+      html.is-ipad .practice-view .hud{
+        width:calc(100% - 76px);
+        height:56px;
+        justify-self:end;
+        margin:0;
+        padding:0 22px;
+        border:1px solid rgba(28,29,26,.1);
+        border-radius:17px;
+        background:rgba(255,253,248,.94);
+        box-shadow:0 5px 18px rgba(40,27,22,.08)
+      }
+      html.is-ipad .practice-view .question-zone{padding:12px 18px 8px;align-items:stretch}
+      html.is-ipad .practice-view .question-card{width:min(870px,100%);height:100%;min-height:0;padding:40px 48px 28px}
+      html.is-ipad .practice-view .answer-area{
+        display:flex;
+        min-width:0;
+        flex-direction:column;
+        margin:0 -12px;
+        padding:0
+      }
+      html.is-ipad .practice-view .answer-line{
+        width:min(850px,calc(100% - 24px));
+        grid-template-columns:minmax(0,1fr) 106px;
+        margin:0 auto 5px
+      }
+      html.is-ipad .practice-view .feedback-line{height:20px;font-size:12px}
+      html.is-ipad .practice-view .mobile-actions{
+        order:2;
+        display:grid!important;
+        width:min(850px,calc(100% - 24px));
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:10px;
+        margin:6px auto 9px
+      }
+      html.is-ipad .practice-view .mobile-actions .skip-button,
+      html.is-ipad .practice-view .mobile-actions .hint-button{
+        position:static;
+        display:flex;
+        width:100%;
+        min-width:0;
+        min-height:52px;
+        align-items:center;
+        justify-content:center;
+        flex-direction:row;
+        gap:10px;
+        padding:0 16px;
+        border:1px solid rgba(28,29,26,.1);
+        border-radius:15px;
+        background:rgba(255,253,248,.94);
+        box-shadow:0 5px 16px rgba(40,27,22,.08);
+        font-size:13px
+      }
+      html.is-ipad .practice-view .mobile-actions .skip-button .circle,
+      html.is-ipad .practice-view .mobile-actions .hint-button .circle{width:34px;height:34px;margin:0;font-size:17px}
+      html.is-ipad .practice-view .exit-button{
+        position:fixed;
+        top:max(12px,env(safe-area-inset-top));
+        bottom:auto;
+        left:12px;
+        z-index:10;
+        display:grid;
+        width:56px;
+        min-width:56px;
+        height:56px;
+        place-items:center;
+        padding:0;
+        border:1px solid rgba(28,29,26,.1);
+        border-radius:17px;
+        background:rgba(255,253,248,.94);
+        box-shadow:0 5px 18px rgba(40,27,22,.08)
+      }
+      html.is-ipad .practice-view .exit-button>span:last-child{display:none}
+      html.is-ipad .practice-view .exit-button .circle{
+        width:auto;
+        height:auto;
+        margin:0;
+        background:transparent;
+        color:var(--ink);
+        font-family:var(--sans);
+        font-size:24px
+      }
+      html.is-ipad .practice-view .romaji-keyboard{
+        order:3;
+        display:flex;
+        width:100%;
+        margin:0;
+        padding:11px 10px max(12px,env(safe-area-inset-bottom));
+        gap:8px;
+        border-right:0;
+        border-bottom:0;
+        border-left:0;
+        border-radius:20px 20px 0 0;
+        touch-action:manipulation
+      }
+      html.is-ipad .practice-view .key-row{gap:7px}
+      html.is-ipad .practice-view .key{
+        height:var(--ipad-key-height);
+        border-radius:10px;
+        font-size:22px;
+        box-shadow:0 3px 0 rgba(40,27,22,.2)
+      }
+      html.is-ipad .practice-view .key.function,
+      html.is-ipad .practice-view .key.long{font-size:24px}
+    }
+
     @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}.question-card{transform:none}.result-scroll{clip-path:inset(0)}.result-content{opacity:1;transform:none}}
   </style>
-  <script src="shiba-study-cottage/arcade-bridge.js"></script>
+  <script src="shared/arcade-bridge-github-20261020.js"></script>
+  <script defer src="shared/game-navigation-bridge-github-20261020.js?v=arcade-nav-20261011-1"></script>
+<script id="gameScoringRuntime">
+/* The single scoring formula used by the existing games and server. */
+(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.GameScoring=api;})(globalThis,function(){
+  'use strict';
+  const levels={n5:100,n4:150,n3:220,n2:320,n1:450};
+  const forms={masu:100,te:100,ta:100,nai:100,pot:115,vol:115,pas:115,cau:115,imp:115,cpas:130};
+  let catalog={};
+  function base(game,question){
+    if(game==='kanji'||game==='katsuyo'){
+      const level=String(question.level||question.verb?.level||'').toLowerCase();
+      if(!levels[level])throw Error('题目缺少有效词汇等级');
+      if(game==='kanji')return levels[level];
+      const factor=forms[question.formId];if(!factor)throw Error('未知活用形式');
+      return Math.floor((levels[level]*factor+50)/100);
+    }
+    const value=question.baseScore??catalog[question.id];
+    if(![100,150,220,320,450].includes(value))throw Error('题目缺少基础分：'+question.id);
+    return value;
+  }
+  function points(baseScore,priorStreak,assisted=false){
+    if(!Number.isSafeInteger(baseScore)||baseScore<100||baseScore>585||!Number.isSafeInteger(priorStreak)||priorStreak<0)throw Error('无效计分参数');
+    return assisted?0:Math.floor((baseScore*(100+2*Math.min(priorStreak,5))+50)/100);
+  }
+  return Object.freeze({levels:Object.freeze(levels),forms:Object.freeze(forms),base,points,configure(values){catalog=Object.freeze({...values});}});
+});
+
+GameScoring.configure({});
+</script>
+<script src="shared/game-ranking.js?v=score-start-retry-20261009-2" data-game="kanji"></script>
+<!-- shared-game-responsive:start -->
+<script id="gameResponsiveRuntime">
+/* Shared view classification only; answer handling stays in each game. */
+(function (root) {
+  'use strict';
+  const doc = root.document;
+  const media = query => root.matchMedia ? root.matchMedia(query).matches : false;
+  function usesTouchLayout() {
+    return root.innerWidth <= 1180 || Number(root.navigator.maxTouchPoints || 0) > 0 ||
+      media('(pointer: coarse)') || media('(any-pointer: coarse)') || !media('(pointer: fine)') ||
+      doc.documentElement.classList.contains('is-ipad');
+  }
+  function sync() {
+    const html = doc.documentElement;
+    const touch = usesTouchLayout();
+    html.setAttribute('data-game-ui', '2');
+    html.setAttribute('data-game-layout', root.innerWidth <= 767 ? 'phone' : touch ? 'tablet' : 'desktop');
+    html.setAttribute('data-game-touch', String(touch));
+    const keyboard = doc.getElementById('romajiKeyboard');
+    if (keyboard) keyboard.setAttribute('aria-hidden', String(!touch || Boolean(root.GameInputMode?.isSystem())));
+    root.GameInputMode?.sync();
+  }
+  function prepareQuestionLayout() {
+    const time = doc.getElementById('timeLeft') || doc.getElementById('timerText');
+    if (time?.parentElement) time.parentElement.setAttribute('aria-label', '残り時間（秒）');
+    const exit = doc.getElementById('exitButton') || doc.getElementById('exitBtn');
+    if (exit) {
+      exit.setAttribute('aria-label', '退場（退出本局）');
+      const label = exit.querySelector('span:last-child');
+      if (label) label.textContent = '退場';
+      const icon = exit.querySelector('.corner-icon, .circle, .tool-icon');
+      if (icon) { icon.textContent = '↩\uFE0E'; icon.setAttribute('aria-hidden', 'true'); }
+    }
+    const card = doc.querySelector('.practice-view .question-card, .practice-view .question-shell');
+    if (!card || card.querySelector('.game-question-content')) return;
+    const body = doc.createElement('div');
+    body.className = 'game-question-content';
+    const answer = doc.createElement('div');
+    answer.className = 'game-answer-content';
+    const status = doc.createElement('div');
+    status.className = 'game-answer-status';
+    const form = card.querySelector('.answer-form');
+    if (form) {
+      answer.appendChild(form);
+      for (const selector of ['.hint-text', '.feedback']) {
+        const node = card.querySelector(selector);
+        if (node) status.appendChild(node);
+      }
+    } else {
+      const area = doc.querySelector('.practice-view .answer-area');
+      if (area) for (const selector of ['.answer-line', '.feedback-line']) {
+        const node = area.querySelector(selector);
+        if (node) (selector === '.answer-line' ? answer : status).appendChild(node);
+      }
+    }
+    for (const node of Array.from(card.children)) {
+      if (!node.matches('.level-seal, .correct-fx')) body.appendChild(node);
+    }
+    card.appendChild(body);
+    if (answer.children.length) {
+      if (status.children.length) answer.appendChild(status);
+      card.appendChild(answer);
+    }
+    const choices = doc.querySelector('.practice-view .choice-grid');
+    if (choices && root.ResizeObserver) {
+      const observer = new root.ResizeObserver(entries => {
+        const height = entries[0] && entries[0].contentRect.height;
+        if (height > 0) doc.documentElement.style.setProperty('--game-choice-height', `${Math.ceil(height)}px`);
+      });
+      observer.observe(choices);
+    }
+    sync();
+  }
+  root.GameResponsive = Object.freeze({ usesTouchLayout, sync });
+  sync();
+  root.addEventListener('resize', sync, { passive: true });
+  root.addEventListener('orientationchange', sync, { passive: true });
+  doc.addEventListener('DOMContentLoaded', prepareQuestionLayout, { once: true });
+  for (const query of ['(pointer: coarse)', '(any-pointer: coarse)']) {
+    const listener = root.matchMedia && root.matchMedia(query);
+    if (listener && listener.addEventListener) listener.addEventListener('change', sync);
+  }
+})(window);
+</script>
+<style id="gameResponsiveStyles">
+/* Shared dojo CSS-pixel geometry, embedded in each game's build. */
+html[data-game-ui] {
+  --paper: #f6f3eb; --paper-light: #fcfaf5; --paper-deep: #eee8da;
+  --ink: #1c1d1a; --muted: #6d6c66; --red: #a34336; --red-dark: #7f3027;
+  --gold: #b48a32; --wood: #56392e; --wood-dark: #281b16; --tatami: #b7aa77;
+  --shoji: #efe8da; --green: #4d7255;
+  --cn: "Heiti SC", SimHei, "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --jp-ui: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+  --jp-display: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+  --sans: var(--jp-ui); --ui: var(--jp-ui); --serif: var(--jp-display);
+  --game-edge: 28px; --game-top: max(25px, env(safe-area-inset-top));
+  --game-header: 48px; --game-card-max: 900px; --game-input-height: 52px;
+  --game-key-height: 56px; --game-keyboard-height: 0px; --game-tools-height: 0px;
+  --game-answer-height: 94px; --game-bottom: max(24px, env(safe-area-inset-bottom));
+  --game-mascot-scale: 1.06;
+  min-width: 320px; color-scheme: light;
+}
+html[data-game-ui] body { min-width: 320px; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
+html[data-game-ui] .view { width: 100%; height: 100vh !important; height: 100dvh !important; min-height: 0 !important; max-height: none !important; overflow: hidden; }
+html[data-game-ui] [hidden] { display: none !important; }
+html[data-game-ui] :is(button, input) { font-family: var(--jp-ui); touch-action: manipulation; }
+html[data-game-ui] :is(button, input, summary, a):focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+html[data-game-ui] :is(.zh, [lang="zh-CN"], .home-lead, .home-description, .home-desc, .home-help p, .meaning, .sentence-meaning, .keigo-instruction, .keigo-feedback, .settings-note, .setting-note, .how-card p) { font-family: var(--cn) !important; }
+
+/* Shared entrance scroll: the original 活用道場 geometry. */
+html[data-game-ui] .home-view { display: grid; place-items: center; padding: 76px 5vw 60px !important; overflow-y: auto; overflow-x: hidden; }
+html[data-game-ui] .home-layout { display: grid !important; position: relative; width: min(1040px, 100%) !important; height: 508px !important; min-height: 508px; grid-template-columns: minmax(300px, .9fr) minmax(330px, .8fr) !important; gap: clamp(42px, 7vw, 92px) !important; align-items: center !important; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel) { display: flex !important; flex-direction: column; justify-content: center; position: relative; width: 100% !important; height: 508px !important; min-height: 508px !important; max-height: none !important; padding: 48px 34px !important; border: 0 !important; border-inline: 12px solid var(--wood) !important; background: var(--paper-light); box-shadow: 0 18px 48px #281b161f; text-align: center; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel)::before,
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel)::after { display: block !important; position: absolute; inset: auto -28px; width: auto; height: 20px; border-radius: 8px; background: linear-gradient(90deg, var(--wood-dark), var(--wood), var(--wood-dark)); content: ""; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel)::before { top: -10px; bottom: auto; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel)::after { top: auto; bottom: -10px; }
+html[data-game-ui][data-game-kind="reading"] { --game-mascot-scale: 1.14; }
+html[data-game-ui][data-game-kind="particle"] { --game-mascot-scale: 1.08; }
+html[data-game-ui] :is(.home-mascot, .home-shiba) { display: flex; width: min(650px, 100%) !important; height: 100% !important; margin: 0; align-self: end; align-items: flex-end; justify-content: center; transform: translate(-2%, 54px) scale(var(--game-mascot-scale)) !important; transform-origin: center bottom; }
+html[data-game-ui] :is(.home-mascot, .home-shiba) img { display: block; width: 100%; height: auto; max-height: 100%; object-fit: contain; object-position: center bottom; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel) > * { flex-shrink: 0; }
+html[data-game-ui] :is(.home-kicker, .home-copy > .eyebrow, .home-card > .eyebrow) { margin: 0 0 10px; font: 800 10px/1.3 var(--jp-ui); letter-spacing: .3em; }
+html[data-game-ui] .home-title { margin: 0; font: 900 clamp(54px, 6.4vw, 72px)/.96 var(--jp-display) !important; letter-spacing: -.04em; }
+html[data-game-ui] :is(.home-subtitle, .home-title small) { display: block; margin: 10px 0 0; font: 800 12px/1.4 var(--jp-ui); letter-spacing: .3em; }
+html[data-game-ui] :is(.home-lead, .home-description, .home-desc) { max-width: 410px; margin: 16px auto 0 !important; font-size: 14px; line-height: 1.7; color: var(--muted); }
+html[data-game-ui] .home-actions { width: min(340px, 100%); margin: 16px auto 0; }
+html[data-game-ui] .home-view :is(.primary-button, .primary-btn) { display: flex; align-items: center; justify-content: center; gap: 20px; width: min(340px, 100%); min-height: 60px; height: 60px; flex-shrink: 0; margin: 16px auto 0; padding: 0 20px; font: 800 15px/1.3 var(--jp-ui); }
+html[data-game-ui] .home-actions :is(.primary-button, .primary-btn) { margin-top: 0; }
+html[data-game-ui] .home-view :is(.primary-button, .primary-btn) .arrow { margin: 0; font-size: 20px; }
+html[data-game-ui] .home-view :is(.best-plaque, .best-score-panel) { position: static; width: min(340px, 100%); min-height: 46px; height: 46px; margin: 10px auto 0; padding: 6px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+html[data-game-ui] .home-view :is(.best-plaque, .best-score-panel) strong { font-size: 25px; }
+html[data-game-ui] :is(.home-help, .help-link, .home-view .text-button) { margin-top: 8px; font-size: 12px; }
+html[data-game-ui] :is(.home-help summary, .help-link, .home-view .text-button) { display: flex; align-items: center; justify-content: center; min-height: 44px; padding-block: 0; }
+html[data-game-ui] .home-layout:has(.home-help[open]),
+html[data-game-ui] .home-copy:has(.home-help[open]) { height: auto !important; }
+html[data-game-ui] :is(.settings-button, .gear) { position: fixed; top: max(22px, env(safe-area-inset-top)); right: max(24px, env(safe-area-inset-right)); width: 48px; height: 48px; min-height: 48px; z-index: 25; }
+html[data-game-ui] :is(.settings-button, .gear) svg { width: 23px; height: 23px; }
+html[data-game-ui] :is(.settings-close, .close-button, .close-btn, .settings-choice-content, .chip span) { min-height: 44px; }
+html[data-game-ui] :is(.settings-close, .close-button, .close-btn) { min-width: 44px; }
+
+/* Header, central card and input dock never scale the page or its touch targets. */
+html[data-game-ui] .practice-view { border: 0 !important; }
+html[data-game-ui] .practice-view .practice-shell { display: block !important; position: static !important; height: 100% !important; padding: 0 !important; }
+html[data-game-ui] .practice-view .practice-app-header { display: contents !important; }
+html[data-game-ui] .practice-view .hud { position: absolute !important; top: var(--game-top) !important; left: 50% !important; right: auto !important; bottom: auto !important; transform: translateX(-50%) !important; width: min(920px, calc(100% - 56px)) !important; height: var(--game-header) !important; min-height: var(--game-header) !important; margin: 0 !important; padding: 0 14px !important; display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 0 !important; border: 1px solid #56392e1f; border-radius: 14px; background: #fcfaf5e8; z-index: 10; }
+html[data-game-ui] .practice-view :is(.hud-item, .score, .timer, .streak, .hud-score, .hud-best, .timer-wrap) { display: flex !important; flex-wrap: wrap; align-items: baseline; justify-content: center !important; align-content: center; min-width: 0; width: auto !important; height: auto !important; margin: 0 !important; padding: 0 5px !important; gap: 5px; font: 700 12px/1.2 var(--jp-ui) !important; text-align: center; color: var(--muted); letter-spacing: 0; }
+html[data-game-ui] .practice-view :is(.hud-item, .score, .streak, .hud-score, .hud-best) strong { display: inline !important; font: 800 18px/1.1 var(--jp-ui) !important; color: var(--ink); letter-spacing: 0; }
+html[data-game-ui] .practice-view :is(.timer strong, .hud-time strong, .timer-text) { font: 800 23px/1.1 var(--jp-ui) !important; color: var(--ink); letter-spacing: 0; }
+html[data-game-ui] .practice-view :is(.timer small, .hud-time small, .timer-text::after) { font-size: 10px !important; }
+html[data-game-ui] .practice-view .timer-text::before { content: "残り "; font: 700 10px/1.2 var(--jp-ui); color: var(--muted); }
+html[data-game-ui] .practice-view .timer-text::after { content: " 秒"; font-family: var(--jp-ui); color: var(--muted); }
+html[data-game-ui] .practice-view .timer-bar { display: none !important; }
+html[data-game-ui] .practice-view .hud { font-variant-numeric: tabular-nums; }
+html[data-game-ui] .practice-view .question-zone { position: absolute !important; inset: calc(var(--game-top) + var(--game-header) + 16px) var(--game-edge) calc(var(--game-bottom) + var(--game-answer-height)) !important; display: flex !important; align-items: stretch !important; justify-content: center; min-height: 0 !important; padding: 0 !important; }
+html[data-game-ui] .practice-view :is(.question-card, .question-shell) { display: grid !important; grid-template-rows: minmax(0, 1fr) auto; align-items: stretch; width: min(var(--game-card-max), 100%) !important; height: 100% !important; min-width: 0; min-height: 0 !important; max-height: none !important; padding: 48px 32px 24px !important; border-radius: 22px; overflow: hidden !important; transform: none !important; justify-content: normal !important; }
+html[data-game-ui] .practice-view .game-question-content { display: flex; flex-direction: column; align-items: center; justify-content: safe center; min-width: 0; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; padding: 2px 0 8px; }
+html[data-game-ui] .practice-view .game-question-content > * { flex-shrink: 0; }
+html[data-game-ui] .practice-view .game-answer-content { min-width: 0; padding-top: 6px; background: var(--paper-light); }
+html[data-game-ui] .practice-view .game-answer-status { min-width: 0; min-height: 0; max-height: 4.5em; overflow-y: auto; }
+html[data-game-ui] .practice-view .game-answer-content :is(.answer-line, .answer-form) { width: 100%; }
+html[data-game-ui] .practice-view .game-answer-content :is(.feedback-line, .feedback, .hint-text) { max-height: 4.5em; overflow-y: auto; }
+html[data-game-ui] .practice-view .game-answer-content :is(.feedback-line, .feedback, .hint-text):empty { display: none; }
+html[data-game-ui][data-game-kind="reading"] { --game-answer-height: 0px; }
+html[data-game-ui] .practice-view .question-shell { position: absolute !important; top: calc(var(--game-top) + var(--game-header) + 16px) !important; bottom: calc(var(--game-bottom) + var(--game-tools-height)) !important; left: 50% !important; right: auto !important; transform: translateX(-50%) !important; width: min(var(--game-card-max), calc(100% - var(--game-edge) * 2)) !important; height: auto !important; display: flex; flex-direction: column; gap: 8px; }
+html[data-game-ui] .practice-view :is(.kanji-word, .verb-word) { flex-shrink: 0; min-height: 0 !important; max-width: 100%; width: auto; margin: 4px 0 0 !important; font: 900 clamp(64px, 6.8vw, 104px)/1.25 var(--jp-display) !important; letter-spacing: .035em; white-space: normal !important; overflow-wrap: anywhere; word-break: normal; }
+html[data-game-ui] .practice-view :is(.kanji-word, .verb-word).is-long { font-size: clamp(48px, 5.6vw, 80px) !important; }
+html[data-game-ui] .practice-view :is(.kanji-word, .verb-word).is-very-long { font-size: clamp(36px, 4.2vw, 60px) !important; }
+html[data-game-ui] .practice-view :is(.sentence, .keigo-expression, .keigo-expression.is-context) { max-width: 100%; margin: 0; font: 800 clamp(26px, 2.7vw, 36px)/1.65 var(--jp-display) !important; white-space: normal !important; overflow-wrap: anywhere; word-break: normal; }
+/* Phrase wrappers flow inline; only individual ruby words and the blank stay intact. */
+html[data-game-ui] .practice-view .sentence { display: block !important; width: 100%; min-width: 0; overflow: visible; text-align: center; }
+html[data-game-ui] .practice-view :is(.sentence-chunk, .sentence-tail) { display: inline !important; flex: initial; min-width: 0; white-space: normal !important; overflow-wrap: anywhere; word-break: normal; }
+html[data-game-ui] .practice-view .sentence .blank { display: inline-block; white-space: nowrap; }
+html[data-game-ui] .practice-view ruby { ruby-position: over; white-space: nowrap; }
+html[data-game-ui] .practice-view rt { font-size: .4em; line-height: 1; }
+html[data-game-ui] .practice-view :is(.meaning, .sentence-meaning, .keigo-instruction, .question-copy) { height: auto; min-height: 0; max-width: 100%; margin: 12px 0 0 !important; font-size: 14px !important; line-height: 1.6; overflow-wrap: anywhere; }
+html[data-game-ui] .practice-view .question-meta { position: static !important; min-height: 23px; margin: 0; font-size: 11px; }
+html[data-game-ui] .practice-view :is(.level-seal, .question-type) { font-size: 11px; }
+html[data-game-ui] .practice-view .level-seal { top: 12px; left: 14px; width: 30px; height: 30px; }
+html[data-game-ui] .practice-view .answer-area { position: absolute !important; inset: auto 0 var(--game-bottom) !important; display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+html[data-game-ui] .practice-view :is(.answer-line, .answer-form) { display: grid; grid-template-columns: minmax(0, 1fr) 90px; gap: 8px; width: min(var(--game-card-max), calc(100% - var(--game-edge) * 2)); margin: 0 auto 6px !important; padding: 0; flex-shrink: 0; }
+html[data-game-ui] .practice-view .answer-form { width: 100%; margin-top: 8px !important; }
+html[data-game-ui] .practice-view :is(.answer-field, .answer-display, .answer-input) { min-width: 0; }
+html[data-game-ui] .practice-view :is(.answer-display, .answer-input, .answer-submit, .judge-button) { height: var(--game-input-height) !important; min-height: var(--game-input-height) !important; border-radius: 12px; font-family: var(--jp-ui); }
+html[data-game-ui] .practice-view :is(.answer-display, .answer-input) { font-size: 22px; overflow-x: auto; white-space: nowrap; }
+html[data-game-ui] .practice-view :is(.feedback-line, .feedback, .hint-text, .reading-guide, .keigo-feedback) { height: auto !important; min-height: 20px; max-width: 100%; margin: 5px 0 0; font-size: 13px !important; line-height: 1.5; overflow-wrap: anywhere; }
+html[data-game-ui] .practice-view .romaji-keyboard { display: none !important; }
+html[data-game-ui] .practice-view :is(.practice-tools, .mobile-actions, .utility-stack) { position: static !important; display: contents !important; }
+html[data-game-ui] .practice-view :is(.corner-action, .utility-btn, .exit-btn) { min-width: 44px; min-height: 44px; font-family: var(--jp-ui); }
+html[data-game-ui] .practice-view :is(.exit-button, .exit-btn) { position: fixed !important; left: clamp(24px, 5vw, 72px) !important; right: auto !important; top: auto !important; bottom: var(--game-bottom) !important; width: 64px; }
+html[data-game-ui] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) { position: fixed !important; left: auto !important; right: clamp(24px, 5vw, 72px) !important; top: auto !important; bottom: var(--game-bottom) !important; width: 64px; }
+html[data-game-ui] .practice-view :is(.skip-button, #skipBtn) { bottom: calc(var(--game-bottom) + 84px) !important; }
+html[data-game-ui] .practice-view .practice-bottom { display: contents !important; }
+html[data-game-ui][data-game-kind="particle"] { --game-answer-height: 152px; }
+html[data-game-ui] .practice-view .particle-keyboard { position: absolute !important; left: 50%; bottom: var(--game-bottom); transform: translateX(-50%); width: min(650px, calc(100% - 220px)) !important; margin: 0 !important; padding: 10px 6px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 4px; }
+html[data-game-ui] .practice-view .particle-key { min-width: 0; height: 56px; min-height: 56px; font: 700 22px/1 var(--jp-ui); }
+html[data-game-ui][data-game-kind="choice"] { --game-answer-height: calc(var(--game-choice-height, 148px) + 16px); }
+html[data-game-ui] .practice-view .keigo-answer-area { position: absolute !important; inset: auto var(--game-edge) var(--game-bottom) !important; padding: 0 !important; }
+html[data-game-ui] .practice-view .choice-grid { width: min(780px, 100%); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+html[data-game-ui] .practice-view .choice-button { min-height: 68px; min-width: 0; padding: 12px 16px 12px 42px; font-size: 18px; line-height: 1.4; overflow-wrap: anywhere; }
+
+/* Nonblocking, right aligned score stamps. */
+html[data-game-ui] .practice-view :is(.brush-feedback, .correct-fx) { position: fixed !important; top: calc(var(--game-top) + var(--game-header) + 4px) !important; right: max(28px, calc((100vw - 920px) / 2)) !important; left: auto !important; bottom: auto !important; width: 150px !important; height: 58px !important; pointer-events: none !important; z-index: 15; }
+html[data-game-ui] .practice-view :is(.brush-feedback .stamp, .correct-copy) { position: absolute; inset: 4px; display: grid; place-items: center; padding: 4px 8px; border: 2px solid var(--red); border-radius: 7px; background: #fcfaf5e8; font-size: 20px; text-align: center; }
+html[data-game-ui] .practice-view .correct-copy strong { font-size: 20px; }
+html[data-game-ui] .practice-view .tea-ring { display: none; }
+
+/* Results retain scroll artwork; the record plaque has its own column. */
+html[data-game-ui] .result-view { display: grid; grid-template-columns: minmax(0, 430px) 154px; align-content: safe center; justify-content: center; align-items: center; gap: 24px; padding: 40px 28px; overflow-y: auto !important; overflow-x: hidden !important; }
+html[data-game-ui] .result-scroll { position: relative; width: 100% !important; height: auto !important; min-height: min(540px, calc(100dvh - 80px)) !important; margin: 0; padding: 0 !important; flex-shrink: 0; }
+html[data-game-ui] .scroll-sheet { width: calc(100% - 30px); min-height: inherit; margin: 0 auto; padding: 62px 34px 56px !important; }
+html[data-game-ui] .scroll-content { min-width: 0; }
+html[data-game-ui] .result-view :is(.result-title, #resultTitle) { font-size: clamp(36px, 5vw, 56px); }
+html[data-game-ui] .result-score { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 5px; margin: 18px 0; font-size: clamp(58px, 8vw, 84px) !important; overflow-wrap: anywhere; }
+html[data-game-ui] .result-score strong { max-width: 100%; font-size: inherit !important; overflow-wrap: anywhere; }
+html[data-game-ui] .result-score small { font-size: 16px; }
+html[data-game-ui] .result-best-plaque { position: relative !important; inset: auto !important; transform: none; width: 154px !important; min-height: 170px; margin: 0 !important; }
+html[data-game-ui] .result-actions :is(button, a) { width: 100%; height: auto !important; min-height: 48px !important; padding: 12px; font-size: 14px; line-height: 1.5; }
+html[data-game-ui] .result-view :is(.game-ranking-result, .game-ranking-retry, .game-ranking-login) { box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%; margin: 8px 0 0; font: 500 12px/1.5 var(--cn) !important; text-align: center; overflow-wrap: anywhere; }
+html[data-game-ui] .result-view .game-ranking-result { color: var(--muted); }
+html[data-game-ui] .result-view .game-ranking-result:empty { display: none; }
+html[data-game-ui] .result-view :is(.game-ranking-retry, .game-ranking-login) { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 12px; border: 1px solid #56392e33; border-radius: 8px; background: var(--paper-light); color: var(--red-dark); cursor: pointer; text-decoration: none; }
+
+/* Phone and tablet dock. Touch capability keeps this layout on wide iPads. */
+html[data-game-ui][data-game-touch="true"] {
+  --game-edge: 18px; --game-top: calc(env(safe-area-inset-top) + 8px);
+  --game-header: 44px; --game-card-max: 780px; --game-input-height: 48px;
+  --game-keyboard-height: calc(var(--game-key-height) * 3 + 36px + env(safe-area-inset-bottom));
+  --game-tools-height: 60px; --game-bottom: 0px;
+  --game-answer-height: calc(var(--game-keyboard-height) + var(--game-tools-height) + var(--game-input-height) + 32px);
+}
+html[data-game-ui][data-game-kind="reading"][data-game-touch="true"] { --game-answer-height: calc(var(--game-keyboard-height) + var(--game-tools-height)); }
+html[data-game-ui][data-game-touch="true"] .practice-view .hud { left: calc(var(--game-edge) + 56px) !important; right: var(--game-edge) !important; transform: none !important; width: auto !important; max-width: none; padding: 0 6px !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.hud-item, .score, .timer, .streak, .hud-score, .hud-best, .timer-wrap) { font-size: 10px !important; gap: 4px; padding: 0 2px !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.timer strong, .hud-time strong, .timer-text) { font-size: 22px !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.timer, .hud-time, .timer-wrap, .timer-text) { flex-wrap: nowrap !important; white-space: nowrap; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.exit-button, .exit-btn) { display: grid !important; place-items: center; position: fixed !important; top: var(--game-top) !important; left: var(--game-edge) !important; right: auto !important; bottom: auto !important; width: 44px !important; height: 44px !important; min-height: 44px !important; padding: 0 !important; border: 1px solid #56392e26; border-radius: 14px; background: var(--paper-light); z-index: 20; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.exit-button, .exit-btn) > span:last-child { display: none; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.exit-button .circle, .exit-button .corner-icon, .exit-btn .tool-icon) { width: 28px !important; height: 28px !important; margin: 0 !important; border-radius: 0; background: none; color: var(--ink); font: 700 24px/1 var(--jp-ui); }
+html[data-game-ui][data-game-touch="true"] .practice-view .question-zone { top: calc(var(--game-top) + var(--game-header) + 10px) !important; bottom: calc(var(--game-answer-height) + 8px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-card, .question-shell) { padding: 42px 24px 16px !important; border-radius: 18px; }
+html[data-game-ui][data-game-touch="true"] .practice-view .question-shell { top: calc(var(--game-top) + var(--game-header) + 10px) !important; bottom: calc(var(--game-keyboard-height) + var(--game-tools-height) + 8px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word) { font-size: clamp(48px, 7vw, 72px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-long { font-size: clamp(38px, 5.5vw, 56px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-very-long { font-size: clamp(28px, 4.5vw, 44px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.answer-line, .answer-form) { grid-template-columns: minmax(0, 1fr) 96px; }
+html[data-game-ui][data-game-touch="true"] .practice-view .answer-area { bottom: calc(var(--game-keyboard-height) + var(--game-tools-height)) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.answer-display, .answer-input) { font-size: 20px; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) { display: flex !important; flex-direction: row !important; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 9px; top: auto !important; bottom: calc(var(--game-keyboard-height) + 8px) !important; width: calc((100% - var(--game-edge) * 2 - 8px) / 2) !important; height: 44px !important; min-height: 44px !important; padding: 0 12px !important; border: 1px solid #56392e26; border-radius: 12px; background: var(--paper-light); font-size: 12px !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn) { left: var(--game-edge) !important; right: auto !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.hint-button, #hintBtn) { left: auto !important; right: var(--game-edge) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.corner-icon-wrap, .tool-icon-wrap) { position: relative; flex: 0 0 28px; width: 28px; height: 28px; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) :is(.circle, .corner-icon, .tool-icon) { position: relative; display: grid; place-items: center; flex: 0 0 28px; width: 28px !important; height: 28px !important; min-width: 28px; min-height: 28px; max-width: 28px; max-height: 28px; margin: 0 !important; padding: 0; border-radius: 50%; font: 900 15px/1 var(--jp-ui) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) > span:last-child { flex: 0 0 auto; white-space: nowrap; font: 800 12px/1.25 var(--jp-ui); }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.count, .corner-count, .tool-count) { position: absolute; top: -6px; right: -8px; width: 20px; height: 20px; min-width: 20px; border: 2px solid var(--paper); border-radius: 50%; background: var(--paper); color: var(--ink); display: grid; place-items: center; font: 800 10px/1 var(--jp-ui); }
+html[data-game-ui][data-game-touch="true"] .practice-view .romaji-keyboard { position: fixed !important; inset: auto 0 0 !important; display: flex !important; flex-direction: column; gap: 8px !important; width: 100% !important; max-width: none !important; height: var(--game-keyboard-height) !important; margin: 0 !important; padding: 10px 6px calc(10px + env(safe-area-inset-bottom)) !important; border: 0 !important; border-radius: 18px 18px 0 0; background: #ded9cc; box-shadow: 0 -1px 0 #56392e21; transform: none !important; z-index: 12; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.key-row, .romaji-keyboard-row) { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px !important; width: min(1024px, 100%); height: var(--game-key-height); margin: 0 auto; padding: 0; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.key-row, .romaji-keyboard-row):nth-child(3) { grid-template-columns: 1.28fr repeat(7, minmax(0, 1fr)) 1.28fr; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.key, .romaji-key) { width: 100%; min-width: 0; height: var(--game-key-height) !important; min-height: var(--game-key-height) !important; margin: 0; padding: 0; border: 0; border-radius: 9px; background: #fffdf8; box-shadow: 0 2px 0 #281b1633; color: var(--ink); font: 700 22px/1 var(--jp-ui) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.key.function, .romaji-key.is-function) { background: #c7c5c0; }
+html[data-game-ui][data-game-kind="particle"][data-game-touch="true"] { --game-keyboard-height: calc(var(--game-key-height) * 2 + 28px + env(safe-area-inset-bottom)); --game-answer-height: calc(var(--game-keyboard-height) + var(--game-tools-height)); }
+html[data-game-ui][data-game-touch="true"] .practice-view .particle-keyboard { position: fixed !important; inset: auto 0 0 !important; width: 100% !important; height: var(--game-keyboard-height); transform: none; padding: 10px max(6px, calc((100vw - 1024px) / 2)) calc(10px + env(safe-area-inset-bottom)); border: 0; border-radius: 18px 18px 0 0; background: #ded9cc; }
+html[data-game-ui][data-game-touch="true"] .practice-view .particle-key { height: var(--game-key-height); min-height: var(--game-key-height); }
+html[data-game-ui][data-game-kind="choice"][data-game-touch="true"] { --game-keyboard-height: 0px; --game-answer-height: calc(var(--game-choice-height, 148px) + 76px + env(safe-area-inset-bottom)); }
+html[data-game-ui][data-game-kind="choice"][data-game-touch="true"] .practice-view .keigo-answer-area { bottom: calc(60px + env(safe-area-inset-bottom)) !important; }
+html[data-game-ui][data-game-kind="choice"][data-game-touch="true"] .practice-view :is(.skip-button, .hint-button) { bottom: calc(8px + env(safe-area-inset-bottom)) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.brush-feedback, .correct-fx) { right: var(--game-edge) !important; width: 124px !important; height: 55px !important; }
+
+@media (max-width: 1023px) {
+  html[data-game-ui] .home-view { padding: calc(76px + env(safe-area-inset-top)) 30px calc(34px + env(safe-area-inset-bottom)) !important; }
+  html[data-game-ui] .home-layout { width: min(430px, 100%) !important; height: auto !important; min-height: 0; grid-template-columns: minmax(0, 1fr) !important; gap: 0 !important; }
+  html[data-game-ui] :is(.home-mascot, .home-shiba) { display: none !important; }
+  html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel) { height: auto !important; min-height: 508px !important; padding: 40px 24px !important; }
+  html[data-game-ui] .home-title { font-size: clamp(44px, 11vw, 64px) !important; }
+  html[data-game-ui] .home-view :is(.primary-button, .primary-btn) { min-height: 62px; height: auto; }
+  html[data-game-ui] .home-view :is(.best-plaque, .best-score-panel) { min-height: 58px; height: auto; }
+}
+@media (max-width: 767px) {
+  html[data-game-ui] { --game-edge: 12px; --game-key-height: 52px; --game-input-height: 46px; }
+  html[data-game-ui][data-game-touch="true"] { --game-edge: 12px; --game-key-height: 52px; --game-input-height: 46px; }
+  html[data-game-ui] .home-title { font-size: clamp(44px, 13vw, 58px) !important; }
+  html[data-game-ui] :is(.settings-button, .gear) { top: calc(12px + env(safe-area-inset-top)); right: 12px; width: 44px; height: 44px; min-height: 44px; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-card, .question-shell) { padding: 38px 15px 12px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word) { font-size: clamp(36px, 11vw, 56px) !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-long { font-size: clamp(29px, 9vw, 44px) !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-very-long { font-size: clamp(24px, 7.2vw, 36px) !important; }
+  html[data-game-ui] .practice-view :is(.sentence, .keigo-expression, .keigo-expression.is-context) { font-size: clamp(18px, 5.4vw, 22px) !important; line-height: 1.65; }
+  html[data-game-ui] .practice-view :is(.meaning, .sentence-meaning, .keigo-instruction, .question-copy) { margin-top: 8px !important; font-size: 12px !important; line-height: 1.5; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.answer-display, .answer-input) { font-size: 18px; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.answer-line, .answer-form) { grid-template-columns: minmax(0, 1fr) 76px; }
+  html[data-game-ui] .practice-view :is(.feedback-line, .feedback, .hint-text, .reading-guide, .keigo-feedback) { font-size: 12px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.key, .romaji-key) { font-size: 20px !important; }
+  html[data-game-ui] .practice-view .choice-grid { gap: 8px; }
+  html[data-game-ui] .practice-view .choice-button { min-height: 60px; padding: 10px 8px 10px 32px; border-radius: 10px; font-size: 14px; }
+  html[data-game-ui] .practice-view .choice-index { left: 7px; width: 20px; height: 20px; }
+  html[data-game-ui] .result-view { grid-template-columns: minmax(0, 400px); align-content: start; gap: 24px; padding: calc(28px + env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom)); }
+  html[data-game-ui] .result-scroll { min-height: 480px !important; }
+  html[data-game-ui] .scroll-sheet { width: calc(100% - 24px); padding: 55px 24px 49px !important; }
+  html[data-game-ui] .result-best-plaque { justify-self: center; width: min(260px, 100%) !important; min-height: 110px; }
+  html[data-game-ui] .result-score { font-size: clamp(50px, 14vw, 72px) !important; }
+  html[data-game-ui] :is(.modal, .settings-dialog) { max-width: 100%; }
+  html[data-game-ui] .modal { padding: 12px; }
+  html[data-game-ui] :is(.modal-card, .settings-form, .settings-body) { padding: 20px 16px; }
+}
+/* Keep a five-character time (120.0) on the same baseline as shorter times.
+   "秒" still identifies the timer; the redundant prefix remains accessible. */
+@media (max-width: 430px) {
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.timer, .hud-time) > span:first-child { position: absolute; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  html[data-game-ui][data-game-touch="true"] .practice-view .timer-text::before { content: none; }
+}
+@media (max-width: 359px) {
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.timer strong, .hud-time strong, .timer-text) { font-size: 20px !important; }
+}
+@media (max-height: 700px) {
+  html[data-game-ui][data-game-touch="true"] { --game-key-height: 48px; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-card, .question-shell) { padding-top: 32px !important; }
+  html[data-game-ui] .home-view { place-items: start center; }
+  html[data-game-ui] .result-view { align-content: start; }
+}
+/* Short landscape: the same question and answer nodes sit side by side. */
+@media (max-height: 480px) and (min-width: 600px) {
+  html[data-game-ui][data-game-touch="true"] { --game-key-height: 44px; --game-input-height: 44px; --game-tools-height: 52px; --game-edge: 12px; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-card, .question-shell) { grid-template-columns: minmax(0, 1fr) minmax(240px, .9fr); grid-template-rows: minmax(0, 1fr); gap: 12px; padding: 8px !important; }
+  html[data-game-ui][data-game-kind="particle"] .practice-view .question-card,
+  html[data-game-ui][data-game-kind="choice"] .practice-view .question-card { grid-template-columns: minmax(0, 1fr); }
+  html[data-game-ui][data-game-touch="true"] .practice-view .game-answer-content { display: grid; grid-template-rows: 44px minmax(0, 1fr); min-height: 0; height: 100%; padding: 0; overflow: hidden; }
+  html[data-game-ui][data-game-touch="true"] .practice-view .game-answer-content :is(.answer-line, .answer-form) { height: 44px; margin: 0 !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view .game-answer-status { max-height: none; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-meta, .level-seal, .question-copy, .question-type) { display: none; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word) { font-size: clamp(28px, 4vw, 44px) !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-long { font-size: 30px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-very-long { font-size: 24px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.meaning, .sentence-meaning, .keigo-instruction) { margin-top: 4px !important; font-size: 12px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) { bottom: calc(var(--game-keyboard-height) + 4px) !important; }
+  html[data-game-ui][data-game-kind="choice"][data-game-touch="true"] .practice-view :is(.skip-button, .hint-button) { bottom: calc(4px + env(safe-area-inset-bottom)) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-game-ui] *, html[data-game-ui] *::before, html[data-game-ui] *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition: none !important; scroll-behavior: auto !important; }
+  html[data-game-ui] :is(.result-scroll, .scroll-sheet, .scroll-content, .result-best-plaque) { opacity: 1 !important; clip-path: none !important; transform: none !important; }
+  html[data-game-ui] :is(.new-record-effect, .record-particles) { display: none !important; }
+}
+</style>
+<script id="gameInputModeRuntime">
+/* Device-local input preference. This module never submits scores or changes game rules. */
+(function (root) {
+  'use strict';
+  const doc = root.document;
+  const storageKey = 'kiki.game.input-method.v1';
+  let mode = 'builtin', adapter = null, input = null, field = null, hint = null;
+  let composing = false, committedAt = -Infinity, discardUntil = -Infinity, activeToken, frame = 0;
+  try { if (root.localStorage.getItem(storageKey) === 'system') mode = 'system'; } catch { /* Private browsing is supported. */ }
+  const isSystem = () => mode === 'system';
+  function normalize(value, script = 'hiragana') {
+    const kana = String(value || '').normalize('NFKC').trim();
+    return script === 'katakana'
+      ? kana.replace(/[ぁ-ゖ]/g, char => String.fromCharCode(char.charCodeAt(0) + 0x60))
+      : kana.replace(/[ァ-ヶ]/g, char => String.fromCharCode(char.charCodeAt(0) - 0x60));
+  }
+  function state() { return adapter.getState(); }
+  function viewport() {
+    frame = 0;
+    if (!adapter || !isSystem()) return;
+    const visible = root.visualViewport;
+    let top = visible?.offsetTop || 0, bottom = top + (visible?.height || root.innerHeight), offset = 0, current = root;
+    // A same-origin cottage/collection iframe may not receive a smaller visual
+    // viewport itself. Intersect with the host's visible area as well.
+    try {
+      for (let depth = 0; depth < 4 && current.parent !== current && current.frameElement; depth++) {
+        offset += current.frameElement.getBoundingClientRect().top;
+        current = current.parent;
+        const host = current.visualViewport, hostTop = host?.offsetTop || 0;
+        top = Math.max(top, hostTop - offset);
+        bottom = Math.min(bottom, hostTop + (host?.height || current.innerHeight) - offset);
+      }
+    } catch { /* Cross-origin hosts retain the local visual viewport fallback. */ }
+    const height = Math.max(0, Math.round(bottom - top));
+    doc.documentElement.style.setProperty('--game-device-height', `${height}px`);
+    doc.documentElement.style.setProperty('--game-device-top', `${Math.max(0, Math.round(top))}px`);
+    doc.documentElement.setAttribute('data-game-device-compact', String(height < 430));
+  }
+  function scheduleViewport() {
+    if (!frame) frame = root.requestAnimationFrame(viewport);
+  }
+  function sync() {
+    if (!adapter) return;
+    const current = state(), system = isSystem();
+    if (system && current.token !== activeToken) {
+      activeToken = current.token;
+      if (composing) {
+        // A skip can replace the question while the OS still has preedit text.
+        // Invalidate that composition before its delayed end/input events arrive.
+        discardUntil = Date.now() + 80; composing = false;
+        if (doc.activeElement === input) input.blur();
+      }
+    }
+    doc.documentElement.setAttribute('data-game-input', mode);
+    if (field) field.hidden = !system;
+    if (adapter.display) adapter.display.setAttribute('aria-hidden', String(system));
+    const keyboard = doc.getElementById('romajiKeyboard');
+    if (keyboard) {
+      keyboard.inert = system;
+      keyboard.setAttribute('aria-hidden', String(system || !root.GameResponsive?.usesTouchLayout()));
+    }
+    if (system) {
+      if (!current.active) {
+        composing = false;
+        if (doc.activeElement === input) input.blur();
+      }
+      // Never replace an IME's preedit text or move its caret during composition.
+      if (!composing && input.value !== current.value) input.value = current.value;
+      // Toggling DOM readOnly between answers dismisses some phone IMEs. Keep
+      // the field focused during feedback; beforeinput/input guards lock edits.
+      input.readOnly = !current.active;
+      input.setAttribute('aria-readonly', String(!current.active || !current.editable));
+      input.classList.toggle('is-correct', Boolean(current.correct));
+      input.classList.toggle('is-wrong', Boolean(current.wrong));
+      if (hint) { hint.textContent = current.hint || ''; field.classList.toggle('has-hint', Boolean(current.hint)); }
+      viewport();
+    } else if (adapter.input) {
+      input.readOnly = true;
+      input.setAttribute('aria-readonly', 'true');
+    }
+  }
+  function submit() {
+    if (!isSystem() || composing || Date.now() - committedAt < 80 || !state().active || adapter.submitButton.disabled) return;
+    adapter.onSubmit();
+  }
+  function mountSettings() {
+    const form = doc.getElementById('settingsForm');
+    const modal = doc.getElementById('settingsModal') || doc.getElementById('settingsDialog');
+    if (!form || !modal) return;
+    const section = doc.createElement('fieldset');
+    section.className = 'game-input-settings';
+    const legend = doc.createElement('legend'); legend.textContent = '输入方式'; section.appendChild(legend);
+    const choices = [];
+    for (const [value, label] of [['builtin', '游戏内置键盘'], ['system', '设备自带输入法']]) {
+      const item = doc.createElement('label'), radio = doc.createElement('input'), text = doc.createElement('span');
+      radio.type = 'radio'; radio.name = 'gameInputMethod'; radio.value = value;
+      text.textContent = label; item.appendChild(radio); item.appendChild(text); section.appendChild(item); choices.push(radio);
+    }
+    const note = doc.createElement('p'); note.textContent = '设备输入法：点击答案框输入日语，确认候选词后再按「判定」。'; section.appendChild(note);
+    const actions = form.querySelector('.modal-actions, .settings-actions');
+    form.insertBefore(section, actions);
+    const restore = () => { for (const radio of choices) radio.checked = radio.value === mode; };
+    restore(); doc.getElementById('settingsButton')?.addEventListener('click', restore);
+    // Game validation runs first. A rejected settings form remains open and must
+    // not commit this preference either. Closing/cancelling discards the draft.
+    form.addEventListener('submit', () => {
+      if (!(modal.hidden || modal.open === false)) return;
+      const selected = choices.find(radio => radio.checked)?.value;
+      mode = selected === 'system' ? 'system' : 'builtin';
+      try { root.localStorage.setItem(storageKey, mode); } catch { /* Keep the current-page preference. */ }
+      composing = false; committedAt = -Infinity; discardUntil = -Infinity;
+      adapter.onModeChange?.(); sync();
+    });
+  }
+  function register(options) {
+    if (adapter) throw Error('Input method already registered');
+    adapter = options;
+    if (adapter.input) input = adapter.input;
+    else {
+      field = doc.createElement('div'); field.className = 'game-device-field';
+      input = doc.createElement('input'); input.className = 'answer-input game-device-input'; input.id = 'gameDeviceInput';
+      hint = doc.createElement('span'); hint.className = 'game-device-hint'; hint.id = 'gameDeviceHint';
+      input.setAttribute('aria-describedby', hint.id);
+      field.appendChild(input); field.appendChild(hint);
+      adapter.display.parentNode.insertBefore(field, adapter.display);
+    }
+    input.type = 'text'; input.lang = 'ja';
+    input.setAttribute('inputmode', 'text'); input.setAttribute('enterkeyhint', 'done');
+    input.setAttribute('autocomplete', 'off'); input.setAttribute('autocorrect', 'off');
+    input.setAttribute('autocapitalize', 'off'); input.spellcheck = false;
+    if (!adapter.input) { input.placeholder = '日本語で入力'; input.setAttribute('aria-label', options.label); }
+    input.addEventListener('compositionstart', () => { if (isSystem()) composing = true; });
+    input.addEventListener('compositionend', () => {
+      if (!isSystem()) return;
+      composing = false; committedAt = Date.now();
+      if (Date.now() >= discardUntil && state().active && state().editable) adapter.onInput(input.value);
+      sync();
+    });
+    input.addEventListener('beforeinput', event => {
+      if (isSystem() && (!state().active || !state().editable)) event.preventDefault();
+    });
+    input.addEventListener('input', () => {
+      if (!isSystem()) return;
+      if (Date.now() >= discardUntil && state().active && state().editable) adapter.onInput(input.value);
+      sync();
+    });
+    input.addEventListener('keydown', event => {
+      if (!isSystem() || event.key === 'Escape') return;
+      // Let the browser own text, selection, deletion, shortcuts and candidates.
+      // Candidate Enter must not reach either a game handler or an implicit form submit.
+      event.stopImmediatePropagation();
+      if (event.isComposing || composing || event.keyCode === 229) { committedAt = Date.now(); return; }
+      if (event.key === 'Enter' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        event.preventDefault(); if (!event.repeat) submit();
+      }
+    }, true);
+    const guard = event => {
+      if (isSystem() && (composing || Date.now() - committedAt < 80)) { event.preventDefault(); event.stopImmediatePropagation(); }
+    };
+    adapter.submitButton.addEventListener('click', guard, true);
+    // Prevent a game tool from blurring the editable field / dismissing the IME.
+    for (const button of [adapter.submitButton, doc.getElementById('skipButton'), doc.getElementById('hintButton')]) {
+      button?.addEventListener('pointerdown', event => { if (isSystem() && doc.activeElement === input) event.preventDefault(); });
+    }
+    if (input.form) input.form.addEventListener('submit', event => {
+      if (!isSystem()) return;
+      event.preventDefault(); event.stopImmediatePropagation(); submit();
+    }, true);
+    root.addEventListener('resize', scheduleViewport, { passive: true });
+    root.visualViewport?.addEventListener('resize', scheduleViewport, { passive: true });
+    root.visualViewport?.addEventListener('scroll', scheduleViewport, { passive: true });
+    try {
+      let host = root;
+      for (let depth = 0; depth < 4 && host.parent !== host; depth++) {
+        host = host.parent;
+        host.visualViewport?.addEventListener('resize', scheduleViewport, { passive: true });
+        host.visualViewport?.addEventListener('scroll', scheduleViewport, { passive: true });
+        host.addEventListener('scroll', scheduleViewport, { passive: true });
+      }
+    } catch { /* Parent access is optional, never a prerequisite for input. */ }
+    mountSettings(); adapter.onModeChange?.(); sync();
+  }
+  root.GameInputMode = Object.freeze({ register, isSystem, normalize, sync });
+})(window);
+</script>
+<style id="gameInputModeStyles">
+/* Optional native IME. Built-in layouts retain the existing geometry. */
+.game-input-settings { min-width: 0; margin: 18px 0; padding: 0; border: 0; color: var(--ink); font: 600 14px/1.5 var(--cn, sans-serif); }
+.game-input-settings :is(legend, span, p) { font-family: var(--cn, sans-serif) !important; }
+.game-input-settings legend { margin-bottom: 8px; font: inherit; }
+.game-input-settings label { display: flex; align-items: center; gap: 10px; min-height: 44px; cursor: pointer; }
+.game-input-settings input { width: 18px; height: 18px; margin: 0; accent-color: var(--red); }
+.game-input-settings p { margin: 6px 0 0; font: 400 12px/1.6 var(--cn, sans-serif); color: var(--muted); }
+html[data-game-ui] .game-device-field[hidden] { display: none !important; }
+html[data-game-ui] .practice-view .game-device-field { position: relative; min-width: 0; height: var(--game-input-height); }
+html[data-game-ui] .practice-view .game-device-input { display: block; box-sizing: border-box; width: 100%; min-width: 0; margin: 0; padding: 4px 10px; border: 2px solid #56392e33; background: var(--paper-light, #fffdf8); color: var(--ink); text-align: center; font-weight: 600; outline-offset: 2px; }
+html[data-game-ui] .practice-view .game-device-input:focus { border-color: var(--ink); }
+html[data-game-ui] .practice-view .game-device-input.is-correct { border-color: var(--green, #63714b); color: var(--green, #63714b); }
+html[data-game-ui] .practice-view .game-device-input.is-wrong { border-color: var(--red); color: var(--red); }
+html[data-game-ui] .practice-view .game-device-hint { position: absolute; right: 8px; bottom: 2px; left: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; pointer-events: none; font: 500 12px/1.3 var(--jp-ui); color: var(--muted); }
+html[data-game-ui] .practice-view .has-hint .game-device-input { padding-bottom: 18px; }
+html[data-game-ui][data-game-input="system"] { --game-keyboard-height: 0px !important; }
+html[data-game-ui][data-game-input="system"] .practice-view :is(#answerDisplay, .romaji-keyboard) { display: none !important; }
+/* Position within the visible area, not behind a system keyboard. All controls
+   use the same parent coordinate system; there is no second keyboard spacer. */
+html[data-game-ui][data-game-input="system"][data-game-touch="true"] .practice-view {
+  position: absolute !important; top: var(--game-device-top, 0px) !important; right: 0 !important; bottom: auto !important; left: 0 !important;
+  height: var(--game-device-height, 100dvh) !important; min-height: 0 !important; max-height: none !important;
+}
+html[data-game-ui][data-game-input="system"][data-game-touch="true"] .practice-view :is(.hud, .exit-button, .skip-button, .hint-button, .brush-feedback, .correct-fx) { position: absolute !important; }
+html[data-game-ui][data-game-input="system"][data-game-touch="true"] .practice-view :is(.skip-button, .hint-button) { bottom: calc(8px + env(safe-area-inset-bottom)) !important; }
+html[data-game-ui][data-game-input="system"][data-game-touch="true"] { --game-tools-height: calc(60px + env(safe-area-inset-bottom)); }
+html[data-game-ui][data-game-input="system"][data-game-device-compact="true"] .practice-view :is(.question-card, .question-shell) { padding: 12px !important; }
+html[data-game-ui][data-game-input="system"][data-game-device-compact="true"] .practice-view :is(.level-seal, .question-meta, .question-copy) { display: none; }
+</style>
+<!-- shared-game-responsive:end -->
 </head>
 <body data-view="home">
   <main>
@@ -671,7 +1444,7 @@
 
     function loadJSON(key,fallback){try{return Object.assign(Array.isArray(fallback)?[]:{},fallback,JSON.parse(localStorage.getItem(key)||'null')||{});}catch{return fallback}}
     function saveJSON(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch{}}
-    function setView(name){game.view=name;for(const id of ['home','countdown','practice','ending','result'])$(`${id}View`).hidden=id!==name;document.body.dataset.view=name}
+    function setView(name){game.view=name;for(const id of ['home','countdown','practice','ending','result'])$(`${id}View`).hidden=id!==name;document.body.dataset.view=name;window.GameInputMode?.sync()}
     function openModal(id){$(id).hidden=false}function closeModal(id){$(id).hidden=true}
     function shuffle(list){const out=[...list];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
     function current(){return game.queue[game.index]}
@@ -724,22 +1497,22 @@
       return{kana,pending:rest,segments};
     }
     function deleteRomajiUnit(value){const raw=String(value||'');if(!raw)return'';const converted=convertRomaji(raw,false);if(converted.pending)return raw.slice(0,-1);const last=converted.segments.at(-1);return last?raw.slice(0,-last.raw.length):raw.slice(0,-1)}
-    function renderInput(){const converted=convertRomaji(game.romaji,false);$('answerKana').textContent=converted.kana;$('answerPending').textContent=converted.pending;$('judgeButton').disabled=game.answered||!game.romaji;return converted}
+    function renderInput(){const converted=window.GameInputMode?.isSystem()?{kana:game.romaji,pending:''}:convertRomaji(game.romaji,false);$('answerKana').textContent=converted.kana;$('answerPending').textContent=converted.pending;$('judgeButton').disabled=game.answered||!game.romaji.trim();window.GameInputMode?.sync();return converted}
     function enterKey(key){if(game.view!=='practice'||game.answered)return;game.romaji+=key;renderInput()}
     function backspace(){if(game.view!=='practice'||game.answered)return;game.romaji=deleteRomajiUnit(game.romaji);renderInput()}
 
-    function updateHud(){$('score').textContent=String(game.score);$('streak').textContent=String(game.streak);$('hintCount').textContent=String(game.hints);$('skipCount').textContent=String(game.skips);$('hintButton').disabled=game.hints<=0||game.answered||game.hintUsed;$('skipButton').disabled=game.skips<=0||game.answered}
+    function updateHud(){$('score').textContent=String(game.score);$('streak').textContent=String(game.streak);$('hintCount').textContent=String(game.hints);$('skipCount').textContent=String(game.skips);$('hintButton').disabled=game.hints<=0||game.answered||game.hintUsed;$('skipButton').disabled=game.skips<=0||game.answered;window.GameInputMode?.sync()}
     function renderQuestion(){
-      const q=current();if(!q)return;game.answered=false;game.hintUsed=false;game.romaji='';game.questionStartedAt=Date.now();$('judgeButton').textContent='判定';
+      const q=current();if(!q)return;window.GameRanking?.question(q.id);game.answered=false;game.hintUsed=false;game.romaji='';game.questionStartedAt=Date.now();$('judgeButton').textContent='判定';
       $('kanjiWord').textContent=q.word;$('meaning').textContent=q.meaning||'';$('levelSeal').textContent=levelLabels[q.level]||q.level.toUpperCase();$('readingGuide').textContent='';$('feedbackLine').textContent='';$('feedbackLine').className='feedback-line';
       const length=[...q.word].length;$('kanjiWord').className=`kanji-word${length>=7?' is-very-long':length>=5?' is-long':''}`;$('answerDisplay').className='answer-display';$('romajiKeyboard').classList.remove('disabled');$('questionCard').style.setProperty('--approach','0');renderInput();updateHud();
     }
     function recordResult(q,result,elapsed){if(settings.mode!=='study')return;const stat=history[q.id]||{correct:0,wrong:0,hint:0,skip:0,avg:0};stat[result]=(stat[result]||0)+1;if(elapsed){stat.avg=stat.avg?Math.round(stat.avg*.7+elapsed*.3):elapsed}history[q.id]=stat;saveJSON(HISTORY_KEY,history)}
     function showBrush(points){clearTimeout(game.feedback);$('brushText').firstChild.textContent=game.streak>=10?'無双':game.streak>=5?'鮮烈':game.streak>=3?'連破':'見事';$('brushScore').textContent=`＋${points}`;const el=$('brushFeedback');el.classList.remove('is-active');void el.offsetWidth;el.classList.add('is-active');game.feedback=setTimeout(()=>el.classList.remove('is-active'),1100)}
-    function checkAnswer(){
-      if(game.answered)return;const q=current(),converted=convertRomaji(game.romaji,true),answer=normalizeKana(converted.kana);if(!answer)return;
-      const correct=q.answers.map(normalizeKana).includes(answer),elapsed=Math.max(0,Date.now()-game.questionStartedAt);game.answered=true;$('romajiKeyboard').classList.add('disabled');$('hintButton').disabled=true;$('skipButton').disabled=true;
-      if(correct){window.CottageArcade?.correct();game.streak++;const seconds=Math.floor(elapsed/1000),time=Math.max(0,TIME_WINDOW-seconds)*TIME_STEP,chain=Math.min((game.streak-1)*STREAK_STEP,MAX_STREAK),points=BASE+time+chain;game.score+=points;$('answerDisplay').classList.add('is-correct');$('feedbackLine').textContent=`正解　＋${points}点`;$('feedbackLine').classList.add('correct');recordResult(q,'correct',elapsed);showBrush(points);updateHud();game.advance=setTimeout(nextQuestion,760)}
+    async function checkAnswer(){
+      if(game.view!=='practice'||game.answered)return;if(Date.now()>=game.endsAt){finishGame();return;}const q=current(),converted=window.GameInputMode?.isSystem()?{kana:window.GameInputMode.normalize(game.romaji),pending:''}:convertRomaji(game.romaji,true),answer=normalizeKana(converted.kana);if(!answer)return;
+      window.GameRanking?.answer(answer);const correct=q.answers.map(normalizeKana).includes(answer),elapsed=Math.max(0,Date.now()-game.questionStartedAt);game.answered=true;$('romajiKeyboard').classList.add('disabled');$('hintButton').disabled=true;$('skipButton').disabled=true;
+      if(correct){window.CottageArcade?.correct();game.streak=game.hintUsed?0:game.streak+1;const points=GameScoring.points(GameScoring.base('kanji',q),Math.max(0,game.streak-1),game.hintUsed);game.score+=points;$('answerDisplay').classList.add('is-correct');$('feedbackLine').textContent=`正解　＋${points}点`;$('feedbackLine').classList.add('correct');recordResult(q,'correct',elapsed);showBrush(points);updateHud();game.advance=setTimeout(nextQuestion,760)}
       else{game.streak=0;$('answerDisplay').classList.add('is-wrong');$('answerKana').textContent=answer;$('answerPending').textContent='';$('feedbackLine').textContent=`正答：${q.answers.join('／')}`;$('feedbackLine').classList.add('wrong');recordResult(q,'wrong',elapsed);$('judgeButton').textContent='次へ';$('judgeButton').disabled=false;updateHud()}
     }
     function weightedQuestion(){
@@ -748,18 +1521,18 @@
       let roll=Math.random()*weighted.reduce((sum,item)=>sum+item[1],0);for(const [q,w]of weighted){roll-=w;if(roll<=0)return q}return weighted[weighted.length-1][0]
     }
     function appendNext(){let q;if(settings.mode==='study')q=weightedQuestion();else{if(game.index>=game.queue.length-1){const remaining=shuffle(game.pool.filter(item=>!game.recent.includes(item.word)));q=remaining[0]||shuffle(game.pool)[0]}else q=game.queue[game.index+1]}if(settings.mode==='study'||game.index>=game.queue.length-1)game.queue.push(q)}
-    function nextQuestion(){clearTimeout(game.advance);game.advance=0;const previous=current();if(previous){game.recent.push(previous.word);if(game.recent.length>5)game.recent.shift()}appendNext();game.index++;renderQuestion()}
-    function showHint(){if(game.answered||game.hints<=0||game.hintUsed)return;const q=current();game.hints--;game.hintUsed=true;$('readingGuide').textContent=`${q.reading[0]}…　${[...q.reading].length}拍`;recordResult(q,'hint');updateHud()}
-    function skipQuestion(){if(game.answered||game.skips<=0)return;game.skips--;recordResult(current(),'skip');updateHud();nextQuestion()}
+    function nextQuestion(){if(game.view!=='practice'||Date.now()>=game.endsAt)return;clearTimeout(game.advance);game.advance=0;const previous=current();if(previous){game.recent.push(previous.word);if(game.recent.length>5)game.recent.shift()}appendNext();game.index++;renderQuestion()}
+    function showHint(){if(game.answered||game.hints<=0||game.hintUsed)return;const q=current();window.GameRanking?.hint();game.hints--;game.hintUsed=true;game.streak=0;$('readingGuide').textContent=`${q.reading[0]}…　${[...q.reading].length}拍`;recordResult(q,'hint');updateHud()}
+    function skipQuestion(){if(game.answered||game.skips<=0)return;window.GameRanking?.skip();game.skips--;game.streak=0;recordResult(current(),'skip');updateHud();nextQuestion()}
 
     function updateTimer(){if(game.view!=='practice')return;const now=Date.now(),remaining=Math.max(0,game.endsAt-now),seconds=remaining/1000;$('timeLeft').textContent=seconds.toFixed(1);$('timerWrap').classList.toggle('is-urgent',seconds<=10);const approach=Math.min(1,(now-game.questionStartedAt)/10000),progress=Math.min(1,(DURATION-remaining)/DURATION);$('questionCard').style.setProperty('--approach',approach.toFixed(3));$('questionCard').style.setProperty('--time-progress',progress.toFixed(4));if(now>=game.endsAt)finishGame()}
-    function beginGame(){window.CottageArcade?.start();
-      game.pool=buildPool();if(!game.pool.length){setView('home');return}game.queue=settings.mode==='random'?shuffle(game.pool):[weightedQuestion()];game.index=0;game.score=0;game.streak=0;game.hints=MAX_HINTS;game.skips=MAX_SKIPS;game.recent=[];game.endsAt=Date.now()+DURATION;$('questionCard').style.setProperty('--time-progress','0');setView('practice');renderQuestion();clearInterval(game.timer);game.timer=setInterval(updateTimer,50);updateTimer()
+    async function beginGame(){window.GameRanking?.begin({levels:settings.levels,types:settings.types});window.CottageArcade?.start();
+      game.pool=buildPool();if(!game.pool.length){setView('home');return}game.queue=settings.mode==='random'?shuffle(game.pool):[weightedQuestion()];game.index=0;game.score=0;game.streak=0;game.hints=MAX_HINTS;game.skips=MAX_SKIPS;game.recent=[];game.endsAt=Date.now()+DURATION;window.GameRanking?.clock();$('questionCard').style.setProperty('--time-progress','0');setView('practice');renderQuestion();clearInterval(game.timer);game.timer=setInterval(updateTimer,50);updateTimer()
     }
-    function startCountdown(){clearInterval(game.timer);clearInterval(game.countdown);clearTimeout(game.advance);setView('countdown');$('countdownReady').textContent='よーい';let count=3;$('countdownNumber').textContent='3';$('countdownNumber').className='countdown-number is-pop';game.countdown=setInterval(()=>{count--;if(count>0){$('countdownNumber').classList.remove('is-pop');void $('countdownNumber').offsetWidth;$('countdownNumber').textContent=String(count);$('countdownNumber').classList.add('is-pop')}else{clearInterval(game.countdown);$('countdownReady').textContent='';$('countdownNumber').textContent='はじめ！';$('countdownNumber').className='countdown-number is-start is-pop';setTimeout(beginGame,560)}},1000)}
+    function startCountdown(){clearInterval(game.timer);clearInterval(game.countdown);clearTimeout(game.advance);setView('countdown');$('countdownReady').textContent='よーい';let count=3;$('countdownNumber').textContent='3';$('countdownNumber').className='countdown-number is-pop';game.countdown=setInterval(()=>{count--;if(count>0){$('countdownNumber').classList.remove('is-pop');void $('countdownNumber').offsetWidth;$('countdownNumber').textContent=String(count);$('countdownNumber').classList.add('is-pop')}else{clearInterval(game.countdown);$('countdownReady').textContent='';$('countdownNumber').textContent='はじめ！';$('countdownNumber').className='countdown-number is-start is-pop';game.countdown=setTimeout(beginGame,560)}},1000)}
     function prepareRecordEffect(isNew){$('resultBestLabel').textContent=isNew?'新記録':'自己最高';$('resultBestPanel').classList.toggle('is-new',isNew);const particles=$('recordParticles');particles.replaceChildren();if(!isNew)return;const fragment=document.createDocumentFragment();for(let index=0;index<42;index++){const drop=document.createElement('i'),angle=((360/42)*index)+((index%4)-1.5)*4,size=4+(index%5)*1.55;drop.className=`record-drop${index%5===0?' is-red':index%3===0?' is-gold':''}${index%4===0?' is-round':''}`;drop.style.setProperty('--record-angle',`${angle}deg`);drop.style.setProperty('--record-distance',`${126+(index%7)*23}px`);drop.style.setProperty('--record-size',`${size}px`);drop.style.setProperty('--record-delay',`${80+(index%6)*18}ms`);fragment.appendChild(drop)}particles.appendChild(fragment)}
-    function finishGame(){if(game.view!=='practice')return;window.CottageArcade?.finish();clearInterval(game.timer);clearTimeout(game.advance);clearTimeout(game.recordTimer);const isNew=game.score>best;if(isNew){best=game.score;try{localStorage.setItem(BEST_KEY,String(best))}catch{}}$('resultScore').textContent=String(game.score);$('resultBest').textContent=String(best);$('resultKicker').textContent=isNew?'自己最高を更新':'百二十秒の稽古';$('resultTitle').textContent=isNew?'新記録':'稽古終了';prepareRecordEffect(isNew);setView('ending');$('endingView').classList.add('is-active');setTimeout(()=>{setView('result');const view=$('resultView');view.className='view result-view is-unfurling';void view.offsetWidth;if(isNew&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)game.recordTimer=setTimeout(()=>view.classList.add('is-new-record'),1200)},900)}
-    function returnHome(){window.CottageArcade?.cancel();clearInterval(game.timer);clearInterval(game.countdown);clearTimeout(game.advance);$('homeBest').textContent=String(best);setView('home')}
+    async function finishGame(){if(game.view!=='practice')return;window.GameRanking?.finish();window.CottageArcade?.finish();clearInterval(game.timer);clearTimeout(game.advance);clearTimeout(game.recordTimer);const isNew=game.score>best;if(isNew){best=game.score;try{localStorage.setItem(BEST_KEY,String(best))}catch{}}$('resultScore').textContent=String(game.score);$('resultBest').textContent=String(best);$('resultKicker').textContent=isNew?'自己最高を更新':'百二十秒の稽古';$('resultTitle').textContent=isNew?'新記録':'稽古終了';prepareRecordEffect(isNew);setView('ending');$('endingView').classList.add('is-active');setTimeout(()=>{if(game.view!=='ending')return;setView('result');const view=$('resultView');view.className='view result-view is-unfurling';void view.offsetWidth;if(isNew&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)game.recordTimer=setTimeout(()=>view.classList.add('is-new-record'),1200)},900)}
+    function returnHome(){window.GameRanking?.cancel();window.CottageArcade?.cancel();clearInterval(game.timer);clearInterval(game.countdown);clearTimeout(game.advance);$('homeBest').textContent=String(best);setView('home')}
 
     function makeKeyboardButton(label,className='key'){const button=document.createElement('button');button.type='button';button.className=className;button.textContent=label;return button}
     function buildKeyboard(){for(const [row,chars]of [['keyRow1','qwertyuiop'],['keyRow2','asdfghjkl']]){const target=$(row);for(const char of chars){const button=makeKeyboardButton(char);button.dataset.key=char;target.appendChild(button)}if(row==='keyRow2'){const long=makeKeyboardButton('ー','key long');long.dataset.key='-';long.setAttribute('aria-label','長音');target.appendChild(long)}}const third=$('keyRow3'),shift=makeKeyboardButton('⇧','key function');shift.dataset.action='shift';shift.setAttribute('aria-label','大文字切替');third.appendChild(shift);for(const char of 'zxcvbnm'){const button=makeKeyboardButton(char);button.dataset.key=char;third.appendChild(button)}const back=makeKeyboardButton('⌫','key function');back.dataset.action='backspace';back.setAttribute('aria-label','一文字削除');third.appendChild(back)}
@@ -771,10 +1544,11 @@
     $('startButton').onclick=startCountdown;$('againButton').onclick=startCountdown;$('homeButton').onclick=returnHome;$('exitButton').onclick=returnHome;$('hintButton').onclick=showHint;$('skipButton').onclick=skipQuestion;
     $('judgeButton').onclick=()=>game.answered?nextQuestion():checkAnswer();
     $('romajiKeyboard').addEventListener('pointerdown',e=>{if(e.target.closest('.key'))e.preventDefault()});$('romajiKeyboard').addEventListener('click',e=>{const key=e.target.closest('.key');if(!key)return;if(key.dataset.action==='backspace')backspace();else if(key.dataset.action==='shift')setKeyboardShift(!$('romajiKeyboard').classList.contains('shifted'));else{enterKey(key.dataset.key);if($('romajiKeyboard').classList.contains('shifted'))setKeyboardShift(false)}});
-    document.addEventListener('keydown',e=>{if(game.view!=='practice')return;if(/^[a-zA-Z]$/.test(e.key)){e.preventDefault();enterKey(e.key.toLowerCase())}else if(e.key==='-'||e.key==="'"){e.preventDefault();enterKey(e.key)}else if(e.key==='Backspace'){e.preventDefault();backspace()}else if(e.key==='Enter'){e.preventDefault();game.answered?nextQuestion():checkAnswer()}});
+    document.addEventListener('keydown',e=>{if(game.view!=='practice'||window.GameInputMode?.isSystem()||e.isComposing||e.keyCode===229||e.ctrlKey||e.metaKey||e.altKey||e.defaultPrevented)return;if(/^[a-zA-Z]$/.test(e.key)){e.preventDefault();enterKey(e.key.toLowerCase())}else if(e.key==='-'||e.key==="'"){e.preventDefault();enterKey(e.key)}else if(e.key==='Backspace'){e.preventDefault();backspace()}else if(e.key==='Enter'){e.preventDefault();game.answered?nextQuestion():checkAnswer()}});
     $('settingsButton').onclick=()=>{renderSettings();$('settingsError').textContent='';openModal('settingsModal')};$('settingsClose').onclick=()=>closeModal('settingsModal');$('settingsForm').onsubmit=saveSettings;$('settingsReset').onclick=()=>{document.querySelectorAll('#settingsForm input[type="checkbox"]').forEach(el=>el.checked=true);$('settingsError').textContent=''};
     $('howButton').onclick=()=>openModal('howModal');$('howClose').onclick=()=>closeModal('howModal');
     for(const id of ['settingsModal','howModal'])$(id).addEventListener('click',e=>{if(e.target===$(id))closeModal(id)});
+    window.GameInputMode?.register({display:$('answerDisplay'),submitButton:$('judgeButton'),label:'読みを日本語で入力',getState:()=>({token:`${game.endsAt}:${game.index}:${game.questionStartedAt}`,active:game.view==='practice',editable:!game.answered,value:game.romaji,correct:$('answerDisplay').classList.contains('is-correct'),wrong:$('answerDisplay').classList.contains('is-wrong')}),onInput:value=>{game.romaji=value;renderInput()},onSubmit:()=>game.answered?nextQuestion():checkAnswer()});
   })();
   </script>
 </body>

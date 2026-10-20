@@ -1,17 +1,91 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JLPT 文法排序练习</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;600;700;900&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../shared/domestic-fonts.css">
     <link rel="stylesheet" href="../grammar/grammar-redesign.css">
     <link rel="stylesheet" href="./sort-redesign.css">
+    <link rel="stylesheet" href="../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
 </head>
-<body class="grammar-app sort-app">
+<body class="kiki-unified-header-enabled grammar-app sort-app">
 
-    <header class="sort-page-header">
-        <a href="../index.html" id="page-back-btn" class="grammar-back-link" data-kiki-unified-back data-kiki-dynamic-back aria-label="返回上一页" onclick="event.preventDefault(); app.handleHeaderBack(); return false;">
+    <header class="sort-page-header" data-kiki-unified-header-host="page" data-kiki-header-pending>
+        <a href="../../../index.html#exam/exam-grammar" id="page-back-btn" class="grammar-back-link" data-kiki-unified-back data-kiki-dynamic-back aria-label="返回上一页" onclick="event.preventDefault(); app.handleHeaderBack(); return false;">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             <span id="page-back-label">返回语法专项</span>
         </a>
@@ -48,7 +122,7 @@
                 <div class="grammar-level-tabs grammar-main-level-tabs" aria-label="切换练习等级">
                     <button type="button" data-sort-level="N1" onclick="app.selectLevel('N1')">N1</button>
                     <button type="button" data-sort-level="N2" onclick="app.selectLevel('N2')">N2</button>
-                    <button id="level-btn-N3" type="button" data-sort-level="N3" onclick="app.selectLevel('N3')">N3</button>
+                    
                 </div>
             </div>
 
@@ -66,7 +140,7 @@
                     </button>
                 </nav>
                 <button type="button" onclick="app.startGlobalRandomPractice()" class="grammar-random-entry">
-                    <span><strong>跨级别随机小测</strong><small>混合 N1 / N2 / N3，集中检查语序判断</small></span>
+                    <span><strong>跨级别随机小测</strong><small>混合 N1 / N2，集中检查语序判断</small></span>
                     <span>开始小测　›</span>
                 </button>
             </section>
@@ -94,7 +168,7 @@
                 <div class="grammar-level-tabs" aria-label="切换年度排序真题级别">
                     <button type="button" data-sort-year-level="N1" onclick="app.selectYearLevel('N1')">N1</button>
                     <button type="button" data-sort-year-level="N2" onclick="app.selectYearLevel('N2')">N2</button>
-                    <button type="button" data-sort-year-level="N3" onclick="app.selectYearLevel('N3')">N3</button>
+                    
                 </div>
             </footer>
         </div>
@@ -114,7 +188,7 @@
                 <div class="grammar-level-tabs grammar-main-level-tabs" aria-label="切换错题级别">
                     <button type="button" data-sort-mistake-level="N1" onclick="app.selectMistakeLevel('N1')">N1</button>
                     <button type="button" data-sort-mistake-level="N2" onclick="app.selectMistakeLevel('N2')">N2</button>
-                    <button type="button" data-sort-mistake-level="N3" onclick="app.selectMistakeLevel('N3')">N3</button>
+                    
                 </div>
             </div>
             <section class="mistake-overview-line" aria-label="排序错题概览">
@@ -257,11 +331,11 @@
     </div>
     </main>
 
-    <script src="./n1/data-sort-n1.js"></script>
+    <script src="./n1/data-sort-n1.js?v=20261019-n1-2025-1"></script>
     <script src="./n2/data-sort-n2.js"></script>
-    <script src="./n3/data-sort-n3.js"></script>
-    <script src="../../../shared/study-quest-test-runtime.js"></script>
-    <script src="../../../shared/study-quest-test-boot.js"></script>
+    
+    <script src="../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../shared/study-quest-test-boot-github-20261020.js"></script>
 
     <script>
         // --- 1. 结构化题库 (带级别和年份元数据) ---
@@ -609,7 +683,7 @@
                 const training = params.get('training');
                 const timer = params.get('timer');
 
-                this.currentLevel = ['N1', 'N2', 'N3'].includes(level) && isEnabledSortLevel(level) ? level : 'N1';
+                this.currentLevel = ['N1', 'N2'].includes(level) && isEnabledSortLevel(level) ? level : 'N1';
                 const selectedLevelDisplay = document.getElementById('display-selected-level');
                 if (selectedLevelDisplay) selectedLevelDisplay.textContent = this.currentLevel;
                 updateSortCharacterCopy();
@@ -897,7 +971,7 @@
             handleHeaderBack() {
                 const activeViewId = this.getActiveViewId();
                 if (activeViewId === 'view-level-select') {
-                    window.location.href = '../index.html';
+                    window.location.href = '../../../index.html#exam/exam-grammar';
                     return;
                 }
                 if (activeViewId === 'view-mode-select') {
@@ -916,7 +990,7 @@
                     this.handleBackFromPractice();
                     return;
                 }
-                window.location.href = '../index.html';
+                window.location.href = '../../../index.html#exam/exam-grammar';
             },
 
             goHome() {
@@ -1659,6 +1733,34 @@
                 return correctOrderStrHtml;
             },
 
+            buildStructuredResolutionMarkup(q) {
+                if (q.analysisStyle !== 'structured') return '';
+
+                const resolvedTokens = q.correctOrder.map((id, slotIndex) => {
+                    const option = q.options.find(item => String(item.id) === String(id));
+                    const optionText = option ? option.text : id;
+                    const starClass = slotIndex === q.starIndex ? ' is-star' : '';
+                    const punctuation = q.resolvedPunctuation && q.resolvedPunctuation[id]
+                        ? q.resolvedPunctuation[id]
+                        : '';
+                    return `<span class="sort-resolved-token${starClass}">${optionText}</span>${punctuation}`;
+                }).join('');
+                const starId = q.correctOrder[q.starIndex];
+                const starOption = q.options.find(item => String(item.id) === String(starId));
+
+                return `
+                    <div class="correct-answer-box sort-complete-answer-box">
+                        <div class="sort-complete-copy">
+                            <p class="sort-resolution-sentence">
+                                ${q.prefix}${resolvedTokens}${q.suffix}
+                            </p>
+                            ${q.translation ? `<p class="sort-inline-meaning">${escapeHtml(q.translation)}</p>` : ''}
+                        </div>
+                        <strong class="sort-star-answer">★位答案：${escapeHtml(String(starId))}「${starOption ? starOption.text : ''}」</strong>
+                    </div>
+                `;
+            },
+
             getSessionReviewResults() {
                 const seen = new Set();
                 return this.sessionResults.filter((result) => {
@@ -1769,8 +1871,14 @@
                                     </div>
                                 </div>
                             </div>
+                            ${q.analysisStyle === 'structured' ? `
+                                <div>
+                                    <h4 class="explanation-group-title">02　完整还原</h4>
+                                    ${this.buildStructuredResolutionMarkup(q)}
+                                </div>
+                            ` : ''}
                             <div>
-                                <h4 class="explanation-group-title">02　排序解析</h4>
+                                <h4 class="explanation-group-title">${q.analysisStyle === 'structured' ? '03　语言逻辑' : '02　排序解析'}</h4>
                                 <div class="explanation-copy">
                                     ${q.explanation}
                                 </div>
@@ -1958,13 +2066,7 @@
                         </header>
 
                         <div class="question-prompt-area">
-                            <div class="choice-sentence sort-sentence">
-                                ${q.prefix}
-                                <span class="sort-slot-group">
-                                    ${slotsHtml}
-                                </span>
-                                ${q.suffix}
-                            </div>
+                            <div class="choice-sentence sort-sentence"><span class="sort-sentence-prefix">${q.prefix}</span><span class="sort-slot-group">${slotsHtml}</span><span class="sort-sentence-suffix">${q.suffix}</span></div>
                         </div>
 
                         <div class="choice-options-grid sort-options-grid">
@@ -1988,8 +2090,14 @@
                                     </div>
                                 </div>
                             </div>
+                            ${q.analysisStyle === 'structured' ? `
+                                <div>
+                                    <h4 class="explanation-group-title">02　完整还原</h4>
+                                    ${this.buildStructuredResolutionMarkup(q)}
+                                </div>
+                            ` : ''}
                             <div>
-                                <h4 class="explanation-group-title">02　排序解析</h4>
+                                <h4 class="explanation-group-title">${q.analysisStyle === 'structured' ? '03　语言逻辑' : '02　排序解析'}</h4>
                                 <div class="explanation-copy">
                                     ${q.explanation}
                                 </div>
@@ -2196,7 +2304,7 @@
             }
         });
     </script>
-    <script src="../../../shared/word-bank.js"></script>
-    <script src="../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+    <script src="../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
 </body>
 </html>

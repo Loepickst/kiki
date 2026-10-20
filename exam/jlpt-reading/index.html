@@ -1,16 +1,90 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>能力考阅读鉴赏</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;600;700;900&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../shared/domestic-fonts.css">
     <link rel="stylesheet" href="./reading-directory-redesign.css?v=20260815-n2-long-genres">
+    <link rel="stylesheet" href="../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
 </head>
-<body class="reading-app">
+<body class="kiki-unified-header-enabled reading-app">
 
-    <header class="reading-page-header">
+    <header class="reading-page-header" data-kiki-unified-header-host="page" data-kiki-header-pending>
         <a href="../../index.html#exam/exam-reading" class="reading-back-link" id="backButton" data-back-nav data-kiki-unified-back data-kiki-dynamic-back>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             返回上一页
@@ -47,7 +121,7 @@
                         <div class="reading-level-tabs" aria-label="切换阅读等级">
                             <button type="button" data-reading-level="N1" onclick="switchReadingLevel('N1')">N1</button>
                             <button type="button" data-reading-level="N2" onclick="switchReadingLevel('N2')">N2</button>
-                            <button type="button" data-reading-level="N3" disabled title="内容准备中">N3</button>
+                            
                         </div>
                     </div>
                 </div>
@@ -89,7 +163,7 @@
                         <div class="reading-level-tabs" aria-label="切换阅读等级">
                             <button type="button" data-reading-level="N1" onclick="switchReadingLevel('N1')">N1</button>
                             <button type="button" data-reading-level="N2" onclick="switchReadingLevel('N2')">N2</button>
-                            <button type="button" data-reading-level="N3" disabled title="内容准备中">N3</button>
+                            
                         </div>
                     </div>
                 </div>
@@ -121,7 +195,7 @@
                         <div class="reading-level-tabs" aria-label="切换阅读等级">
                             <button type="button" data-reading-level="N1" onclick="switchReadingLevel('N1')">N1</button>
                             <button type="button" data-reading-level="N2" onclick="switchReadingLevel('N2')">N2</button>
-                            <button type="button" data-reading-level="N3" disabled title="内容准备中">N3</button>
+                            
                         </div>
                         <button id="mistakeCategoryBack" type="button" class="reading-directory-back hidden" onclick="returnToMistakeCategories()"><span>‹</span> 返回错题分类</button>
                     </div>
@@ -134,8 +208,8 @@
 <script src="shared/reading-year-system.js?v=20260809-reading-mistakes"></script>
 <script src="categories/index.js?v=20260815-n2-long-genres"></script>
 <script src="shared/reading-category-system.js?v=20260815-n2-long-genres"></script>
-<script src="../../shared/back-navigation.js"></script>
-<script src="../../shared/study-quest-test-boot.js"></script>
+<script src="../../shared/back-navigation.js?v=20260907-first-paint"></script>
+<script src="../../shared/study-quest-test-boot-github-20261020.js"></script>
 <script>
     const databaseN1 = [
         {
@@ -1176,6 +1250,78 @@
             title: '2020年12月 短文',
             link: 's/n2/2020.12.html?page=1',
             questionCount: 5
+        },
+        {
+            type: 'short',
+            level: 'N2',
+            year: '2021.7',
+            title: '2021年7月 短文',
+            link: 's/n2/2021.7.html?page=1',
+            questionCount: 5
+        },
+        {
+            type: 'short',
+            level: 'N2',
+            year: '2021.12',
+            title: '2021年12月 短文',
+            link: 's/n2/2021.12.html?page=1',
+            questionCount: 5
+        },
+        {
+            type: 'short',
+            level: 'N2',
+            year: '2022.7',
+            title: '2022年7月 短文',
+            link: 's/n2/2022.7.html?page=1',
+            questionCount: 5
+        },
+        {
+            type: 'short',
+            level: 'N2',
+            year: '2022.12',
+            title: '2022年12月 短文',
+            link: 's/n2/2022.12.html?page=1',
+            questionCount: 5
+        },
+        {
+            type: 'short',
+            level: 'N2',
+            year: '2023.7',
+            title: '2023年7月 短文',
+            link: 's/n2/2023.7.html?page=1',
+            questionCount: 5
+        },
+        {
+            type: 'short',
+            level: 'N2',
+            year: '2023.12',
+            title: '2023年12月 短文',
+            link: 's/n2/2023.12.html?page=1',
+            questionCount: 5
+        },
+        {
+            type: 'short',
+            level: 'N2',
+            year: '2024.7',
+            title: '2024年7月 短文',
+            link: 's/n2/2024.7.html?page=1',
+            questionCount: 5
+        },
+        {
+            type: 'short',
+            level: 'N2',
+            year: '2024.12',
+            title: '2024年12月 短文',
+            link: 's/n2/2024.12.html?page=1',
+            questionCount: 5
+        },
+        {
+            type: 'short',
+            level: 'N2',
+            year: '2025.7',
+            title: '2025年7月 短文',
+            link: 's/n2/2025.7.html?page=1',
+            questionCount: 5
         }
     ];
 
@@ -1531,6 +1677,312 @@
             title: '2021年12月 長文',
             link: 'l/n2/2021.12.html?page=1',
             questionCount: 3
+        },
+        // --- N2 統合理解（A/B文对比） ---
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2010.7',
+            title: '2010年7月 統合理解',
+            link: 'd/n2/2010.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2010.12',
+            title: '2010年12月 統合理解',
+            link: 'd/n2/2010.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2011.7',
+            title: '2011年7月 統合理解',
+            link: 'd/n2/2011.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2011.12',
+            title: '2011年12月 統合理解',
+            link: 'd/n2/2011.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2012.7',
+            title: '2012年7月 統合理解',
+            link: 'd/n2/2012.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2012.12',
+            title: '2012年12月 統合理解',
+            link: 'd/n2/2012.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2013.7',
+            title: '2013年7月 統合理解',
+            link: 'd/n2/2013.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2013.12',
+            title: '2013年12月 統合理解',
+            link: 'd/n2/2013.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2014.7',
+            title: '2014年7月 統合理解',
+            link: 'd/n2/2014.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2014.12',
+            title: '2014年12月 統合理解',
+            link: 'd/n2/2014.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2015.7',
+            title: '2015年7月 統合理解',
+            link: 'd/n2/2015.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2015.12',
+            title: '2015年12月 統合理解',
+            link: 'd/n2/2015.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2016.7',
+            title: '2016年7月 統合理解',
+            link: 'd/n2/2016.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2016.12',
+            title: '2016年12月 統合理解',
+            link: 'd/n2/2016.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2017.7',
+            title: '2017年7月 統合理解',
+            link: 'd/n2/2017.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2017.12',
+            title: '2017年12月 統合理解',
+            link: 'd/n2/2017.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'integrated',
+            level: 'N2',
+            year: '2018.7',
+            title: '2018年7月 統合理解',
+            link: 'd/n2/2018.7.html',
+            questionCount: 2
+        },
+        // --- N2 情報検索（图表文） ---
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2010.7',
+            title: '2010年7月 情報検索',
+            link: 't/n2/2010.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2010.12',
+            title: '2010年12月 情報検索',
+            link: 't/n2/2010.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2011.7',
+            title: '2011年7月 情報検索',
+            link: 't/n2/2011.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2011.12',
+            title: '2011年12月 情報検索',
+            link: 't/n2/2011.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2012.7',
+            title: '2012年7月 情報検索',
+            link: 't/n2/2012.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2012.12',
+            title: '2012年12月 情報検索',
+            link: 't/n2/2012.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2013.7',
+            title: '2013年7月 情報検索',
+            link: 't/n2/2013.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2013.12',
+            title: '2013年12月 情報検索',
+            link: 't/n2/2013.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2014.7',
+            title: '2014年7月 情報検索',
+            link: 't/n2/2014.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2014.12',
+            title: '2014年12月 情報検索',
+            link: 't/n2/2014.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2015.7',
+            title: '2015年7月 情報検索',
+            link: 't/n2/2015.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2015.12',
+            title: '2015年12月 情報検索',
+            link: 't/n2/2015.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2016.7',
+            title: '2016年7月 情報検索',
+            link: 't/n2/2016.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2016.12',
+            title: '2016年12月 情報検索',
+            link: 't/n2/2016.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2017.7',
+            title: '2017年7月 情報検索',
+            link: 't/n2/2017.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2017.12',
+            title: '2017年12月 情報検索',
+            link: 't/n2/2017.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2018.7',
+            title: '2018年7月 情報検索',
+            link: 't/n2/2018.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2018.12',
+            title: '2018年12月 情報検索',
+            link: 't/n2/2018.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2019.7',
+            title: '2019年7月 情報検索',
+            link: 't/n2/2019.7.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2019.12',
+            title: '2019年12月 情報検索',
+            link: 't/n2/2019.12.html',
+            questionCount: 2
+        },
+        {
+            type: 'search',
+            level: 'N2',
+            year: '2020.12',
+            title: '2020年12月 情報検索',
+            link: 't/n2/2020.12.html',
+            questionCount: 2
         }
     );
 
@@ -2500,7 +2952,7 @@
 
     initializeReadingDirectory();
 </script>
-    <script src="../../shared/word-bank.js?v=20260808-reading-tools"></script>
-    <script src="../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+    <script src="../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
 </body>
 </html>

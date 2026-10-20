@@ -20,6 +20,11 @@ const FULL_WORD_LIST = [
                 "cn": "他用巧妙的话术谈妥了生意。"
             }
         ],
+        "patterns": [
+            "準備を整える",
+            "体制を整える",
+            "環境を整える"
+        ],
         "category": "整理・收纳・积累",
         "sourceOrder": 1,
         "sourceNumber": 1,
@@ -152,6 +157,11 @@ const FULL_WORD_LIST = [
                 "cn": "统一团队的意见很难。"
             }
         ],
+        "patterns": [
+            "意見をまとめる",
+            "資料をまとめる",
+            "一つにまとめる"
+        ],
         "category": "整理・收纳・积累",
         "sourceOrder": 2,
         "sourceNumber": 2,
@@ -279,6 +289,11 @@ const FULL_WORD_LIST = [
                 "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>長年<rt>ながねん</rt></ruby>の<ruby>経験<rt>けいけん</rt></ruby>で<ruby>多<rt>おお</rt></ruby>くの<ruby>知識<rt>ちしき</rt></ruby>を<strong class=\"ex-highlight\"><ruby>蓄<rt>たくわ</rt></ruby>えて</strong>いる。",
                 "cn": "他通过多年的经验积累了丰富的知识。"
             }
+        ],
+        "patterns": [
+            "食料を蓄える",
+            "知識を蓄える",
+            "力を蓄える"
         ],
         "category": "整理・收纳・积累",
         "sourceOrder": 3,
@@ -408,6 +423,11 @@ const FULL_WORD_LIST = [
                 "cn": "把雨水积攒在水桶里。"
             }
         ],
+        "patterns": [
+            "お金を貯める",
+            "ポイントを貯める",
+            "学費を貯める"
+        ],
         "category": "整理・收纳・积累",
         "sourceOrder": 4,
         "sourceNumber": 4,
@@ -535,6 +555,11 @@ const FULL_WORD_LIST = [
                 "jp": "その<ruby>件<rt>けん</rt></ruby>はしばらく<ruby>私<rt>わたし</rt></ruby>が<strong class=\"ex-highlight\"><ruby>預<rt>あず</rt></ruby>かる</strong>。",
                 "cn": "这件事我暂时保留意见。"
             }
+        ],
+        "patterns": [
+            "荷物を預かる",
+            "子どもを預かる",
+            "伝言を預かる"
         ],
         "category": "整理・收纳・积累",
         "sourceOrder": 5,
@@ -667,6 +692,11 @@ const FULL_WORD_LIST = [
                 "jp": "<ruby>計画<rt>けいかく</rt></ruby>をもう<ruby>一<rt>いち</rt></ruby><ruby>度<rt>ど</rt></ruby><ruby>考<rt>かんが</rt></ruby>え<strong class=\"ex-highlight\"><ruby>直<rt>なお</rt></ruby>そう</strong>。",
                 "cn": "重新考虑一下计划吧。"
             }
+        ],
+        "patterns": [
+            "間違いを直す",
+            "故障を直す",
+            "機嫌を直す"
         ],
         "category": "整理・收纳・积累",
         "sourceOrder": 6,
@@ -844,6 +874,11 @@ const FULL_WORD_LIST = [
                 "cn": "心情好转了。"
             }
         ],
+        "patterns": [
+            "故障が直る",
+            "時計が直る",
+            "機嫌が直る"
+        ],
         "category": "整理・收纳・积累",
         "sourceOrder": 7,
         "sourceNumber": 7,
@@ -976,6 +1011,11 @@ const FULL_WORD_LIST = [
                 "cn": "他充分具备作为领导者的素质。"
             }
         ],
+        "patterns": [
+            "防災グッズを備える",
+            "設備を備える",
+            "心構えを備える"
+        ],
         "category": "整理・收纳・积累",
         "sourceOrder": 8,
         "sourceNumber": 8,
@@ -1104,6 +1144,11 @@ const FULL_WORD_LIST = [
                 "cn": "步调一致。"
             }
         ],
+        "patterns": [
+            "全員が揃う",
+            "資料が揃う",
+            "条件が揃う"
+        ],
         "category": "整理・收纳・积累",
         "sourceOrder": 9,
         "sourceNumber": 9,
@@ -1231,6 +1276,11 @@ const FULL_WORD_LIST = [
                 "jp": "<ruby>損害<rt>そんがい</rt></ruby>を<ruby>金銭<rt>きんせん</rt></ruby>で<strong class=\"ex-highlight\"><ruby>補<rt>おぎな</rt></ruby>う</strong>。",
                 "cn": "用金钱来填补损失。"
             }
+        ],
+        "patterns": [
+            "栄養を補う",
+            "不足を補う",
+            "損失を補う"
         ],
         "category": "整理・收纳・积累",
         "sourceOrder": 10,
@@ -1364,6 +1414,11 @@ const FULL_WORD_LIST = [
                 "cn": "平息怒火。"
             }
         ],
+        "patterns": [
+            "税金を納める",
+            "会費を納める",
+            "商品を納める"
+        ],
         "category": "整理・收纳・积累",
         "sourceOrder": 11,
         "sourceNumber": 11,
@@ -1496,11 +1551,16 @@ const FULL_WORD_LIST = [
                 "cn": "通过协商圆满地解决了纷争。"
             }
         ],
+        "patterns": [
+            "書類を箱に収める",
+            "成功を収める",
+            "争いを収める"
+        ],
         "category": "整理・收纳・积累",
         "sourceOrder": 12,
         "sourceNumber": 12,
-        "word_html": "収める",
-        "reading": "おさめた",
+        "word_html": "<ruby>収<rt>おさ</rt></ruby>める",
+        "reading": "おさめる",
         "usage": "表示“收纳”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -1675,11 +1735,16 @@ const FULL_WORD_LIST = [
                 "cn": "两家公司之间总算协调好了谈判。"
             }
         ],
+        "patterns": [
+            "準備が整う",
+            "顔立ちが整う",
+            "条件が整う"
+        ],
         "category": "整理・收纳・积累",
         "sourceOrder": 13,
         "sourceNumber": 13,
-        "word_html": "整う",
-        "reading": "ととのった",
+        "word_html": "<ruby>整<rt>ととの</rt></ruby>う",
+        "reading": "ととのう",
         "usage": "表示“齐备”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -1854,11 +1919,16 @@ const FULL_WORD_LIST = [
                 "cn": "他在国外积累了丰富的工作经验。"
             }
         ],
+        "patterns": [
+            "荷物を積む",
+            "経験を積む",
+            "練習を積む"
+        ],
         "category": "整理・收纳・积累",
         "sourceOrder": 14,
         "sourceNumber": 14,
-        "word_html": "積む",
-        "reading": "つんで",
+        "word_html": "<ruby>積<rt>つ</rt></ruby>む",
+        "reading": "つむ",
         "usage": "表示“堆积”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -2029,6 +2099,11 @@ const FULL_WORD_LIST = [
                 "cn": "压力不断堆积导致生病。"
             }
         ],
+        "patterns": [
+            "疲れが溜まる",
+            "ストレスが溜まる",
+            "ほこりが溜まる"
+        ],
         "category": "整理・收纳・积累",
         "sourceOrder": 15,
         "sourceNumber": 15,
@@ -2156,6 +2231,11 @@ const FULL_WORD_LIST = [
                 "jp": "<ruby>月<rt>つき</rt></ruby>が<strong class=\"ex-highlight\"><ruby>満<rt>み</rt></ruby>ちて</strong>、<ruby>夜道<rt>よみち</rt></ruby>が<ruby>明<rt>あか</rt></ruby>るくなった。",
                 "cn": "月亮圆了，夜路变亮了。"
             }
+        ],
+        "patterns": [
+            "自信に満ちる",
+            "希望に満ちる",
+            "月が満ちる"
         ],
         "category": "整理・收纳・积累",
         "sourceOrder": 16,
@@ -2289,11 +2369,16 @@ const FULL_WORD_LIST = [
                 "cn": "把子弹装填进枪中。"
             }
         ],
+        "patterns": [
+            "心を込める",
+            "力を込める",
+            "願いを込める"
+        ],
         "category": "整理・收纳・积累",
         "sourceOrder": 17,
         "sourceNumber": 17,
-        "word_html": "込める",
-        "reading": "こめて",
+        "word_html": "<ruby>込<rt>こ</rt></ruby>める",
+        "reading": "こめる",
         "usage": "表示“倾注”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -2716,7 +2801,7 @@ const FULL_WORD_LIST = [
         "nuance": "抱、搂抱 (用手臂环绕着抱住具体的人、动物或物体)",
         "examples": [
             {
-                "jp": "<ruby>彼女<rt>かのじょ</rt></ruby>は<ruby>可愛<rt>かわ</rt></ruby>い<ruby>子猫<rt>こねこ</rt></ruby>を<ruby>両手<rt>りょうて</rt></ruby>でしっかりと<strong class=\"ex-highlight\"><ruby>抱<rt>だ</rt></ruby>いて</strong>いる。",
+                "jp": "<ruby>彼女<rt>かのじょ</rt></ruby>は<ruby>可愛い<rt>かわいい</rt></ruby><ruby>子猫<rt>こねこ</rt></ruby>を<ruby>両手<rt>りょうて</rt></ruby>でしっかりと<strong class=\"ex-highlight\"><ruby>抱<rt>だ</rt></ruby>いて</strong>いる。",
                 "cn": "她正用双手稳稳地抱着可爱的小猫。"
             }
         ],
@@ -2888,7 +2973,7 @@ const FULL_WORD_LIST = [
         "nuance": "抱、夹(用手或手臂围住物体)\n承担、背负(担负债务、难题、心理负担)",
         "examples": [
             {
-                "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>大<rt>おお</rt></ruby>きな<ruby>箱<rt>ばこ</rt></ruby>を<ruby>両手<rt>りょうて</rt></ruby>で<strong class=\"ex-highlight\"><ruby>抱<rt>かか</rt></ruby>えて</strong>いた。",
+                "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>大<rt>おお</rt></ruby>きな<ruby>箱<rt>はこ</rt></ruby>を<ruby>両手<rt>りょうて</rt></ruby>で<strong class=\"ex-highlight\"><ruby>抱<rt>かか</rt></ruby>えて</strong>いた。",
                 "cn": "他双手抱着一个大箱子。"
             },
             {
@@ -3156,7 +3241,7 @@ const FULL_WORD_LIST = [
                 "cn": "缔结契约。"
             },
             {
-                "jp": "<ruby>努力<rt>どりょく</rt></ruby>が<ruby>実<rt>じつ</rt></ruby>を<strong class=\"ex-highlight\"><ruby>結<rt>むす</rt></ruby>ぶ</strong>。",
+                "jp": "<ruby>努力<rt>どりょく</rt></ruby>が<ruby>実<rt>み</rt></ruby>を<strong class=\"ex-highlight\"><ruby>結<rt>むす</rt></ruby>ぶ</strong>。",
                 "cn": "努力结出了果实。"
             }
         ],
@@ -5523,8 +5608,8 @@ const FULL_WORD_LIST = [
         "category": "物体操作・手部动作",
         "sourceOrder": 40,
         "sourceNumber": 40,
-        "word_html": "刻む",
-        "reading": "きざんで",
+        "word_html": "<ruby>刻<rt>きざ</rt></ruby>む",
+        "reading": "きざむ",
         "usage": "表示“切碎”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -5702,8 +5787,8 @@ const FULL_WORD_LIST = [
         "category": "物体操作・手部动作",
         "sourceOrder": 41,
         "sourceNumber": 41,
-        "word_html": "味わう",
-        "reading": "あじわった",
+        "word_html": "<ruby>味<rt>あじ</rt></ruby>わう",
+        "reading": "あじわう",
         "usage": "表示“品尝”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -5881,7 +5966,7 @@ const FULL_WORD_LIST = [
         "category": "物体操作・手部动作",
         "sourceOrder": 42,
         "sourceNumber": 42,
-        "word_html": "撒く",
+        "word_html": "<ruby>撒<rt>ま</rt></ruby>く",
         "reading": "まく",
         "usage": "表示“撒”。",
         "vocabType": "verb",
@@ -6056,8 +6141,8 @@ const FULL_WORD_LIST = [
         "category": "物体操作・手部动作",
         "sourceOrder": 43,
         "sourceNumber": 43,
-        "word_html": "背負う",
-        "reading": "せおって",
+        "word_html": "<ruby>背負<rt>せお</rt></ruby>う",
+        "reading": "せおう",
         "usage": "表示“背”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -6227,7 +6312,7 @@ const FULL_WORD_LIST = [
         "category": "物体操作・手部动作",
         "sourceOrder": 44,
         "sourceNumber": 44,
-        "word_html": "耕す",
+        "word_html": "<ruby>耕<rt>たがや</rt></ruby>す",
         "reading": "たがやす",
         "usage": "表示“耕种”。",
         "vocabType": "verb",
@@ -6402,8 +6487,8 @@ const FULL_WORD_LIST = [
         "category": "物体操作・手部动作",
         "sourceOrder": 45,
         "sourceNumber": 45,
-        "word_html": "用いる",
-        "reading": "もちいて",
+        "word_html": "<ruby>用<rt>もち</rt></ruby>いる",
+        "reading": "もちいる",
         "usage": "表示“使用”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -6577,8 +6662,8 @@ const FULL_WORD_LIST = [
         "category": "物体操作・手部动作",
         "sourceOrder": 46,
         "sourceNumber": 46,
-        "word_html": "映す",
-        "reading": "うつした",
+        "word_html": "<ruby>映<rt>うつ</rt></ruby>す",
+        "reading": "うつす",
         "usage": "表示“映照”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -6752,8 +6837,8 @@ const FULL_WORD_LIST = [
         "category": "物体操作・手部动作",
         "sourceOrder": 47,
         "sourceNumber": 47,
-        "word_html": "注ぐ",
-        "reading": "注ぐ",
+        "word_html": "<ruby>注<rt>そそ</rt></ruby>ぐ",
+        "reading": "そそぐ",
         "usage": "表示“注入”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -6879,8 +6964,8 @@ const FULL_WORD_LIST = [
         "category": "物体操作・手部动作",
         "sourceOrder": 48,
         "sourceNumber": 48,
-        "word_html": "齧る",
-        "reading": "かじって",
+        "word_html": "<ruby>齧<rt>かじ</rt></ruby>る",
+        "reading": "かじる",
         "usage": "表示“啃”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -7050,8 +7135,8 @@ const FULL_WORD_LIST = [
         "category": "物体操作・手部动作",
         "sourceOrder": 49,
         "sourceNumber": 49,
-        "word_html": "乾かす",
-        "reading": "かわかして",
+        "word_html": "<ruby>乾<rt>かわ</rt></ruby>かす",
+        "reading": "かわかす",
         "usage": "表示“弄干”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -7225,7 +7310,7 @@ const FULL_WORD_LIST = [
         "category": "物体操作・手部动作",
         "sourceOrder": 50,
         "sourceNumber": 50,
-        "word_html": "縮める",
+        "word_html": "<ruby>縮<rt>ちぢ</rt></ruby>める",
         "reading": "ちぢめる",
         "usage": "表示“缩短”。",
         "vocabType": "verb",
@@ -7404,8 +7489,8 @@ const FULL_WORD_LIST = [
         "category": "物体操作・手部动作",
         "sourceOrder": 51,
         "sourceNumber": 51,
-        "word_html": "詰める",
-        "reading": "つめた",
+        "word_html": "<ruby>詰<rt>つ</rt></ruby>める",
+        "reading": "つめる",
         "usage": "表示“塞”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -9915,8 +10000,8 @@ const FULL_WORD_LIST = [
         "category": "移动・方向・位置关系",
         "sourceOrder": 69,
         "sourceNumber": 72,
-        "word_html": "浮かぶ",
-        "reading": "うかんだ",
+        "word_html": "<ruby>浮<rt>う</rt></ruby>かぶ",
+        "reading": "うかぶ",
         "usage": "表示“漂浮”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -10094,7 +10179,7 @@ const FULL_WORD_LIST = [
         "category": "移动・方向・位置关系",
         "sourceOrder": 70,
         "sourceNumber": 73,
-        "word_html": "就く",
+        "word_html": "<ruby>就<rt>つ</rt></ruby>く",
         "reading": "つく",
         "usage": "表示“就任”。",
         "vocabType": "verb",
@@ -10273,8 +10358,8 @@ const FULL_WORD_LIST = [
         "category": "移动・方向・位置关系",
         "sourceOrder": 71,
         "sourceNumber": 74,
-        "word_html": "外れる",
-        "reading": "はずれて",
+        "word_html": "<ruby>外<rt>はず</rt></ruby>れる",
+        "reading": "はずれる",
         "usage": "表示“脱落”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -10448,8 +10533,8 @@ const FULL_WORD_LIST = [
         "category": "移动・方向・位置关系",
         "sourceOrder": 72,
         "sourceNumber": 75,
-        "word_html": "溢れる",
-        "reading": "あふれ",
+        "word_html": "<ruby>溢<rt>あふ</rt></ruby>れる",
+        "reading": "あふれる",
         "usage": "表示“溢出”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -10631,7 +10716,7 @@ const FULL_WORD_LIST = [
         "category": "移动・方向・位置关系",
         "sourceOrder": 73,
         "sourceNumber": 76,
-        "word_html": "抜ける",
+        "word_html": "<ruby>抜<rt>ぬ</rt></ruby>ける",
         "reading": "ぬける",
         "usage": "表示“脱落”。",
         "vocabType": "verb",
@@ -10806,8 +10891,8 @@ const FULL_WORD_LIST = [
         "category": "移动・方向・位置关系",
         "sourceOrder": 74,
         "sourceNumber": 77,
-        "word_html": "遡る",
-        "reading": "さかのぼって",
+        "word_html": "<ruby>遡<rt>さかのぼ</rt></ruby>る",
+        "reading": "さかのぼる",
         "usage": "表示“溯流而上”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -10981,7 +11066,7 @@ const FULL_WORD_LIST = [
         "category": "移动・方向・位置关系",
         "sourceOrder": 75,
         "sourceNumber": 78,
-        "word_html": "見下ろす",
+        "word_html": "<ruby>見<rt>み</rt></ruby><ruby>下<rt>お</rt></ruby>ろす",
         "reading": "みおろす",
         "usage": "表示“俯视”。",
         "vocabType": "verb",
@@ -11156,7 +11241,7 @@ const FULL_WORD_LIST = [
         "category": "移动・方向・位置关系",
         "sourceOrder": 76,
         "sourceNumber": 79,
-        "word_html": "すれ違う",
+        "word_html": "すれ<ruby>違<rt>ちが</rt></ruby>う",
         "reading": "すれちがう",
         "usage": "表示“擦肩而过”。",
         "vocabType": "verb",
@@ -12496,7 +12581,7 @@ const FULL_WORD_LIST = [
         "sourceOrder": 86,
         "sourceNumber": 89,
         "word_html": "もたれる",
-        "reading": "もたれて",
+        "reading": "もたれる",
         "usage": "表示“靠”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -12674,7 +12759,7 @@ const FULL_WORD_LIST = [
         "category": "姿势・接触・身体动作",
         "sourceOrder": 87,
         "sourceNumber": 90,
-        "word_html": "接する",
+        "word_html": "<ruby>接<rt>せっ</rt></ruby>する",
         "reading": "せっする",
         "usage": "表示“挨着”。",
         "vocabType": "verb",
@@ -15153,8 +15238,8 @@ const FULL_WORD_LIST = [
         "category": "准备・确认・决定・努力・达成",
         "sourceOrder": 106,
         "sourceNumber": 109,
-        "word_html": "兼ねる",
-        "reading": "かねて",
+        "word_html": "<ruby>兼<rt>か</rt></ruby>ねる",
+        "reading": "かねる",
         "usage": "表示“兼备”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -15324,8 +15409,8 @@ const FULL_WORD_LIST = [
         "category": "准备・确认・决定・努力・达成",
         "sourceOrder": 107,
         "sourceNumber": 110,
-        "word_html": "適する",
-        "reading": "てきして",
+        "word_html": "<ruby>適<rt>てき</rt></ruby>する",
+        "reading": "てきする",
         "usage": "表示“适合”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -16438,8 +16523,8 @@ const FULL_WORD_LIST = [
         "category": "工作・职责・经济活动",
         "sourceOrder": 115,
         "sourceNumber": 118,
-        "word_html": "承る",
-        "reading": "うけたまわって",
+        "word_html": "<ruby>承<rt>うけたまわ</rt></ruby>る",
+        "reading": "うけたまわる",
         "usage": "表示“接受”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -17893,8 +17978,8 @@ const FULL_WORD_LIST = [
         "category": "授受・给予・邀请・请求",
         "sourceOrder": 126,
         "sourceNumber": 129,
-        "word_html": "教わる",
-        "reading": "おそわった",
+        "word_html": "<ruby>教<rt>おそ</rt></ruby>わる",
+        "reading": "おそわる",
         "usage": "表示“学习”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -20456,7 +20541,7 @@ const FULL_WORD_LIST = [
         "category": "感情・心理・态度",
         "sourceOrder": 146,
         "sourceNumber": 149,
-        "word_html": "好む",
+        "word_html": "<ruby>好<rt>この</rt></ruby>む",
         "reading": "このむ",
         "usage": "表示“喜欢”。",
         "vocabType": "verb",
@@ -20627,8 +20712,8 @@ const FULL_WORD_LIST = [
         "category": "感情・心理・态度",
         "sourceOrder": 147,
         "sourceNumber": 150,
-        "word_html": "飽きる",
-        "reading": "あきた",
+        "word_html": "<ruby>飽<rt>あ</rt></ruby>きる",
+        "reading": "あきる",
         "usage": "表示“厌倦”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -20802,8 +20887,8 @@ const FULL_WORD_LIST = [
         "category": "感情・心理・态度",
         "sourceOrder": 148,
         "sourceNumber": 151,
-        "word_html": "慰める",
-        "reading": "なぐさめた",
+        "word_html": "<ruby>慰<rt>なぐさ</rt></ruby>める",
+        "reading": "なぐさめる",
         "usage": "表示“安慰”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -20973,8 +21058,8 @@ const FULL_WORD_LIST = [
         "category": "感情・心理・态度",
         "sourceOrder": 149,
         "sourceNumber": 152,
-        "word_html": "甘やかす",
-        "reading": "あまやかして",
+        "word_html": "<ruby>甘<rt>あま</rt></ruby>やかす",
+        "reading": "あまやかす",
         "usage": "表示“溺爱”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -21148,8 +21233,8 @@ const FULL_WORD_LIST = [
         "category": "感情・心理・态度",
         "sourceOrder": 150,
         "sourceNumber": 153,
-        "word_html": "裏切る",
-        "reading": "うらぎられて",
+        "word_html": "<ruby>裏切<rt>うらぎ</rt></ruby>る",
+        "reading": "うらぎる",
         "usage": "表示“背叛”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -22855,8 +22940,8 @@ const FULL_WORD_LIST = [
         "category": "语言・认知・调查・判断",
         "sourceOrder": 163,
         "sourceNumber": 166,
-        "word_html": "訴える",
-        "reading": "うったえた",
+        "word_html": "<ruby>訴<rt>うった</rt></ruby>える",
+        "reading": "うったえる",
         "usage": "表示“起诉”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -25737,7 +25822,7 @@ const FULL_WORD_LIST = [
     {
         "id": "n2-verb-120",
         "word": "恵まれる",
-        "tone": "4",
+        "tone": "0",
         "pos": "自",
         "mean": "蒙受恩惠、富有",
         "nuance": "蒙受恩惠、富有（具备好的条件、天赋、自然资源等）",
@@ -25878,7 +25963,7 @@ const FULL_WORD_LIST = [
         "category": "自然现象・状态变化",
         "sourceOrder": 186,
         "sourceNumber": 189,
-        "word_html": "実る",
+        "word_html": "<ruby>実<rt>みの</rt></ruby>る",
         "reading": "みのる",
         "usage": "表示“结出果实”。",
         "vocabType": "verb",
@@ -26057,8 +26142,8 @@ const FULL_WORD_LIST = [
         "category": "自然现象・状态变化",
         "sourceOrder": 187,
         "sourceNumber": 190,
-        "word_html": "湧く",
-        "reading": "わいて",
+        "word_html": "<ruby>湧<rt>わ</rt></ruby>く",
+        "reading": "わく",
         "usage": "表示“涌出”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -26232,8 +26317,8 @@ const FULL_WORD_LIST = [
         "category": "自然现象・状态变化",
         "sourceOrder": 188,
         "sourceNumber": 191,
-        "word_html": "燃える",
-        "reading": "もえ",
+        "word_html": "<ruby>燃<rt>も</rt></ruby>える",
+        "reading": "もえる",
         "usage": "表示“燃烧”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -26407,8 +26492,8 @@ const FULL_WORD_LIST = [
         "category": "自然现象・状态变化",
         "sourceOrder": 189,
         "sourceNumber": 192,
-        "word_html": "腐る",
-        "reading": "くさり",
+        "word_html": "<ruby>腐<rt>くさ</rt></ruby>る",
+        "reading": "くさる",
         "usage": "表示“腐烂”。",
         "vocabType": "verb",
         "scheduleKind": "normal",
@@ -26586,7 +26671,7 @@ const FULL_WORD_LIST = [
         "category": "自然现象・状态变化",
         "sourceOrder": 190,
         "sourceNumber": 193,
-        "word_html": "繋がる",
+        "word_html": "<ruby>繋<rt>つな</rt></ruby>がる",
         "reading": "つながる",
         "usage": "表示“连接”。",
         "vocabType": "verb",
@@ -27386,7 +27471,7 @@ const FULL_WORD_LIST = [
         "nuance": "压扁、压碎 (立体受压后失去原本的形状)\n破产、倒闭 (企业、店铺等无法继续经营)\n泡汤、白费 (计划落空，或时间被白白消耗)",
         "examples": [
             {
-                "jp": "<ruby>箱<rt>ばこ</rt></ruby>が<strong class=\"ex-highlight\"><ruby>潰<rt>つぶ</rt></ruby>れる</strong>。",
+                "jp": "<ruby>箱<rt>はこ</rt></ruby>が<strong class=\"ex-highlight\"><ruby>潰<rt>つぶ</rt></ruby>れる</strong>。",
                 "cn": "箱子被压扁了。"
             },
             {
@@ -32025,7 +32110,7 @@ const FULL_WORD_LIST = [
         "category": "对立・竞争・阻碍・控制",
         "sourceOrder": 232,
         "sourceNumber": 235,
-        "word_html": "討つ",
+        "word_html": "<ruby>討<rt>う</rt></ruby>つ",
         "reading": "うつ",
         "usage": "表示“讨伐”。",
         "vocabType": "verb",
@@ -32569,7 +32654,7 @@ const FULL_WORD_LIST = [
         "nuance": "跳过、跨过 (越过前方的障碍物等)\n越级、超越 (跳过中间的层级或顺序)",
         "examples": [
             {
-                "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>道<rt>みち</rt></ruby>をふさいでいる<ruby>倒木<rt>とうぼく</rt></ruby>を<ruby>軽々<rt>けいけい</rt></ruby>と<strong class=\"ex-highlight\"><ruby>飛<rt>と</rt></ruby>び<ruby>越<rt>こ</rt></ruby>えた</strong>。",
+                "jp": "<ruby>彼<rt>かれ</rt></ruby>は<ruby>道<rt>みち</rt></ruby>をふさいでいる<ruby>倒木<rt>とうぼく</rt></ruby>を<ruby>軽々と<rt>かるがると</rt></ruby><strong class=\"ex-highlight\"><ruby>飛<rt>と</rt></ruby>び<ruby>越<rt>こ</rt></ruby>えた</strong>。",
                 "cn": "他轻松地跨过了挡在路上的倒木。"
             },
             {
@@ -33473,7 +33558,7 @@ const FULL_WORD_LIST = [
     {
         "id": "n2-verb-147",
         "word": "付け加える",
-        "tone": "4",
+        "tone": "5",
         "pos": "他",
         "mean": "补充、追加",
         "nuance": "补充、追加（在已经存在的事物、文章或话语上再增加一部分）",
@@ -34871,6 +34956,78 @@ const FULL_WORD_LIST = [
         "sourceCategoryId": "08",
         "sourceCategoryName": "感情・心理・态度",
         "sourceCategoryFullTitle": "08 感情・心理・态度"
+    },
+    {
+        "id": "n2-verb-new-258",
+        "word": "裂ける",
+        "word_html": "<ruby>裂<rt>さ</rt></ruby>ける",
+        "reading": "さける",
+        "tone": "2",
+        "pos": "自",
+        "mean": "裂开、撕裂",
+        "nuance": "用于纸张、布料被扯开，或地面出现裂缝的情况。",
+        "examples": [
+            {
+                "jp": "<ruby>枝<rt>えだ</rt></ruby>に<ruby>引<rt>ひ</rt></ruby>っかかって、シャツの<ruby>袖<rt>そで</rt></ruby>が<strong class=\"ex-highlight\"><ruby>裂<rt>さ</rt></ruby>けた</strong>。",
+                "cn": "被树枝钩住，衬衫的袖子撕裂了。"
+            }
+        ],
+        "patterns": [
+            "布が裂ける",
+            "地面が裂ける",
+            "真っ二つに裂ける"
+        ],
+        "usage": "用于纸张、布料被扯开，或地面出现裂缝的情况。",
+        "collocation": "布が裂ける",
+        "vocabType": "verb",
+        "scheduleKind": "normal",
+        "sentencePracticeDisabled": true,
+        "category": "破损・恶化・异常状态",
+        "sourceOrder": 286,
+        "sourceNumber": 286,
+        "sourceCategoryId": "11",
+        "sourceCategoryName": "破损・恶化・异常状态",
+        "sourceCategoryFullTitle": "11 破损・恶化・异常状态"
+    },
+    {
+        "id": "n2-verb-new-259",
+        "word": "流行る",
+        "word_html": "<ruby>流行<rt>はや</rt></ruby>る",
+        "reading": "はやる",
+        "tone": "2",
+        "pos": "自",
+        "mean": "流行、风靡；蔓延、传播；生意兴隆",
+        "nuance": "用于服装、歌曲、玩法等在某个时期受到许多人欢迎的情况。\n用于感冒、流感等传染病在某个时期或地区广泛传播的情况。\n用于店铺顾客多、生意好的情况。",
+        "examples": [
+            {
+                "jp": "<ruby>最近<rt>さいきん</rt></ruby>、<ruby>若者<rt>わかもの</rt></ruby>の<ruby>間<rt>あいだ</rt></ruby>でこの<ruby>歌<rt>うた</rt></ruby>が<strong class=\"ex-highlight\"><ruby>流行<rt>はや</rt></ruby>っている</strong>。",
+                "cn": "最近，这首歌在年轻人中很流行。"
+            },
+            {
+                "jp": "<ruby>今年<rt>ことし</rt></ruby>の<ruby>冬<rt>ふゆ</rt></ruby>は、<ruby>学校<rt>がっこう</rt></ruby>でインフルエンザが<strong class=\"ex-highlight\"><ruby>流行<rt>はや</rt></ruby>っている</strong>。",
+                "cn": "今年冬天，学校里流感正在流行。"
+            },
+            {
+                "jp": "<ruby>駅前<rt>えきまえ</rt></ruby>にできたパン<ruby>屋<rt>や</rt></ruby>は、いつも<strong class=\"ex-highlight\"><ruby>流行<rt>はや</rt></ruby>っている</strong>。",
+                "cn": "车站前新开的面包店生意一直很兴隆。"
+            }
+        ],
+        "patterns": [
+            "若者の間で流行る",
+            "インフルエンザが流行る",
+            "よく流行っている店"
+        ],
+        "usage": "用于服装、歌曲等受到欢迎，传染病在某个时期或地区广泛传播，或店铺顾客多、生意好的情况。",
+        "collocation": "若者の間で流行る",
+        "vocabType": "verb",
+        "scheduleKind": "normal",
+        "sentencePracticeDisabled": true,
+        "category": "自然现象・状态变化",
+        "sourceOrder": 287,
+        "sourceNumber": 287,
+        "sourceCategoryId": "10",
+        "sourceCategoryName": "自然现象・状态变化",
+        "sourceCategoryFullTitle": "10 自然现象・状态变化"
     }
 ];
 

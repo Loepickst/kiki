@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情報検索 - 练习与解析</title>
+    <link rel="stylesheet" href="../../../../shared/domestic-fonts.css">
+    <link rel="stylesheet" href="../../shared/reading-content-redesign.css?v=20260907-first-paint">
+    <link rel="stylesheet" href="../../shared/reading-tools.css?v=20260809-14">
+    <link rel="stylesheet" href="../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+</head>
+<body id="top" class="kiki-unified-header-enabled reading-article-tools-page reading-tools-no-furigana reading-content-page reading-cloze-v2">
+    <header class="kiki-unified-header kiki-unified-header--practice" data-kiki-unified-header="practice" data-kiki-unified-header-host="reading-practice">
+        <div class="kiki-unified-header-left">
+            <a class="kiki-unified-brand" href="../../../../index.html" aria-label="返回 kiji 首页"><img src="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline" alt="kiji"></a>
+            <span class="kiki-unified-divider" aria-hidden="true"></span>
+            <a id="back-to-reading-index" class="kiki-unified-back" href="../../index.html?level=N2&type=search&browse=year" aria-label="返回上一页" data-kiki-dynamic-back>
+                <svg class="kiki-unified-back-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18 9 12l6-6"></path></svg>
+                <span class="kiki-unified-back-label">返回上一页</span>
+                <span class="kiki-unified-back-label-mobile" aria-hidden="true">返回</span>
+            </a>
+        </div>
+        <h1 class="kiki-unified-header-title">N2 · 情報検索</h1>
+        <div class="kiki-unified-header-right"><div class="top-actions top-bar-controls reading-editorial-actions"></div></div>
+    </header>
+
+    <nav class="quick-nav sketch-box">
+        <a href="#top" class="nav-link">Top</a>
+        <div class="nav-divider"></div>
+        <a href="#poster-content" class="nav-link">案内</a>
+        <div class="nav-divider"></div>
+        <a href="#q1-card" class="nav-link">問1</a>
+        <a href="#q2-card" class="nav-link">問2</a>
+    </nav>
+
+    <div class="layout-container">
+        <main class="article-section sketch-box" id="mainArticleContent">
+            <div class="article-meta">
+                <div class="meta-left">
+                    <span class="tag">N2 読解</span>
+                    <span class="article-title-info">2014年12月 · 情報検索</span>
+                </div>
+                <button class="translate-toggle-btn" onclick="toggleTranslation(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+                    参考訳
+                </button>
+            </div>
+
+            <div class="poster-box" id="poster-content">
+                <div class="poster-main-title" style="text-align: right; font-size: 0.92em; font-weight: 500;">美木 海の会</div>
+                <div class="poster-main-title" style="text-align: center; margin-top: 8px;">ご家族で、仲間で、美木の海をきれいにしよう！</div>
+                <div class="poster-intro">今年も美木市内の海岸の清掃活動を実施します。皆様のご協力をお願いします。</div>
+
+                <div class="article-translation">
+                    【美木海之会】和家人、朋友一起清洁美木的海吧！今年也将在美木市内的海岸开展清扫活动，敬请大家协助。
+                </div>
+
+                <div class="table-responsive" style="margin-top: 18px;">
+                    <table class="availability-table" style="min-width: 760px;">
+                        <tbody>
+                            <tr>
+                                <th style="width: 150px;">日時</th>
+                                <td>5月15日（日）9時〜12時<br>＊雨天中止（中止の場合、ホームページにて当日6時までにお知らせします。）<br>お電話でのお問い合わせはご遠慮お願いします。</td>
+                            </tr>
+                            <tr><th>実施会場</th><td>緑浜海水浴場、白波海水浴場、みなと海浜公園</td></tr>
+                            <tr><th>参加資格</th><td>原則、中学生以上　＊小学生以下のお子さんは保護者が一緒の場合に限りご参加いただけます。</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="article-translation">
+                    【基本信息】活动时间为5月15日星期日9:00—12:00，雨天取消；若取消，将在当天6点前通过网站通知，请勿通过电话询问。会场为绿滨海水浴场、白波海水浴场和港海滨公园。原则上初中生以上可参加，小学生及以下须有监护人陪同。
+                </div>
+
+                <div class="note-text" style="margin-top: 24px; font-weight: 700;">「参加方法」</div>
+                <div class="note-text" style="margin-top: 12px;"><strong>a．団体（20名以上）で参加する場合</strong></div>
+                <div class="note-text" style="margin-top: 8px;">下記①②③をEメールに書き、4月23日（金）までに事務局へお申し込みください。</div>
+                <div class="note-text" style="margin-top: 8px;">①代表者氏名および連絡先　　②参加希望会場　　③参加者の人数</div>
+                <div class="note-text" style="margin-top: 16px;"><strong>b．個人で参加する場合</strong></div>
+                <div class="note-text" style="margin-top: 8px;">事前申し込みは不要です。当日直接会場でお申し込みください。</div>
+
+                <div class="article-translation">
+                    【参加方法】20人以上的团体须在4月23日前通过电子邮件提交负责人姓名及联系方式、希望参加的会场和人数。个人参加无须事先报名，当天直接在会场报名即可。
+                </div>
+
+                <div class="note-text" style="margin-top: 24px; font-weight: 700;">同時募集</div>
+                <div class="note-text ks-target target-q1" style="margin-top: 8px;">
+                    前日と当日の準備・片付けもお手伝いいただく臨時スタッフも同時に募集しています。（5月14日13〜15時、および15日8〜15時の両日参加できる方に限ります。）ご協力いただける方は4月23日（金）17時までに事務局へお電話でお申し込みください。
+                </div>
+
+                <div class="article-translation">
+                    【同时招募临时工作人员】应聘者须能在5月14日13:00—15:00和15日8:00—15:00两天都参加准备及收尾工作，并于4月23日17点前致电事务局报名。
+                </div>
+
+                <div class="note-text" style="margin-top: 24px; font-weight: 700;">「当日の流れ」</div>
+                <div class="table-responsive" style="margin-top: 10px;">
+                    <table class="availability-table" style="min-width: 720px; table-layout: fixed;">
+                        <tbody>
+                            <tr>
+                                <td style="vertical-align: top;"><strong>1、受付</strong><br>ゴミ袋を受け取る</td>
+                                <td style="vertical-align: top;"><strong>2、清掃</strong><br>ゴミをひろい、ゴミ袋に入れる</td>
+                                <td style="vertical-align: top;"><strong>3、分別</strong><br>分別スペースにて、ゴミを分別する</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="article-translation">
+                    【当天流程】先在接待处领取垃圾袋，然后捡拾垃圾并装袋，最后到分类区进行垃圾分类。
+                </div>
+
+                <div class="note-text" style="margin-top: 24px; font-weight: 700;">「注意事項」</div>
+                <ul class="note-list">
+                    <li class="ks-target target-q2">けがや急病の場合に備え、健康保険証を忘れずにお持ちください。</li>
+                    <li class="ks-target target-q2">長袖シャツと長ズボンでの参加をお勧めします。作業用手袋をお持ちの場合はご持参ください。</li>
+                    <li>強い日ざしに備え、帽子、タオル、飲み物などをご用意ください。体調管理はご自身でお願いいたします。</li>
+                    <li class="ks-target target-q2">駐車スペースには限りがありますので、できるだけ公共交通機関をご利用ください。</li>
+                </ul>
+
+                <div class="article-translation">
+                    【注意事项】为应对受伤或突发疾病，务必携带健康保险证。建议穿长袖和长裤；有工作手套的人可以带来。请准备帽子、毛巾和饮料并自行管理身体状况。停车位有限，请尽量使用公共交通。
+                </div>
+
+                <div class="contact-info">
+                    「美木 海の会」事務局　電話：01-4321-5577<br>
+                    Eメール：eco-sea@miki-city.com
+                </div>
+            </div>
+        </main>
+
+        <aside class="question-section" id="quizForm">
+            <div class="question-card sketch-box" data-question="q1" id="q1-card">
+                <div class="q-header"><div class="q-number" style="background: var(--marker-blue);">1</div><div class="q-text-wrapper">
+                    <div class="q-text">オーリャさんと山下さんの二人は臨時スタッフになって、海岸清掃活動に参加したいと思っている。二人はどうしなければならないか。<br>
+                        <div class="source-jump-btn ks-theme-q1" onclick="jumpToTarget('q1')"><div class="ks-icon-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>クリックして臨時スタッフ応募条件の出処へ移動</span></div></div>
+                    </div><div class="q-text-trans">（奥莉娅和山下两人想作为临时工作人员参加海岸清扫活动。他们必须怎么做？）</div>
+                </div></div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1"><input type="radio" name="q1" value="1" class="option-input"><div class="custom-radio">1</div><div class="option-content-wrapper"><div class="option-content">4月23日までEメールで申し込む。</div><div class="option-trans">在4月23日前通过电子邮件报名。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="2"><input type="radio" name="q1" value="2" class="option-input"><div class="custom-radio">2</div><div class="option-content-wrapper"><div class="option-content">4月23日の17時までに電話で申し込む。</div><div class="option-trans">在4月23日17点前通过电话报名。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="3"><input type="radio" name="q1" value="3" class="option-input"><div class="custom-radio">3</div><div class="option-content-wrapper"><div class="option-content">5月14日の13時までに会場に行って、申し込む。</div><div class="option-trans">在5月14日13点前到会场报名。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="4"><input type="radio" name="q1" value="4" class="option-input"><div class="custom-radio">4</div><div class="option-content-wrapper"><div class="option-content">5月15日の8時までに会場に行って、申し込む。</div><div class="option-trans">在5月15日8点前到会场报名。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                </div>
+            </div>
+
+            <div class="question-card sketch-box" data-question="q2" id="q2-card">
+                <div class="q-header"><div class="q-number" style="background: var(--marker-peach);">2</div><div class="q-text-wrapper">
+                    <div class="q-text">海岸清掃活動への参加者が当日必ずするように言われていることはどれか。<br>
+                        <div class="source-jump-btn ks-theme-q2" onclick="jumpToTarget('q2')"><div class="ks-icon-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>クリックして注意事項の出処へ移動</span></div></div>
+                    </div><div class="q-text-trans">（海岸清扫活动的参加者被要求当天务必做的是哪一项？）</div>
+                </div></div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1"><input type="radio" name="q2" value="1" class="option-input"><div class="custom-radio">1</div><div class="option-content-wrapper"><div class="option-content">ゴミ袋を持参し、清掃活動後のゴミを持ち帰る。</div><div class="option-trans">自带垃圾袋，并把清扫后的垃圾带回去。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="2"><input type="radio" name="q2" value="2" class="option-input"><div class="custom-radio">2</div><div class="option-content-wrapper"><div class="option-content">けがをしたときのために健康保険証を持参する。</div><div class="option-trans">为防受伤，携带健康保险证。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="3"><input type="radio" name="q2" value="3" class="option-input"><div class="custom-radio">3</div><div class="option-content-wrapper"><div class="option-content">長袖シャツと長ズボンを着て、作業用手袋を持参する。</div><div class="option-trans">穿长袖和长裤，并携带工作手套。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="4"><input type="radio" name="q2" value="4" class="option-input"><div class="custom-radio">4</div><div class="option-content-wrapper"><div class="option-content">会場に来るときに公共交通機関を利用する。</div><div class="option-trans">前往会场时使用公共交通工具。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                </div>
+            </div>
+            <div class="action-bar"><button type="button" class="submit-btn" id="submitBtn" onclick="submitAnswers()">答え合わせ</button></div>
+        </aside>
+    </div>
+
+    <div id="vocabTooltip" class="vocab-tooltip"></div>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (event) {
+                event.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#top') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        function toggleTranslation(btn) {
+            if (!document.getElementById('mainArticleContent').classList.contains('reviewed')) {
+                alert("请先完成所有题目（点击「答え合わせ」提交），然后再查看译文哦！");
+                return;
+            }
+            btn.classList.toggle('active');
+            document.querySelectorAll('.article-translation').forEach(el => el.classList.toggle('show'));
+        }
+
+        const answerData = {
+            q1: { correct: "2", optAnalysis: {
+                "1": "【✖ 排除】4月23日前通过电子邮件报名是20人以上团体参加普通清扫活动的方法，不是临时工作人员的报名方式。",
+                "2": "【✔ 正解】临时工作人员的通知明确要求，能参加两天工作的人须在4月23日17点前致电事务局报名。",
+                "3": "【✖ 排除】5月14日13点是临时工作人员第一天工作的开始时间，不是到会场报名的截止时间。",
+                "4": "【✖ 排除】5月15日8点是临时工作人员第二天工作的开始时间；报名必须在4月23日17点前通过电话完成。"
+            }},
+            q2: { correct: "2", optAnalysis: {
+                "1": "【✖ 排除】垃圾袋由接待处发放，参加者清扫后还要在分类区分类，并未要求自带垃圾袋或把垃圾带回家。",
+                "2": "【✔ 正解】注意事项使用「忘れずにお持ちください」，明确要求为应对受伤或急病务必携带健康保险证。",
+                "3": "【✖ 排除】长袖和长裤只是“建议”穿着；工作手套也是“如果有的话”才携带，并非必须。",
+                "4": "【✖ 排除】公告因停车位有限而要求“尽量”使用公共交通，并不是所有参加者必须使用。"
+            }}
+        };
+
+        document.querySelectorAll('.option-input').forEach(input => {
+            input.addEventListener('change', function () {
+                if (document.getElementById('submitBtn').disabled) return;
+                document.querySelectorAll(`input[name="${this.name}"]`).forEach(radio => radio.closest('.option-label').classList.remove('selected'));
+                if (this.checked) this.closest('.option-label').classList.add('selected');
+            });
+        });
+
+        document.querySelectorAll('.option-label').forEach(label => {
+            label.addEventListener('click', function () {
+                const group = this.closest('.options-group');
+                if (!group.classList.contains('reviewed')) return;
+                const detailBox = this.querySelector('.option-detail-analysis');
+                if (detailBox.classList.contains('show')) {
+                    detailBox.classList.remove('show');
+                    return;
+                }
+                group.querySelectorAll('.option-detail-analysis').forEach(box => box.classList.remove('show'));
+                detailBox.classList.add('show');
+            });
+        });
+
+        window.jumpToTarget = function (qName) {
+            const targets = document.querySelectorAll(`.target-${qName}`);
+            if (!targets.length) return;
+            targets[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targets.forEach(target => {
+                target.classList.add(`revealed-${qName}`);
+                target.classList.remove('flash-focus');
+                void target.offsetWidth;
+                target.classList.add('flash-focus');
+            });
+        };
+
+        function submitAnswers() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            if (!q1 || !q2) {
+                alert("すべての問いに答えてください。（请回答所有問題）");
+                return;
+            }
+            const userAnswers = { q1: q1.value, q2: q2.value };
+            let score = 0;
+            document.querySelectorAll('.option-input').forEach(input => {
+                input.disabled = true;
+                input.closest('.option-label').classList.add('disabled');
+            });
+            document.querySelectorAll('.options-group').forEach(group => group.classList.add('reviewed'));
+            document.getElementById('mainArticleContent').classList.add('reviewed');
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+
+            Object.keys(answerData).forEach(qName => {
+                const qCard = document.querySelector(`.question-card[data-question="${qName}"]`);
+                const data = answerData[qName];
+                const userValue = userAnswers[qName];
+                qCard.classList.add('reviewed');
+                qCard.querySelectorAll('.option-label').forEach(label => {
+                    const optionValue = label.querySelector('.option-input').value;
+                    if (optionValue === data.correct) {
+                        label.classList.add('is-correct');
+                        label.querySelector('.custom-radio').innerHTML = '✔';
+                    }
+                    if (optionValue === userValue && userValue !== data.correct) {
+                        label.classList.add('is-wrong');
+                        label.querySelector('.custom-radio').innerHTML = '✖';
+                    }
+                    label.querySelector('.option-detail-analysis').innerText = data.optAnalysis[optionValue];
+                });
+                if (userValue === data.correct) score++;
+            });
+
+            if (score === 2) {
+                btn.innerText = "全問正解！素晴らしい！";
+                btn.style.background = "var(--marker-mint)";
+                btn.style.color = "var(--green-pencil)";
+            } else {
+                btn.innerText = `完了 (${score}/2 正解)`;
+                btn.style.background = "var(--marker-peach)";
+                btn.style.color = "var(--red-pencil)";
+            }
+        }
+    </script>
+
+    <script src="../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="../../shared/reading-year-system.js?v=20260809-reading-mistakes"></script>
+    <script src="../../shared/reading-analysis-n2-search.js?v=20260904-n2-search-12"></script>
+    <script src="../../shared/reading-practice-redesign.js?v=20261011-scoped-lookup-3"></script>
+    <script src="../../shared/reading-tools.js?v=20261011-scoped-lookup-3"></script>
+    <script src="../../shared/reading-dt-year-session.js?v=20260809-reading-mistakes"></script>
+    <script src="../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../shared/selection-dictionary.js?v=20261012-lookup-spelling-2" data-lookup-scope="reading"></script>
+</body>
+</html>

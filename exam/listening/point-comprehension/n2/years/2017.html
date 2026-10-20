@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ポイント理解 - 聴解練習 (N2 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20260830-sentence-console-r2">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,16 +192,18 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../../shared/study-quest-test-runtime.js"></script>
-    <script src="../../../../shared/study-quest-test-boot.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
+    <script src="../shared/follow-listening-timelines.js?v=20260825-n2-point-manual-2017-december-r1"></script>
+    <script src="../../../task-comprehension/n2/shared/follow-listening.js?v=20260830-sentence-console-r2"></script>
     <script>
         // --- Data Structure (针对要点理解 Point Comprehension 的特制数据) ---
         // 解析中包含了您要求规范使用的语法表达，移除了绝对化的表达（如：必然，一定，必須等），词汇提示框未作任何词法解析。
         const examData = {
-            "N2-2017-07": {
+            "2017-07": {
                 label: "2017年7月 (N2)",
                 questions: [
                     {
@@ -265,7 +342,7 @@
                     }
                 ]
             },
-            "N2-2017-12": {
+            "2017-12": {
                 label: "2017年12月 (N2)",
                 questions: [
                     {
@@ -305,7 +382,7 @@
                                 { speaker: "男", text: "そうですか。", trans: "（这样啊。）" },
                                 { speaker: "女", text: "いまお手元に図書館のカードをお持ちですか。右上のバーコードの下にあるご利用者番号がお分かりでしたら、延長できるかお調べしますが。", trans: "（请问您现在手头有借书卡吗？如果您知道右上角条形码下方的用户号码，我帮您查一下能不能延长。）" },
                                 { speaker: "男", text: "あ、お願いします。番号は255127です。本の<span class=\"keyword\" onclick=\"showTooltip(event, 'タイトル（title）：标题，书名。')\">タイトル</span>は相撲の歴史です。", trans: "（啊，拜托了。号码是255127。书名叫《相扑的历史》。）" },
-                                { speaker: "女", text: "あ、いまのところ予約は入ってないんですが、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '图书管理员明确查到【借阅期到昨天为止（貸し出し期間は昨日まででした）】，也就是已经过了归还期限，所以需要先还回来，这符合选项1。')\">貸し出し期間は昨日まででした。</span>一度返していただく必要が。</span>", trans: "（啊，目前倒是没有人预约，不过借阅期到昨天为止。您需要先还回来一下。）" },
+                                { speaker: "女", text: "あ、いまのところ予約は入ってないんですが、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '图书管理员明确查到【借阅期到昨天为止（貸し出し期間が昨日まででした）】，也就是已经过了归还期限，所以需要先还回来，这符合选项1。')\">貸し出し期間が昨日まででした。</span>一度返していただく必要が。</span>", trans: "（啊，目前倒是没有人预约，不过借阅期到昨天为止。您需要先还回来一下。）" },
                                 { speaker: "男", text: "え？すみません、<span class=\"keyword\" onclick=\"showTooltip(event, 'うっかり：不留神，不小心，疏忽。')\">うっかり</span>してて、今日中に返します。", trans: "（诶？不好意思，我一时疏忽了，今天之内就去还。）" }
                             ]
                         },
@@ -343,12 +420,12 @@
                             questionTrans: "（第四题：女学生和男学生在聊天。女学生说她为什么不去二手店买东西？）",
                             dialogue: [
                                 { speaker: "女", text: "おはよう。あ、そのジャケット、いいね。", trans: "（早上好。啊，这件夹克不错呢。）" },
-                                { speaker: "男", text: "加藤さん、おはよう。これ、<span class=\"keyword\" onclick=\"showTooltip(event, 'リサイクルショップ（recycle shop）：二手店，回收店。')\">リサイクルショップ</span>で見つけてね。1000円でよ、安いでしょ。", trans: "（加藤，早上好。这个啊，是我在二手店找到的。只要1000日元哦，很便宜吧。）" },
-                                { speaker: "女", text: "ええ、今の流行とは違うけど、個性的でいいね。", trans: "（嗯，虽然跟现在的流行不太一样，但挺有个性的，挺好的。）" },
-                                { speaker: "男", text: "うん、これ見つけたときは、やったって思ったよ。加藤さんも<span class=\"keyword\" onclick=\"showTooltip(event, '古着（ふるぎ）：旧衣服。')\">古着</span>とかすきそうだね。その店、いいものがそろってるし、リサイクルとは思えない<span class=\"keyword\" onclick=\"showTooltip(event, '品質（ひんしつ）：品质，质量。')\">品質</span>だから、今度行ってみたら？", trans: "（嗯，找到这件的时候，我就觉得“赚到了”。加藤感觉你也挺喜欢旧衣服之类的呢。那家店好东西挺全的，而且品质好得让人不敢相信是二手货，你要不要下次也去看看？）" },
+                                { speaker: "男", text: "加藤さん、おはよう。これ、<span class=\"keyword\" onclick=\"showTooltip(event, 'リサイクルショップ（recycle shop）：二手店，回收店。')\">リサイクルショップ</span>で見つけてね。1000円だよ、安いでしょ。", trans: "（加藤，早上好。这个啊，是我在二手店找到的。只要1000日元哦，很便宜吧。）" },
+                                { speaker: "女", text: "へえ、今の流行とは違うけど、個性的でいいね。", trans: "（嗯，虽然跟现在的流行不太一样，但挺有个性的，挺好的。）" },
+                                { speaker: "男", text: "うん、これ見つけたときは、やったって思ったよ。加藤さんも<span class=\"keyword\" onclick=\"showTooltip(event, '古着（ふるぎ）：旧衣服。')\">古着</span>とか好きそうだよね。その店、いいものがそろってるし、リサイクルとは思えない<span class=\"keyword\" onclick=\"showTooltip(event, '品質（ひんしつ）：品质，质量。')\">品質</span>だから、今度行ってみたら？", trans: "（嗯，找到这件的时候，我就觉得“赚到了”。加藤感觉你也挺喜欢旧衣服之类的呢。那家店好东西挺全的，而且品质好得让人不敢相信是二手货，你要不要下次也去看看？）" },
                                 { speaker: "女", text: "うーん。わたし、リサイクルショップは行かないんだ。", trans: "（嗯——。我呀，是不去二手店的。）" },
-                                { speaker: "男", text: "あ、やっぱり知らない人が着てたもの着るのを<span class=\"keyword\" onclick=\"showTooltip(event, '抵抗（ていこう）：抵触，抵抗。')\">抵抗</span>ある？", trans: "（啊，果然还是对穿陌生人穿过的东西有抵触心理吗？）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男同学猜测她是不是抗拒穿别人穿过的衣服，但女生立刻说【那倒没有（それはないけど）】，予以了否定，可以排除。')\">それはないけど、</span></span><span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女生明确表示不去的原因是【去了的话就会因为便宜而买些多余的东西，最后后悔（いくと安いからって余計なものまで買って後悔するから）】，这与选项4连可有可无的东西也会买相符。')\">いくと安いからって<span class=\"keyword\" onclick=\"showTooltip(event, '余計（よけい）な：多余的，无用的。')\">余計な</span>ものまで買って<span class=\"keyword\" onclick=\"showTooltip(event, '後悔（こうかい）：后悔。')\">後悔</span>するから。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">① ②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和2，女生接着说，看到虽然不流行但现在穿也时髦的衣服就忍不住想买，说明并不是没有流行的东西或质量不好才不去，排除。')\">以前そういうことが何度もあって。リサイクルショップで、いまの流行じゃないけど、いま着てもおしゃれなの、いろいろあるでしょう。そういうの見ると、買わずにはいられなくて。</span></span>", trans: "（那倒没有。主要是因为去了的话就会因为便宜而买些多余的东西，最后后悔。以前这种事发生过好几次。在二手店里，不是有很多虽然不流行了，但现在穿也挺时髦的东西嘛。看到那些，我就忍不住想买。）" },
+                                { speaker: "男", text: "あ、やっぱり知らない人が着てたもの着るの<span class=\"keyword\" onclick=\"showTooltip(event, '抵抗（ていこう）：抵触，抵抗。')\">抵抗</span>ある？", trans: "（啊，果然还是对穿陌生人穿过的东西有抵触心理吗？）" },
+                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男同学猜测她是不是抗拒穿别人穿过的衣服，但女生立刻说【那倒没有（それはないけど）】，予以了否定，可以排除。')\">それはないけど、</span></span><span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女生明确表示不去的原因是【去了的话就会因为便宜而买些多余的东西，最后后悔（いくと安いからって余計なものまで買って後悔するから）】，这与选项4连可有可无的东西也会买相符。')\">いくと安いからって<span class=\"keyword\" onclick=\"showTooltip(event, '余計（よけい）な：多余的，无用的。')\">余計な</span>ものまで買って<span class=\"keyword\" onclick=\"showTooltip(event, '後悔（こうかい）：后悔。')\">後悔</span>するから。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">① ②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和2，女生接着说，看到虽然不流行但现在穿也时髦的衣服就忍不住想买，说明并不是没有流行的东西或质量不好才不去，排除。')\">以前そういうことが何度もあって。リサイクルショップって、いまの流行じゃないけど、いま着てもおしゃれなの、いろいろあるでしょう。そういうの見ると、買わずにはいられなくて。</span></span>", trans: "（那倒没有。主要是因为去了的话就会因为便宜而买些多余的东西，最后后悔。以前这种事发生过好几次。在二手店里，不是有很多虽然不流行了，但现在穿也挺时髦的东西嘛。看到那些，我就忍不住想买。）" },
                                 { speaker: "男", text: "分かる気がする。", trans: "（感觉能懂你的心情。）" }
                             ]
                         },
@@ -367,10 +444,10 @@
                             questionTrans: "（第五题：在公司里，女人和男人在交谈。关于在职场放音乐这件事，男人持有什么意见？问的是男人。）",
                             dialogue: [
                                 { speaker: "女", text: "ねえ、木村君。部長に聞いたんだけど、いまね、職場環境の改善策の一つとして勤務時間中にオフィスに音楽を流すことが検討されてるんだって。", trans: "（呐，木村。我听部长说了，现在啊，作为改善职场环境的对策之一，正在探讨在工作时间里在办公室放音乐的事呢。）" },
-                                { speaker: "男", text: "あ、職場に音楽を流すと、集中力が上がったり、リラックスできたりして、仕事の<span class=\"keyword\" onclick=\"showTooltip(event, '能率（のうりつ）：效率。')\">能率</span>も上がるって、最近注目されてるよね。", trans: "（啊，在职场放音乐，能提高注意力、让人放松，进而提高工作效率什么的，最近挺受关注的呢。）" },
+                                { speaker: "男", text: "ああ、職場に音楽を流すと、集中力が上がったり、リラックスできたりして、仕事の<span class=\"keyword\" onclick=\"showTooltip(event, '能率（のうりつ）：效率。')\">能率</span>も上がるって、最近注目されてるよね。", trans: "（啊，在职场放音乐，能提高注意力、让人放松，进而提高工作效率什么的，最近挺受关注的呢。）" },
                                 { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">② ④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2和4，女生说自己听到音乐会无法集中，并且有的曲子反而不能让人放松。这是女生的反对意见，而不是男生的意见，注意不要弄错主语，排除。')\">わたしは何か考えてるときに音楽が流れてると、集中できないタイプだから、職場でっていうのはどうかと思うけど。それに、曲によってはむしろリラックスできないものだってあるだろうし。</span></span>", trans: "（我在思考事情的时候要是放着音乐，就会没法集中精神，所以我觉得在职场里放音乐不太好。而且，根据曲子的不同，说不定反而会让人无法放松呢。）" },
                                 { speaker: "男", text: "どういう曲かけるんだろうね。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男生明确表示【不知道有没有放松效果（リラックス効果があるかは僕は分かんないんだけど）】，所以这不是他赞成的理由，排除。')\">リラックス効果があるかは僕は分かんないんだけど</span></span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男生明确表达了自己的观点：【太安静的话反而会分心，放音乐能让人集中精神，个人非常欢迎（集中できて、個人的には大歓迎だなぁ）】，这与选项1相符。')\">とにかく、<span class=\"keyword\" onclick=\"showTooltip(event, 'しいんと：静悄悄地，寂静无声。')\">しいんと</span>してると、かえって気が散るほうだから、集中できて、個人的には大歓迎だなぁ。</span></span>", trans: "（会放什么样的曲子呢。我倒是不太清楚有没有放松效果啦，总之，太安静的话我反而会分心，放音乐能让我集中精神，所以我个人是非常欢迎的。）" },
-                                { speaker: "女", text: "そう。じゃ、木村君の仕事の能率もぐんと上がって。", trans: "（这样啊。那木村你的工作效率也会一下子提高咯。）" },
+                                { speaker: "女", text: "そう。じゃあ、木村君の仕事の能率もぐんと上がって。", trans: "（这样啊。那木村你的工作效率也会一下子提高咯。）" },
                                 { speaker: "男", text: "ちょっと、そんな期待しないでよ。", trans: "（喂，你可别那么期待啊。）" }
                             ]
                         },
@@ -389,7 +466,7 @@
                             questionTrans: "（第六题：在就职面试中，男学生正在讲话。男学生说自己的缺点是什么？问的是缺点。）",
                             dialogue: [
                                 { speaker: "男", text: "わたしは子供のころから、クラスやクラブでは、リーダーを支えるような役割を果たしてきました。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男生说【对于灵活应对各种事物很有自信（物事に柔軟に対応することには自信があります）】，这是他的长处，与选项1完全相反，排除。')\">周囲の声に耳を傾け、物事に<span class=\"keyword\" onclick=\"showTooltip(event, '柔軟（じゅうなん）：灵活，柔软。')\">柔軟</span>に対応することには自信があります。</span></span>", trans: "（我从小在班级或者社团里，就一直扮演着支持领导者的角色。对于倾听周围的声音，灵活应对各种事物，我还是很有自信的。）" },
-                                { speaker: "男", text: "反面、つい<span class=\"keyword\" onclick=\"showTooltip(event, '受身（うけみ）：被动。')\">受身</span>になり、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男生明确提到自己的短板是【很容易变得被动，不太擅长主动采取行动或者发表意见（つい受身になり、主体的に行動をしたり、意見を述べたりということがあまり得意ではない）】，这与选项2“不能主动采取行动”相符。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '主体的（しゅたいてき）に：主动地。')\">主体的</span>に行動をしたり、</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男生说自己【不太擅长发表意见（意見を述べたりということがあまり得意ではない）】，与选项3“过度主张自己的意见”截然相反，排除。')\">意見を述べたりということがあまり得意ではないので</span></span>、その点に気をつけ、仕事ではどんなことでも柔軟性を持ちつつ、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，男生说今后在工作中想【有耐心地去处理（根気強く取り組んで行きたい）】，这表达的是今后的决心，而非他自述的现有短处，排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '根気強（こんきづよ）く：有耐心地，坚韧不拔地。')\">根気強く</span>取り組んで行きたいと思います。</span></span>", trans: "（反过来说，我很容易变得被动，不太擅长主动采取行动或者发表意见。所以我想注意这一点，在工作中保持灵活性的同时，也想有耐心地去处理任何事情。）" }
+                                { speaker: "男", text: "反面、つい<span class=\"keyword\" onclick=\"showTooltip(event, '受身（うけみ）：被动。')\">受身</span>になり、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男生明确提到自己的短板是【很容易变得被动，不太擅长主动采取行动或者发表意见（つい受身になり、主体的に行動をしたり、意見を述べたりということがあまり得意ではない）】，这与选项2“不能主动采取行动”相符。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '主体的（しゅたいてき）に：主动地。')\">主体的</span>に行動をしたり、</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男生说自己【不太擅长发表意见（意見を述べたりということがあまり得意ではない）】，与选项3“过度主张自己的意见”截然相反，排除。')\">意見を述べたりということがあまり得意ではないので</span></span>、その点に気をつけ、仕事ではどんなことにも柔軟性を持ちつつ、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，男生说今后在工作中想【有耐心地去处理（根気強く取り組んで行きたい）】，这表达的是今后的决心，而非他自述的现有短处，排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '根気強（こんきづよ）く：有耐心地，坚韧不拔地。')\">根気強く</span>取り組んで行きたいと思います。</span></span>", trans: "（反过来说，我很容易变得被动，不太擅长主动采取行动或者发表意见。所以我想注意这一点，在工作中保持灵活性的同时，也想有耐心地去处理任何事情。）" }
                             ]
                         },
                         options: [
@@ -403,7 +480,7 @@
             }
         };
 
-        let currentExamKey = "N2-2017-07"; 
+        let currentExamKey = "2017-07"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'point-comprehension';
@@ -426,10 +503,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N2-${yearParam}` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -768,7 +845,8 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
 </body>
 </html>

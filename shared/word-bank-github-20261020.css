@@ -1,0 +1,4506 @@
+@import url("mobile-foundations.css");
+:root {
+    --word-bank-ink: #2b2c27;
+    --word-bank-muted: #74776d;
+    --word-bank-faint: #a5aa9b;
+    --word-bank-green: #5d8a66;
+    --word-bank-green-deep: #48704f;
+    --word-bank-paper: rgba(255, 254, 250, 0.96);
+    --word-bank-paper-strong: #fffefa;
+    --word-bank-line: rgba(92, 101, 82, 0.16);
+    --word-bank-line-strong: rgba(92, 101, 82, 0.28);
+    --word-bank-shadow: 0 18px 46px rgba(38, 42, 32, 0.12);
+    --word-bank-radius: 22px;
+    --word-bank-ui: "Noto Sans SC", "Noto Sans JP", "PingFang SC", "Hiragino Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    --word-bank-serif: "Hiragino Mincho ProN", "Noto Serif JP", "Noto Serif SC", "Songti SC", serif;
+}
+
+
+
+.kiki-word-bank-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 12100;
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    background: rgba(38, 40, 34, 0.42);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 140ms ease-out;
+}
+
+.kiki-word-bank-modal.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.kiki-word-bank-dialog {
+    width: min(100%, 1080px);
+    height: min(92vh, 840px);
+    min-height: 620px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--word-bank-line);
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at 14px 14px, rgba(93, 138, 102, 0.055) 1px, transparent 1.3px) 0 0 / 22px 22px,
+        var(--word-bank-paper-strong);
+    box-shadow: var(--word-bank-shadow);
+    color: var(--word-bank-ink);
+    font-family: var(--word-bank-ui);
+    transform: translate3d(0, 7px, 0);
+    transition: transform 160ms cubic-bezier(0.2, 0.75, 0.24, 1);
+}
+
+.kiki-word-bank-modal.is-open .kiki-word-bank-dialog {
+    transform: translate3d(0, 0, 0);
+}
+
+.kiki-word-bank-dialog-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex: 0 0 auto;
+    min-height: 98px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--word-bank-line);
+    background: rgba(255, 254, 250, 0.92);
+}
+
+.kiki-word-bank-dialog-title-group {
+    min-width: 0;
+}
+
+.kiki-word-bank-eyebrow {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--word-bank-green-deep);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+}
+
+.kiki-word-bank-title {
+    margin: 0;
+    color: var(--word-bank-ink);
+    font-family: var(--word-bank-serif);
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: 0.04em;
+}
+
+.kiki-word-bank-source {
+    max-width: 640px;
+    margin: 6px 0 0;
+    overflow: hidden;
+    color: var(--word-bank-muted);
+    font-size: 11px;
+    line-height: 1.5;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kiki-word-bank-head-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 0 auto;
+}
+
+.kiki-word-bank-completion-label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 0 10px;
+    border: 1px solid rgba(93, 138, 102, 0.2);
+    border-radius: 999px;
+    background: rgba(93, 138, 102, 0.08);
+    color: var(--word-bank-green-deep);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.kiki-word-bank-close {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    border: 1px solid var(--word-bank-line);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--word-bank-muted);
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.kiki-word-bank-close:hover,
+.kiki-word-bank-close:focus-visible {
+    color: var(--word-bank-green-deep);
+    border-color: rgba(93, 138, 102, 0.36);
+    transform: translateY(-1px);
+}
+
+.kiki-word-bank-close:focus-visible {
+    outline: 2px solid rgba(93, 138, 102, 0.24);
+    outline-offset: 3px;
+}
+
+.kiki-word-bank-form {
+    min-height: 0;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.kiki-word-bank-editor-layout {
+    min-height: 0;
+    display: grid;
+    flex: 1;
+    grid-template-columns: minmax(0, 1fr) 330px;
+    overflow: hidden;
+}
+
+.kiki-word-bank-form-scroll {
+    min-width: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 6px 24px 26px;
+    scrollbar-color: rgba(93, 138, 102, 0.28) transparent;
+    scrollbar-width: thin;
+}
+
+.kiki-word-bank-section {
+    padding: 20px 0 22px;
+    border-bottom: 1px solid var(--word-bank-line);
+}
+
+.kiki-word-bank-section-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.kiki-word-bank-section-number {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    border-radius: 9px;
+    background: rgba(93, 138, 102, 0.11);
+    color: var(--word-bank-green-deep);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.kiki-word-bank-section-head h3 {
+    margin: 1px 0 0;
+    color: var(--word-bank-ink);
+    font-family: var(--word-bank-serif);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.kiki-word-bank-section-head p {
+    margin: 3px 0 0;
+    color: var(--word-bank-muted);
+    font-size: 10px;
+    line-height: 1.55;
+}
+
+.kiki-word-bank-field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.kiki-word-bank-section > .kiki-word-bank-field-grid + .kiki-word-bank-field-grid,
+.kiki-word-bank-section > .kiki-word-bank-field-grid + .kiki-word-bank-field,
+.kiki-word-bank-section > .kiki-word-bank-field + .kiki-word-bank-field-grid,
+.kiki-word-bank-section > .kiki-word-bank-field + .kiki-word-bank-field,
+.kiki-word-bank-more-fields-body > .kiki-word-bank-field-grid + .kiki-word-bank-field,
+.kiki-word-bank-more-fields-body > .kiki-word-bank-field + .kiki-word-bank-field-grid,
+.kiki-word-bank-more-fields-body > .kiki-word-bank-field + .kiki-word-bank-field {
+    margin-top: 13px;
+}
+
+.kiki-word-bank-field-grid--three {
+    grid-template-columns: 1.25fr 0.9fr 0.72fr;
+}
+
+.kiki-word-bank-field {
+    min-width: 0;
+    display: grid;
+    gap: 6px;
+}
+
+.kiki-word-bank-field--wide {
+    grid-column: 1 / -1;
+}
+
+.kiki-word-bank-label {
+    color: var(--word-bank-green-deep);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.kiki-word-bank-label b {
+    color: #a96452;
+    font-size: 10px;
+}
+
+.kiki-word-bank-label small {
+    margin-left: 4px;
+    color: var(--word-bank-faint);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.kiki-word-bank-input,
+.kiki-word-bank-textarea,
+.kiki-word-bank-select {
+    width: 100%;
+    min-width: 0;
+    border: 1px solid var(--word-bank-line-strong);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.86);
+    color: var(--word-bank-ink);
+    font-family: var(--word-bank-ui);
+    font-size: 13px;
+    line-height: 1.55;
+    transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.kiki-word-bank-input {
+    height: 44px;
+    padding: 0 12px;
+}
+
+.kiki-word-bank-input--word {
+    font-family: var(--word-bank-serif);
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.kiki-word-bank-textarea {
+    min-height: 76px;
+    resize: vertical;
+    padding: 10px 12px;
+}
+
+.kiki-word-bank-textarea--meaning {
+    min-height: 84px;
+    font-size: 14px;
+}
+
+.kiki-word-bank-textarea--compact {
+    min-height: 62px;
+}
+
+.kiki-word-bank-input:focus,
+.kiki-word-bank-textarea:focus,
+.kiki-word-bank-select:focus {
+    outline: none;
+    border-color: rgba(93, 138, 102, 0.48);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(93, 138, 102, 0.1);
+}
+
+.kiki-word-bank-input::placeholder,
+.kiki-word-bank-textarea::placeholder {
+    color: #a7aa9f;
+}
+
+.kiki-word-bank-more-fields {
+    margin-top: 18px;
+    border: 1px solid var(--word-bank-line);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.48);
+}
+
+.kiki-word-bank-more-fields summary {
+    min-height: 62px;
+    display: grid;
+    align-items: center;
+    grid-template-columns: 28px minmax(0, 1fr) 24px;
+    gap: 10px;
+    padding: 9px 12px;
+    list-style: none;
+    color: var(--word-bank-ink);
+    cursor: pointer;
+}
+
+.kiki-word-bank-more-fields summary::-webkit-details-marker {
+    display: none;
+}
+
+.kiki-word-bank-more-fields summary b {
+    display: block;
+    font-family: var(--word-bank-serif);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.kiki-word-bank-more-fields summary small {
+    display: block;
+    margin-top: 3px;
+    color: var(--word-bank-muted);
+    font-size: 9px;
+}
+
+.kiki-word-bank-more-fields summary i {
+    color: var(--word-bank-muted);
+    font-size: 14px;
+    font-style: normal;
+    text-align: center;
+    transition: transform 160ms ease;
+}
+
+.kiki-word-bank-more-fields[open] summary i {
+    transform: rotate(180deg);
+}
+
+.kiki-word-bank-more-fields-body {
+    padding: 13px 14px 16px;
+    border-top: 1px solid var(--word-bank-line);
+}
+
+.kiki-word-bank-preview {
+    min-width: 0;
+    overflow-y: auto;
+    padding: 18px;
+    border-left: 1px solid var(--word-bank-line);
+    background: rgba(242, 244, 237, 0.88);
+}
+
+.kiki-word-bank-preview-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.kiki-word-bank-preview-head > div > span,
+.kiki-word-bank-preview-head > div > small {
+    display: block;
+}
+
+.kiki-word-bank-preview-head > div > span {
+    color: var(--word-bank-ink);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.kiki-word-bank-preview-head > div > small {
+    margin-top: 2px;
+    color: var(--word-bank-muted);
+    font-size: 9px;
+}
+
+.kiki-word-bank-preview-status {
+    padding: 4px 7px;
+    border: 1px solid rgba(93, 138, 102, 0.16);
+    border-radius: 999px;
+    background: rgba(93, 138, 102, 0.08);
+    color: var(--word-bank-green-deep);
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.kiki-word-bank-card-preview {
+    min-height: 440px;
+    padding: 22px 20px 18px;
+    border: 1px solid var(--wb-card-line);
+    border-radius: 5px;
+    background: var(--wb-card-paper);
+    box-shadow: 0 2px 0 #f8f2e9, 0 3px 0 #e7ddcc, 0 10px 24px rgba(64, 47, 27, 0.06);
+}
+
+.kiki-word-bank-card-term {
+    padding-bottom: 14px;
+    border-bottom: 3px double var(--wb-card-line);
+}
+
+.kiki-word-bank-card-term-line {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 6px 9px;
+}
+
+.kiki-word-bank-card-word {
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: var(--wb-card-ink);
+    font-family: var(--wb-card-mincho);
+    font-size: 31px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.kiki-word-bank-card-word ruby,
+.kiki-word-card-word ruby {
+    ruby-align: center;
+    ruby-position: over;
+}
+
+.kiki-word-bank-card-word rt,
+.kiki-word-card-word rt {
+    color: var(--wb-card-faint);
+    font-family: var(--word-bank-ui);
+    font-size: 0.34em;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    line-height: 1;
+}
+
+.kiki-word-bank-card-reading {
+    margin: 0 0 5px;
+    color: var(--word-bank-muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.kiki-word-bank-card-meta {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    color: var(--word-bank-muted);
+    font-size: 8px;
+    line-height: 1.4;
+}
+
+.kiki-word-bank-card-meta span + span::before {
+    content: "·";
+    margin: 0 5px;
+    color: var(--word-bank-faint);
+}
+
+.kiki-word-bank-card-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.kiki-word-bank-card-meta[hidden],
+.kiki-word-bank-card-chips[hidden] {
+    display: none;
+}
+
+.kiki-word-bank-card-chips span {
+    padding: 4px 7px;
+    border: 1px solid var(--wb-card-line);
+    border-radius: 2px;
+    background: #fffdf9;
+    color: var(--wb-card-muted);
+    font-size: 8px;
+    font-weight: 400;
+}
+
+.kiki-word-bank-card-chips--collocations span {
+    border-color: var(--wb-card-red-line);
+    background: var(--wb-card-red-soft);
+    color: var(--wb-card-red);
+}
+
+.kiki-word-bank-card-chips--related span {
+    border-color: var(--wb-card-sage-line);
+    background: var(--wb-card-sage-soft);
+    color: var(--wb-card-sage);
+}
+
+.kiki-word-bank-card-section--related .kiki-word-bank-card-label {
+    color: var(--wb-card-sage);
+}
+
+.kiki-word-bank-card-label {
+    color: var(--wb-card-red);
+    font-family: var(--wb-card-mincho);
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+}
+
+.kiki-word-bank-card-section {
+    padding: 13px 0;
+    border-bottom: 1px solid var(--wb-card-rule);
+}
+
+.kiki-word-bank-card-meaning {
+    margin-top: 7px;
+    color: var(--word-bank-ink);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.72;
+    letter-spacing: 0.01em;
+    white-space: pre-line;
+}
+
+.kiki-word-bank-card-note {
+    margin-top: 7px;
+    color: var(--word-bank-muted);
+    font-size: 10px;
+    line-height: 1.7;
+    white-space: pre-line;
+}
+
+.kiki-word-bank-card-example {
+    margin-top: 8px;
+    padding: 11px 12px;
+    border-radius: 8px;
+    background: rgba(169, 52, 48, 0.055);
+    color: #000;
+    font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", var(--word-bank-ui);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 2;
+    white-space: pre-line;
+}
+
+.kiki-word-bank-card-example small {
+    display: block;
+    margin-top: 5px;
+    color: #454641;
+    font-family: var(--word-bank-ui);
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+.kiki-word-bank-card-preview > :last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.kiki-word-bank-quality {
+    margin-top: 12px;
+    padding: 13px 14px;
+    border: 1px solid var(--word-bank-line);
+    border-radius: 13px;
+    background: rgba(255, 254, 250, 0.9);
+}
+
+.kiki-word-bank-quality-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--word-bank-ink);
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.kiki-word-bank-quality-head b {
+    color: var(--word-bank-green-deep);
+}
+
+.kiki-word-bank-quality-bar {
+    height: 6px;
+    margin-top: 9px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(92, 101, 82, 0.12);
+}
+
+.kiki-word-bank-quality-bar i {
+    width: 0;
+    height: 100%;
+    display: block;
+    border-radius: inherit;
+    background: var(--word-bank-green);
+    transition: width 180ms ease;
+}
+
+.kiki-word-bank-quality p {
+    margin: 8px 0 0;
+    color: var(--word-bank-muted);
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+.kiki-word-bank-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 70px;
+    padding: 14px 22px;
+    border-top: 1px solid var(--word-bank-line);
+    background: rgba(255, 254, 250, 0.95);
+}
+
+.kiki-word-bank-actions-main {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.kiki-word-bank-button,
+.word-bank-action {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 15px;
+    border: 1px solid var(--word-bank-line);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--word-bank-muted);
+    font-family: var(--word-bank-ui);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.kiki-word-bank-button:hover,
+.kiki-word-bank-button:focus-visible,
+.word-bank-action:hover,
+.word-bank-action:focus-visible {
+    color: var(--word-bank-green-deep);
+    border-color: rgba(93, 138, 102, 0.34);
+    background: rgba(255, 255, 255, 0.94);
+    transform: translateY(-1px);
+}
+
+.kiki-word-bank-button:focus-visible,
+.word-bank-action:focus-visible {
+    outline: 2px solid rgba(93, 138, 102, 0.24);
+    outline-offset: 3px;
+}
+
+.kiki-word-bank-button--primary,
+.word-bank-action--primary {
+    border-color: rgba(93, 138, 102, 0.12);
+    background: var(--word-bank-green);
+    color: #fffefa;
+}
+
+.kiki-word-bank-button--primary:hover,
+.kiki-word-bank-button--primary:focus-visible,
+.word-bank-action--primary:hover,
+.word-bank-action--primary:focus-visible {
+    background: var(--word-bank-green-deep);
+    color: #fffefa;
+}
+
+/* The word card is a page of the vocabulary library: the same warm paper,
+   hairline rules and seal-red accents as 我推の単語. */
+.kiki-word-card-dialog,
+.kiki-word-bank-card-preview {
+    --wb-card-paper: #fdfbf7;
+    --wb-card-paper-deep: #f9f6ef;
+    --wb-card-alt: #fef6ee;
+    --wb-card-ink: #292722;
+    --wb-card-muted: #605b55;
+    --wb-card-faint: #7b7268;
+    --wb-card-line: #e6d9c9;
+    --wb-card-line-strong: #d9c8b2;
+    --wb-card-rule: #eee2d4;
+    --wb-card-red: #be441e;
+    --wb-card-red-soft: #fff0e5;
+    --wb-card-red-line: #efae8e;
+    --wb-card-sage: #687153;
+    --wb-card-sage-soft: #f5f7e6;
+    --wb-card-sage-line: #bec695;
+    --wb-card-peach: #fed8c1;
+    --wb-card-peach-ink: #aa3d1b;
+    --wb-card-peach-hover: #ffccb0;
+    --wb-card-mincho: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", "Noto Serif SC", serif;
+    /* Shared components inside the card keep their own variable names. */
+    --word-bank-ink: var(--wb-card-ink);
+    --word-bank-muted: var(--wb-card-muted);
+    --word-bank-faint: var(--wb-card-faint);
+    --word-bank-green: var(--wb-card-red);
+    --word-bank-green-deep: var(--wb-card-red);
+    --word-bank-line: var(--wb-card-line);
+    --word-bank-line-strong: var(--wb-card-line-strong);
+}
+
+.kiki-word-card-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 12120;
+    display: grid;
+    place-items: center;
+    padding: clamp(14px, calc(3 * var(--canvas-vw, 1vw)), 34px);
+    background: rgba(48, 36, 26, 0.34);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 140ms ease-out;
+}
+
+.kiki-word-card-modal.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.kiki-word-card-dialog {
+    position: relative;
+    width: min(100%, 720px);
+    max-height: min(90vh, 860px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--wb-card-line);
+    border-radius: 6px;
+    background: var(--wb-card-paper);
+    box-shadow: 0 2px 0 #f8f2e9, 0 3px 0 #e7ddcc, 0 26px 64px rgba(64, 47, 27, 0.16);
+    color: var(--wb-card-ink);
+    font-family: var(--word-bank-ui);
+    transform: translate3d(0, 7px, 0);
+    transition: transform 160ms cubic-bezier(0.2, 0.75, 0.24, 1);
+}
+
+.kiki-word-card-modal.is-open .kiki-word-card-dialog {
+    transform: translate3d(0, 0, 0);
+}
+
+.kiki-word-card-scroll {
+    min-height: 0;
+    overflow-y: auto;
+    padding: 44px 48px 34px;
+    overscroll-behavior: contain;
+}
+
+.kiki-word-card-content {
+    width: 100%;
+}
+
+.kiki-word-card-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    z-index: 2;
+    width: 38px;
+    height: 38px;
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--wb-card-faint);
+    font-size: 26px;
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
+}
+
+.kiki-word-card-close:hover,
+.kiki-word-card-close:focus-visible {
+    border-color: var(--wb-card-line);
+    background: #fffdf9;
+    color: var(--wb-card-red);
+}
+
+.kiki-word-card-close:focus-visible {
+    outline: 2px solid var(--wb-card-red);
+    outline-offset: -2px;
+}
+
+.kiki-word-card-scroll {
+    min-height: 0;
+    overflow-y: auto;
+    padding: 40px 46px 34px;
+    overscroll-behavior: contain;
+    scrollbar-color: #dfd4c5 transparent;
+    scrollbar-width: thin;
+}
+
+.kiki-word-card-content {
+    width: 100%;
+}
+
+.kiki-word-card-term {
+    display: grid;
+    gap: 14px;
+    padding: 0 52px 24px 0;
+    border-bottom: 3px double var(--wb-card-line);
+}
+
+.kiki-word-card-term-line {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 9px 15px;
+}
+
+.kiki-word-card-speak {
+    width: 32px;
+    height: 32px;
+    display: inline-grid;
+    place-items: center;
+    align-self: flex-end;
+    margin-bottom: 2px;
+    padding: 0;
+    border: 1px solid var(--wb-card-red-line);
+    border-radius: 50%;
+    background: var(--wb-card-red-soft);
+    color: var(--wb-card-red);
+    cursor: pointer;
+    transition: color 160ms ease, background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.kiki-word-card-speak:hover {
+    border-color: var(--wb-card-red);
+    background: #ffe4d3;
+    transform: translateY(-1px);
+}
+
+.kiki-word-card-speak:focus-visible {
+    outline: 2px solid var(--wb-card-red);
+    outline-offset: 2px;
+}
+
+.kiki-word-card-speak.is-speaking {
+    border-color: var(--wb-card-red);
+    background: var(--wb-card-red);
+    color: #fffdf9;
+}
+
+.kiki-word-card-speak:disabled {
+    border-color: var(--wb-card-line);
+    background: var(--wb-card-paper-deep);
+    color: var(--wb-card-faint);
+    cursor: default;
+    transform: none;
+}
+
+.kiki-word-card-speak svg {
+    width: 17px;
+    height: 17px;
+    fill: currentColor;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.kiki-word-card-speak svg path:first-child {
+    stroke: none;
+}
+
+.kiki-word-card-word {
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: var(--wb-card-ink);
+    font-family: var(--wb-card-mincho);
+    font-size: clamp(34px, calc(5 * var(--canvas-vw, 1vw)), 42px);
+    font-weight: 700;
+    line-height: 1.28;
+    letter-spacing: 0.01em;
+}
+
+.kiki-word-card-meta {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    color: var(--wb-card-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.kiki-word-card-meta:empty {
+    display: none;
+}
+
+/* Part of speech and pitch accent read as index tags, like the source pills. */
+.kiki-word-card-part-of-speech {
+    padding: 4px 8px;
+    border: 1px solid var(--wb-card-sage-line);
+    border-radius: 2px;
+    background: var(--wb-card-sage-soft);
+    color: var(--wb-card-sage);
+    font-size: 10.5px;
+    font-weight: 400;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.kiki-word-card-accent {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border: 1px solid var(--wb-card-red-line);
+    border-radius: 2px;
+    background: var(--wb-card-red-soft);
+    color: var(--wb-card-red);
+    font-family: var(--word-bank-ui);
+    font-size: 10.5px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.kiki-word-card-accent::before {
+    content: "音調";
+    color: var(--wb-card-red);
+    opacity: 0.82;
+}
+
+.kiki-word-card-accent b {
+    color: var(--wb-card-red);
+    font-size: 11px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.kiki-word-card-reading {
+    margin: 0 0 7px;
+    color: var(--wb-card-muted);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.55;
+}
+
+.kiki-word-card-reading[hidden],
+.kiki-word-card-section[hidden],
+.kiki-word-card-example[hidden] {
+    display: none;
+}
+
+.kiki-word-card-section,
+.kiki-word-card-example {
+    margin: 0;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--wb-card-rule);
+}
+
+/* Section labels take the seal's framed, spaced character. */
+.kiki-word-card-section > span,
+.kiki-word-card-example > span {
+    display: block;
+    color: var(--wb-card-red);
+    font-family: var(--wb-card-mincho);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+}
+
+.kiki-word-card-section p {
+    margin: 10px 0 0;
+    color: var(--wb-card-muted);
+    font-size: 14px;
+    line-height: 1.8;
+    white-space: pre-line;
+}
+
+.kiki-word-card-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.kiki-word-card-list span {
+    padding: 6px 10px;
+    border: 1px solid var(--wb-card-line);
+    border-radius: 2px;
+    background: #fffdf9;
+    color: var(--wb-card-muted);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.kiki-word-card-list--collocations span {
+    border-color: var(--wb-card-red-line);
+    background: var(--wb-card-red-soft);
+    color: var(--wb-card-red);
+}
+
+.kiki-word-card-section--related > span {
+    color: var(--wb-card-sage);
+}
+
+.kiki-word-card-list--related span {
+    border-color: var(--wb-card-sage-line);
+    background: var(--wb-card-sage-soft);
+    color: var(--wb-card-sage);
+}
+
+.kiki-word-card-example {
+    padding: 25px 0;
+}
+
+.kiki-word-card-example p {
+    margin: 11px 0 0;
+    color: var(--wb-card-ink);
+    font-family: var(--wb-card-mincho);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.95;
+    white-space: pre-line;
+}
+
+.kiki-word-card-example ruby,
+.kiki-word-bank-card-example ruby,
+.kiki-word-sense-example ruby {
+    ruby-position: over;
+    ruby-align: center;
+}
+
+.kiki-word-card-example rt,
+.kiki-word-bank-card-example rt,
+.kiki-word-sense-example rt {
+    color: var(--wb-card-faint);
+    font-family: var(--word-bank-ui);
+    font-size: 0.5em;
+    font-weight: 400;
+    letter-spacing: 0;
+}
+
+.kiki-word-card-example small {
+    display: block;
+    margin-top: 7px;
+    color: var(--wb-card-muted);
+    font-family: var(--word-bank-ui);
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-line;
+}
+
+.kiki-word-sense-stack {
+    display: grid;
+    gap: 22px;
+    margin-top: 14px;
+}
+
+.kiki-word-sense-item {
+    min-width: 0;
+}
+
+.kiki-word-sense-item + .kiki-word-sense-item {
+    padding-top: 21px;
+    border-top: 1px solid var(--wb-card-rule);
+}
+
+/* A meaning sits on the ruled paper with a vermilion margin rule, not a box. */
+.kiki-word-sense-meaning {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 8px;
+    padding: 14px 18px;
+    border: 0;
+    border-left: 3px solid var(--wb-card-red);
+    border-radius: 0 3px 3px 0;
+    background: var(--wb-card-alt);
+}
+
+.kiki-word-sense-stack.is-multiple .kiki-word-sense-meaning {
+    grid-template-columns: 1.45em minmax(0, 1fr);
+}
+
+.kiki-word-sense-marker {
+    color: var(--wb-card-red);
+    font-family: var(--word-bank-ui);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 2.1;
+    font-variant-numeric: tabular-nums;
+}
+
+.kiki-word-sense-meaning p {
+    min-width: 0;
+    margin: 0;
+    color: var(--wb-card-ink);
+    font-family: var(--wb-card-mincho);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.8;
+    letter-spacing: 0.01em;
+    white-space: pre-line;
+}
+
+.kiki-word-sense-meaning-zh {
+    grid-column: 1 / -1;
+    display: block;
+    margin-top: -2px;
+    color: var(--wb-card-muted);
+    font-family: var(--word-bank-ui);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.7;
+    white-space: pre-line;
+}
+
+.kiki-word-sense-example {
+    margin: 14px 0 0;
+    padding: 12px 15px 11px;
+    border-left: 3px solid var(--wb-card-line-strong);
+    border-radius: 0 3px 3px 0;
+    background: var(--wb-card-paper-deep);
+}
+
+.kiki-word-sense-example-label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--wb-card-faint);
+    font-family: var(--word-bank-ui);
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 0.14em;
+}
+
+.kiki-word-sense-example-row + .kiki-word-sense-example-row {
+    margin-top: 13px;
+    padding-top: 13px;
+    border-top: 1px dashed var(--wb-card-line);
+}
+
+.kiki-word-sense-example .kiki-word-sense-example-ja {
+    margin: 0;
+    color: var(--wb-card-ink);
+    font-family: var(--wb-card-mincho);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.95;
+    letter-spacing: 0.01em;
+    overflow-wrap: anywhere;
+}
+
+/* The target word carries a seal-red keyline, as on the directory rows. */
+.kiki-word-example-target {
+    display: inline;
+    margin: 0;
+    padding: 0 0.08em;
+    color: var(--wb-card-red);
+    background: none;
+    font: inherit;
+    font-weight: 700;
+    text-decoration-line: underline;
+    text-decoration-color: var(--wb-card-red-line);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 4px;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+.kiki-word-example-target ruby,
+.kiki-word-example-target rb {
+    font-weight: 700;
+}
+
+.kiki-word-sense-example-zh {
+    display: block;
+    margin-top: 7px;
+    color: var(--wb-card-muted);
+    font-family: var(--word-bank-ui);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+.kiki-word-sense-stack.is-preview {
+    gap: 13px;
+    margin-top: 9px;
+}
+
+.kiki-word-sense-stack.is-preview .kiki-word-sense-item + .kiki-word-sense-item {
+    padding-top: 12px;
+}
+
+.kiki-word-sense-stack.is-preview .kiki-word-sense-meaning {
+    gap: 5px;
+    padding: 9px 10px;
+    border-left-width: 2px;
+    border-radius: 0 2px 2px 0;
+}
+
+.kiki-word-sense-stack.is-preview.is-multiple .kiki-word-sense-meaning {
+    grid-template-columns: 1.35em minmax(0, 1fr);
+}
+
+.kiki-word-sense-stack.is-preview .kiki-word-sense-marker {
+    font-size: 9px;
+    line-height: 1.8;
+}
+
+.kiki-word-sense-stack.is-preview .kiki-word-sense-meaning p {
+    font-size: 11px;
+    line-height: 1.75;
+}
+
+.kiki-word-sense-stack.is-preview .kiki-word-sense-example {
+    margin: 9px 0 0;
+    padding: 8px 9px 7px;
+    border-left-width: 2px;
+    border-radius: 0 2px 2px 0;
+}
+
+.kiki-word-sense-stack.is-preview .kiki-word-sense-example-label {
+    margin-bottom: 4px;
+    font-size: 7px;
+}
+
+.kiki-word-sense-stack.is-preview .kiki-word-sense-example-ja {
+    font-size: 10px;
+    line-height: 1.9;
+}
+
+.kiki-word-sense-stack.is-preview .kiki-word-sense-example-zh {
+    margin-top: 4px;
+    font-size: 8px;
+    line-height: 1.55;
+}
+
+.kiki-word-card-content > :last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.kiki-word-card-search-tools { flex: 1 0 100%; min-width: 0; }
+.kiki-word-card-search-tools p { margin: 0 0 10px; font: 14px/1.5 var(--font-ui, sans-serif); color: #786c64; }
+.kiki-word-card-search-tools p:empty { display: none; }
+.kiki-word-card-search-tools .kiki-word-card-category-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.kiki-word-card-search-tools .kiki-word-card-category-grid button { min-width: 0; min-height: 44px; padding: 6px; font-size: 14px; }
+.kiki-word-card-category-grid button[aria-pressed="true"] { background: #fbefeb; border-color: #aa3b32; color: #aa3b32; }
+.kiki-word-card-collection-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+.kiki-word-card-modal[data-card-mode="dictionary"] .kiki-word-card-actions { flex-wrap: wrap; }
+.kiki-word-card-modal[data-card-mode="dictionary"] .kiki-word-card-actions [hidden] { display: none !important; }
+@media (max-width: 600px) {
+    .kiki-word-card-search-tools .kiki-word-card-category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .kiki-word-card-modal[data-card-mode="dictionary"] .kiki-word-card-actions { max-height: 52vh; overflow-y: auto; }
+}
+.kiki-word-card-actions {
+    min-height: 64px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 9px;
+    flex: 0 0 auto;
+    padding: 11px 18px;
+    border-top: 1px solid var(--wb-card-line);
+    background: var(--wb-card-paper-deep);
+}
+
+/* The button's inline-flex style must not override the personal-card hidden state. */
+.kiki-word-card-actions [hidden] {
+    display: none !important;
+}
+
+.kiki-word-card-actions .kiki-word-bank-button {
+    min-height: 38px;
+    border-radius: 3px;
+    border-color: var(--wb-card-line);
+    background: #fffdf9;
+    color: var(--wb-card-muted);
+    font-size: 12.5px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+}
+
+.kiki-word-card-actions .kiki-word-bank-button:hover,
+.kiki-word-card-actions .kiki-word-bank-button:focus-visible {
+    border-color: var(--wb-card-line-strong);
+    background: var(--wb-card-alt);
+    color: var(--wb-card-ink);
+    transform: none;
+}
+
+/* The primary action keeps the directory's peach call-to-action. */
+.kiki-word-card-actions .kiki-word-bank-button--primary {
+    border-color: transparent;
+    background: var(--wb-card-peach);
+    color: var(--wb-card-peach-ink);
+}
+
+.kiki-word-card-actions .kiki-word-bank-button--primary:hover,
+.kiki-word-card-actions .kiki-word-bank-button--primary:focus-visible {
+    border-color: var(--wb-card-red-line);
+    background: var(--wb-card-peach-hover);
+    color: #a53a18;
+}
+
+.kiki-word-card-actions :is(button, .kiki-word-bank-button):focus-visible {
+    outline: 2px solid var(--wb-card-red);
+    outline-offset: 2px;
+}
+
+.kiki-word-card-actions svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.kiki-word-bank-button {
+    min-height: 42px;
+    border-radius: 10px;
+    padding-inline: 17px;
+}
+
+.kiki-word-bank-button--quiet {
+    border-color: transparent;
+    background: transparent;
+    padding-left: 0;
+}
+
+.kiki-word-bank-toast {
+    position: fixed;
+    left: 50%;
+    bottom: max(22px, env(safe-area-inset-bottom));
+    z-index: 12200;
+    max-width: min(calc(92 * var(--canvas-vw, 1vw)), 360px);
+    padding: 11px 15px;
+    border: 1px solid var(--word-bank-line);
+    border-radius: 999px;
+    background: rgba(255, 254, 250, 0.98);
+    color: var(--word-bank-green-deep);
+    box-shadow: 0 14px 30px rgba(38, 42, 32, 0.14);
+    font-family: var(--word-bank-ui);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 8px);
+    transition: opacity 170ms ease, transform 170ms ease;
+}
+
+.kiki-word-bank-toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.word-bank-board {
+    display: grid;
+    gap: 20px;
+    color: var(--word-bank-ink);
+    font-family: var(--word-bank-ui);
+}
+
+.word-bank-toolbar {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 18px;
+    border-bottom: 1px solid var(--word-bank-line);
+}
+
+.word-bank-search-wrap {
+    width: min(100%, 620px);
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    border: 1px solid var(--word-bank-line);
+    border-radius: 6px;
+    background: #fff;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.word-bank-search-wrap:focus-within {
+    border-color: rgba(93, 138, 102, 0.48);
+    box-shadow: 0 0 0 3px rgba(93, 138, 102, 0.08);
+}
+
+.word-bank-search-icon {
+    position: relative;
+    width: 15px;
+    height: 15px;
+    flex: 0 0 auto;
+    border: 1.6px solid var(--word-bank-faint);
+    border-radius: 50%;
+}
+
+.word-bank-search-icon::after {
+    content: "";
+    position: absolute;
+    right: -5px;
+    bottom: -3px;
+    width: 6px;
+    height: 1.6px;
+    border-radius: 2px;
+    background: var(--word-bank-faint);
+    transform: rotate(45deg);
+}
+
+.word-bank-search {
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    border: 0;
+    background: transparent;
+    color: var(--word-bank-ink);
+    padding: 0 2px;
+    font-family: var(--word-bank-ui);
+    font-size: 14px;
+}
+
+.word-bank-search:focus {
+    outline: none;
+}
+
+.word-bank-tools {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.word-bank-toolbar .word-bank-action {
+    min-height: 38px;
+    border-radius: 6px;
+    letter-spacing: 0;
+}
+
+.word-bank-more {
+    position: relative;
+}
+
+.word-bank-more summary {
+    width: 38px;
+    height: 38px;
+    box-sizing: border-box;
+    display: inline-flex;
+    flex: 0 0 38px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0;
+    border: 1px solid var(--word-bank-line);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--word-bank-muted);
+    font-size: 0;
+    line-height: 1;
+    cursor: pointer;
+    list-style: none;
+}
+
+.word-bank-more summary::-webkit-details-marker {
+    display: none;
+}
+
+.word-bank-more summary::marker {
+    content: "";
+}
+
+.word-bank-more summary:hover,
+.word-bank-more summary:focus-visible,
+.word-bank-more[open] summary {
+    outline: none;
+    border-color: rgba(93, 138, 102, 0.34);
+    background: rgba(93, 138, 102, 0.07);
+    color: var(--word-bank-green-deep);
+}
+
+.word-bank-more summary:focus-visible {
+    box-shadow: 0 0 0 3px rgba(93, 138, 102, 0.1);
+}
+
+.word-bank-more summary svg {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    overflow: visible;
+    fill: currentColor;
+}
+
+.word-bank-more-menu {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 7px);
+    right: 0;
+    width: 158px;
+    display: grid;
+    padding: 6px;
+    border: 1px solid var(--word-bank-line);
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 12px 28px rgba(38, 42, 32, 0.11);
+}
+
+.word-bank-more-menu button {
+    min-height: 36px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--word-bank-muted);
+    font: 600 12px/1 var(--word-bank-ui);
+    text-align: left;
+    cursor: pointer;
+}
+
+.word-bank-more-menu button:hover,
+.word-bank-more-menu button:focus-visible {
+    outline: none;
+    background: rgba(93, 138, 102, 0.08);
+    color: var(--word-bank-green-deep);
+}
+
+.word-bank-library {
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    height: clamp(500px, calc(100vh - 290px), 720px);
+    height: clamp(500px, calc(100dvh - 290px), 720px);
+    min-height: 500px;
+    border: 1px solid var(--word-bank-line);
+    border-radius: 6px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.word-bank-mobile-filters {
+    display: none;
+}
+
+.word-bank-source-directory {
+    min-height: 0;
+    padding: 24px 18px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    border-right: 1px solid var(--word-bank-line);
+    background: #fff;
+    scrollbar-color: rgba(93, 138, 102, 0.24) transparent;
+    scrollbar-width: thin;
+}
+
+.word-bank-source-directory h3,
+.word-bank-collection-toolbar h3 {
+    margin: 0;
+    color: var(--word-bank-ink);
+    font-family: var(--word-bank-serif);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+}
+
+.word-bank-source-directory h3 {
+    padding: 0 12px 14px;
+}
+
+.word-bank-source-list {
+    display: grid;
+    gap: 8px;
+}
+
+.word-bank-source-group {
+    border-bottom: 1px solid var(--word-bank-line);
+}
+
+.word-bank-source-group:last-child {
+    border-bottom: 0;
+}
+
+.word-bank-source-group > summary {
+    min-height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 5px;
+    color: var(--word-bank-muted);
+    list-style: none;
+    cursor: pointer;
+    transition: color 150ms ease, background-color 150ms ease;
+}
+
+.word-bank-source-group > summary::-webkit-details-marker {
+    display: none;
+}
+
+.word-bank-source-group > summary::marker {
+    content: "";
+}
+
+.word-bank-source-group > summary:hover,
+.word-bank-source-group > summary:focus-visible,
+.word-bank-source-group.is-active > summary {
+    outline: none;
+    background: rgba(93, 138, 102, 0.07);
+    color: var(--word-bank-green-deep);
+}
+
+.word-bank-source-group > summary:focus-visible {
+    box-shadow: inset 0 0 0 1px rgba(93, 138, 102, 0.28);
+}
+
+.word-bank-source-group-copy {
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+}
+
+.word-bank-source-group-copy strong {
+    color: inherit;
+    font-family: var(--word-bank-serif);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.word-bank-source-group-copy small {
+    overflow: hidden;
+    color: var(--word-bank-faint);
+    font-size: 9px;
+    font-weight: 500;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.word-bank-source-group-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+}
+
+.word-bank-source-group-meta b {
+    color: var(--word-bank-faint);
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.word-bank-source-group-meta i {
+    width: 7px;
+    height: 7px;
+    display: block;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg) translate(-1px, -1px);
+    transform-origin: center;
+    transition: transform 150ms ease;
+}
+
+.word-bank-source-group[open] .word-bank-source-group-meta i {
+    transform: rotate(225deg) translate(-1px, -1px);
+}
+
+.word-bank-source-submenu {
+    display: grid;
+    gap: 2px;
+    padding: 3px 0 10px 12px;
+}
+
+.word-bank-source-group[open] .word-bank-source-submenu {
+    animation: wordBankSourceReveal 150ms ease-out;
+}
+
+@keyframes wordBankSourceReveal {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.word-bank-source-button {
+    position: relative;
+    width: 100%;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--word-bank-muted);
+    font: 600 13px/1 var(--word-bank-ui);
+    text-align: left;
+    cursor: pointer;
+    transition: color 150ms ease, background-color 150ms ease;
+}
+
+.word-bank-source-button::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 7px;
+    bottom: 7px;
+    width: 2px;
+    border-radius: 2px;
+    background: transparent;
+}
+
+.word-bank-source-button small {
+    color: var(--word-bank-faint);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.word-bank-source-button:hover,
+.word-bank-source-button:focus-visible,
+.word-bank-source-button.is-active {
+    outline: none;
+    background: rgba(93, 138, 102, 0.07);
+    color: var(--word-bank-green-deep);
+}
+
+.word-bank-source-button.is-active::before {
+    background: var(--word-bank-green);
+}
+
+.word-bank-collection {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 24px 26px 12px;
+}
+
+.word-bank-collection-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 18px;
+}
+
+.word-bank-view-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.word-bank-view-filters select {
+    min-height: 34px;
+    padding: 0 30px 0 10px;
+    border: 1px solid var(--word-bank-line);
+    border-radius: 4px;
+    background-color: #fff;
+    color: var(--word-bank-muted);
+    font: 600 11px/1 var(--word-bank-ui);
+    cursor: pointer;
+}
+
+.word-bank-view-filters select:focus-visible {
+    outline: 2px solid rgba(93, 138, 102, 0.18);
+    outline-offset: 2px;
+}
+
+.word-bank-column-head {
+    display: grid;
+    grid-template-columns: minmax(150px, 0.9fr) minmax(240px, 1.8fr) 100px 74px;
+    gap: 18px;
+    padding: 10px 12px;
+    border-top: 1px solid var(--word-bank-line);
+    border-bottom: 1px solid var(--word-bank-line);
+    color: var(--word-bank-faint);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.word-bank-list {
+    display: grid;
+    min-height: 0;
+    flex: 1 1 auto;
+    align-content: start;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-color: rgba(93, 138, 102, 0.24) transparent;
+    scrollbar-width: thin;
+}
+
+.word-bank-entry-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 74px;
+    align-items: stretch;
+    border-bottom: 1px solid var(--word-bank-line);
+}
+
+.word-bank-entry-main {
+    min-width: 0;
+    min-height: 76px;
+    display: grid;
+    grid-template-columns: minmax(150px, 0.9fr) minmax(240px, 1.8fr) 100px;
+    gap: 18px;
+    align-items: center;
+    padding: 12px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.word-bank-entry-row:hover,
+.word-bank-entry-row:focus-within {
+    background: rgba(93, 138, 102, 0.035);
+}
+
+.word-bank-icon-button {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--word-bank-line);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--word-bank-muted);
+    cursor: pointer;
+    transition: color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.word-bank-icon-button:hover,
+.word-bank-icon-button:focus-visible {
+    color: var(--word-bank-green-deep);
+    border-color: rgba(93, 138, 102, 0.34);
+    transform: translateY(-1px);
+}
+
+.word-bank-icon-button:focus-visible {
+    outline: 2px solid rgba(93, 138, 102, 0.22);
+    outline-offset: 2px;
+}
+
+.word-bank-icon-button svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.word-bank-entry-word {
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+}
+
+.word-bank-entry-word strong {
+    overflow: hidden;
+    color: var(--word-bank-ink);
+    font-family: var(--word-bank-serif);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.word-bank-entry-word small {
+    overflow: hidden;
+    color: var(--word-bank-faint);
+    font-size: 11px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.word-bank-entry-meaning {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--word-bank-muted);
+    font-size: 13px;
+    line-height: 1.65;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.word-bank-entry-source {
+    overflow: hidden;
+    color: var(--word-bank-green-deep);
+    font-size: 11px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.word-bank-entry-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    padding-right: 8px;
+}
+
+.word-bank-entry-menu {
+    display: none;
+}
+
+.word-bank-empty {
+    display: grid;
+    min-height: 0;
+    flex: 1 1 auto;
+    justify-items: center;
+    align-content: center;
+    gap: 11px;
+    padding: 54px 22px;
+    overflow-y: auto;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+    color: var(--word-bank-muted);
+    text-align: center;
+}
+
+.word-bank-empty-title {
+    margin: 0;
+    color: var(--word-bank-ink);
+    font-family: var(--word-bank-serif);
+    font-size: 23px;
+    font-weight: 600;
+}
+
+.word-bank-empty-copy {
+    margin: 0;
+    max-width: 420px;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.word-bank-file-input {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .kiki-word-bank-dialog {
+        width: min(100%, 700px);
+    }
+
+    .kiki-word-bank-editor-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .kiki-word-bank-preview {
+        display: none;
+    }
+}
+
+@media (max-width: 760px) {
+    .feature-panel[data-section="word-bank"] > .section-view-head {
+        display: none;
+    }
+
+    .kiki-word-bank-modal {
+        padding: 8px;
+    }
+
+    .kiki-word-card-modal {
+        padding: 8px;
+    }
+
+    .kiki-word-card-dialog {
+        width: 100%;
+        max-height: 96vh;
+        border-radius: 5px;
+    }
+
+    .kiki-word-card-scroll {
+        padding: 36px 22px 26px;
+    }
+
+    .kiki-word-card-close {
+        top: 8px;
+        right: 9px;
+    }
+
+    .kiki-word-card-word {
+        font-size: 34px;
+    }
+
+    .kiki-word-card-term {
+        padding-right: 42px;
+        padding-bottom: 21px;
+    }
+
+    .kiki-word-card-term-line {
+        gap: 7px 11px;
+    }
+
+    .kiki-word-card-meta {
+        font-size: 10px;
+    }
+
+    .kiki-word-card-reading {
+        margin-bottom: 6px;
+        font-size: 14px;
+    }
+
+    .kiki-word-card-section,
+    .kiki-word-card-example {
+        padding: 21px 0;
+    }
+
+    .kiki-word-card-example p {
+        font-size: 15px;
+    }
+
+    .kiki-word-sense-stack {
+        gap: 20px;
+        margin-top: 12px;
+    }
+
+    .kiki-word-sense-item + .kiki-word-sense-item {
+        padding-top: 19px;
+    }
+
+    .kiki-word-sense-meaning {
+        padding: 12px 14px;
+    }
+
+    .kiki-word-sense-example {
+        padding: 11px 12px 10px;
+    }
+
+    .kiki-word-sense-stack.is-multiple .kiki-word-sense-meaning {
+        grid-template-columns: 1.45em minmax(0, 1fr);
+    }
+
+    .kiki-word-sense-marker,
+    .kiki-word-sense-meaning p {
+        font-size: 14px;
+    }
+
+    .kiki-word-sense-example {
+        margin-top: 12px;
+    }
+
+    .kiki-word-sense-example .kiki-word-sense-example-ja {
+        font-size: 15px;
+        line-height: 2.05;
+    }
+
+    .kiki-word-sense-example-zh {
+        font-size: 12px;
+    }
+
+    .kiki-word-card-list span {
+        padding: 6px 9px;
+        font-size: 11px;
+    }
+
+    .kiki-word-card-actions {
+        min-height: 64px;
+        padding: 11px 13px;
+    }
+
+    .kiki-word-card-actions .kiki-word-bank-button {
+        width: 100%;
+    }
+
+    .kiki-word-bank-dialog {
+        width: 100%;
+        height: 96vh;
+        min-height: 0;
+        border-radius: 18px;
+    }
+
+    .kiki-word-bank-dialog-head {
+        min-height: 86px;
+        padding: 13px 15px;
+    }
+
+    .kiki-word-bank-eyebrow {
+        display: none;
+    }
+
+    .kiki-word-bank-title {
+        font-size: 21px;
+    }
+
+    .kiki-word-bank-source {
+        max-width: calc(58 * var(--canvas-vw, 1vw));
+    }
+
+    .kiki-word-bank-completion-label {
+        display: none;
+    }
+
+    .kiki-word-bank-close {
+        width: 40px;
+        height: 40px;
+    }
+
+    .kiki-word-bank-form-scroll {
+        padding: 3px 16px 22px;
+    }
+
+    .kiki-word-bank-field-grid,
+    .kiki-word-bank-field-grid--three {
+        grid-template-columns: 1fr;
+    }
+
+    .kiki-word-bank-actions {
+        min-height: 64px;
+        padding: 11px 15px;
+    }
+
+    .kiki-word-bank-button--quiet {
+        display: none;
+    }
+
+    .kiki-word-bank-actions-main {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .word-bank-board {
+        gap: 12px;
+    }
+
+    .word-bank-toolbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        padding-bottom: 12px;
+    }
+
+    .word-bank-search-wrap {
+        width: auto;
+        min-height: 40px;
+        padding-inline: 12px;
+    }
+
+    .word-bank-search {
+        min-height: 38px;
+        font-size: 13px;
+    }
+
+    .word-bank-tools {
+        gap: 6px;
+        justify-content: flex-end;
+    }
+
+    .word-bank-toolbar .word-bank-action {
+        min-height: 40px;
+        padding-inline: 11px;
+        font-size: 11px;
+    }
+
+    .word-bank-more summary {
+        width: 40px;
+        height: 40px;
+        flex-basis: 40px;
+    }
+
+    .word-bank-library {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto minmax(0, 1fr);
+        height: min(720px, calc(100vh - 150px));
+        height: min(720px, calc(100dvh - 150px));
+        min-height: 540px;
+        border-radius: 8px;
+    }
+
+    .word-bank-source-directory {
+        display: none;
+    }
+
+    .word-bank-mobile-filters {
+        position: relative;
+        z-index: 6;
+        display: grid;
+        gap: 8px;
+        padding: 12px 12px 10px;
+        border-bottom: 1px solid var(--word-bank-line);
+        background: #fff;
+    }
+
+    .word-bank-mobile-origin-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4px;
+        padding: 3px;
+        border-radius: 8px;
+        background: #f2f3ef;
+    }
+
+    .word-bank-mobile-origin-tab {
+        min-width: 0;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 0 10px;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--word-bank-muted);
+        font: 600 12px/1 var(--word-bank-ui);
+        cursor: pointer;
+    }
+
+    .word-bank-mobile-origin-tab small {
+        color: var(--word-bank-faint);
+        font-size: 9px;
+        font-weight: 600;
+    }
+
+    .word-bank-mobile-origin-tab.is-active {
+        background: #fff;
+        color: var(--word-bank-green-deep);
+        box-shadow: 0 1px 4px rgba(38, 42, 32, 0.08);
+    }
+
+    .word-bank-mobile-category {
+        position: relative;
+        min-width: 0;
+    }
+
+    .word-bank-mobile-filter-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .word-bank-mobile-category > summary {
+        min-height: 40px;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 10px;
+        padding: 0 12px;
+        border: 1px solid var(--word-bank-line);
+        border-radius: 7px;
+        background: #fff;
+        color: var(--word-bank-muted);
+        list-style: none;
+        cursor: pointer;
+    }
+
+    .word-bank-mobile-category > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .word-bank-mobile-category > summary::marker {
+        content: "";
+    }
+
+    .word-bank-mobile-category-label {
+        color: var(--word-bank-faint);
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .word-bank-mobile-category > summary strong {
+        overflow: hidden;
+        color: var(--word-bank-ink);
+        font-size: 12px;
+        font-weight: 600;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .word-bank-mobile-category-meta {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .word-bank-mobile-category-meta small {
+        display: none;
+    }
+
+    .word-bank-mobile-category-meta i {
+        width: 7px;
+        height: 7px;
+        border-right: 1.5px solid currentColor;
+        border-bottom: 1.5px solid currentColor;
+        transform: rotate(45deg) translate(-1px, -1px);
+        transition: transform 150ms ease;
+    }
+
+    .word-bank-mobile-category[open] .word-bank-mobile-category-meta i {
+        transform: rotate(225deg) translate(-1px, -1px);
+    }
+
+    .word-bank-mobile-category-menu {
+        position: absolute;
+        z-index: 12;
+        top: calc(100% + 6px);
+        left: 0;
+        right: auto;
+        width: calc(200% + 8px);
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 5px;
+        padding: 8px;
+        border: 1px solid var(--word-bank-line);
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 12px 28px rgba(38, 42, 32, 0.13);
+        animation: wordBankSourceReveal 150ms ease-out;
+    }
+
+    .word-bank-mobile-category--pos .word-bank-mobile-category-menu {
+        right: 0;
+        left: auto;
+    }
+
+    .word-bank-mobile-category-button {
+        min-width: 0;
+        min-height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 0 10px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        background: #f7f8f5;
+        color: var(--word-bank-muted);
+        font: 600 11px/1 var(--word-bank-ui);
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .word-bank-mobile-category-button small {
+        color: var(--word-bank-faint);
+        font-size: 9px;
+    }
+
+    .word-bank-mobile-category-button.is-active {
+        border-color: rgba(93, 138, 102, 0.24);
+        background: rgba(93, 138, 102, 0.09);
+        color: var(--word-bank-green-deep);
+    }
+
+    .word-bank-collection {
+        min-height: 0;
+        padding: 12px 12px 6px;
+    }
+
+    .word-bank-collection-toolbar {
+        display: none;
+    }
+
+    .word-bank-collection-toolbar h3 {
+        display: none;
+    }
+
+    .word-bank-view-filters {
+        display: flex;
+        flex: 0 0 auto;
+    }
+
+    .word-bank-view-filters select {
+        width: auto;
+        min-width: 96px;
+        min-height: 32px;
+        padding-right: 24px;
+        font-size: 10px;
+    }
+
+    .word-bank-column-head {
+        display: none;
+    }
+
+    .word-bank-entry-row {
+        grid-template-columns: minmax(0, 1fr) 36px;
+    }
+
+    .word-bank-entry-main {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 5px 10px;
+        min-height: 82px;
+        padding: 11px 8px 11px 4px;
+    }
+
+    .word-bank-entry-word {
+        grid-column: 1;
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        overflow: hidden;
+    }
+
+    .word-bank-entry-word strong {
+        min-width: 0;
+        flex: 0 1 auto;
+    }
+
+    .word-bank-entry-word small {
+        min-width: 0;
+        flex: 0 1 auto;
+        font-size: 10px;
+    }
+
+    .word-bank-entry-meaning {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        font-size: 12px;
+        line-height: 1.55;
+        -webkit-line-clamp: 2;
+    }
+
+    .word-bank-entry-source {
+        grid-column: 2;
+        grid-row: 1;
+        max-width: 74px;
+        padding: 4px 7px;
+        border-radius: 999px;
+        background: rgba(93, 138, 102, 0.08);
+        font-size: 9px;
+    }
+
+    .word-bank-entry-actions {
+        position: relative;
+        padding-right: 0;
+    }
+
+    .word-bank-entry-actions > .word-bank-icon-button {
+        display: none;
+    }
+
+    .word-bank-entry-menu {
+        position: relative;
+        display: block;
+    }
+
+    .word-bank-entry-menu > summary {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--word-bank-faint);
+        list-style: none;
+        cursor: pointer;
+    }
+
+    .word-bank-entry-menu > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .word-bank-entry-menu > summary::marker {
+        content: "";
+    }
+
+    .word-bank-entry-menu > summary svg {
+        width: 17px;
+        height: 17px;
+        fill: currentColor;
+    }
+
+    .word-bank-entry-menu-popover {
+        position: absolute;
+        z-index: 15;
+        top: calc(100% + 4px);
+        right: 0;
+        width: 104px;
+        display: grid;
+        padding: 5px;
+        border: 1px solid var(--word-bank-line);
+        border-radius: 7px;
+        background: #fff;
+        box-shadow: 0 10px 24px rgba(38, 42, 32, 0.13);
+    }
+
+    .word-bank-entry-menu-popover button {
+        min-height: 34px;
+        padding: 0 9px;
+        border: 0;
+        border-radius: 5px;
+        background: transparent;
+        color: var(--word-bank-muted);
+        font: 600 11px/1 var(--word-bank-ui);
+        text-align: left;
+    }
+
+    .word-bank-entry-menu-popover button:hover,
+    .word-bank-entry-menu-popover button:focus-visible {
+        outline: none;
+        background: #f3f5f0;
+        color: var(--word-bank-green-deep);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kiki-word-bank-modal,
+    .kiki-word-bank-dialog,
+    .kiki-word-card-modal,
+    .kiki-word-card-dialog,
+    .kiki-word-bank-toast,
+    .kiki-word-bank-button,
+    .word-bank-action,
+    .word-bank-icon-button,
+    .word-bank-source-group-meta i,
+    .word-bank-source-group[open] .word-bank-source-submenu {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* Reference-led editor: calm full-screen form with lightweight category tabs. */
+.kiki-word-bank-dialog {
+    position: relative;
+    width: min(100%, 1020px);
+    height: min(90vh, 820px);
+    min-height: 600px;
+    border-color: rgba(55, 61, 50, 0.12);
+    border-radius: 22px;
+    background: #f7f8f5;
+}
+
+.kiki-word-bank-dialog-head {
+    min-height: 72px;
+    display: grid;
+    align-items: center;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 0;
+    background: rgba(255, 255, 253, 0.98);
+}
+
+.kiki-word-bank-dialog-title-group {
+    min-width: 0;
+    text-align: center;
+}
+
+.kiki-word-bank-title {
+    overflow: hidden;
+    color: #343730;
+    font-family: var(--word-bank-ui);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: 0.01em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kiki-word-bank-source {
+    max-width: 520px;
+    margin: 3px auto 0;
+    color: #92978d;
+    font-size: 9px;
+}
+
+.kiki-word-bank-head-status {
+    min-width: 44px;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.kiki-word-bank-dialog-head .kiki-word-bank-close {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: transparent;
+    color: #73786f;
+    font-size: 30px;
+    font-weight: 200;
+}
+
+.kiki-word-bank-dialog-head .kiki-word-bank-close:hover,
+.kiki-word-bank-dialog-head .kiki-word-bank-close:focus-visible {
+    border-color: transparent;
+    background: rgba(72, 112, 79, 0.07);
+    color: var(--word-bank-green-deep);
+    transform: none;
+}
+
+.kiki-word-bank-preview-toggle {
+    width: 44px;
+    height: 44px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: #5f645b;
+    cursor: pointer;
+}
+
+.kiki-word-bank-preview-toggle svg {
+    width: 23px;
+    height: 23px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.kiki-word-bank-preview-toggle.is-active,
+.kiki-word-bank-preview-toggle:hover,
+.kiki-word-bank-preview-toggle:focus-visible {
+    background: rgba(93, 138, 102, 0.1);
+    color: var(--word-bank-green-deep);
+}
+
+.kiki-word-bank-preview-toggle:focus-visible {
+    outline: 2px solid rgba(93, 138, 102, 0.24);
+    outline-offset: 2px;
+}
+
+.kiki-word-bank-editor-tabs {
+    min-height: 54px;
+    display: grid;
+    flex: 0 0 auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-bottom: 1px solid rgba(55, 61, 50, 0.1);
+    background: rgba(255, 255, 253, 0.98);
+}
+
+.kiki-word-bank-editor-tabs button {
+    position: relative;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: #a2a69e;
+    font-family: var(--word-bank-ui);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 140ms ease, background-color 140ms ease;
+}
+
+.kiki-word-bank-editor-tabs button::after {
+    position: absolute;
+    bottom: 7px;
+    left: 50%;
+    width: 24px;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--word-bank-green);
+    content: "";
+    opacity: 0;
+    transform: translateX(-50%) scaleX(0.55);
+    transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.kiki-word-bank-editor-tabs button.is-active {
+    color: #353932;
+}
+
+.kiki-word-bank-editor-tabs button.is-active::after {
+    opacity: 1;
+    transform: translateX(-50%) scaleX(1);
+}
+
+.kiki-word-bank-editor-tabs button:hover,
+.kiki-word-bank-editor-tabs button:focus-visible {
+    color: var(--word-bank-green-deep);
+}
+
+.kiki-word-bank-editor-tabs button:focus-visible {
+    outline: 2px solid rgba(93, 138, 102, 0.22);
+    outline-offset: -4px;
+}
+
+.kiki-word-bank-editor-layout {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    background: #f5f6f3;
+}
+
+.kiki-word-bank-form-scroll {
+    padding: 22px 24px 28px;
+    background: #f6f7f4;
+}
+
+.kiki-word-bank-editor-panel {
+    width: min(100%, 660px);
+    margin: 0 auto;
+}
+
+.kiki-word-bank-editor-panel[hidden] {
+    display: none;
+}
+
+.kiki-word-bank-section {
+    margin: 0 0 16px;
+    padding: 20px;
+    border: 1px solid rgba(55, 61, 50, 0.11);
+    border-radius: 18px;
+    background: rgba(255, 255, 253, 0.98);
+    box-shadow: 0 4px 15px rgba(42, 47, 39, 0.025);
+}
+
+.kiki-word-bank-section-head {
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.kiki-word-bank-section-number {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: #eef1ec;
+    color: #70786d;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.kiki-word-bank-section-head h3 {
+    margin-top: 0;
+    color: #363a33;
+    font-family: var(--word-bank-ui);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.kiki-word-bank-section-head p {
+    margin-top: 4px;
+    color: #91968d;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.kiki-word-bank-field-grid {
+    gap: 13px;
+}
+
+.kiki-word-bank-section > .kiki-word-bank-field-grid + .kiki-word-bank-field-grid,
+.kiki-word-bank-section > .kiki-word-bank-field-grid + .kiki-word-bank-field,
+.kiki-word-bank-section > .kiki-word-bank-field + .kiki-word-bank-field-grid,
+.kiki-word-bank-section > .kiki-word-bank-field + .kiki-word-bank-field {
+    margin-top: 15px;
+}
+
+.kiki-word-bank-field {
+    gap: 7px;
+}
+
+.kiki-word-bank-label {
+    color: #4c5149;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
+.kiki-word-bank-label small {
+    color: #979c93;
+    font-size: 10px;
+    font-weight: 400;
+}
+
+.kiki-word-bank-input,
+.kiki-word-bank-textarea,
+.kiki-word-bank-select {
+    border-color: rgba(55, 61, 50, 0.13);
+    border-radius: 14px;
+    background: #fafbf9;
+    color: #353932;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.kiki-word-bank-field--collocations .kiki-word-bank-label {
+    color: #416b4a;
+}
+
+.kiki-word-bank-field--collocations .kiki-word-bank-input {
+    border-color: rgba(93, 138, 102, 0.2);
+    background: rgba(93, 138, 102, 0.055);
+}
+
+.kiki-word-bank-field--related .kiki-word-bank-label {
+    color: #675e87;
+}
+
+.kiki-word-bank-field--related .kiki-word-bank-input {
+    border-color: rgba(112, 101, 151, 0.2);
+    background: rgba(112, 101, 151, 0.055);
+}
+
+.kiki-word-bank-input {
+    height: 52px;
+    padding: 0 14px;
+}
+
+.kiki-word-bank-input--word {
+    font-family: var(--word-bank-ui);
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.kiki-word-bank-textarea {
+    min-height: 104px;
+    padding: 13px 14px;
+    line-height: 1.75;
+}
+
+.kiki-word-bank-textarea--meaning {
+    min-height: 146px;
+    background: #f6f7f5;
+    font-size: 14px;
+}
+
+.kiki-word-bank-textarea--example {
+    min-height: 160px;
+}
+
+.kiki-word-bank-textarea--compact {
+    min-height: 120px;
+}
+
+.kiki-word-bank-input:focus,
+.kiki-word-bank-textarea:focus,
+.kiki-word-bank-select:focus {
+    border-color: rgba(93, 138, 102, 0.55);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(93, 138, 102, 0.09);
+}
+
+.kiki-word-bank-input::placeholder,
+.kiki-word-bank-textarea::placeholder {
+    color: #afb3ac;
+    font-weight: 400;
+}
+
+.kiki-word-bank-preview {
+    padding: 18px;
+    border-left-color: rgba(55, 61, 50, 0.1);
+    background: #eef1ec;
+}
+
+.kiki-word-bank-actions {
+    min-height: 68px;
+    padding: 10px 18px;
+    border-top-color: rgba(55, 61, 50, 0.1);
+    background: rgba(255, 255, 253, 0.98);
+}
+
+.kiki-word-bank-save-hint {
+    color: #999e95;
+    font-size: 10px;
+}
+
+.kiki-word-bank-actions .kiki-word-bank-button {
+    min-height: 42px;
+    border-radius: 13px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+@media (max-width: 767px) {
+    .kiki-word-bank-editor-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 760px) {
+    .kiki-word-bank-modal {
+        padding: 0;
+        background: #f7f8f5;
+    }
+
+    .kiki-word-bank-dialog {
+        width: 100%;
+        height: 100vh;
+        min-height: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        transform: none;
+    }
+
+    @supports (height: 100dvh) {
+        .kiki-word-bank-dialog {
+            height: 100dvh;
+        }
+    }
+
+    .kiki-word-bank-modal.is-open .kiki-word-bank-dialog {
+        transform: none;
+    }
+
+    .kiki-word-bank-dialog-head {
+        min-height: 64px;
+        grid-template-columns: 44px minmax(0, 1fr) 44px;
+        padding: calc(7px + env(safe-area-inset-top)) 12px 7px;
+    }
+
+    .kiki-word-bank-title {
+        font-size: 17px;
+        font-weight: 600;
+    }
+
+    .kiki-word-bank-source,
+    .kiki-word-bank-completion-label {
+        display: none;
+    }
+
+    .kiki-word-bank-preview-toggle {
+        display: inline-flex;
+    }
+
+    .kiki-word-bank-editor-tabs {
+        min-height: 54px;
+    }
+
+    .kiki-word-bank-editor-tabs button {
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .kiki-word-bank-form-scroll {
+        padding: 18px 14px 24px;
+    }
+
+    .kiki-word-bank-editor-panel {
+        width: 100%;
+    }
+
+    .kiki-word-bank-section {
+        margin-bottom: 14px;
+        padding: 18px 16px;
+        border-radius: 18px;
+        box-shadow: none;
+    }
+
+    .kiki-word-bank-section-head {
+        margin-bottom: 17px;
+    }
+
+    .kiki-word-bank-section-head h3 {
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    .kiki-word-bank-section-head p {
+        font-size: 10px;
+    }
+
+    .kiki-word-bank-field-grid,
+    .kiki-word-bank-field-grid--three {
+        grid-template-columns: 1fr;
+    }
+
+    .kiki-word-bank-input {
+        height: 54px;
+        font-size: 14px;
+    }
+
+    .kiki-word-bank-input--word {
+        font-size: 15px;
+        font-weight: 400;
+    }
+
+    .kiki-word-bank-textarea {
+        font-size: 14px;
+    }
+
+    .kiki-word-bank-textarea--meaning {
+        min-height: 150px;
+    }
+
+    .kiki-word-bank-preview {
+        display: none;
+    }
+
+    .kiki-word-bank-modal.is-preview-open .kiki-word-bank-preview {
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        display: block;
+        border-left: 0;
+        background: #eef1ec;
+    }
+
+    .kiki-word-bank-actions {
+        min-height: 70px;
+        padding: 9px 14px calc(9px + env(safe-area-inset-bottom));
+    }
+
+    .kiki-word-bank-save-hint,
+    .kiki-word-bank-actions-main .kiki-word-bank-button:not(.kiki-word-bank-button--primary) {
+        display: none;
+    }
+
+    .kiki-word-bank-actions-main {
+        width: 100%;
+    }
+
+    .kiki-word-bank-actions-main .kiki-word-bank-button--primary {
+        width: 100%;
+        min-height: 50px;
+        border-radius: 15px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kiki-word-bank-editor-tabs button,
+    .kiki-word-bank-editor-tabs button::after {
+        transition: none !important;
+    }
+}
+
+.kiki-word-card-word.is-long,
+.kiki-word-bank-card-word.is-long {
+    font-size: 30px;
+}
+
+.kiki-word-card-word.is-very-long,
+.kiki-word-bank-card-word.is-very-long {
+    font-size: 25px;
+}
+
+@media (max-width: 760px) {
+    .kiki-word-card-word.is-long {
+        font-size: 31px;
+    }
+
+    .kiki-word-card-word.is-very-long {
+        font-size: 26px;
+    }
+}
+
+/* Vocabulary library: a continuous Japanese paperback page, with quiet index colors. */
+.word-bank-board {
+    --wb-page: #fdfbf7;
+    --wb-sidebar: #f9f6ef;
+    --wb-surface: #fdfbf7;
+    --wb-surface-alt: #fef6ee;
+    --wb-ink: #292722;
+    --wb-muted: #605b55;
+    --wb-faint: #756b61;
+    --wb-line: #e6d9c9;
+    --wb-red: #be441e;
+    --wb-red-soft: #fff0e5;
+    --wb-blue: #605b55;
+    --wb-blue-soft: #fef6ee;
+    --wb-source-tone: #687153;
+    --wb-source-soft: #f5f7e6;
+    --wb-source-line: #bec695;
+    --wb-rule-soft: #eee2d4;
+    --word-bank-muted: var(--wb-muted);
+    --word-bank-faint: var(--wb-faint);
+    --word-bank-line: var(--wb-line);
+    --wb-mascot-size: 116px;
+    position: relative;
+    gap: 18px;
+    background: var(--wb-page);
+    color: var(--wb-ink);
+    font-family: var(--word-bank-ui);
+}
+
+.word-bank-board [data-word-bank-source="all"] {
+    --wb-source-tone: var(--wb-red);
+    --wb-source-soft: var(--wb-red-soft);
+    --wb-source-line: #efae8e;
+}
+
+.word-bank-board :is([data-word-bank-source="movie"], [data-source-tone="movie"]) {
+    --wb-source-tone: #ba4928;
+    --wb-source-soft: #fff2e9;
+    --wb-source-line: #ffb293;
+}
+
+.word-bank-board :is([data-word-bank-source="lyrics"], [data-source-tone="lyrics"]) {
+    --wb-source-tone: #687153;
+    --wb-source-soft: #f5f7e6;
+}
+
+.word-bank-board :is([data-word-bank-source="novel"], [data-source-tone="novel"]) {
+    --wb-source-tone: #687153;
+    --wb-source-soft: #f5f7e6;
+}
+
+.word-bank-board :is([data-word-bank-source="article"], [data-source-tone="article"]) {
+    --wb-source-tone: #73704e;
+    --wb-source-soft: #f7f5e7;
+}
+
+.word-bank-board :is([data-word-bank-source="news"], [data-source-tone="news"]) {
+    --wb-source-tone: #62715a;
+    --wb-source-soft: #f2f5e9;
+}
+
+.word-bank-board :is([data-word-bank-source="exam"], [data-source-tone="exam"]) {
+    --wb-source-tone: #b64b2b;
+    --wb-source-soft: #fff1e5;
+    --wb-source-line: #efae8e;
+}
+
+.word-bank-board :is([data-word-bank-source="textbook"], [data-source-tone="textbook"]) {
+    --wb-source-tone: #687153;
+    --wb-source-soft: #f5f7e6;
+}
+
+.word-bank-board :is([data-word-bank-source="custom"], [data-source-tone="custom"]) {
+    --wb-source-tone: #76634f;
+    --wb-source-soft: #faf3e9;
+    --wb-source-line: #d7c6ad;
+}
+
+.word-bank-board .word-bank-toolbar {
+    display: grid;
+    grid-template-columns: auto minmax(120px, 440px) auto;
+    justify-content: start;
+    align-items: center;
+    min-height: 78px;
+    gap: 24px;
+    padding: 0 calc(var(--wb-mascot-size) + 22px) 0 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.word-bank-page-heading {
+    min-width: 0;
+}
+
+.word-bank-page-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--wb-ink);
+    font: 500 23px/1.4 var(--word-bank-serif);
+    letter-spacing: .035em;
+    white-space: nowrap;
+}
+
+.word-bank-title-paw {
+    flex: 0 0 auto;
+    width: 21px;
+    height: 21px;
+    fill: #e5672e;
+}
+
+.word-bank-page-subtitle {
+    margin: 7px 0 0;
+    color: var(--wb-faint);
+    font: 400 10.5px/1.6 var(--word-bank-ui);
+    letter-spacing: .065em;
+    white-space: nowrap;
+}
+
+.word-bank-board .word-bank-search-wrap {
+    width: 100%;
+    justify-self: start;
+    min-height: 44px;
+    gap: 14px;
+    border: 1px solid var(--wb-line);
+    border-radius: 6px;
+    background: #fffdf9;
+    box-shadow: 0 1px 2px rgba(64, 47, 27, .025);
+}
+
+.word-bank-board .word-bank-search {
+    min-height: 42px;
+    color: var(--wb-ink);
+    font-size: 14px;
+}
+
+.word-bank-board .word-bank-search::placeholder {
+    color: var(--wb-faint);
+    opacity: 1;
+}
+
+body.home-dashboard-redesign .word-bank-board .word-bank-search:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+
+.word-bank-board .word-bank-search-wrap:focus-within {
+    border-color: var(--wb-red);
+    background: #fff;
+    box-shadow: 0 0 0 3px var(--wb-red-soft);
+}
+
+.word-bank-board .word-bank-search-icon {
+    width: 14px;
+    height: 14px;
+    border-color: #735039;
+}
+
+.word-bank-board .word-bank-search-icon::after {
+    background: #735039;
+}
+
+.word-bank-board .word-bank-toolbar .word-bank-action--primary {
+    min-height: 42px;
+    padding-inline: 16px;
+    border-color: transparent;
+    border-radius: 6px;
+    background: #fed8c1;
+    color: #aa3d1b;
+    font-size: 13px;
+    font-weight: 400;
+    white-space: nowrap;
+    box-shadow: none;
+}
+
+.word-bank-board .word-bank-action--primary > span:first-child {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.word-bank-board .word-bank-toolbar .word-bank-action--primary:hover,
+.word-bank-board .word-bank-toolbar .word-bank-action--primary:focus-visible {
+    border-color: #efae8e;
+    background: #ffccb0;
+    color: #a53a18;
+    transform: none;
+}
+
+.word-bank-board .word-bank-more summary {
+    width: 40px;
+    height: 42px;
+    border-color: var(--wb-line);
+    border-radius: 6px;
+    color: #735039;
+    background: #fffdf9;
+    box-shadow: 0 2px 8px rgba(86, 54, 49, .025);
+}
+
+.word-bank-board :is(.word-bank-more summary:hover, .word-bank-more[open] summary) {
+    border-color: var(--wb-line);
+    background: var(--wb-surface-alt);
+    color: var(--wb-ink);
+}
+
+.word-bank-mascot {
+    grid-area: 2 / 1;
+    justify-self: end;
+    align-self: start;
+    position: relative;
+    z-index: 3;
+    width: var(--wb-mascot-size);
+    height: 0;
+    margin-right: 12px;
+    pointer-events: none;
+    user-select: none;
+}
+
+.word-bank-mascot img {
+    position: absolute;
+    right: 0;
+    /* The source has transparent bottom padding; align its paws, not its canvas. */
+    bottom: calc(var(--wb-mascot-size) * -.085);
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.word-bank-board .word-bank-library {
+    grid-area: 2 / 1;
+    grid-template-columns: 170px minmax(0, 1fr);
+    border: 1px solid var(--wb-line);
+    border-radius: 5px;
+    background: var(--wb-surface);
+    box-shadow: 0 2px 0 #f8f2e9, 0 3px 0 #e7ddcc, 0 7px 18px rgba(64, 47, 27, .035);
+}
+
+.word-bank-board .word-bank-source-directory {
+    padding: 20px 10px;
+    border-color: var(--wb-line);
+    background: var(--wb-sidebar);
+    scrollbar-color: #dfd4c5 transparent;
+}
+
+.word-bank-board .word-bank-source-directory h3 {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 0 12px 16px;
+    color: var(--wb-muted);
+    font: 500 13px/1.5 var(--word-bank-serif);
+    letter-spacing: .12em;
+}
+
+.word-bank-directory-hint {
+    color: var(--wb-faint);
+    font: 400 10px/1.5 var(--word-bank-ui);
+    letter-spacing: .04em;
+}
+
+.word-bank-board .word-bank-source-list {
+    gap: 16px;
+}
+
+.word-bank-board .word-bank-source-group {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.word-bank-board .word-bank-source-group > summary {
+    min-height: 52px;
+    padding: 8px 9px;
+    border-radius: 3px;
+    background: transparent;
+    color: var(--wb-ink);
+}
+
+.word-bank-board .word-bank-source-group > summary:hover {
+    background: var(--wb-surface-alt);
+}
+
+.word-bank-board .word-bank-source-group-copy strong {
+    font: 600 15px/1.5 var(--word-bank-serif);
+}
+
+.word-bank-board .word-bank-source-group-copy small {
+    color: var(--wb-faint);
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.word-bank-board .word-bank-source-group-meta {
+    color: var(--wb-faint);
+}
+
+.word-bank-board .word-bank-source-group-meta b {
+    display: none;
+}
+
+.word-bank-board .word-bank-source-submenu {
+    margin: 10px 0 0;
+    padding: 0;
+    gap: 3px;
+    border-radius: 0;
+    background: transparent;
+}
+
+.word-bank-board .word-bank-source-button {
+    min-height: 35px;
+    padding: 0 9px 0 24px;
+    border-radius: 2px;
+    color: var(--wb-muted);
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.word-bank-board .word-bank-source-button::before {
+    content: "";
+    left: 9px;
+    top: calc(50% - 2px);
+    bottom: auto;
+    width: 4px;
+    height: 4px;
+    border-radius: 0;
+    background: var(--wb-source-tone);
+    opacity: .6;
+}
+
+.word-bank-board .word-bank-source-button small {
+    min-width: 24px;
+    padding: 0;
+    color: var(--wb-faint);
+    background: transparent;
+    font-size: 12px;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.word-bank-board .word-bank-source-button:hover {
+    background: #f8ecde;
+    color: var(--wb-ink);
+}
+
+.word-bank-board .word-bank-source-button.is-active {
+    background: var(--wb-red-soft);
+    color: var(--wb-red);
+    font-weight: 500;
+}
+
+.word-bank-board .word-bank-source-button.is-active::before {
+    top: calc(50% - 9px);
+    left: 0;
+    width: 2px;
+    height: 18px;
+    background: var(--wb-red);
+    opacity: 1;
+}
+
+.word-bank-board .word-bank-source-button.is-active small {
+    color: var(--wb-red);
+}
+
+.word-bank-board .word-bank-collection {
+    padding: 20px 24px 14px;
+    background: var(--wb-surface);
+}
+
+.word-bank-board .word-bank-collection-toolbar {
+    min-height: 38px;
+    padding-bottom: 14px;
+    border: 0;
+}
+
+.word-bank-collection-heading {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+}
+
+.word-bank-board .word-bank-collection-toolbar h3 {
+    color: var(--wb-ink);
+    font: 600 19px/1.45 var(--word-bank-serif);
+    letter-spacing: .035em;
+}
+
+.word-bank-collection-seal {
+    align-self: center;
+    padding: 2px 3px;
+    border: 1px solid currentColor;
+    color: var(--wb-red);
+    font: 500 10px/1.3 var(--word-bank-serif);
+    letter-spacing: .08em;
+}
+
+.word-bank-result-count {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--wb-faint);
+    font-size: 11px;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.word-bank-board .word-bank-view-filters select {
+    min-height: 36px;
+    border-color: var(--wb-line);
+    border-radius: 3px;
+    background: #fffdf9;
+    color: var(--wb-muted);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.word-bank-board .word-bank-column-head,
+.word-bank-board .word-bank-entry-row {
+    grid-template-columns: minmax(190px, .95fr) minmax(0, 1.8fr) 82px 32px;
+    column-gap: 18px;
+    padding-inline: 14px;
+}
+
+.word-bank-board .word-bank-column-head {
+    min-height: 38px;
+    align-items: center;
+    padding-block: 0;
+    padding-right: 14px;
+    border-top: 1px solid var(--wb-line);
+    border-bottom: 3px double var(--wb-line);
+    border-radius: 0;
+    background: transparent;
+    color: var(--wb-faint);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: .08em;
+}
+
+.word-bank-board .word-bank-column-head > span:first-child {
+    padding-left: 32px;
+}
+
+.word-bank-board .word-bank-list {
+    grid-template-rows: repeat(5, minmax(0, 1fr));
+    gap: 0;
+    padding-top: 0;
+    overflow: visible;
+    background: transparent;
+    scrollbar-gutter: auto;
+}
+
+.word-bank-board .word-bank-entry-row {
+    position: relative;
+    min-height: 0;
+    border: 0;
+    border-bottom: 1px solid var(--wb-rule-soft);
+    border-radius: 0;
+    background: transparent;
+    transition: none;
+}
+
+.word-bank-board .word-bank-entry-row:hover,
+.word-bank-board .word-bank-entry-row:focus-within {
+    background: var(--wb-surface-alt);
+    box-shadow: none;
+}
+
+.word-bank-board .word-bank-entry-row:last-child {
+    border-bottom-color: transparent;
+}
+
+.word-bank-board .word-bank-entry-main {
+    grid-column: 1 / 4;
+    grid-template-columns: subgrid;
+    min-height: 0;
+    padding: 8px 0;
+    column-gap: 18px;
+}
+
+.word-bank-board .word-bank-entry-word {
+    grid-template-columns: 22px minmax(0, 1fr);
+    align-items: first baseline;
+    gap: 10px;
+}
+
+.word-bank-entry-index {
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--wb-red);
+    font-family: var(--word-bank-ui);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.word-bank-entry-spelling {
+    min-width: 0;
+    display: block;
+}
+
+.word-bank-board .word-bank-entry-word strong {
+    display: block;
+    color: var(--wb-ink);
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.word-bank-board .word-bank-entry-word strong.has-ruby {
+    padding-top: calc(.65em + 2px);
+}
+
+.word-bank-board .word-bank-entry-word ruby {
+    ruby-position: over;
+    ruby-align: center;
+}
+
+.word-bank-board .word-bank-entry-word rt {
+    position: relative;
+    top: -2px;
+    color: var(--wb-faint);
+    font-family: var(--word-bank-ui);
+    font-size: .52em;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: 0;
+    text-align: center;
+}
+
+.word-bank-board .word-bank-entry-meaning {
+    color: var(--wb-muted);
+    font-family: var(--word-bank-ui);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+.word-bank-board .word-bank-entry-source {
+    width: fit-content;
+    max-width: 100%;
+    padding: 5px 9px;
+    border: 1px solid var(--wb-source-line);
+    border-radius: 2px;
+    background: var(--wb-source-soft);
+    color: var(--wb-source-tone);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.word-bank-board .word-bank-entry-actions {
+    position: relative;
+    padding: 0;
+    justify-content: center;
+}
+
+.word-bank-board .word-bank-entry-menu {
+    position: relative;
+    display: block;
+}
+
+.word-bank-board .word-bank-entry-menu > summary {
+    display: flex;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--wb-faint);
+    cursor: pointer;
+    list-style: none;
+}
+
+.word-bank-board .word-bank-entry-menu > summary::-webkit-details-marker {
+    display: none;
+}
+
+.word-bank-board .word-bank-entry-menu > summary::marker {
+    content: "";
+}
+
+.word-bank-board .word-bank-entry-menu > summary svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.word-bank-board .word-bank-entry-menu[open] > summary,
+.word-bank-board .word-bank-entry-menu > summary:hover {
+    background: var(--wb-surface-alt);
+    color: var(--wb-ink);
+}
+
+.word-bank-board .word-bank-entry-menu-popover,
+.word-bank-board .word-bank-more-menu {
+    border: 1px solid var(--wb-line);
+    border-radius: 4px;
+    background: #fffdf9;
+    box-shadow: 0 8px 24px #49321f14;
+}
+
+.word-bank-board .word-bank-entry-menu-popover {
+    position: absolute;
+    z-index: 15;
+    top: calc(100% + 4px);
+    bottom: auto;
+    right: 0;
+    display: grid;
+    width: 128px;
+    padding: 5px;
+}
+
+.word-bank-board .word-bank-entry-menu-popover button,
+.word-bank-board .word-bank-more-menu button {
+    min-height: 38px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--wb-muted);
+    font: 400 12px/1.5 var(--word-bank-ui);
+    text-align: left;
+    cursor: pointer;
+}
+
+.word-bank-board .word-bank-entry-menu-popover button[data-word-bank-delete] {
+    color: var(--wb-red);
+}
+
+.word-bank-board .word-bank-entry-menu-popover button:hover,
+.word-bank-board .word-bank-more-menu button:hover {
+    color: var(--wb-ink);
+    background: var(--wb-surface-alt);
+}
+
+body.home-dashboard-redesign .word-bank-board :is(button, summary, select):focus-visible {
+    outline: 2px solid var(--wb-red);
+    outline-offset: -2px;
+    box-shadow: none;
+}
+
+.word-bank-pagination-footer {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 48px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--wb-line);
+}
+
+.word-bank-page-range {
+    color: var(--wb-faint);
+    font-size: 11px;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+}
+
+.word-bank-board .word-bank-empty {
+    background: transparent;
+}
+
+.word-bank-board .word-bank-empty-title {
+    color: var(--wb-ink);
+}
+
+.word-bank-pagination {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto;
+}
+
+.word-bank-pagination:focus {
+    outline: none;
+}
+
+.word-bank-pagination button {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    background: transparent;
+    color: var(--wb-muted);
+    font: 400 13px/1 var(--word-bank-serif);
+    cursor: pointer;
+}
+
+.word-bank-pagination button:hover:not(:disabled) {
+    background: var(--wb-surface-alt);
+    color: var(--wb-ink);
+}
+
+.word-bank-pagination .word-bank-page-number.is-active {
+    border-color: #ee9d73;
+    background: var(--wb-red-soft);
+    color: var(--wb-red);
+    font-weight: 500;
+}
+
+.word-bank-pagination .word-bank-page-arrow {
+    border-color: var(--wb-line);
+    background: #fffdf9;
+    color: #735039;
+}
+
+.word-bank-pagination button:disabled {
+    color: #aea396;
+    background: transparent;
+    cursor: default;
+}
+
+.word-bank-page-arrow svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.word-bank-page-ellipsis {
+    width: 20px;
+    color: var(--wb-faint);
+    font-size: 12px;
+    text-align: center;
+}
+
+.word-bank-page-current {
+    display: none;
+}
+
+/* The home dashboard keeps its 1366px tablet canvas; only standalone pages reflow. */
+@media (max-width: 1100px) and (min-width: 761px) {
+    :where(body:not(.home-dashboard-redesign)) .word-bank-board .word-bank-library {
+        grid-template-columns: 156px minmax(0, 1fr);
+    }
+
+    :where(body:not(.home-dashboard-redesign)) .word-bank-board .word-bank-collection {
+        padding-inline: 18px;
+    }
+
+    :where(body:not(.home-dashboard-redesign)) .word-bank-board .word-bank-column-head,
+    :where(body:not(.home-dashboard-redesign)) .word-bank-board .word-bank-entry-row {
+        grid-template-columns: minmax(130px, .9fr) minmax(0, 1.6fr) 68px 32px;
+        column-gap: 12px;
+        padding-inline: 8px;
+    }
+
+    :where(body:not(.home-dashboard-redesign)) .word-bank-board .word-bank-entry-main {
+        column-gap: 12px;
+    }
+
+    :where(body:not(.home-dashboard-redesign)) .word-bank-board .word-bank-entry-word strong {
+        font-size: 17px;
+    }
+
+    :where(body:not(.home-dashboard-redesign)) .word-bank-board .word-bank-toolbar {
+        gap: 12px;
+    }
+
+    :where(body:not(.home-dashboard-redesign)) .word-bank-page-title {
+        font-size: 20px;
+    }
+
+    :where(body:not(.home-dashboard-redesign)) .word-bank-page-subtitle {
+        font-size: 10px;
+        letter-spacing: 0;
+    }
+
+    :where(body:not(.home-dashboard-redesign)) .word-bank-board .word-bank-entry-meaning {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 760px) {
+    .word-bank-board {
+        gap: 10px;
+        padding-top: 10px;
+    }
+
+    .word-bank-board .word-bank-toolbar {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        min-height: 0;
+        padding: 0;
+        gap: 8px;
+    }
+
+    .word-bank-mascot {
+        display: none;
+    }
+
+    .word-bank-page-title {
+        font-size: 15px;
+        letter-spacing: 0;
+        gap: 4px;
+    }
+
+    .word-bank-title-paw {
+        width: 14px;
+        height: 14px;
+    }
+
+    .word-bank-page-subtitle {
+        display: none;
+    }
+
+    .word-bank-board .word-bank-search-wrap {
+        width: 100%;
+        min-width: 0;
+        gap: 9px;
+        padding-inline: 10px;
+    }
+
+    .word-bank-board .word-bank-search {
+        font-size: 13px;
+    }
+
+    .word-bank-board .word-bank-toolbar .word-bank-action--primary {
+        width: 36px;
+        min-height: 40px;
+        padding: 0;
+        font-size: 21px;
+    }
+
+    .word-bank-add-label {
+        display: none;
+    }
+
+    .word-bank-board .word-bank-tools {
+        gap: 2px;
+    }
+
+    .word-bank-board .word-bank-more summary {
+        width: 32px;
+    }
+
+    .word-bank-board .word-bank-library {
+        grid-template-columns: minmax(0, 1fr);
+        border: 0;
+        border-radius: 0;
+        background: var(--wb-surface);
+        box-shadow: none;
+    }
+
+    .word-bank-board .word-bank-mobile-filters {
+        padding: 0 0 10px;
+        gap: 8px;
+        border-bottom: 1px solid var(--wb-line);
+        background: var(--wb-surface);
+    }
+
+    .word-bank-board .word-bank-mobile-origin-tabs {
+        gap: 0;
+        padding: 0;
+        border-radius: 0;
+        border-bottom: 1px solid var(--wb-line);
+        background: transparent;
+    }
+
+    .word-bank-board .word-bank-mobile-origin-tab {
+        position: relative;
+        min-height: 44px;
+        padding: 0 4px 9px;
+        border-radius: 0;
+        color: var(--wb-faint);
+        font-family: var(--word-bank-serif);
+        font-size: 13px;
+        font-weight: 400;
+    }
+
+    .word-bank-board .word-bank-mobile-origin-tab small {
+        color: inherit;
+        font-size: 11px;
+        font-weight: 400;
+    }
+
+    .word-bank-board .word-bank-mobile-origin-tab.is-active {
+        background: transparent;
+        color: var(--wb-red);
+        box-shadow: none;
+        font-weight: 500;
+    }
+
+    .word-bank-board .word-bank-mobile-origin-tab.is-active::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 25%;
+        right: 25%;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--wb-red);
+    }
+
+    .word-bank-board .word-bank-mobile-category > summary {
+        min-height: 40px;
+        gap: 8px;
+        padding: 0 10px;
+        border: 1px solid var(--wb-line);
+        border-radius: 3px;
+        background: var(--wb-surface-alt);
+        color: var(--wb-muted);
+    }
+
+    .word-bank-board .word-bank-mobile-category-label {
+        color: var(--wb-faint);
+        font-size: 11px;
+        font-weight: 400;
+    }
+
+    .word-bank-board .word-bank-mobile-category > summary strong {
+        color: var(--wb-ink);
+        font-size: 12px;
+        font-weight: 400;
+    }
+
+    .word-bank-board .word-bank-mobile-category-menu {
+        border-color: var(--wb-line);
+        background: var(--wb-surface);
+        box-shadow: 0 8px 24px #49321f14;
+    }
+
+    .word-bank-board .word-bank-mobile-category-button {
+        min-height: 40px;
+        background: var(--wb-surface);
+        color: var(--wb-muted);
+        font-size: 12px;
+        font-weight: 400;
+    }
+
+    .word-bank-board .word-bank-mobile-category-button.is-active {
+        border-color: color-mix(in srgb, var(--wb-source-tone) 25%, transparent);
+        background: var(--wb-source-soft);
+        color: var(--wb-source-tone);
+    }
+
+    .word-bank-board .word-bank-mobile-category:not(.word-bank-mobile-category--pos) > summary {
+        border-color: color-mix(in srgb, var(--wb-source-tone) 16%, var(--wb-line));
+        background: var(--wb-source-soft);
+    }
+
+    .word-bank-board .word-bank-mobile-category:not(.word-bank-mobile-category--pos) > summary strong {
+        color: var(--wb-source-tone);
+    }
+
+    .word-bank-board .word-bank-collection {
+        padding: 0;
+    }
+
+    .word-bank-board .word-bank-entry-row {
+        grid-template-columns: minmax(0, 1fr) 28px;
+        column-gap: 4px;
+        padding: 0 9px;
+    }
+
+    .word-bank-board .word-bank-entry-main {
+        grid-column: 1;
+        grid-template-columns: minmax(0, 1fr) auto;
+        min-height: 0;
+        padding: 8px 0;
+        gap: 5px 8px;
+    }
+
+    .word-bank-board .word-bank-entry-word {
+        display: grid;
+        grid-template-columns: 18px minmax(0, 1fr);
+        gap: 6px;
+        align-items: first baseline;
+    }
+
+    .word-bank-board .word-bank-entry-word strong {
+        font-size: 16px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .word-bank-board .word-bank-entry-word rt {
+        font-size: 9px;
+    }
+
+    .word-bank-board .word-bank-entry-meaning {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        font-size: 12px;
+        line-height: 1.55;
+    }
+
+    .word-bank-board .word-bank-entry-source {
+        grid-column: 2;
+        grid-row: 1;
+        align-self: start;
+        margin-top: 1px;
+        padding: 3px 6px;
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+    .word-bank-board .word-bank-entry-actions {
+        align-items: flex-start;
+        padding-top: 8px;
+    }
+
+    .word-bank-board .word-bank-entry-menu > summary {
+        width: 28px;
+        height: 28px;
+    }
+
+    .word-bank-entry-index {
+        display: block;
+        font-size: 10px;
+    }
+
+    .word-bank-board .word-bank-list {
+        gap: 0;
+        padding-top: 0;
+    }
+
+    .word-bank-pagination-footer {
+        min-height: 44px;
+        margin-top: 8px;
+        padding-top: 8px;
+        gap: 8px;
+    }
+
+    .word-bank-pagination .word-bank-page-number,
+    .word-bank-page-ellipsis {
+        display: none;
+    }
+
+    .word-bank-page-current {
+        display: inline;
+        min-width: 46px;
+        color: var(--wb-muted);
+        font-size: 11px;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .word-bank-board .word-bank-entry-menu-popover {
+        top: calc(100% + 4px);
+        bottom: auto;
+    }
+}
+
+/* Mobile template contract — docs/design/全站手机端排列与字体规范-审查及规划-20260927.md */
+@media (max-width: 767px) {
+    .word-bank-board { gap: 16px; }
+    .word-bank-board .word-bank-toolbar { grid-template-columns: minmax(0, 1fr) auto; gap: 16px 12px; }
+    .word-bank-board .word-bank-page-heading { grid-column: 1; grid-row: 1; min-width: 0; }
+    .word-bank-board .word-bank-page-title { font-size: var(--mobile-title); line-height: 1.4; font-weight: 600; }
+    .word-bank-board .word-bank-tools { grid-column: 2; grid-row: 1; gap: 4px; }
+    .word-bank-board .word-bank-search-wrap { grid-column: 1 / -1; grid-row: 2; min-height: 48px; border-radius: var(--mobile-control-radius); padding-inline: 12px; }
+    .word-bank-board .word-bank-search { font-size: 1rem; line-height: 1.5; }
+    .word-bank-board .word-bank-toolbar .word-bank-action--primary, .word-bank-board .word-bank-more summary { width: 44px; min-width: 44px; min-height: 44px; }
+    .word-bank-board .word-bank-mobile-origin-tab { font-size: var(--mobile-control); min-height: 44px; }
+    .word-bank-board .word-bank-mobile-origin-tab small, .word-bank-board .word-bank-mobile-category-label, .word-bank-board .word-bank-entry-source, .word-bank-board .word-bank-pagination { font-size: var(--mobile-meta); }
+    .word-bank-board .word-bank-mobile-category summary { min-height: 44px; }
+    .word-bank-board .word-bank-mobile-category summary strong { font-size: var(--mobile-control); }
+    .word-bank-board .word-bank-entry-row { min-height: 88px; padding-block: 16px; }
+    .word-bank-board .word-bank-entry-word strong { font-family: var(--mobile-serif); font-size: var(--mobile-option); font-weight: 700; line-height: 1.9; }
+    .word-bank-board .word-bank-entry-meaning { font: 400 var(--mobile-copy)/1.7 var(--mobile-sans); }
+    .word-bank-board .word-bank-entry-more summary { min-width: 44px; min-height: 44px; }
+    .word-bank-board rt { font-size: var(--mobile-ruby); }
+    .word-bank-board .word-bank-library, .word-bank-board .word-bank-collection,
+    .word-bank-board .word-bank-list { height: auto; max-height: none; min-height: 0; overflow: visible; }
+    .word-bank-board .word-bank-list { grid-template-rows: none; grid-auto-rows: auto; }
+    .word-bank-board .word-bank-entry-row { grid-template-columns: minmax(0, 1fr) 44px; align-items: start; padding-inline: 0; }
+    .word-bank-board .word-bank-entry-main { grid-template-rows: auto auto; align-items: start; row-gap: 8px; padding: 0; }
+    .word-bank-board .word-bank-entry-word strong { white-space: normal; overflow: visible; }
+    .word-bank-board .word-bank-entry-word strong.has-ruby { padding-top: .7em; }
+    .word-bank-board .word-bank-entry-menu > summary { width: 44px; height: 44px; }
+}
+
+/* Word card v3 (2026-10-19): the original paper-page look, with a clearer
+   reading order and deeper inks for bright screens.
+   Shared by 我推の単語 and the site dictionary search (openCard mode="dictionary");
+   sense rules also drive the editor's live preview.
+   Order: headword → meaning (vermilion margin rule, strongest text)
+   → examples (flush paler panel, regular weight) → supplementary rows. */
+.kiki-word-card-dialog,
+.kiki-word-bank-card-preview {
+    --wb-card-paper: #fdfbf7;
+    --wb-card-paper-deep: #f7f2ea;
+    --wb-card-alt: #fdf1e7;
+    --wb-card-ink: #22201d;
+    --wb-card-text: #3d3832;
+    --wb-card-muted: #554d44;
+    --wb-card-faint: #5f574e;
+    --wb-card-line: #e2d4c2;
+    --wb-card-line-strong: #d2bfa5;
+    --wb-card-rule: #ebdfd0;
+    --wb-card-red: #a83a1c;
+    --wb-card-red-soft: #fff0e5;
+    --wb-card-red-line: #eab096;
+    --wb-card-sage: #4f5b36;
+    --wb-card-sage-soft: #f5f7e6;
+    --wb-card-sage-line: #bec695;
+    --wb-card-peach-ink: #8f3112;
+    --wb-card-mincho: "Noto Serif JP", "Noto Serif JP Variable", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif SC", serif;
+    --wb-card-sans: "Noto Sans SC", "Noto Sans JP", "PingFang SC", "Hiragino Sans", sans-serif;
+    -webkit-font-smoothing: auto;
+}
+
+/* ── Headword ─────────────────────────────────────────── */
+.kiki-word-card-dialog .kiki-word-card-term {
+    border-bottom-color: var(--wb-card-line-strong);
+}
+
+.kiki-word-card-dialog .kiki-word-card-word rt {
+    color: var(--wb-card-muted);
+    font-weight: 500;
+}
+
+.kiki-word-card-dialog .kiki-word-card-speak {
+    width: 36px;
+    height: 36px;
+}
+
+.kiki-word-card-dialog .kiki-word-card-part-of-speech,
+.kiki-word-card-dialog .kiki-word-card-accent {
+    padding: 4px 9px;
+    font-family: var(--wb-card-sans);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.kiki-word-card-dialog .kiki-word-card-accent::before {
+    opacity: 1;
+}
+
+.kiki-word-card-dialog .kiki-word-card-close {
+    color: var(--wb-card-muted);
+}
+
+/* ── Section label: small spaced seal-red caption + hairline ─ */
+.kiki-word-card-dialog .kiki-word-card-section--senses {
+    padding: 26px 0 6px;
+    border-bottom: 0;
+}
+
+.kiki-word-card-dialog .kiki-word-card-section > span {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+}
+
+.kiki-word-card-dialog .kiki-word-card-section--senses > span::after {
+    content: "";
+    flex: 1;
+    border-top: 1px solid var(--wb-card-rule);
+}
+
+/* ── Meanings ─────────────────────────────────────────── */
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-stack {
+    gap: 0;
+    margin-top: 16px;
+}
+
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-item + .kiki-word-sense-item {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--wb-card-line-strong);
+}
+
+/* The meaning keeps the original vermilion margin rule on a peach wash. */
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-meaning {
+    gap: 6px 10px;
+    padding: 16px 20px;
+    border-left: 3px solid var(--wb-card-red);
+    border-radius: 0 4px 4px 0;
+    background: var(--wb-card-alt);
+}
+
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .is-multiple .kiki-word-sense-meaning {
+    grid-template-columns: 22px minmax(0, 1fr);
+}
+
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-marker {
+    width: 22px;
+    height: 22px;
+    display: inline-grid;
+    place-items: center;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: var(--wb-card-red);
+    color: #fffdf9;
+    font-family: var(--wb-card-sans);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-meaning p {
+    color: var(--wb-card-ink);
+    font-family: var(--wb-card-mincho);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+}
+
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-meaning-zh {
+    margin-top: 0;
+    color: var(--wb-card-text);
+    font-family: var(--wb-card-sans);
+    font-size: 14.5px;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .is-multiple .kiki-word-sense-meaning-zh {
+    grid-column: 2;
+}
+
+/* ── Examples: flush with the meaning block, a paler sheet; the text
+   lines up with the meaning text (3px rule + 20px padding). ─ */
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-example {
+    margin: 12px 0 0;
+    padding: 14px 20px 14px 23px;
+    border-left: 0;
+    border-radius: 4px;
+    background: var(--wb-card-paper-deep);
+}
+
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .is-multiple .kiki-word-sense-example {
+    padding-left: 55px;
+}
+
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-example-label {
+    margin-bottom: 6px;
+    color: var(--wb-card-red);
+    font-family: var(--word-bank-ui);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+}
+
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-example-row + .kiki-word-sense-example-row {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--wb-card-line-strong);
+}
+
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-example .kiki-word-sense-example-ja {
+    color: var(--wb-card-ink);
+    font-family: var(--wb-card-mincho);
+    font-size: 16.5px;
+    font-weight: 500;
+    line-height: 2;
+    letter-spacing: 0.02em;
+}
+
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-example rt {
+    color: var(--wb-card-muted);
+    font-weight: 500;
+}
+
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-example-zh {
+    margin-top: 2px;
+    color: var(--wb-card-muted);
+    font-family: var(--word-bank-ui);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+:is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-example-target {
+    color: var(--wb-card-red);
+    text-decoration-color: var(--wb-card-red-line);
+    text-decoration-thickness: 2px;
+}
+
+/* ── Supplementary: quiet label | content rows ────────── */
+.kiki-word-card-dialog .kiki-word-card-section:not(.kiki-word-card-section--senses):not([hidden]) {
+    display: grid;
+    grid-template-columns: 6em minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--wb-card-rule);
+    border-bottom: 0;
+}
+
+.kiki-word-card-dialog .kiki-word-card-section--senses + .kiki-word-card-section {
+    margin-top: 22px;
+}
+
+.kiki-word-card-dialog .kiki-word-card-section:not(.kiki-word-card-section--senses) > span,
+.kiki-word-card-dialog .kiki-word-card-section--related > span {
+    color: var(--wb-card-muted);
+    font-size: 12.5px;
+    letter-spacing: 0.16em;
+}
+
+.kiki-word-card-dialog .kiki-word-card-section:not(.kiki-word-card-section--senses) .kiki-word-card-list {
+    margin-top: 0;
+}
+
+.kiki-word-card-dialog .kiki-word-card-list span {
+    font-family: var(--wb-card-sans);
+    font-size: 13px;
+}
+
+.kiki-word-card-dialog .kiki-word-card-section[data-word-card-block] p {
+    margin: 0;
+    color: var(--wb-card-text);
+    font-size: 14.5px;
+}
+
+.kiki-word-card-dialog .kiki-word-card-content > :last-child {
+    padding-bottom: 4px;
+}
+
+/* ── Footer: the original outline + peach pair, slightly larger ─ */
+.kiki-word-card-dialog .kiki-word-card-actions {
+    box-sizing: border-box;
+}
+
+.kiki-word-card-dialog .kiki-word-card-actions .kiki-word-bank-button {
+    min-height: 40px;
+    padding: 0 18px;
+    border-color: var(--wb-card-line-strong);
+    color: var(--wb-card-text);
+    font-size: 13.5px;
+    font-weight: 500;
+}
+
+.kiki-word-card-dialog .kiki-word-card-actions .kiki-word-bank-button--primary {
+    border-color: transparent;
+    color: var(--wb-card-peach-ink);
+    font-weight: 600;
+}
+
+.kiki-word-card-dialog .kiki-word-card-actions .kiki-word-bank-button--primary:hover,
+.kiki-word-card-dialog .kiki-word-card-actions .kiki-word-bank-button--primary:focus-visible {
+    color: var(--wb-card-peach-ink);
+}
+
+.kiki-word-card-dialog .kiki-word-card-search-tools p {
+    color: var(--wb-card-muted);
+}
+
+/* ── Editor live preview: a narrow column, no hanging indent ─ */
+.kiki-word-bank-card-preview .kiki-word-sense-meaning {
+    padding: 12px 14px;
+}
+
+.kiki-word-bank-card-preview .kiki-word-sense-meaning p {
+    font-size: 15px;
+}
+
+.kiki-word-bank-card-preview .kiki-word-sense-example,
+.kiki-word-bank-card-preview .is-multiple .kiki-word-sense-example {
+    padding: 10px 14px 10px 17px;
+}
+
+.kiki-word-bank-card-preview .kiki-word-sense-example .kiki-word-sense-example-ja {
+    font-size: 14.5px;
+}
+
+/* ── Phone ────────────────────────────────────────────── */
+@media (max-width: 760px) {
+    :is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-meaning {
+        padding: 14px 14px;
+    }
+
+    :is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-meaning p {
+        font-size: 17px;
+    }
+
+    :is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-meaning-zh {
+        font-size: 14px;
+    }
+
+    :is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-example,
+    :is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .is-multiple .kiki-word-sense-example {
+        padding: 12px 14px 12px 17px;
+    }
+
+    :is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-example .kiki-word-sense-example-ja {
+        font-size: 16px;
+    }
+
+    :is(.kiki-word-card-dialog, .kiki-word-bank-card-preview) .kiki-word-sense-example-zh {
+        font-size: 13.5px;
+    }
+
+    .kiki-word-card-dialog .kiki-word-card-section:not(.kiki-word-card-section--senses):not([hidden]) {
+        grid-template-columns: 5em minmax(0, 1fr);
+        column-gap: 10px;
+    }
+}

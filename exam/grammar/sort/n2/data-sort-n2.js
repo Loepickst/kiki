@@ -17,14 +17,14 @@ window.sortQuestionBanks.N2 = [
             { id: "4", text: "まで" }
         ],
         correctOrder: ["2", "3", "4", "1"],
-        starIndex: 2, 
+        starIndex: 2,
+        analysisStyle: "structured",
+        translation: "A：“上周的课讲到哪里了？”B：“讲到做完第3课的语法练习题那里就结束了。”",
         explanation: `
-            <p><strong class="text-textMain">第一步：寻找动宾搭配。</strong>前面的宾语是「練習問題を」（练习题），需要接动词。选项中只有动词 2「解いた」（解开/做完）合适。</p>
-            <p><strong class="text-textMain">第二步：寻找形式名词。</strong>动词「解いた」可以直接修饰形式名词 3「ところ」，在这里表示“做完题的这个阶段/进度”。</p>
-            <p><strong class="text-textMain">第三步：寻找范围与动作的终点。</strong>A问的是「どこまで」（进展到哪里），所以B用 4「まで」回应。最后用格助词 1「で」表示动作（終わった）发生的基准点，合起来就是「解いたところまでで終わった」。</p>
-            <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                <span class="font-bold text-textMain">完整句意：</span>A“上周的课进展到哪里了？” B“刚好讲到把第3课的语法练习题做完那里就下课了。”
-            </p>
+            <p>「<ruby>練習問題<rt>れんしゅうもんだい</rt></ruby>を<ruby>解<rt>と</rt></ruby>いた」先组成“做完语法练习题”的动宾关系。</p>
+            <p>「<ruby>解<rt>と</rt></ruby>いたところ」把做完练习题的阶段作为课程进度的节点，后接「まで」回应前文的「どこまで」。</p>
+            <p>「ところまでで<ruby>終<rt>お</rt></ruby>わった」中的「で」标示课程结束的界点。</p>
+            <p class="sort-logic-conclusion"><strong>结构：</strong><span>练习对象「<ruby>練習問題<rt>れんしゅうもんだい</rt></ruby>を」</span><span>完成动作「<ruby>解<rt>と</rt></ruby>いた」</span><span>进度范围「ところまで」</span><span>结束界点「で<ruby>終<rt>お</rt></ruby>わった」</span></p>
         `
     },
     {
@@ -42,13 +42,14 @@ window.sortQuestionBanks.N2 = [
         ],
         correctOrder: ["4", "2", "1", "3"],
         starIndex: 1,
+        analysisStyle: "structured",
+        resolvedPunctuation: { "2": "、" },
+        translation: "虽说都叫咖喱饭，但不同店铺使用的材料各不相同。",
         explanation: `
-            <p><strong class="text-textMain">第一步：寻找固定句型。</strong>副词「ひとくちに」可以和「～といっても」搭配，表示“虽说统称为...”。中间需要加名词事物，因此 4「カレーライス」接 2「といっても」，构成「ひとくちにカレーライスといっても」。</p>
-            <p><strong class="text-textMain">第二步：寻找因果/变化关系。</strong>句尾是「材料はさまざまだ」（材料各不相同），是什么导致不同？必然是“根据...的不同”，对应选项 3「によって」。</p>
-            <p><strong class="text-textMain">第三步：确定前接词。</strong>选项中能接在「によって」前面的只有名词 1「それぞれの店」，构成“根据每家店的不同”。</p>
-            <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                <span class="font-bold text-textMain">完整句意：</span>虽说统称为咖喱饭，但根据每家店的不同，所用的食材也是多种多样的。
-            </p>
+            <p>「ひとくちにカレーライスといっても」构成“虽说都统称为咖喱饭”的让步表达。</p>
+            <p>「それぞれの<ruby>店<rt>みせ</rt></ruby>によって」表示材料产生差异的依据，即因店铺不同而异。</p>
+            <p>前面的让步和差异依据共同连接结论「<ruby>材料<rt>ざいりょう</rt></ruby>はさまざまだ」。</p>
+            <p class="sort-logic-conclusion"><strong>结构：</strong><span>统称对象「ひとくちにカレーライス」</span><span>让步「といっても」</span><span>差异依据「それぞれの<ruby>店<rt>みせ</rt></ruby>によって」</span><span>结论「<ruby>材料<rt>ざいりょう</rt></ruby>はさまざまだ」</span></p>
         `
     },
     {
@@ -66,13 +67,14 @@ window.sortQuestionBanks.N2 = [
         ],
         correctOrder: ["3", "4", "1", "2"],
         starIndex: 2,
+        analysisStyle: "structured",
+        resolvedPunctuation: { "2": "、" },
+        translation: "田中总是只会对别人做的事情说三道四，自己却什么也不做。",
         explanation: `
-            <p><strong class="text-textMain">第一步：寻找修饰关系。</strong>3「人の」（别人的）作为定语需要修饰名词，只能接 4「やることに」（做的事情上）。</p>
-            <p><strong class="text-textMain">第二步：寻找动作搭配。</strong>对“别人做的事情”能做出什么动作？选项中只有 1「文句を言う」（抱怨/说闲话）合适，即对别人的事指手画脚。</p>
-            <p><strong class="text-textMain">第三步：寻找转折逻辑。</strong>后半句是“自己却什么都不做”，所以前面应该表达“光是/净是...”，这正是句型 2「ばかりで」的用法，用来连接前后形成对比转折。</p>
-            <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                <span class="font-bold text-textMain">完整句意：</span>田中总是光对别人做的事情指手画脚（抱怨），自己却什么都不干。
-            </p>
+            <p>「<ruby>人<rt>ひと</rt></ruby>のやること」表示“别人做的事情”，「に」标示抱怨所针对的对象。</p>
+            <p>「<ruby>文句<rt>もんく</rt></ruby>を<ruby>言<rt>い</rt></ruby>う」组成固定的动宾搭配，表示抱怨或说三道四。</p>
+            <p>「ばかりで」表示一味做前面的事，并与后文「<ruby>自分<rt>じぶん</rt></ruby>では<ruby>何<rt>なに</rt></ruby>もしない」形成对比。</p>
+            <p class="sort-logic-conclusion"><strong>结构：</strong><span>他人行为「<ruby>人<rt>ひと</rt></ruby>のやることに」</span><span>抱怨动作「<ruby>文句<rt>もんく</rt></ruby>を<ruby>言<rt>い</rt></ruby>う」</span><span>一味如此「ばかりで」</span><span>对比「<ruby>自分<rt>じぶん</rt></ruby>では<ruby>何<rt>なに</rt></ruby>もしない」</span></p>
         `
     },
     {
@@ -90,13 +92,13 @@ window.sortQuestionBanks.N2 = [
         ],
         correctOrder: ["2", "3", "1", "4"],
         starIndex: 1,
+        analysisStyle: "structured",
+        translation: "约翰：“‘りかい’这个词是什么意思？”阿里：“啊，我记得大概是‘明白’之类的意思。”",
         explanation: `
-            <p><strong class="text-textMain">第一步：寻找内容指代。</strong>『わかる』（懂）是一个具体的意思内容，需要用 2「という」引出来进行解释，构成“叫做‘懂’的...”。</p>
-            <p><strong class="text-textMain">第二步：寻找连体修饰。</strong>「という」后面接 3「ような」表示“像...一样的”，再去修饰名词 1「意味だった」，构成“大概是‘懂’这类的意思”。</p>
-            <p><strong class="text-textMain">第三步：确定句尾语气。</strong>前面都是客观的内容推测，句尾需要表达说话人的主观看法，即接 4「と思う」（我想是/我认为是），最后加上后缀「んですけど」来软化语气，显得不那么绝对。</p>
-            <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                <span class="font-bold text-textMain">完整句意：</span>约翰：“这个‘りかい’（理解）一词是什么意思呢？” 阿里：“啊，我记得大概是‘懂/明白’这类意思吧。”
-            </p>
+            <p>「『わかる』という」用「という」引用并提示所说明的具体词义。</p>
+            <p>「というような」表示“像……之类的”，整体修饰「<ruby>意味<rt>いみ</rt></ruby>」。</p>
+            <p>「<ruby>意味<rt>いみ</rt></ruby>だったと<ruby>思<rt>おも</rt></ruby>う」表示对记忆中的词义作不确定判断，句末「んですけど」进一步缓和语气。</p>
+            <p class="sort-logic-conclusion"><strong>结构：</strong><span>引用内容「『わかる』という」</span><span>近似说明「ような」</span><span>词义判断「<ruby>意味<rt>いみ</rt></ruby>だった」</span><span>不确定表达「と<ruby>思<rt>おも</rt></ruby>うんですけど」</span></p>
         `
     },
     {
@@ -114,13 +116,14 @@ window.sortQuestionBanks.N2 = [
         ],
         correctOrder: ["1", "3", "4", "2"],
         starIndex: 2,
+        analysisStyle: "structured",
+        resolvedPunctuation: { "3": "、" },
+        translation: "从每年合格者中有80%是具有实务经验的人这一点来看，毫无经验的我要通过这项考试恐怕并不容易。",
         explanation: `
-            <p><strong class="text-textMain">第一步：寻找判断依据句型。</strong>「～からすると」表示“从...来看/判断”，前面需要接名词化的「こと」。因此 1「実務経験者という」直接修饰 3「ことからすると」，表示“从80%都是有实务经验的人这一点来看”。</p>
-            <p><strong class="text-textMain">第二步：寻找后半句的主语。</strong>后半句“要合格大概不简单”需要一个执行动作的主语。根据上下文，显然是指缺乏经验的“我”，即选项 2「わたしが」。</p>
-            <p><strong class="text-textMain">第三步：完善主语的修饰语。</strong>4「未経験者の」（没有经验的）正好作为定语修饰 2「わたしが」，与前半句的“有实务经验者”形成强烈对比。</p>
-            <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                <span class="font-bold text-textMain">完整句意：</span>从每年合格者中80%都是有实务经验的人这一点来看，作为没有经验的我，想要通过这个考试大概没那么简单吧。
-            </p>
+            <p>「<ruby>実務経験者<rt>じつむけいけんしゃ</rt></ruby>ということ」用「ということ」把“合格者中80%是实务经验者”这一事实名词化。</p>
+            <p>「ことからすると」表示以该事实为依据进行后面的判断。</p>
+            <p>「<ruby>未経験者<rt>みけいけんしゃ</rt></ruby>のわたしが」组成后半句的主语，并与前面的实务经验者形成对照。</p>
+            <p class="sort-logic-conclusion"><strong>结构：</strong><span>事实内容「<ruby>実務経験者<rt>じつむけいけんしゃ</rt></ruby>という」</span><span>判断依据「ことからすると」</span><span>身份限定「<ruby>未経験者<rt>みけいけんしゃ</rt></ruby>の」</span><span>判断主体「わたしが」</span></p>
         `
     },
     // ---------------- 2010年12月 ----------------
@@ -139,13 +142,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "1", "3", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "（边看电视剧边聊）弟弟：“你觉得这部剧的凶手是谁？”哥哥：“我觉得可能是三姐妹中的某一个，不过其他人也都很可疑啊。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：寻找连体修饰关系。</strong>选项中 4「三姉妹の」和 1「中の」都带有「の」，需要接名词。而选项中具有名词性质的词是 3「誰か」。</p>
-                    <p><strong class="text-textMain">第二步：确立修饰层级（排他法）。</strong>如果让 4 直接修饰 3 变成「三姉妹の誰か」（三姐妹里的某人），语法上虽然说得通，但剩下的 1「中の」就会无处安放（无法说成“中の三姉妹の誰か”）。因此，正确的逻辑是从大范围限定到小范围：4「三姉妹の」先接 1「中の」，然后再去修饰 3「誰か」，构成「三姉妹の中の誰か」（三姐妹之中的某个人）。</p>
-                    <p><strong class="text-textMain">第三步：寻找句尾呼应。</strong>题干后面是「と思うんだけど」（我觉得...），前面可以接表示推测或反问的表达，即 2「じゃないか」（难道不是...吗）。整体连起来就是「三姉妹の中の誰かじゃないか」。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>(看电视剧时) <br>弟弟：“你觉得这部剧的犯人是谁？” <br>哥哥：“我觉得大概是三姐妹里的某个人吧，不过其他人看着也都很可疑啊。”
-                    </p>
+                    <p>「<ruby>三姉妹<rt>さんしまい</rt></ruby>の<ruby>中<rt>なか</rt></ruby>」先限定判断范围为三姐妹这个群体。</p>
+                    <p>「<ruby>中<rt>なか</rt></ruby>の<ruby>誰<rt>だれ</rt></ruby>か」表示该范围中的某一个人。</p>
+                    <p>「<ruby>誰<rt>だれ</rt></ruby>かじゃないかと<ruby>思<rt>おも</rt></ruby>う」用「じゃないか」表达推测，再以「と<ruby>思<rt>おも</rt></ruby>う」说明自己的判断。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>群体限定「<ruby>三姉妹<rt>さんしまい</rt></ruby>の」</span><span>内部范围「<ruby>中<rt>なか</rt></ruby>の」</span><span>不定人物「<ruby>誰<rt>だれ</rt></ruby>か」</span><span>推测「じゃないかと<ruby>思<rt>おも</rt></ruby>う」</span></p>
                 `
             },
             {
@@ -163,13 +166,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "4", "2", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "虽然想买一台新电脑，但如果现在匆忙买下后还没过几个月就出了新款，我会后悔，所以打算暂时观望一下。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：理清时间与动作先后顺序。</strong>首先是现在的动作假设：3「今あわてて買って」（要是现在急急忙忙买了的话）。</p>
-                    <p><strong class="text-textMain">第二步：寻找后续发生的假设情况。</strong>买完之后发生了什么？接时间副词 4「何か月もしないうちに」（没过几个月）+ 动词短语 2「新しいのが出たりしたら」（要是出了新款的话）。</p>
-                    <p><strong class="text-textMain">第三步：连接情感原因。</strong>“刚买没几个月就出了新款”会导致什么心情？自然是接 1「悔しいから」（因为会很懊恼/后悔），这也解释了句尾“打算暂时再观望一下”的原因。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>虽然很想要新电脑，但如果现在急急忙忙买下，没过几个月就出了新款的话肯定会很后悔，所以我想暂时再观望一下。
-                    </p>
+                    <p>「<ruby>今<rt>いま</rt></ruby>あわてて<ruby>買<rt>か</rt></ruby>って」先提出现在匆忙购买这一动作。</p>
+                    <p>「<ruby>何<rt>なん</rt></ruby>か<ruby>月<rt>げつ</rt></ruby>もしないうちに」表示购买后还没有过几个月，限定后面新款出现的时间。</p>
+                    <p>「<ruby>新<rt>あたら</rt></ruby>しいのが<ruby>出<rt>で</rt></ruby>たりしたら<ruby>悔<rt>くや</rt></ruby>しいから」提出假设及由此产生的后悔，说明暂时观望的原因。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>当前行动「<ruby>今<rt>いま</rt></ruby>あわてて<ruby>買<rt>か</rt></ruby>って」</span><span>短暂期间「<ruby>何<rt>なん</rt></ruby>か<ruby>月<rt>げつ</rt></ruby>もしないうちに」</span><span>假设「<ruby>新<rt>あたら</rt></ruby>しいのが<ruby>出<rt>で</rt></ruby>たりしたら」</span><span>观望原因「<ruby>悔<rt>くや</rt></ruby>しいから」</span></p>
                 `
             },
            {
@@ -187,13 +190,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "4", "1", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "当双方都情绪激动时，即使想冷静地交谈，往往也无法顺利进行。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：寻找固定语法接续。</strong>选项 4「としても」表示逆接让步“即使...也...”，前面须接续动词的普通体或意向形。选项中唯一的动词是 2「話そう」（意向形），构成「冷静に話そうとしても」（即使打算冷静交谈）。</p>
-                    <p><strong class="text-textMain">第二步：寻找惯用搭配。</strong>选项 1「うまく」是副词，常与动词否定形式连用表示“不顺利”。选项 3「いかない」正是否定形式，两者构成固定惯用语「うまくいかない」（进展不顺）。</p>
-                    <p><strong class="text-textMain">第三步：确立前后逻辑。</strong>结合题干条件「感情的になっていると」（当双方情绪化的时候），逻辑上必然是“[即使打算冷静交谈] 也 [无法顺利进行]”。因此 2-4 在前，1-3 在后，最后接续句尾表示事物常态的「ものだ」。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>当双方都处于情绪化的时候，即使打算冷静下来交谈，往往也是无法顺利沟通的。
-                    </p>
+                    <p>「<ruby>冷静<rt>れいせい</rt></ruby>に<ruby>話<rt>はな</rt></ruby>そう」用意向形表示试图冷静交谈。</p>
+                    <p>「～ようとしても」表示即使尝试做某事也未能得到预期结果。</p>
+                    <p>「うまくいかない」是“不顺利”的惯用表达，句末「ものだ」说明这种情况通常如此。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>尝试内容「<ruby>冷静<rt>れいせい</rt></ruby>に<ruby>話<rt>はな</rt></ruby>そう」</span><span>让步尝试「としても」</span><span>顺利程度「うまく」</span><span>否定结果「いかないものだ」</span></p>
                 `
             },
             {
@@ -211,13 +214,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "2", "4", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "他不是会做那种事的人，这一点你应该最清楚。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确定谓语。</strong>题干后半部分存在主语「あなたが」（你），后方需要接续谓语。选项中能充当谓语的只有含有尊敬意义的名词 2「ご存じ」（了解/知道）。</p>
-                    <p><strong class="text-textMain">第二步：确定句尾语法。</strong>句尾是断定助动词「だ」，选项 1 形式名词「はず」（理应）一般接在「だ」前面，构成「はずだ」。</p>
-                    <p><strong class="text-textMain">第三步：确立修饰与连接关系。</strong>「ご存じ」在此处作为名词使用，接续形式名词「はず」时，一般用格助词 4「の」连接，构成「ご存じのはず」。剩余的副词 3「いちばん」（最）用于修饰了解的程度，置于「ご存じ」之前。综合顺序为 3-2-4-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>他不是会做出那种事的人，这一点你应该比谁都清楚。
-                    </p>
+                    <p>「いちばんご<ruby>存<rt>ぞん</rt></ruby>じ」用「いちばん」强调“最清楚”，主体是前面的「あなたが」。</p>
+                    <p>「ご<ruby>存<rt>ぞん</rt></ruby>じの」用「の」连接后面的形式名词「はず」。</p>
+                    <p>「ご<ruby>存<rt>ぞん</rt></ruby>じのはずだ」表示根据双方关系作出的确信判断，即“你理应最清楚”。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>程度强调「いちばん」</span><span>认知状态「ご<ruby>存<rt>ぞん</rt></ruby>じ」</span><span>连体连接「の」</span><span>确信判断「はずだ」</span></p>
                 `
             },
             {
@@ -235,13 +238,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "1", "4", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "田中教练之所以对选手们要求严格，正是因为他希望让选手们至少体验一次夺冠。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：寻找句型呼应。</strong>题干前半句为「～するのは」（之所以...），后半句一般接续表示原因的语法。选项 3「からこそ」（正因为）符合此结构，必然位于最后一个空（接在句尾「だ」前）。</p>
-                    <p><strong class="text-textMain">第二步：寻找动宾搭配。</strong>题干存在宾语「優勝を」（冠军），选项中能作其谓语的只有动词 2「経験させたい」（想让...体验）。</p>
-                    <p><strong class="text-textMain">第三步：确立引语接续。</strong>「経験させたい」表达一种心理意愿，与其他动词相连时需用助词 1「と」作为引用，接续表示心理活动的动词 4「願う」（期望/祈愿），构成「経験させたいと願う」。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>田中教练之所以对选手们那么严格，正因为他期望能让选手们体验一次夺冠的滋味。
-                    </p>
+                    <p>「<ruby>優勝<rt>ゆうしょう</rt></ruby>を<ruby>経験<rt>けいけん</rt></ruby>させたい」表示希望让选手们体验夺冠，其中「させたい」包含使役和愿望。</p>
+                    <p>「と<ruby>願<rt>ねが</rt></ruby>う」用「と」引用前面的愿望内容，并以「<ruby>願<rt>ねが</rt></ruby>う」说明教练的心愿。</p>
+                    <p>「からこそだ」强调这份愿望正是教练严格要求选手的原因，与前文「～のは」呼应。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>希望内容「<ruby>優勝<rt>ゆうしょう</rt></ruby>を<ruby>経験<rt>けいけん</rt></ruby>させたい」</span><span>引用「と」</span><span>愿望「<ruby>願<rt>ねが</rt></ruby>う」</span><span>强调原因「からこそだ」</span></p>
                 `
             },
             // ---------------- 2011年7月 ----------------
@@ -249,7 +252,7 @@ window.sortQuestionBanks.N2 = [
                 id: "n2_1107_1",
                 level: "N2",
                 year: "2011年7月",
-                label: "問題7 - 1",
+                label: "問題8 - 1",
                 prefix: "<ruby>不<rt>ふ</rt></ruby><ruby>調<rt>ちょう</rt></ruby>だった<ruby>山<rt>やま</rt></ruby><ruby>中<rt>なか</rt></ruby><ruby>選<rt>せん</rt></ruby><ruby>手<rt>しゅ</rt></ruby>がついにゴールを<ruby>決<rt>き</rt></ruby>めた。<ruby>彼<rt>かれ</rt></ruby>に",
                 suffix: "<ruby>相<rt>そう</rt></ruby><ruby>当<rt>とう</rt></ruby>あったはずだ。",
                 options: [
@@ -260,20 +263,21 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["1", "4", "2", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "状态一直不佳的山中选手终于攻入一球。站在他的立场上，想必一直承受着“要是再失误怎么办”这样的巨大压力。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立固定接续。</strong>题干前半部分以「彼に」（对他...）结尾，选项中 1「したら」与之构成固定句型「～にしたら」（站在...的立场来看 / 对...来说），即「彼にしたら」（对他来说）。</p>
-                    <p><strong class="text-textMain">第二步：寻找引用与被修饰名词。</strong>选项 4「もし、またミスをしたら」（如果又失误了的话）是一个完整的引用句，需要通过助词 2「という」（叫做...的）来修饰名词。选项中唯一的名词是 3「プレッシャーは」（压力），构成「『もし、またミスをしたら』というプレッシャーは」（“如果又失误了该怎么办”的压力）。</p>
-                    <p><strong class="text-textMain">第三步：连接句尾谓语。</strong>名词 3 作为主语，顺理成章地接续后半句的谓语「相当あったはずだ」（理应是相当大的）。综合顺序为 1-4-2-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>状态一直不佳的山中选手终于进球了。对他来说，“如果再次失误该怎么办”的压力想必是相当大的吧。
-                    </p>
+                    <p>「<ruby>彼<rt>かれ</rt></ruby>にしたら」是固定表达，表示从山中选手本人的立场来看。</p>
+                    <p>「『もし、またミスをしたら』という」用「という」引用选手心中的担忧，并修饰后面的「プレッシャー」。</p>
+                    <p>「プレッシャーは<ruby>相当<rt>そうとう</rt></ruby>あったはずだ」说明说话人根据情况推断，他当时承受的压力一定很大。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>立场「<ruby>彼<rt>かれ</rt></ruby>にしたら」</span><span>担忧内容「もし、またミスをしたら」</span><span>引用修饰「というプレッシャー」</span><span>推断「<ruby>相当<rt>そうとう</rt></ruby>あったはずだ」</span></p>
                 `
             },
             {
                 id: "n2_1107_2",
                 level: "N2",
                 year: "2011年7月",
-                label: "問題7 - 2",
+                label: "問題8 - 2",
                 prefix: "「これは<ruby>地<rt>じ</rt></ruby><ruby>元<rt>もと</rt></ruby>ではよく<ruby>知<rt>し</rt></ruby>られた<ruby>料<rt>りょう</rt></ruby><ruby>理<rt>り</rt></ruby>で、このすっぱさがおいしい。ただ、",
                 suffix: "<ruby>増<rt>ふ</rt></ruby>えていることだね。」と<ruby>田<rt>た</rt></ruby><ruby>中<rt>なか</rt></ruby>さんは<ruby>語<rt>かた</rt></ruby>る。",
                 options: [
@@ -284,20 +288,20 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "4", "1", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "田中说：“这是当地很有名的一道菜，酸味正是它的美味所在。只是遗憾的是，最近越来越多年轻人说自己不喜欢吃酸的。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立宏观句型。</strong>题干后半部分出现「ただ、」（只是、不过），句尾为「～増えていることだね」（...在增加这件事）。这构成了一个说明状况的宏观结构，选项 2「残念なのは」（遗憾的是）置于句首，构成「残念なのは、～ことだね」（遗憾的是...这件事）。</p>
-                    <p><strong class="text-textMain">第二步：确立动作主体。</strong>句尾谓语是「増えている」（正在增加），选项中能充当该动作主体的只有 3「若者が最近」（最近年轻人）。</p>
-                    <p><strong class="text-textMain">第三步：寻找名词修饰语。</strong>什么类型的年轻人增加了？选项 1「なんていう」是「などと言う」的口语形式（说出...这样的话的），用于引出具体内容。它将选项 4「すっぱいのが苦手だ」（吃不惯酸的）连接到 3「若者が」之上，构成「『すっぱいのが苦手だ』なんていう若者が」（说自己吃不惯酸的这类年轻人）。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>田中先生说：“这是在当地很出名的料理，这种酸味正是它的美味所在。只是，令人遗憾的是，最近说着‘吃不惯酸的’这类话的年轻人在逐渐增多。”
-                    </p>
+                    <p>「<ruby>残念<rt>ざんねん</rt></ruby>なのは～ことだ」构成“遗憾的是……”的主干，句末「ことだね」概括令人遗憾的情况。</p>
+                    <p>「すっぱいのが<ruby>苦手<rt>にがて</rt></ruby>だなんていう」引用年轻人的说法，并以「なんていう」带出带有感叹色彩的评价。</p>
+                    <p>被修饰的主体是「<ruby>若者<rt>わかもの</rt></ruby>が<ruby>最近<rt>さいきん</rt></ruby>」，与句末「<ruby>増<rt>ふ</rt></ruby>えている」组成“最近这样的年轻人越来越多”。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>评价框架「<ruby>残念<rt>ざんねん</rt></ruby>なのは」</span><span>引用内容「すっぱいのが<ruby>苦手<rt>にがて</rt></ruby>だ」</span><span>人物限定「なんていう<ruby>若者<rt>わかもの</rt></ruby>が」</span><span>变化「<ruby>最近<rt>さいきん</rt></ruby><ruby>増<rt>ふ</rt></ruby>えていることだ」</span></p>
                 `
             },
             {
                 id: "n2_1107_3",
                 level: "N2",
                 year: "2011年7月",
-                label: "問題7 - 3",
+                label: "問題8 - 3",
                 prefix: "<ruby>忘<rt>わす</rt></ruby>れられないプレゼントは、<ruby>小<rt>しょう</rt></ruby><ruby>学<rt>がく</rt></ruby><ruby>生<rt>せい</rt></ruby>のときに<ruby>両<rt>りょう</rt></ruby><ruby>親<rt>しん</rt></ruby>が<ruby>買<rt>か</rt></ruby>ってくれた<ruby>自<rt>じ</rt></ruby><ruby>転<rt>てん</rt></ruby><ruby>車<rt>しゃ</rt></ruby>です。<ruby>苦<rt>くる</rt></ruby>しい<ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>の<ruby>中<rt>なか</rt></ruby>、",
                 suffix: "<ruby>涙<rt>なみだ</rt></ruby>が<ruby>出<rt>で</rt></ruby>ます。",
                 options: [
@@ -308,20 +312,21 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "3", "4", "1"],
                 starIndex: 3,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、" },
+                translation: "我最难忘的礼物，是小学时父母买给我的自行车。一想到在生活那么艰苦的情况下，他们是怀着怎样的心情为我买下它的，单是想到这一点，我就会流下眼泪。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：寻找疑问与引用搭配。</strong>选项 2「どんな思いで」（带着怎样的心情）是包含疑问词的短语，常与表示不确定或引用的「～か」连用。选项 3「買ってくれたのかと」含有「のかと」，两者构成「どんな思いで買ってくれたのかと」（带着怎样的心情为我买的呢）。</p>
-                    <p><strong class="text-textMain">第二步：寻找动词接续。</strong>「～かと」作为引用内容，后方需要接续表示思考或言语的动词。选项 4「思うと」（一想到...）符合要求，构成「～かと思うと」（一想到...）。</p>
-                    <p><strong class="text-textMain">第三步：确立句尾逻辑。</strong>选项 1「それだけで」（仅凭这一点/单单那样）接在条件表达「思うと」之后，顺接后文的结果「涙が出ます」（眼泪就流出来了）。综合排布顺序为 2-3-4-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>令我难以忘怀的礼物，是小学生时父母买给我的自行车。在艰苦的生活中，一想到他们是怀着怎样的心情买给我的，单是这样我就不禁流下眼泪。
-                    </p>
+                    <p>「どんな<ruby>思<rt>おも</rt></ruby>いで」与后面的「のか」呼应，构成“怀着怎样的心情”的间接疑问。</p>
+                    <p>「<ruby>買<rt>か</rt></ruby>ってくれたのかと<ruby>思<rt>おも</rt></ruby>うと」把父母买自行车时的心情作为回想内容，表示“一想到……”。</p>
+                    <p>「それだけで」强调仅仅想到这件事就足以引出结果「<ruby>涙<rt>なみだ</rt></ruby>が<ruby>出<rt>で</rt></ruby>ます」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>疑问方式「どんな<ruby>思<rt>おも</rt></ruby>いで」</span><span>受惠动作「<ruby>買<rt>か</rt></ruby>ってくれたのか」</span><span>回想契机「と<ruby>思<rt>おも</rt></ruby>うと」</span><span>情感结果「それだけで<ruby>涙<rt>なみだ</rt></ruby>が<ruby>出<rt>で</rt></ruby>る」</span></p>
                 `
             },
             {
                 id: "n2_1107_4",
                 level: "N2",
                 year: "2011年7月",
-                label: "問題7 - 4",
+                label: "問題8 - 4",
                 prefix: "<ruby>最<rt>さい</rt></ruby><ruby>近<rt>きん</rt></ruby>、<ruby>子<rt>こ</rt></ruby>どもがピアノを<ruby>習<rt>なら</rt></ruby>いたいと<ruby>言<rt>い</rt></ruby>いだした。わたしは、<ruby>子<rt>こ</rt></ruby>どもが",
                 suffix: "と<ruby>思<rt>おも</rt></ruby>っている。",
                 options: [
@@ -330,22 +335,22 @@ window.sortQuestionBanks.N2 = [
                     { id: "3", text: "やらせて" },
                     { id: "4", text: "と<ruby>思<rt>おも</rt></ruby>うことは" }
                 ],
-                correctOrder: ["2", "4", "3", "1"],
+                correctOrder: ["1", "4", "3", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "最近，孩子说自己想学钢琴。我想，只要是孩子自己想做的事情，就让他去做。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立动宾修饰关系。</strong>题干以「子どもが」（孩子）为主语，后接其愿望。选项 2「やりたい」（想要做）接选项 4「と思うことは」，构成「やりたいと思うことは」（想要做的事情）。</p>
-                    <p><strong class="text-textMain">第二步：寻找使役表达与意愿接续。</strong>「やりたいと思うことは」作为后半句的宾语（提示助词「は」替代了「を」），需要接续他动词动作。选项 3「やらせて」（让其去做，使役て形）表示允许或让孩子去做。</p>
-                    <p><strong class="text-textMain">第三步：确立最终谓语。</strong>结合句尾「と思っている」（我想...），选项 1「したい」（想做...）接在「やらせて」之后，构成「やらせてしたい」（想要让他去做）。综合排序为 2-4-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>最近，孩子开始说想学钢琴。我觉得，孩子想做的事情就想让他去做。
-                    </p>
+                    <p>「<ruby>子<rt>こ</rt></ruby>どもがしたいと<ruby>思<rt>おも</rt></ruby>うこと」表示“孩子自己想做的事情”，「ことは」把它提示为后半句的话题。</p>
+                    <p>「やらせてやりたい」由使役形「やらせる」和授受补助动词「てやる」构成，表示想让孩子按自己的意愿去做。</p>
+                    <p>整段作为「と<ruby>思<rt>おも</rt></ruby>っている」的引用内容，说明说话人目前的想法。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>愿望主体「<ruby>子<rt>こ</rt></ruby>どもが」</span><span>想做之事「したいと<ruby>思<rt>おも</rt></ruby>うことは」</span><span>允许实现「やらせてやりたい」</span><span>想法「と<ruby>思<rt>おも</rt></ruby>っている」</span></p>
                 `
             },
             {
                 id: "n2_1107_5",
                 level: "N2",
                 year: "2011年7月",
-                label: "問題7 - 5",
+                label: "問題8 - 5",
                 prefix: "<ruby>国<rt>こく</rt></ruby><ruby>民<rt>みん</rt></ruby>の、<ruby>政<rt>せい</rt></ruby><ruby>治<rt>じ</rt></ruby>",
                 suffix: "<ruby>政<rt>せい</rt></ruby><ruby>治<rt>じ</rt></ruby><ruby>家<rt>か</rt></ruby>は<ruby>指<rt>し</rt></ruby><ruby>導<rt>どう</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<ruby>発<rt>はっ</rt></ruby><ruby>揮<rt>き</rt></ruby>できるのだ。",
                 options: [
@@ -356,20 +361,20 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "4", "3", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "只有得到国民对政治的信任，政治家才能发挥领导力。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：寻找修饰对象。</strong>题干前半部分结尾为「政治」，选项 2「に対する」（对于...）直接接续，构成「政治に対する」（对政治的...）。</p>
-                    <p><strong class="text-textMain">第二步：寻找被修饰名词与存在句型。</strong>「に対する」需修饰名词，接续选项 4「信頼」（信任），即「政治に対する信頼」。随后接选项 3「があって」（存在...），构成「政治に対する信頼があって」（存在对政治的信任）。</p>
-                    <p><strong class="text-textMain">第三步：确立固定语法。</strong>动词て形搭配「初めて」是固定语法，表示“直到...才 / 只有...才”。将选项 1「初めて」置于「て」之后，构成「～があって初めて」（只有存在...才能够）。顺接后文的「～発揮できるのだ」（才能发挥出）。综合顺序为 2-4-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>只有存在国民对政治的信任，政治家才能够发挥出领导力。
-                    </p>
+                    <p>「<ruby>政治<rt>せいじ</rt></ruby>に<ruby>対<rt>たい</rt></ruby>する<ruby>信頼<rt>しんらい</rt></ruby>」中，「に<ruby>対<rt>たい</rt></ruby>する」修饰「<ruby>信頼<rt>しんらい</rt></ruby>」，表示信任所指向的对象。</p>
+                    <p>「<ruby>信頼<rt>しんらい</rt></ruby>があって」说明存在国民信任这一前提。</p>
+                    <p>「～があって<ruby>初<rt>はじ</rt></ruby>めて」表示只有具备前项条件，后项才可能成立，后面接政治家发挥领导力这一结果。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>对象「<ruby>政治<rt>せいじ</rt></ruby>に<ruby>対<rt>たい</rt></ruby>する」</span><span>必要条件「<ruby>信頼<rt>しんらい</rt></ruby>があって」</span><span>条件成立「<ruby>初<rt>はじ</rt></ruby>めて」</span><span>结果「<ruby>指導力<rt>しどうりょく</rt></ruby>を<ruby>発揮<rt>はっき</rt></ruby>できる」</span></p>
                 `
             },
             {
                 id: "n2_1112_1",
                 level: "N2",
                 year: "2011年12月",
-                label: "問題7 - 1",
+                label: "問題8 - 1",
                 prefix: "もう<ruby>秋<rt>あき</rt></ruby>になるのに、<ruby>今日<rt>きょう</rt></ruby>の<ruby>暑<rt>あつ</rt></ruby>さは",
                 suffix: "エアコンをつけた<ruby>家<rt>いえ</rt></ruby>も<ruby>多<rt>おお</rt></ruby>かったらしい。",
                 options: [
@@ -380,20 +385,21 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "1", "4", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "明明已经入秋了，今天却热得仿佛又回到了盛夏，听说很多家庭都开了空调。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：寻找副词呼应关系。</strong>选项 3「まるで」（宛如/简直）是比喻性副词，通常需要与表示比喻的「～ようだ/みたいだ」相呼应。选项中存在 2「のようで」，两者搭配构成「まるで～のようで」（宛如...一样）。</p>
-                    <p><strong class="text-textMain">第二步：确立比喻的核心内容。</strong>题干的主题是「今日の暑さは」（今天的暑热）。选项 1「真夏」（盛夏）接续 4「に戻ったか」（回到了...吗），构成比喻的具体内容「真夏に戻ったか」（是否回到了盛夏）。</p>
-                    <p><strong class="text-textMain">第三步：组合完整句型结构。</strong>将比喻内容嵌入呼应结构中，构成「まるで真夏に戻ったかのようで」（简直就像回到了盛夏一般）。置于横线处，顺接后半句「エアコンをつけた家も多かったらしい」（开空调的人家似乎也很多），逻辑成立。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>明明都已经到了秋天，今天的暑热却简直就像回到了盛夏一般，似乎有很多家庭都开了空调。
-                    </p>
+                    <p>「まるで」与「～かのようだ」呼应，构成“仿佛……”的比喻表达。</p>
+                    <p>比喻的具体内容是「<ruby>真夏<rt>まなつ</rt></ruby>に<ruby>戻<rt>もど</rt></ruby>ったか」，表示仿佛重新回到了盛夏。</p>
+                    <p>「のようで」以て形连接后句，说明天气酷热，以至于很多家庭又开了空调。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>比喻提示「まるで」</span><span>回归对象「<ruby>真夏<rt>まなつ</rt></ruby>に」</span><span>假想内容「<ruby>戻<rt>もど</rt></ruby>ったか」</span><span>比喻连接「のようで」</span></p>
                 `
             },
             {
                 id: "n2_1112_2",
                 level: "N2",
                 year: "2011年12月",
-                label: "問題7 - 2",
+                label: "問題8 - 2",
                 prefix: "(ホテルで)<br><ruby>支<rt>し</rt></ruby><ruby>配<rt>はい</rt></ruby><ruby>人<rt>にん</rt></ruby>　「お<ruby>客<rt>きゃく</rt></ruby><ruby>様<rt>さま</rt></ruby>を<ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>った<ruby>部<rt>へ</rt></ruby><ruby>屋<rt>や</rt></ruby>に<ruby>案<rt>あん</rt></ruby><ruby>内<rt>ない</rt></ruby>してしまったそうだね」<br><ruby>従<rt>じゅう</rt></ruby><ruby>業<rt>ぎょう</rt></ruby><ruby>員<rt>いん</rt></ruby>　「はい。<ruby>事<rt>じ</rt></ruby><ruby>前<rt>ぜん</rt></ruby>にリストをしっかり",
                 suffix: "のに<ruby>申<rt>もう</rt></ruby>し<ruby>訳<rt>わけ</rt></ruby>ありません」",
                 options: [
@@ -404,20 +410,20 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "1", "4", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "（在酒店）经理：“听说你把客人带进了错误的房间。”员工：“是的。这本来是只要事先仔细核对名单就能避免的失误，非常抱歉。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：寻找条件接续。</strong>题干提示语为「事前にリストをしっかり」（事先好好地将名单...），后需接续具体的动作。选项 2「確認さえ」（只要确认）和 1「しておけば」（事先做好的话）构成极限界定条件表达「確認さえしておけば」（只要事先确认好）。</p>
-                    <p><strong class="text-textMain">第二步：确立连体修饰关系。</strong>选项 4「防げる」（能够防范/避免）是动词的可能态，在此作为连体修饰语，修饰名词 3「ミスでした」（是失误），构成「防げるミスでした」（是能够避免的失误）。</p>
-                    <p><strong class="text-textMain">第三步：结合语境完成组合。</strong>将条件与结果相连，构成「確認さえしておけば防げるミスでした」（只要确认好就能避免的失误）。接续在句尾的「のに」（却.../明明...，在此处用于表达遗憾与自责的语气）之前，符合员工道歉的语境。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>（在酒店里）<br>经理：“听说你把客人带错房间了呀。”<br>员工：“是的。明明只要事先好好确认一下名单就是能够避免的失误，非常抱歉。”
-                    </p>
+                    <p>「<ruby>確認<rt>かくにん</rt></ruby>さえしておけば」由「さえ～ば」构成最低条件，表示只要事先做到核对这一点。</p>
+                    <p>「<ruby>防<rt>ふせ</rt></ruby>げる」以连体形修饰「ミス」，说明这是本来能够避免的失误。</p>
+                    <p>「ミスでしたのに」表达对未能避免失误的遗憾和自责，并自然连接后面的道歉。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>最低条件「<ruby>確認<rt>かくにん</rt></ruby>さえ」</span><span>事前准备「しておけば」</span><span>可能结果「<ruby>防<rt>ふせ</rt></ruby>げる」</span><span>自责「ミスでしたのに」</span></p>
                 `
             },
             {
                 id: "n2_1112_3",
                 level: "N2",
                 year: "2011年12月",
-                label: "問題7 - 3",
+                label: "問題8 - 3",
                 prefix: "<ruby>今<rt>こん</rt></ruby><ruby>回<rt>かい</rt></ruby><ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>した",
                 suffix: "<ruby>必<rt>かなら</rt></ruby>ずこの<ruby>経<rt>けい</rt></ruby><ruby>験<rt>けん</rt></ruby>を<ruby>生<rt>い</rt></ruby>かしてほしい。",
                 options: [
@@ -428,20 +434,21 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "4", "1", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "即使这次失败是无可奈何的，今后也希望你一定把这次经验运用起来。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：寻找修饰关系与形式名词。</strong>题干前半部分「今回失敗した」（这次失败了）是连体修饰语，需要接续名词。选项 3「ことは」包含形式名词「こと」，构成「失敗したことは」（关于失败这件事）。</p>
-                    <p><strong class="text-textMain">第二步：确立句型与逻辑转折。</strong>接续表示“不可避免”的评价 4「仕方ない」，构成「失敗したことは仕方ない」（失败是没办法的事）。随后接续逆接让步表达 1「としても」（即使...也...），构成「仕方ないとしても」（即使说是没办法的事）。</p>
-                    <p><strong class="text-textMain">第三步：确定副词位置。</strong>选项 2「今後」（今后）作为时间副词，修饰后半句的「必ずこの経験を生かしてほしい」（一定要充分利用这次经验），因此置于横线最后。综合排序为 3-4-1-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>即使说这次失败是无可奈何的事，今后也一定要充分利用这次的经验。
-                    </p>
+                    <p>「<ruby>今回失敗<rt>こんかいしっぱい</rt></ruby>したことは」用「こと」把这次失败名词化，并作为评价对象。</p>
+                    <p>「<ruby>仕方<rt>しかた</rt></ruby>ないとしても」表示即使承认失败无法挽回，后面的要求仍然成立。</p>
+                    <p>时间副词「<ruby>今後<rt>こんご</rt></ruby>」修饰「この<ruby>経験<rt>けいけん</rt></ruby>を<ruby>生<rt>い</rt></ruby>かしてほしい」，将重点转向今后的行动。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>事实名词化「<ruby>失敗<rt>しっぱい</rt></ruby>したことは」</span><span>评价「<ruby>仕方<rt>しかた</rt></ruby>ない」</span><span>让步「としても」</span><span>今后要求「<ruby>今後<rt>こんご</rt></ruby>この<ruby>経験<rt>けいけん</rt></ruby>を<ruby>生<rt>い</rt></ruby>かしてほしい」</span></p>
                 `
             },
             {
                 id: "n2_1112_4",
                 level: "N2",
                 year: "2011年12月",
-                label: "問題7 - 4",
+                label: "問題8 - 4",
                 prefix: "<ruby>試<rt>し</rt></ruby><ruby>合<rt>あい</rt></ruby>に<ruby>負<rt>ま</rt></ruby>けて<ruby>本<rt>ほん</rt></ruby><ruby>当<rt>とう</rt></ruby>に<ruby>悔<rt>くや</rt></ruby>しかったので、もっと<ruby>強<rt>つよ</rt></ruby>くなるため",
                 suffix: "<ruby>耐<rt>た</rt></ruby>えようと<ruby>思<rt>おも</rt></ruby>います。",
                 options: [
@@ -452,20 +459,21 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "4", "3", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "因为输掉比赛后实在很不甘心，所以只要是为了变得更强，无论多么艰苦的训练，我都打算坚持下来。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：寻找条件表达。</strong>题干前半句结尾为「強くなるため」（为了变强），接续选项 2「なら」（如果...的话），构成假定条件「強くなるためなら」（如果是为了变强的话）。</p>
-                    <p><strong class="text-textMain">第二步：确定动作对象。</strong>句尾谓语为「耐えよう」（打算忍耐），其动作对象需要用格助词「に」提示。选项 3「厳しい練習に」（对严酷的练习）符合接续，构成「厳しい練習に耐えよう」。</p>
-                    <p><strong class="text-textMain">第三步：确立疑问词与助词的呼应。</strong>选项 4「どんな」与选项 1「だって」（相当于「でも」，表示全面肯定“无论...都”）相互呼应。将它们嵌套在名词结构中，构成「どんな厳しい練習にだって」（无论是怎样严酷的练习都...）。综合排布顺序为 2-4-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>因为输了比赛真的很不甘心，所以如果是为了变得更强，无论是怎样严酷的练习我都打算忍耐。
-                    </p>
+                    <p>「もっと<ruby>強<rt>つよ</rt></ruby>くなるためなら」表示只要目的是让自己变得更强，便接受后面的条件。</p>
+                    <p>「どんな～だって」构成全面让步，表示无论是怎样的训练都不例外。</p>
+                    <p>「<ruby>厳<rt>きび</rt></ruby>しい<ruby>練習<rt>れんしゅう</rt></ruby>にだって<ruby>耐<rt>た</rt></ruby>えよう」中，「に」标示忍耐的对象，「よう」表达说话人的决心。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>目的条件「もっと<ruby>強<rt>つよ</rt></ruby>くなるためなら」</span><span>全面让步「どんな」</span><span>忍耐对象「<ruby>厳<rt>きび</rt></ruby>しい<ruby>練習<rt>れんしゅう</rt></ruby>にだって」</span><span>意志「<ruby>耐<rt>た</rt></ruby>えよう」</span></p>
                 `
             },
             {
                 id: "n2_1112_5",
                 level: "N2",
                 year: "2011年12月",
-                label: "問題7 - 5",
+                label: "問題8 - 5",
                 prefix: "<ruby>母<rt>はは</rt></ruby>は「<ruby>風邪<rt>かぜ</rt></ruby>をひかないのは、",
                 suffix: "」とよく<ruby>言<rt>い</rt></ruby>っている。",
                 options: [
@@ -476,13 +484,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "2", "1", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "母亲经常说：“我之所以不感冒，多亏了每天早晨坚持慢跑。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：寻找句型呼应。</strong>题干结构为「～のは、～」（不感冒的原因是...），后文需接续表示原因的句型。选项 3「おかげだ」（多亏了...）符合该结构，置于横线末尾。</p>
-                    <p><strong class="text-textMain">第二步：确立名词修饰结构。</strong>选项 1「ジョギングの」（慢跑的...）接续「おかげだ」，构成「ジョギングのおかげだ」。其前方需要连体修饰语来限定“怎样的慢跑”。</p>
-                    <p><strong class="text-textMain">第三步：组合动作修饰语。</strong>选项 4「毎朝」作时间状语，修饰动词 2「している」，构成「毎朝している」（每天早上做的）。整体作为定语修饰「ジョギング」，最终组合为「毎朝しているジョギングのおかげだ」（多亏了每天早上做的慢跑）。综合顺序为 4-2-1-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>母亲常说：“之所以不感冒，多亏了每天早上做的慢跑。”
-                    </p>
+                    <p>「<ruby>毎朝<rt>まいあさ</rt></ruby>している」表示每天早晨持续进行，整体作为连体修饰语。</p>
+                    <p>「<ruby>毎朝<rt>まいあさ</rt></ruby>しているジョギング」说明让母亲受益的具体习惯。</p>
+                    <p>「ジョギングのおかげだ」以「おかげだ」表示积极原因，与前面的「<ruby>風邪<rt>かぜ</rt></ruby>をひかないのは」相呼应。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>频率「<ruby>毎朝<rt>まいあさ</rt></ruby>」</span><span>持续动作「している」</span><span>受益来源「ジョギングの」</span><span>积极原因「おかげだ」</span></p>
                 `
             },
             // ---------------- 2012年7月 (N2) ----------------
@@ -501,13 +509,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "4", "3", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "“我只要一吃辣的东西，几乎每次都会咳嗽。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立固定搭配。</strong>选项 4「といって」与选项 3「いい」和选项 1「ほど」结合，构成表示程度的固定句型「～といっていいほど」（到了可以说……的程度 / 简直可以说是……）。</p>
-                    <p><strong class="text-textMain">第二步：确立修饰内容与程度基准。</strong>上述句型前接表示频率的副词选项 2「必ず」（必定 / 肯定），构成「必ずといっていいほど」（几乎可以说是必定 / 必然）。</p>
-                    <p><strong class="text-textMain">第三步：组合完整句意。</strong>将该副词短语置于题干前后两部分之间，修饰句尾的动作，构成「辛いものを食べると、必ずといっていいほど、せきが出る」（一吃辣的东西，几乎可以说是必然会咳嗽）。综合排序为 2-4-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>“我只要一吃辣的东西，几乎可以说是必然会咳嗽。”
-                    </p>
+                    <p>「<ruby>必<rt>かなら</rt></ruby>ず」表示每次都发生，用来说明吃辣以后咳嗽的频率。</p>
+                    <p>「～といっていいほど」是固定表达，表示已经达到“几乎可以说……”的程度。</p>
+                    <p>「<ruby>必<rt>かなら</rt></ruby>ずといっていいほど」整体修饰后面的「せきが<ruby>出<rt>で</rt></ruby>る」，强调这种反应几乎没有例外。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>条件「<ruby>辛<rt>から</rt></ruby>いものを<ruby>食<rt>た</rt></ruby>べると」</span><span>频率「<ruby>必<rt>かなら</rt></ruby>ず」</span><span>程度评价「といっていいほど」</span><span>结果「せきが<ruby>出<rt>で</rt></ruby>る」</span></p>
                 `
             },
             {
@@ -525,13 +534,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "4", "1", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "A：“大家都在吗？”B：“田中不在。”A：“明明说好下课后在这里会合，再一起去的，他是不是自己一个人先走了？”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立先后动作。</strong>题干「授業のあと」（下课后）后接最初计划的动作选项 3「ここで待ち合わせて」（在这里碰头/集合），随后接续后续动作选项 4「一緒に行くことに」（一起去……）。</p>
-                    <p><strong class="text-textMain">第二步：确立固定句型与逆接。</strong>前述的决定事项接续表示规定或计划的句型「～ことになっている」。加上表示逆接转折的选项 1「なっていたのに」（明明已经定好了……却），构成「一緒に行くことになっていたのに」（明明定好了一起去的）。</p>
-                    <p><strong class="text-textMain">第三步：确立意外结果与句尾衔接。</strong>逆接后引出与预期相反的实际行动，即选项 2「一人で行っちゃった」（一个人走掉了），与句尾的推测「のかな」（吧 / 难道是……）相连。综合排序为 3-4-1-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>A：“大家都在吗？” B：“田中不在。” A：“明明定好了下课后在这里集合一起去的，难道他一个人先走掉了吗？”
-                    </p>
+                    <p>「ここで<ruby>待<rt>ま</rt></ruby>ち<ruby>合<rt>あ</rt></ruby>わせて」表示先在这里会合，再进行后面的行动。</p>
+                    <p>「<ruby>一緒<rt>いっしょ</rt></ruby>に<ruby>行<rt>い</rt></ruby>くことになっていた」表示事先已经约定好要一起去。</p>
+                    <p>「のに」引出与约定相反的情况，「<ruby>一人<rt>ひとり</rt></ruby>で<ruby>行<rt>い</rt></ruby>っちゃったのかな」则以口语形式推测田中是否独自先走了。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>会合「ここで<ruby>待<rt>ま</rt></ruby>ち<ruby>合<rt>あ</rt></ruby>わせて」</span><span>既定安排「<ruby>一緒<rt>いっしょ</rt></ruby>に<ruby>行<rt>い</rt></ruby>くことになっていた」</span><span>逆接「のに」</span><span>推测「<ruby>一人<rt>ひとり</rt></ruby>で<ruby>行<rt>い</rt></ruby>っちゃったのかな」</span></p>
                 `
             },
             {
@@ -549,13 +559,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "1", "4", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "A：“啊，指南上写着，我们现在要去的博物馆必须提前一周预约才能入馆。”B：“是吗？这可麻烦了。”A：“我们还是先去一趟，试着商量一下能不能让我们进去吧。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立让步句型。</strong>「動詞辞書形＋だけ＋動詞て形」（姑且先……看看 / 总是要去……一趟的）是日语中常见的固定表达。将其与题干前缀的「行く」结合，接续选项 2「だけ」和选项 1「行って」，构成「行くだけ行って」（姑且先去看看）。</p>
-                    <p><strong class="text-textMain">第二步：确立请求与目的。</strong>到了之后做什么？引出具体的询问内容，即选项 4「入れてもらえないか」（能不能让我们进去）。</p>
-                    <p><strong class="text-textMain">第三步：确立手段与句尾。</strong>将上述的询问作为交涉的内容，后接表示手段的选项 3「交渉して」（进行交涉），最后与句尾的「みようか」（试试看吧）相连。综合排序为 2-1-4-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>A：“啊，指南上写着，我们现在要去的博物馆如果不提前一周预约是进不去的哦。” B：“诶，是吗？那可难办了。” A：“姑且先去看看，交涉一下看能不能让我们进去试试吧。”
-                    </p>
+                    <p>「<ruby>行<rt>い</rt></ruby>くだけ<ruby>行<rt>い</rt></ruby>って」是“至少先去一趟”的表达，表示即使结果不确定也先采取行动。</p>
+                    <p>「<ruby>入<rt>い</rt></ruby>れてもらえないか」以否定疑问形式提出请求内容，即询问能否获得允许入馆。</p>
+                    <p>该请求内容接「<ruby>交渉<rt>こうしょう</rt></ruby>してみようか」，表示尝试就此进行交涉。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>最低限度的行动「<ruby>行<rt>い</rt></ruby>くだけ<ruby>行<rt>い</rt></ruby>って」</span><span>请求内容「<ruby>入<rt>い</rt></ruby>れてもらえないか」</span><span>尝试手段「<ruby>交渉<rt>こうしょう</rt></ruby>して」</span><span>提议「みようか」</span></p>
                 `
             },
             {
@@ -573,13 +584,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "3", "2", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、" },
+                translation: "A：“不好意思，关于下周两点开始的会议，那段时间我临时有别的事情。如果您方便的话，能否把时间改到四点以后？那就太感谢了，您看可以吗？”B：“我们这边没问题。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立条件铺垫。</strong>题干「もしそちらのご都合が」（如果您的时间）后接选项 4「よろしければ」（方便的话），构成商务日语中常见的条件寒暄语「もしそちらのご都合がよろしければ」（如果您的时间方便的话）。</p>
-                    <p><strong class="text-textMain">第二步：确立核心动作。</strong>提出更改时间的具体请求，接续选项 3「4時以降に」（4点以后），并接续授受动作选项 2「変更していただけると」（如果能请您更改到……的话），构成「4時以降に変更していただけると」。</p>
-                    <p><strong class="text-textMain">第三步：确立委婉请求表达。</strong>将上述条件与自身的情感表达相连，接续选项 1「ありがたいんですが」（我会很感激的），最后顺接句尾的询问「いかがでしょうか」（您看如何），构成极其委婉的请求句型。综合排序为 4-3-2-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>A：“不好意思，关于下周2点开始的会议，那个时间我正好有别的事情……如果您的时间方便的话，能请您将会议更改到4点以后吗，我会非常感激的，您看如何？” B：“我这边没问题哦。”
-                    </p>
+                    <p>「もしそちらのご<ruby>都合<rt>つごう</rt></ruby>がよろしければ」先以敬语确认对方是否方便，为请求作铺垫。</p>
+                    <p>「4<ruby>時以降<rt>じいこう</rt></ruby>に<ruby>変更<rt>へんこう</rt></ruby>していただけると」用授受表达委婉地请求对方更改会议时间。</p>
+                    <p>「ありがたいんですが、いかがでしょうか」说明若对方答应会很感激，并进一步征询对方意见。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>条件「ご<ruby>都合<rt>つごう</rt></ruby>がよろしければ」</span><span>新时间「4<ruby>時以降<rt>じいこう</rt></ruby>に」</span><span>委婉请求「<ruby>変更<rt>へんこう</rt></ruby>していただけると」</span><span>征询「ありがたいんですが、いかがでしょうか」</span></p>
                 `
             },
             {
@@ -597,13 +609,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "4", "2", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "这场演唱会的安保工作，有20名保安就足够了。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立主语及数量。</strong>题干「警備員」（保安）后接主格助词选项 3「が」，再接续具体的数量词选项 4「20人」，构成「警備員が20人」（20名保安）。</p>
-                    <p><strong class="text-textMain">第二步：确立强调助词。</strong>数量词后接副助词选项 2「も」，在此处表示数量之多或对该数量的强调，构成「20人も」（多达20人）。</p>
-                    <p><strong class="text-textMain">第三步：确立假定条件与句尾。</strong>接续表示存在动作的假定形选项 1「いれば」（如果有……的话），与句尾的「十分です」（就足够了）相连，构成「20人もいれば十分です」（如果有20人之多就足够了）。综合排序为 3-4-2-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>这场演唱会的安保工作，如果有20名保安之多就足够了。
-                    </p>
+                    <p>「<ruby>警備員<rt>けいびいん</rt></ruby>が20<ruby>人<rt>にん</rt></ruby>」由「が」标示存在人数的主体。</p>
+                    <p>数量词后的「も」在这里表示达到该数量，带有“有这么多”的语气。</p>
+                    <p>「20<ruby>人<rt>にん</rt></ruby>もいれば<ruby>十分<rt>じゅうぶん</rt></ruby>です」用假定形说明只要人数达到20人便足够。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>主体「<ruby>警備員<rt>けいびいん</rt></ruby>が」</span><span>数量「20<ruby>人<rt>にん</rt></ruby>」</span><span>数量强调「も」</span><span>充分条件「いれば<ruby>十分<rt>じゅうぶん</rt></ruby>です」</span></p>
                 `
             },
             // ---------------- 2012年12月 (N2) ----------------
@@ -622,13 +634,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "4", "1", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "A：“啊，饮料已经没有了。”B：“那我去一趟便利店买回来，你在这里等着吧。”A：“我也和你一起去买。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立连贯动作。</strong>题干「コンビニに」（去便利店）提示需要接续移动动词。接续选项 2「行って」（去），并接续在便利店发生的动作选项 4「買って」（买），构成「コンビニに行って買って」（去便利店买）。</p>
-                    <p><strong class="text-textMain">第二步：确立原因与授受关系。</strong>动作完成后需要返回，接续选项 1「きますから」（因为我会……然后回来），构成「買ってきますから」（因为我会买完回来）。</p>
-                    <p><strong class="text-textMain">第三步：确立最终请求。</strong>向对方说明原因后，提出对对方的动作要求。接续选项 3「待って」（等待），与句尾的补助动词「いてください」（请保持……状态）相连，构成「待っていてください」（请在这里等着）。综合排序为 2-4-1-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>A：“啊，饮料喝完了呢。” B：“那我稍微去一趟便利店买点回来，请在这里等一下。” A：“我也一起去买吧。”
-                    </p>
+                    <p>「コンビニに<ruby>行<rt>い</rt></ruby>って」表示先去便利店，再进行购买这一动作。</p>
+                    <p>「<ruby>買<rt>か</rt></ruby>ってきます」由「～てくる」表示买完东西后再回到当前地点。</p>
+                    <p>「から」说明自己去买东西是提出请求的理由，后面的「<ruby>待<rt>ま</rt></ruby>っていてください」请对方保持等待状态。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>移动「コンビニに<ruby>行<rt>い</rt></ruby>って」</span><span>往返动作「<ruby>買<rt>か</rt></ruby>ってきます」</span><span>理由「から」</span><span>请求「<ruby>待<rt>ま</rt></ruby>っていてください」</span></p>
                 `
             },
             {
@@ -646,13 +659,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "2", "3", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、", "2": "、" },
+                translation: "这项计划究竟是继续照此推进还是终止，无论如何，恐怕都有必要尽快作出结论。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立并列选项。</strong>题干「このまま」（就这样）后接续针对该计划的两个相反动作，即选项 4「進めるかやめるか」（是推进还是放弃），构成「この計画をこのまま進めるかやめるか」（这个计划是就这样推进还是放弃）。</p>
-                    <p><strong class="text-textMain">第二步：确立条件转折。</strong>在前述的两种可能性之后，接续表示让步转折的副词选项 2「いずれにしても」（无论如何 / 不管怎样），引出下文必须采取的行动，构成「進めるかやめるか、いずれにしても」。</p>
-                    <p><strong class="text-textMain">第三步：确立必要性与句尾呼应。</strong>选项 3「早急に結論を出す」（尽早得出结论）作为动作短语，必须修饰表示必要性的形式名词选项 1「必要がある」（有必要），最后顺接句尾的推测助动词「だろう」（吧）。综合排序为 4-2-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>这个计划是就这样推进还是放弃，不管怎样，都有必要尽早得出结论吧。
-                    </p>
+                    <p>「<ruby>進<rt>すす</rt></ruby>めるかやめるか」并列继续和终止两种相反选择。</p>
+                    <p>「いずれにしても」表示无论最终选择哪一种，后面的必要性都不会改变。</p>
+                    <p>「<ruby>早急<rt>そうきゅう</rt></ruby>に<ruby>結論<rt>けつろん</rt></ruby>を<ruby>出<rt>だ</rt></ruby>す<ruby>必要<rt>ひつよう</rt></ruby>がある」说明必须尽快作出决定，句末「だろう」保留判断语气。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>两种选择「<ruby>進<rt>すす</rt></ruby>めるかやめるか」</span><span>不论选择「いずれにしても」</span><span>行动「<ruby>早急<rt>そうきゅう</rt></ruby>に<ruby>結論<rt>けつろん</rt></ruby>を<ruby>出<rt>だ</rt></ruby>す」</span><span>必要性「<ruby>必要<rt>ひつよう</rt></ruby>があるだろう」</span></p>
                 `
             },
             {
@@ -670,13 +684,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "1", "2", "4"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "“关于下周登山要携带的物品，我有一个问题。发下来的资料上写着要自备塑料袋，请问大概准备多少个才够呢？”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立引用与逆接。</strong>题干「持参」（带来）后接表示引用传闻的句型选项 3「のことと」（提及…… / 据说……），再接续表示转折的选项 1「ありますが」（虽然写着……，但），构成「プリントに、ビニール袋を持参のこととありますが」（虽然分发的讲义上写着要自带塑料袋，但……）。</p>
-                    <p><strong class="text-textMain">第二步：确立疑问与条件。</strong>转折后提出具体的疑问，接续询问数量的选项 2「だいたい何枚ぐらい」（大概多少个左右），后接表示条件的动词选项 4「用意すれば」（如果准备……的话），构成「だいたい何枚ぐらい用意すれば」（大概准备多少个的话……）。</p>
-                    <p><strong class="text-textMain">第三步：组合完整句意。</strong>将上述条件句与句尾的疑问「足りるのでしょうか」（够用呢？）相连。综合排序为 3-1-2-4。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>“关于下周登山的随身物品我有个问题。虽然分发的讲义上写着要自带塑料袋，但大概准备多少个才够用呢？”
-                    </p>
+                    <p>「ビニール<ruby>袋<rt>ぶくろ</rt></ruby>を<ruby>持参<rt>じさん</rt></ruby>のこと」是通知中的书面表达，表示要求自备塑料袋。</p>
+                    <p>「とありますが」引用资料上写明的内容，并以「が」引出接下来的具体疑问。</p>
+                    <p>「だいたい<ruby>何枚<rt>なんまい</rt></ruby>ぐらい<ruby>用意<rt>ようい</rt></ruby>すれば<ruby>足<rt>た</rt></ruby>りるのでしょうか」以条件形式询问达到充足状态所需的大致数量。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>携带要求「<ruby>持参<rt>じさん</rt></ruby>のこと」</span><span>书面引用「とありますが」</span><span>数量疑问「だいたい<ruby>何枚<rt>なんまい</rt></ruby>ぐらい」</span><span>充分条件「<ruby>用意<rt>ようい</rt></ruby>すれば<ruby>足<rt>た</rt></ruby>りる」</span></p>
                 `
             },
             {
@@ -694,13 +709,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "3", "1", "2"],
                 starIndex: 0,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "3": "、" },
+                translation: "经常会有这种情况：明明是有目的才去了那个地方，却忘了自己究竟去那里做什么。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立修饰与动作。</strong>题干「何か目的があって」（带有某种目的）修饰动作，后接前往某地的具体行为选项 4「その場所に行った」（去了那个地方），构成「何か目的があってその場所に行った」（带有某种目的去了那个地方）。</p>
-                    <p><strong class="text-textMain">第二步：确立逆接句型。</strong>在该动作后接续表示转折的 N2 句型选项 3「はずなのに」（明明应该是……却），构成「～その場所に行ったはずなのに」（明明应该是带有某种目的去了那里，却……）。</p>
-                    <p><strong class="text-textMain">第三步：确立遗忘对象与句尾。</strong>转折后引出实际发生的意外结果，即把选项 1「何をしに行ったのか」（到底是去做什么的）作为宾语短句，接续谓语选项 2「忘れてしまう」（忘记了），并与句尾的「ということがよくある」（经常有这样的事）相连。综合排序为 4-3-1-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>明明应该是带有某种目的才去那个地方的，却把到底是去做什么的给忘记了，经常有这样的事。
-                    </p>
+                    <p>「<ruby>何<rt>なに</rt></ruby>か<ruby>目的<rt>もくてき</rt></ruby>があってその<ruby>場所<rt>ばしょ</rt></ruby>に<ruby>行<rt>い</rt></ruby>った」说明前往某处本来具有明确目的。</p>
+                    <p>「はずなのに」表示按理说应当如此，却出现了与预期相反的情况。</p>
+                    <p>间接疑问「<ruby>何<rt>なに</rt></ruby>をしに<ruby>行<rt>い</rt></ruby>ったのか」作为「<ruby>忘<rt>わす</rt></ruby>れてしまう」的内容，最后由「ということがよくある」概括为常见现象。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>原有目的「<ruby>何<rt>なに</rt></ruby>か<ruby>目的<rt>もくてき</rt></ruby>があって」</span><span>前往「その<ruby>場所<rt>ばしょ</rt></ruby>に<ruby>行<rt>い</rt></ruby>った」</span><span>逆预期「はずなのに」</span><span>遗忘内容「<ruby>何<rt>なに</rt></ruby>をしに<ruby>行<rt>い</rt></ruby>ったのか<ruby>忘<rt>わす</rt></ruby>れる」</span></p>
                 `
             },
             {
@@ -718,13 +734,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["1", "4", "3", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "大豆是制作味噌、酱油等日本餐桌上不可缺少的调味料的原料，但日本国内生产的大豆很少，据说大部分依赖从海外进口。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立修饰与举例。</strong>题干「日本の食卓に」（对日本的餐桌而言）后接连体修饰选项 1「欠かせない」（不可或缺的），修饰具体的举例内容选项 4「みそやしょうゆといった」（诸如味噌和酱油等），构成「日本の食卓に欠かせないみそやしょうゆといった」（日本餐桌上不可或缺的诸如味噌和酱油等）。</p>
-                    <p><strong class="text-textMain">第二步：确立所属与修饰对象。</strong>该举例内容后接其所属的分类选项 3「調味料の」（调味料的），构成「～みそやしょうゆといった調味料の」。</p>
-                    <p><strong class="text-textMain">第三步：确立原料关系。</strong>将上述调味料名词短语接续选项 2「原料となる」（作为原料的），最终修饰后文的核心名词「大豆だが」（虽然是……大豆，但），构成「～調味料の原料となる大豆だが」。综合排序为 1-4-3-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>虽然大豆是日本餐桌上不可或缺的诸如味噌和酱油等调味料的原料，但在日本国内生产的却很少，据说其大部分都依赖于从海外输入。
-                    </p>
+                    <p>「<ruby>日本<rt>にほん</rt></ruby>の<ruby>食卓<rt>しょくたく</rt></ruby>に<ruby>欠<rt>か</rt></ruby>かせない」说明后面的调味料在日本饮食中不可或缺。</p>
+                    <p>「みそやしょうゆといった<ruby>調味料<rt>ちょうみりょう</rt></ruby>」用「といった」列举味噌和酱油等代表性例子。</p>
+                    <p>「<ruby>調味料<rt>ちょうみりょう</rt></ruby>の<ruby>原料<rt>げんりょう</rt></ruby>となる」整体修饰「<ruby>大豆<rt>だいず</rt></ruby>」，后文再转入日本大豆产量和进口依赖的问题。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>必要性「<ruby>食卓<rt>しょくたく</rt></ruby>に<ruby>欠<rt>か</rt></ruby>かせない」</span><span>举例「みそやしょうゆといった」</span><span>类别「<ruby>調味料<rt>ちょうみりょう</rt></ruby>の」</span><span>原料关系「<ruby>原料<rt>げんりょう</rt></ruby>となる<ruby>大豆<rt>だいず</rt></ruby>」</span></p>
                 `
             },
             // ---------------- 2013年7月 (N2) ----------------
@@ -743,13 +759,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "4", "1", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "3": "、" },
+                translation: "在这个国家，说到受欢迎程度仅次于足球的运动，那就是棒球。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立比较基准与固定句型。</strong>题干「サッカー」（足球）后接续表示“仅次于……”的选项 2「に次いで」，构成「サッカーに次いで」（仅次于足球的）。</p>
-                    <p><strong class="text-textMain">第二步：确立连体修饰关系。</strong>该短语后接续修饰语选项 4「人気のある」（受欢迎的），并修饰名词选项 1「スポーツ」（运动），构成「サッカーに次いで人気のあるスポーツ」（仅次于足球的、受欢迎的运动）。</p>
-                    <p><strong class="text-textMain">第三步：确立话题提示与句尾呼应。</strong>名词短语后接续提示话题的选项 3「といえば」（说到……），与句尾的「野球だ」（是棒球）相连。综合排序为 2-4-1-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>在这个国家，说到仅次于足球受欢迎的运动，那就是棒球了。
-                    </p>
+                    <p>「サッカーに<ruby>次<rt>つ</rt></ruby>いで」表示以足球为第一位，后面的对象在受欢迎程度上排在其次。</p>
+                    <p>「<ruby>人気<rt>にんき</rt></ruby>のある」修饰「スポーツ」，组成“受欢迎的运动”。</p>
+                    <p>「スポーツといえば」把整个名词短语设为话题，句末「<ruby>野球<rt>やきゅう</rt></ruby>だ」给出答案。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>比较基准「サッカーに<ruby>次<rt>つ</rt></ruby>いで」</span><span>性质「<ruby>人気<rt>にんき</rt></ruby>のある」</span><span>话题「スポーツといえば」</span><span>结论「<ruby>野球<rt>やきゅう</rt></ruby>だ」</span></p>
                 `
             },
             {
@@ -757,7 +774,7 @@ window.sortQuestionBanks.N2 = [
                 level: "N2",
                 year: "2013年7月",
                 label: "問題8 - 2",
-                prefix: "②、<ruby>田<rt>た</rt></ruby><ruby>中<rt>なか</rt></ruby>「あれ？<ruby>木<rt>き</rt></ruby><ruby>村<rt>むら</rt></ruby>さん、だいぶ<ruby>髪<rt>かみ</rt></ruby>が<ruby>伸<rt>の</rt></ruby>びましたね。」<br><ruby>中<rt>なか</rt></ruby><ruby>村<rt>むら</rt></ruby>「ええ、<ruby>半<rt>はん</rt></ruby><ruby>年<rt>とし</rt></ruby><ruby>前<rt>まえ</rt></ruby>に",
+                prefix: "②、<ruby>田<rt>た</rt></ruby><ruby>中<rt>なか</rt></ruby>「あれ？<ruby>木<rt>き</rt></ruby><ruby>村<rt>むら</rt></ruby>さん、だいぶ<ruby>髪<rt>かみ</rt></ruby>が<ruby>伸<rt>の</rt></ruby>びましたね。」<br><ruby>木<rt>き</rt></ruby><ruby>村<rt>むら</rt></ruby>「ええ、<ruby>半<rt>はん</rt></ruby><ruby>年<rt>とし</rt></ruby><ruby>前<rt>まえ</rt></ruby>に",
                 suffix: "ないんですよ。」",
                 options: [
                     { id: "1", text: "きり" },
@@ -767,13 +784,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "1", "2", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "田中：“咦？木村，你的头发长长了不少呢。”木村：“是啊，自从半年前剪过以后，一次都没再剪过。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立时间节点与固定句型。</strong>题干「半年前に」（半年前）后接续动词过去时选项 4「切った」（剪了），随后接续表示“自那以后再也没有……”的 N2 句型选项 1「きり」，构成「半年前に切ったきり」（自从半年前剪过之后就再也没……）。</p>
-                    <p><strong class="text-textMain">第二步：确立频度副词与否定呼应。</strong>选项 2「一度も」（一次也没）作为频度副词，需与后文的否定表达相呼应，置于句型「きり」之后，构成「半年前に切ったきり一度も」（自从半年前剪过之后一次也没有……）。</p>
-                    <p><strong class="text-textMain">第三步：确立谓语动词与句尾。</strong>频度副词后接续具体动作的动词连用形选项 3「切って」（剪），与句尾的否定状态「ないんですよ」（没有……哦）相连，构成「一度も切ってないんですよ」（一次也没有剪过哦）。综合排序为 4-1-2-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>田中：“咦？木村先生，您的头发长长了不少呢。” 中村：“是啊，自从半年前剪过之后，就一次也没有剪过了哦。”
-                    </p>
+                    <p>「<ruby>半年前<rt>はんとしまえ</rt></ruby>に<ruby>切<rt>き</rt></ruby>ったきり」以「～たきり」表示自从半年前剪过后，状态一直没有改变。</p>
+                    <p>「<ruby>一度<rt>いちど</rt></ruby>も」与否定形式呼应，强调一次也没有。</p>
+                    <p>「<ruby>一度<rt>いちど</rt></ruby>も<ruby>切<rt>き</rt></ruby>ってない」是「切っていない」的口语形式，说明此后一直没有再剪头发。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>起点「<ruby>半年前<rt>はんとしまえ</rt></ruby>に<ruby>切<rt>き</rt></ruby>った」</span><span>状态持续「きり」</span><span>完全否定「<ruby>一度<rt>いちど</rt></ruby>も」</span><span>未再发生「<ruby>切<rt>き</rt></ruby>ってない」</span></p>
                 `
             },
             {
@@ -791,13 +808,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "1", "3", "4"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "我们学校有很多热心指导学生的老师，其中经验丰富的山田老师不仅深受学生信任，也很受家长信赖。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立连体修饰关系。</strong>题干「経験豊富な」（经验丰富的）作为连体修饰语，后需接续名词。接续选项 2「山田先生は」（山田老师），构成「経験豊富な山田先生は」（经验丰富的山田老师）。</p>
-                    <p><strong class="text-textMain">第二步：确立递进句型。</strong>选项 1「生徒は」（学生）后接续表示“不仅……而且……”的 N2 固定句型选项 3「もとより」，构成「生徒はもとより」（不仅是学生）。</p>
-                    <p><strong class="text-textMain">第三步：确立并列对象与句尾搭配。</strong>递进句型后引出另一个对象选项 4「保護者からの」（来自监护人的），与句尾的「信頼も厚い」（也非常受信任）相连，构成「保護者からの信頼も厚い」。综合排序为 2-1-3-4。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>我们的学校里有很多热心指导的老师，其中，经验丰富的山田老师不仅深受学生信任，也非常受学生监护人们的信任。
-                    </p>
+                    <p>「<ruby>経験豊富<rt>けいけんほうふ</rt></ruby>な<ruby>山田先生<rt>やまだせんせい</rt></ruby>は」由な形容词修饰人物，并将山田老师设为话题。</p>
+                    <p>「<ruby>生徒<rt>せいと</rt></ruby>はもとより」表示学生自不必说，用来引出更广的信任来源。</p>
+                    <p>「<ruby>保護者<rt>ほごしゃ</rt></ruby>からの<ruby>信頼<rt>しんらい</rt></ruby>も<ruby>厚<rt>あつ</rt></ruby>い」说明山田老师也深受家长信赖。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>人物「<ruby>経験豊富<rt>けいけんほうふ</rt></ruby>な<ruby>山田先生<rt>やまだせんせい</rt></ruby>は」</span><span>基本群体「<ruby>生徒<rt>せいと</rt></ruby>はもとより」</span><span>扩展群体「<ruby>保護者<rt>ほごしゃ</rt></ruby>からの」</span><span>评价「<ruby>信頼<rt>しんらい</rt></ruby>も<ruby>厚<rt>あつ</rt></ruby>い」</span></p>
                 `
             },
             {
@@ -815,13 +832,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["1", "3", "4", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "3": "、" },
+                translation: "宇宙中有这么多星球，因此我认为，即使某个星球上存在生物也不足为奇。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立程度修饰与原因。</strong>题干「これだけ」（如此之多）后接续选项 1「多くの星がある」（有许多星球），随后接续表示原因的选项 3「のだから」（因为……），构成「これだけ多くの星があるのだから」（因为有如此之多的星球）。</p>
-                    <p><strong class="text-textMain">第二步：确立存在句型。</strong>选项 4「どこかの星に」（在某个星球上）作为地点状语，后接续表示存在动作的选项 2「生物がいた」（存在生物），构成「どこかの星に生物がいた」（在某个星球上存在生物）。</p>
-                    <p><strong class="text-textMain">第三步：确立假设与句尾呼应。</strong>将上述存在句接续在题干句尾的假设转折表达「としても不思議ではない」（即使……也不奇怪）之前。综合排序为 1-3-4-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>宇宙中有如此之多的星球，所以我觉得即使在某个星球上存在生物也不足为奇。
-                    </p>
+                    <p>「これだけ<ruby>多<rt>おお</rt></ruby>くの<ruby>星<rt>ほし</rt></ruby>がある」说明宇宙中存在数量如此庞大的星球。</p>
+                    <p>「のだから」把这一事实作为后面判断的理由。</p>
+                    <p>「どこかの<ruby>星<rt>ほし</rt></ruby>に<ruby>生物<rt>せいぶつ</rt></ruby>がいたとしても」提出假设，与「<ruby>不思議<rt>ふしぎ</rt></ruby>ではない」组成“即使存在也不奇怪”。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>事实「<ruby>多<rt>おお</rt></ruby>くの<ruby>星<rt>ほし</rt></ruby>がある」</span><span>理由「のだから」</span><span>存在地点「どこかの<ruby>星<rt>ほし</rt></ruby>に」</span><span>假设「<ruby>生物<rt>せいぶつ</rt></ruby>がいたとしても」</span></p>
                 `
             },
             {
@@ -839,13 +857,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "1", "2", "4"],
                 starIndex: 1,
+                analysisStyle: "structured",
+                translation: "山田和林在工作中经常意见对立，但私下关系却非常好。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立范围表达。</strong>题干「仕事の」（工作的）后接续选项 3「上では」（在……方面），构成固定表达「仕事の上では」（在工作上 / 在工作方面）。</p>
-                    <p><strong class="text-textMain">第二步：确立连体修饰从句的核心结构。</strong>动词选项 1「対立する」（对立 / 冲突）后接形式名词短语选项 2「ことの」，再接续形容词选项 4「多い」（多的）。这是「対立することが多い」作为连体修饰语时主格助词「が」替换为「の」的用法，构成「対立することの多い」（经常发生冲突的）。</p>
-                    <p><strong class="text-textMain">第三步：确立整体修饰关系。</strong>将前述两部分组合，作为连体修饰语修饰后文的主语「山田さんと林さん」（山田先生和林先生）。综合排序为 3-1-2-4。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>虽然山田先生和林先生在工作上经常发生冲突，但在私下里他们的关系却非常好。
-                    </p>
+                    <p>「<ruby>仕事<rt>しごと</rt></ruby>の<ruby>上<rt>うえ</rt></ruby>では」限定讨论范围，表示在工作方面。</p>
+                    <p>「<ruby>対立<rt>たいりつ</rt></ruby>することの<ruby>多<rt>おお</rt></ruby>い」表示经常发生对立，其中「の」相当于连体从句中的主格「が」。</p>
+                    <p>这一连体结构修饰「<ruby>山田<rt>やまだ</rt></ruby>さんと<ruby>林<rt>はやし</rt></ruby>さん」，再由「だが」转向两人私下关系很好的对比。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>范围「<ruby>仕事<rt>しごと</rt></ruby>の<ruby>上<rt>うえ</rt></ruby>では」</span><span>动作「<ruby>対立<rt>たいりつ</rt></ruby>する」</span><span>频率「ことの<ruby>多<rt>おお</rt></ruby>い」</span><span>对比「プライベートでは<ruby>仲<rt>なか</rt></ruby>がいい」</span></p>
                 `
             },
             // ---------------- 2013年12月 (N2) ----------------
@@ -864,13 +882,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "2", "1", "4"],
                 starIndex: 0,
+                analysisStyle: "structured",
+                translation: "A：“暑假到明天就结束了。”B：“是啊，不过还想再休息一个星期左右呢。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立数量基准。</strong>副词选项 3「あと」（再 / 还有）后需接续具体的时间数量词选项 2「1週間」（一周），构成「あと1週間」（再有一周）。</p>
-                    <p><strong class="text-textMain">第二步：确立程度修饰。</strong>时间数量短语后接续表示大概数量的副助词选项 1「ぐらい」（大约 / 左右），构成「あと1週間ぐらい」（大约再有一周）。</p>
-                    <p><strong class="text-textMain">第三步：确立强调提示与句尾。</strong>最后接续提示助词选项 4「は」（至少 / 起码），在此表示对该数量的最低期望强调，构成「あと1週間ぐらいは」（起码大约再有一周），直接与句尾的谓语「休みたいよね」（想休息呢）相连。综合排序为 3-2-1-4。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>A：“暑假明天就结束了呢。” B：“是啊。但是还想至少再休息大约一周左右呢。”
-                    </p>
+                    <p>「あと」放在数量前，表示还想追加一段时间。</p>
+                    <p>「1<ruby>週間<rt>しゅうかん</rt></ruby>ぐらい」用「ぐらい」表示大约一个星期。</p>
+                    <p>「は」提示说话人期望的最低范围，组成「あと1<ruby>週間<rt>しゅうかん</rt></ruby>ぐらいは<ruby>休<rt>やす</rt></ruby>みたい」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>追加「あと」</span><span>时长「1<ruby>週間<rt>しゅうかん</rt></ruby>」</span><span>大致范围「ぐらい」</span><span>最低期望「は<ruby>休<rt>やす</rt></ruby>みたい」</span></p>
                 `
             },
             {
@@ -888,13 +906,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "1", "4", "3"],
                 starIndex: 3,
+                analysisStyle: "structured",
+                translation: "（写给北川老师的邮件）我昨天已经平安回国。在日本期间，承蒙北川老师以及许多人的照顾，真的非常感谢。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立典型代表。</strong>题干背景提示这是一封写给北川老师的邮件。接续选项 2「北川先生」与 N2 固定句型选项 1「をはじめ」（以……为首 / 包含……在内），构成「北川先生をはじめ」（以北川老师为首）。</p>
-                    <p><strong class="text-textMain">第二步：确立扩展范围。</strong>该句型后通常接续表示整体或多数群体的名词，即接续选项 4「多くの方々」（许多人 / 大家），构成「北川先生をはじめ多くの方々」（以北川老师为首的大家）。</p>
-                    <p><strong class="text-textMain">第三步：确立动作对象与句尾。</strong>名词短语后接续表示动作来源（施事者）的格助词选项 3「に」，与句尾表示受恩惠的表达「お世話になり」（受到照顾）相连，构成「～多くの方々にお世話になり」（受到了以北川老师为首的许多人的照顾）。综合排序为 2-1-4-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>（在给北川老师的邮件中）昨天我已平安回国。在日本逗留期间，受到了以北川老师您为首的许多人的照顾，真的非常感谢。
-                    </p>
+                    <p>「<ruby>北川先生<rt>きたがわせんせい</rt></ruby>をはじめ」以北川老师为代表，提示后面还包括其他人。</p>
+                    <p>「<ruby>多<rt>おお</rt></ruby>くの<ruby>方々<rt>かたがた</rt></ruby>」扩大感谢对象的范围。</p>
+                    <p>助词「に」标示「お<ruby>世話<rt>せわ</rt></ruby>になる」所涉及的对象，完整表达在日本期间受到许多人照顾。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>代表人物「<ruby>北川先生<rt>きたがわせんせい</rt></ruby>」</span><span>列举起点「をはじめ」</span><span>扩展范围「<ruby>多<rt>おお</rt></ruby>くの<ruby>方々<rt>かたがた</rt></ruby>」</span><span>受惠对象「にお<ruby>世話<rt>せわ</rt></ruby>になり」</span></p>
                 `
             },
             {
@@ -902,7 +920,7 @@ window.sortQuestionBanks.N2 = [
                 level: "N2",
                 year: "2013年12月",
                 label: "問題8 - 3",
-                prefix: "③、<ruby>私<rt>わたし</rt></ruby>の<ruby>祖<rt>そ</rt></ruby><ruby>父<rt>ふ</rt></ruby>は、<ruby>風<rt>かぜ</rt></ruby>をひいても、「<ruby>風<rt>かぜ</rt></ruby>のときはあたたかく",
+                prefix: "③、<ruby>私<rt>わたし</rt></ruby>の<ruby>祖<rt>そ</rt></ruby><ruby>父<rt>ふ</rt></ruby>は、<ruby>風邪<rt>かぜ</rt></ruby>をひいても、「<ruby>風邪<rt>かぜ</rt></ruby>のときはあたたかく",
                 suffix: "。」と<ruby>言<rt>い</rt></ruby>って<ruby>病<rt>びょう</rt></ruby><ruby>院<rt>いん</rt></ruby>に<ruby>行<rt>い</rt></ruby>かない。",
                 options: [
                     { id: "1", text: "に<ruby>限<rt>かぎ</rt></ruby>る" },
@@ -912,13 +930,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "2", "3", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "我的祖父即使感冒了，也总说“感冒时注意保暖、早点睡觉最好”，不肯去医院。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立状态修饰。</strong>题干「あたたかく」（暖和地）作为连用修饰语，后接动词选项 4「して」，构成「あたたかくして」（保暖 / 弄得暖暖的）。</p>
-                    <p><strong class="text-textMain">第二步：确立连贯动作。</strong>在保暖的状态下，接续下一个动作，即副词选项 2「早く」（早早地）修饰动词选项 3「寝る」（睡觉），构成「あたたかくして早く寝る」（保暖并早点睡觉）。</p>
-                    <p><strong class="text-textMain">第三步：确立最高级评价句型。</strong>动词原形后接续表示“……是最好的” N2 句型选项 1「に限る」，构成「早く寝るに限る」（早点睡觉是最好的），与句尾的引用「と言って」（这样说着）相连。综合排序为 4-2-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>我的祖父即使感冒了，也会说“感冒的时候保暖并早点睡觉是最好的”，而不去医院。
-                    </p>
+                    <p>「あたたかくして」表示让身体保持温暖的状态。</p>
+                    <p>「<ruby>早<rt>はや</rt></ruby>く<ruby>寝<rt>ね</rt></ruby>る」由副词修饰动作，表示早点休息。</p>
+                    <p>「～に<ruby>限<rt>かぎ</rt></ruby>る」表示在某种情况下这样做最好，整句话作为祖父所说的内容被引用。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>状态「あたたかくして」</span><span>时间「<ruby>早<rt>はや</rt></ruby>く」</span><span>动作「<ruby>寝<rt>ね</rt></ruby>る」</span><span>最佳选择「に<ruby>限<rt>かぎ</rt></ruby>る」</span></p>
                 `
             },
             {
@@ -936,13 +954,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "1", "2", "3"],
                 starIndex: 1,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "留学期间，直到别人问起我自己国家的事情，我才发现，很多事情过去一直被我视为理所当然，甚至从未产生过疑问。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立认知状态。</strong>题干「今まで」（直到现在）后接续一直以来的认知状态，即选项 4「当たり前だと」（理所当然地）加上谓语选项 1「思って」（认为），构成「今まで当たり前だと思って」（直到现在都认为是理所当然的，并且……）。</p>
-                    <p><strong class="text-textMain">第二步：确立极端否定。</strong>在理所当然的认知下，引出连怀疑都不曾有过的状态。选项 2「疑問にすら」（甚至连疑问……都）包含强调助词「すら」，后必须接续否定表达选项 3「思っていなかった」（没有想过），构成「疑問にすら思っていなかった」（甚至连怀疑都不曾有过）。</p>
-                    <p><strong class="text-textMain">第三步：组合完整句意。</strong>将上述两部分顺接，修饰句尾的名词短语「ことが多いのに気づいた」（意识到有许多……样的事）。综合排序为 4-1-2-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>留学期间，被问起自己国家的事情时我才第一次意识到，有很多事情我直到现在都认为是理所当然的，甚至连怀疑都不曾有过。
-                    </p>
+                    <p>「<ruby>当<rt>あ</rt></ruby>たり<ruby>前<rt>まえ</rt></ruby>だと<ruby>思<rt>おも</rt></ruby>って」表示过去一直把许多本国的事情视为理所当然。</p>
+                    <p>「<ruby>疑問<rt>ぎもん</rt></ruby>にすら」中的「すら」强调连产生疑问这种最低程度的反思都没有。</p>
+                    <p>「<ruby>思<rt>おも</rt></ruby>っていなかったことが<ruby>多<rt>おお</rt></ruby>い」概括这种情况很多，并由「<ruby>気<rt>き</rt></ruby>づいた」说明留学带来的认识变化。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>既有认知「<ruby>当<rt>あ</rt></ruby>たり<ruby>前<rt>まえ</rt></ruby>だと」</span><span>持续判断「<ruby>思<rt>おも</rt></ruby>って」</span><span>最低程度强调「<ruby>疑問<rt>ぎもん</rt></ruby>にすら」</span><span>否定状态「<ruby>思<rt>おも</rt></ruby>っていなかった」</span></p>
                 `
             },
             {
@@ -960,13 +979,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["1", "2", "4", "3"],
                 starIndex: 3,
+                analysisStyle: "structured",
+                translation: "他画的狮子栩栩如生，仿佛马上就会动起来，朝人走近。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立程度修饰。</strong>选项 1「今にも動き出して」（仿佛眼看着就要动起来并……）后接连贯的趋向动作及程度表达选项 2「近づいてきそうなほど」（到了好像要靠近过来的地步），构成「今にも動き出して近づいてきそうなほど」（到了仿佛马上就要动起来并靠近过来的地步）。</p>
-                    <p><strong class="text-textMain">第二步：确立状态样貌。</strong>在上述极端程度的修饰下，引出具体的样貌选项 4「本物そっくりに」（简直和真的一模一样地），构成「～近づいてきそうなほど本物そっくりに」。</p>
-                    <p><strong class="text-textMain">第三步：确立谓语动词与句尾。</strong>最后接续谓语动词的被动态连用形选项 3「描かれて」（被描绘成），与句尾的补助动词「いる」相连，构成「描かれている」（被画成……）。综合排序为 1-2-4-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>他画的狮子，被画得简直和真的一模一样，到了仿佛眼看着就要动起来并靠近过来的地步。
-                    </p>
+                    <p>「<ruby>今<rt>いま</rt></ruby>にも<ruby>動<rt>うご</rt></ruby>き<ruby>出<rt>だ</rt></ruby>して」表示看起来马上就要开始活动。</p>
+                    <p>「<ruby>近<rt>ちか</rt></ruby>づいてきそうなほど」用「ほど」说明逼真程度，仿佛狮子会向人走近。</p>
+                    <p>「<ruby>本物<rt>ほんもの</rt></ruby>そっくりに<ruby>描<rt>えが</rt></ruby>かれている」说明画面被描绘得与真狮子一模一样。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>即将动作「<ruby>今<rt>いま</rt></ruby>にも<ruby>動<rt>うご</rt></ruby>き<ruby>出<rt>だ</rt></ruby>して」</span><span>趋近推测「<ruby>近<rt>ちか</rt></ruby>づいてきそうなほど」</span><span>逼真程度「<ruby>本物<rt>ほんもの</rt></ruby>そっくりに」</span><span>描绘状态「<ruby>描<rt>えが</rt></ruby>かれている」</span></p>
                 `
             },
             // ---------------- 2014年7月 (N2) ----------------
@@ -985,13 +1004,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "1", "4", "2"],
                 starIndex: 3,
+                analysisStyle: "structured",
+                translation: "A：“那我差不多该走了。谢谢你的茶。”B：“咦，这就走了吗？难得来一趟，再多坐一会儿再走多好。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立因果关系与固定搭配。</strong>题干副词「せっかく」（难得 / 好不容易）常与表示原因的选项 3「来たんだから」（既然来了）搭配，构成「せっかく来たんだから」（既然难得来一趟）。</p>
-                    <p><strong class="text-textMain">第二步：确立动作状语。</strong>选项 1「もう少し」（再稍微）作为程度副词，修饰后续的动作选项 4「ゆっくりして」（慢慢休息 / 放松），构成「もう少しゆっくりして」（再稍微多待一会儿）。</p>
-                    <p><strong class="text-textMain">第三步：确立条件句型与句尾。</strong>动作后接续假定条件选项 2「いけば」（去的话 / 继续做某事的话），与句尾的遗憾或建议表达「いいのに」（……就好了）相连，构成「ゆっくりしていけばいいのに」（多待一会儿再走就好了）。综合排序为 3-1-4-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>A：“那我差不多该回去了。谢谢你的茶。” B：“诶，这就回去了吗？既然难得来一趟，再稍微多待一会儿就好了。”
-                    </p>
+                    <p>「せっかく<ruby>来<rt>き</rt></ruby>たんだから」表示“既然难得来一趟”，说明挽留对方的理由。</p>
+                    <p>「もう<ruby>少<rt>すこ</rt></ruby>し」修饰「ゆっくりして」，表示希望对方再多待一会儿。</p>
+                    <p>「～ていけばいいのに」表示说话人认为对方再待一会儿再走会更好，带有建议和惋惜的语气。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>难得的机会「せっかく」</span><span>理由「<ruby>来<rt>き</rt></ruby>たんだから」</span><span>追加时间「もう<ruby>少<rt>すこ</rt></ruby>し」</span><span>建议「ゆっくりしていけばいいのに」</span></p>
                 `
             },
             {
@@ -1009,13 +1028,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "2", "1", "4"],
                 starIndex: 0,
+                analysisStyle: "structured",
+                translation: "撰写报告时应该注意的是，要明确区分所写内容究竟是事实还是个人意见。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立动宾搭配与句型。</strong>题干「レポートを作成」（制作报告）后需接动词选项 3「する」，再接续 N2 句型选项 2「上で」（在……方面 / 在……的过程中），构成「レポートを作成する上で」（在制作报告的过程中）。</p>
-                    <p><strong class="text-textMain">第二步：确立义务与修饰关系。</strong>选项 1「注意」（注意）后接表示义务或理所应当的选项 4「すべき」（应该……的），构成「注意すべき」（应该注意的）。</p>
-                    <p><strong class="text-textMain">第三步：确立主语与句尾呼应。</strong>将「注意すべき」作为连体修饰语，直接接续题干后半部分的形式名词「ことは」，充当整句话的主语。与句尾的「明確にすることだ」（是明确……）相连。综合排序为 3-2-1-4。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>在制作报告的过程中，应该注意的事情是，要明确内容究竟是事实还是意见。
-                    </p>
+                    <p>「レポートを<ruby>作成<rt>さくせい</rt></ruby>する」先组成完整的动宾结构。</p>
+                    <p>「～する<ruby>上<rt>うえ</rt></ruby>で」表示“在做……时／在……方面”，引出需要注意的事项。</p>
+                    <p>「<ruby>注意<rt>ちゅうい</rt></ruby>すべきこと」表示“应该注意的事情”，其具体内容由后面的「<ruby>事実<rt>じじつ</rt></ruby>なのか<ruby>意見<rt>いけん</rt></ruby>なのかを<ruby>明確<rt>めいかく</rt></ruby>にする」说明。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>行为「レポートを<ruby>作成<rt>さくせい</rt></ruby>する」</span><span>场合「<ruby>上<rt>うえ</rt></ruby>で」</span><span>必要事项「<ruby>注意<rt>ちゅうい</rt></ruby>すべきこと」</span><span>具体内容「<ruby>事実<rt>じじつ</rt></ruby>か<ruby>意見<rt>いけん</rt></ruby>かを<ruby>明確<rt>めいかく</rt></ruby>にする」</span></p>
                 `
             },
             {
@@ -1033,13 +1052,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["1", "4", "2", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、", "4": "、" },
+                translation: "无论遇到多么痛苦的事，石川先生都从不流露出难受的样子，总是笑容满面，因此我很尊敬他。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立呼应关系与条件句。</strong>题干副词「どんなに」（无论多么）后需接续表示让步条件的「～ても」形式，即选项 1「つらいことがあっても」（即使有痛苦的事情），构成「どんなにつらいことがあっても」（无论遇到多么痛苦的事情）。</p>
-                    <p><strong class="text-textMain">第二步：确立动作状语与连贯状态。</strong>在逆接条件后，接续表示实际状态的选项 4「そんな様子を全く見せず」（完全不表露出那种样子），随后接续其连贯的表现选项 2「いつもにこにこしている」（总是笑眯眯的）。</p>
-                    <p><strong class="text-textMain">第三步：确立连体修饰与句尾动宾搭配。</strong>将上述表示状态的短语作为连体修饰语，修饰宾语及谓语选项 3「石川さんを尊敬している」（尊敬着石川先生）。结合题干主语「私は」（我），综合排序为 1-4-2-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>我尊敬着石川先生，无论遇到多么痛苦的事情，他都完全不表露出那种样子，总是笑眯眯的。
-                    </p>
+                    <p>「どんなにつらいことがあっても」由「どんなに～ても」构成让步条件，表示无论发生多么痛苦的事。</p>
+                    <p>「そんな<ruby>様子<rt>ようす</rt></ruby>を<ruby>全<rt>まった</rt></ruby>く<ruby>見<rt>み</rt></ruby>せず」承接前文，说明石川先生从不把痛苦表现出来。</p>
+                    <p>「いつもにこにこしている」修饰「<ruby>石川<rt>いしかわ</rt></ruby>さん」，整个长定语成为「<ruby>尊敬<rt>そんけい</rt></ruby>している」的对象。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>让步条件「どんなにつらいことがあっても」</span><span>不显露「そんな<ruby>様子<rt>ようす</rt></ruby>を<ruby>全<rt>まった</rt></ruby>く<ruby>見<rt>み</rt></ruby>せず」</span><span>一贯表现「いつもにこにこしている」</span><span>评价「<ruby>石川<rt>いしかわ</rt></ruby>さんを<ruby>尊敬<rt>そんけい</rt></ruby>している」</span></p>
                 `
             },
             {
@@ -1057,13 +1077,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "2", "3", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "A：“从公司职员转行当农民，你真有勇气啊。”B：“因为我无论如何都无法放弃自己的梦想。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立谓语动词及句型。</strong>题干「サラリーマンから農家」（从上班族到农民）需接续变化动词选项 4「になる」（成为），随后接续表示对该事实感到惊讶或感叹的提示助词选项 2「とは」（竟然……），构成「農家になるとは」（竟然成为了农民）。</p>
-                    <p><strong class="text-textMain">第二步：确立程度修饰关系。</strong>副词选项 3「ずいぶん」（相当 / 很）用于修饰后文的内容，即接续名词选项 1「勇気」（勇气），构成「ずいぶん勇気」（相当大的勇气）。</p>
-                    <p><strong class="text-textMain">第三步：确立主谓结构与句尾衔接。</strong>将名词「勇気」与句尾的「があるんだね」（是有……的啊）相连，构成「ずいぶん勇気があるんだね」（是有相当大的勇气的啊）。综合排序为 4-2-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>A：“从上班族去当农民，竟然有这么大的勇气啊。” B：“因为我无论如何也无法放弃自己的梦想啊。”
-                    </p>
+                    <p>「サラリーマンから<ruby>農家<rt>のうか</rt></ruby>になる」表示职业由公司职员转变为农民。</p>
+                    <p>「～とは」把前面的事实作为话题，并表达说话人的惊讶或感叹。</p>
+                    <p>「ずいぶん」修饰「<ruby>勇気<rt>ゆうき</rt></ruby>がある」，强调做出这一决定需要很大的勇气。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>原职业「サラリーマンから」</span><span>职业转变「<ruby>農家<rt>のうか</rt></ruby>になる」</span><span>感叹「とは」</span><span>评价「ずいぶん<ruby>勇気<rt>ゆうき</rt></ruby>がある」</span></p>
                 `
             },
             {
@@ -1081,13 +1102,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "3", "4", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "3": "、" },
+                translation: "A：“昨天工作上又搞砸了。我可能真的不适合这份工作，还是考虑换工作吧。”B：“我不反对。如果你真的觉得自己不适合，我也认为没有必要勉强坚持下去。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立引用与条件从句。</strong>题干「本当に向いていないと」（真的不适合的话）作为引用内容，后接续谓语动词选项 2「思う」（觉得 / 认为），并接续表示假定条件的选项 3「んだったら」（如果是……的话），构成「本当に向いていないと思うんだったら」（如果你真的觉得不适合的话）。</p>
-                    <p><strong class="text-textMain">第二步：确立固定句型。</strong>动词原形选项 4「続ける」（继续）后接续表示“没有必要……”的 N2 固定句型选项 1「こともないと」（也没有必要……），构成「続けることもないと」（没有必要继续下去）。</p>
-                    <p><strong class="text-textMain">第三步：确立句尾衔接。</strong>将前述的否定判断作为思考的内容，直接与句尾的「思うからね」（因为我是这么认为的）相连，综合排序为 2-3-4-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>A：“昨天工作上又失败了呢。这份工作估计不适合我吧。要不还是跳槽吧。” B：“我不反对哦。因为如果你真的觉得不适合的话，我认为也没有必要勉强继续下去。”
-                    </p>
+                    <p>「<ruby>向<rt>む</rt></ruby>いていないと<ruby>思<rt>おも</rt></ruby>う」表示认为自己不适合这份工作。</p>
+                    <p>「～んだったら」把这一判断设为条件，相当于“如果你真这么认为的话”。</p>
+                    <p>「<ruby>続<rt>つづ</rt></ruby>けることもない」表示没有必要继续；后面的「と<ruby>思<rt>おも</rt></ruby>うから」说明B不反对换工作的理由。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>自我判断「<ruby>向<rt>む</rt></ruby>いていないと<ruby>思<rt>おも</rt></ruby>う」</span><span>假定条件「んだったら」</span><span>不必继续「<ruby>続<rt>つづ</rt></ruby>けることもない」</span><span>理由「と<ruby>思<rt>おも</rt></ruby>うから」</span></p>
                 `
             },
             // ---------------- 2014年12月 (N2) ----------------
@@ -1106,13 +1128,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "4", "2", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "听说X公司即将推出的手表采用了以往任何手表都没有的全新设计，实在令人期待。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立否定呼应。</strong>题干「これまでのどの時計にも」（至今为止的任何手表上都）含有提示助词「も」，后需接续否定表达选项 3「なかった」（没有过），构成「これまでのどの時計にもなかった」（至今为止的任何手表上都不曾有过的）。</p>
-                    <p><strong class="text-textMain">第二步：确立连体修饰关系。</strong>该短语后接续形容词选项 4「全く新しい」（全新的），共同作为修饰语，修饰名词选项 2「デザインに」（设计），构成「～なかった全く新しいデザインに」（不曾有过的全新设计）。</p>
-                    <p><strong class="text-textMain">第三步：确立状态搭配与句尾。</strong>名词短语后接状态动词选项 1「なっている」（呈现为…… / 做成了……），与句尾表示传闻的「そうで」（听说……）相连。综合排序为 3-4-2-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>听说X公司新发售的手表，采用了至今为止任何手表都不曾有过的全新设计，这让我非常期待。
-                    </p>
+                    <p>「どの<ruby>時計<rt>とけい</rt></ruby>にもなかった」由「どの～にも」与否定形式「なかった」呼应，表示以往任何手表都没有。</p>
+                    <p>这一部分与「<ruby>全<rt>まった</rt></ruby>く<ruby>新<rt>あたら</rt></ruby>しい」共同修饰「デザイン」。</p>
+                    <p>「デザインになっている」表示手表采用了这种设计，再接「そうで」表明这是听来的消息。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>否定范围「どの<ruby>時計<rt>とけい</rt></ruby>にもなかった」</span><span>性质「<ruby>全<rt>まった</rt></ruby>く<ruby>新<rt>あたら</rt></ruby>しい」</span><span>设计「デザインに」</span><span>采用状态与传闻「なっているそうで」</span></p>
                 `
             },
             {
@@ -1130,13 +1152,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "3", "1", "4"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "像姐姐那样，十多年来一天不落地坚持写日记，我实在做不到。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立比喻对象。</strong>题干「姉の」（姐姐的）后接表示比喻或举例的助动词选项 2「ように」（像……那样），构成「姉のように」（像姐姐那样）。</p>
-                    <p><strong class="text-textMain">第二步：确立频度副词与修饰。</strong>选项 3「10年以上一日も」（10年以上哪怕一天也）含有提示助词「も」，后接具有否定含义的副词选项 1「欠かさず」（不遗漏地 / 不间断地），构成「10年以上一日も欠かさず」（10年以上一天也不间断地）。</p>
-                    <p><strong class="text-textMain">第三步：确立动作及感叹句型。</strong>副词短语修饰其后的具体动作选项 4「日記を書くなんて」（写日记这种事），并与句尾的「私にはとてもできない」（我是绝对做不到的）相连。综合排序为 2-3-1-4。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>像姐姐那样，10年以上一天也不间断地写日记这种事，我是绝对做不到的。
-                    </p>
+                    <p>「<ruby>姉<rt>あね</rt></ruby>のように」表示以姐姐的做法为例，相当于“像姐姐那样”。</p>
+                    <p>「10<ruby>年以上<rt>ねんいじょう</rt></ruby><ruby>一日<rt>いちにち</rt></ruby>も<ruby>欠<rt>か</rt></ruby>かさず」表示十多年间一天也没有中断。</p>
+                    <p>「<ruby>日記<rt>にっき</rt></ruby>を<ruby>書<rt>か</rt></ruby>くなんて」把写日记这件事作为评价对象，与「<ruby>私<rt>わたし</rt></ruby>にはとてもできない」呼应。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>参照对象「<ruby>姉<rt>あね</rt></ruby>のように」</span><span>持续时间「10<ruby>年以上<rt>ねんいじょう</rt></ruby>」</span><span>从不中断「<ruby>一日<rt>いちにち</rt></ruby>も<ruby>欠<rt>か</rt></ruby>かさず」</span><span>评价对象「<ruby>日記<rt>にっき</rt></ruby>を<ruby>書<rt>か</rt></ruby>くなんて」</span></p>
                 `
             },
             {
@@ -1154,13 +1177,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "1", "4", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "有一种很罕见的花，早晨刚开放时洁白无瑕，随着傍晚临近会逐渐变成粉红色。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立状态与主语。</strong>题干「開花したときには」（开花的时候）后接续描述其最初状态的选项 2「真っ白だった」（是纯白的），并修饰主语选项 1「花が」（花），构成「開花したときには真っ白だった花が」（开花时是纯白色的花）。</p>
-                    <p><strong class="text-textMain">第二步：确立时间推移与变化。</strong>随着时间推移，接续选项 4「夕方が近づくにつれて」（随着傍晚的临近），引出其后发生的变化状态选项 3「次第にピンクへと変化していく」（逐渐变成粉红色），构成「夕方が近づくにつれて次第にピンクへと変化していく」。</p>
-                    <p><strong class="text-textMain">第三步：确立连体修饰与句尾。</strong>将前后两部分组合，作为较长的连体修饰语整体修饰句尾的「珍しい花があります」（有一种罕见的花）。综合排序为 2-1-4-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>有一种罕见的花，在早晨开花时是纯白色的，随着傍晚的临近会逐渐变成粉红色。
-                    </p>
+                    <p>「<ruby>開花<rt>かいか</rt></ruby>したときには<ruby>真<rt>ま</rt></ruby>っ<ruby>白<rt>しろ</rt></ruby>だった」说明这种花开放之初的颜色。</p>
+                    <p>「<ruby>夕方<rt>ゆうがた</rt></ruby>が<ruby>近<rt>ちか</rt></ruby>づくにつれて」表示随着时间推移，后接相应的颜色变化。</p>
+                    <p>「<ruby>次第<rt>しだい</rt></ruby>にピンクへと<ruby>変化<rt>へんか</rt></ruby>していく」与前面的「<ruby>花<rt>はな</rt></ruby>が」组成主谓关系，整段修饰句末的「<ruby>珍<rt>めずら</rt></ruby>しい<ruby>花<rt>はな</rt></ruby>」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>最初状态「<ruby>真<rt>ま</rt></ruby>っ<ruby>白<rt>しろ</rt></ruby>だった」</span><span>变化主体「<ruby>花<rt>はな</rt></ruby>が」</span><span>时间推移「<ruby>夕方<rt>ゆうがた</rt></ruby>が<ruby>近<rt>ちか</rt></ruby>づくにつれて」</span><span>颜色变化「<ruby>次第<rt>しだい</rt></ruby>にピンクへと<ruby>変化<rt>へんか</rt></ruby>していく」</span></p>
                 `
             },
             {
@@ -1178,13 +1202,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["1", "4", "3", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、", "3": "、" },
+                translation: "下属制作的文件有错误时，我常觉得与其让下属重新写，还不如自己动手更快，结果总会忍不住亲自改掉。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立比较基准。</strong>题干「部下にもう一度」（让部下再次）后接使役动词及比较助词选项 1「書き直させるより」（与其让……重写），构成「部下にもう一度書き直させるより」（与其让部下重新写）。</p>
-                    <p><strong class="text-textMain">第二步：确立对比对象与心理。</strong>引出比较的另一方选项 4「自分でやってしまったほうが」（自己来做的话），后接续对其的判断及心理活动选项 3「早いと思って」（觉得更快），构成「自分でやってしまったほうが早いと思って」（觉得还是自己来做更快）。</p>
-                    <p><strong class="text-textMain">第三步：确立最终结果。</strong>基于上述想法，导致了最终的动作选项 2「つい自分で直してしまうことも」（往往就不知不觉自己修改了的情况也），与句尾的「多い」（很多）相连。综合排序为 1-4-3-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>部下制作的文件有错误时，与其让部下重写，觉得还是自己来弄更快，从而不知不觉就自己改了的情况有很多。
-                    </p>
+                    <p>「<ruby>部下<rt>ぶか</rt></ruby>にもう<ruby>一度<rt>いちど</rt></ruby><ruby>書<rt>か</rt></ruby>き<ruby>直<rt>なお</rt></ruby>させるより」以使役形式提出比较基准，即让下属重写。</p>
+                    <p>「<ruby>自分<rt>じぶん</rt></ruby>でやってしまったほうが<ruby>早<rt>はや</rt></ruby>い」说明比较后的判断：自己处理更快。</p>
+                    <p>「と<ruby>思<rt>おも</rt></ruby>って」说明原因，随后「つい<ruby>自分<rt>じぶん</rt></ruby>で<ruby>直<rt>なお</rt></ruby>してしまうことも<ruby>多<rt>おお</rt></ruby>い」表示由此产生的结果。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>比较基准「<ruby>書<rt>か</rt></ruby>き<ruby>直<rt>なお</rt></ruby>させるより」</span><span>另一选择「<ruby>自分<rt>じぶん</rt></ruby>でやってしまったほうが」</span><span>判断「<ruby>早<rt>はや</rt></ruby>いと<ruby>思<rt>おも</rt></ruby>って」</span><span>结果「つい<ruby>自分<rt>じぶん</rt></ruby>で<ruby>直<rt>なお</rt></ruby>してしまう」</span></p>
                 `
             },
             {
@@ -1202,13 +1227,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "4", "3", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、" },
+                translation: "那份补习班教师的工作，是朋友再三恳求后我才接下的。不过真正尝试之后，我发现它出乎意料地有趣，也觉得很适合自己。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立状语与被动关系。</strong>题干「友人に」（被朋友）后接续副词选项 2「どうしても」（无论如何），并接续被动动词选项 4「と頼まれて」（拜托），构成「友人にどうしてもと頼まれて」（被朋友无论如何地拜托）。</p>
-                    <p><strong class="text-textMain">第二步：确立承接动作与连体修饰。</strong>在被拜托之后，接续采取的动作选项 3「引き受けた」（接受了），并修饰名词短语选项 1「塾講師の仕事だった」（是补习班讲师的工作），构成「引き受けた塾講師の仕事だった」（接受的补习班讲师的工作）。</p>
-                    <p><strong class="text-textMain">第三步：确立逆接与句尾。</strong>将名词短语后的助动词及助词「だったが」（虽然是……但），顺接后文「やってみたら意外に面白くて」（试着做了一下意外地觉得很有趣）。综合排序为 2-4-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>虽然是被朋友苦苦拜托才接下的补习班讲师的工作，但试着做了一下意外地觉得很有趣，感觉很适合自己。
-                    </p>
+                    <p>「どうしてもと<ruby>頼<rt>たの</rt></ruby>まれて」表示朋友坚持请求自己务必答应。</p>
+                    <p>「<ruby>頼<rt>たの</rt></ruby>まれて、<ruby>引<rt>ひ</rt></ruby>き<ruby>受<rt>う</rt></ruby>けた」按照先受托、后接受的时间顺序连接。</p>
+                    <p>「<ruby>引<rt>ひ</rt></ruby>き<ruby>受<rt>う</rt></ruby>けた」修饰「<ruby>塾講師<rt>じゅくこうし</rt></ruby>の<ruby>仕事<rt>しごと</rt></ruby>」，再由「だったが」转入实际尝试后的感受。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>强烈请求「どうしてもと<ruby>頼<rt>たの</rt></ruby>まれて」</span><span>接受委托「<ruby>引<rt>ひ</rt></ruby>き<ruby>受<rt>う</rt></ruby>けた」</span><span>工作内容「<ruby>塾講師<rt>じゅくこうし</rt></ruby>の<ruby>仕事<rt>しごと</rt></ruby>」</span><span>转折「だったが」</span></p>
                 `
             },
             // ---------------- 2015年7月 (N2) ----------------
@@ -1226,14 +1252,15 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "したのは" }
                 ],
                 correctOrder: ["3", "1", "4", "2"],
-                starIndex: 3,
+                starIndex: 1,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、" },
+                translation: "我希望女儿能成为一个温柔善良的人。之所以给她取名为“优子”，正是因为把这份心愿寄托在了名字里。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立所属关系与动宾搭配。</strong>题干「娘の」（女儿的）后接名词选项 3「名前を」（名字），并接续表示结果状态的选项 1「「優子」に」（定为“优子”），构成「娘の名前を「優子」に」（把女儿的名字定为“优子”）。</p>
-                    <p><strong class="text-textMain">第二步：确立主语名词化。</strong>动作短语后接续形式名词结构选项 4「したのは」（之所以……），将前面的动作整体作为主语，构成「娘の名前を「優子」にしたのは」（之所以把女儿的名字定为“优子”）。</p>
-                    <p><strong class="text-textMain">第三步：确立因果呼应与句尾。</strong>引出这样做的原因，即接续宾语选项 2「そういった願いを」（这样的愿望），与句尾的「込めたからだ」（是因为倾注了……）相连，构成「そういった願いを込めたからだ」。综合排序为 3-1-4-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>希望她能成为一个温柔的孩子。之所以把女儿的名字定为“优子”，是因为在其中倾注了这样的愿望。
-                    </p>
+                    <p>「<ruby>娘<rt>むすめ</rt></ruby>の<ruby>名前<rt>なまえ</rt></ruby>を『<ruby>優子<rt>ゆうこ</rt></ruby>』にした」表示把女儿的名字取为“优子”。</p>
+                    <p>「～したのは」把取名这件事设为话题，并引出后面的原因。</p>
+                    <p>「そういった<ruby>願<rt>ねが</rt></ruby>いを<ruby>込<rt>こ</rt></ruby>めたからだ」与前一句希望女儿温柔的心愿呼应，说明命名理由。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>对象「<ruby>娘<rt>むすめ</rt></ruby>の<ruby>名前<rt>なまえ</rt></ruby>を」</span><span>命名结果「『<ruby>優子<rt>ゆうこ</rt></ruby>』にした」</span><span>原因提示「のは」</span><span>理由「そういった<ruby>願<rt>ねが</rt></ruby>いを<ruby>込<rt>こ</rt></ruby>めたからだ」</span></p>
                 `
             },
             {
@@ -1251,13 +1278,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "1", "2", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "手机在日本问世至今已有约二十年。如今可以说，它已经作为生活中不可或缺的工具扎根于社会了。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立修饰与被修饰关系。</strong>名词选项 4「生活」（生活）后接续格助词及连体修饰短语选项 1「に欠かせない」（中不可或缺的），构成「生活に欠かせない」（生活中不可或缺的）。</p>
-                    <p><strong class="text-textMain">第二步：确立核心名词。</strong>该连体修饰语必须修饰名词，接续选项 2「道具」（工具），构成「生活に欠かせない道具」（生活中不可或缺的工具）。</p>
-                    <p><strong class="text-textMain">第三步：确立身份资格与句尾。</strong>名词短语后接续表示资格或作为的选项 3「として」（作为……），构成「～道具として」（作为……工具），最后顺接句尾的「定着したといえるのではないか」（可以说已经扎根了吧）。综合排序为 4-1-2-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>手机在日本发售大约20年了。如今可以说手机作为生活中不可或缺的工具，已经完全扎根了吧。
-                    </p>
+                    <p>「<ruby>生活<rt>せいかつ</rt></ruby>に<ruby>欠<rt>か</rt></ruby>かせない」表示对于日常生活不可缺少。</p>
+                    <p>这一连体修饰语限定「<ruby>道具<rt>どうぐ</rt></ruby>」，组成「<ruby>生活<rt>せいかつ</rt></ruby>に<ruby>欠<rt>か</rt></ruby>かせない<ruby>道具<rt>どうぐ</rt></ruby>」。</p>
+                    <p>「～として<ruby>定着<rt>ていちゃく</rt></ruby>した」表示手机以这种工具的身份被社会普遍接受并固定下来。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>领域「<ruby>生活<rt>せいかつ</rt></ruby>」</span><span>必要性「に<ruby>欠<rt>か</rt></ruby>かせない」</span><span>定位「<ruby>道具<rt>どうぐ</rt></ruby>として」</span><span>社会状态「<ruby>定着<rt>ていちゃく</rt></ruby>した」</span></p>
                 `
             },
             {
@@ -1275,13 +1302,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "4", "3", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "我工作时总会一边思考怎样才能按计划推进，一边进行手头的任务。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立基准与动作。</strong>题干「スケジュール」（日程表）后接后缀选项 2「どおりに」（按照……），再接续具体的动作选项 4「仕事を進める」（推进工作），构成「スケジュールどおりに仕事を進める」（按照日程表推进工作）。</p>
-                    <p><strong class="text-textMain">第二步：确立目的与疑问。</strong>动词原形后接续表示目的的选项 3「には」（为了……），引出疑问小句选项 1「どうすればいいか」（怎么做才好），构成「仕事を進めるにはどうすればいいか」（为了推进工作该怎么做才好）。</p>
-                    <p><strong class="text-textMain">第三步：确立思考内容与句尾。</strong>将上述疑问小句作为思考的宾语，直接与句尾的「常に考えながら作業をしている」（总是边思考边进行作业）相连。综合排序为 2-4-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>我总是边思考为了能按日程表推进工作该怎么做才好，边进行着作业。
-                    </p>
+                    <p>「スケジュールどおりに」表示以既定日程为基准。</p>
+                    <p>「<ruby>仕事<rt>しごと</rt></ruby>を<ruby>進<rt>すす</rt></ruby>めるには」用「には」提出实现目标所需的方法。</p>
+                    <p>「どうすればいいか」构成间接疑问，作为「<ruby>常<rt>つね</rt></ruby>に<ruby>考<rt>かんが</rt></ruby>えながら」的思考内容。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>基准「スケジュールどおりに」</span><span>目标「<ruby>仕事<rt>しごと</rt></ruby>を<ruby>進<rt>すす</rt></ruby>める」</span><span>方法条件「には」</span><span>思考内容「どうすればいいか」</span></p>
                 `
             },
             {
@@ -1299,13 +1327,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "1", "4", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、", "3": "、" },
+                translation: "做力量训练时，是否有意识地关注自己正在锻炼哪个部位，训练效果会截然不同。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立时间状语。</strong>题干宾语「筋肉トレーニングを」（肌肉训练）后接续谓语及时间名词选项 2「しているとき」（在做……的时候），构成「筋肉トレーニングをしているとき」（在做肌肉训练的时候）。</p>
-                    <p><strong class="text-textMain">第二步：确立意识对象。</strong>选项 1「今自分がどこを鍛えているのか」（现在自己正在锻炼哪里）作为疑问小句，充当后续动词选项 4「意識するのと」（意识到……和）的宾语，构成「今自分がどこを鍛えているのか意識するのと」（意识到现在自己正在锻炼哪里和……）。</p>
-                    <p><strong class="text-textMain">第三步：确立对比句型与句尾。</strong>前述短语与选项 3「しないのでは」（不意识到……的话，二者之间）构成「～のと～のでは」（做……与不做……之间）的对比句型，顺接句尾的「効果は全く違います」（效果是完全不同的）。综合排序为 2-1-4-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>在做肌肉训练的时候，意识到现在自己正在锻炼哪里和不意识到这一点，其效果是完全不同的。
-                    </p>
+                    <p>「<ruby>筋肉<rt>きんにく</rt></ruby>トレーニングをしているとき」先限定讨论的时间场景。</p>
+                    <p>「<ruby>今自分<rt>いまじぶん</rt></ruby>がどこを<ruby>鍛<rt>きた</rt></ruby>えているのか」是间接疑问，充当「<ruby>意識<rt>いしき</rt></ruby>する」的内容。</p>
+                    <p>「<ruby>意識<rt>いしき</rt></ruby>するのとしないのでは」用「～のと～のでは」对比有意识与无意识两种情况，并引出效果差异。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>训练场景「<ruby>筋肉<rt>きんにく</rt></ruby>トレーニングをしているとき」</span><span>关注内容「どこを<ruby>鍛<rt>きた</rt></ruby>えているのか」</span><span>两种情况「<ruby>意識<rt>いしき</rt></ruby>するのとしないのでは」</span><span>结果对比「<ruby>効果<rt>こうか</rt></ruby>は<ruby>全<rt>まった</rt></ruby>く<ruby>違<rt>ちが</rt></ruby>う」</span></p>
                 `
             },
             {
@@ -1323,13 +1352,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "3", "1", "4"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "“牛奶屋”在A市家喻户晓，是一家几乎没有当地居民不知道的著名点心店。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立范围条件。</strong>题干「A市に」（在A市）后接续居住状态及假设选项 2「住んでいる人なら」（如果是居住在……的人的话），构成「A市に住んでいる人なら」（如果是住在A市的人的话）。</p>
-                    <p><strong class="text-textMain">第二步：确立极度比喻。</strong>在上述条件下，接续表示程度的选项 3「知らない人はいないくらい」（到了没有一个人不知道的程度），构成「住んでいる人なら知らない人はいないくらい」（到了只要是住在那里的人就没有人不知道的程度）。</p>
-                    <p><strong class="text-textMain">第三步：确立修饰关系与句尾。</strong>将上述程度短语作为修饰语，修饰形容动词选项 1「有名な」（有名的），进而修饰名词选项 4「お菓子屋さん」（点心店），最后与句尾的「です」（是）相连。综合排序为 2-3-1-4。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>“Milk屋”是一家只要是住在A市的人就没有人不知道的、极其有名的点心店。
-                    </p>
+                    <p>「A<ruby>市<rt>し</rt></ruby>に<ruby>住<rt>す</rt></ruby>んでいる<ruby>人<rt>ひと</rt></ruby>なら」限定评价范围为A市居民。</p>
+                    <p>「<ruby>知<rt>し</rt></ruby>らない<ruby>人<rt>ひと</rt></ruby>はいないくらい」直译为“到了没有人不知道的程度”，强调知名度很高。</p>
+                    <p>程度表达修饰「<ruby>有名<rt>ゆうめい</rt></ruby>な」，再共同修饰核心名词「お<ruby>菓子屋<rt>かしや</rt></ruby>さん」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>居民范围「A<ruby>市<rt>し</rt></ruby>に<ruby>住<rt>す</rt></ruby>んでいる<ruby>人<rt>ひと</rt></ruby>なら」</span><span>极高程度「<ruby>知<rt>し</rt></ruby>らない<ruby>人<rt>ひと</rt></ruby>はいないくらい」</span><span>评价「<ruby>有名<rt>ゆうめい</rt></ruby>な」</span><span>店铺类别「お<ruby>菓子屋<rt>かしや</rt></ruby>さん」</span></p>
                 `
             },
             // ---------------- 2015年12月 (N2) ----------------
@@ -1348,13 +1378,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "1", "4", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "书上说，即使房间很小，只要做到不在桌面上堆放东西，就会让空间显得宽敞。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立习惯性动作。</strong>题干「物を置かない」（不放东西）后接续表示主观努力做到某事的句型选项 3「ようにする」（尽量做到…… / 养成……的习惯），构成「物を置かないようにする」（养成不放东西的习惯）。</p>
-                    <p><strong class="text-textMain">第二步：确立限定条件。</strong>该动词短语后接续表示限定条件的选项 1「だけで」（仅仅通过…… / 只要……），构成「物を置かないようにするだけで」（只要养成不在上面放东西的习惯）。</p>
-                    <p><strong class="text-textMain">第三步：确立结果变化与引用。</strong>条件后接续产生的结果选项 4「広く感じられる」（能让人感觉宽敞），并接续表示状态变化及引用的选项 2「ようになると」（变得……，这般……），与句尾的「本に書いてあった」（书上写着）相连，构成「広く感じられるようになると本に書いてあった」。综合排序为 3-1-4-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>书上写着，即使是狭窄的房间，只要养成不在桌子上放东西的习惯，就能让人感觉宽敞起来。
-                    </p>
+                    <p>「<ruby>物<rt>もの</rt></ruby>を<ruby>置<rt>お</rt></ruby>かないようにする」表示有意识地做到不在桌上放东西。</p>
+                    <p>「～だけで」表示仅凭这一项做法就能产生后面的效果。</p>
+                    <p>「<ruby>広<rt>ひろ</rt></ruby>く<ruby>感<rt>かん</rt></ruby>じられるようになる」说明房间给人的感觉发生变化，末尾的「と」标记书中所写的内容。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>主动控制「<ruby>物<rt>もの</rt></ruby>を<ruby>置<rt>お</rt></ruby>かないようにする」</span><span>最低条件「だけで」</span><span>感受结果「<ruby>広<rt>ひろ</rt></ruby>く<ruby>感<rt>かん</rt></ruby>じられる」</span><span>变化与引用「ようになると」</span></p>
                 `
             },
             {
@@ -1372,13 +1403,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["1", "4", "3", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、", "3": "、" },
+                translation: "我在餐厅打工到今天明明已经整整一年了，却不但弄错了客人的点单，甚至还犯了打碎盘子这样的错误。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立时间状语与逆接。</strong>题干「アルバイトを始めてから」（开始打工之后）后接具体的时间经过与表示转折的选项 1「今日で1年たつのに」（到今天明明已经满一年了，却……），构成「始めてから今日で1年たつのに」。</p>
-                    <p><strong class="text-textMain">第二步：确立递进句型。</strong>在转折之后，引出第一个负面动作选项 4「客の注文を間違えた」（弄错了客人的订单），并接续表示递进的 N2 句型选项 3「うえに」（不仅……而且 / 甚至），构成「客の注文を間違えたうえに」（不仅弄错了客人的订单，甚至还……）。</p>
-                    <p><strong class="text-textMain">第三步：确立具体事例与句尾呼应。</strong>递进后引出更严重的具体事例选项 2「皿を割るという」（打碎盘子这样的），修饰句尾的「ミスまでしてしまった」（甚至犯了……的错误）。综合排序为 1-4-3-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>在餐厅开始打工到今天明明已经满一年了，我不仅弄错了客人的订单，甚至还犯了打碎盘子这样的错误。
-                    </p>
+                    <p>「<ruby>今日<rt>きょう</rt></ruby>で1<ruby>年<rt>ねん</rt></ruby>たつのに」表示虽然打工经验已经满一年，实际表现却不符合预期。</p>
+                    <p>「<ruby>客<rt>きゃく</rt></ruby>の<ruby>注文<rt>ちゅうもん</rt></ruby>を<ruby>間違<rt>まちが</rt></ruby>えたうえに」用「～うえに」追加另一项更严重的失误。</p>
+                    <p>「<ruby>皿<rt>さら</rt></ruby>を<ruby>割<rt>わ</rt></ruby>るというミス」用「という」说明失误的具体内容，「まで」进一步强化出乎意料的程度。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>经验与逆接「<ruby>今日<rt>きょう</rt></ruby>で1<ruby>年<rt>ねん</rt></ruby>たつのに」</span><span>第一项失误「<ruby>注文<rt>ちゅうもん</rt></ruby>を<ruby>間違<rt>まちが</rt></ruby>えた」</span><span>递进「うえに」</span><span>更严重的失误「<ruby>皿<rt>さら</rt></ruby>を<ruby>割<rt>わ</rt></ruby>るというミスまで」</span></p>
                 `
             },
             {
@@ -1396,13 +1428,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "2", "1", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、", "3": "、" },
+                translation: "也许是因为我冒着大雨没打伞就回了家，原本快要痊愈的感冒又加重了，从今天早晨起鼻涕一直流个不停。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立原因与动作搭配。</strong>题干「傘を差さずに」（没打伞）后接续具体的动作及表原因的选项 4「帰ったせいか」（可能是因为回去了吧），构成「傘を差さずに帰ったせいか」（可能是因为没打伞就在大雨中回去了吧）。</p>
-                    <p><strong class="text-textMain">第二步：确立连体修饰与主语。</strong>动词连用形接「かける」表示动作进行到一半或快要发生，选项 2「治りかけていた」（快要痊愈的）修饰名词主语选项 1「風邪が」（感冒），构成「治りかけていた風邪が」（原本快要治好的感冒）。</p>
-                    <p><strong class="text-textMain">第三步：确立状态变化与句尾。</strong>主语后接续状态的恶化选项 3「またひどくなって」（又变严重了，从而……），与句尾的「鼻水が止まらない」（流鼻涕不止）相连。综合排序为 4-2-1-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>可能是因为在大雨中没打伞就回去了吧，原本快要治好的感冒又变严重了，从今早开始就一直流鼻涕不止。
-                    </p>
+                    <p>「<ruby>傘<rt>かさ</rt></ruby>を<ruby>差<rt>さ</rt></ruby>さずに<ruby>帰<rt>かえ</rt></ruby>ったせいか」用「せいか」推测身体不适的原因。</p>
+                    <p>「<ruby>治<rt>なお</rt></ruby>りかけていた」表示感冒原本正处在即将痊愈的阶段，并修饰主语「<ruby>風邪<rt>かぜ</rt></ruby>が」。</p>
+                    <p>「またひどくなって」说明感冒再度恶化，并作为原因连接到鼻涕一直不停这一结果。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>推测原因「<ruby>傘<rt>かさ</rt></ruby>を<ruby>差<rt>さ</rt></ruby>さずに<ruby>帰<rt>かえ</rt></ruby>ったせいか」</span><span>恢复途中「<ruby>治<rt>なお</rt></ruby>りかけていた」</span><span>主体「<ruby>風邪<rt>かぜ</rt></ruby>が」</span><span>再度恶化「またひどくなって」</span></p>
                 `
             },
             {
@@ -1420,13 +1453,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "4", "3", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "3": "、" },
+                translation: "说到富含蛋白质的食物，大家可能会想到肉类、鱼类和鸡蛋等，其实大豆中也含有大量蛋白质。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立主谓修饰关系。</strong>选项 2「たんぱく質が」（蛋白质）作为主语，后接续谓语选项 4「多く含まれる」（大量包含），构成连体修饰小句「たんぱく質が多く含まれる」（富含蛋白质的）。</p>
-                    <p><strong class="text-textMain">第二步：确立话题提示。</strong>该修饰小句接续名词及提示话题的句型选项 3「食べ物というと」（提起……食物的话），构成「たんぱく質が多く含まれる食べ物というと」（提起富含蛋白质的食物的话）。</p>
-                    <p><strong class="text-textMain">第三步：确立举例与句尾。</strong>引出具体的代表性例子，即选项 1「肉や魚や卵といった」（肉、鱼、鸡蛋之类的），直接修饰句尾的形式名词「ものが思い浮かぶ」（会浮现出……的东西）。综合排序为 2-4-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>提起富含蛋白质的食物，我想大家都会浮现出肉、鱼、鸡蛋之类的东西，但其实大豆中也含有非常多。
-                    </p>
+                    <p>「たんぱく<ruby>質<rt>しつ</rt></ruby>が<ruby>多<rt>おお</rt></ruby>く<ruby>含<rt>ふく</rt></ruby>まれる」组成主谓关系，并作为定语修饰「<ruby>食<rt>た</rt></ruby>べ<ruby>物<rt>もの</rt></ruby>」。</p>
+                    <p>「<ruby>食<rt>た</rt></ruby>べ<ruby>物<rt>もの</rt></ruby>というと」表示“说到这类食物”，引出通常会想到的例子。</p>
+                    <p>「<ruby>肉<rt>にく</rt></ruby>や<ruby>魚<rt>さかな</rt></ruby>や<ruby>卵<rt>たまご</rt></ruby>といった」列举代表性事物，并修饰句末的「もの」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>成分「たんぱく<ruby>質<rt>しつ</rt></ruby>が」</span><span>含量「<ruby>多<rt>おお</rt></ruby>く<ruby>含<rt>ふく</rt></ruby>まれる」</span><span>话题提示「<ruby>食<rt>た</rt></ruby>べ<ruby>物<rt>もの</rt></ruby>というと」</span><span>举例「<ruby>肉<rt>にく</rt></ruby>や<ruby>魚<rt>さかな</rt></ruby>や<ruby>卵<rt>たまご</rt></ruby>といった」</span></p>
                 `
             },
             {
@@ -1444,13 +1478,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "1", "2", "4"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、", "4": "、" },
+                translation: "活动筹备原本预计至少需要两天，但在许多志愿者的协助下，一天就完成了，因此日程也宽裕了起来。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立程度副词与预估时间。</strong>题干「準備には」（准备工作）后接续表示最低限度的副词选项 3「最低でも」（至少也），并接续预估的时间与逆接选项 1「二日はかかるだろうと思われたが」（原以为要花两天时间，但是），构成「最低でも二日はかかるだろうと思われたが」。</p>
-                    <p><strong class="text-textMain">第二步：确立转折原因。</strong>转折后引出实际情况发生改变的原因，即选项 2「多くのボランティアの方の協力で」（在众多志愿者的协助下）。</p>
-                    <p><strong class="text-textMain">第三步：确立实际结果与顺接。</strong>在众多志愿者的协助下导致了动作结果选项 4「一日で終わったので」（一天就结束了，因此），顺接句尾的好结果「スケジュールに余裕ができた」（日程上有了空余）。综合排序为 3-1-2-4。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>活动准备工作原以为至少也要花两天时间，但在众多志愿者的协助下一天就结束了，因此日程上有了空余。
-                    </p>
+                    <p>「<ruby>最低<rt>さいてい</rt></ruby>でも<ruby>二日<rt>ふつか</rt></ruby>はかかるだろう」表示事前估计最少也需要两天。</p>
+                    <p>「と<ruby>思<rt>おも</rt></ruby>われたが」以逆接引出实际情况，「<ruby>多<rt>おお</rt></ruby>くのボランティアの<ruby>方<rt>かた</rt></ruby>の<ruby>協力<rt>きょうりょく</rt></ruby>で」说明进度加快的原因。</p>
+                    <p>「<ruby>一日<rt>いちにち</rt></ruby>で<ruby>終<rt>お</rt></ruby>わったので」说明实际结果及原因，并连接到日程变得宽裕的最终结果。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>最低预估「<ruby>最低<rt>さいてい</rt></ruby>でも<ruby>二日<rt>ふつか</rt></ruby>はかかる」</span><span>预想与转折「だろうと<ruby>思<rt>おも</rt></ruby>われたが」</span><span>协助条件「ボランティアの<ruby>方<rt>かた</rt></ruby>の<ruby>協力<rt>きょうりょく</rt></ruby>で」</span><span>提前完成「<ruby>一日<rt>いちにち</rt></ruby>で<ruby>終<rt>お</rt></ruby>わったので」</span></p>
                 `
             },
             // ---------------- 2016年7月 (N2) ----------------
@@ -1468,14 +1503,14 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "と<ruby>感<rt>かん</rt></ruby>じさせられる" }
                 ],
                 correctOrder: ["3", "1", "4", "2"],
-                starIndex: 2,
+                starIndex: 1,
+                analysisStyle: "structured",
+                translation: "刚开始独自生活时，做饭、洗衣都得自己来，实在很辛苦。那段日子让我每天都切身体会到，自己过去一直生活在多么优越的环境中。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立程度修饰与连体修饰。</strong>题干「これまでずっと」（一直以来）后接续修饰短语选项 3「どんなに恵まれた」（多么优越的），并直接修饰名词短语选项 1「環境にいたか」（待在……的环境中吧），构成「どんなに恵まれた環境にいたか」（待在多么优越的环境中啊）。</p>
-                    <p><strong class="text-textMain">第二步：确立引用与使役被动。</strong>将前述的感叹内容作为情感产生的来源，接续表示引用的选项 4「と感じさせられる」（让人深深感受到），构成「～環境にいたかと感じさせられる」（让人深感曾经待在多么优越的环境中）。</p>
-                    <p><strong class="text-textMain">第三步：确立名词修饰与句尾。</strong>将该情感状态作为连体修饰语，修饰表示日常频度的名词选项 2「毎日だった」（是这样的每一天），构成句子的主干。综合排序为 3-1-4-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>刚开始一个人生活的时候，做饭洗衣服全都要自己来，非常辛苦，这让我每天都深感自己以前一直以来是待在多么优越的环境中啊。
-                    </p>
+                    <p>「どんなに<ruby>恵<rt>めぐ</rt></ruby>まれた<ruby>環境<rt>かんきょう</rt></ruby>にいたか」由「どんなに～か」构成感叹性的间接疑问，表示过去的环境非常优越。</p>
+                    <p>这一小句由引用助词「と」连接到使役被动表达「<ruby>感<rt>かん</rt></ruby>じさせられる」，表示生活经历让说话人不得不深有感触。</p>
+                    <p>「<ruby>感<rt>かん</rt></ruby>じさせられる」作为定语修饰「<ruby>毎日<rt>まいにち</rt></ruby>」，说明这种体会日复一日出现。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>程度「どんなに<ruby>恵<rt>めぐ</rt></ruby>まれた」</span><span>过去处境「<ruby>環境<rt>かんきょう</rt></ruby>にいたか」</span><span>被触发的感受「と<ruby>感<rt>かん</rt></ruby>じさせられる」</span><span>持续状态「<ruby>毎日<rt>まいにち</rt></ruby>だった」</span></p>
                 `
             },
             {
@@ -1484,7 +1519,7 @@ window.sortQuestionBanks.N2 = [
                 year: "2016年7月",
                 label: "問題8 - 2",
                 prefix: "②、このお<ruby>菓<rt>か</rt></ruby><ruby>子<rt>し</rt></ruby>はとても<ruby>簡<rt>かん</rt></ruby><ruby>単<rt>たん</rt></ruby>に<ruby>作<rt>つく</rt></ruby>れるから<ruby>初<rt>しょ</rt></ruby><ruby>心<rt>しん</rt></ruby><ruby>者<rt>しゃ</rt></ruby>でも<ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>する",
-                suffix: "<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>を聞<rt>き</rt></ruby>いて、<ruby>作<rt>つく</rt></ruby>ってみようと<ruby>思<rt>おも</rt></ruby>った。",
+                suffix: "<ruby>友<rt>ゆう</rt></ruby><ruby>人<rt>じん</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>を<ruby>聞<rt>き</rt></ruby>いて、<ruby>作<rt>つく</rt></ruby>ってみようと<ruby>思<rt>おも</rt></ruby>った。",
                 options: [
                     { id: "1", text: "ことは" },
                     { id: "2", text: "という" },
@@ -1492,14 +1527,14 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "まず" }
                 ],
                 correctOrder: ["1", "4", "3", "2"],
-                starIndex: 2,
+                starIndex: 1,
+                analysisStyle: "structured",
+                translation: "朋友告诉我，这种点心制作起来非常简单，就连新手也几乎不会失败。听完以后，我也想试着做做看。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立名词化与副词搭配。</strong>题干「失敗する」（失败）作为动词连体形，后接形式名词选项 1「ことは」（……这种事），随后接续常与否定呼应的副词选项 4「まず」（基本上 / 几乎），构成「失敗することはまず」（基本上不可能发生失败这种事）。</p>
-                    <p><strong class="text-textMain">第二步：确立否定与内容引用。</strong>副词「まず」后接续否定谓语选项 3「ない」（没有 / 不会），并接续表示内容引用的选项 2「という」（这样的……），构成「まずないという」（几乎不会这样的……）。</p>
-                    <p><strong class="text-textMain">第三步：确立修饰对象与句尾。</strong>将上述引用的内容整体作为定语，修饰句尾的「友人の話を聞いて」（听了朋友的这番话），顺接后文「作ってみようと思った」（想着试着做一下吧）。综合排序为 1-4-3-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>听了朋友说“这个点心做起来非常简单，所以即使是初学者也几乎不会失败”这样的话，我便想着试着做一下。
-                    </p>
+                    <p>「<ruby>失敗<rt>しっぱい</rt></ruby>することは」用形式名词「こと」把失败这一动作名词化。</p>
+                    <p>「まずない」是常见搭配，表示某种情况几乎不可能发生。</p>
+                    <p>「～という<ruby>友人<rt>ゆうじん</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>」用「という」把前面的整句话作为朋友所说的内容。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>名词化「<ruby>失敗<rt>しっぱい</rt></ruby>することは」</span><span>低概率「まず」</span><span>否定「ない」</span><span>引用内容「という<ruby>友人<rt>ゆうじん</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>」</span></p>
                 `
             },
             {
@@ -1517,13 +1552,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "1", "2", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "附近超市旁边有一家干洗店。超市和干洗店在我下班回家的时间都还营业，所以购物时可以顺便去取送洗的衣服，十分方便。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立时间状语与状态。</strong>题干「私が」（我）后接续时间状语选项 4「仕事から帰る時間でも」（即使是在下班回家的时间），并接续状态动词选项 1「開いていて」（也开着门），构成「私が仕事から帰る時間でも開いていて」（即使在我下班回家的时间也开着门，而且）。</p>
-                    <p><strong class="text-textMain">第二步：确立顺带动作。</strong>在店铺开门的状态下，接续表示“顺便……”的句型选项 2「買い物するついでに」（在买东西的顺便），构成「～開いていて、買い物するついでに」。</p>
-                    <p><strong class="text-textMain">第三步：确立名词化主语与评价。</strong>接续后续的动作及名词化形式选项 3「預けた服を取りに行けるのが」（能去取寄存的衣服这件事），作为主语与句尾的评价「助かる」（帮了大忙 / 得救了）相连。综合排序为 4-1-2-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>附近的超市旁边有一家干洗店。超市和干洗店即使在我下班回家的时间也都开着门，能够在买东西时顺便去取寄存的衣服，这真是帮了大忙。
-                    </p>
+                    <p>「<ruby>仕事<rt>しごと</rt></ruby>から<ruby>帰<rt>かえ</rt></ruby>る<ruby>時間<rt>じかん</rt></ruby>でも<ruby>開<rt>あ</rt></ruby>いていて」说明两家店即使到下班时间仍在营业。</p>
+                    <p>「<ruby>買<rt>か</rt></ruby>い<ruby>物<rt>もの</rt></ruby>するついでに」表示利用购物这一主要行动顺便完成另一件事。</p>
+                    <p>「<ruby>預<rt>あず</rt></ruby>けた<ruby>服<rt>ふく</rt></ruby>を<ruby>取<rt>と</rt></ruby>りに<ruby>行<rt>い</rt></ruby>けるの」把能够取衣服这件事名词化，并由「が<ruby>助<rt>たす</rt></ruby>かる」作出评价。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>营业时间「<ruby>仕事<rt>しごと</rt></ruby>から<ruby>帰<rt>かえ</rt></ruby>る<ruby>時間<rt>じかん</rt></ruby>でも」</span><span>营业状态「<ruby>開<rt>あ</rt></ruby>いていて」</span><span>顺便行动「<ruby>買<rt>か</rt></ruby>い<ruby>物<rt>もの</rt></ruby>するついでに」</span><span>便利之处「<ruby>服<rt>ふく</rt></ruby>を<ruby>取<rt>と</rt></ruby>りに<ruby>行<rt>い</rt></ruby>けるのが<ruby>助<rt>たす</rt></ruby>かる」</span></p>
                 `
             },
             {
@@ -1541,13 +1577,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "3", "1", "4"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、", "4": "、" },
+                translation: "药物如果没有正确服用，不仅无法获得原本应有的疗效，甚至还可能使病情恶化。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立条件搭配。</strong>题干「正しく」（正确地）修饰动词，接续表示假定条件的选项 2「飲まないと」（如果不服用的话），构成「正しく飲まないと」（如果不正确服用的话）。</p>
-                    <p><strong class="text-textMain">第二步：确立连体修饰关系。</strong>动词连体形及预期表达选项 3「得られるはずの」（本应该获得的）修饰名词选项 1「効果が」（效果），构成「得られるはずの効果が」（本应该获得的效果）。</p>
-                    <p><strong class="text-textMain">第三步：确立递进句型与结果。</strong>名词后接续否定及递进句型选项 4「得られないだけでなく」（不仅得不到，而且），顺接句尾的负面结果「状態を悪化させてしまう危険もある」（还有导致状态恶化的危险）。综合排序为 2-3-1-4。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>药如果不正确服用的话，不仅得不到本应该获得的效果，甚至还有导致病情恶化的危险。
-                    </p>
+                    <p>「<ruby>正<rt>ただ</rt></ruby>しく<ruby>飲<rt>の</rt></ruby>まないと」以否定条件说明服药方式不正确时会出现的后果。</p>
+                    <p>「<ruby>得<rt>え</rt></ruby>られるはずの」表示按理应当获得，并修饰「<ruby>効果<rt>こうか</rt></ruby>」。</p>
+                    <p>「<ruby>効果<rt>こうか</rt></ruby>が<ruby>得<rt>え</rt></ruby>られないだけでなく」用「～だけでなく」递进到病情恶化这一更严重的风险。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>错误条件「<ruby>正<rt>ただ</rt></ruby>しく<ruby>飲<rt>の</rt></ruby>まないと」</span><span>预期结果「<ruby>得<rt>え</rt></ruby>られるはずの」</span><span>对象「<ruby>効果<rt>こうか</rt></ruby>が」</span><span>递进否定「<ruby>得<rt>え</rt></ruby>られないだけでなく」</span></p>
                 `
             },
             {
@@ -1555,7 +1592,7 @@ window.sortQuestionBanks.N2 = [
                 level: "N2",
                 year: "2016年7月",
                 label: "問題8 - 5",
-                prefix: "⑤、いつ<ruby>行<rt>い</rt></ruby>っても<ruby>長<rt>なが</rt></ruby>い<ruby>行<rt>ぎょう</rt></ruby><ruby>列<rt>れつ</rt></ruby>ができているラーメン<ruby>屋<rt>や</rt></ruby>なのに",
+                prefix: "⑤、いつ<ruby>行<rt>い</rt></ruby>っても<ruby>長<rt>なが</rt></ruby>い<ruby>行<rt>ぎょう</rt></ruby><ruby>列<rt>れつ</rt></ruby>ができているラーメン<ruby>屋<rt>や</rt></ruby>なのに、",
                 suffix: "だ。",
                 options: [
                     { id: "1", text: "<ruby>行<rt>い</rt></ruby>ったから" },
@@ -1565,13 +1602,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "2", "3", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、" },
+                translation: "明明是一家无论何时去都排着长队的拉面店，这次却没等多久，因为我事先确认了大约几点客人较少之后才去。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立因果句型主语。</strong>题干以逆接「なのに」（明明……却）结尾，引出与预想不同的事实，即形式名词作主语的选项 4「今回あまり並ばないで済んだのは」（这次没怎么排队就解决了的原因是），构成「～ラーメン屋なのに今回あまり並ばないで済んだのは」。</p>
-                    <p><strong class="text-textMain">第二步：确立疑问小句与宾语。</strong>为了解释原因，引出具体的做法，即将疑问小句选项 2「何時ごろがすいているか」（大概几点左右人比较少）作为宾语。</p>
-                    <p><strong class="text-textMain">第三步：确立动作先后与因果呼应。</strong>宾语后接续确认动作选项 3「事前に確認してから」（事前确认了之后），再接续最终动作及原因表达选项 1「行ったから」（才去的），与句尾的「だ」（是）相连，构成「～のは、～行ったからだ」（之所以……，是因为……）。综合排序为 4-2-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>明明是一家无论什么时候去都排着长队的拉面店，这次之所以没怎么排队就吃上了，是因为我事前确认了大概几点比较空闲之后才去的。
-                    </p>
+                    <p>「<ruby>今回<rt>こんかい</rt></ruby>あまり<ruby>並<rt>なら</rt></ruby>ばないで<ruby>済<rt>す</rt></ruby>んだのは」把这次不必久等的结果名词化，并用「のは」引出原因。</p>
+                    <p>「<ruby>何時<rt>なんじ</rt></ruby>ごろがすいているか」是间接疑问，作为「<ruby>確認<rt>かくにん</rt></ruby>する」的内容。</p>
+                    <p>「<ruby>事前<rt>じぜん</rt></ruby>に<ruby>確認<rt>かくにん</rt></ruby>してから<ruby>行<rt>い</rt></ruby>ったからだ」按先确认、后前往的顺序说明原因。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>意外结果「<ruby>並<rt>なら</rt></ruby>ばないで<ruby>済<rt>す</rt></ruby>んだのは」</span><span>确认内容「<ruby>何時<rt>なんじ</rt></ruby>ごろがすいているか」</span><span>事前行动「<ruby>事前<rt>じぜん</rt></ruby>に<ruby>確認<rt>かくにん</rt></ruby>してから」</span><span>原因「<ruby>行<rt>い</rt></ruby>ったからだ」</span></p>
                 `
             },
             // ---------------- 2016年12月 (N2) ----------------
@@ -1590,13 +1628,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["1", "4", "3", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "要说经营婚姻生活最重要的是什么，我认为是要有体谅伴侣的心。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立固定搭配与场景。</strong>题干「結婚生活を送る」（过婚姻生活）后接续表示在某方面或某个过程中的 N2 句型选项 1「うえで」（在……方面 / 在……过程中），构成「結婚生活を送るうえで」（在过婚姻生活的过程中）。</p>
-                    <p><strong class="text-textMain">第二步：确立疑问短语。</strong>疑问词选项 4「何が」（什么是）与形容动词选项 3「大切か」（重要的），构成疑问小句「何が大切か」（什么是重要的）。</p>
-                    <p><strong class="text-textMain">第三步：确立话题提示与句尾。</strong>将疑问小句接续表示提示话题的固定表达选项 2「といえば」（要说……），构成「何が大切かといえば」（要说什么是重要的话），最后顺接句尾的「相手への思いやりの気持ちを持つことだと思う」（我认为是抱有体谅对方的心情）。综合排序为 1-4-3-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>在过婚姻生活的过程中，要说什么是重要的话，我认为是抱有体谅对方的心情。
-                    </p>
+                    <p>「<ruby>結婚生活<rt>けっこんせいかつ</rt></ruby>を<ruby>送<rt>おく</rt></ruby>るうえで」表示在维持婚姻生活这一过程中。</p>
+                    <p>「<ruby>何<rt>なに</rt></ruby>が<ruby>大切<rt>たいせつ</rt></ruby>か」组成间接疑问，提出最重要的事项。</p>
+                    <p>「～かといえば」用于承接问题并给出说话人的答案，后文即“体谅伴侣”。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>场景「<ruby>結婚生活<rt>けっこんせいかつ</rt></ruby>を<ruby>送<rt>おく</rt></ruby>る」</span><span>方面「うえで」</span><span>问题「<ruby>何<rt>なに</rt></ruby>が<ruby>大切<rt>たいせつ</rt></ruby>か」</span><span>答案提示「といえば」</span></p>
                 `
             },
             {
@@ -1614,13 +1652,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "1", "4", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "我刚参加工作时买的那个包，从买来以后一直用到现在，终于坏掉了，于是决定换一个新的。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立时间起点。</strong>题干「就職したときに」（就职的时候）作为时间点，后接续动作及表示起点的选项 2「買って以来」（自从买了之后），构成「就職したときに買って以来」（自从就职时买了之后）。</p>
-                    <p><strong class="text-textMain">第二步：确立连贯状态。</strong>动作发生后，接续表示状态一直持续的副词选项 1「ずっと」（一直），并修饰过去的持续动作选项 4「使っていた」（在使用着），构成「ずっと使っていた」（一直使用着的）。</p>
-                    <p><strong class="text-textMain">第三步：确立连体修饰与主语。</strong>将上述两步结合作为连体修饰语，修饰主语名词选项 3「かばんが」（包），并与句尾的「とうとう壊れたので」（终于坏了，所以）相连。综合排序为 2-1-4-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>自从就职时买了之后就一直在用的包终于坏了，所以我决定买个新的替换。
-                    </p>
+                    <p>「<ruby>就職<rt>しゅうしょく</rt></ruby>したときに<ruby>買<rt>か</rt></ruby>って<ruby>以来<rt>いらい</rt></ruby>」以买包这件事为持续状态的起点。</p>
+                    <p>「ずっと<ruby>使<rt>つか</rt></ruby>っていた」说明从购买后到现在一直在使用。</p>
+                    <p>前面的长定语整体修饰「かばん」，再由「がとうとう<ruby>壊<rt>こわ</rt></ruby>れた」说明最终结果。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>购买时点「<ruby>就職<rt>しゅうしょく</rt></ruby>したときに<ruby>買<rt>か</rt></ruby>って」</span><span>持续起点「<ruby>以来<rt>いらい</rt></ruby>」</span><span>长期使用「ずっと<ruby>使<rt>つか</rt></ruby>っていた」</span><span>主体与结果「かばんがとうとう<ruby>壊<rt>こわ</rt></ruby>れた」</span></p>
                 `
             },
             {
@@ -1637,14 +1675,15 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "<ruby>山<rt>やま</rt></ruby>を<ruby>下<rt>お</rt></ruby>りて<ruby>何<rt>なん</rt></ruby><ruby>日<rt>にち</rt></ruby>かすると" }
                 ],
                 correctOrder: ["3", "2", "1", "4"],
-                starIndex: 0,
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、", "4": "、" },
+                translation: "登山有一种不可思议的魅力。爬山时明明会觉得这么痛苦的事再也不想经历第二次，可下山几天后，不知为什么又想去爬了。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立程度修饰与情感对象。</strong>题干「こんなに」（如此地 / 这么）作为程度副词，修饰带有负面情感的名词短语选项 3「苦しいことは」（痛苦的事情），构成「こんなに苦しいことは」（如此痛苦的事情）。</p>
-                    <p><strong class="text-textMain">第二步：确立心理活动及引用。</strong>将前述的痛苦经历作为想法的内容，接续选项 2「二度としたくないと」（不想再做第二次了），并接续谓语及逆接表达选项 1「思うのに」（明明这样想，却），构成「～二度としたくないと思うのに」（明明想着再也不想受这种苦了，却）。</p>
-                    <p><strong class="text-textMain">第三步：确立转折发生的时间条件。</strong>逆接之后，引出想法发生改变的具体时间状语选项 4「山を下りて何日かすると」（下山过了几天之后），顺接句尾的「なぜかまた登りたくなる」（不知为何又想去爬了）。综合排序为 3-2-1-4。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>登山有着不可思议的魅力。爬山的时候，明明想着这么痛苦的事情再也不想做第二次了，但下山过了几天之后，不知为何又想去爬了。
-                    </p>
+                    <p>「こんなに<ruby>苦<rt>くる</rt></ruby>しいことは」把登山中的痛苦体验设为后面想法的对象。</p>
+                    <p>「<ruby>二度<rt>にど</rt></ruby>としたくないと<ruby>思<rt>おも</rt></ruby>う」由引用助词「と」连接心理活动，表示再也不想经历。</p>
+                    <p>「のに」形成逆接；「<ruby>山<rt>やま</rt></ruby>を<ruby>下<rt>お</rt></ruby>りて<ruby>何日<rt>なんにち</rt></ruby>かすると」说明想法发生改变的时间条件。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>痛苦体验「こんなに<ruby>苦<rt>くる</rt></ruby>しいことは」</span><span>拒绝重来「<ruby>二度<rt>にど</rt></ruby>としたくないと」</span><span>逆接心理「<ruby>思<rt>おも</rt></ruby>うのに」</span><span>时间变化「<ruby>山<rt>やま</rt></ruby>を<ruby>下<rt>お</rt></ruby>りて<ruby>何日<rt>なんにち</rt></ruby>かすると」</span></p>
                 `
             },
             {
@@ -1661,14 +1700,15 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "<ruby>今<rt>いま</rt></ruby>にも" }
                 ],
                 correctOrder: ["3", "4", "1", "2"],
-                starIndex: 0,
+                starIndex: 3,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "3": "、" },
+                translation: "雕刻家川村创作的动物雕塑，虽然造型简洁，却充满了仿佛随时会动起来的生命力。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立逆接连词。</strong>题干「形はシンプル」（形状很简单）后接续表示转折让步的接续助词选项 3「ながら」（虽然……但是），构成「形はシンプルながら」（虽然形状简单，但是）。</p>
-                    <p><strong class="text-textMain">第二步：确立样态修饰与呼应副词。</strong>副词选项 4「今にも」（眼看着马上就要）常与表示样态的「～そうだ」呼应，修饰动词连用形选项 1「動き出し」（动起来），构成「今にも動き出し」（仿佛马上就要动起来）。</p>
-                    <p><strong class="text-textMain">第三步：确立连体修饰与句尾。</strong>动作后接续样态助动词的连体形选项 2「そうな」（的样子 / 似的），整体修饰句尾的名词短语「生命力にあふれている」（充满了生命力）。综合排序为 3-4-1-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>雕刻家川村建制作的动物雕刻作品，虽然形状简单，却充满了仿佛眼看着马上就要动起来一般的生命力。
-                    </p>
+                    <p>「<ruby>形<rt>かたち</rt></ruby>はシンプルながら」用「ながら」表示“虽然造型简洁，却……”。</p>
+                    <p>「<ruby>今<rt>いま</rt></ruby>にも」与样态表达「～そう」呼应，表示某个动作仿佛马上就要发生。</p>
+                    <p>「<ruby>動<rt>うご</rt></ruby>き<ruby>出<rt>だ</rt></ruby>しそうな」作为连体修饰语限定「<ruby>生命力<rt>せいめいりょく</rt></ruby>」，说明作品栩栩如生。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>让步「シンプルながら」</span><span>即将发生「<ruby>今<rt>いま</rt></ruby>にも」</span><span>动作开始「<ruby>動<rt>うご</rt></ruby>き<ruby>出<rt>だ</rt></ruby>し」</span><span>样态定语「そうな<ruby>生命力<rt>せいめいりょく</rt></ruby>」</span></p>
                 `
             },
             {
@@ -1685,14 +1725,14 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "<ruby>最<rt>さい</rt></ruby><ruby>後<rt>ご</rt></ruby>まで" }
                 ],
                 correctOrder: ["4", "2", "1", "3"],
-                starIndex: 0,
+                starIndex: 3,
+                analysisStyle: "structured",
+                translation: "我认为，能在商业上成功的人与不能成功的人之间的差别，就在于无论处境多么艰难，是否都能不放弃并坚持到底。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立动作状语与动词。</strong>题干「あきらめずに」（不放弃地）后接续表示动作界限的选项 4「最後まで」（到最后），并修饰动词选项 2「取り組める」（能够致力于 / 能够应对），构成「あきらめずに最後まで取り組める」（能够不放弃地应对到最后）。</p>
-                    <p><strong class="text-textMain">第二步：确立疑问小句。</strong>动词原形后接续表示是否的选项 1「かどうか」（是否），构成「～最後まで取り組めるかどうか」（是否能够不放弃地坚持到最后）。</p>
-                    <p><strong class="text-textMain">第三步：确立主谓结构。</strong>该疑问小句作为整个句子的核心内容，与前文主语「違いは」（区别在于）相呼应，接续谓语选项 3「にある」（在于……），与句尾的「と思う」（我认为）相连。综合排序为 4-2-1-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>我认为，在商业上能够成功的人和不能成功的人的区别，就在于无论在多么艰难的状况下，是否都能不放弃地坚持应对到最后。
-                    </p>
+                    <p>「あきらめずに<ruby>最後<rt>さいご</rt></ruby>まで」说明面对困难时坚持行动的方式和界限。</p>
+                    <p>「<ruby>取<rt>と</rt></ruby>り<ruby>組<rt>く</rt></ruby>めるかどうか」组成“是否能够坚持处理”的间接疑问。</p>
+                    <p>整段疑问内容与「<ruby>違<rt>ちが</rt></ruby>いは～にある」呼应，说明成功者与失败者的差别所在。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>不放弃「あきらめずに」</span><span>坚持界限「<ruby>最後<rt>さいご</rt></ruby>まで」</span><span>能否行动「<ruby>取<rt>と</rt></ruby>り<ruby>組<rt>く</rt></ruby>めるかどうか」</span><span>差别所在「にある」</span></p>
                 `
             },
             // ---------------- 2017年7月 (N2) ----------------
@@ -1710,14 +1750,14 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "<ruby>商<rt>しょう</rt></ruby><ruby>品<rt>ひん</rt></ruby>やサービスであっても" }
                 ],
                 correctOrder: ["4", "1", "2", "3"],
-                starIndex: 2,
+                starIndex: 1,
+                analysisStyle: "structured",
+                translation: "即使商品或服务本身很好，如果顾客感受不到它的优点，也不能指望销售额增长。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立连体修饰与让步条件。</strong>题干「良い」（好的）修饰名词选项 4「商品やサービスであっても」（即使是商品或服务），构成「良い商品やサービスであっても」（即使是好的商品或服务）。</p>
-                    <p><strong class="text-textMain">第二步：确立主谓结构与假设条件。</strong>选项 1「その良さが」（其优点）作为主语，后接谓语的否定假设选项 2「客に伝わらなければ」（如果不传达给客人的话），构成「その良さが客に伝わらなければ」（如果其优点不传达给客人的话）。</p>
-                    <p><strong class="text-textMain">第三步：确立修饰关系与句尾。</strong>名词短语选项 3「売上の」（销售额的）修饰句尾名词「増加は期待できない」（无法期待……的增加），将前述的条件句顺接至此。综合排序为 4-1-2-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>即使是好的商品或服务，如果其优点不传达给客人的话，也是无法期待销售额的增加的。
-                    </p>
+                    <p>「良い」直接修饰「商品やサービス」，「であっても」构成让步条件：“即使是优质的商品或服务”。</p>
+                    <p>「その良さが客に伝わらなければ」以“优点”为主语，用「～なければ」提出否定条件。</p>
+                    <p>「売上の」修饰句尾的「増加」，形成「売上の増加は期待できない」：“不能指望销售额增长”。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>让步条件「良い商品やサービスであっても」</span><span>条件主语「その良さが」</span><span>否定条件「客に伝わらなければ」</span><span>结果「売上の増加は期待できない」</span></p>
                 `
             },
             {
@@ -1734,14 +1774,17 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "<ruby>友<rt>とも</rt></ruby><ruby>達<rt>だち</rt></ruby>からもらったもので" }
                 ],
                 correctOrder: ["3", "4", "1", "2"],
-                starIndex: 2,
+                starIndex: 1,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "4": "、"
+                },
+                translation: "学长家里有一台风琴。他说，那是五年前从一位搬到国外的朋友那里收到的，拿到时只弹过一次，此后就再也没弹过。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立连体修饰关系。</strong>题干「5年前に」（5年前）后接动作选项 3「海外に引っ越した」（搬到海外的），修饰名词短语选项 4「友達からもらったもので」（从朋友那里收到的东西，并且），构成「5年前に海外に引っ越した友達からもらったもので」（是从5年前搬到海外的朋友那里收到的东西）。</p>
-                    <p><strong class="text-textMain">第二步：确立时间状语。</strong>在交代了物品的来源之后，引出后续动作发生的具体时间，即接续选项 1「もらった時に」（在收到的时候）。</p>
-                    <p><strong class="text-textMain">第三步：确立固定句型与句尾。</strong>时间状语后接续表示动作界限的 N2 句型选项 2「一度弾いたきり」（只弹过一次就再也没弹过），与句尾的「だと言っていた」（他曾这么说）相连。综合排序为 3-4-1-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>前辈的家里有一台风琴。他曾说那是从5年前搬到海外的朋友那里收到的，而且收到的时候只弹过一次就再也没弹过了。
-                    </p>
+                    <p>「5年前に海外に引っ越した」是连体修饰语，限定后面的「友達」。</p>
+                    <p>「友達からもらったもので」说明风琴的来历，并用「で」连接后面的补充说明。</p>
+                    <p>「もらった時に一度弾いたきり」表示拿到时只弹过一次，此后一直没有再弹。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>朋友的特征「5年前に海外に引っ越した」</span><span>物品来历「友達からもらったもので」</span><span>时间「もらった時に」</span><span>仅有一次「一度弾いたきり」</span></p>
                 `
             },
             {
@@ -1758,14 +1801,17 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "<ruby>誰<rt>だれ</rt></ruby>かが" }
                 ],
                 correctOrder: ["2", "4", "1", "3"],
-                starIndex: 2,
+                starIndex: 1,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "2": "、"
+                },
+                translation: "我曾在杂志之类的地方看到有人接受采访时说，对自己而言，人生中最重要的是与人的相遇。我觉得这话确实如此。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立并列与处所。</strong>题干「雑誌か」（在杂志或……）后接续表示不确定处所的选项 2「何かで」（什么地方），构成「雑誌か何かで」（在杂志或什么地方）。</p>
-                    <p><strong class="text-textMain">第二步：确立引用小句的主语。</strong>引出接受采访的动作主体选项 4「誰かが」（某个人），并引出其回答的具体内容。</p>
-                    <p><strong class="text-textMain">第三步：确立连体修饰与句尾。</strong>选项 1「自分にとって」（对某人自己来说）修饰选项 3「人生で一番大切なのは」（人生中最重要的是），构成「自分にとって人生で一番大切なのは」，最后顺接句尾的「人との出会いだと」（是与人的相遇）。综合排序为 2-4-1-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>看到某个人在杂志或什么地方的采访中回答说，对自己来说人生中最重要的事情是与人的相遇，我觉得真的是这样啊。
-                    </p>
+                    <p>「雑誌か何かで」用「か何か」表示不确定的媒介：“在杂志之类的地方”。</p>
+                    <p>「誰かが」是后面「インタビューに答えていた」的动作主体。</p>
+                    <p>「自分にとって」提出评价立场，「人生で一番大切なのは人との出会いだ」则是受访者回答的内容。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>信息来源「雑誌か何かで」</span><span>发言者「誰かが」</span><span>评价立场「自分にとって」</span><span>回答内容「人生で一番大切なのは人との出会いだ」</span></p>
                 `
             },
             {
@@ -1783,13 +1829,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "2", "3", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "那家餐厅一直很难订到位，所以始终没能去成；如今终于可以去了。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立副词搭配与因果。</strong>题干副词「なかなか」（怎么也……）常与否定或困难情况呼应，后接续选项 4「予約が取れなくて」（订不到预约），并接续产生的结果选项 2「行けなかった」（没能去成），构成「なかなか予約が取れなくて行けなかった」（因为怎么也订不到预约而没能去成）。</p>
-                    <p><strong class="text-textMain">第二步：确立连体修饰关系。</strong>将前述动词短语作为定语，修饰地点名词选项 3「レストランに」（的餐厅）。</p>
-                    <p><strong class="text-textMain">第三步：确立最终状态。</strong>地点名词后接续表示“终于”的副词选项 1「ようやく」，最后顺接句尾的状态变化「行けることになった」（变得能去了）。综合排序为 4-2-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>终于能去那家因为怎么也订不到预约而一直没能去成的餐厅了。
-                    </p>
+                    <p>「なかなか」与「予約が取れなくて」呼应，表示一直很难订到座位。</p>
+                    <p>「予約が取れなくて行けなかった」整体修饰「レストラン」，说明此前没能去成的原因。</p>
+                    <p>「レストランにようやく行けることになった」用「ようやく」强调如今终于能够前往。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>困难状态「なかなか予約が取れなくて」</span><span>过去结果「行けなかった」</span><span>目的地「レストランに」</span><span>现状变化「ようやく行けることになった」</span></p>
                 `
             },
             {
@@ -1807,13 +1853,16 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["1", "4", "2", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "3": "、"
+                },
+                translation: "为什么我会如此在意那个只是偶尔在车站擦肩而过的女孩，连我自己也说不清。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立限定修饰。</strong>题干「すれ違う」（擦肩而过）后接续表示限定的形式名词短语选项 1「だけの」（仅仅是……的），构成「すれ違うだけの」（仅仅是擦肩而过的）。</p>
-                    <p><strong class="text-textMain">第二步：确立情感对象与谓语。</strong>该连体修饰语修饰宾语选项 4「彼女のことが」（关于她的事），并接续情感状态谓语选项 2「こんなに気になる」（如此在意），构成「すれ違うだけの彼女のことがこんなに気になる」（对仅仅是擦肩而过的她如此在意）。</p>
-                    <p><strong class="text-textMain">第三步：确立疑问呼应与句尾。</strong>题干开头的疑问词「なぜ」（为什么）必须与句末的疑问终助词选项 3「のか」相呼应，构成疑问从句，最后与句尾的「自分でもよくわからない」（我自己也不太清楚）相连。综合排序为 1-4-2-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>为什么我会对仅仅是偶尔在车站擦肩而过的她如此在意呢，连我自己也不太清楚。
-                    </p>
+                    <p>「すれ違うだけの」以「だけ」限定关系，整体修饰「彼女」：“只是偶尔擦肩而过的女孩”。</p>
+                    <p>「彼女のことがこんなに気になる」表示对她如此在意。</p>
+                    <p>句首的「なぜ」与「のか」构成间接疑问，整段疑问内容成为「自分でもよくわからない」的对象。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>疑问「なぜ」</span><span>关系限定「すれ違うだけの」</span><span>在意对象与程度「彼女のことがこんなに気になる」</span><span>间接疑问「のか、自分でもよくわからない」</span></p>
                 `
             },
             // ---------------- 2017年12月 (N2) ----------------
@@ -1831,14 +1880,17 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "いい<ruby>方<rt>ほう</rt></ruby><ruby>法<rt>ほう</rt></ruby>はないか" }
                 ],
                 correctOrder: ["1", "4", "2", "3"],
-                starIndex: 1,
+                starIndex: 0,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "3": "、"
+                },
+                translation: "（教室里）学生：“接下来我要介绍的，是我为了记住新单词，反复思考有没有好办法后终于想到的方法。大家也请务必试试看。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立目的与疑问小句。</strong>题干「覚える」（记住）后接续表示目的的选项 1「のに」（为了……），引出为了这个目的而产生的疑问小句选项 4「いい方法はないか」（有没有什么好方法），构成「覚えるのにいい方法はないか」（为了记住新单词有没有什么好方法）。</p>
-                    <p><strong class="text-textMain">第二步：确立思考内容与动作。</strong>将上述疑问作为思考的内容，后接续引用助词及动作选项 2「とあれこれ考えた」（这样反反复复思考了），构成「～ないかとあれこれ考えた」（左思右想有没有什么好方法）。</p>
-                    <p><strong class="text-textMain">第三步：确立结果句型与句尾。</strong>动词过去时后接续 N2 句型选项 3「末に」（在……之后 / 经过……的最后），表示经过长时间或反复做某事之后的结果，最后顺接句尾的「思いついた方法です」（想出的方法）。综合排序为 1-4-2-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>（在教室里）学生：“我现在要介绍的，是我为了记住新单词，左思右想有没有什么好方法之后，最终想出来的方法。大家也请务必尝试一下。”
-                    </p>
+                    <p>「覚えるのに」表示目的或用途：“为了记住新单词”。</p>
+                    <p>「いい方法はないか」是思考的内容，后接引用助词「と」和「考えた」。</p>
+                    <p>「あれこれ考えた末に」表示经过反复思考之后，连接结果「思いついた方法です」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>目的「新しい単語を覚えるのに」</span><span>思考内容「いい方法はないか」</span><span>反复思考「とあれこれ考えた」</span><span>最终结果「末に思いついた方法」</span></p>
                 `
             },
             {
@@ -1855,14 +1907,17 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "<ruby>性<rt>せい</rt></ruby><ruby>格<rt>かく</rt></ruby>や<ruby>能<rt>のう</rt></ruby><ruby>力<rt>りょく</rt></ruby>の<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>" }
                 ],
                 correctOrder: ["1", "4", "3", "2"],
-                starIndex: 2,
+                starIndex: 1,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "3": "、"
+                },
+                translation: "讲师：“我经常听人说自己不擅长整理，但那绝不是性格或能力的问题，只是因为不知道方法。只要掌握方法，就一定能够整理好。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立否定呼应。</strong>副词选项 1「決して」（绝对不 / 决不）需与否定表达相呼应，即接续选项 3「ではなく」（而不是），构成「決して～ではなく」（绝不是……而是）。</p>
-                    <p><strong class="text-textMain">第二步：确立否定对象。</strong>在「決して」和「ではなく」之间填入被否定的对象，即选项 4「性格や能力の問題」（性格或能力的问题），构成「決して性格や能力の問題ではなく」（绝不是性格或能力的问题，而是）。</p>
-                    <p><strong class="text-textMain">第三步：确立肯定内容与句尾。</strong>引出真正的原因选项 2「やり方を知らない」（不知道做法），与句尾的限定及原因表达「だけなので」（只是因为……）相连，构成「～ではなくやり方を知らないだけなので」（不是……而仅仅是因为不知道做法）。综合排序为 1-4-3-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>讲师：“我经常听人说自己不擅长收拾整理，但这绝不是性格或能力的问题，而仅仅是因为不知道做法，所以只要掌握了做法，就一定能学会收拾整理的。”
-                    </p>
+                    <p>「決して」必须与否定表达呼应，因此与后面的「ではなく」组成「決して～ではなく」。</p>
+                    <p>「性格や能力の問題」放在「決して」与「ではなく」之间，明确被否定的原因。</p>
+                    <p>「やり方を知らないだけなので」说明真正原因只是“不知道方法”，并引出掌握方法后的结果。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>强烈否定「決して」</span><span>被否定内容「性格や能力の問題」</span><span>对照「ではなく」</span><span>真正原因「やり方を知らないだけ」</span></p>
                 `
             },
             {
@@ -1879,14 +1934,17 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "<ruby>音<rt>おん</rt></ruby><ruby>楽<rt>がく</rt></ruby>コンサートを" }
                 ],
                 correctOrder: ["2", "4", "1", "3"],
-                starIndex: 2,
+                starIndex: 1,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "2": "、"
+                },
+                translation: "X市有两处面向市民的文化设施，会举办包括音乐会在内的各种活动。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立主语与存在句型。</strong>题干「X<ruby>市<rt>し</rt></ruby>には、<ruby>市<rt>し</rt></ruby><ruby>民<rt>みん</rt></ruby>のための<ruby>文<rt>ぶん</rt></ruby><ruby>化<rt>か</rt></ruby><ruby>施<rt>し</rt></ruby><ruby>設<rt>せつ</rt></ruby>が」（在X市，为市民而建的文化设施）后接续表示数量和存在的谓语选项 2「<ruby>二<rt>ふた</rt></ruby>つあり」（有两个，并且），构成「<ruby>文<rt>ぶん</rt></ruby><ruby>化<rt>か</rt></ruby><ruby>施<rt>し</rt></ruby><ruby>設<rt>せつ</rt></ruby>が<ruby>二<rt>ふた</rt></ruby>つあり」（有两个文化设施）。</p>
-                    <p><strong class="text-textMain">第二步：确立举例与修饰关系。</strong>选项 4「<ruby>音<rt>おん</rt></ruby><ruby>楽<rt>がく</rt></ruby>コンサートを」（音乐会）后接续表示以……为首的选项 1「はじめとした」（以……为首的 / 包括……在内的），构成「<ruby>音<rt>おん</rt></ruby><ruby>楽<rt>がく</rt></ruby>コンサートをはじめとした」（以音乐会为首的）。该短语作为连体修饰语，修饰名词短语选项 3「さまざまな<ruby>催<rt>もよお</rt></ruby>しを」（各种各样的活动）。</p>
-                    <p><strong class="text-textMain">第三步：确立宾语与句尾谓语。</strong>将前述宾语短语「さまざまな<ruby>催<rt>もよお</rt></ruby>しを」直接与句尾的谓语「<ruby>行<rt>おこな</rt></ruby>っている」（正在举办）相连。综合排序为 2-4-1-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>在X市，有两个为市民而建的文化设施，举办着以音乐会为首的各种各样的活动。
-                    </p>
+                    <p>「文化施設が二つあり」先说明设施的数量，并用「あり」连接后面的活动介绍。</p>
+                    <p>「音楽コンサートをはじめとした」是“以音乐会为代表、包括音乐会在内”的举例表达。</p>
+                    <p>该短语修饰「さまざまな催し」，再与谓语「行っている」构成“举办各种活动”。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>设施与数量「文化施設が二つあり」</span><span>代表事例「音楽コンサートを」</span><span>举例修饰「はじめとした」</span><span>活动内容「さまざまな催しを行っている」</span></p>
                 `
             },
             {
@@ -1904,13 +1962,16 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "3", "2", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "3": "、"
+                },
+                translation: "明明并不饿，肚子为什么还会咕咕叫呢？",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立否定句型。</strong>题干「おなかがすいている」（肚子饿）后接续形式名词选项 4「わけ」，再接续逆接表达选项 3「でもないのに」（明明并非……却），构成「おなかがすいているわけでもないのに」（明明并不是肚子饿了）。</p>
-                    <p><strong class="text-textMain">第二步：确立主语话题。</strong>在上述逆接之后，引出产生疑问的具体现象作为话题，即接续选项 2「お<ruby>腹<rt>なか</rt></ruby>がなるのは」（肚子咕咕叫这件事），构成「お<ruby>腹<rt>なか</rt></ruby>がなるのは」（肚子之所以会叫）。</p>
-                    <p><strong class="text-textMain">第三步：确立疑问与句尾。</strong>主语后接续疑问词选项 1「どうして」（为什么），并与句尾的推测助动词「だろう」（呢）相连，构成「どうしてだろう」（是为什么呢）。综合排序为 4-3-2-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>明明并不是肚子饿了，肚子之所以会咕咕叫是为什么呢。
-                    </p>
+                    <p>「おなかがすいているわけでもない」用「わけでもない」否定“是因为饿了”这一解释。</p>
+                    <p>「のに」表示与预期相反：“明明并不饿，却……”。</p>
+                    <p>「お腹がなるのはどうしてだろう」把肚子叫这一现象设为话题，再用「どうしてだろう」提出疑问。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>可能解释「おなかがすいているわけ」</span><span>否定让步「でもないのに」</span><span>疑问对象「お腹がなるのは」</span><span>疑问「どうしてだろう」</span></p>
                 `
             },
             {
@@ -1928,13 +1989,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "2", "1", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "我每次出差都会入住的Y酒店从上周起因施工暂停营业，所以这次决定住另一家酒店。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立动作与频度。</strong>选项 4「<ruby>出<rt>しゅっ</rt></ruby><ruby>張<rt>ちょう</rt></ruby>に<ruby>行<rt>い</rt></ruby>く」（去出差）后接续表示频度条件的选项 2「たびに」（每当……时），构成「<ruby>出<rt>しゅっ</rt></ruby><ruby>張<rt>ちょう</rt></ruby>に<ruby>行<rt>い</rt></ruby>くたびに」（每当去出差时）。</p>
-                    <p><strong class="text-textMain">第二步：确立连体修饰关系。</strong>在该条件后接续习惯性动作选项 1「<ruby>泊<rt>と</rt></ruby>まっている」（住宿着），并将这部分整体作为修饰语，修饰名词主语选项 3「Yホテルが」（Y酒店），构成「<ruby>出<rt>しゅっ</rt></ruby><ruby>張<rt>ちょう</rt></ruby>に<ruby>行<rt>い</rt></ruby>くたびに<ruby>泊<rt>と</rt></ruby>まっているYホテルが」（每次出差都会入住的Y酒店）。</p>
-                    <p><strong class="text-textMain">第三步：确立因果关系的主语。</strong>将上述主语部分直接与后文的原因状语「<ruby>先<rt>せん</rt></ruby><ruby>週<rt>しゅう</rt></ruby>から<ruby>工<rt>こう</rt></ruby><ruby>事<rt>じ</rt></ruby>で<ruby>休<rt>きゅう</rt></ruby><ruby>業<rt>ぎょう</rt></ruby><ruby>中<rt>ちゅう</rt></ruby>なので」（因为从上周开始因施工而停业，所以）相连。综合排序为 4-2-1-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>每次出差都会入住的Y酒店因为从上周开始因施工而停业，所以这次我决定住在别的酒店。
-                    </p>
+                    <p>「出張に行くたびに」表示每逢出差这一反复发生的时机。</p>
+                    <p>「泊まっている」表示一贯入住，前面的内容整体修饰「Yホテル」。</p>
+                    <p>「Yホテルが休業中なので」说明更换酒店的原因，后句给出决定。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>反复时机「出張に行くたびに」</span><span>习惯动作「泊まっている」</span><span>主语「Yホテルが」</span><span>原因与决定「休業中なので、別のホテルに泊まる」</span></p>
                 `
             },
             // ---------------- 2018年7月 (N2) ----------------
@@ -1952,14 +2013,17 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "<ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>った<ruby>方<rt>ほう</rt></ruby><ruby>法<rt>ほう</rt></ruby>で" }
                 ],
                 correctOrder: ["3", "2", "1", "4"],
-                starIndex: 2,
+                starIndex: 1,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "1": "、"
+                },
+                translation: "无论从事哪项运动，每天练习固然是进步不可缺少的，但如果方法不对，即使投入很多时间也很难提高。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立修饰与评价。</strong>题干「日々の練習が」（每天的练习）后接续目标对象选项 3「上達に」（对于进步），再接续评价短语形式名词化选项 2「欠かせないのは」（不可或缺的这件事），构成「日々の練習が上達に欠かせないのは」（每天的练习对于进步不可或缺这件事）。</p>
-                    <p><strong class="text-textMain">第二步：确立转折句型。</strong>在上述评价后接续表示理所当然并带有转折的选项 1「もちろんだが」（当然是……但是），构成「上達に欠かせないのはもちろんだが」（对于进步不可或缺当然是理所当然的，但是）。</p>
-                    <p><strong class="text-textMain">第三步：确立条件与句尾。</strong>转折后引出导致不好结果的条件动作，即选项 4「間違った方法で」（用错误的方法）修饰句尾的「行うと」（去做的话），最终与「時間をかけてもなかなか上達しない」（即使花了时间也很难进步）相连。综合排序为 3-2-1-4。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>无论什么运动，每天的练习对于进步不可或缺当然是理所当然的，但是如果用错误的方法去做，即使花了时间也很难进步。
-                    </p>
+                    <p>「日々の練習が上達に欠かせない」表示日常练习对于进步不可或缺。</p>
+                    <p>「～のはもちろんだが」先承认这一点理所当然，再转入更重要的条件。</p>
+                    <p>「間違った方法で行うと」提出方法错误的条件，句末说明即使花费时间也难以进步。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>必要条件「日々の練習が上達に欠かせない」</span><span>承认与转折「のはもちろんだが」</span><span>错误方式「間違った方法で行うと」</span><span>结果「時間をかけてもなかなか上達しない」</span></p>
                 `
             },
             {
@@ -1977,13 +2041,16 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["1", "4", "2", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "1": "、"
+                },
+                translation: "姐姐是歌手赤川圭的忠实粉丝，她说，只要是关于赤川圭的事，无论多么细小都想知道。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立话题。</strong>题干「彼女の」（她的）后接续代词及假设条件选项 1「ことなら」（如果是关于……的事的话），构成「彼女のことなら」（如果是关于她的事的话）。</p>
-                    <p><strong class="text-textMain">第二步：确立程度句型。</strong>后文引出极端条件的固定搭配，疑问副词选项 4「どんなに」（无论多么）后需接续修饰语。</p>
-                    <p><strong class="text-textMain">第三步：确立极端条件与句尾。</strong>选项 4 后接连体词选项 2「小さな」（微小的），并修饰名词及逆接助词选项 3「ことでも」（事情也都），构成「どんなに小さなことでも」（无论多么微小的事情也都），与句尾的「知りたいと言っている」（说想知道）相连。综合排序为 1-4-2-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>姐姐是歌手赤川圭的超级粉丝，她说如果是关于她的事，无论多么微小的事情她都想知道。
-                    </p>
+                    <p>「彼女のことなら」把关于赤川圭的事情设为话题和条件。</p>
+                    <p>「どんなに」修饰「小さな」，构成“无论多么细小”。</p>
+                    <p>「どんなに小さなことでも」表示没有例外，连接「知りたい」说明任何小事都想知道。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>话题条件「彼女のことなら」</span><span>程度「どんなに」</span><span>性质「小さな」</span><span>无例外愿望「ことでも知りたい」</span></p>
                 `
             },
             {
@@ -2001,13 +2068,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "4", "1", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "明天下午截止的报告还没有完成。明天一整天都有课，抽不出时间，所以今晚即使熬夜也必须把它写完。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立极端条件。</strong>题干「今晩」（今晚）后接续动作及表示让步的极端条件，即选项 2「徹夜して」（熬夜）加选项 4「でも」（即使……也），构成「今晩徹夜してでも」（今晚即使熬夜也）。</p>
-                    <p><strong class="text-textMain">第二步：确立动作及完成状态。</strong>在极端条件下必须完成动作，接续动词使役形及表示动作彻底完成的选项 1「終わらせて」（使其结束），再接续表示必须完成的句型前序部分选项 3「しまわないと」（不……完的话），构成「終わらせてしまわないと」（必须使其彻底做完，否则……）。</p>
-                    <p><strong class="text-textMain">第三步：确立句尾呼应。</strong>将前述短语与句尾的「いけない」（不行）相连，构成「～しまわないといけない」（必须彻底做完）。综合排序为 2-4-1-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>明晚截止的报告还没写完。明天一整天都有课抽不出时间，所以今晚即使熬夜也必须把它彻底写完。
-                    </p>
+                    <p>「徹夜してでも」表示即使采取熬夜这种极端手段也要完成。</p>
+                    <p>「終わらせる」是他动词，表示把尚未完成的报告做完。</p>
+                    <p>「終わらせてしまわないといけない」由「～てしまう」与「～ないといけない」结合，强调必须彻底完成。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>极端手段「今晩徹夜してでも」</span><span>完成动作「終わらせて」</span><span>彻底完成「しまわないと」</span><span>义务「いけない」</span></p>
                 `
             },
             {
@@ -2024,14 +2091,17 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "<ruby>止<rt>と</rt></ruby>まらないほど" }
                 ],
                 correctOrder: ["3", "2", "1", "4"],
-                starIndex: 2,
+                starIndex: 3,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "3": "、"
+                },
+                translation: "田中似乎非常喜欢橘子，一旦开始吃就停不下来，因此听说他每到冬天都会大量购买。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立人物特征与原因。</strong>题干「田中さんは」（田中先生）后接续说明其喜好的选项 3「みかんが好きらしく」（似乎很喜欢橘子），并作为后文程度极端的背景原因。</p>
-                    <p><strong class="text-textMain">第二步：确立条件触发。</strong>引出极端程度的具体情境，即副词选项 2「一度」（一旦 / 一次）搭配动词条件形选项 1「食べ出すと」（开始吃的话），构成「一度食べ出すと」（一旦开始吃的话）。</p>
-                    <p><strong class="text-textMain">第三步：确立程度修饰与句尾。</strong>动作触发后，接续表示程度的选项 4「止まらないほど」（到了停不下来的地步），作为连用修饰语顺接句尾的「冬はいつもみかんを大量に買うそうだ」（听说冬天总是会大量购买橘子）。综合排序为 3-2-1-4。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>听说田中先生似乎非常喜欢橘子，到了只要一开始吃就停不下来的地步，冬天总是会大量购买。
-                    </p>
+                    <p>「みかんが好きらしく」用「らしい」的连用形说明推测出的喜好，并连接后文。</p>
+                    <p>「一度食べ出すと」表示一旦开始吃这一触发条件。</p>
+                    <p>「止まらないほど」说明喜欢的程度已经到了停不下来的地步，并引出大量购买的结果。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>推测背景「みかんが好きらしく」</span><span>触发条件「一度」</span><span>开始动作「食べ出すと」</span><span>程度与结果「止まらないほど、冬は大量に買う」</span></p>
                 `
             },
             {
@@ -2049,13 +2119,16 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "2", "3", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "2": "、"
+                },
+                translation: "从上初中前后开始，我逐渐对医学产生了兴趣；到进入高中时，已经决定将来要成为医生。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立状态变化与连贯动作。</strong>题干「中学生になったころから」（从成为初中生的时候起）后接续表示渐进变化的副词选项 4「次第に」（逐渐地），修饰动作选项 2「医学に興味を持ち始め」（开始对医学产生兴趣，并且），构成「次第に医学に興味を持ち始め」（逐渐开始对医学产生兴趣）。</p>
-                    <p><strong class="text-textMain">第二步：确立时间节点。</strong>在产生兴趣之后，接续下一个阶段的时间节点选项 3「高校に入ったときには」（在进入高中的时候）。</p>
-                    <p><strong class="text-textMain">第三步：确立时间状语与句尾搭配。</strong>在该时间节点下，接续表示未来预期的时间名词选项 1「将来」（将来），直接修饰句尾的「医者になろうと決めていた」（决定了要成为医生）。综合排序为 4-2-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>从成为初中生的时候起，我就逐渐开始对医学产生兴趣，在进入高中的时候，就已经决定将来要成为一名医生了。
-                    </p>
+                    <p>「次第に」修饰「興味を持ち始め」，表示兴趣是逐渐产生的。</p>
+                    <p>「医学に興味を持ち始め」用连用形连接下一个时间阶段。</p>
+                    <p>「高校に入ったときには」设定决定已经形成的时间节点，「将来」修饰成为医生这一志向。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>渐进变化「次第に」</span><span>兴趣产生「医学に興味を持ち始め」</span><span>时间节点「高校に入ったときには」</span><span>未来决定「将来医者になろうと決めていた」</span></p>
                 `
             },
             // ---------------- 2018年12月 (N2) ----------------
@@ -2073,14 +2146,14 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "<ruby>有<rt>ゆう</rt></ruby><ruby>名<rt>めい</rt></ruby>な" }
                 ],
                 correctOrder: ["1", "4", "3", "2"],
-                starIndex: 2,
+                starIndex: 3,
+                analysisStyle: "structured",
+                translation: "以拍摄山岳和植物而闻名的摄影家岩本雅树先生，其摄影展将从15日起在ABC百货商店举办。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立身份与评价。</strong>题干「写真家」（摄影家）后接续表示作为某种身份的选项 1「として」（作为……），再接续评价形容动词选项 4「有名な」（有名的），构成「写真家として有名な」（作为摄影家而有名的）。</p>
-                    <p><strong class="text-textMain">第二步：确立连体修饰关系。</strong>该短语作为连体修饰语，修饰具体的人物名词选项 3「岩本まさき氏」（岩本正树先生），构成「～有名な岩本まさき氏」。</p>
-                    <p><strong class="text-textMain">第三步：确立所属关系与句尾。</strong>人物名词后接续表示所属关系的格助词选项 2「の」（的），修饰句尾的主语「写真展が」（摄影展），构成「岩本まさき氏の写真展が開催される」（岩本正树先生的摄影展将被举办）。综合排序为 1-4-3-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>作为山川和植物的摄影家而闻名的岩本正树先生的摄影展，将从15日起在ABC百货商场举办。
-                    </p>
+                    <p>「山や植物の写真家として」用「として」表示岩本先生广为人知的身份。</p>
+                    <p>「有名な」修饰人物「岩本まさき氏」，前面的身份说明也一起限定该人物。</p>
+                    <p>人物后面的「の」表示所属，连接「岩本まさき氏の写真展」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>身份「山や植物の写真家として」</span><span>评价「有名な」</span><span>人物「岩本まさき氏」</span><span>所属活动「の写真展が開催される」</span></p>
                 `
             },
             {
@@ -2098,13 +2171,16 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "4", "1", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "1": "、"
+                },
+                translation: "小时候明明觉得一年很漫长，为什么随着年龄增长，却会渐渐觉得一年变短了呢？",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立伴随变化句型。</strong>题干「年をとる」（上年纪）后接续表示伴随变化的 N2 句型选项 2「につれて」（随着……），构成「年をとるにつれて」（随着年龄的增长）。</p>
-                    <p><strong class="text-textMain">第二步：确立变化结果与名词化。</strong>在伴随条件后引出发生的变化，即选项 4「短く感じるようになる」（变得感觉短暂），随后接续形式名词及提示助词选项 1「のは」（……这件事），将前面的变化内容整体名词化并作为主语。</p>
-                    <p><strong class="text-textMain">第三步：确立疑问呼应与句尾。</strong>主语后接续疑问词选项 3「なぜ」（为什么），直接与句尾的推测疑问表达「だろうか」（呢？）相连，构成「～のはなぜだろうか」（……是为什么呢？）。综合排序为 2-4-1-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>明明在小的时候感觉一年很漫长，但随着年龄的增长变得感觉短暂了，这是为什么呢？
-                    </p>
+                    <p>「年をとるにつれて」表示一种变化伴随年龄增长而发生。</p>
+                    <p>「短く感じるようになる」说明感觉逐渐发生变化。</p>
+                    <p>「～のはなぜだろうか」把前面的变化名词化，并询问其原因。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>伴随变化「年をとるにつれて」</span><span>感觉变化「短く感じるようになる」</span><span>话题化「のは」</span><span>原因疑问「なぜだろうか」</span></p>
                 `
             },
             {
@@ -2122,13 +2198,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "2", "3", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "信息以怎样的顺序呈现，会改变对方的理解方式，因此说话时需要有意识地安排顺序。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立疑问修饰关系。</strong>题干连体词「どのような」（怎样的）后需接续名词，此处接续选项 4「順番で」（以……顺序），构成「どのような順番で」（以怎样的顺序）。</p>
-                    <p><strong class="text-textMain">第二步：确立疑问从句与条件。</strong>将该短语与动词及疑问助词选项 2「提示するか」（去提示呢）结合构成疑问小句，再接续表示依据或条件的选项 3「によって」（根据…… / 取决于……），构成「どのような順番で提示するかによって」（取决于以怎样的顺序去提示信息）。</p>
-                    <p><strong class="text-textMain">第三步：确立主语与句尾。</strong>条件引出其所影响的动作主体，即接续选项 1「相手の受け止め方」（对方的接受方式），并与句尾的「が変わってくるので」（会发生改变，所以）相连。综合排序为 4-2-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>因为取决于以怎样的顺序去提示信息，对方的接受方式也会随之改变，所以有必要意识到顺序来表达。
-                    </p>
+                    <p>「どのような」修饰「順番」，「順番で」说明呈现信息所采用的顺序。</p>
+                    <p>「どのような順番で提示するか」构成间接疑问，表示“以怎样的顺序呈现”。</p>
+                    <p>「～かによって」表示后项随前项而变化，主语是「相手の受け止め方」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>顺序性质「どのような順番で」</span><span>呈现方式「提示するか」</span><span>变化依据「によって」</span><span>结果「相手の受け止め方が変わってくる」</span></p>
                 `
             },
             {
@@ -2145,14 +2221,17 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "「<ruby>白<rt>しろ</rt></ruby>」という" }
                 ],
                 correctOrder: ["1", "4", "2", "3"],
-                starIndex: 1,
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "3": "、"
+                },
+                translation: "在日本，人们把99岁寿辰称为“白寿”。据说，这是因为从“百”字中去掉“一”，就会变成“白”字。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立假设条件。</strong>题干动词「とる」（去掉）后接续表示恒常条件或假设的接续助词选项 1「と」（一……就 / 如果……的话），构成「「一」をとると」（如果去掉“一”的话）。</p>
-                    <p><strong class="text-textMain">第二步：确立结果状态。</strong>在该动作发生后，引出必然产生的结果，即接续选项 4「「白」という」（叫做“白”的）并修饰名词短语选项 2「字になる」（变成……字），构成「「白」という字になる」（变成叫做“白”的字）。</p>
-                    <p><strong class="text-textMain">第三步：确立因果句型与句尾。</strong>将上述事实结果作为命名的原因，接续表示由来或原因的 N2 句型选项 3「ことから」（由此 / 因为……的缘故），并与句尾的「そう呼ばれています」（所以被这样称呼）相连。综合排序为 1-4-2-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>在日本，99岁的寿辰被称为“白寿”。这是因为从“百”字中去掉“一”的话就会变成“白”字，由此才被这样称呼的。
-                    </p>
+                    <p>「「一」をとると」用「と」表示一旦去掉“一”便会出现的必然结果。</p>
+                    <p>「「白」という字になる」说明“百”字去掉“一”后形成“白”字。</p>
+                    <p>「ことから」把这一文字变化作为“白寿”这一称呼的由来。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>操作「「一」をとると」</span><span>名称「「白」という」</span><span>结果「字になる」</span><span>命名由来「ことから、そう呼ばれている」</span></p>
                 `
             },
             {
@@ -2169,14 +2248,17 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "CMなどで<ruby>何<rt>なん</rt></ruby><ruby>度<rt>ど</rt></ruby>か<ruby>見<rt>み</rt></ruby>ている" }
                 ],
                 correctOrder: ["2", "3", "4", "1"],
-                starIndex: 3,
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "3": "、"
+                },
+                translation: "讲师：“大家有没有过这样的经历：某件商品一开始完全不感兴趣，可是在电视广告等地方看过几次后，渐渐就开始在意了？这种心理现象称为‘曝光效应’。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立时间呼应与连体修饰。</strong>题干时间词「最初は」（最初）呼应描述过去状态的谓语选项 2「全く興味がなかった」（完全没有兴趣），并作为连体修饰语修饰名词及逆接选项 3「商品なのに」（明明是……商品，却），构成「最初は全く興味がなかった商品なのに」（明明是最初完全没有兴趣的商品，却）。</p>
-                    <p><strong class="text-textMain">第二步：确立状态的持续。</strong>在转折之后，接续表示反复发生或持续的状态选项 4「CMなどで何度か見ている」（在广告里看了几次）。</p>
-                    <p><strong class="text-textMain">第三步：确立期间句型与句尾。</strong>动作持续的过程中接续 N2 句型选项 1「うちに」（在……的过程中，不知不觉），并与句尾的状态变化「気になってくる」（变得在意起来）相连。综合排序为 2-3-4-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>讲师：“明明是最初完全没有兴趣的商品，但在看几次广告的过程中，不知不觉就变得在意起来了，大家有过这样的经历吗？这样的心理现象被称为‘多看效应（曝光效应）’。”
-                    </p>
+                    <p>「全く興味がなかった」修饰「商品」，说明最初对该商品完全没有兴趣。</p>
+                    <p>「商品なのに」表示与后面的心理变化相反的初始状态。</p>
+                    <p>「CMなどで何度か見ているうちに」表示在广告中反复看到的过程中，不知不觉发生了变化。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>初始状态「全く興味がなかった」</span><span>对象与转折「商品なのに」</span><span>反复接触「CMなどで何度か見ている」</span><span>过程变化「うちに気になってくる」</span></p>
                 `
             },
             // ---------------- 2019年7月 (N2) ----------------
@@ -2195,13 +2277,16 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "4", "3", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "4": "、"
+                },
+                translation: "烹饪的有趣之处在于，即使使用便宜的食材，只要肯花心思，也能做出丰盛的佳肴。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立条件与固定句型。</strong>题干「<ruby>安<rt>やす</rt></ruby>い<ruby>材<rt>ざい</rt></ruby><ruby>料<rt>りょう</rt></ruby>でも」（即使是便宜的材料）后接续名词选项 2「<ruby>工<rt>く</rt></ruby><ruby>夫<rt>ふう</rt></ruby>」（下工夫 / 巧思）与表示“取决于……”的 N2 句型选项 4「<ruby>次<rt>し</rt></ruby><ruby>第<rt>だい</rt></ruby>で」，构成「<ruby>工<rt>く</rt></ruby><ruby>夫<rt>ふう</rt></ruby><ruby>次<rt>し</rt></ruby><ruby>第<rt>だい</rt></ruby>で」（取决于如何下工夫）。</p>
-                    <p><strong class="text-textMain">第二步：确立连体修饰关系。</strong>形容动词选项 3「<ruby>豪<rt>ごう</rt></ruby><ruby>華<rt>か</rt></ruby>な」（豪华的）修饰名词选项 1「ごちそう」（盛宴 / 佳肴），构成「<ruby>豪<rt>ごう</rt></ruby><ruby>華<rt>か</rt></ruby>なごちそう」（豪华的盛宴）。</p>
-                    <p><strong class="text-textMain">第三步：组合完整句意。</strong>将前述的条件短语与名词短语顺接，并与句尾的「ができるところです」（是能够做出来的部分）相连。综合排序为 2-4-3-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>料理有趣的地方在于，即使是便宜的材料，取决于如何下工夫，也能做出豪华的盛宴。
-                    </p>
+                    <p>「工夫次第で」是固定表达，表示结果取决于如何动脑筋、下功夫。</p>
+                    <p>「安い材料でも」提出让步条件：即使食材便宜，也不妨碍做出好菜。</p>
+                    <p>「豪華な」修饰「ごちそう」，再与「ができる」组成“能做出丰盛佳肴”。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>让步条件「安い材料でも」</span><span>决定因素「工夫次第で」</span><span>成品性质「豪華な」</span><span>结果「ごちそうができる」</span></p>
                 `
             },
             {
@@ -2219,13 +2304,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "4", "1", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "田中：“昨天是我儿子的高中入学典礼。”山田：“田中先生的儿子也已经是高中生了吗？真快啊。”",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立所属关系与主语。</strong>题干「<ruby>田<rt>た</rt></ruby><ruby>中<rt>なか</rt></ruby>さんの」（田中先生的）后接续人物名词选项 2「<ruby>息<rt>むす</rt></ruby><ruby>子<rt>こ</rt></ruby>さん」（儿子），并接续提示助词选项 4「も」（也），构成「<ruby>田<rt>た</rt></ruby><ruby>中<rt>なか</rt></ruby>さんの<ruby>息<rt>むす</rt></ruby><ruby>子<rt>こ</rt></ruby>さんも」（田中先生的儿子也）。</p>
-                    <p><strong class="text-textMain">第二步：确立时间副词与状态。</strong>副词选项 1「もう」（已经）修饰后文的状态名词选项 3「<ruby>高<rt>こう</rt></ruby><ruby>校<rt>こう</rt></ruby><ruby>生<rt>せい</rt></ruby>」（高中生），构成「もう<ruby>高<rt>こう</rt></ruby><ruby>校<rt>こう</rt></ruby><ruby>生<rt>せい</rt></ruby>」（已经是高中生了）。</p>
-                    <p><strong class="text-textMain">第三步：确立主谓结构与句尾。</strong>将前述主语与谓语部分直接相连，与句尾的「ですか。<ruby>早<rt>はや</rt></ruby>いですね」（了吗。真快啊）构成呼应。综合排序为 2-4-1-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>田中：“昨天是我儿子高中的入学典礼哦。” 山田：“田中先生的儿子也已经是高中生了吗。时间过得真快啊。”
-                    </p>
+                    <p>「田中さんの息子さん」先组成所属关系，指田中的儿子。</p>
+                    <p>助词「も」带有“连他也已经……”的感叹语气，与后面的「早いですね」呼应。</p>
+                    <p>「もう高校生ですか」表示对孩子已经升入高中的惊讶。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>所属人物「田中さんの息子さん」</span><span>追加感叹「も」</span><span>时间状态「もう」</span><span>身份确认「高校生ですか」</span></p>
                 `
             },
             {
@@ -2243,13 +2328,16 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "1", "4", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "1": "、"
+                },
+                translation: "按年龄段观察世界各国国会议员选举的投票率，可以发现年轻人的投票率不仅在我国，在其他国家也普遍偏低。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立所属关系。</strong>题干「<ruby>若<rt>わか</rt></ruby>い<ruby>世<rt>せ</rt></ruby><ruby>代<rt>だい</rt></ruby>の」（年轻一代的）后需接续名词，选项 3「<ruby>投<rt>とう</rt></ruby><ruby>票<rt>ひょう</rt></ruby><ruby>率<rt>りつ</rt></ruby>は」（投票率）最为合适，构成「<ruby>若<rt>わか</rt></ruby>い<ruby>世<rt>せ</rt></ruby><ruby>代<rt>だい</rt></ruby>の<ruby>投<rt>とう</rt></ruby><ruby>票<rt>ひょう</rt></ruby><ruby>率<rt>りつ</rt></ruby>は」（年轻一代的投票率）。</p>
-                    <p><strong class="text-textMain">第二步：确立修饰关系与程度。</strong>后接选项 4「<ruby>相<rt>そう</rt></ruby><ruby>対<rt>たい</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>低<rt>ひく</rt></ruby>い」（相对较低的），并修饰选项 2「<ruby>傾<rt>けい</rt></ruby><ruby>向<rt>こう</rt></ruby>がある」（有……的倾向），构成「<ruby>相<rt>そう</rt></ruby><ruby>対<rt>たい</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>低<rt>ひく</rt></ruby>い<ruby>傾<rt>けい</rt></ruby><ruby>向<rt>こう</rt></ruby>がある」（有相对较低的倾向）。</p>
-                    <p><strong class="text-textMain">第三步：确立范围限定与句尾。</strong>将选项 1「<ruby>我<rt>わ</rt></ruby>が<ruby>国<rt>くに</rt></ruby>に<ruby>限<rt>かぎ</rt></ruby>らず」（不限于我国）插入两者之间，作为限定范围的状语，构成「<ruby>我<rt>わ</rt></ruby>が<ruby>国<rt>くに</rt></ruby>に<ruby>限<rt>かぎ</rt></ruby>らず、<ruby>相<rt>そう</rt></ruby><ruby>対<rt>たい</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>低<rt>ひく</rt></ruby>い<ruby>傾<rt>けい</rt></ruby><ruby>向<rt>こう</rt></ruby>がある」（不限于我国，都有相对较低的倾向），最后顺接句尾「ことがわかる」（可以看出……）。综合排序为 3-1-4-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>按世代来看世界各国国会议员选举的投票率，可以看出年轻一代的投票率不限于我国，都存在相对较低的倾向。
-                    </p>
+                    <p>「若い世代の投票率は」组成主题，说明比较的对象是年轻人的投票率。</p>
+                    <p>「我が国に限らず」表示这一现象不只出现在本国，范围扩展到其他国家。</p>
+                    <p>「相対的に低い」修饰「傾向」，与「ことがわかる」共同表达从数据中得出的结论。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>观察对象「若い世代の投票率は」</span><span>范围扩展「我が国に限らず」</span><span>相对评价「相対的に低い」</span><span>数据结论「傾向があることがわかる」</span></p>
                 `
             },
             {
@@ -2257,7 +2345,7 @@ window.sortQuestionBanks.N2 = [
                 level: "N2",
                 year: "2019年7月",
                 label: "問題8 - 4",
-                prefix: "④、5<ruby>歳<rt>さい</rt></ruby>の<ruby>娘<rt>むすめ</rt></ruby>は、<ruby>私<rt>わたし</rt></ruby>と同<ruby>おな</rt></ruby>じ<ruby>警<rt>けい</rt></ruby><ruby>察<rt>さつ</rt></ruby><ruby>官<rt>かん</rt></ruby>になりたいと<ruby>言<rt>い</rt></ruby>っている。<ruby>本<rt>ほん</rt></ruby><ruby>当<rt>とう</rt></ruby>に<ruby>将<rt>しょう</rt></ruby><ruby>来<rt>らい</rt></ruby>",
+                prefix: "④、5<ruby>歳<rt>さい</rt></ruby>の<ruby>娘<rt>むすめ</rt></ruby>は、<ruby>私<rt>わたし</rt></ruby>と<ruby>同<rt>おな</rt></ruby>じ<ruby>警<rt>けい</rt></ruby><ruby>察<rt>さつ</rt></ruby><ruby>官<rt>かん</rt></ruby>になりたいと<ruby>言<rt>い</rt></ruby>っている。<ruby>本<rt>ほん</rt></ruby><ruby>当<rt>とう</rt></ruby>に<ruby>将<rt>しょう</rt></ruby><ruby>来<rt>らい</rt></ruby>",
                 suffix: "<ruby>感<rt>かん</rt></ruby><ruby>激<rt>げき</rt></ruby>した。",
                 options: [
                     { id: "1", text: "<ruby>別<rt>べつ</rt></ruby>として" },
@@ -2267,13 +2355,16 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "1", "2", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "1": "、"
+                },
+                translation: "5岁的女儿说，她想和我一样成为警察。她将来是否真的会成为警察暂且不论，单是她对我说出这番话，就让我非常感动。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立时间状语与固定句型。</strong>题干「<ruby>本<rt>ほん</rt></ruby><ruby>当<rt>とう</rt></ruby>に<ruby>将<rt>しょう</rt></ruby><ruby>来<rt>らい</rt></ruby>」（真的在将来）后接选项 4「なるかどうかは」（是否会成为），并接续固定句型选项 1「<ruby>別<rt>べつ</rt></ruby>として」（暂且不谈 / 另当别论），构成「<ruby>将<rt>しょう</rt></ruby><ruby>来<rt>らい</rt></ruby>なるかどうかは<ruby>別<rt>べつ</rt></ruby>として」（将来是否会成为暂且不谈）。</p>
-                    <p><strong class="text-textMain">第二步：确立动作对象与授受动词。</strong>选项 2「そんなことを」（那样的话）作为宾语，后接续表示恩惠或感谢的授受动词短语选项 3「<ruby>言<rt>い</rt></ruby>ってくれたことに」（对于她能对我说出……），构成「そんなことを<ruby>言<rt>い</rt></ruby>ってくれたことに」（对于她能对我说出那样的话）。</p>
-                    <p><strong class="text-textMain">第三步：组合完整句意。</strong>将前述的条件短语与动作短语顺接，并与句尾的情感状态「<ruby>感<rt>かん</rt></ruby><ruby>激<rt>げき</rt></ruby>した」（感动了）相连。综合排序为 4-1-2-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>5岁的女儿说想成为和我一样的警察。将来是否真的会成为暂且不谈，对于她能对我说出那样的话，我感到非常感动。
-                    </p>
+                    <p>「将来なるかどうか」构成间接疑问，表示将来是否真的会成为警察。</p>
+                    <p>「～は別として」表示暂且不讨论前面的可能性。</p>
+                    <p>「そんなことを言ってくれたことに」把女儿为自己说出这番话视为令人感动的事情。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>未来疑问「将来なるかどうかは」</span><span>暂置不论「別として」</span><span>话语内容「そんなことを」</span><span>受惠与感情「言ってくれたことに感激した」</span></p>
                 `
             },
             {
@@ -2291,13 +2382,16 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["1", "4", "3", "2"],
                 starIndex: 0,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "4": "、"
+                },
+                translation: "听说，输掉比赛后本应十分懊恼的选手们却不知为何面带笑容，是因为教练奉行“越是艰难的时候越要保持开朗”的方针。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立逆转设定与修饰关系。</strong>题干「<ruby>本<rt>ほん</rt></ruby><ruby>当<rt>とう</rt></ruby>は」（本来是 / 实际上）后接续表示理应如此的选项 1「<ruby>悔<rt>くや</rt></ruby>しいはずの」（理应感到不甘心的），作为连体修饰语修饰主语选项 4「<ruby>選<rt>せん</rt></ruby><ruby>手<rt>しゅ</rt></ruby>たちが」（选手们），构成「<ruby>本<rt>ほん</rt></ruby><ruby>当<rt>とう</rt></ruby>は<ruby>悔<rt>くや</rt></ruby>しいはずの<ruby>選<rt>せん</rt></ruby><ruby>手<rt>しゅ</rt></ruby>たちが」（本来理应感到不甘心的选手们）。</p>
-                    <p><strong class="text-textMain">第二步：确立副词与状态修饰。</strong>主语后接续疑问副词选项 3「なぜか」（不知为何），修饰形容词选项 2「<ruby>明<rt>あか</rt></ruby>るい」（明朗的 / 开朗的），构成「なぜか<ruby>明<rt>あか</rt></ruby>るい」（不知为何却很开朗的）。</p>
-                    <p><strong class="text-textMain">第三步：组合完整句意与句尾呼应。</strong>将形容词「<ruby>明<rt>あか</rt></ruby>るい」直接与句尾名词「<ruby>表<rt>ひょう</rt></ruby><ruby>情<rt>じょう</rt></ruby>だったのは」（之所以是……表情）相连，构成整个大主语，呼应后文的原因「<ruby>監<rt>かん</rt></ruby><ruby>督<rt>とく</rt></ruby>の<ruby>方<rt>ほう</rt></ruby><ruby>針<rt>しん</rt></ruby>だからだそうだ」（听说是因为教练的方针）。综合排序为 1-4-3-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>输了比赛本来理应感到不甘心的选手们，不知为何却是一副开朗的表情，听说这是因为“越是痛苦的时候越要开朗”是教练的方针。
-                    </p>
+                    <p>「悔しいはずの」表示按常理选手们输掉比赛后应该感到懊恼，整体修饰「選手たち」。</p>
+                    <p>「選手たちが、なぜか明るい表情だった」描述与常理相反的实际表现。</p>
+                    <p>「～だったのは～からだ」是原因说明结构，后半句给出教练方针这一原因。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>应有感受「悔しいはずの」</span><span>主体「選手たちが」</span><span>意外表现「なぜか明るい表情だった」</span><span>原因「監督の方針だからだ」</span></p>
                 `
             },
             // ---------------- 2019年12月 (N2) ----------------
@@ -2316,13 +2410,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["1", "4", "3", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "对于其他公司的提问或咨询，公司规定必须先在内部讨论，否则不能作答。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立动作先后与固定句型。</strong>题干「一度社内で」（先在公司内部）后接续动作名词选项 1「検討」（探讨），再接续动词连用形式选项 4「してから」（做……之后），构成「検討してから」（探讨之后）。</p>
-                    <p><strong class="text-textMain">第二步：确立条件句型。</strong>在动作发生之后，接续 N2 句型选项 3「でないと」（如果不……的话），构成「検討してからでないと」（如果不先探讨一下的话）。「～てからでないと」是固定搭配，后项必须接续否定表达。</p>
-                    <p><strong class="text-textMain">第三步：确立否定对象与句尾。</strong>该条件句型后接续名词选项 2「回答」（回答），直接与句尾的「できないことになっています」（规定不能……）相连，构成「回答できないことになっています」（规定是不能回答的）。综合排序为 1-4-3-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>关于来自其他公司的提问和咨询，规定如果不先在公司内部探讨一下的话，是不能予以回答的。
-                    </p>
+                    <p>「社内で検討してから」表示先在公司内部进行讨论。</p>
+                    <p>「～てからでないと」表示不先完成前项就不能进行后项，必须与否定结果呼应。</p>
+                    <p>「回答できないことになっています」说明这是公司的既定规则，而非个人临时决定。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>场所「社内で」</span><span>先行步骤「検討してから」</span><span>必要条件「でないと」</span><span>规则结果「回答できないことになっている」</span></p>
                 `
             },
             {
@@ -2339,14 +2433,14 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "テレビを<ruby>見<rt>み</rt></ruby><ruby>続<rt>つづ</rt></ruby>けてしまい" }
                 ],
                 correctOrder: ["2", "3", "1", "4"],
-                starIndex: 0,
+                starIndex: 2,
+                analysisStyle: "structured",
+                translation: "昨晚我虽然一直想着要在11点前睡觉，却还是忍不住一直看电视，结果凌晨1点才睡。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立意向与逆接。</strong>题干「11時までには」（在11点之前）后接续意向形选项 2「寝ようと」（想睡），再接续表示逆接的 N2 句型选项 3「思いつつ」（虽然想着……却），构成「寝ようと思いつつ」（虽然想着要睡，却）。</p>
-                    <p><strong class="text-textMain">第二步：确立副词与动作搭配。</strong>在逆接之后，接续表示无意识或控制不住的副词选项 1「つい」（不知不觉地），修饰动作选项 4「テレビを見続けてしまい」（一直看电视了，并且），构成「ついテレビを見続けてしまい」（不知不觉地就一直看电视了）。</p>
-                    <p><strong class="text-textMain">第三步：组合完整句意。</strong>将前述短语与句尾的客观事实「結局寝たのは1時だった」（结果睡觉的时候已经是1点了）相连。综合排序为 2-3-1-4。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>昨天晚上，虽然想着11点之前要睡觉的，却不知不觉地一直看电视，结果睡觉的时候已经是1点了。
-                    </p>
+                    <p>「寝ようと思う」表示打算睡觉，接「つつ」后形成“虽这样想却……”的逆接。</p>
+                    <p>「つい」表示不由自主，修饰带有懊悔语气的「テレビを見続けてしまい」。</p>
+                    <p>前面的打算与实际行为形成对比，句末再交代最终凌晨1点才睡的结果。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>原定计划「11時までには寝ようと」</span><span>逆接「思いつつ」</span><span>失控行为「ついテレビを見続けてしまい」</span><span>结果「結局寝たのは1時だった」</span></p>
                 `
             },
             {
@@ -2364,13 +2458,17 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["1", "3", "4", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "1": "、",
+                    "3": "、"
+                },
+                translation: "即使挑战新事物，我也不会犹豫。因为我觉得，可以先尝试，如果不顺利，到时再想该怎么办就好。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立先后动作。</strong>副词「まず」（首先）后接续尝试性动作选项 1「やってみて」（试着做一下），再接续表示假设条件的选项 3「うまくいかなかったら」（如果不顺利的话），构成「まずやってみてうまくいかなかったら」（首先试着做一下，如果不顺利的话）。</p>
-                    <p><strong class="text-textMain">第二步：确立应对策略。</strong>在不顺利的条件下，引出疑问小句选项 4「そのときにどうしたらいいか」（那时候该怎么做才好），作为后续思考动作的宾语。</p>
-                    <p><strong class="text-textMain">第三步：确立思考内容与句尾。</strong>将该疑问小句接续动作选项 2「もう一度考えればいい」（再思考一次就好），并与句尾的「と思っているからだ」（是因为我觉得……）相连。综合排序为 1-3-4-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>我在挑战新事物时从不烦恼。是因为我觉得，首先试着去做一下，如果不顺利的话，那时候再考虑该怎么做就好了。
-                    </p>
+                    <p>「まずやってみて」先提出行动优先的做法：“先试试看”。</p>
+                    <p>「うまくいかなかったら」设定尝试失败时的条件。</p>
+                    <p>「そのときにどうしたらいいか」是「考える」的内容，「もう一度考えればいい」表示到那时再考虑即可。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>先行尝试「まずやってみて」</span><span>失败条件「うまくいかなかったら」</span><span>应对问题「そのときにどうしたらいいか」</span><span>处理方式「もう一度考えればいい」</span></p>
                 `
             },
             {
@@ -2388,13 +2486,16 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "1", "4", "2"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "1": "、"
+                },
+                translation: "那本漫画的最新一期在家附近的书店已经售罄，所以没能买到；听说去邻镇的ABC书店还能买到，虽然有点远，我还是想去看看。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立原因与修饰关系。</strong>题干「家の近くの本屋では」（在离家近的书店）后接续状态原因选项 3「もう売り切れていて」（已经卖光了），并修饰后续名词选项 1「買えなかった漫画の最新号が」（没能买到的漫画最新一期），构成「家の近くの本屋ではもう売り切れていて買えなかった漫画の最新号が」（在离家近的书店因为卖光了而没买到的最新一期漫画）。</p>
-                    <p><strong class="text-textMain">第二步：确立条件与可能性。</strong>名词主语后接续假设条件选项 4「隣町のABC書店に行けば」（如果去隔壁镇的ABC书店的话），再引出基于此条件传闻的可能性选项 2「まだ買えるらしいので」（似乎还能买到，所以）。</p>
-                    <p><strong class="text-textMain">第三步：组合完整句意。</strong>将前述的原因状语顺接句尾的「少し遠いけど行ってみようと思う」（虽然有点远但我想去看看）。综合排序为 3-1-4-2。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>在离家近的书店因为卖光了而没买到的最新一期漫画，如果去隔壁镇的ABC书店似乎还能买到，所以虽然有点远但我打算去看看。
-                    </p>
+                    <p>「家の近くの本屋ではもう売り切れていて」说明附近书店的售罄状态。</p>
+                    <p>「買えなかった」修饰「漫画の最新号」，组成“没能买到的漫画最新一期”。</p>
+                    <p>「隣町のABC書店に行けばまだ買えるらしいので」用条件形和传闻表达说明决定前往的原因。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>售罄状态「もう売り切れていて」</span><span>目标商品「買えなかった漫画の最新号が」</span><span>购买条件「隣町のABC書店に行けば」</span><span>传闻与决定「まだ買えるらしいので、行ってみる」</span></p>
                 `
             },
             {
@@ -2412,13 +2513,16 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "1", "2", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: {
+                    "1": "、"
+                },
+                translation: "第一次去了那家热门咖喱店。在几种蔬菜咖喱中，我选择的是加入大量夏季蔬菜的“夏季限定蔬菜咖喱”，味道果然名不虚传。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立所属与范围。</strong>题干「野菜の」（蔬菜的）后接名词选项 4「カレーがいくつかある」（有几种咖喱），再接续表示范围的选项 1「中で」（在……之中），构成「野菜のカレーがいくつかある中で」（在有几种蔬菜咖喱的选项之中）。</p>
-                    <p><strong class="text-textMain">第二步：确立主语与修饰关系。</strong>引出主语选项 2「私が選んだのは」（我所选择的是），后接修饰语选项 3「夏の野菜がたっぷり入った」（加入了大量夏日蔬菜的）。</p>
-                    <p><strong class="text-textMain">第三步：组合完整句意。</strong>将上述修饰语直接修饰句尾的专有名词「『夏限定ベジタブルカレー』」（“夏日限定蔬菜咖喱”）。综合排序为 4-1-2-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>初次访问话题中的咖喱店。在几种蔬菜咖喱之中，我所选择的是加入了大量夏日蔬菜的“夏日限定蔬菜咖喱”。正如评价一般美味。
-                    </p>
+                    <p>「野菜のカレーがいくつかある」说明店里有多种蔬菜咖喱。</p>
+                    <p>「中で」限定选择范围，后接「私が選んだのは」提出自己所选的品项。</p>
+                    <p>「夏の野菜がたっぷり入った」修饰具体菜名「夏限定ベジタブルカレー」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>备选范围「野菜のカレーがいくつかある」</span><span>范围限定「中で」</span><span>选择者「私が選んだのは」</span><span>菜品说明「夏の野菜がたっぷり入った夏限定ベジタブルカレー」</span></p>
                 `
             },
             // ---------------- 2020年12月 (N2) ----------------
@@ -2436,14 +2540,14 @@ window.sortQuestionBanks.N2 = [
                     { id: "4", text: "<ruby>作<rt>つく</rt></ruby>った" }
                 ],
                 correctOrder: ["2", "3", "4", "1"],
-                starIndex: 2,
+                starIndex: 1,
+                analysisStyle: "structured",
+                translation: "昨天我第一次试着做面包。明明完全按照烹饪杂志食谱上写的方法做了，面包却没能好好发起来。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立所属与修饰。</strong>题干「<ruby>料<rt>りょう</rt></ruby><ruby>理<rt>り</rt></ruby><ruby>雑<rt>ざっ</rt></ruby><ruby>誌<rt>し</rt></ruby>の」（料理杂志的）后接续名词短语选项 2「レシピに<ruby>書<rt>か</rt></ruby>いてある」（写在食谱上的），构成「<ruby>料<rt>りょう</rt></ruby><ruby>理<rt>り</rt></ruby><ruby>雑<rt>ざっ</rt></ruby><ruby>誌<rt>し</rt></ruby>のレシピに<ruby>書<rt>か</rt></ruby>いてある」（写在料理杂志食谱上的）。</p>
-                    <p><strong class="text-textMain">第二步：确立基准与动作。</strong>动词连体形后接续表示“按照……”的选项 3「とおりに」，随后接续具体的动作选项 4「<ruby>作<rt>つく</rt></ruby>った」（制作了），构成「～<ruby>書<rt>か</rt></ruby>いてあるとおりに<ruby>作<rt>つく</rt></ruby>った」（按照写着的那样制作了）。</p>
-                    <p><strong class="text-textMain">第三步：确立逆接与句尾。</strong>动作后接续表示转折的逆接助词选项 1「のに」（明明……却），与句尾的「うまく<ruby>膨<rt>ふく</rt></ruby>らまなかった」（没有很好地膨胀起来）相连。综合排序为 2-3-4-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>昨天，我第一次试着做了面包。明明是按照料理杂志食谱上写着的那样去做的，却没有很好地膨胀起来。
-                    </p>
+                    <p>「レシピに書いてある」修饰做法的内容，表示食谱上事先写明的方法。</p>
+                    <p>「～とおりに」表示按照前面的内容行动，与「作った」组成“按食谱所写的方法做了”。</p>
+                    <p>「作ったのに」用逆接引出与预期相反的结果「うまく膨らまなかった」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>食谱内容「レシピに書いてある」</span><span>遵循方法「とおりに」</span><span>实际行动「作った」</span><span>逆接结果「のに、うまく膨らまなかった」</span></p>
                 `
             },
             {
@@ -2461,13 +2565,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["4", "3", "2", "1"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "所谓“十倍粥”，就是用相当于一份米十倍量的水熬成的粥。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立比例基准。</strong>选项 4「<ruby>米<rt>こめ</rt></ruby>1に<ruby>対<rt>たい</rt></ruby>して」（对于1份米而言）作为比例的基准条件，放在前列。</p>
-                    <p><strong class="text-textMain">第二步：确立数量修饰与动作手段。</strong>基准后接续具体的倍数选项 3「10<ruby>倍<rt>ばい</rt></ruby>の」（10倍的），修饰作为手段或材料的名词及助词选项 2「<ruby>水<rt>みず</rt></ruby>で」（用水），构成「<ruby>米<rt>こめ</rt></ruby>1に<ruby>対<rt>たい</rt></ruby>して10<ruby>倍<rt>ばい</rt></ruby>の<ruby>水<rt>みず</rt></ruby>で」（对于1份米而言用10倍的水）。</p>
-                    <p><strong class="text-textMain">第三步：确立动作与句尾。</strong>最后接续谓语动词连体形选项 1「<ruby>作<rt>つく</rt></ruby>った」（制作的），整体作为连体修饰语，修饰句尾的名词短语「おかゆのことです」（是……的粥）。综合排序为 4-3-2-1。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>所谓的“10倍粥”，就是对于1份米而言，用10倍的水熬制而成的粥。
-                    </p>
+                    <p>「米1に対して」设定计算比例的基准，表示以一份米为准。</p>
+                    <p>「10倍の」修饰「水」，而「水で」中的「で」标示制作粥所使用的材料。</p>
+                    <p>「作った」以连体形修饰句尾的「おかゆ」，完成对“十倍粥”的定义。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>比例基准「米1に対して」</span><span>水量「10倍の水」</span><span>制作材料「で」</span><span>定义「作ったおかゆ」</span></p>
                 `
             },
             {
@@ -2476,7 +2580,7 @@ window.sortQuestionBanks.N2 = [
                 year: "2020年12月",
                 label: "問題8 - 3",
                 prefix: "③、<ruby>私<rt>わたし</rt></ruby>が<ruby>就<rt>しゅう</rt></ruby><ruby>職<rt>しょく</rt></ruby>した<ruby>商<rt>しょう</rt></ruby><ruby>社<rt>しゃ</rt></ruby>は<ruby>大<rt>おお</rt></ruby><ruby>手<rt>て</rt></ruby>の",
-                suffix: "<ruby>新<rt>しん</rt></ruby><ruby>人<rt>じん</rt></ruby>でも<ruby>大<rt>おお</rt></ruby><きな<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>を<ruby>任<rt>まか</rt></ruby>せてもらえるので、やりがいがある。",
+                suffix: "<ruby>新<rt>しん</rt></ruby><ruby>人<rt>じん</rt></ruby>でも<ruby>大<rt>おお</rt></ruby>きな<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>を<ruby>任<rt>まか</rt></ruby>せてもらえるので、やりがいがある。",
                 options: [
                     { id: "1", text: "<ruby>決<rt>けっ</rt></ruby>して" },
                     { id: "2", text: "<ruby>商<rt>しょう</rt></ruby><ruby>社<rt>しゃ</rt></ruby>に<ruby>比<rt>くら</rt></ruby>べると" },
@@ -2485,13 +2589,14 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["2", "1", "4", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、", "4": "、" },
+                translation: "我任职的贸易公司与大型商社相比，规模绝对算不上大，但只要有干劲，即使是新人也能得到负责重要工作的机会，所以很有成就感。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立比较基准。</strong>题干「<ruby>大<rt>おお</rt></ruby><ruby>手<rt>て</rt></ruby>の」（大型的）后接续名词及比较基准选项 2「<ruby>商<rt>しょう</rt></ruby><ruby>社<rt>しゃ</rt></ruby>に<ruby>比<rt>くら</rt></ruby>べると」（与商社相比的话），构成「<ruby>大<rt>おお</rt></ruby><ruby>手<rt>て</rt></ruby>の<ruby>商<rt>しょう</rt></ruby><ruby>社<rt>しゃ</rt></ruby>に<ruby>比<rt>くら</rt></ruby>べると」（与大型商社相比的话）。</p>
-                    <p><strong class="text-textMain">第二步：确立否定呼应与转折。</strong>副词选项 1「<ruby>決<rt>けっ</rt></ruby>して」（绝对不 / 并不）需与否定表达相呼应，接续选项 4「<ruby>規<rt>き</rt></ruby><ruby>模<rt>ぼ</rt></ruby>は<ruby>大<rt>おお</rt></ruby>きくないが」（虽然规模并不大），构成「<ruby>決<rt>けっ</rt></ruby>して<ruby>規<rt>き</rt></ruby><ruby>模<rt>ぼ</rt></ruby>は<ruby>大<rt>おお</rt></ruby>きくないが」（虽然规模绝不算大，但是）。</p>
-                    <p><strong class="text-textMain">第三步：确立条件与句尾。</strong>在转折后接续积极的假设条件选项 3「やる<ruby>気<rt>き</rt></ruby>があれば」（只要有干劲的话），顺接句尾的「<ruby>新<rt>しん</rt></ruby><ruby>人<rt>じん</rt></ruby>でも<ruby>大<rt>おお</rt></ruby>きな<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>を<ruby>任<rt>まか</rt></ruby>せてもらえるので、やりがいがある」（即使是新人也能被委以重任，所以很有价值）。综合排序为 2-1-4-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>我就职的商社与大型商社相比，虽然规模绝对算不上大，但只要有干劲，即使是新人也能被委以重任，因此非常值得一做。
-                    </p>
+                    <p>「大手の商社に比べると」提出比较基准，下文说明自己任职公司的特点。</p>
+                    <p>「決して」必须与否定表达呼应，因此连接「規模は大きくないが」，表示规模虽不大，但还有后文的优点。</p>
+                    <p>「やる気があれば」设定条件，后面的「任せてもらえる」表示能够获得被委以重任的机会。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>比较基准「大手の商社に比べると」</span><span>否定呼应「決して規模は大きくない」</span><span>转折「が」</span><span>条件与收获「やる気があれば…任せてもらえる」</span></p>
                 `
             },
             {
@@ -2509,13 +2614,13 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["3", "2", "1", "4"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                translation: "她是活跃于20世纪70年代的爵士钢琴家，在日本爵士乐史上举足轻重，甚至可以说，不提她就无从谈起日本爵士乐。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立缺一不可句型。</strong>题干「この<ruby>人<rt>ひと</rt></ruby>」（这个人）后接续表示“如果没有……”的 N2 固定句型选项 3「<ruby>抜<rt>ぬ</rt></ruby>きには」（如果没有…… / 抛开……的话），构成「この<ruby>人<rt>ひと</rt></ruby><ruby>抜<rt>ぬ</rt></ruby>きには」（抛开这个人不谈的话）。</p>
-                    <p><strong class="text-textMain">第二步：确立动作对象与不可能搭配。</strong>「～抜きには」常与否定表达呼应，引出话题选项 2「<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>のジャズは」（日本的爵士乐），并接续否定可能态选项 1「<ruby>語<rt>かた</rt></ruby>れない」（无法谈论），构成「<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>のジャズは<ruby>語<rt>かた</rt></ruby>れない」（就无法谈论日本的爵士乐）。</p>
-                    <p><strong class="text-textMain">第三步：确立程度修饰与句尾。</strong>将前述的极高评价整体作为程度修饰语，接续选项 4「というほど」（到了这般程度），进而修饰句尾的名词短语「<ruby>大<rt>おお</rt></ruby>きな<ruby>存<rt>そん</rt></ruby><ruby>在<rt>ざい</rt></ruby>だった」（是如此巨大的存在）。综合排序为 3-2-1-4。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>她是活跃于1970年代的爵士钢琴家，是一个到了如果不提她就无法谈论日本爵士乐这般地步的巨大存在。
-                    </p>
+                    <p>「この人抜きには」表示如果把这个人排除在外，必须与后面的否定表达呼应。</p>
+                    <p>「日本のジャズは語れない」表示无法谈论日本爵士乐，与「抜きには」构成“缺少……就无法……”的搭配。</p>
+                    <p>「というほど」将前面的评价作为程度基准，修饰「大きな存在だった」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>排除条件「この人抜きには」</span><span>话题「日本のジャズは」</span><span>否定呼应「語れない」</span><span>程度评价「というほど大きな存在」</span></p>
                 `
             },
             {
@@ -2533,13 +2638,1136 @@ window.sortQuestionBanks.N2 = [
                 ],
                 correctOrder: ["1", "4", "2", "3"],
                 starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、", "2": "、" },
+                translation: "送礼物时，如果只凭自己一厢情愿的想法挑选物品，别说让对方高兴了，有时反而会给对方添麻烦，所以还是要充分考虑对方的喜好和实际情况后再做决定。",
                 explanation: `
-                    <p><strong class="text-textMain">第一步：确立连体修饰。</strong>题干「<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>勝<rt>かっ</rt></ruby><ruby>手<rt>て</rt></ruby>な」（自己一厢情愿的 / 随便的）后接续名词及限定表达选项 1「<ruby>思<rt>おも</rt></ruby>い<ruby>込<rt>こ</rt></ruby>みだけで」（仅凭主观臆断），构成「<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の<ruby>勝<rt>かっ</rt></ruby><ruby>手<rt>て</rt></ruby>な<ruby>思<rt>おも</rt></ruby>い<ruby>込<rt>こ</rt></ruby>みだけで」（仅凭自己一厢情愿的主观臆断）。</p>
-                    <p><strong class="text-textMain">第二步：确立条件动作。</strong>该状态状语后接续具体的动作及假定条件选项 4「<ruby>品<rt>しな</rt></ruby><ruby>物<rt>もの</rt></ruby>を<ruby>選<rt>えら</rt></ruby>ぶと」（如果去挑选物品的话），构成「～<ruby>思<rt>おも</rt></ruby>い<ruby>込<rt>こ</rt></ruby>みだけで<ruby>品<rt>しな</rt></ruby><ruby>物<rt>もの</rt></ruby>を<ruby>選<rt>えら</rt></ruby>ぶと」（如果仅凭主观臆断去挑选物品的话）。</p>
-                    <p><strong class="text-textMain">第三步：确立反面结果与句尾呼应。</strong>动作发生后，接续表示与预期相反的 N2 句型选项 2「<ruby>喜<rt>よろこ</rt></ruby>ばれるどころか」（别说被喜欢了，反而），引出负面结果选项 3「<ruby>迷<rt>めい</rt></ruby><ruby>惑<rt>わく</rt></ruby>をかけることもあるので」（有时还会给对方造成困扰，所以），最后顺接句尾的建议「<ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>の<ruby>趣<rt>しゅ</rt></ruby><ruby>味<rt>み</rt></ruby>や<ruby>都<rt>つ</rt></ruby><ruby>合<rt>ごう</rt></ruby>をよく<ruby>考<rt>かんが</rt></ruby>えて<ruby>決<rt>き</rt></ruby>めましょう」（仔细考虑对方的喜好和方便与否再做决定吧）。综合排序为 1-4-2-3。</p>
-                    <p class="mt-4 bg-bgCard p-4 md:p-5 text-sm md:text-base border border-borderMain rounded-sm leading-loose">
-                        <span class="font-bold text-textMain">完整句意：</span>赠送礼物的时候，如果仅凭自己一厢情愿的主观臆断去挑选物品的话，别说让对方高兴了，有时反而会给对方造成困扰，所以还是仔细考虑对方的喜好和情况再做决定吧。
-                    </p>
+                    <p>「自分の勝手な」修饰「思い込み」，「だけで」则限定挑选礼物的依据，表示只凭自己的主观想法。</p>
+                    <p>「品物を選ぶと」用「と」提出一旦这样挑选就可能导致的结果。</p>
+                    <p>「喜ばれるどころか」表示实际结果非但与期待不同，反而可能「迷惑をかける」，「ので」再引出后面的建议。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>主观依据「勝手な思い込みだけで」</span><span>条件「品物を選ぶと」</span><span>反预期「喜ばれるどころか」</span><span>负面结果与建议「迷惑をかけることもあるので…」</span></p>
+                `
+            },
+            // ---------------- 2021年7月（结构化解析样例） ----------------
+            {
+                id: "n2_2107_1",
+                level: "N2",
+                year: "2021年7月",
+                label: "問題8 - 1",
+                prefix: "もうすぐ高校卒業だ。この学校で先生や友達と過ごす",
+                suffix: "。",
+                options: [
+                    { id: "1", text: "あと数週間" },
+                    { id: "2", text: "と思うと" },
+                    { id: "3", text: "のも" },
+                    { id: "4", text: "寂しさが増してくる" }
+                ],
+                correctOrder: ["3", "1", "2", "4"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "马上就要高中毕业了。一想到能和老师、朋友们一起在这所学校度过的时间只剩几周，心中的寂寞感便越来越强。",
+                explanation: `
+                    <p>「過ごす」后接「のも」，把“和老师、朋友一起度过校园生活”这件事名词化。</p>
+                    <p>接着用「あと数週間」说明这段生活“只剩几周”。</p>
+                    <p>「と思うと」表示“一想到……”，后面自然接由此产生的感受「寂しさが増してくる」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>剩余时间「過ごすのもあと数週間」</span><span>想到这件事「と思うと」</span><span>产生的感受「寂しさが増してくる」</span></p>
+                `
+            },
+            {
+                id: "n2_2107_2",
+                level: "N2",
+                year: "2021年7月",
+                label: "問題8 - 2",
+                prefix: "A「サラリーマンから<ruby>農家<rt>のうか</rt></ruby>",
+                suffix: "があるんだね。」<br>B「<ruby>自分<rt>じぶん</rt></ruby>の<ruby>夢<rt>ゆめ</rt></ruby>をどうしてもあきらめきれなくてね。」",
+                options: [
+                    { id: "1", text: "<ruby>勇気<rt>ゆうき</rt></ruby>" },
+                    { id: "2", text: "とは" },
+                    { id: "3", text: "ずいぶん" },
+                    { id: "4", text: "になる" }
+                ],
+                correctOrder: ["4", "2", "3", "1"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "A：“从公司职员转行做农民，真是相当有勇气呢。” B：“因为我无论如何也无法彻底放弃自己的梦想。”",
+                explanation: `
+                    <p>「<ruby>農家<rt>のうか</rt></ruby>になる」表示“成为农民”，与前面的「サラリーマンから」组成“从公司职员转行做农民”。</p>
+                    <p>「とは」承接整件事，带有惊讶或感叹的语气。</p>
+                    <p>「ずいぶん」修饰「<ruby>勇気<rt>ゆうき</rt></ruby>がある」，表示“相当有勇气”。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>身份转变「<ruby>農家<rt>のうか</rt></ruby>になる」</span><span>感叹提示「とは」</span><span>程度评价「ずいぶん<ruby>勇気<rt>ゆうき</rt></ruby>がある」</span></p>
+                `
+            },
+            {
+                id: "n2_2107_3",
+                level: "N2",
+                year: "2021年7月",
+                label: "問題8 - 3",
+                prefix: "<ruby>遠足<rt>えんそく</rt></ruby>の<ruby>日<rt>ひ</rt></ruby>の<ruby>朝<rt>あさ</rt></ruby>、<ruby>娘<rt>むすめ</rt></ruby>は、「いってきます」と",
+                suffix: "<ruby>飛<rt>と</rt></ruby>び<ruby>出<rt>だ</rt></ruby>していった。",
+                options: [
+                    { id: "1", text: "<ruby>終<rt>お</rt></ruby>わらないか" },
+                    { id: "2", text: "<ruby>言<rt>い</rt></ruby>い<ruby>終<rt>お</rt></ruby>わるか" },
+                    { id: "3", text: "<ruby>玄関<rt>げんかん</rt></ruby>を" },
+                    { id: "4", text: "のうちに" }
+                ],
+                correctOrder: ["2", "1", "4", "3"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                translation: "远足那天早上，女儿刚说完“我出门了”，就冲出了家门。",
+                explanation: `
+                    <p>「<ruby>言<rt>い</rt></ruby>い<ruby>終<rt>お</rt></ruby>わるか<ruby>終<rt>お</rt></ruby>わらないかのうちに」是固定结构，表示“刚说完，还没等话音落下”。</p>
+                    <p>「<ruby>玄関<rt>げんかん</rt></ruby>を」与「<ruby>飛<rt>と</rt></ruby>び<ruby>出<rt>だ</rt></ruby>す」搭配，「を」表示离开的场所。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>动作刚要完成「<ruby>言<rt>い</rt></ruby>い<ruby>終<rt>お</rt></ruby>わるか<ruby>終<rt>お</rt></ruby>わらないかのうちに」</span><span>离开场所「<ruby>玄関<rt>げんかん</rt></ruby>を」</span><span>后续动作「<ruby>飛<rt>と</rt></ruby>び<ruby>出<rt>だ</rt></ruby>していった」</span></p>
+                `
+            },
+            {
+                id: "n2_2107_4",
+                level: "N2",
+                year: "2021年7月",
+                label: "問題8 - 4",
+                prefix: "<ruby>参考書<rt>さんこうしょ</rt></ruby>を<ruby>読<rt>よ</rt></ruby>んで<ruby>完璧<rt>かんぺき</rt></ruby>に",
+                suffix: "ということがよくある。",
+                options: [
+                    { id: "1", text: "<ruby>理解<rt>りかい</rt></ruby>した" },
+                    { id: "2", text: "<ruby>問題<rt>もんだい</rt></ruby>を<ruby>解<rt>と</rt></ruby>いてみると" },
+                    { id: "3", text: "できない" },
+                    { id: "4", text: "つもりでも" }
+                ],
+                correctOrder: ["1", "4", "2", "3"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、", "2": "、" },
+                translation: "常常会有这样的情况：读参考书时以为自己已经完全理解了，但实际试着做题却做不出来。",
+                explanation: `
+                    <p>「<ruby>理解<rt>りかい</rt></ruby>したつもりでも」表示“虽然自以为已经理解了”。</p>
+                    <p>「<ruby>問題<rt>もんだい</rt></ruby>を<ruby>解<rt>と</rt></ruby>いてみると」表示“实际试着做题时”，引出检验后的结果。</p>
+                    <p>结果是「できない」，再由「ということがよくある」概括为经常出现的情况。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>主观判断「<ruby>理解<rt>りかい</rt></ruby>したつもりでも」</span><span>实际检验「<ruby>問題<rt>もんだい</rt></ruby>を<ruby>解<rt>と</rt></ruby>いてみると」</span><span>结果「できない」</span></p>
+                `
+            },
+            {
+                id: "n2_2107_5",
+                level: "N2",
+                year: "2021年7月",
+                label: "問題8 - 5",
+                prefix: "この<ruby>池<rt>いけ</rt></ruby>に",
+                suffix: "そうだ。",
+                options: [
+                    { id: "1", text: "ものもいる" },
+                    { id: "2", text: "すむ" },
+                    { id: "3", text: "<ruby>魚<rt>さかな</rt></ruby>の<ruby>中<rt>なか</rt></ruby>には" },
+                    { id: "4", text: "100<ruby>年<rt>ねん</rt></ruby><ruby>以上<rt>いじょう</rt></ruby><ruby>生<rt>い</rt></ruby>きる" }
+                ],
+                correctOrder: ["2", "3", "4", "1"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "3": "、" },
+                translation: "听说生活在这个池塘里的鱼中，也有能活100年以上的。",
+                explanation: `
+                    <p>「この<ruby>池<rt>いけ</rt></ruby>にすむ」修饰后面的「<ruby>魚<rt>さかな</rt></ruby>」，表示“生活在这个池塘里的鱼”。</p>
+                    <p>「<ruby>魚<rt>さかな</rt></ruby>の<ruby>中<rt>なか</rt></ruby>には」从这类鱼中提出一部分作为话题。</p>
+                    <p>「100<ruby>年<rt>ねん</rt></ruby><ruby>以上<rt>いじょう</rt></ruby><ruby>生<rt>い</rt></ruby>きる」修饰「もの」，最后用「ものもいる」表示“也有这样的鱼”。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>范围「この<ruby>池<rt>いけ</rt></ruby>にすむ<ruby>魚<rt>さかな</rt></ruby>の<ruby>中<rt>なか</rt></ruby>には」</span><span>特征「100<ruby>年<rt>ねん</rt></ruby><ruby>以上<rt>いじょう</rt></ruby><ruby>生<rt>い</rt></ruby>きる」</span><span>存在「ものもいる」</span></p>
+                `
+            },
+            // ---------------- 2021年12月（结构化解析） ----------------
+            {
+                id: "n2_2112_1",
+                level: "N2",
+                year: "2021年12月",
+                label: "問題8 - 1",
+                prefix: "もう<ruby>酒<rt>さけ</rt></ruby>は<ruby>飲<rt>の</rt></ruby>まないと",
+                suffix: "<ruby>絶対<rt>ぜったい</rt></ruby>に<ruby>守<rt>まも</rt></ruby>りたい。",
+                options: [
+                    { id: "1", text: "<ruby>決<rt>き</rt></ruby>めた" },
+                    { id: "2", text: "どんなに" },
+                    { id: "3", text: "<ruby>以上<rt>いじょう</rt></ruby>は" },
+                    { id: "4", text: "<ruby>誘<rt>さそ</rt></ruby>われても" }
+                ],
+                correctOrder: ["1", "3", "2", "4"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "3": "、" },
+                translation: "既然已经决定不再喝酒，无论别人怎么劝，我都一定要遵守这个决定。",
+                explanation: `
+                    <p>「<ruby>飲<rt>の</rt></ruby>まないと<ruby>決<rt>き</rt></ruby>めた」先说明已经作出的决定。</p>
+                    <p>「<ruby>以上<rt>いじょう</rt></ruby>は」表示“既然已经……”，后面接应当贯彻的意志；「どんなに～ても」表示“无论怎样……也……”。</p>
+                    <p>因此「どんなに<ruby>誘<rt>さそ</rt></ruby>われても」作为让步条件，最后落到「<ruby>絶対<rt>ぜったい</rt></ruby>に<ruby>守<rt>まも</rt></ruby>りたい」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>决定「<ruby>飲<rt>の</rt></ruby>まないと<ruby>決<rt>き</rt></ruby>めた」</span><span>既定前提「<ruby>以上<rt>いじょう</rt></ruby>は」</span><span>让步「どんなに<ruby>誘<rt>さそ</rt></ruby>われても」</span><span>意志「<ruby>絶対<rt>ぜったい</rt></ruby>に<ruby>守<rt>まも</rt></ruby>りたい」</span></p>
+                `
+            },
+            {
+                id: "n2_2112_2",
+                level: "N2",
+                year: "2021年12月",
+                label: "問題8 - 2",
+                prefix: "<ruby>必要<rt>ひつよう</rt></ruby>のない<ruby>物<rt>もの</rt></ruby>でも、<ruby>欲<rt>ほ</rt></ruby>しくなると",
+                suffix: "しまう。",
+                options: [
+                    { id: "1", text: "<ruby>買<rt>か</rt></ruby>わずには" },
+                    { id: "2", text: "すぐ<ruby>買<rt>か</rt></ruby>って" },
+                    { id: "3", text: "いられなく" },
+                    { id: "4", text: "なって" }
+                ],
+                correctOrder: ["1", "3", "4", "2"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、" },
+                translation: "即使是不需要的东西，一旦想要，就会变得忍不住非买不可，马上把它买下来。",
+                explanation: `
+                    <p>「<ruby>買<rt>か</rt></ruby>わずにはいられない」是固定表达，表示“忍不住要买、非买不可”。</p>
+                    <p>把「いられない」变为「いられなくなって」，表示进入了“控制不住想买”的状态。</p>
+                    <p>后面的「すぐ<ruby>買<rt>か</rt></ruby>ってしまう」说明由这种状态产生的结果。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>冲动「<ruby>買<rt>か</rt></ruby>わずにはいられない」</span><span>状态变化「いられなくなって」</span><span>结果「すぐ<ruby>買<rt>か</rt></ruby>ってしまう」</span></p>
+                `
+            },
+            {
+                id: "n2_2112_3",
+                level: "N2",
+                year: "2021年12月",
+                label: "問題8 - 3",
+                prefix: "パソコンの<ruby>電源<rt>でんげん</rt></ruby>を<ruby>入<rt>い</rt></ruby>れたのだが、<ruby>画面<rt>がめん</rt></ruby>に「お<ruby>待<rt>ま</rt></ruby>ちください」という",
+                suffix: "<ruby>電源<rt>でんげん</rt></ruby>を<ruby>入<rt>い</rt></ruby>れ<ruby>直<rt>なお</rt></ruby>した。",
+                options: [
+                    { id: "1", text: "<ruby>待<rt>ま</rt></ruby>っても" },
+                    { id: "2", text: "<ruby>何分<rt>なんぷん</rt></ruby>" },
+                    { id: "3", text: "メッセージが<ruby>出<rt>で</rt></ruby>たまま" },
+                    { id: "4", text: "<ruby>先<rt>さき</rt></ruby>に<ruby>進<rt>すす</rt></ruby>まないので" }
+                ],
+                correctOrder: ["3", "2", "1", "4"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、" },
+                translation: "虽然打开了电脑，但画面一直显示“请稍候”，等了好几分钟也没有继续运行，所以重新启动了电脑。",
+                explanation: `
+                    <p>「『お<ruby>待<rt>ま</rt></ruby>ちください』というメッセージ」先组成“写着‘请稍候’的提示信息”。</p>
+                    <p>「メッセージが<ruby>出<rt>で</rt></ruby>たまま」表示提示一直保持显示；「<ruby>何分<rt>なんぷん</rt></ruby><ruby>待<rt>ま</rt></ruby>っても」表示“不管等多少分钟”。</p>
+                    <p>等待后的结果是「<ruby>先<rt>さき</rt></ruby>に<ruby>進<rt>すす</rt></ruby>まない」，再用「ので」引出重新启动电脑的原因。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>屏幕状态「メッセージが<ruby>出<rt>で</rt></ruby>たまま」</span><span>持续等待「<ruby>何分<rt>なんぷん</rt></ruby><ruby>待<rt>ま</rt></ruby>っても」</span><span>仍无进展「<ruby>先<rt>さき</rt></ruby>に<ruby>進<rt>すす</rt></ruby>まないので」</span><span>处理「<ruby>電源<rt>でんげん</rt></ruby>を<ruby>入<rt>い</rt></ruby>れ<ruby>直<rt>なお</rt></ruby>した」</span></p>
+                `
+            },
+            {
+                id: "n2_2112_4",
+                level: "N2",
+                year: "2021年12月",
+                label: "問題8 - 4",
+                prefix: "（<ruby>電話<rt>でんわ</rt></ruby>で）<br>A「すみません、<ruby>来週<rt>らいしゅう</rt></ruby>の2<ruby>時<rt>じ</rt></ruby>からの<ruby>会議<rt>かいぎ</rt></ruby>ですが、その<ruby>時間<rt>じかん</rt></ruby>、<ruby>別<rt>べつ</rt></ruby>の<ruby>用件<rt>ようけん</rt></ruby>が<ruby>入<rt>はい</rt></ruby>ってしまいまして、もしそちらのご<ruby>都合<rt>つごう</rt></ruby>が",
+                suffix: "、いかがでしょうか。」<br>B「こちらは<ruby>大丈夫<rt>だいじょうぶ</rt></ruby>ですよ。」",
+                options: [
+                    { id: "1", text: "ありがたいんですが" },
+                    { id: "2", text: "<ruby>変更<rt>へんこう</rt></ruby>していただけると" },
+                    { id: "3", text: "4<ruby>時以降<rt>じいこう</rt></ruby>に" },
+                    { id: "4", text: "よろしければ" }
+                ],
+                correctOrder: ["4", "3", "2", "1"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、" },
+                translation: "A：“不好意思，关于下周两点开始的会议，那段时间我临时有别的事情。如果您方便的话，能把时间改到四点以后就太感谢了，您看可以吗？” B：“我们这边没问题。”",
+                explanation: `
+                    <p>「ご<ruby>都合<rt>つごう</rt></ruby>がよろしければ」先提出“如果您方便”的条件。</p>
+                    <p>「4<ruby>時以降<rt>じいこう</rt></ruby>に」说明希望改到的时间，「<ruby>変更<rt>へんこう</rt></ruby>していただけると」表示礼貌地请对方更改。</p>
+                    <p>最后接「ありがたいんですが」，把直接要求缓和为委婉请求，再以「いかがでしょうか」询问对方意见。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>条件「ご<ruby>都合<rt>つごう</rt></ruby>がよろしければ」</span><span>时间「4<ruby>時以降<rt>じいこう</rt></ruby>に」</span><span>请求「<ruby>変更<rt>へんこう</rt></ruby>していただけるとありがたいんですが」</span><span>征询「いかがでしょうか」</span></p>
+                `
+            },
+            {
+                id: "n2_2112_5",
+                level: "N2",
+                year: "2021年12月",
+                label: "問題8 - 5",
+                prefix: "20<ruby>年前<rt>ねんまえ</rt></ruby>に<ruby>初<rt>はじ</rt></ruby>めてこの<ruby>歌手<rt>かしゅ</rt></ruby>の<ruby>歌<rt>うた</rt></ruby>を<ruby>聴<rt>き</rt></ruby>いたとき、",
+                suffix: "。",
+                options: [
+                    { id: "1", text: "と<ruby>思<rt>おも</rt></ruby>った" },
+                    { id: "2", text: "よく<ruby>覚<rt>おぼ</rt></ruby>えている" },
+                    { id: "3", text: "のを" },
+                    { id: "4", text: "なんと<ruby>美<rt>うつく</rt></ruby>しい<ruby>声<rt>こえ</rt></ruby>なんだろう" }
+                ],
+                correctOrder: ["4", "1", "3", "2"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                translation: "20年前第一次听到这位歌手的歌时，我曾想“这是多么美的声音啊”，这件事至今仍记得很清楚。",
+                explanation: `
+                    <p>「なんと<ruby>美<rt>うつく</rt></ruby>しい<ruby>声<rt>こえ</rt></ruby>なんだろう」是感叹句，表示“这是多么美的声音啊”。</p>
+                    <p>后接「と<ruby>思<rt>おも</rt></ruby>った」，把整句感叹作为当时所想的内容。</p>
+                    <p>「のを」把“当时这样想”整件事名词化，作为「よく<ruby>覚<rt>おぼ</rt></ruby>えている」的宾语。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>感叹内容「なんと<ruby>美<rt>うつく</rt></ruby>しい<ruby>声<rt>こえ</rt></ruby>なんだろう」</span><span>当时想法「と<ruby>思<rt>おも</rt></ruby>った」</span><span>名词化「のを」</span><span>现在的记忆「よく<ruby>覚<rt>おぼ</rt></ruby>えている」</span></p>
+                `
+            },
+            // ---------------- 2022年7月（结构化解析） ----------------
+            {
+                id: "n2_2207_1",
+                level: "N2",
+                year: "2022年7月",
+                label: "問題8 - 1",
+                prefix: "この<ruby>歌<rt>うた</rt></ruby>を<ruby>聞<rt>き</rt></ruby>く",
+                suffix: "ことだ。<ruby>彼<rt>かれ</rt></ruby>はカラオケに<ruby>行<rt>い</rt></ruby>くと<ruby>必<rt>かなら</rt></ruby>ずこの<ruby>歌<rt>うた</rt></ruby>を<ruby>歌<rt>うた</rt></ruby>っていた。",
+                options: [
+                    { id: "1", text: "のは" },
+                    { id: "2", text: "<ruby>思<rt>おも</rt></ruby>い<ruby>出<rt>だ</rt></ruby>す" },
+                    { id: "3", text: "たびに" },
+                    { id: "4", text: "<ruby>高校時代<rt>こうこうじだい</rt></ruby>の<ruby>友人<rt>ゆうじん</rt></ruby>の" }
+                ],
+                correctOrder: ["3", "2", "1", "4"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                translation: "每当听到这首歌，我就会想起高中时代的那位朋友。他每次去卡拉OK都一定会唱这首歌。",
+                explanation: `
+                    <p>「<ruby>聞<rt>き</rt></ruby>くたびに」表示“每次听到时”，说明反复出现的契机。</p>
+                    <p>契机后接「<ruby>思<rt>おも</rt></ruby>い<ruby>出<rt>だ</rt></ruby>す」，再用「のは」把“想起的对象”提出来作为话题。</p>
+                    <p>「<ruby>高校時代<rt>こうこうじだい</rt></ruby>の<ruby>友人<rt>ゆうじん</rt></ruby>のことだ」回答想起的是谁。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>反复契机「<ruby>聞<rt>き</rt></ruby>くたびに」</span><span>心理动作「<ruby>思<rt>おも</rt></ruby>い<ruby>出<rt>だ</rt></ruby>す」</span><span>话题化「のは」</span><span>对象「<ruby>高校時代<rt>こうこうじだい</rt></ruby>の<ruby>友人<rt>ゆうじん</rt></ruby>のことだ」</span></p>
+                `
+            },
+            {
+                id: "n2_2207_2",
+                level: "N2",
+                year: "2022年7月",
+                label: "問題8 - 2",
+                prefix: "<ruby>昨日<rt>きのう</rt></ruby>、アルバイトに<ruby>遅刻<rt>ちこく</rt></ruby>しそうだったので、",
+                suffix: "<ruby>結局<rt>けっきょく</rt></ruby><ruby>遅刻<rt>ちこく</rt></ruby>してしまった。",
+                options: [
+                    { id: "1", text: "タクシーに<ruby>乗<rt>の</rt></ruby>ったら" },
+                    { id: "2", text: "かえって<ruby>時間<rt>じかん</rt></ruby>がかかり" },
+                    { id: "3", text: "<ruby>急<rt>いそ</rt></ruby>ごうと<ruby>思<rt>おも</rt></ruby>って" },
+                    { id: "4", text: "<ruby>道<rt>みち</rt></ruby>が<ruby>渋滞<rt>じゅうたい</rt></ruby>していたせいで" }
+                ],
+                correctOrder: ["3", "1", "4", "2"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、", "2": "、" },
+                translation: "昨天上班快要迟到了，我想赶快一点便坐了出租车，没想到因为道路拥堵反而花了更多时间，结果还是迟到了。",
+                explanation: `
+                    <p>「<ruby>急<rt>いそ</rt></ruby>ごうと<ruby>思<rt>おも</rt></ruby>って」先说明乘出租车的目的。</p>
+                    <p>「タクシーに<ruby>乗<rt>の</rt></ruby>ったら」引出乘车后发生的情况；原因是「<ruby>道<rt>みち</rt></ruby>が<ruby>渋滞<rt>じゅうたい</rt></ruby>していたせいで」。</p>
+                    <p>「かえって」表示结果与预期相反，最终接到「<ruby>遅刻<rt>ちこく</rt></ruby>してしまった」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>目的「<ruby>急<rt>いそ</rt></ruby>ごうと<ruby>思<rt>おも</rt></ruby>って」</span><span>行动「タクシーに<ruby>乗<rt>の</rt></ruby>ったら」</span><span>原因「<ruby>道<rt>みち</rt></ruby>が<ruby>渋滞<rt>じゅうたい</rt></ruby>していたせいで」</span><span>反向结果「かえって<ruby>時間<rt>じかん</rt></ruby>がかかり」</span></p>
+                `
+            },
+            {
+                id: "n2_2207_3",
+                level: "N2",
+                year: "2022年7月",
+                label: "問題8 - 3",
+                prefix: "<ruby>来月<rt>らいげつ</rt></ruby><ruby>結婚<rt>けっこん</rt></ruby>する<ruby>友人<rt>ゆうじん</rt></ruby>に<ruby>結婚式<rt>けっこんしき</rt></ruby>のスピーチを<ruby>頼<rt>たの</rt></ruby>まれた。<ruby>大勢<rt>おおぜい</rt></ruby>の<ruby>前<rt>まえ</rt></ruby>で<ruby>話<rt>はな</rt></ruby>すのは",
+                suffix: "<ruby>引<rt>ひ</rt></ruby>き<ruby>受<rt>う</rt></ruby>けることにした。",
+                options: [
+                    { id: "1", text: "<ruby>悩<rt>なや</rt></ruby>んだのだが" },
+                    { id: "2", text: "と<ruby>言<rt>い</rt></ruby>われて" },
+                    { id: "3", text: "どうしても" },
+                    { id: "4", text: "<ruby>苦手<rt>にがて</rt></ruby>なので" }
+                ],
+                correctOrder: ["4", "1", "3", "2"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、", "2": "、" },
+                translation: "下个月要结婚的朋友请我在婚礼上致辞。因为我不擅长在众人面前讲话，所以很犹豫，但朋友坚持说无论如何都希望我来，我便决定接受。",
+                explanation: `
+                    <p>「<ruby>話<rt>はな</rt></ruby>すのは<ruby>苦手<rt>にがて</rt></ruby>なので」先说明犹豫的原因。</p>
+                    <p>接着用「<ruby>悩<rt>なや</rt></ruby>んだのだが」表示“虽然很为难”，为后面的决定作转折铺垫。</p>
+                    <p>「どうしてもと<ruby>言<rt>い</rt></ruby>われて」表示朋友坚持请求，因此最后决定「<ruby>引<rt>ひ</rt></ruby>き<ruby>受<rt>う</rt></ruby>ける」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>原因「<ruby>苦手<rt>にがて</rt></ruby>なので」</span><span>犹豫「<ruby>悩<rt>なや</rt></ruby>んだのだが」</span><span>对方坚持「どうしてもと<ruby>言<rt>い</rt></ruby>われて」</span><span>决定「<ruby>引<rt>ひ</rt></ruby>き<ruby>受<rt>う</rt></ruby>けることにした」</span></p>
+                `
+            },
+            {
+                id: "n2_2207_4",
+                level: "N2",
+                year: "2022年7月",
+                label: "問題8 - 4",
+                prefix: "<ruby>先日<rt>せんじつ</rt></ruby>の<ruby>政治家<rt>せいじか</rt></ruby>A<ruby>氏<rt>し</rt></ruby>の<ruby>発言<rt>はつげん</rt></ruby>はあまりに<ruby>無責任<rt>むせきにん</rt></ruby>だ。",
+                suffix: "と<ruby>思<rt>おも</rt></ruby>う。",
+                options: [
+                    { id: "1", text: "<ruby>政治家<rt>せいじか</rt></ruby>としての" },
+                    { id: "2", text: "うえで" },
+                    { id: "3", text: "<ruby>発言<rt>はつげん</rt></ruby>しなければならなかった" },
+                    { id: "4", text: "<ruby>自分<rt>じぶん</rt></ruby>の<ruby>立場<rt>たちば</rt></ruby>をよく<ruby>考<rt>かんが</rt></ruby>えた" }
+                ],
+                correctOrder: ["1", "4", "2", "3"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                translation: "前几天政治家A先生的发言实在太不负责任了。我认为他本应充分考虑自己作为政治家的立场之后再发言。",
+                explanation: `
+                    <p>「<ruby>政治家<rt>せいじか</rt></ruby>としての」修饰「<ruby>自分<rt>じぶん</rt></ruby>の<ruby>立場<rt>たちば</rt></ruby>」，说明要考虑的是哪一种立场。</p>
+                    <p>「よく<ruby>考<rt>かんが</rt></ruby>えたうえで」表示“充分考虑之后再……”，强调先后顺序。</p>
+                    <p>最后用「<ruby>発言<rt>はつげん</rt></ruby>しなければならなかった」表示本来应该这样做却没有做到。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>身份限定「<ruby>政治家<rt>せいじか</rt></ruby>としての」</span><span>考虑对象「<ruby>自分<rt>じぶん</rt></ruby>の<ruby>立場<rt>たちば</rt></ruby>」</span><span>先行动作「よく<ruby>考<rt>かんが</rt></ruby>えたうえで」</span><span>应做之事「<ruby>発言<rt>はつげん</rt></ruby>しなければならなかった」</span></p>
+                `
+            },
+            {
+                id: "n2_2207_5",
+                level: "N2",
+                year: "2022年7月",
+                label: "問題8 - 5",
+                prefix: "<ruby>食事<rt>しょくじ</rt></ruby>や<ruby>睡眠<rt>すいみん</rt></ruby>などの<ruby>生活習慣<rt>せいかつしゅうかん</rt></ruby>は<ruby>一度<rt>いちど</rt></ruby><ruby>乱<rt>みだ</rt></ruby>れてしまうと、",
+                suffix: "、<ruby>大切<rt>たいせつ</rt></ruby>だ。",
+                options: [
+                    { id: "1", text: "<ruby>規則正<rt>きそくただ</rt></ruby>しい<ruby>生活<rt>せいかつ</rt></ruby>を" },
+                    { id: "2", text: "<ruby>戻<rt>もど</rt></ruby>そうとしても" },
+                    { id: "3", text: "<ruby>普段<rt>ふだん</rt></ruby>から<ruby>意識<rt>いしき</rt></ruby>することが" },
+                    { id: "4", text: "なかなか<ruby>戻<rt>もど</rt></ruby>せないので" }
+                ],
+                correctOrder: ["1", "2", "4", "3"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、" },
+                translation: "饮食、睡眠等生活习惯一旦被打乱，即使想恢复规律生活也很难恢复，所以从平时就有意识地保持很重要。",
+                explanation: `
+                    <p>「<ruby>規則正<rt>きそくただ</rt></ruby>しい<ruby>生活<rt>せいかつ</rt></ruby>を<ruby>戻<rt>もど</rt></ruby>そうとしても」表示“即使试图恢复规律生活”。</p>
+                    <p>后接「なかなか<ruby>戻<rt>もど</rt></ruby>せないので」，说明一旦习惯被打乱就很难恢复，并用「ので」引出结论。</p>
+                    <p>结论是「<ruby>普段<rt>ふだん</rt></ruby>から<ruby>意識<rt>いしき</rt></ruby>することが<ruby>大切<rt>たいせつ</rt></ruby>だ」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>恢复对象「<ruby>規則正<rt>きそくただ</rt></ruby>しい<ruby>生活<rt>せいかつ</rt></ruby>を」</span><span>让步尝试「<ruby>戻<rt>もど</rt></ruby>そうとしても」</span><span>困难与原因「なかなか<ruby>戻<rt>もど</rt></ruby>せないので」</span><span>结论「<ruby>普段<rt>ふだん</rt></ruby>から<ruby>意識<rt>いしき</rt></ruby>することが<ruby>大切<rt>たいせつ</rt></ruby>だ」</span></p>
+                `
+            },
+            // ---------------- 2022年12月（结构化解析） ----------------
+            {
+                id: "n2_2212_1",
+                level: "N2",
+                year: "2022年12月",
+                label: "問題8 - 1",
+                prefix: "<ruby>私<rt>わたし</rt></ruby>は、とにかく<ruby>勉強<rt>べんきょう</rt></ruby>が<ruby>嫌<rt>きら</rt></ruby>いで、<ruby>学校<rt>がっこう</rt></ruby>があまり<ruby>好<rt>す</rt></ruby>きではない<ruby>子供<rt>こども</rt></ruby>だった。そんな",
+                suffix: "きっかけだった。",
+                options: [
+                    { id: "1", text: "ある<ruby>先生<rt>せんせい</rt></ruby>との" },
+                    { id: "2", text: "<ruby>教師<rt>きょうし</rt></ruby>になりたいと<ruby>思<rt>おも</rt></ruby>ったのは" },
+                    { id: "3", text: "<ruby>私<rt>わたし</rt></ruby>が" },
+                    { id: "4", text: "<ruby>出会<rt>であ</rt></ruby>いが" }
+                ],
+                correctOrder: ["3", "2", "1", "4"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "我小时候非常讨厌学习，也不太喜欢学校。这样的我之所以想成为教师，是因为遇到了一位老师。",
+                explanation: `
+                    <p>「そんな<ruby>私<rt>わたし</rt></ruby>が」先承接前文，指出发生转变的人正是“那样的我”。</p>
+                    <p>「<ruby>教師<rt>きょうし</rt></ruby>になりたいと<ruby>思<rt>おも</rt></ruby>ったのは」提出需要说明原因的事情。</p>
+                    <p>「ある<ruby>先生<rt>せんせい</rt></ruby>との<ruby>出会<rt>であ</rt></ruby>いがきっかけだった」回答产生这一想法的契机。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>转变主体「そんな<ruby>私<rt>わたし</rt></ruby>が」</span><span>产生的愿望「<ruby>教師<rt>きょうし</rt></ruby>になりたいと<ruby>思<rt>おも</rt></ruby>ったのは」</span><span>契机内容「ある<ruby>先生<rt>せんせい</rt></ruby>との<ruby>出会<rt>であ</rt></ruby>いが」</span><span>结论「きっかけだった」</span></p>
+                `
+            },
+            {
+                id: "n2_2212_2",
+                level: "N2",
+                year: "2022年12月",
+                label: "問題8 - 2",
+                prefix: "<ruby>若<rt>わか</rt></ruby>いときに<ruby>努力<rt>どりょく</rt></ruby>して",
+                suffix: "なって<ruby>必<rt>かなら</rt></ruby>ず<ruby>将来<rt>しょうらい</rt></ruby><ruby>役<rt>やく</rt></ruby>に<ruby>立<rt>た</rt></ruby>つと<ruby>思<rt>おも</rt></ruby>う。",
+                options: [
+                    { id: "1", text: "<ruby>経験<rt>けいけん</rt></ruby>は" },
+                    { id: "2", text: "<ruby>目標<rt>もくひょう</rt></ruby>を" },
+                    { id: "3", text: "<ruby>自信<rt>じしん</rt></ruby>と" },
+                    { id: "4", text: "<ruby>達成<rt>たっせい</rt></ruby>した" }
+                ],
+                correctOrder: ["2", "4", "1", "3"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "年轻时通过努力实现目标的经验会成为自信，我认为将来一定能够派上用场。",
+                explanation: `
+                    <p>「<ruby>目標<rt>もくひょう</rt></ruby>を<ruby>達成<rt>たっせい</rt></ruby>した」先组成完整的动宾关系，并修饰后面的「<ruby>経験<rt>けいけん</rt></ruby>」。</p>
+                    <p>「<ruby>目標<rt>もくひょう</rt></ruby>を<ruby>達成<rt>たっせい</rt></ruby>した<ruby>経験<rt>けいけん</rt></ruby>は」把这段经历作为句子的主题。</p>
+                    <p>「<ruby>自信<rt>じしん</rt></ruby>となって」说明经验带来的变化，后面再说它将对未来有帮助。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>目标「<ruby>目標<rt>もくひょう</rt></ruby>を」</span><span>达成「<ruby>達成<rt>たっせい</rt></ruby>した」</span><span>主题「<ruby>経験<rt>けいけん</rt></ruby>は」</span><span>转化结果「<ruby>自信<rt>じしん</rt></ruby>となって」</span></p>
+                `
+            },
+            {
+                id: "n2_2212_3",
+                level: "N2",
+                year: "2022年12月",
+                label: "問題8 - 3",
+                prefix: "この<ruby>町<rt>まち</rt></ruby>では、<ruby>都心<rt>としん</rt></ruby>で<ruby>家<rt>いえ</rt></ruby>を<ruby>借<rt>か</rt></ruby>りる",
+                suffix: "<ruby>家<rt>いえ</rt></ruby>が<ruby>借<rt>か</rt></ruby>りられる。",
+                options: [
+                    { id: "1", text: "<ruby>場合<rt>ばあい</rt></ruby>" },
+                    { id: "2", text: "<ruby>半分程度<rt>はんぶんていど</rt></ruby>の" },
+                    { id: "3", text: "<ruby>家賃<rt>やちん</rt></ruby>で" },
+                    { id: "4", text: "と<ruby>比<rt>くら</rt></ruby>べて" }
+                ],
+                correctOrder: ["1", "4", "2", "3"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、" },
+                translation: "在这个城镇租房，与在市中心租房相比，只需大约一半的房租就能租到房子。",
+                explanation: `
+                    <p>「<ruby>家<rt>いえ</rt></ruby>を<ruby>借<rt>か</rt></ruby>りる<ruby>場合<rt>ばあい</rt></ruby>」表示“租房这种情况”。</p>
+                    <p>后接「と<ruby>比<rt>くら</rt></ruby>べて」，把“在市中心租房”设为比较基准。</p>
+                    <p>「<ruby>半分程度<rt>はんぶんていど</rt></ruby>の」修饰「<ruby>家賃<rt>やちん</rt></ruby>」，「<ruby>家賃<rt>やちん</rt></ruby>で」表示租房所需的费用。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>比较对象「<ruby>都心<rt>としん</rt></ruby>で<ruby>家<rt>いえ</rt></ruby>を<ruby>借<rt>か</rt></ruby>りる<ruby>場合<rt>ばあい</rt></ruby>」</span><span>比较「と<ruby>比<rt>くら</rt></ruby>べて」</span><span>程度「<ruby>半分程度<rt>はんぶんていど</rt></ruby>の」</span><span>费用「<ruby>家賃<rt>やちん</rt></ruby>で」</span></p>
+                `
+            },
+            {
+                id: "n2_2212_4",
+                level: "N2",
+                year: "2022年12月",
+                label: "問題8 - 4",
+                prefix: "",
+                suffix: "<ruby>酸素<rt>さんそ</rt></ruby>や<ruby>栄養<rt>えいよう</rt></ruby>が<ruby>十分<rt>じゅうぶん</rt></ruby>に<ruby>細胞<rt>さいぼう</rt></ruby>に<ruby>届<rt>とど</rt></ruby>かなくなってしまう。",
+                options: [
+                    { id: "1", text: "<ruby>運<rt>はこ</rt></ruby>ばれる" },
+                    { id: "2", text: "<ruby>悪<rt>わる</rt></ruby>くなると" },
+                    { id: "3", text: "<ruby>血液<rt>けつえき</rt></ruby>の<ruby>流<rt>なが</rt></ruby>れが" },
+                    { id: "4", text: "<ruby>血液<rt>けつえき</rt></ruby>によって" }
+                ],
+                correctOrder: ["3", "2", "4", "1"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "血液循环一旦变差，由血液输送的氧气和营养就会无法充分到达细胞。",
+                explanation: `
+                    <p>「<ruby>血液<rt>けつえき</rt></ruby>の<ruby>流<rt>なが</rt></ruby>れが<ruby>悪<rt>わる</rt></ruby>くなると」先提出导致后果的条件。</p>
+                    <p>「<ruby>血液<rt>けつえき</rt></ruby>によって」表示动作的实施者，后接被动态「<ruby>運<rt>はこ</rt></ruby>ばれる」。</p>
+                    <p>「<ruby>血液<rt>けつえき</rt></ruby>によって<ruby>運<rt>はこ</rt></ruby>ばれる」整体修饰「<ruby>酸素<rt>さんそ</rt></ruby>や<ruby>栄養<rt>えいよう</rt></ruby>」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>条件主体「<ruby>血液<rt>けつえき</rt></ruby>の<ruby>流<rt>なが</rt></ruby>れが」</span><span>状态变化「<ruby>悪<rt>わる</rt></ruby>くなると」</span><span>被动施事「<ruby>血液<rt>けつえき</rt></ruby>によって」</span><span>连体修饰「<ruby>運<rt>はこ</rt></ruby>ばれる<ruby>酸素<rt>さんそ</rt></ruby>や<ruby>栄養<rt>えいよう</rt></ruby>」</span></p>
+                `
+            },
+            {
+                id: "n2_2212_5",
+                level: "N2",
+                year: "2022年12月",
+                label: "問題8 - 5",
+                prefix: "さくら<ruby>駅周辺<rt>えきしゅうへん</rt></ruby>の<ruby>再開発事業<rt>さいかいはつじぎょう</rt></ruby>を<ruby>行<rt>おこな</rt></ruby>う",
+                suffix: "<ruby>予定<rt>よてい</rt></ruby>だ。",
+                options: [
+                    { id: "1", text: "さくら<ruby>市<rt>し</rt></ruby>は" },
+                    { id: "2", text: "に<ruby>先立<rt>さきだ</rt></ruby>って" },
+                    { id: "3", text: "<ruby>関係者<rt>かんけいしゃ</rt></ruby>に<ruby>対<rt>たい</rt></ruby>する" },
+                    { id: "4", text: "<ruby>説明会<rt>せつめいかい</rt></ruby>を<ruby>開催<rt>かいさい</rt></ruby>する" }
+                ],
+                correctOrder: ["2", "1", "3", "4"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "在实施樱花站周边再开发项目之前，樱花市计划面向相关人员召开说明会。",
+                explanation: `
+                    <p>「～に<ruby>先立<rt>さきだ</rt></ruby>って」表示“在实施……之前”，直接承接前面的再开发项目。</p>
+                    <p>「さくら<ruby>市<rt>し</rt></ruby>は」是后半句的主体，「<ruby>関係者<rt>かんけいしゃ</rt></ruby>に<ruby>対<rt>たい</rt></ruby>する」修饰「<ruby>説明会<rt>せつめいかい</rt></ruby>」。</p>
+                    <p>最后以「<ruby>説明会<rt>せつめいかい</rt></ruby>を<ruby>開催<rt>かいさい</rt></ruby>する<ruby>予定<rt>よてい</rt></ruby>だ」说明预定采取的行动。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>事前关系「<ruby>行<rt>おこな</rt></ruby>うに<ruby>先立<rt>さきだ</rt></ruby>って」</span><span>主体「さくら<ruby>市<rt>し</rt></ruby>は」</span><span>对象限定「<ruby>関係者<rt>かんけいしゃ</rt></ruby>に<ruby>対<rt>たい</rt></ruby>する」</span><span>预定行动「<ruby>説明会<rt>せつめいかい</rt></ruby>を<ruby>開催<rt>かいさい</rt></ruby>する」</span></p>
+                `
+            },
+            // ---------------- 2023年7月（结构化解析） ----------------
+            {
+                id: "n2_2307_1",
+                level: "N2",
+                year: "2023年7月",
+                label: "問題8 - 1",
+                prefix: "<ruby>隣<rt>となり</rt></ruby>のクラスの<ruby>友達<rt>ともだち</rt></ruby>とけんかをしてしまい、<ruby>学校<rt>がっこう</rt></ruby>の<ruby>廊下<rt>ろうか</rt></ruby>で",
+                suffix: "なくなってしまった。",
+                options: [
+                    { id: "1", text: "こと" },
+                    { id: "2", text: "すら" },
+                    { id: "3", text: "<ruby>目<rt>め</rt></ruby>を<ruby>合<rt>あ</rt></ruby>わせる" },
+                    { id: "4", text: "すれ<ruby>違<rt>ちが</rt></ruby>っても" }
+                ],
+                correctOrder: ["4", "3", "1", "2"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                translation: "我和隔壁班的朋友吵了架，此后即使在学校走廊擦肩而过，也不再看对方一眼了。",
+                explanation: `
+                    <p>「すれ<ruby>違<rt>ちが</rt></ruby>っても」先提出“即使擦肩而过”的让步情况。</p>
+                    <p>「<ruby>目<rt>め</rt></ruby>を<ruby>合<rt>あ</rt></ruby>わせること」把“目光相接”这一动作名词化。</p>
+                    <p>「すら」表示最低程度的强调，与否定的「なくなった」呼应，意思是“连……都不再”。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>让步场景「すれ<ruby>違<rt>ちが</rt></ruby>っても」</span><span>动作「<ruby>目<rt>め</rt></ruby>を<ruby>合<rt>あ</rt></ruby>わせる」</span><span>名词化「こと」</span><span>最低程度强调「すらなくなった」</span></p>
+                `
+            },
+            {
+                id: "n2_2307_2",
+                level: "N2",
+                year: "2023年7月",
+                label: "問題8 - 2",
+                prefix: "このソファーは、それなりの<ruby>大<rt>おお</rt></ruby>きさはあるが、<ruby>見<rt>み</rt></ruby>た<ruby>目<rt>め</rt></ruby>",
+                suffix: "<ruby>楽<rt>らく</rt></ruby>に<ruby>動<rt>うご</rt></ruby>かせる。",
+                options: [
+                    { id: "1", text: "ほどの" },
+                    { id: "2", text: "でも" },
+                    { id: "3", text: "<ruby>重<rt>おも</rt></ruby>さはないため" },
+                    { id: "4", text: "<ruby>一人<rt>ひとり</rt></ruby>" }
+                ],
+                correctOrder: ["1", "3", "4", "2"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "3": "、" },
+                translation: "这张沙发虽然有一定的体积，但并没有看上去那么重，所以一个人也能轻松移动。",
+                explanation: `
+                    <p>「<ruby>見<rt>み</rt></ruby>た<ruby>目<rt>め</rt></ruby>ほどの<ruby>重<rt>おも</rt></ruby>さはない」表示“没有外观看起来那么重”。</p>
+                    <p>「ため」说明这正是后面能够轻松移动的原因。</p>
+                    <p>「<ruby>一人<rt>ひとり</rt></ruby>でも」表示“即使只有一个人也可以”，后接可能表达「<ruby>動<rt>うご</rt></ruby>かせる」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>比较基准「<ruby>見<rt>み</rt></ruby>た<ruby>目<rt>め</rt></ruby>ほどの」</span><span>原因「<ruby>重<rt>おも</rt></ruby>さはないため」</span><span>最低人数「<ruby>一人<rt>ひとり</rt></ruby>でも」</span><span>可能结果「<ruby>楽<rt>らく</rt></ruby>に<ruby>動<rt>うご</rt></ruby>かせる」</span></p>
+                `
+            },
+            {
+                id: "n2_2307_3",
+                level: "N2",
+                year: "2023年7月",
+                label: "問題8 - 3",
+                prefix: "<ruby>友達<rt>ともだち</rt></ruby>にスキー<ruby>旅行<rt>りょこう</rt></ruby>に<ruby>誘<rt>さそ</rt></ruby>われている。<ruby>返事<rt>へんじ</rt></ruby>を",
+                suffix: "まだ<ruby>返事<rt>へんじ</rt></ruby>ができていない。",
+                options: [
+                    { id: "1", text: "<ruby>決<rt>き</rt></ruby>まっていなくて" },
+                    { id: "2", text: "<ruby>仕事<rt>しごと</rt></ruby>の<ruby>予定<rt>よてい</rt></ruby>が" },
+                    { id: "3", text: "しなければ" },
+                    { id: "4", text: "と<ruby>思<rt>おも</rt></ruby>いながらも" }
+                ],
+                correctOrder: ["3", "4", "2", "1"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、", "1": "、" },
+                translation: "朋友邀请我去滑雪旅行。虽然想着必须回复，但因为工作安排还没有确定，所以至今仍未答复。",
+                explanation: `
+                    <p>「<ruby>返事<rt>へんじ</rt></ruby>をしなければ」表示“必须回复”。</p>
+                    <p>「と<ruby>思<rt>おも</rt></ruby>いながらも」表示虽然心里这样想，实际却没有采取行动。</p>
+                    <p>原因是「<ruby>仕事<rt>しごと</rt></ruby>の<ruby>予定<rt>よてい</rt></ruby>が<ruby>決<rt>き</rt></ruby>まっていなくて」，自然连接句尾的“还没有回复”。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>应做之事「<ruby>返事<rt>へんじ</rt></ruby>をしなければ」</span><span>逆接想法「と<ruby>思<rt>おも</rt></ruby>いながらも」</span><span>未定事项「<ruby>仕事<rt>しごと</rt></ruby>の<ruby>予定<rt>よてい</rt></ruby>が」</span><span>原因「<ruby>決<rt>き</rt></ruby>まっていなくて」</span></p>
+                `
+            },
+            {
+                id: "n2_2307_4",
+                level: "N2",
+                year: "2023年7月",
+                label: "問題8 - 4",
+                prefix: "<ruby>私<rt>わたし</rt></ruby>は、<ruby>美術館<rt>びじゅつかん</rt></ruby>では<ruby>音声<rt>おんせい</rt></ruby>ガイドの<ruby>機械<rt>きかい</rt></ruby>を<ruby>借<rt>か</rt></ruby>りて、<ruby>説明<rt>せつめい</rt></ruby>を<ruby>聞<rt>き</rt></ruby>きながら<ruby>作品<rt>さくひん</rt></ruby>を<ruby>鑑賞<rt>かんしょう</rt></ruby>する。<ruby>作品<rt>さくひん</rt></ruby>のどこに",
+                suffix: "その<ruby>作品<rt>さくひん</rt></ruby>をより<ruby>深<rt>ふか</rt></ruby>く<ruby>味<rt>あじ</rt></ruby>わえるからだ。",
+                options: [
+                    { id: "1", text: "わかると" },
+                    { id: "2", text: "<ruby>注目<rt>ちゅうもく</rt></ruby>して" },
+                    { id: "3", text: "いいのかが" },
+                    { id: "4", text: "<ruby>鑑賞<rt>かんしょう</rt></ruby>したら" }
+                ],
+                correctOrder: ["2", "4", "3", "1"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "我在美术馆会租用语音导览设备，一边听说明一边欣赏作品。因为知道欣赏时应该关注作品的哪些部分，就能更加深入地品味作品。",
+                explanation: `
+                    <p>「どこに<ruby>注目<rt>ちゅうもく</rt></ruby>して」先说明关注的对象。</p>
+                    <p>「<ruby>鑑賞<rt>かんしょう</rt></ruby>したらいいのか」表示“欣赏时应该怎么做”，「が」把整段疑问内容作为「わかる」的主语。</p>
+                    <p>「わかると」提出条件，后面说明理解关注点后便能更深入地欣赏作品。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>关注位置「どこに<ruby>注目<rt>ちゅうもく</rt></ruby>して」</span><span>欣赏方式「<ruby>鑑賞<rt>かんしょう</rt></ruby>したら」</span><span>间接疑问「いいのかが」</span><span>理解条件「わかると」</span></p>
+                `
+            },
+            {
+                id: "n2_2307_5",
+                level: "N2",
+                year: "2023年7月",
+                label: "問題8 - 5",
+                prefix: "<ruby>雪<rt>ゆき</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>っている",
+                suffix: "<ruby>風<rt>かぜ</rt></ruby>がほとんどないからだろう。",
+                options: [
+                    { id: "1", text: "わりに" },
+                    { id: "2", text: "のは" },
+                    { id: "3", text: "<ruby>寒<rt>さむ</rt></ruby>く<ruby>感<rt>かん</rt></ruby>じない" },
+                    { id: "4", text: "そんなに" }
+                ],
+                correctOrder: ["1", "4", "3", "2"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "虽然正在下雪，却没有感觉那么冷，大概是因为几乎没有风吧。",
+                explanation: `
+                    <p>「<ruby>雪<rt>ゆき</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>っているわりに」表示实际感受与“正在下雪”的印象不相称。</p>
+                    <p>「そんなに」修饰否定表达「<ruby>寒<rt>さむ</rt></ruby>く<ruby>感<rt>かん</rt></ruby>じない」，表示“没有那么冷”。</p>
+                    <p>「のは」把前面的现象作为话题，后面用「からだろう」推测其原因。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>逆预期「<ruby>雪<rt>ゆき</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>っているわりに」</span><span>程度「そんなに」</span><span>感受「<ruby>寒<rt>さむ</rt></ruby>く<ruby>感<rt>かん</rt></ruby>じない」</span><span>原因提示「のは」</span></p>
+                `
+            },
+            // ---------------- 2023年12月（结构化解析） ----------------
+            {
+                id: "n2_2312_1",
+                level: "N2",
+                year: "2023年12月",
+                label: "問題8 - 1",
+                prefix: "この<ruby>本<rt>ほん</rt></ruby>の<ruby>内容<rt>ないよう</rt></ruby>をきちんと",
+                suffix: "<ruby>多<rt>おお</rt></ruby>いだろう。",
+                options: [
+                    { id: "1", text: "それなりの" },
+                    { id: "2", text: "<ruby>理解<rt>りかい</rt></ruby>するには" },
+                    { id: "3", text: "<ruby>難<rt>むずか</rt></ruby>しいと<ruby>感<rt>かん</rt></ruby>じる<ruby>人<rt>ひと</rt></ruby>も" },
+                    { id: "4", text: "<ruby>知識<rt>ちしき</rt></ruby>が<ruby>求<rt>もと</rt></ruby>められるので" }
+                ],
+                correctOrder: ["2", "1", "4", "3"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、", "4": "、" },
+                translation: "要真正理解这本书的内容，需要具备一定的知识，因此可能也有很多人觉得很难。",
+                explanation: `
+                    <p>「<ruby>理解<rt>りかい</rt></ruby>するには」表示要实现“理解这本书的内容”所需的条件。</p>
+                    <p>「それなりの」修饰「<ruby>知識<rt>ちしき</rt></ruby>」，表示与这本书的难度相应的一定程度的知识。</p>
+                    <p>「<ruby>知識<rt>ちしき</rt></ruby>が<ruby>求<rt>もと</rt></ruby>められるので」说明原因，后接“觉得难的人可能很多”这一判断。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>条件「<ruby>理解<rt>りかい</rt></ruby>するには」</span><span>程度限定「それなりの」</span><span>原因「<ruby>知識<rt>ちしき</rt></ruby>が<ruby>求<rt>もと</rt></ruby>められるので」</span><span>判断「<ruby>難<rt>むずか</rt></ruby>しいと<ruby>感<rt>かん</rt></ruby>じる<ruby>人<rt>ひと</rt></ruby>も<ruby>多<rt>おお</rt></ruby>い」</span></p>
+                `
+            },
+            {
+                id: "n2_2312_2",
+                level: "N2",
+                year: "2023年12月",
+                label: "問題8 - 2",
+                prefix: "<ruby>石油<rt>せきゆ</rt></ruby>は、<ruby>自動車<rt>じどうしゃ</rt></ruby>や<ruby>航空機<rt>こうくうき</rt></ruby>などの",
+                suffix: "<ruby>原料<rt>げんりょう</rt></ruby>としても<ruby>利用<rt>りよう</rt></ruby>されている。",
+                options: [
+                    { id: "1", text: "<ruby>使<rt>つか</rt></ruby>われる" },
+                    { id: "2", text: "だけでなく" },
+                    { id: "3", text: "プラスチック<ruby>製品<rt>せいひん</rt></ruby>を<ruby>作<rt>つく</rt></ruby>る" },
+                    { id: "4", text: "<ruby>燃料<rt>ねんりょう</rt></ruby>として" }
+                ],
+                correctOrder: ["4", "1", "2", "3"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "石油不仅被用作汽车和飞机等的燃料，也被用作制造塑料制品的原料。",
+                explanation: `
+                    <p>「<ruby>燃料<rt>ねんりょう</rt></ruby>として<ruby>使<rt>つか</rt></ruby>われる」先组成“被用作燃料”的完整表达。</p>
+                    <p>「だけでなく」与后面的「としても」呼应，构成“不仅……也……”的并列关系。</p>
+                    <p>「プラスチック<ruby>製品<rt>せいひん</rt></ruby>を<ruby>作<rt>つく</rt></ruby>る」修饰「<ruby>原料<rt>げんりょう</rt></ruby>」，说明原料的用途。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>用途一「<ruby>燃料<rt>ねんりょう</rt></ruby>として」</span><span>谓语「<ruby>使<rt>つか</rt></ruby>われる」</span><span>并列「だけでなく」</span><span>用途二「プラスチック<ruby>製品<rt>せいひん</rt></ruby>を<ruby>作<rt>つく</rt></ruby>る<ruby>原料<rt>げんりょう</rt></ruby>としても」</span></p>
+                `
+            },
+            {
+                id: "n2_2312_3",
+                level: "N2",
+                year: "2023年12月",
+                label: "問題8 - 3",
+                prefix: "東鉄道竹山線内にある<ruby>二<rt>ふた</rt></ruby>つの<ruby>信号機<rt>しんごうき</rt></ruby>が<ruby>故障<rt>こしょう</rt></ruby>しており、<ruby>大事故<rt>だいじこ</rt></ruby>が",
+                suffix: "<ruby>明<rt>あき</rt></ruby>らかになった。",
+                options: [
+                    { id: "1", text: "<ruby>起<rt>お</rt></ruby>きかねない" },
+                    { id: "2", text: "<ruby>続<rt>つづ</rt></ruby>いていたことが" },
+                    { id: "3", text: "<ruby>状態<rt>じょうたい</rt></ruby>が" },
+                    { id: "4", text: "<ruby>危険<rt>きけん</rt></ruby>な" }
+                ],
+                correctOrder: ["1", "4", "3", "2"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                translation: "经查明，东铁道竹山线内的两台信号机发生故障，可能引发重大事故的危险状态一直持续着。",
+                explanation: `
+                    <p>「<ruby>大事故<rt>だいじこ</rt></ruby>が<ruby>起<rt>お</rt></ruby>きかねない」表示存在发生重大事故的可能性。</p>
+                    <p>这部分与「<ruby>危険<rt>きけん</rt></ruby>な」一起修饰「<ruby>状態<rt>じょうたい</rt></ruby>」，构成“可能发生重大事故的危险状态”。</p>
+                    <p>「<ruby>状態<rt>じょうたい</rt></ruby>が<ruby>続<rt>つづ</rt></ruby>いていたことが」把持续存在的状态作为后来查明的事实。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>可能性「<ruby>大事故<rt>だいじこ</rt></ruby>が<ruby>起<rt>お</rt></ruby>きかねない」</span><span>性质「<ruby>危険<rt>きけん</rt></ruby>な」</span><span>主体「<ruby>状態<rt>じょうたい</rt></ruby>が」</span><span>查明的事实「<ruby>続<rt>つづ</rt></ruby>いていたことが<ruby>明<rt>あき</rt></ruby>らかになった」</span></p>
+                `
+            },
+            {
+                id: "n2_2312_4",
+                level: "N2",
+                year: "2023年12月",
+                label: "問題8 - 4",
+                prefix: "（インタビューで）<br>「<ruby>店長<rt>てんちょう</rt></ruby>になって<ruby>最初<rt>さいしょ</rt></ruby>の1<ruby>年間<rt>ねんかん</rt></ruby>は<ruby>大変<rt>たいへん</rt></ruby>でした。<ruby>店長<rt>てんちょう</rt></ruby>になった",
+                suffix: "と<ruby>悩<rt>なや</rt></ruby>むこともありました。」",
+                options: [
+                    { id: "1", text: "といっても" },
+                    { id: "2", text: "ばかりで" },
+                    { id: "3", text: "わからないこと" },
+                    { id: "4", text: "<ruby>自分<rt>じぶん</rt></ruby>でいいのか" }
+                ],
+                correctOrder: ["1", "3", "2", "4"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、", "2": "、" },
+                translation: "“刚当店长的第一年很辛苦。虽说已经当上了店长，但尽是些不明白的事情，我有时也会烦恼自己是否适合担任店长。”",
+                explanation: `
+                    <p>「<ruby>店長<rt>てんちょう</rt></ruby>になったといっても」表示“虽说已经当上了店长”，为后面的实际情况作让步铺垫。</p>
+                    <p>「わからないことばかりで」表示不懂的事情很多，并用「で」连接后面的烦恼。</p>
+                    <p>「<ruby>自分<rt>じぶん</rt></ruby>でいいのか」是「<ruby>悩<rt>なや</rt></ruby>む」的具体内容，意思是怀疑自己是否适合。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>让步「<ruby>店長<rt>てんちょう</rt></ruby>になったといっても」</span><span>实际情况「わからないことばかりで」</span><span>疑问内容「<ruby>自分<rt>じぶん</rt></ruby>でいいのか」</span><span>心理活动「と<ruby>悩<rt>なや</rt></ruby>む」</span></p>
+                `
+            },
+            {
+                id: "n2_2312_5",
+                level: "N2",
+                year: "2023年12月",
+                label: "問題8 - 5",
+                prefix: "<ruby>家<rt>いえ</rt></ruby>を<ruby>買<rt>か</rt></ruby>うことについて",
+                suffix: "<ruby>簡単<rt>かんたん</rt></ruby>に<ruby>引<rt>ひ</rt></ruby>っ<ruby>越<rt>こ</rt></ruby>せないのが<ruby>嫌<rt>いや</rt></ruby>だと<ruby>言<rt>い</rt></ruby>っている。",
+                options: [
+                    { id: "1", text: "<ruby>夫<rt>おっと</rt></ruby>は" },
+                    { id: "2", text: "<ruby>買<rt>か</rt></ruby>ってしまうと" },
+                    { id: "3", text: "<ruby>否定的<rt>ひていてき</rt></ruby>な" },
+                    { id: "4", text: "<ruby>一度<rt>いちど</rt></ruby>" }
+                ],
+                correctOrder: ["3", "1", "4", "2"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "对买房持否定态度的丈夫说，他不喜欢房子一旦买下以后就不能轻易搬家的这一点。",
+                explanation: `
+                    <p>「<ruby>家<rt>いえ</rt></ruby>を<ruby>買<rt>か</rt></ruby>うことについて<ruby>否定的<rt>ひていてき</rt></ruby>な」整体修饰「<ruby>夫<rt>おっと</rt></ruby>」，说明丈夫对买房的态度。</p>
+                    <p>「<ruby>夫<rt>おっと</rt></ruby>は」提示后半句的说话主体。</p>
+                    <p>「<ruby>一度<rt>いちど</rt></ruby>～てしまうと」表示动作一旦完成，就会出现后面难以改变的结果。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>态度「<ruby>家<rt>いえ</rt></ruby>を<ruby>買<rt>か</rt></ruby>うことについて<ruby>否定的<rt>ひていてき</rt></ruby>な」</span><span>主题「<ruby>夫<rt>おっと</rt></ruby>は」</span><span>一次性条件「<ruby>一度<rt>いちど</rt></ruby>」</span><span>完成后果「<ruby>買<rt>か</rt></ruby>ってしまうと」</span></p>
+                `
+            },
+            // ---------------- 2024年7月（结构化解析） ----------------
+            {
+                id: "n2_2407_1",
+                level: "N2",
+                year: "2024年7月",
+                label: "問題8 - 1",
+                prefix: "「さわら」という<ruby>魚<rt>さかな</rt></ruby>は、<ruby>漢字<rt>かんじ</rt></ruby>で「<ruby>鰆<rt>さわら</rt></ruby>」と<ruby>書<rt>か</rt></ruby>く",
+                suffix: "<ruby>魚<rt>さかな</rt></ruby>の<ruby>一<rt>ひと</rt></ruby>つだ。",
+                options: [
+                    { id: "1", text: "ように" },
+                    { id: "2", text: "わかる" },
+                    { id: "3", text: "ことから" },
+                    { id: "4", text: "<ruby>春<rt>はる</rt></ruby>を<ruby>代表<rt>だいひょう</rt></ruby>する" }
+                ],
+                correctOrder: ["3", "2", "1", "4"],
+                starIndex: 1,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "“鰆”这种鱼，正如从其汉字写作“鰆”可以看出的那样，是代表春天的鱼类之一。",
+                explanation: `
+                    <p>「<ruby>書<rt>か</rt></ruby>くことから」用「こと」把前面的写法名词化，再用「から」表示判断的依据。</p>
+                    <p>「ことからわかるように」是“正如从……可以看出的那样”，引出后面的结论。</p>
+                    <p>「<ruby>春<rt>はる</rt></ruby>を<ruby>代表<rt>だいひょう</rt></ruby>する」修饰「<ruby>魚<rt>さかな</rt></ruby>」，说明鰆的季节特征。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>依据「<ruby>書<rt>か</rt></ruby>くことから」</span><span>判断「わかる」</span><span>提示结论「ように」</span><span>性质「<ruby>春<rt>はる</rt></ruby>を<ruby>代表<rt>だいひょう</rt></ruby>する」</span></p>
+                `
+            },
+            {
+                id: "n2_2407_2",
+                level: "N2",
+                year: "2024年7月",
+                label: "問題8 - 2",
+                prefix: "<ruby>会議<rt>かいぎ</rt></ruby>での<ruby>西山<rt>にしやま</rt></ruby>さんのプレゼンは、<ruby>普段<rt>ふだん</rt></ruby>はなかなか",
+                suffix: "<ruby>素晴<rt>すば</rt></ruby>らしかった。",
+                options: [
+                    { id: "1", text: "ぐらい" },
+                    { id: "2", text: "<ruby>部長<rt>ぶちょう</rt></ruby>が" },
+                    { id: "3", text: "<ruby>褒<rt>ほ</rt></ruby>める" },
+                    { id: "4", text: "<ruby>褒<rt>ほ</rt></ruby>めることがない" }
+                ],
+                correctOrder: ["4", "2", "3", "1"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                translation: "西山在会议上的演示非常出色，甚至连平时很少表扬人的部长都称赞了他。",
+                explanation: `
+                    <p>「<ruby>普段<rt>ふだん</rt></ruby>はなかなか<ruby>褒<rt>ほ</rt></ruby>めることがない」整体修饰「<ruby>部長<rt>ぶちょう</rt></ruby>」，说明部长平时很少称赞别人。</p>
+                    <p>「<ruby>部長<rt>ぶちょう</rt></ruby>が<ruby>褒<rt>ほ</rt></ruby>める」组成完整的主谓关系。</p>
+                    <p>「ぐらい」表示程度：精彩到了连这位部长都称赞的程度。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>人物特征「<ruby>褒<rt>ほ</rt></ruby>めることがない」</span><span>主体「<ruby>部長<rt>ぶちょう</rt></ruby>が」</span><span>动作「<ruby>褒<rt>ほ</rt></ruby>める」</span><span>程度「ぐらい<ruby>素晴<rt>すば</rt></ruby>らしかった」</span></p>
+                `
+            },
+            {
+                id: "n2_2407_3",
+                level: "N2",
+                year: "2024年7月",
+                label: "問題8 - 3",
+                prefix: "<ruby>同<rt>おな</rt></ruby>じ<ruby>気温<rt>きおん</rt></ruby>",
+                suffix: "は<ruby>大<rt>おお</rt></ruby>きく<ruby>変<rt>か</rt></ruby>わる。",
+                options: [
+                    { id: "1", text: "<ruby>感<rt>かん</rt></ruby>じ<ruby>方<rt>かた</rt></ruby>" },
+                    { id: "2", text: "でも" },
+                    { id: "3", text: "<ruby>湿度<rt>しつど</rt></ruby>や<ruby>風<rt>かぜ</rt></ruby>の<ruby>強<rt>つよ</rt></ruby>さなど" },
+                    { id: "4", text: "によって" }
+                ],
+                correctOrder: ["2", "3", "4", "1"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "即使气温相同，体感也会因湿度、风力等因素而发生很大变化。",
+                explanation: `
+                    <p>「<ruby>同<rt>おな</rt></ruby>じ<ruby>気温<rt>きおん</rt></ruby>でも」表示“即使气温相同”，强调条件相同。</p>
+                    <p>「<ruby>湿度<rt>しつど</rt></ruby>や<ruby>風<rt>かぜ</rt></ruby>の<ruby>強<rt>つよ</rt></ruby>さなどによって」说明造成差异的因素。</p>
+                    <p>「<ruby>感<rt>かん</rt></ruby>じ<ruby>方<rt>かた</rt></ruby>は」是后半句的主题，接「<ruby>大<rt>おお</rt></ruby>きく<ruby>変<rt>か</rt></ruby>わる」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>相同条件「<ruby>同<rt>おな</rt></ruby>じ<ruby>気温<rt>きおん</rt></ruby>でも」</span><span>影响因素「<ruby>湿度<rt>しつど</rt></ruby>や<ruby>風<rt>かぜ</rt></ruby>の<ruby>強<rt>つよ</rt></ruby>さなど」</span><span>依据「によって」</span><span>变化对象「<ruby>感<rt>かん</rt></ruby>じ<ruby>方<rt>かた</rt></ruby>は」</span></p>
+                `
+            },
+            {
+                id: "n2_2407_4",
+                level: "N2",
+                year: "2024年7月",
+                label: "問題8 - 4",
+                prefix: "「山川大学アニメ<ruby>研究会<rt>けんきゅうかい</rt></ruby>」は、",
+                suffix: "できた<ruby>団体<rt>だんたい</rt></ruby>だ。",
+                options: [
+                    { id: "1", text: "<ruby>学生<rt>がくせい</rt></ruby>が" },
+                    { id: "2", text: "<ruby>集<rt>あつ</rt></ruby>まって" },
+                    { id: "3", text: "アニメが" },
+                    { id: "4", text: "<ruby>好<rt>す</rt></ruby>きでたまらないという" }
+                ],
+                correctOrder: ["3", "4", "1", "2"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                translation: "“山川大学动漫研究会”是由喜欢动漫喜欢得不得了的学生聚集起来成立的团体。",
+                explanation: `
+                    <p>「アニメが<ruby>好<rt>す</rt></ruby>きでたまらない」表示喜欢动漫到了无法抑制的程度。</p>
+                    <p>「という」引用前面的内容，并与它一起修饰「<ruby>学生<rt>がくせい</rt></ruby>」。</p>
+                    <p>「<ruby>学生<rt>がくせい</rt></ruby>が<ruby>集<rt>あつ</rt></ruby>まって」说明团体成立的方式和来源，后接「できた」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>对象「アニメが」</span><span>强烈喜好「<ruby>好<rt>す</rt></ruby>きでたまらないという」</span><span>主体「<ruby>学生<rt>がくせい</rt></ruby>が」</span><span>成立方式「<ruby>集<rt>あつ</rt></ruby>まってできた」</span></p>
+                `
+            },
+            {
+                id: "n2_2407_5",
+                level: "N2",
+                year: "2024年7月",
+                label: "問題8 - 5",
+                prefix: "<ruby>会社<rt>かいしゃ</rt></ruby>の<ruby>今井<rt>いまい</rt></ruby><ruby>先輩<rt>せんぱい</rt></ruby>は、<ruby>自分<rt>じぶん</rt></ruby>はミスが<ruby>多<rt>おお</rt></ruby>いといつも<ruby>言<rt>い</rt></ruby>っているが、",
+                suffix: "ように<ruby>見<rt>み</rt></ruby>える。",
+                options: [
+                    { id: "1", text: "<ruby>新人<rt>しんじん</rt></ruby>で" },
+                    { id: "2", text: "<ruby>何<rt>なん</rt></ruby>でも<ruby>完璧<rt>かんぺき</rt></ruby>にできている" },
+                    { id: "3", text: "わたしからすると" },
+                    { id: "4", text: "わからないことばかりの" }
+                ],
+                correctOrder: ["1", "4", "3", "2"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "3": "、" },
+                translation: "公司里的今井前辈总说自己经常出错，但在身为新人、净是不懂之事的我看来，他好像什么都能做得很完美。",
+                explanation: `
+                    <p>「<ruby>新人<rt>しんじん</rt></ruby>で」说明“我”的身份，并连接后面的另一项状态。</p>
+                    <p>「わからないことばかりの」修饰省略在后面的「わたし」，表示自己还有很多不懂的事情。</p>
+                    <p>「わたしからすると」提示评价的立场，后面说明从这个立场看到的今井前辈。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>身份「<ruby>新人<rt>しんじん</rt></ruby>で」</span><span>状态「わからないことばかりの」</span><span>评价立场「わたしからすると」</span><span>观感「<ruby>何<rt>なん</rt></ruby>でも<ruby>完璧<rt>かんぺき</rt></ruby>にできている」</span></p>
+                `
+            },
+            // ---------------- 2024年12月（结构化解析） ----------------
+            {
+                id: "n2_2412_1",
+                level: "N2",
+                year: "2024年12月",
+                label: "問題8 - 1",
+                prefix: "<ruby>長<rt>なが</rt></ruby>く<ruby>使<rt>つか</rt></ruby>っている<ruby>電子<rt>でんし</rt></ruby>レンジが<ruby>壊<rt>こわ</rt></ruby>れてしまった。<ruby>古<rt>ふる</rt></ruby>いものだし、<ruby>修理<rt>しゅうり</rt></ruby>に",
+                suffix: "<ruby>買<rt>か</rt></ruby>い<ruby>替<rt>か</rt></ruby>えたほうがいいかもしれない。",
+                options: [
+                    { id: "1", text: "もう" },
+                    { id: "2", text: "<ruby>考<rt>かんが</rt></ruby>えると" },
+                    { id: "3", text: "かかる" },
+                    { id: "4", text: "<ruby>費用<rt>ひよう</rt></ruby>を" }
+                ],
+                correctOrder: ["3", "4", "2", "1"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "用了很久的微波炉坏了。东西已经很旧，考虑到维修所需的费用，或许还是换一台新的比较好。",
+                explanation: `
+                    <p>「<ruby>修理<rt>しゅうり</rt></ruby>にかかる」修饰「<ruby>費用<rt>ひよう</rt></ruby>」，表示维修所需要的费用。</p>
+                    <p>「<ruby>費用<rt>ひよう</rt></ruby>を<ruby>考<rt>かんが</rt></ruby>えると」表示把费用纳入考虑后作出判断。</p>
+                    <p>「もう」修饰「<ruby>買<rt>か</rt></ruby>い<ruby>替<rt>か</rt></ruby>えたほうがいい」，表示到了应该换新的时候。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>用途「<ruby>修理<rt>しゅうり</rt></ruby>に」</span><span>连体修饰「かかる」</span><span>判断依据「<ruby>費用<rt>ひよう</rt></ruby>を<ruby>考<rt>かんが</rt></ruby>えると」</span><span>结论「もう<ruby>買<rt>か</rt></ruby>い<ruby>替<rt>か</rt></ruby>えたほうがいい」</span></p>
+                `
+            },
+            {
+                id: "n2_2412_2",
+                level: "N2",
+                year: "2024年12月",
+                label: "問題8 - 2",
+                prefix: "<ruby>娘<rt>むすめ</rt></ruby>「<ruby>今度<rt>こんど</rt></ruby>のスピーチコンテスト、<ruby>参加<rt>さんか</rt></ruby>しようかなあ。でも、<ruby>自信<rt>じしん</rt></ruby>ないなあ。」<br><ruby>母<rt>はは</rt></ruby>「チャレンジ",
+                suffix: "？いい<ruby>経験<rt>けいけん</rt></ruby>になると<ruby>思<rt>おも</rt></ruby>うよ。」",
+                options: [
+                    { id: "1", text: "だけ" },
+                    { id: "2", text: "みたら" },
+                    { id: "3", text: "する" },
+                    { id: "4", text: "して" }
+                ],
+                correctOrder: ["3", "1", "4", "2"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                translation: "女儿：“我在考虑要不要参加下次的演讲比赛，可是没什么信心。”母亲：“不妨尽管挑战一下试试？我觉得会成为一次很好的经历。”",
+                explanation: `
+                    <p>「チャレンジする」先组成“进行挑战”的完整表达。</p>
+                    <p>「するだけして」表示先把能做的事情尽量做了，带有“不妨先试一试”的语气。</p>
+                    <p>「してみたら」用「～てみる」表示尝试，再用「たら」提出建议。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>动作「チャレンジする」</span><span>尽量尝试「だけして」</span><span>建议「みたら」</span></p>
+                `
+            },
+            {
+                id: "n2_2412_3",
+                level: "N2",
+                year: "2024年12月",
+                label: "問題8 - 3",
+                prefix: "このドレスを<ruby>着<rt>き</rt></ruby>ると、",
+                suffix: "<ruby>気分<rt>きぶん</rt></ruby>になる。",
+                options: [
+                    { id: "1", text: "<ruby>映画<rt>えいが</rt></ruby>か<ruby>何<rt>なに</rt></ruby>かに" },
+                    { id: "2", text: "なったような" },
+                    { id: "3", text: "<ruby>出<rt>で</rt></ruby>てくる" },
+                    { id: "4", text: "<ruby>お姫様<rt>おひめさま</rt></ruby>にでも" }
+                ],
+                correctOrder: ["1", "3", "4", "2"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                translation: "穿上这条连衣裙，就会有一种仿佛变成了电影之类作品中出现的公主的感觉。",
+                explanation: `
+                    <p>「<ruby>映画<rt>えいが</rt></ruby>か<ruby>何<rt>なに</rt></ruby>かに<ruby>出<rt>で</rt></ruby>てくる」整体修饰「<ruby>お姫様<rt>おひめさま</rt></ruby>」。</p>
+                    <p>「<ruby>お姫様<rt>おひめさま</rt></ruby>にでも」用「でも」举出一个形象性的例子。</p>
+                    <p>「なったような」修饰「<ruby>気分<rt>きぶん</rt></ruby>」，表示仿佛变成了公主一般的感觉。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>出处「<ruby>映画<rt>えいが</rt></ruby>か<ruby>何<rt>なに</rt></ruby>かに」</span><span>连体修饰「<ruby>出<rt>で</rt></ruby>てくる」</span><span>比喻对象「<ruby>お姫様<rt>おひめさま</rt></ruby>にでも」</span><span>感受「なったような<ruby>気分<rt>きぶん</rt></ruby>」</span></p>
+                `
+            },
+            {
+                id: "n2_2412_4",
+                level: "N2",
+                year: "2024年12月",
+                label: "問題8 - 4",
+                prefix: "<ruby>昨日<rt>きのう</rt></ruby>は「<ruby>母<rt>はは</rt></ruby>の<ruby>日<rt>ひ</rt></ruby>」だったので、いつもおいしいお<ruby>弁当<rt>べんとう</rt></ruby>を",
+                suffix: "<ruby>母<rt>はは</rt></ruby>が<ruby>欲<rt>ほ</rt></ruby>しがっていたアクセサリをプレゼントした。",
+                options: [
+                    { id: "1", text: "<ruby>感謝<rt>かんしゃ</rt></ruby>の" },
+                    { id: "2", text: "<ruby>作<rt>つく</rt></ruby>ってくれて" },
+                    { id: "3", text: "ありがとうという" },
+                    { id: "4", text: "<ruby>気持<rt>きも</rt></ruby>ちを<ruby>込<rt>こ</rt></ruby>めて" }
+                ],
+                correctOrder: ["2", "3", "1", "4"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "4": "、" },
+                translation: "昨天是母亲节，我怀着感谢母亲一直为我制作美味便当的心意，把母亲一直想要的饰品送给了她。",
+                explanation: `
+                    <p>「お<ruby>弁当<rt>べんとう</rt></ruby>を<ruby>作<rt>つく</rt></ruby>ってくれてありがとう」组成具体的感谢内容。</p>
+                    <p>「という」引用这份感谢内容，并连接「<ruby>感謝<rt>かんしゃ</rt></ruby>の<ruby>気持<rt>きも</rt></ruby>ち」。</p>
+                    <p>「<ruby>気持<rt>きも</rt></ruby>ちを<ruby>込<rt>こ</rt></ruby>めて」表示带着这种心意实施后面的赠送行为。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>受惠行为「<ruby>作<rt>つく</rt></ruby>ってくれて」</span><span>感谢内容「ありがとうという」</span><span>情感「<ruby>感謝<rt>かんしゃ</rt></ruby>の」</span><span>方式「<ruby>気持<rt>きも</rt></ruby>ちを<ruby>込<rt>こ</rt></ruby>めて」</span></p>
+                `
+            },
+            {
+                id: "n2_2412_5",
+                level: "N2",
+                year: "2024年12月",
+                label: "問題8 - 5",
+                prefix: "<ruby>学生時代<rt>がくせいじだい</rt></ruby>は、<ruby>周<rt>まわ</rt></ruby>りの<ruby>人<rt>ひと</rt></ruby>から",
+                suffix: "<ruby>無理<rt>むり</rt></ruby>して<ruby>人<rt>ひと</rt></ruby>に<ruby>合<rt>あ</rt></ruby>わせようとすることが<ruby>多<rt>おお</rt></ruby>かった。",
+                options: [
+                    { id: "1", text: "<ruby>言<rt>い</rt></ruby>えずに" },
+                    { id: "2", text: "<ruby>気<rt>き</rt></ruby>にするあまり" },
+                    { id: "3", text: "<ruby>自分<rt>じぶん</rt></ruby>の<ruby>本当<rt>ほんとう</rt></ruby>の<ruby>気持<rt>きも</rt></ruby>ちを" },
+                    { id: "4", text: "<ruby>自分<rt>じぶん</rt></ruby>がどう<ruby>思<rt>おも</rt></ruby>われているかを" }
+                ],
+                correctOrder: ["4", "2", "3", "1"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、", "1": "、" },
+                translation: "学生时代，我因为过于在意周围的人怎么看自己，无法说出内心真实的想法，常常勉强自己去迎合别人。",
+                explanation: `
+                    <p>「<ruby>自分<rt>じぶん</rt></ruby>がどう<ruby>思<rt>おも</rt></ruby>われているか」是间接疑问，表示“自己被别人怎么看”。</p>
+                    <p>「を<ruby>気<rt>き</rt></ruby>にするあまり」表示因为过度在意这件事而产生后面的负面结果。</p>
+                    <p>「<ruby>自分<rt>じぶん</rt></ruby>の<ruby>本当<rt>ほんとう</rt></ruby>の<ruby>気持<rt>きも</rt></ruby>ちを<ruby>言<rt>い</rt></ruby>えずに」说明无法表达真实想法，并连接勉强迎合别人的行为。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>在意内容「<ruby>自分<rt>じぶん</rt></ruby>がどう<ruby>思<rt>おも</rt></ruby>われているかを」</span><span>过度原因「<ruby>気<rt>き</rt></ruby>にするあまり」</span><span>无法表达「<ruby>本当<rt>ほんとう</rt></ruby>の<ruby>気持<rt>きも</rt></ruby>ちを<ruby>言<rt>い</rt></ruby>えずに」</span><span>结果「<ruby>無理<rt>むり</rt></ruby>して<ruby>人<rt>ひと</rt></ruby>に<ruby>合<rt>あ</rt></ruby>わせる」</span></p>
+                `
+            },
+            // ---------------- 2025年7月（结构化解析） ----------------
+            {
+                id: "n2_2507_1",
+                level: "N2",
+                year: "2025年7月",
+                label: "問題8 - 1",
+                prefix: "<ruby>昨日<rt>きのう</rt></ruby>は、<ruby>梅雨<rt>つゆ</rt></ruby>の",
+                suffix: "、<ruby>久<rt>ひさ</rt></ruby>しぶりに<ruby>洗濯物<rt>せんたくもの</rt></ruby>を<ruby>外<rt>そと</rt></ruby>に<ruby>干<rt>ほ</rt></ruby>すことができた。",
+                options: [
+                    { id: "1", text: "いい<ruby>天気<rt>てんき</rt></ruby>で" },
+                    { id: "2", text: "<ruby>時期<rt>じき</rt></ruby>にしては" },
+                    { id: "3", text: "この" },
+                    { id: "4", text: "<ruby>珍<rt>めずら</rt></ruby>しく" }
+                ],
+                correctOrder: ["3", "2", "4", "1"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                translation: "昨天以梅雨季的这个时期来说，天气难得很好，所以久违地把衣服晾到了室外。",
+                explanation: `
+                    <p>「<ruby>梅雨<rt>つゆ</rt></ruby>のこの<ruby>時期<rt>じき</rt></ruby>」先组成“梅雨季的这个时期”。</p>
+                    <p>「にしては」表示实际情况与这一时期通常的状况不同。</p>
+                    <p>「<ruby>珍<rt>めずら</rt></ruby>しく」修饰「いい<ruby>天気<rt>てんき</rt></ruby>で」，表示难得遇到好天气。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>时间「<ruby>梅雨<rt>つゆ</rt></ruby>のこの<ruby>時期<rt>じき</rt></ruby>」</span><span>逆预期「にしては」</span><span>频率「<ruby>珍<rt>めずら</rt></ruby>しく」</span><span>天气状况「いい<ruby>天気<rt>てんき</rt></ruby>で」</span></p>
+                `
+            },
+            {
+                id: "n2_2507_2",
+                level: "N2",
+                year: "2025年7月",
+                label: "問題8 - 2",
+                prefix: "<ruby>今回<rt>こんかい</rt></ruby>のセミナーの<ruby>開催日<rt>かいさいび</rt></ruby>が<ruby>人<rt>ひと</rt></ruby>の",
+                suffix: "<ruby>参加者<rt>さんかしゃ</rt></ruby>が<ruby>集<rt>あつ</rt></ruby>まったのは<ruby>大成功<rt>だいせいこう</rt></ruby>といえる。",
+                options: [
+                    { id: "1", text: "<ruby>集<rt>あつ</rt></ruby>まりにくい" },
+                    { id: "2", text: "ことを<ruby>考<rt>かんが</rt></ruby>えると" },
+                    { id: "3", text: "<ruby>平日<rt>へいじつ</rt></ruby>だった" },
+                    { id: "4", text: "200<ruby>名<rt>めい</rt></ruby>もの" }
+                ],
+                correctOrder: ["1", "3", "2", "4"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "2": "、" },
+                translation: "考虑到这次研讨会的举办日是在不容易召集到人的工作日，仍有多达两百名参加者到场，可以说是非常成功。",
+                explanation: `
+                    <p>「<ruby>人<rt>ひと</rt></ruby>の<ruby>集<rt>あつ</rt></ruby>まりにくい」修饰「<ruby>平日<rt>へいじつ</rt></ruby>」，说明工作日不容易召集到人。</p>
+                    <p>「<ruby>平日<rt>へいじつ</rt></ruby>だったことを<ruby>考<rt>かんが</rt></ruby>えると」把举办日期作为评价后面结果的依据。</p>
+                    <p>「200<ruby>名<rt>めい</rt></ruby>もの」用「もの」强调参加人数之多。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>性质「<ruby>集<rt>あつ</rt></ruby>まりにくい」</span><span>日期「<ruby>平日<rt>へいじつ</rt></ruby>だった」</span><span>评价依据「ことを<ruby>考<rt>かんが</rt></ruby>えると」</span><span>数量强调「200<ruby>名<rt>めい</rt></ruby>もの」</span></p>
+                `
+            },
+            {
+                id: "n2_2507_3",
+                level: "N2",
+                year: "2025年7月",
+                label: "問題8 - 3",
+                prefix: "このパン<ruby>屋<rt>や</rt></ruby>では、<ruby>原料<rt>げんりょう</rt></ruby>の",
+                suffix: "<ruby>一<rt>ひと</rt></ruby>つ<ruby>一<rt>ひと</rt></ruby>つ<ruby>丁寧<rt>ていねい</rt></ruby>にパンを<ruby>作<rt>つく</rt></ruby>っているそうだ。",
+                options: [
+                    { id: "1", text: "こだわって" },
+                    { id: "2", text: "<ruby>小麦粉<rt>こむぎこ</rt></ruby>は" },
+                    { id: "3", text: "<ruby>水<rt>みず</rt></ruby>にまで" },
+                    { id: "4", text: "もちろん" }
+                ],
+                correctOrder: ["2", "4", "3", "1"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "听说这家面包店不仅讲究原料中的面粉，甚至连用水都很讲究，一件件认真地制作面包。",
+                explanation: `
+                    <p>「<ruby>小麦粉<rt>こむぎこ</rt></ruby>はもちろん」表示面粉自然是讲究的对象。</p>
+                    <p>「<ruby>水<rt>みず</rt></ruby>にまで」用「まで」强调讲究的范围甚至扩大到了水。</p>
+                    <p>「こだわって」承接前面的对象，并连接后面认真制作面包的行为。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>基本对象「<ruby>小麦粉<rt>こむぎこ</rt></ruby>は」</span><span>列举「もちろん」</span><span>范围扩大「<ruby>水<rt>みず</rt></ruby>にまで」</span><span>态度「こだわって」</span></p>
+                `
+            },
+            {
+                id: "n2_2507_4",
+                level: "N2",
+                year: "2025年7月",
+                label: "問題8 - 4",
+                prefix: "<ruby>昨日<rt>きのう</rt></ruby>の<ruby>晩<rt>ばん</rt></ruby>、<ruby>目覚<rt>めざ</rt></ruby>まし<ruby>時計<rt>どけい</rt></ruby>をセットするのを<ruby>忘<rt>わす</rt></ruby>れてしまい、<ruby>今朝<rt>けさ</rt></ruby>は<ruby>寝坊<rt>ねぼう</rt></ruby>してしまった。それでも",
+                suffix: "からだ。",
+                options: [
+                    { id: "1", text: "のは" },
+                    { id: "2", text: "たまたまかかってきた" },
+                    { id: "3", text: "<ruby>電話<rt>でんわ</rt></ruby>に<ruby>起<rt>お</rt></ruby>こされた" },
+                    { id: "4", text: "<ruby>遅刻<rt>ちこく</rt></ruby>をせずに<ruby>済<rt>す</rt></ruby>んだ" }
+                ],
+                correctOrder: ["4", "1", "2", "3"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                translation: "昨晚忘记设置闹钟，今天早上睡过头了。即便如此仍没有迟到，是因为恰好被一个打来的电话叫醒了。",
+                explanation: `
+                    <p>「<ruby>遅刻<rt>ちこく</rt></ruby>をせずに<ruby>済<rt>す</rt></ruby>んだ」表示最终避免了迟到。</p>
+                    <p>「のは」把这个结果名词化并设为话题，后面说明原因。</p>
+                    <p>「たまたまかかってきた」修饰「<ruby>電話<rt>でんわ</rt></ruby>」，「<ruby>電話<rt>でんわ</rt></ruby>に<ruby>起<rt>お</rt></ruby>こされた」说明被电话叫醒。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>结果「<ruby>遅刻<rt>ちこく</rt></ruby>をせずに<ruby>済<rt>す</rt></ruby>んだ」</span><span>原因提示「のは」</span><span>偶然事件「たまたまかかってきた」</span><span>被动原因「<ruby>電話<rt>でんわ</rt></ruby>に<ruby>起<rt>お</rt></ruby>こされたからだ」</span></p>
+                `
+            },
+            {
+                id: "n2_2507_5",
+                level: "N2",
+                year: "2025年7月",
+                label: "問題8 - 5",
+                prefix: "<ruby>人<rt>ひと</rt></ruby>には",
+                suffix: "<ruby>気<rt>き</rt></ruby>づくのは<ruby>難<rt>むずか</rt></ruby>しい。",
+                options: [
+                    { id: "1", text: "<ruby>良<rt>よ</rt></ruby>さがあるというが" },
+                    { id: "2", text: "<ruby>誰<rt>だれ</rt></ruby>にでも" },
+                    { id: "3", text: "その<ruby>人<rt>ひと</rt></ruby>にしかない" },
+                    { id: "4", text: "<ruby>自分<rt>じぶん</rt></ruby>でそれに" }
+                ],
+                correctOrder: ["2", "3", "1", "4"],
+                starIndex: 2,
+                analysisStyle: "structured",
+                resolvedPunctuation: { "1": "、" },
+                translation: "虽说每个人都有只属于自己的优点，但要靠自己察觉到它却很困难。",
+                explanation: `
+                    <p>「<ruby>誰<rt>だれ</rt></ruby>にでも」表示这一情况适用于每一个人。</p>
+                    <p>「その<ruby>人<rt>ひと</rt></ruby>にしかない」修饰「<ruby>良<rt>よ</rt></ruby>さ」，表示只属于那个人的优点。</p>
+                    <p>「<ruby>良<rt>よ</rt></ruby>さがあるというが」先承认一般说法，再转入“自己很难发现”的现实。</p>
+                    <p>「<ruby>自分<rt>じぶん</rt></ruby>でそれに」分别说明发现者和发现的对象，连接「<ruby>気<rt>き</rt></ruby>づく」。</p>
+                    <p class="sort-logic-conclusion"><strong>结构：</strong><span>普遍范围「<ruby>誰<rt>だれ</rt></ruby>にでも」</span><span>独有性质「その<ruby>人<rt>ひと</rt></ruby>にしかない」</span><span>让步前提「<ruby>良<rt>よ</rt></ruby>さがあるというが」</span><span>发现主体与对象「<ruby>自分<rt>じぶん</rt></ruby>でそれに」</span></p>
                 `
             }
 ];

@@ -6,6 +6,7 @@
         'task-comprehension': {
             ja: '課題理解',
             zh: '任务理解',
+            brief: '听完对话，选出接下来要做的事',
             categoryType: 'task_comprehension',
             years: {
                 N1: standardSessions(2010, 2020, (year) => `years/n1_${year}.html`, { noJuly: [2020] }),
@@ -14,7 +15,9 @@
                         session('2021-07', 'years/2021.html'),
                         session('2021-12', 'years/2021.html'),
                         session('2022-07', 'years/2022.html'),
-                        session('2022-12', 'years/2022.html')
+                        session('2022-12', 'years/2022.html'),
+                        session('2023-07', 'years/2023.html'),
+                        session('2023-12', 'years/2023.html')
                     ),
                 N3: []
             }
@@ -22,6 +25,7 @@
         'point-comprehension': {
             ja: 'ポイント理解',
             zh: '重点理解',
+            brief: '先读问题和选项，再听准要点',
             categoryType: 'point_comprehension',
             years: {
                 N1: standardSessions(2010, 2021, (year) => `years/${year}.html`, { noJuly: [2020] }),
@@ -32,8 +36,8 @@
         'summary-comprehension': {
             ja: '概要理解',
             zh: '概要理解',
+            brief: '选项不印在卷面，听出说话人的主张',
             categoryType: 'overview_comprehension',
-            progressTypes: ['summary-comprehension', 'overview-comprehension'],
             years: {
                 N1: sessionFileYears(2010, 2019, (year, month) => `years/${year}.${month === 7 ? '7' : '12'}.html`)
                     .concat(session(`${2020}-12`, 'years/2020.12.html'))
@@ -45,6 +49,7 @@
         'immediate-response': {
             ja: '即時応答',
             zh: '即时应答',
+            brief: '听一句话，选出最自然的回应',
             categoryType: 'immediate_response',
             years: {
                 N1: standardSessions(2010, 2020, (year) => `years/n1_${year}.html`, { noJuly: [2020] }),
@@ -55,6 +60,7 @@
         'integrated-comprehension': {
             ja: '総合理解',
             zh: '综合理解',
+            brief: '比较、整合多段信息后作答',
             categoryType: 'integrated_comprehension',
             years: {
                 N1: [],
@@ -131,26 +137,31 @@
         return Array.isArray(config.years[context.level]) ? config.years[context.level] : [];
     }
 
-    function progressTypes() {
-        return Array.from(new Set([context.type].concat(config.progressTypes || [])));
+    function getAnnualPosition() {
+        return window.ListeningProgress?.getPracticePosition(context.type, context.level, 'annual');
     }
 
-    function getLastPractice() {
-        if (!window.ListeningProgress) return '';
-        for (const type of progressTypes()) {
-            const value = window.ListeningProgress.getLastPractice(type, context.level.toLowerCase());
-            if (value) return value;
-        }
-        return '';
+    function getCategoryPosition() {
+        return window.ListeningCategorySystem?.getRecentPractice(config.categoryType, context.level);
+    }
+
+    function categoryPositionCopy(position) {
+        return `${position.category.name} · ${position.setNumber ? `第 ${position.setNumber} 组 · ` : ''}第 ${position.index + 1} 题`;
+    }
+
+    function categoryResumeUrl(position) {
+        return window.ListeningCategorySystem.buildCategoryPracticeUrl({
+            type: config.categoryType, level: context.level, categoryId: position.categoryId,
+            setNumber: position.setNumber, sourceExamKey: position.examKey, questionId: position.questionId
+        });
+    }
+
+    function continueBadge() {
+        return '<span class="listening-continue-badge">继续</span>';
     }
 
     function getMistakeIds(examKey) {
-        if (!window.ListeningProgress) return [];
-        for (const type of progressTypes()) {
-            const values = window.ListeningProgress.getMistakeIds(type, context.level.toLowerCase(), examKey);
-            if (Array.isArray(values) && values.length) return values;
-        }
-        return [];
+        return window.ListeningProgress?.getMistakeIds(context.type, context.level, examKey) || [];
     }
 
     function getPool() {
@@ -167,18 +178,21 @@
         }).length;
     }
 
+    // A small sound-wave mark: listening's counterpart to the vocabulary directory's diamonds.
+    const WAVE_MARK = '<svg class="lst-wave" viewBox="0 0 22 12" aria-hidden="true"><path d="M2 5v2M6 3v6M10 1v10M14 3.5v5M18 5v2"/></svg>';
+
     function renderShell() {
         document.title = `${context.level} ${config.ja}｜聴解特訓`;
         document.body.innerHTML = `
-            <header class="sort-page-header">
-                <a href="../../index.html" id="listening-page-back" class="grammar-back-link back-btn" data-kiki-dynamic-back aria-label="聴解メニューへ戻る">
+            <header class="sort-page-header" data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
+                <a href="../../../../index.html#exam/exam-listening" id="listening-page-back" class="grammar-back-link back-btn" data-kiki-dynamic-back aria-label="返回听力入口">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-                    <span id="listening-back-copy">聴解メニューへ戻る</span>
+                    <span id="listening-back-copy">返回听力入口</span>
                 </a>
                 <h1 id="listening-header-title" class="sort-page-header-title">${context.level} 聴解特訓</h1>
                 <div class="header-right-slot">
-                    <button id="listening-mistake-button" type="button" class="header-mistake-center-btn">
-                        <span>誤答ノート</span><strong id="listening-mistake-count">0</strong>
+                    <button id="listening-mistake-button" type="button" class="header-mistake-center-btn" data-mobile-label="错题库">
+                        <span>错题库</span><strong id="listening-mistake-count">0</strong>
                     </button>
                 </div>
             </header>
@@ -198,19 +212,26 @@
 
     function renderHero(view) {
         const lines = {
-            main: '选择今天想要进行的听力练习吧，kiki。',
-            year: `选一套${config.zh}真题，把声音里的线索按顺序抓住吧，kiki。`,
-            category: `选一个${config.zh}场景，集中辨清容易漏掉的信息吧，kiki。`
+            main: '戴上耳机，从哪一种开始？',
+            year: '选一套真题，按考试的节奏听完。',
+            category: '挑一个场景，集中练一练。',
+            mistakes: '漏听的地方，再听一遍。'
         };
+        const resume = view === 'year' || view === 'category'
+            ? `<button type="button" class="lst-resume" data-resume-track="${view}" hidden><span class="lst-resume__label">上次</span><span class="lst-resume__copy" data-resume-copy></span><span class="lst-resume__go">继续 ›</span></button>`
+            : '';
         return `
-            <section class="grammar-character-hero" aria-label="听力练习引导">
-                <div class="grammar-character-figure listening-character-figure">
+            <section class="lst-hero" aria-label="听力练习引导">
+                <div class="lst-hero__figure">
                     <img src="../../../../assets/listening/music-duo-private-upper-body-v6.png" alt="听力搭档枫与一二三的半身像">
                 </div>
-                <div class="grammar-character-speech">
-                    <p class="grammar-character-name">一二三 × 枫 · 聴解ナビ</p>
-                    <h2>${escapeHtml(lines[view])}</h2>
-                    ${view === 'main' ? '<button id="listening-resume-button" type="button" class="grammar-resume-line" hidden><span><strong>继续练习</strong>　<span id="listening-resume-copy"></span></span><span>继续 →</span></button>' : ''}
+                <div class="lst-hero__card">
+                    <span class="lst-name">一二三・枫</span>
+                    <p class="lst-hero__line">「${escapeHtml(lines[view])}」</p>
+                    ${view === 'mistakes' ? '' : `<div class="lst-hero__meta">
+                        <span class="lst-hero__brief">${escapeHtml(config.brief)}</span>
+                        ${resume}
+                    </div>`}
                 </div>
             </section>
         `;
@@ -218,82 +239,92 @@
 
     function levelTabs(attribute) {
         return `
-            <div class="grammar-level-tabs grammar-main-level-tabs" aria-label="切换练习等级">
-                ${['N1', 'N2', 'N3'].map((level) => `<button type="button" ${attribute}="${level}" class="${level === context.level ? 'is-active' : ''}" aria-current="${level === context.level ? 'true' : 'false'}">${level}</button>`).join('')}
+            <div class="lst-levels" role="group" aria-label="切换级别">
+                ${['N1', 'N2'].map((level) => `<button type="button" ${attribute}="${level}" class="${level === context.level ? 'is-active' : ''}" aria-current="${level === context.level ? 'true' : 'false'}">${level}</button>`).join('')}
             </div>
         `;
     }
 
+    function viewHeading(title, attribute, withCrumb = true) {
+        return `
+            <div class="lst-heading">
+                <div class="lst-heading__copy">
+                    ${withCrumb ? `<button type="button" class="lst-crumb" data-return-main><span aria-hidden="true">‹</span>${escapeHtml(config.ja)}</button>` : ''}
+                    <h2>${WAVE_MARK}${escapeHtml(title)}</h2>
+                </div>
+                ${levelTabs(attribute)}
+            </div>
+        `;
+    }
+
+    function yearRouteMeta() {
+        const sessions = getSessions().filter((entry) => !entry.locked);
+        if (!sessions.length) return '整理中';
+        const years = sessions.map((entry) => entry.year);
+        const first = Math.min(...years);
+        const last = Math.max(...years);
+        return `${first === last ? first : `${first}–${last}`} · ${sessions.length} 套`;
+    }
+
+    function categoryRouteMeta() {
+        const categories = window.ListeningCategorySystem?.getCategories(config.categoryType, context.level) || [];
+        const total = categories.reduce((sum, category) => sum + (category.itemCount || 0), 0);
+        return total ? `${categories.length} 类场景 · ${total} 题` : '整理中';
+    }
+
     function renderMainView() {
         return `
-            <div id="listening-view-main" class="view-section active selection-view-shell grammar-directory-view">
+            <div id="listening-view-main" class="view-section active selection-view-shell lst-view">
                 ${renderHero('main')}
-                <div class="grammar-section-title"><h2>${escapeHtml(config.ja)} · 练习目录</h2>${levelTabs('data-main-level')}</div>
-                <section class="grammar-practice-entry" aria-label="主要练习入口">
-                    <nav class="grammar-primary-routes">
-                        <button type="button" class="grammar-primary-route is-year" data-open-view="year">
-                            <span class="grammar-primary-route__index">01</span>
-                            <span class="grammar-primary-route__copy"><strong>年度练习</strong><small>按考试年份完成真题</small></span>
-                            <span class="grammar-primary-route__arrow">›</span>
-                        </button>
-                        <button type="button" class="grammar-primary-route is-category" data-open-view="category">
-                            <span class="grammar-primary-route__index">02</span>
-                            <span class="grammar-primary-route__copy"><strong>分类练习</strong><small>按听力场景集中练习</small></span>
-                            <span class="grammar-primary-route__arrow">›</span>
-                        </button>
-                    </nav>
-                    <button type="button" class="grammar-random-entry" id="listening-random-open">
-                        <span><strong>随机练习</strong><small>从当前级别随机抽题</small></span>
-                        <span>开始随机小测　›</span>
+                ${viewHeading(config.ja, 'data-main-level', false)}
+                <nav class="lst-routes" aria-label="练习方式">
+                    <button type="button" class="lst-route is-year" data-open-view="year">
+                        <span class="lst-route__no">01</span>
+                        <span class="lst-route__copy"><strong>年度真题</strong><small>${escapeHtml(yearRouteMeta())}</small></span>
+                        <span class="lst-route__go" aria-hidden="true">›</span>
                     </button>
-                </section>
+                    <button type="button" class="lst-route is-category" data-open-view="category">
+                        <span class="lst-route__no">02</span>
+                        <span class="lst-route__copy"><strong>分类练习</strong><small>${escapeHtml(categoryRouteMeta())}</small></span>
+                        <span class="lst-route__go" aria-hidden="true">›</span>
+                    </button>
+                </nav>
+                <button type="button" class="lst-random" id="listening-random-open">
+                    <span class="lst-random__copy"><strong>随机练习</strong><small>自选年份范围抽题</small></span>
+                    <span class="lst-random__go">开始 ›</span>
+                </button>
             </div>
         `;
     }
 
     function renderYearView() {
         return `
-            <div id="listening-view-year" class="view-section selection-view-shell">
+            <div id="listening-view-year" class="view-section selection-view-shell lst-view">
                 ${renderHero('year')}
-                <div class="grammar-section-title grammar-year-title">
-                    <h2>${context.level} ${escapeHtml(config.ja)} · 年度真题</h2>
-                    <button type="button" class="grammar-directory-back" data-return-main><span>‹</span>練習メニューへ戻る</button>
-                </div>
-                <div id="listening-year-list" class="exam-year-list"></div>
-                <footer class="grammar-level-switcher grammar-year-level-switcher"><span>切换级别</span>${levelTabs('data-year-level')}</footer>
+                ${viewHeading('年度真题', 'data-year-level')}
+                <div id="listening-year-list" class="lst-year-grid"></div>
             </div>
         `;
     }
 
     function renderCategoryView() {
         return `
-            <div id="listening-view-category" class="view-section selection-view-shell">
+            <div id="listening-view-category" class="view-section selection-view-shell lst-view">
                 ${renderHero('category')}
-                <div class="grammar-section-title grammar-category-title">
-                    <h2>${context.level} ${escapeHtml(config.ja)} · 分类练习</h2>
-                    <button type="button" class="grammar-directory-back" data-return-main><span>‹</span>練習メニューへ戻る</button>
-                </div>
-                <section class="grammar-category-directory"><div id="listening-category-list" class="grammar-category-grid"></div></section>
-                <footer class="grammar-level-switcher"><span>切换级别</span>${levelTabs('data-category-level')}</footer>
+                ${viewHeading('分类练习', 'data-category-level')}
+                <div id="listening-category-list" class="lst-category-grid"></div>
             </div>
         `;
     }
 
     function renderMistakeView() {
         return `
-            <div id="listening-view-mistakes" class="view-section selection-view-shell mistake-center-view">
-                <section class="mistake-mentor-strip" aria-label="听力错题复习建议">
-                    <img src="../../../../assets/listening/music-duo-private-upper-body-v6.png" alt="听力搭档枫与一二三的半身像">
-                    <div><span>一二三 × 枫 · 错题复习</span><h2>从漏听的地方重新开始，把声音里的线索补完整吧，kiki。</h2></div>
-                </section>
-                <div class="grammar-section-title mistake-center-title">
-                    <h2>${context.level} ${escapeHtml(config.ja)} · 错题中心</h2>
-                    ${levelTabs('data-mistake-level')}
-                </div>
-                <section class="mistake-overview-line">
+            <div id="listening-view-mistakes" class="view-section selection-view-shell lst-view mistake-center-view">
+                ${renderHero('mistakes')}
+                ${viewHeading('错题库', 'data-mistake-level')}
+                <section class="lst-mistake-stats" aria-label="错题统计">
                     <div><span>待复习</span><strong id="listening-mistake-total">0 题</strong></div>
                     <div><span>涉及真题</span><strong id="listening-mistake-exams">0 套</strong></div>
-                    <div class="mistake-overview-weak"><span>复习方式</span><strong>按年份重新作答</strong></div>
                 </section>
                 <div id="listening-mistake-list" class="listening-mistake-list"></div>
             </div>
@@ -304,8 +335,7 @@
         return `
             <div id="listening-category-modal" class="listening-category-set-modal" hidden>
                 <section class="listening-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="listening-category-modal-title">
-                    <header class="listening-modal-header"><div><span class="listening-modal-kicker">分類練習</span><h2 id="listening-category-modal-title">选择练习组</h2></div><button type="button" class="listening-modal-close" data-close-modal aria-label="关闭">×</button></header>
-                    <p id="listening-category-modal-summary" class="listening-set-summary"></p>
+                    <header class="listening-modal-header"><div><h2 id="listening-category-modal-title">选择练习组</h2><p id="listening-category-modal-summary" class="listening-set-summary"></p></div><button type="button" class="listening-modal-close" data-close-modal aria-label="关闭">×</button></header>
                     <div id="listening-category-set-list" class="listening-set-list"></div>
                 </section>
             </div>
@@ -316,14 +346,13 @@
         return `
             <div id="listening-random-modal" class="listening-random-modal" hidden>
                 <section class="listening-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="listening-random-title">
-                    <header class="listening-modal-header"><div><span class="listening-modal-kicker">RANDOM TEST</span><h2 id="listening-random-title">随机练习</h2></div><button type="button" class="listening-modal-close" data-close-modal aria-label="关闭">×</button></header>
-                    <p class="listening-random-copy">选择抽题年份范围，系统会从当前级别的${escapeHtml(config.zh)}题目中随机生成测试。</p>
+                    <header class="listening-modal-header"><div><h2 id="listening-random-title">随机练习</h2><p class="listening-set-summary">${escapeHtml(config.ja)} · ${context.level}</p></div><button type="button" class="listening-modal-close" data-close-modal aria-label="关闭">×</button></header>
                     <div class="listening-random-fields">
                         <label class="listening-random-field">开始年份<select id="listening-random-from"></select></label>
                         <label class="listening-random-field">结束年份<select id="listening-random-to"></select></label>
                     </div>
-                    <p id="listening-random-status" class="listening-set-summary"></p>
-                    <div class="listening-modal-actions"><button type="button" class="listening-modal-action" data-close-modal>取消</button><button id="listening-random-start" type="button" class="listening-modal-action is-primary">开始测试</button></div>
+                    <p id="listening-random-status" class="listening-random-status"></p>
+                    <div class="listening-modal-actions"><button type="button" class="listening-modal-action" data-close-modal>取消</button><button id="listening-random-start" type="button" class="listening-modal-action is-primary">开始练习</button></div>
                 </section>
             </div>
         `;
@@ -336,20 +365,19 @@
                     <header class="training-mode-header">
                         <img src="../../../../assets/listening/music-duo-private-upper-body-v6.png" alt="听力搭档枫与一二三的半身像">
                         <div>
-                            <span>一二三 × 枫 · 练习建议</span>
                             <div id="listening-training-mode-title" class="training-mode-title">选择练习方式</div>
-                            <div id="listening-training-mode-subtitle" class="training-mode-subtitle">请选择答题与批改方式。</div>
+                            <div id="listening-training-mode-subtitle" class="training-mode-subtitle"></div>
                         </div>
                     </header>
                     <div class="training-mode-grid">
                         <button type="button" class="training-mode-card" data-listening-training-mode="study">
                             <span class="training-mode-number">01</span>
-                            <span><b class="training-mode-card-title">学习模式</b><small class="training-mode-card-copy">逐题作答，立即查看正误与解析</small></span>
+                            <span><b class="training-mode-card-title">学习模式</b><small class="training-mode-card-copy">逐题作答，随时看解析</small></span>
                             <span class="training-mode-mark" aria-hidden="true"></span>
                         </button>
                         <button type="button" class="training-mode-card" data-listening-training-mode="challenge">
                             <span class="training-mode-number">02</span>
-                            <span><b class="training-mode-card-title">测试模式</b><small class="training-mode-card-copy">连续播放，整套完成后统一批改</small></span>
+                            <span><b class="training-mode-card-title">测试模式</b><small class="training-mode-card-copy">整套连续听完，统一批改</small></span>
                             <span class="training-mode-mark" aria-hidden="true"></span>
                         </button>
                     </div>
@@ -369,22 +397,25 @@
             container.innerHTML = '<div class="listening-directory-empty">这个级别的年度真题仍在整理中。</div>';
             return;
         }
-        const lastPractice = getLastPractice();
+        const lastPractice = getAnnualPosition();
         const grouped = sessions.reduce((map, entry) => {
             if (!map.has(entry.year)) map.set(entry.year, []);
             map.get(entry.year).push(entry);
             return map;
         }, new Map());
         container.innerHTML = Array.from(grouped.entries()).map(([year, entries]) => `
-            <section class="grammar-year-stage" aria-label="${year} 年真题">
-                <header class="grammar-year-stage-header"><span class="grammar-year-stage-title"><strong>${year} 年</strong></span></header>
-                <div class="grammar-year-sessions">
+            <section class="lst-year" aria-label="${year} 年真题">
+                <h3 class="lst-year__title">${year}<small>年</small></h3>
+                <div class="lst-year__sessions">
                     ${entries.map((entry) => {
-                        const current = !entry.locked && entry.key === lastPractice;
+                        const current = !entry.locked && entry.key === lastPractice?.examKey;
                         if (entry.locked) {
-                            return `<button type="button" class="exam-year-item grammar-year-session is-locked" disabled aria-disabled="true"><span class="grammar-year-session-copy"><strong>${entry.month} 月</strong>${entry.statusDetail ? `<small>${escapeHtml(entry.statusDetail)}</small>` : ''}</span><span class="grammar-year-session-state">${escapeHtml(entry.statusLabel || '准备中')}</span></button>`;
+                            return `<button type="button" class="lst-session is-locked" disabled aria-disabled="true"${entry.statusDetail ? ` title="${escapeHtml(entry.statusDetail)}"` : ''}><span class="lst-session__month">${entry.month}<small>月</small></span><span class="lst-session__state">${escapeHtml(entry.statusLabel || '准备中')}</span></button>`;
                         }
-                        return `<button type="button" data-year-session-key="${escapeHtml(entry.key)}" class="exam-year-item grammar-year-session ${current ? 'is-current' : ''}"><span class="grammar-year-session-copy"><strong>${entry.month} 月</strong></span><span class="grammar-year-session-state">${current ? '继续 ›' : '进入 ›'}</span></button>`;
+                        const state = current
+                            ? `${continueBadge()}${lastPractice.questionId ? `<span>第 ${lastPractice.questionId} 题</span>` : ''}`
+                            : '<span class="lst-session__go" aria-hidden="true">›</span>';
+                        return `<button type="button" data-year-session-key="${escapeHtml(entry.key)}" class="lst-session ${current ? 'is-current' : ''}" aria-label="${year} 年 ${entry.month} 月${current ? '，继续上次' : ''}"><span class="lst-session__month">${entry.month}<small>月</small></span><span class="lst-session__state">${state}</span></button>`;
                     }).join('')}
                 </div>
             </section>
@@ -402,13 +433,19 @@
             container.innerHTML = '<div class="listening-directory-empty">这个级别的分类题单仍在整理中。</div>';
             return;
         }
-        container.innerHTML = categories.map((category, index) => `
-            <button type="button" class="grammar-category-item" data-category-id="${escapeHtml(category.id)}" ${category.itemCount ? '' : 'disabled'}>
-                <span class="grammar-category-item__number">${pad(index + 1)}</span>
-                <b title="${escapeHtml(category.name)}">${escapeHtml(category.name)}</b>
-                <em>${category.itemCount} 题</em><i>进入 ›</i>
-            </button>
-        `).join('');
+        const last = getCategoryPosition();
+        container.innerHTML = categories.map((category, index) => {
+            const current = last?.categoryId === category.id;
+            const groups = category.itemCount
+                ? window.ListeningCategorySystem.getCategorySets(config.categoryType, context.level, category.id, 6).length
+                : 0;
+            return `
+            <button type="button" class="lst-category ${current ? 'is-current' : ''}" data-category-id="${escapeHtml(category.id)}" ${category.itemCount ? '' : 'disabled'}>
+                <span class="lst-category__no">${pad(index + 1)}</span>
+                <span class="lst-category__copy"><b title="${escapeHtml(category.name)}">${escapeHtml(category.name)}</b><small>${category.itemCount} 题${groups ? ` · ${groups} 组` : ''}</small></span>
+                <span class="lst-category__state">${current ? continueBadge() : ''}<i aria-hidden="true">›</i></span>
+            </button>`;
+        }).join('');
     }
 
     function renderMistakes() {
@@ -424,19 +461,26 @@
         }
         container.innerHTML = rows.map((item, index) => {
             const href = `${item.entry.href}${item.entry.href.includes('?') ? '&' : '?'}mode=review`;
-            return `<a href="${escapeHtml(href)}" class="listening-mistake-row"><span>${pad(index + 1)}</span><strong>${item.entry.year} 年 ${item.entry.month} 月</strong><small>${item.ids.length} 题待复习　›</small></a>`;
+            return `<a href="${escapeHtml(href)}" class="listening-mistake-row"><span>${pad(index + 1)}</span><strong>${item.entry.year} 年 ${item.entry.month} 月</strong><small>${item.ids.length} 题</small><i aria-hidden="true">›</i></a>`;
         }).join('');
     }
 
     function updateResume() {
-        const button = document.getElementById('listening-resume-button');
-        const copy = document.getElementById('listening-resume-copy');
-        const last = getLastPractice();
-        const target = getSessions().find((entry) => entry.key === last && !entry.locked);
-        button.hidden = !target;
-        if (!target) return;
-        copy.textContent = `${target.year}年${target.month}月 · ${config.ja}`;
-        button.onclick = () => openTrainingMode(target);
+        const annual = getAnnualPosition();
+        const target = getSessions().find((entry) => entry.key === annual?.examKey && !entry.locked);
+        const category = getCategoryPosition();
+        document.querySelectorAll('[data-resume-track]').forEach((button) => {
+            const isYear = button.dataset.resumeTrack === 'year';
+            button.hidden = isYear ? !target : !category;
+            if (button.hidden) { button.onclick = null; return; }
+            button.querySelector('[data-resume-copy]').textContent = isYear
+                ? `${target.year}年${target.month}月${annual.questionId ? ` · 第 ${annual.questionId} 题` : ''}`
+                : categoryPositionCopy(category);
+            button.onclick = isYear ? () => openTrainingMode(target) : () => {
+                rememberCategoryEntry(category.categoryId, category.setNumber);
+                window.location.href = categoryResumeUrl(category);
+            };
+        });
     }
 
     function syncTrainingModeModal() {
@@ -468,18 +512,23 @@
         localStorage.setItem('listening_training_mode', selectedTrainingMode);
         const url = new URL(pendingYearEntry.href, window.location.href);
         url.searchParams.set('mode', selectedTrainingMode);
+        const last = getAnnualPosition();
+        if (last?.examKey === pendingYearEntry.key && last.questionId) url.searchParams.set('questionId', String(last.questionId));
         window.location.href = url.href;
     }
 
     function showView(view, updateUrl = true) {
         currentView = view;
+        renderYears();
+        renderCategories();
+        updateResume();
         document.querySelectorAll('.view-section').forEach((section) => section.classList.remove('active'));
         const target = document.getElementById(`listening-view-${view}`);
         if (target) target.classList.add('active');
         const back = document.getElementById('listening-page-back');
-        const backLabel = view === 'main' ? '聴解メニューへ戻る' : '練習メニューへ戻る';
+        const backLabel = view === 'main' ? '返回听力入口' : '返回听力目录';
         if (back) {
-            back.href = view === 'main' ? '../../index.html' : './index.html';
+            back.href = view === 'main' ? '../../../../index.html#exam/exam-listening' : './index.html';
             back.setAttribute('aria-label', backLabel);
             const legacyCopy = back.querySelector('#listening-back-copy');
             const unifiedCopy = back.querySelector('.kiki-unified-back-label');
@@ -487,8 +536,13 @@
             if (unifiedCopy) unifiedCopy.textContent = backLabel;
         }
         document.getElementById('listening-mistake-button').hidden = view === 'mistakes';
+        if (view !== 'category') document.getElementById('listening-category-modal').hidden = true;
         if (updateUrl) {
             const url = new URL(window.location.href);
+            if (view !== 'category') {
+                url.searchParams.delete('category');
+                url.searchParams.delete('set');
+            }
             if (view === 'main') url.searchParams.delete('browse');
             else url.searchParams.set('browse', view);
             window.history.replaceState({}, '', `${url.pathname}${url.search}`);
@@ -502,20 +556,57 @@
         window.location.href = url.href;
     }
 
-    function openCategory(categoryId) {
+    function rememberCategoryEntry(categoryId, setNumber = 0) {
+        const url = new URL(window.location.href);
+        if (categoryId) {
+            url.searchParams.set('browse', 'category');
+            url.searchParams.set('category', categoryId);
+        } else url.searchParams.delete('category');
+        if (categoryId && setNumber > 0) url.searchParams.set('set', String(setNumber));
+        else url.searchParams.delete('set');
+        try { window.history.replaceState(window.history.state, '', url.href); } catch (error) { /* file:// restrictions */ }
+    }
+
+    function restoreCategoryEntry() {
+        if (currentView !== 'category') return;
+        const params = new URLSearchParams(window.location.search);
+        const categoryId = params.get('category');
+        if (!categoryId) {
+            document.getElementById('listening-category-modal').hidden = true;
+            return;
+        }
+        openCategory(categoryId, { updateUrl: false, setNumber: Number(params.get('set')) || 0 });
+    }
+
+    function openCategory(categoryId, { updateUrl = true, setNumber = 0 } = {}) {
         if (!window.ListeningCategorySystem) return;
         const category = window.ListeningCategorySystem.getCategory(config.categoryType, context.level, categoryId);
         if (!category) return;
         const stats = window.ListeningCategorySystem.getCategoryStats(config.categoryType, context.level, categoryId);
         const sets = window.ListeningCategorySystem.getCategorySets(config.categoryType, context.level, categoryId, 6);
         document.getElementById('listening-category-modal-title').textContent = category.name;
-        document.getElementById('listening-category-modal-summary').textContent = `${stats.itemCount || 0} 题 · 共 ${sets.length} 组`;
+        document.getElementById('listening-category-modal-summary').textContent = `${stats.itemCount || 0} 题 · ${sets.length} 组`;
+        const last = getCategoryPosition();
         document.getElementById('listening-category-set-list').innerHTML = sets.map((set) => {
-            const href = window.ListeningCategorySystem.buildCategoryPracticeUrl({ type: config.categoryType, level: context.level, categoryId, setNumber: set.setNumber });
-            const state = set.completed ? '已完成' : (set.lastIndex >= 0 ? `上次第 ${set.lastIndex + 1} 题` : '未开始');
-            return `<a href="${escapeHtml(href)}" class="listening-set-link"><strong>第 ${set.setNumber} 组</strong><small>${set.start}–${set.end} 题 · ${state}</small><span>进入 ›</span></a>`;
+            const current = last?.categoryId === categoryId && last.setNumber === set.setNumber;
+            const href = current ? categoryResumeUrl(last) : window.ListeningCategorySystem.buildCategoryPracticeUrl({ type: config.categoryType, level: context.level, categoryId, setNumber: set.setNumber });
+            const state = current ? `上次第 ${last.index + 1} 题` : (set.completed ? '已完成' : (set.lastIndex >= 0 ? `上次第 ${set.lastIndex + 1} 题` : ''));
+            const stateClass = !current && set.completed ? ' is-done' : '';
+            return `<a href="${escapeHtml(href)}" class="listening-set-link ${current ? 'is-current' : ''}${stateClass}" data-category-set="${set.setNumber}" ${current ? 'aria-current="step"' : ''}><strong>第 ${set.setNumber} 组 ${current ? continueBadge() : ''}</strong><small>${set.start}–${set.end} 题</small><span>${state ? `<em>${state}</em>` : ''}<i aria-hidden="true">›</i></span></a>`;
         }).join('') || '<div class="listening-directory-empty">暂无可用练习组。</div>';
-        document.getElementById('listening-category-modal').hidden = false;
+        const modal = document.getElementById('listening-category-modal');
+        modal.dataset.categoryId = categoryId;
+        modal.dataset.setNumber = String(setNumber);
+        modal.hidden = false;
+        if (updateUrl) rememberCategoryEntry(categoryId, setNumber);
+        const row = modal.querySelector(`[data-category-set="${setNumber}"]`) || modal.querySelector('.is-current');
+        const dialog = modal.querySelector('.listening-modal-dialog');
+        if (row && dialog) {
+            const bounds = dialog.getBoundingClientRect();
+            const target = row.getBoundingClientRect();
+            if (target.bottom > bounds.bottom - 24) dialog.scrollTop += target.bottom - bounds.bottom + 24;
+            else if (target.top < bounds.top + 24) dialog.scrollTop += target.top - bounds.top - 24;
+        }
     }
 
     function prepareRandomModal() {
@@ -540,11 +631,13 @@
         const count = window.ListeningQuestionPools && fromYear && toYear
             ? window.ListeningQuestionPools.countQuestionsInRange(config.categoryType, context.level, Math.min(fromYear, toYear), Math.max(fromYear, toYear))
             : 0;
-        document.getElementById('listening-random-status').textContent = count ? `当前范围可抽取 ${count} 题。` : '当前级别暂无可用于随机测试的题目。';
+        document.getElementById('listening-random-status').textContent = count ? `可抽取 ${count} 题` : '这个范围暂无可抽取的题目';
     }
 
     function closeModals() {
-        document.getElementById('listening-category-modal').hidden = true;
+        const categoryModal = document.getElementById('listening-category-modal');
+        if (!categoryModal.hidden) rememberCategoryEntry(null);
+        categoryModal.hidden = true;
         document.getElementById('listening-random-modal').hidden = true;
         closeTrainingMode();
     }
@@ -565,6 +658,17 @@
             const button = event.target.closest('[data-category-id]');
             if (button) openCategory(button.dataset.categoryId);
         });
+        function rememberSelectedSet(event) {
+            if (event.button > 1) return;
+            const link = event.target.closest('[data-category-set]');
+            if (!link) return;
+            const modal = document.getElementById('listening-category-modal');
+            const setNumber = Number(link.dataset.categorySet);
+            modal.dataset.setNumber = String(setNumber);
+            rememberCategoryEntry(modal.dataset.categoryId, setNumber);
+        }
+        document.getElementById('listening-category-set-list').addEventListener('click', rememberSelectedSet);
+        document.getElementById('listening-category-set-list').addEventListener('auxclick', rememberSelectedSet);
         document.getElementById('listening-year-list').addEventListener('click', (event) => {
             const button = event.target.closest('[data-year-session-key]');
             if (!button) return;
@@ -600,12 +704,34 @@
     }
 
     function ensureUnifiedHeader() {
+        if (window.KikiUnifiedHeader) { window.KikiUnifiedHeader.init(); return; }
         if (window.__kikiUnifiedHeaderLoaded || document.querySelector('[data-kiki-unified-header-loader]')) return;
         const loader = document.createElement('script');
-        loader.src = new URL('../../../shared/unified-header.js?v=20260810-listening-white', directoryScriptUrl).href;
+        loader.src = new URL('../../../shared/unified-header-github-20261020.js?v=20260907-first-paint', directoryScriptUrl).href;
         loader.dataset.kikiUnifiedHeaderLoader = 'true';
         document.body.appendChild(loader);
     }
+
+    function refreshPositions() {
+        renderYears();
+        renderCategories();
+        updateResume();
+        const modal = document.getElementById('listening-category-modal');
+        if (modal && !modal.hidden && modal.dataset.categoryId) {
+            openCategory(modal.dataset.categoryId, { updateUrl: false, setNumber: Number(modal.dataset.setNumber) || 0 });
+        } else restoreCategoryEntry();
+    }
+
+    window.addEventListener('pageshow', refreshPositions);
+    window.addEventListener('popstate', () => {
+        const view = new URLSearchParams(window.location.search).get('browse');
+        showView(['year', 'category', 'mistakes'].includes(view) ? view : 'main', false);
+        restoreCategoryEntry();
+    });
+    window.addEventListener('storage', (event) => {
+        if (!event.key || event.key.startsWith('listening_')) refreshPositions();
+    });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshPositions(); });
 
     renderShell();
     renderYears();
@@ -615,5 +741,6 @@
     bindEvents();
     const requestedView = new URLSearchParams(window.location.search).get('browse');
     showView(['year', 'category', 'mistakes'].includes(requestedView) ? requestedView : 'main', false);
+    restoreCategoryEntry();
     ensureUnifiedHeader();
 })();

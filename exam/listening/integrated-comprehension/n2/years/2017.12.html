@@ -1,17 +1,93 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>統合理解 - 聴解練習 (N2 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20260904-integrated-r1">
+    <link rel="stylesheet" href="../../../shared/listening-dictation.css?v=20261007-dictation-r17">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,11 +193,19 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../../../shared/study-quest-test-runtime.js"></script>
-    <script src="../../../../../shared/study-quest-test-boot.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
+    <script src="../shared/follow-listening-timelines.js?v=20260909-integrated-2017-12-r1"></script>
+    <script src="../../../task-comprehension/n2/shared/follow-listening.js?v=20260904-integrated-map-r2"></script>
+    <script src="../../../shared/listening-dictation-kana.js?v=20261007-dictation-r17"></script>
+    <script src="../../../shared/listening-dictation-core.js?v=20261007-dictation-r17"></script>
+    <script src="../../../shared/listening-dictation-records.js?v=20261007-dictation-r17"></script>
+    <script src="../../../shared/../data/dictation-readings/generated/manifest.js?v=20261007-dictation-r17"></script>
+    <script src="../../../shared/listening-dictation-readings.js?v=20261007-dictation-r17"></script>
+    <script src="../../../shared/listening-dictation.js?v=20261007-dictation-r17"></script>
     <script>
         // --- 容错与模拟外部依赖 ---
         if (!window.ListeningProgress) {
@@ -136,7 +220,7 @@
 
         // --- Data Structure ---
         const examData = {
-            "N2-2017-12-Integrated": {
+            "2017-12": {
                 label: "2017年12月 (N2 統合理解)",
                 questions: [
                     {
@@ -146,10 +230,60 @@
                             question: "一番：スポーツクラブで、男の人と受付の人が話しています。男の人はどの会員になりますか。",
                             questionTrans: "（第一题：在健身俱乐部，男士和前台工作人员正在交谈。男士会选择成为哪种会员？）",
                             dialogue: [
+                                {
+                                    speaker: "男",
+                                    text: "あの、こちらに入会したいと思いまして。土日含めて週に何回かプールで泳ぎたいんです。",
+                                    trans: "（那个，我想在这里办理入会。我想包括周末在内，每周去游几次泳。）"
+                                },
+                                {
+                                    speaker: "受付",
+                                    text: "プールのご利用ですね。プールのほかにトレーニングジムのご利用は希望なさいますか。",
+                                    trans: "（您想使用游泳池是吧。除了游泳池以外，您还希望使用健身房吗？）"
+                                },
+                                {
+                                    speaker: "男",
+                                    text: "予算内であれば利用したいですけど、月々の会費は1万円までに抑えたいと思ってます。",
+                                    trans: "（如果在预算内的话我也想用，不过我希望每月会费控制在1万日元以内。）"
+                                },
+                                {
+                                    speaker: "受付",
+                                    text: "はい。ご予算に近い会員のタイプは4つございます。まず、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span>ラッキー会員</span>ですと、プールだけでなくトレーニングジムも何曜日でも好きな時にお使いいただけて、会費は1万1000円と大変お得です。それから、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span>シルバー会員</span>もすべての施設を毎日、終日ご利用いただけます。月の会費は1万5000円になってしまいますが、専門の指導員がつきますので、人気のあるプランになっております。",
+                                    trans: "（好的。接近您预算的会员类型有4种。首先是幸运会员，游泳池和健身房不论星期几都可随时使用，会费为1万1000日元，很划算。然后白银会员也可以每天全天使用所有设施。月费要1万5000日元，不过会配备专业教练，因此很受欢迎。）"
+                                },
+                                {
+                                    speaker: "男",
+                                    text: "うーん、そうですか。",
+                                    trans: "（嗯，这样啊。）"
+                                },
+                                {
+                                    speaker: "受付",
+                                    text: "プールだけをご利用希望という方には、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span>ブルー会員</span>があります。プールに限ってですが、曜日を問わず好きなだけご利用いただけます。こちらは会費が8000円です。",
+                                    trans: "（只想使用游泳池的人可以选择蓝色会员。虽然仅限游泳池，但不论星期几都可不限次数使用。会费为8000日元。）"
+                                },
+                                {
+                                    speaker: "男",
+                                    text: "はい。",
+                                    trans: "（好的。）"
+                                },
+                                {
+                                    speaker: "受付",
+                                    text: "もしジムをご利用になりたい場合は、1回ごとに1000円でご利用いただけますので、月のご利用が2回以下でしたら、ラッキー会員よりお得ですね。",
+                                    trans: "（如果想使用健身房，每次另付1000日元即可。每月使用两次以下的话，会比幸运会员更划算。）"
+                                },
+                                {
+                                    speaker: "受付",
+                                    text: "えー、お仕事帰りにご利用される方には、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span>ナイター会員</span>がおすすめです。プールが土日祝日を除く平日の夜8時以降にご利用になれて、7000円です。あ、休日も利用されるんでしたね。",
+                                    trans: "（嗯，适合下班后使用的人，我推荐夜间会员。游泳池可在除周末和节假日外的工作日晚上8点以后使用，月费7000日元。啊，您还希望节假日也能使用呢。）"
+                                },
                                 { 
                                     speaker: "男", 
-                                    text: "はい。うーむ、ジムは気が向いたとき、月に一回利用するかしないかだし。<span class=\"highlight-correct\"><span class=\"keyword\" onclick=\"showTooltip(event, '【じゃ、これでお願いします】（那，就选这个吧）：最终决定。排除了超出1万日元预算の1号和2号，以及不能周末用的4号，最终选择了单次去健身房也很划算的3号。')\">じゃ、これでお願いします。</span></span>", 
+                                    text: "はい。うーん、ジムは気が向いたとき、月に1回利用するかしないかだし。<span class=\"highlight-correct\"><span class=\"keyword\" onclick=\"showTooltip(event, '【じゃ、これでお願いします】（那，就选这个吧）：最终决定。排除了超出1万日元预算の1号和2号，以及不能周末用的4号，最终选择了单次去健身房也很划算的3号。')\">じゃ、これでお願いします。</span></span>", 
                                     trans: "（是的。嗯，健身房我也是心血来潮时每个月用不用得上一次都不好说。那，就选这个吧。）" 
+                                },
+                                {
+                                    speaker: "問題",
+                                    text: "男の人はどの会員になりますか。",
+                                    trans: "（男士最后选择哪种会员？）"
                                 }
                             ]
                         },
@@ -194,7 +328,7 @@
                                 },
                                 { 
                                     speaker: "男の社員", 
-                                    text: "そうですね。この店は社会人やご高齢者のお客様の割合が多いので、そういった方にゆっくりしてもらえるよう、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span>緑が溢れる明るい庭を作る</span>のはどうですか。", 
+                                    text: "そうですね。この店は社会人やご高齢者のお客様の割合が多いので、そういった方にゆっくりしてもらえるよう、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span>緑あふれる明るい庭を作ってはどうですか</span>。", 
                                     trans: "（是啊。这家店上班族和老年顾客的比例比较高，为了让他们能好好放松，建一个绿意盎然的明亮庭院怎么样？）" 
                                 },
                                 { 
@@ -224,8 +358,13 @@
                                 },
                                 { 
                                     speaker: "上司", 
-                                    text: "うーむ。どれもいい案だと思いますが。そうですね。<span class=\"highlight-wrong\"><span class=\"keyword\" onclick=\"showTooltip(event, '【定期的にイベントを企画実行するのはスタッフの負担が大きすぎますね】（定期策划执行活动对员工的负担太重了呢）：成本/可行性否定。排除了举办家庭活动的选项。')\">定期的にイベントを企画実行するのはスタッフの負担が大きすぎますね。</span></span>それから、<span class=\"highlight-wrong\"><span class=\"keyword\" onclick=\"showTooltip(event, '【テラスからの眺めを売りにした店がありますから、同じようなことをするのもね】（已经有以露台风景为卖点的店了，做类似的事情也不太合适）：同质化排斥。排除了开咖啡厅的选项。')\">12階のレストラン外にはテラスからの眺めを売りにした店がありますから、同じようなことをするのもね。</span></span>今回は<span class=\"highlight-correct\"><span class=\"keyword\" onclick=\"showTooltip(event, '【親子連れのお客様の呼びこみが期待できそうなさっきの案】（有望吸引亲子顾客的刚才那个方案）：最终决策表达。结合“亲子顾客”和前文提到的方案，锁定了建儿童游乐场的提议。')\">親子連れのお客様の呼びこみが期待できそうなさっきの案をやって見ましょう。</span></span>", 
+                                    text: "うーん。どれもいい案だと思いますが。そうですね。<span class=\"highlight-wrong\"><span class=\"keyword\" onclick=\"showTooltip(event, '【定期的にイベントを企画実行するのはスタッフの負担が大きすぎますね】（定期策划执行活动对员工的负担太重了呢）：成本/可行性否定。排除了举办家庭活动的选项。')\">定期的にイベントを企画実行するのはスタッフの負担が大きすぎますね。</span></span>それから、<span class=\"highlight-wrong\"><span class=\"keyword\" onclick=\"showTooltip(event, '【テラスからの眺めを売りにした店がありますから、同じようなことをするのもね】（已经有以露台风景为卖点的店了，做类似的事情也不太合适）：同质化排斥。排除了开咖啡厅的选项。')\">12階のレストラン街にはテラスからの眺めを売りにした店がありますから、同じようなことをするのもね。</span></span>今回は<span class=\"highlight-correct\"><span class=\"keyword\" onclick=\"showTooltip(event, '【親子連れのお客様の呼びこみが期待できそうなさっきの案】（有望吸引亲子顾客的刚才那个方案）：最终决策表达。结合“亲子顾客”和前文提到的方案，锁定了建儿童游乐场的提议。')\">親子連れのお客様の呼びこみが期待できそうなさっきの案をやってみましょう。</span></span>", 
                                     trans: "（嗯...我觉得都是不错的方案。不过，定期策划执行活动对员工的负担太重了呢。然后，12楼餐厅外面已经有以露台风景为卖点的店了，做类似的事情也不太合适。这次就试试刚才那个有望吸引亲子顾客的方案吧。）" 
+                                },
+                                {
+                                    speaker: "問題",
+                                    text: "屋上を活用するために、どうすることにしましたか。",
+                                    trans: "（为了有效利用屋顶，最后决定怎么做？）"
                                 }
                             ]
                         },
@@ -260,7 +399,7 @@
                         id: 3,
                         audio: "../assets/audio/2017.12-3.mp3",
                         script: {
-                            question: "三番：市民センターで女の人はカルチャー講座の説明をしています。",
+                            question: "三番：市民センターで女の人がカルチャー講座の説明をしています。",
                             questionTrans: "（第三题：在市民中心，一位女士正在介绍文化讲座。）",
                             dialogue: [
                                 { 
@@ -275,7 +414,7 @@
                                 },
                                 { 
                                     speaker: "女", 
-                                    text: "でも、いまって、<span class=\"highlight-wrong\"><span class=\"keyword\" onclick=\"showTooltip(event, '【何でも携帯で、パソコンとかで書くでしょう。たいして役に立たないかもしれないよ】（什么都是用手机或者电脑打字对吧。可能没多大用处哦）：客观事实。排除了男士最初想选的练字讲座。')\">何でも携帯で、パソコンとかで書くでしょう。たいして役に立たないかもしれないよ。</span></span>", 
+                                    text: "でも、いまって、<span class=\"highlight-wrong\"><span class=\"keyword\" onclick=\"showTooltip(event, '【何でも携帯とかパソコンで書くでしょう。たいして役に立たないかもしれないよ】（什么都是用手机或者电脑打字对吧。可能没多大用处哦）：客观事实。排除了男士最初想选的练字讲座。')\">何でも携帯とかパソコンで書くでしょう。たいして役に立たないかもしれないよ。</span></span>", 
                                     trans: "（不过，现在什么都是用手机或者电脑打字对吧。可能没多大用处哦。）" 
                                 },
                                 { 
@@ -285,7 +424,7 @@
                                 },
                                 { 
                                     speaker: "女", 
-                                    text: "うーん。<span class=\"highlight-wrong\"><span class=\"keyword\" onclick=\"showTooltip(event, '【それは向こうに行ってから学べるし】（那个等去了那边再学就行了）：时间条件。排除了男士提议的英语讲座。')\">それは向こうに行ってから学べるし、ここでしなくてもいいよ。</span></span>それより、留学先で自分の国のことをちゃんと話せるように、<span class=\"keyword\" onclick=\"showTooltip(event, '【何か日本の文化とか、作法が学べる講座があるといいなって】（要是有能学点日本文化和礼仪的讲座就好了）：女生的核心诉求。对应讲座3（和服与和室礼仪）。')\">何か日本の文化とか、作法が学べる講座があるといいなって思ってたんだ。</span>ちょうどいいのがあったけど、でも話聞いてるうちに、<span class=\"keyword\" onclick=\"showTooltip(event, '【おしゃれについても学べるかなって】（感觉学一下穿衣打扮也不错呢）：女生出现了动摇，对讲座2（时尚搭配）也产生了兴趣。')\">おしゃれについても学べるかなって。</span>", 
+                                    text: "うーん。<span class=\"highlight-wrong\"><span class=\"keyword\" onclick=\"showTooltip(event, '【それは向こうに行ってから学べるし】（那个等去了那边再学就行了）：时间条件。排除了男士提议的英语讲座。')\">それは向こうに行ってから学べるし、ここでしなくてもいいよ。</span></span>それより、留学先で自分の国のことをちゃんと話せるように、<span class=\"keyword\" onclick=\"showTooltip(event, '【何か日本の文化とか、作法が学べる講座があるといいなって】（要是有能学点日本文化和礼仪的讲座就好了）：女生的核心诉求。对应讲座3（和服与和室礼仪）。')\">何か日本の文化とか、作法が学べる講座があるといいなって思ってたんだ。</span>ちょうどいいのがあったけど、でも話聞いてるうちに、<span class=\"keyword\" onclick=\"showTooltip(event, '【おしゃれについて学べるのもいいかなって】（感觉学一下穿衣打扮也不错呢）：女生出现了动摇，对讲座2（时尚搭配）也产生了兴趣。')\">おしゃれについて学べるのもいいかなって。</span>", 
                                     trans: "（嗯。那个等去了那边再学就行了，没必要在这里学。比起那个，为了在留学的地方能好好向别人介绍自己的国家，我本来想着要是有能学点日本文化和礼仪的讲座就好了。正好有个合适的，不过听着听着，感觉学一下穿衣打扮也不错呢。）" 
                                 },
                                 { 
@@ -367,7 +506,7 @@
             }
         };
 
-        let currentExamKey = "N2-2017-12-Integrated"; 
+        let currentExamKey = "2017-12"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'integrated-comprehension'; 
@@ -390,10 +529,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N2-${yearParam}-Integrated` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -776,7 +915,8 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
 </body>
 </html>

@@ -582,7 +582,7 @@
     }
 
     function normalizeExamKeyForUrl(examKey) {
-        return String(examKey || '').trim().replace(/^N[123]-/i, '');
+        return window.ListeningExamKey ? window.ListeningExamKey.normalize(examKey) : String(examKey || '').trim().replace(/^N[123]-/i, '');
     }
 
     function buildResultCopy(stats) {
@@ -701,7 +701,10 @@
 
         function getScopeKey() {
             const examKey = typeof config.getExamKey === 'function' ? config.getExamKey() : '';
-            const examKeyPart = String(examKey || '')
+            // Preserve the existing reward identity while business data uses YYYY-MM.
+            const rewardExamKey = window.ListeningExamKey
+                ? window.ListeningExamKey.legacyPageKey(config.type, config.level, examKey) : examKey;
+            const examKeyPart = String(rewardExamKey || '')
                 .trim()
                 .replace(/[^a-zA-Z0-9_-]+/g, '-')
                 .replace(/^-+|-+$/g, '');

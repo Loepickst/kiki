@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261016-summary-n1-2014-07-9cd102749bb3">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,152 +192,422 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
 <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2014-07-概要理解": {
-                label: "2014年07月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2014.07-1.mp3", 
-                        script: {
-                            question: "一番：大学で女の学生と男の学生がある科目について話しています。男の学生はこの科目についてどう言っていますか。",
-                            questionTrans: "（第一题：在大学里，女学生和男学生正在谈论某个科目。男学生关于这个科目是怎么说的？）",
-                            dialogue: [
-                                { speaker: "女", text: "先輩、去年「世界の言語」っていう科目<span class=\"keyword\" onclick=\"showTooltip(event, 'とる：选修（课程）。')\">とって</span>ましたよね。どうでしたか？", trans: "（学长，你去年修过“世界语言”这门课对吧。感觉如何？）" },
-                                { speaker: "男", text: "うーん。話は専門的すぎて二年生には<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '男学生表示【内容太专业……很难（話は専門的すぎて……難しいし）】，排除了选项3和4中课程【简单（易しい）】的说法。')\">難しいし</span></span>、先生は厳しいしさ。発表やら、レポートやら次々あって、あのときは、ちょっと後悔したね。", trans: "（嗯……讲的内容太专业了，对大二学生来说挺难的，老师又严。又是发表又是报告的，接二连三，当时其实有点后悔选这门课呢。）" },
-                                { speaker: "女", text: "やっぱりそうなんですか。そんなうわさ聞くんで、どうしようか迷っちゃって。", trans: "（果然是这样啊。我也听到了些风声，正发愁要不要选呢。）" },
-                                { speaker: "男", text: "まあ、だけど、あそこであれやっといたからこそ、三年生の専門的な授業に<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男学生表示，正因为当初修了这门课，所以现在才能跟得上大三的专业课。这说明这门课在“以后会有用”。')\"><span class=\"keyword\" onclick=\"showTooltip(event, 'ついていく：跟得上（进度等）。')\">ついてけてる</span>んだと思うんだよね。</span></span>", trans: "（不过嘛，正因为当时硬着头皮熬过来了，我现在才能跟得上大三的专业课。）" },
-                                { speaker: "女", text: "へえ、そうですか。", trans: "（哦？是这样啊。）" },
-                                { speaker: "男", text: "結局、先に苦しむか後に苦しむかだね。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '虽然男学生承认课程难，但他并没有建议不选。相反，他认为【如果先把这门课修了，以后会轻松很多（この科目先にとっとけば、後々楽になると思うよ）】，排除了选项1。')\">この科目先にとっとけば、<span class=\"keyword\" onclick=\"showTooltip(event, '後々（あとあと）：以后，日后。')\">後々</span>楽になると思うよ。</span></span>", trans: "（说到底，就是先吃苦还是后吃苦的事。我觉得如果先修了这门课，以后会轻松很多哦。）" },
-                                { speaker: "女", text: "ありがとうございました。考えてみます。", trans: "（非常感谢。我考虑一下。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "難しいので、選択しないほうがよい", translation: "（因为很难，所以最好别选）", correct: false },
-                            { text: "難しいが、後で役に立つ", translation: "（虽然难，但是以后会有用）", correct: true },
-                            { text: "易しいが、選択しないほうがよい", translation: "（虽然简单，但最好别选）", correct: false },
-                            { text: "易しいし、後で役に立つ", translation: "（又简单，以后又有用）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        audio: "../assets/audio/2014.07-2.mp3", 
-                        script: {
-                            question: "二番：女の人と男の人が話しています。二人は何について話していますか。",
-                            questionTrans: "（第二题：女人和男人正在讲话。两人在谈论什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "ねえ、今話題の「山に生きて」って舞台、見た？", trans: "（哎，你看了现在热门的那部叫《活在山中》的舞台剧了吗？）" },
-                                { speaker: "男", text: "見た見た。昨日行ったんだけど、込んでたよ。", trans: "（看了看了。我昨天去的，人很多呢。）" },
-                                { speaker: "女", text: "主演の林一郎、すごかったよね。この前、「風に乗って」って作品にも出てたけど。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人感叹他在两部作品中判若两人，引出了两人对这名演员塑造角色能力（演技）的探讨。')\">あれと同じ人とは思えなかったわ。</span></span>", trans: "（主演林一郎真厉害啊。之前他也出演了叫《乘风》的那部作品，简直让人不敢相信那是同一个人。）" },
-                                { speaker: "男", text: "そうだね。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '男人提到前一个角色纯粹易受伤，这只是剧情设定的角色性格，而非探讨演员本人的性格，排除了选项3。')\">前回は<span class=\"keyword\" onclick=\"showTooltip(event, '純粋（じゅんすい）：纯洁，纯粹。')\">純粋</span>で<span class=\"keyword\" onclick=\"showTooltip(event, '傷（きず）つきやすい：容易受伤，敏感。')\">傷つきやすい</span>青年って感じだったじゃない？ちょっと<span class=\"keyword\" onclick=\"showTooltip(event, 'おどおど：战战兢兢，怯生生。')\">おどおど</span>してて。</span></span>でも、今回は<span class=\"keyword\" onclick=\"showTooltip(event, '堂々（どうどう）：堂堂正正，气派，自信。')\">堂々</span>としてて。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '男人提到服装只是为了说明角色塑造带来的视觉效果，并不是主要话题，排除了选项2。')\">衣装のせいもあるのかな</span></span>、体まで、大きく見えた。", trans: "（是啊。上次感觉是个纯洁又敏感的青年吧？稍微有些战战兢兢的。但这次却显得气场十足。可能也有服装的原因吧，连身体看起来都变大了。）" },
-                                { speaker: "女", text: "そうそう。歩き方からして違ってたもん。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人总结说专业演员真厉害，直接指向了他们的核心话题：演员的演技。符合选项4。此外，对话中并未探讨舞台剧的具体故事情节，选项1可排除。')\">やっぱりプロの俳優ってすごいよね。</span></span>", trans: "（对啊。就连走路姿势都不一样了。专业演员果然很了不起呢。）" },
-                                { speaker: "男", text: "そうだね。監督も<span class=\"keyword\" onclick=\"showTooltip(event, '絶賛（ぜっさん）：绝赞，赞不绝口。')\">絶賛</span>してるみたいで、次の作品にもぜひって言ってるんだって。", trans: "（是啊。听说导演也对他赞不绝口，表示下一部作品也一定要请他出演。）" },
-                                { speaker: "女", text: "これからますます<span class=\"keyword\" onclick=\"showTooltip(event, '目（め）が離（はな）せない：无法移开视线，需要密切关注。')\">目が離せない</span>ね。", trans: "（今后越来越不能转移视线（要持续关注）了呢。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "舞台のストーリー", translation: "（舞台剧的故事情节）", correct: false },
-                            { text: "舞台の衣装", translation: "（舞台剧的服装）", correct: false },
-                            { text: "俳優の性格", translation: "（演员的性格）", correct: false },
-                            { text: "俳優の演技力", translation: "（演员的演技）", correct: true }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        audio: "../assets/audio/2014.07-3.mp3", 
-                        script: {
-                            question: "三番：大学の食堂で女の学生と男の学生が話しています。男の学生はペットと飼い主の外見について、どのように考えていますか。",
-                            questionTrans: "（第三题：在大学的食堂里，女学生和男学生正在聊天。男学生对于宠物和主人的外貌是怎么认为的？）",
-                            dialogue: [
-                                { speaker: "女", text: "この間本で読んだんだけど、面白い研究があるんだよ。ペットの写真と飼い主の写真を<span class=\"keyword\" onclick=\"showTooltip(event, 'バラバラ（ばらばら）：分散，散乱。')\">バラバラ</span>に置いて、第三者に飼い主とペットの組み合わせを選んでもらうと、<span class=\"keyword\" onclick=\"showTooltip(event, '偶然（ぐうぜん）：偶然，巧合。')\">偶然</span>とは思えない<span class=\"keyword\" onclick=\"showTooltip(event, '確率（かくりつ）：概率，几率。')\">確率</span>で当たるんだって。不思議だよね。", trans: "（前阵子我在书上看到了一个有趣的研究哦。说是把宠物的照片和主人的照片打乱放着，让第三者来选出主人和宠物的组合，结果猜中的概率高得让人不觉得是巧合。很不可思议吧。）" },
-                                { speaker: "男", text: "ああ、それ、僕も知ってる。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '男学生表示有人说宠物和主人在一起久了脸会变得相似，但他觉得【并非如此（そうじゃないと思う）】，排除了选项1和选项2（无论谁像谁的说法）。')\">ペットも長く一緒にいると、顔が似てくるっていう人がいるけど、僕、そうじゃないと思うんだよね。</span></span>", trans: "（啊，那个我也知道。虽说有人认为宠物跟主人在一起待久了长相会越来越像，但我觉得并非如此呢。）" },
-                                { speaker: "女", text: "えっ？違うの？", trans: "（哎？不是这样吗？）" },
-                                { speaker: "男", text: "その実験からはペットの顔が変わったのか飼い主の顔が変わったのかはわからないよね。", trans: "（从那个实验中，是看不出到底宠物的脸变了还是主人的脸变了的呀。）" },
-                                { speaker: "女", text: "ああ、うん。", trans: "（啊，确实。）" },
-                                { speaker: "男", text: "<span class=\"keyword\" onclick=\"showTooltip(event, 'そもそも：原本，最初。')\">そもそも</span>飼いはじめたときには似てなかったってことが<span class=\"keyword\" onclick=\"showTooltip(event, '証明（しょうめい）：证明。')\">証明</span>されてないし、その時点で飼い主の選択が<span class=\"keyword\" onclick=\"showTooltip(event, '働（はたら）く：发挥作用，起作用。')\">働いている</span>わけだからさ。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男学生指出，在开始养的那个时间点主人的选择就已经起作用了，也就是说【并不是养着养着像了，而是从一开始（选宠物的时候）就是这样的（最初からってこと）】，符合选项4“人会选择和自己长得像的宠物”。并且因为他承认了双方长得像的事实，排除了选项3。')\">飼っているうちに似てきたってわけじゃなくて最初からってことなんだと思うんだよね。</span></span>", trans: "（原本就没有证明说刚开始养的时候他们长得不像，而且在（决定养的）那个时候主人的选择就已经发挥作用了。我觉得并不是养着养着就变像了，而是一开始就是这样的。）" },
-                                { speaker: "女", text: "おお、なるほどね。", trans: "（哦，原来如此啊。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "ペットが飼い主に似てくる", translation: "（宠物变得像主人）", correct: false },
-                            { text: "飼い主がペットに似てくる", translation: "（主人变得像宠物）", correct: false },
-                            { text: "ペットと飼い主の外見には関連性がない", translation: "（宠物和主人的外貌没有关联性）", correct: false },
-                            { text: "人は自分に似たペットを選んで飼う", translation: "（人会选择和自己相似的宠物来养）", correct: true }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        audio: "../assets/audio/2014.07-4.mp3", 
-                        script: {
-                            question: "四番：テレビのニュースでアナウンサーが話しています。アナウンサーは何について話していますか。",
-                            questionTrans: "（第四题：在电视新闻中，播音员正在讲话。播音员在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "少子化が進み、一家族あたりの子供の数が減ると、家計に占める教育費の割合も下がると思われますが、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '播音员提到虽然人们认为教育费比例会下降，但其实【并非如此（そうとも言えないようです）】，排除了选项1。')\">そうとも言えないようです。</span></span>", trans: "（随着少子化的加剧，一个家庭的孩子数量减少，人们可能会认为教育费在家庭开支中所占的比例也会下降，但似乎并非如此。）" },
-                                { speaker: "男", text: "教育研究所の調査結果によると、家計に占める教育費の割合はここ数年<span class=\"keyword\" onclick=\"showTooltip(event, '右肩上（みぎかたあが）り：持续上升，不断增长。')\">右肩上がり</span>の状況が続いています。", trans: "（根据教育研究所的调查结果，教育费在家庭开支中所占的比例这几年一直处于持续上升的状况。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '播音员点出报道的核心内容：【其中，增加率特别高的……是在幼儿身上花费的教育费（中でも、特に増加率が高いものは……幼児にかける教育費です）】。后续内容都是在分析增加的原因，符合选项2。')\">中でも、特に増加率が高いものは小さい子供、特に幼児にかける教育費です。</span></span>", trans: "（其中，增加率特别高的是在小孩子，特别是幼儿身上花费的教育费。）" },
-                                { speaker: "男", text: "これは小さい頃から子供に<span class=\"keyword\" onclick=\"showTooltip(event, '習（なら）い事（ごと）：学习才艺，课外学习。')\">習い事</span>をさせる家庭が増えていることが背景にあるようです。", trans: "（这似乎是因为从小孩很小的时候起就让他们学习才艺的家庭正在增加。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，播音员列举了受欢迎的才艺，但这只是为了分析教育费增加的原因（背景），而不是报道的中心主题，可以排除。')\">習い事の中でも特に人気なのは水泳、英語、音楽などで</span></span>、月々払う<span class=\"keyword\" onclick=\"showTooltip(event, '月謝（げっしゃ）：每个月的学费，月费。')\">月謝</span>も増加傾向にあります。", trans: "（在才艺学习中，特别受欢迎的是游泳、英语、音乐等，每个月支付的学费也呈增加趋势。）" },
-                                { speaker: "男", text: "それに加えて、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，考名牌私立小学的孩子增多同样只是导致教育费增加的一个原因（一因），不足以概括全文，可以排除。')\">有名私立小学校を受験する子供の数が年々増えつづけていることも<span class=\"keyword\" onclick=\"showTooltip(event, '一因（いちいん）：一个原因，原因之一。')\">一因</span>となっているようです。</span></span>", trans: "（除此之外，报考名牌私立小学的孩子数量逐年增加，似乎也成为了其中一个原因。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "少子化による教育費の減少", translation: "（因为少子化导致的教育费减少）", correct: false },
-                            { text: "家計に占める幼児の教育費の増加", translation: "（家庭开支中幼儿教育费的增加）", correct: true },
-                            { text: "人気のある幼児の習い事", translation: "（受欢迎的幼儿才艺学习）", correct: false },
-                            { text: "有名私立小学校の人気の高さ", translation: "（名牌私立小学的高人气）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        audio: "../assets/audio/2014.07-5.mp3",
-                        script: {
-                            question: "五番：テレビで男の人が話しています。男の人は主に何について話していますか。",
-                            questionTrans: "（第五题：在电视上男人正在讲话。男人主要在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "日本は四方を海に囲まれていることから、動物性<span class=\"keyword\" onclick=\"showTooltip(event, 'たんぱく質（たんぱくしつ）：蛋白质。')\">たんぱく質</span>の<span class=\"keyword\" onclick=\"showTooltip(event, '摂取（せっしゅ）：摄取。')\">摂取</span>を魚に頼ってきました。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，男人提到消费量减少的原因是“饮食的欧美化”，但这只是引出后续对策的背景介绍，并非整段讲话的核心主旨，可以排除。')\">ところが、食の欧米化とともに、最近は年々消費量が減ってきています。</span></span>", trans: "（日本因为四面环海，所以一直以来动物性蛋白质的摄取都依赖于鱼类。然而，随着饮食的欧美化，最近每年的消费量都在不断减少。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在讲话中明确指出了核心主旨：【从事水产加工业的人们怀着希望大家能多吃鱼的想法，提出了各种各样的方案（もっと魚を食べてもらいたいという思いで、さまざまな提案をしています）】。后续内容都是在列举具体的方案，符合选项4。')\">そこで、水産加工業に<span class=\"keyword\" onclick=\"showTooltip(event, '携（たずさ）わる：参与，从事。')\">携わる</span>人々はもっと魚を食べてもらいたいという思いで、さまざまな提案をしています。</span></span>", trans: "（因此，从事水产加工业的人们怀着希望大家能多吃鱼的想法，提出了各种各样的方案。）" },
-                                { speaker: "男", text: "その<span class=\"keyword\" onclick=\"showTooltip(event, '試（こころ）み：尝试，尝试的做法。')\">試み</span>の一つが、ファストフード<span class=\"keyword\" onclick=\"showTooltip(event, 'ならぬ：并非，不是（常接在名词后，表示转折语气）。')\">ならぬ</span>ファストフィッシュです。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男人接下来列举的是“事先去骨去皮、用微波炉加热即食”的现代速食鱼产品，而并非探讨传统的烹饪方法，可以排除。')\">例えば、<span class=\"keyword\" onclick=\"showTooltip(event, 'あらかじめ：预先，事先。')\">あらかじめ</span>骨や皮が<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り除（のぞ）く：去除，清除。')\">取り除いて</span>あったり、野菜と一緒にレンジで加熱するだけで調理できるものが出てきました。</span></span>", trans: "（其中一项尝试，就是“快鱼”（意指不同于快餐的速食鱼）。例如，出现了事先去除了骨头和皮的，或是只需要和蔬菜一起用微波炉加热就能烹饪的产品。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男人提到出口到海外，只是说明这种新商品的影响力，文中并没有对日本和外国吃鱼的方式进行比较，可以排除。')\">このような商品は今海外にも輸出されるようになりました。</span></span>", trans: "（这样的商品现在也开始出口到海外了。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "日本と外国の魚の食べ方の比較", translation: "（日本和外国吃鱼方式的比较）", correct: false },
-                            { text: "魚の消費量が減った理由", translation: "（鱼类消费量减少的原因）", correct: false },
-                            { text: "魚の伝統的な調理方法", translation: "（鱼的传统烹饪方法）", correct: false },
-                            { text: "魚の消費量を増やす工夫", translation: "（增加鱼类消费量的方法/下的工夫）", correct: true }
-                        ]
-                    },
-                    {
-                        id: 6,
-                        audio: "../assets/audio/2014.07-6.mp3",
-                        script: {
-                            question: "六番：テレビでアナウンサーが話しています。アナウンサーの話のテーマは何ですか。",
-                            questionTrans: "（第六题：在电视上播音员正在讲话。播音员讲话的主题是什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，提到大型超市进驻只是为了说明商店街面临顾客流失的背景，而不是报道的中心主题，可以排除。')\">最近は<span class=\"keyword\" onclick=\"showTooltip(event, '郊外（こうがい）：郊外。')\">郊外</span>に進出している大型スーパーの影響で</span></span>、昔からある商店街は買い物客が減り、経営が苦しいところが増えています。", trans: "（最近，受在郊外开店的大型超市的影响，传统的商店街顾客减少，经营困难的地方正在增加。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '播音员点出核心话题：为了应对危机，商店街开始了【独特的尝试（ユニークな試みを始めました）】。后续内容都是对这一尝试的详细说明，符合选项3。')\">このような状況の中、緑町の商店街ではユニークな<span class=\"keyword\" onclick=\"showTooltip(event, '試（こころ）み：尝试。')\">試み</span>を始めました。</span></span>今月から緑町商店街が緑マネーというこの町の商店でだけ使えるお金の制度を作りました。", trans: "（在这种情况下，绿町的商店街开始了独特的尝试。从这个月起，绿町商店街制定了“绿币”这一只在该镇商店使用的货币制度。）" },
-                                { speaker: "女", text: "これは、例えば、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中提到的是“老年人给孩子们讲故事等志愿活动”，并不是孩子们的志愿活动。而且这也只是说明如何获得“绿币”的举例，并非主题，可排除。')\">お年寄りが子供たちに昔話を聞かせるとか、公園の清掃をするといった<span class=\"keyword\" onclick=\"showTooltip(event, 'ボランティア（volunteer）：志愿者，志愿服务。')\">ボランティア</span>活動をするともらえます。</span></span>", trans: "（比如，老年人给孩子们讲故事，或者打扫公园等进行志愿活动的话，就能得到这种货币。）" },
-                                { speaker: "女", text: "町の人はボランティア活動で緑マネーをもらうことができ、「緑マネー」が使える商店街の店では、客を<span class=\"keyword\" onclick=\"showTooltip(event, '呼（よ）び込（こ）む：招揽，吸引。')\">呼び込む</span>ことができます。", trans: "（镇上的人可以通过志愿活动获得绿币，而在可以使用“绿币”的商店街的店里，则能够招揽顾客。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，报道讲述的是绿币的机制和当地的期待，并没有提及它目前面临的课题或挑战，可以排除。')\">今後、この「緑マネー」が<span class=\"keyword\" onclick=\"showTooltip(event, '普及（ふきゅう）：普及。')\">普及</span>し、お客が増えることを地元では期待しています。</span></span>", trans: "（当地期待着今后这“绿币”能普及开来，顾客能有所增加。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "大型スーパーの進出", translation: "（大型超市的进驻）", correct: false },
-                            { text: "子供のボランティア活動", translation: "（孩子们的志愿活动）", correct: false },
-                            { text: "商店街に客を呼ぶ取り組み", translation: "（为吸引顾客到商店街而采取的举措）", correct: true },
-                            { text: "緑マネーの課題", translation: "（绿币面临的课题）", correct: false }
-                        ]
-                    }
-                ]
+  "2014-07": {
+    "label": "2014年07月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2014.07-1.mp3",
+        "script": {
+          "question": "大学で女の学生と男の学生がある科目について話しています。",
+          "questionTrans": "（在大学里，女学生和男学生正在谈论某个科目。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "先輩、去年「世界の言語」っていう科目<span class=\"keyword\" onclick=\"showTooltip(event, 'とる：选修（课程）。')\">とって</span>ましたよね。どうでしたか？",
+              "trans": "（学长，你去年修过“世界语言”这门课对吧。感觉如何？）"
+            },
+            {
+              "speaker": "男",
+              "text": "うーん。話は専門的すぎて二年生には<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '男学生表示【内容太专业……很难（話は専門的すぎて……難しいし）】，排除了选项3和4中课程【简单（易しい）】的说法。')\">難しいし</span></span>、先生は厳しいしさ。発表やら、レポートやら次々あって、あのときは、ちょっと後悔したね。",
+              "trans": "（嗯……讲的内容太专业了，对大二学生来说挺难的，老师又严。又是发表又是报告的，接二连三，当时其实有点后悔选这门课呢。）"
+            },
+            {
+              "speaker": "女",
+              "text": "やっぱりそうなんですか。そんなうわさ聞くんで、どうしようか迷っちゃって。",
+              "trans": "（果然是这样啊。我也听到了些风声，正发愁要不要选呢。）"
+            },
+            {
+              "speaker": "男",
+              "text": "まあ、だけど、あそこであれやっといたからこそ、三年生の専門的な授業に<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男学生表示，正因为当初修了这门课，所以现在才能跟得上大三的专业课。这说明这门课在“以后会有用”。')\"><span class=\"keyword\" onclick=\"showTooltip(event, 'ついていく：跟得上（进度等）。')\">ついてけてる</span>んだと思うんだよね。</span></span>",
+              "trans": "（不过嘛，正因为当时硬着头皮熬过来了，我现在才能跟得上大三的专业课。）"
+            },
+            {
+              "speaker": "女",
+              "text": "へえ、そうですか。",
+              "trans": "（哦？是这样啊。）"
+            },
+            {
+              "speaker": "男",
+              "text": "結局、先に苦しむか後に苦しむかだね。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '虽然男学生承认课程难，但他并没有建议不选。相反，他认为【如果先把这门课修了，以后会轻松很多（この科目先にとっとけば、後々楽になると思うよ）】，排除了选项1。')\">この科目先にとっとけば、<span class=\"keyword\" onclick=\"showTooltip(event, '後々（あとあと）：以后，日后。')\">後々</span>楽になると思うよ。</span></span>",
+              "trans": "（说到底，就是先吃苦还是后吃苦的事。我觉得如果先修了这门课，以后会轻松很多哦。）"
+            },
+            {
+              "speaker": "女",
+              "text": "ありがとうございました。考えてみます。",
+              "trans": "（非常感谢。我考虑一下。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の学生はこの科目についてどう言っていますか。",
+              "trans": "（男学生关于这个科目是怎么说的？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "難しいので、選択しないほうがよい",
+            "translation": "（因为很难，所以最好别选）",
+            "correct": false
+          },
+          {
+            "text": "難しいが、後で役に立つ",
+            "translation": "（虽然难，但是以后会有用）",
+            "correct": true
+          },
+          {
+            "text": "易しいが、選択しないほうがよい",
+            "translation": "（虽然简单，但最好别选）",
+            "correct": false
+          },
+          {
+            "text": "易しいし、後で役に立つ",
+            "translation": "（又简单，以后又有用）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2014.07-2.mp3",
+        "script": {
+          "question": "女の人と男の人が話しています。",
+          "questionTrans": "（女人和男人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "ねえ、今話題の「山に生きて」って舞台、見た？",
+              "trans": "（哎，你看了现在热门的那部叫《活在山中》的舞台剧了吗？）"
+            },
+            {
+              "speaker": "男",
+              "text": "見た見た。昨日行ったんだけど、込んでたよ。",
+              "trans": "（看了看了。我昨天去的，人很多呢。）"
+            },
+            {
+              "speaker": "女",
+              "text": "主演の林一郎、すごかったよね。この前、「風に乗って」って作品にも出てたけど。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人感叹他在两部作品中判若两人，引出了两人对这名演员塑造角色能力（演技）的探讨。')\">あれと同じ人とは思えなかったわ。</span></span>",
+              "trans": "（主演林一郎真厉害啊。之前他也出演了叫《乘风》的那部作品，简直让人不敢相信那是同一个人。）"
+            },
+            {
+              "speaker": "男",
+              "text": "そうだね。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '男人提到前一个角色纯粹易受伤，这只是剧情设定的角色性格，而非探讨演员本人的性格，排除了选项3。')\">前回は<span class=\"keyword\" onclick=\"showTooltip(event, '純粋（じゅんすい）：纯洁，纯粹。')\">純粋</span>で<span class=\"keyword\" onclick=\"showTooltip(event, '傷（きず）つきやすい：容易受伤，敏感。')\">傷つきやすい</span>青年って感じだったじゃない？ちょっと<span class=\"keyword\" onclick=\"showTooltip(event, 'おどおど：战战兢兢，怯生生。')\">おどおど</span>してて。</span></span>でも、今回は<span class=\"keyword\" onclick=\"showTooltip(event, '堂々（どうどう）：堂堂正正，气派，自信。')\">堂々</span>としてて。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '男人提到服装只是为了说明角色塑造带来的视觉效果，并不是主要话题，排除了选项2。')\">衣装のせいもあるのかな</span></span>、体まで、大きく見えた。",
+              "trans": "（是啊。上次感觉是个纯洁又敏感的青年吧？稍微有些战战兢兢的。但这次却显得气场十足。可能也有服装的原因吧，连身体看起来都变大了。）"
+            },
+            {
+              "speaker": "女",
+              "text": "そうそう。歩き方からして違ってたもん。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人总结说专业演员真厉害，直接指向了他们的核心话题：演员的演技。符合选项4。此外，对话中并未探讨舞台剧的具体故事情节，选项1可排除。')\">やっぱりプロの俳優ってすごいよね。</span></span>",
+              "trans": "（对啊。就连走路姿势都不一样了。专业演员果然很了不起呢。）"
+            },
+            {
+              "speaker": "男",
+              "text": "そうだね。監督も<span class=\"keyword\" onclick=\"showTooltip(event, '絶賛（ぜっさん）：绝赞，赞不绝口。')\">絶賛</span>してるみたいで、次の作品にもぜひって言ってるんだって。",
+              "trans": "（是啊。听说导演也对他赞不绝口，表示下一部作品也一定要请他出演。）"
+            },
+            {
+              "speaker": "女",
+              "text": "これからますます<span class=\"keyword\" onclick=\"showTooltip(event, '目（め）が離（はな）せない：无法移开视线，需要密切关注。')\">目が離せない</span>ね。",
+              "trans": "（今后越来越不能转移视线（要持续关注）了呢。）"
+            },
+            {
+              "speaker": "問",
+              "text": "二人は何について話していますか。",
+              "trans": "（两人在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "舞台のストーリー",
+            "translation": "（舞台剧的故事情节）",
+            "correct": false
+          },
+          {
+            "text": "舞台の衣装",
+            "translation": "（舞台剧的服装）",
+            "correct": false
+          },
+          {
+            "text": "俳優の性格",
+            "translation": "（演员的性格）",
+            "correct": false
+          },
+          {
+            "text": "俳優の演技力",
+            "translation": "（演员的演技）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2014.07-3.mp3",
+        "script": {
+          "question": "大学の食堂で女の学生と男の学生が話しています。",
+          "questionTrans": "（在大学的食堂里，女学生和男学生正在聊天。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "この間本で読んだんだけど、面白い研究があるんだよ。ペットの写真と飼い主の写真を<span class=\"keyword\" onclick=\"showTooltip(event, 'バラバラ（ばらばら）：分散，散乱。')\">バラバラ</span>に置いて、第三者に飼い主とペットの組み合わせを選んでもらうと、<span class=\"keyword\" onclick=\"showTooltip(event, '偶然（ぐうぜん）：偶然，巧合。')\">偶然</span>とは思えない<span class=\"keyword\" onclick=\"showTooltip(event, '確率（かくりつ）：概率，几率。')\">確率</span>で当たるんだって。不思議だよね。",
+              "trans": "（前阵子我在书上看到了一个有趣的研究哦。说是把宠物的照片和主人的照片打乱放着，让第三者来选出主人和宠物的组合，结果猜中的概率高得让人不觉得是巧合。很不可思议吧。）"
+            },
+            {
+              "speaker": "男",
+              "text": "ああ、それ、僕も知ってる。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '男学生表示有人说宠物和主人在一起久了脸会变得相似，但他觉得【并非如此（そうじゃないと思う）】，排除了选项1和选项2（无论谁像谁的说法）。')\">ペットも長く一緒にいると、顔が似てくるっていう人がいるけど、僕、そうじゃないと思うんだよね。</span></span>",
+              "trans": "（啊，那个我也知道。虽说有人认为宠物跟主人在一起待久了长相会越来越像，但我觉得并非如此呢。）"
+            },
+            {
+              "speaker": "女",
+              "text": "えっ？違うの？",
+              "trans": "（哎？不是这样吗？）"
+            },
+            {
+              "speaker": "男",
+              "text": "その実験からはペットの顔が変わったのか飼い主の顔が変わったのかはわからないよね。",
+              "trans": "（从那个实验中，是看不出到底宠物的脸变了还是主人的脸变了的呀。）"
+            },
+            {
+              "speaker": "女",
+              "text": "ああ、うん。",
+              "trans": "（啊，确实。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"keyword\" onclick=\"showTooltip(event, 'そもそも：原本，最初。')\">そもそも</span>飼いはじめたときには似てなかったってことが<span class=\"keyword\" onclick=\"showTooltip(event, '証明（しょうめい）：证明。')\">証明</span>されてないし、その時点で飼い主の選択が<span class=\"keyword\" onclick=\"showTooltip(event, '働（はたら）く：发挥作用，起作用。')\">働いている</span>わけだからさ。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男学生指出，在开始养的那个时间点主人的选择就已经起作用了，也就是说【并不是养着养着像了，而是从一开始（选宠物的时候）就是这样的（最初からってこと）】，符合选项4“人会选择和自己长得像的宠物”。并且因为他承认了双方长得像的事实，排除了选项3。')\">飼っているうちに似てきたってわけじゃなくて最初からってことなんだと思うんだよね。</span></span>",
+              "trans": "（原本就没有证明说刚开始养的时候他们长得不像，而且在（决定养的）那个时候主人的选择就已经发挥作用了。我觉得并不是养着养着就变像了，而是一开始就是这样的。）"
+            },
+            {
+              "speaker": "女",
+              "text": "おお、なるほどね。",
+              "trans": "（哦，原来如此啊。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の学生はペットと飼い主の外見について、どのように考えていますか。",
+              "trans": "（男学生对于宠物和主人的外貌是怎么认为的？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "ペットが飼い主に似てくる",
+            "translation": "（宠物变得像主人）",
+            "correct": false
+          },
+          {
+            "text": "飼い主がペットに似てくる",
+            "translation": "（主人变得像宠物）",
+            "correct": false
+          },
+          {
+            "text": "ペットと飼い主の外見には関連性がない",
+            "translation": "（宠物和主人的外貌没有关联性）",
+            "correct": false
+          },
+          {
+            "text": "人は自分に似たペットを選んで飼う",
+            "translation": "（人会选择和自己相似的宠物来养）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2014.07-4.mp3",
+        "script": {
+          "question": "テレビのニュースでアナウンサーが話しています。",
+          "questionTrans": "（在电视新闻中，播音员正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "少子化が進み、一家族あたりの子供の数が減ると、家計に占める教育費の割合も下がると思われますが、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '播音员提到虽然人们认为教育费比例会下降，但其实【并非如此（そうとも言えないようです）】，排除了选项1。')\">そうとも言えないようです。</span></span>",
+              "trans": "（随着少子化的加剧，一个家庭的孩子数量减少，人们可能会认为教育费在家庭开支中所占的比例也会下降，但似乎并非如此。）"
+            },
+            {
+              "speaker": "男",
+              "text": "教育研究所の調査結果によると、家計に占める教育費の割合はここ数年<span class=\"keyword\" onclick=\"showTooltip(event, '右肩上（みぎかたあが）り：持续上升，不断增长。')\">右肩上がり</span>の状況が続いています。",
+              "trans": "（根据教育研究所的调查结果，教育费在家庭开支中所占的比例这几年一直处于持续上升的状况。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '播音员点出报道的核心内容：【其中，增加率特别高的……是在幼儿身上花费的教育费（中でも、特に増加率が高いものは……幼児にかける教育費です）】。后续内容都是在分析增加的原因，符合选项2。')\">中でも、特に増加率が高いものは小さい子供、特に幼児にかける教育費です。</span></span>",
+              "trans": "（其中，增加率特别高的是在小孩子，特别是幼儿身上花费的教育费。）"
+            },
+            {
+              "speaker": "男",
+              "text": "これは小さい頃から子供に<span class=\"keyword\" onclick=\"showTooltip(event, '習（なら）い事（ごと）：学习才艺，课外学习。')\">習い事</span>をさせる家庭が増えていることが背景にあるようです。",
+              "trans": "（这似乎是因为从小孩很小的时候起就让他们学习才艺的家庭正在增加。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，播音员列举了受欢迎的才艺，但这只是为了分析教育费增加的原因（背景），而不是报道的中心主题，可以排除。')\">習い事の中でも特に人気なのは水泳、英語、音楽などで</span></span>、月々払う<span class=\"keyword\" onclick=\"showTooltip(event, '月謝（げっしゃ）：每个月的学费，月费。')\">月謝</span>も増加傾向にあります。",
+              "trans": "（在才艺学习中，特别受欢迎的是游泳、英语、音乐等，每个月支付的学费也呈增加趋势。）"
+            },
+            {
+              "speaker": "男",
+              "text": "それに加えて、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，考名牌私立小学的孩子增多同样只是导致教育费增加的一个原因（一因），不足以概括全文，可以排除。')\">有名私立小学校を受験する子供の数が年々増えつづけていることも<span class=\"keyword\" onclick=\"showTooltip(event, '一因（いちいん）：一个原因，原因之一。')\">一因</span>となっているようです。</span></span>",
+              "trans": "（除此之外，报考名牌私立小学的孩子数量逐年增加，似乎也成为了其中一个原因。）"
+            },
+            {
+              "speaker": "問",
+              "text": "アナウンサーは何について話していますか。",
+              "trans": "（播音员在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "少子化による教育費の減少",
+            "translation": "（因为少子化导致的教育费减少）",
+            "correct": false
+          },
+          {
+            "text": "家計に占める幼児の教育費の増加",
+            "translation": "（家庭开支中幼儿教育费的增加）",
+            "correct": true
+          },
+          {
+            "text": "人気のある幼児の習い事",
+            "translation": "（受欢迎的幼儿才艺学习）",
+            "correct": false
+          },
+          {
+            "text": "有名私立小学校の人気の高さ",
+            "translation": "（名牌私立小学的高人气）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2014.07-5.mp3",
+        "script": {
+          "question": "テレビで男の人が話しています。",
+          "questionTrans": "（在电视上男人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "日本は四方を海に囲まれていることから、動物性<span class=\"keyword\" onclick=\"showTooltip(event, 'たんぱく質（たんぱくしつ）：蛋白质。')\">たんぱく質</span>の<span class=\"keyword\" onclick=\"showTooltip(event, '摂取（せっしゅ）：摄取。')\">摂取</span>を魚に頼ってきました。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，男人提到消费量减少的原因是“饮食的欧美化”，但这只是引出后续对策的背景介绍，并非整段讲话的核心主旨，可以排除。')\">ところが、食の欧米化とともに、最近は年々消費量が減ってきています。</span></span>",
+              "trans": "（日本因为四面环海，所以一直以来动物性蛋白质的摄取都依赖于鱼类。然而，随着饮食的欧美化，最近每年的消费量都在不断减少。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在讲话中明确指出了核心主旨：【从事水产加工业的人们怀着希望大家能多吃鱼的想法，提出了各种各样的方案（もっと魚を食べてもらいたいという思いで、さまざまな提案をしています）】。后续内容都是在列举具体的方案，符合选项4。')\">そこで、水産加工業に<span class=\"keyword\" onclick=\"showTooltip(event, '携（たずさ）わる：参与，从事。')\">携わる</span>人々はもっと魚を食べてもらいたいという思いで、さまざまな提案をしています。</span></span>",
+              "trans": "（因此，从事水产加工业的人们怀着希望大家能多吃鱼的想法，提出了各种各样的方案。）"
+            },
+            {
+              "speaker": "男",
+              "text": "その<span class=\"keyword\" onclick=\"showTooltip(event, '試（こころ）み：尝试，尝试的做法。')\">試み</span>の一つが、ファストフード<span class=\"keyword\" onclick=\"showTooltip(event, 'ならぬ：并非，不是（常接在名词后，表示转折语气）。')\">ならぬ</span>ファストフィッシュです。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男人接下来列举的是“事先去骨去皮、用微波炉加热即食”的现代速食鱼产品，而并非探讨传统的烹饪方法，可以排除。')\">例えば、<span class=\"keyword\" onclick=\"showTooltip(event, 'あらかじめ：预先，事先。')\">あらかじめ</span>骨や皮が<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り除（のぞ）く：去除，清除。')\">取り除いて</span>あったり、野菜と一緒にレンジで加熱するだけで調理できるものが出てきました。</span></span>",
+              "trans": "（其中一项尝试，就是“快鱼”（意指不同于快餐的速食鱼）。例如，出现了事先去除了骨头和皮的，或是只需要和蔬菜一起用微波炉加热就能烹饪的产品。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男人提到出口到海外，只是说明这种新商品的影响力，文中并没有对日本和外国吃鱼的方式进行比较，可以排除。')\">このような商品は今海外にも輸出されるようになりました。</span></span>",
+              "trans": "（这样的商品现在也开始出口到海外了。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人は主に何について話していますか。",
+              "trans": "（男人主要在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "日本と外国の魚の食べ方の比較",
+            "translation": "（日本和外国吃鱼方式的比较）",
+            "correct": false
+          },
+          {
+            "text": "魚の消費量が減った理由",
+            "translation": "（鱼类消费量减少的原因）",
+            "correct": false
+          },
+          {
+            "text": "魚の伝統的な調理方法",
+            "translation": "（鱼的传统烹饪方法）",
+            "correct": false
+          },
+          {
+            "text": "魚の消費量を増やす工夫",
+            "translation": "（增加鱼类消费量的方法/下的工夫）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "audio": "../assets/audio/2014.07-6.mp3",
+        "script": {
+          "question": "テレビでアナウンサーが話しています。",
+          "questionTrans": "（在电视上播音员正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，提到大型超市进驻只是为了说明商店街面临顾客流失的背景，而不是报道的中心主题，可以排除。')\">最近は<span class=\"keyword\" onclick=\"showTooltip(event, '郊外（こうがい）：郊外。')\">郊外</span>に進出している大型スーパーの影響で</span></span>、昔からある商店街は買い物客が減り、経営が苦しいところが増えています。",
+              "trans": "（最近，受在郊外开店的大型超市的影响，传统的商店街顾客减少，经营困难的地方正在增加。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '播音员点出核心话题：为了应对危机，商店街开始了【独特的尝试（ユニークな試みを始めました）】。后续内容都是对这一尝试的详细说明，符合选项3。')\">このような状況の中、緑町の商店街ではユニークな<span class=\"keyword\" onclick=\"showTooltip(event, '試（こころ）み：尝试。')\">試み</span>を始めました。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '播音员点出核心话题：为了应对危机，商店街开始了【独特的尝试（ユニークな試みを始めました）】。后续内容都是对这一尝试的详细说明，符合选项3。')\"></span></span>今月から緑町商店街が緑マネーというこの町の商店でだけ使えるお金の制度を作りました。",
+              "trans": "（在这种情况下，绿町的商店街开始了独特的尝试。从这个月起，绿町商店街制定了“绿币”这一只在该镇商店使用的货币制度。）"
+            },
+            {
+              "speaker": "女",
+              "text": "これは、例えば、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中提到的是“老年人给孩子们讲故事等志愿活动”，并不是孩子们的志愿活动。而且这也只是说明如何获得“绿币”的举例，并非主题，可排除。')\">お年寄りが子供たちに昔話を聞かせるとか、公園の清掃をするといった<span class=\"keyword\" onclick=\"showTooltip(event, 'ボランティア（volunteer）：志愿者，志愿服务。')\">ボランティア</span>活動をするともらえます。</span></span>",
+              "trans": "（比如，老年人给孩子们讲故事，或者打扫公园等进行志愿活动的话，就能得到这种货币。）"
+            },
+            {
+              "speaker": "女",
+              "text": "町の人はボランティア活動で緑マネーをもらうことができ、「緑マネー」が使える商店街の店では、客を<span class=\"keyword\" onclick=\"showTooltip(event, '呼（よ）び込（こ）む：招揽，吸引。')\">呼び込む</span>ことができます。",
+              "trans": "（镇上的人可以通过志愿活动获得绿币，而在可以使用“绿币”的商店街的店里，则能够招揽顾客。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，报道讲述的是绿币的机制和当地的期待，并没有提及它目前面临的课题或挑战，可以排除。')\">今後、この「緑マネー」が<span class=\"keyword\" onclick=\"showTooltip(event, '普及（ふきゅう）：普及。')\">普及</span>し、お客が増えることを地元では期待しています。</span></span>",
+              "trans": "（当地期待着今后这“绿币”能普及开来，顾客能有所增加。）"
+            },
+            {
+              "speaker": "問",
+              "text": "アナウンサーの話のテーマは何ですか。",
+              "trans": "（播音员讲话的主题是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "大型スーパーの進出",
+            "translation": "（大型超市的进驻）",
+            "correct": false
+          },
+          {
+            "text": "子供のボランティア活動",
+            "translation": "（孩子们的志愿活动）",
+            "correct": false
+          },
+          {
+            "text": "商店街に客を呼ぶ取り組み",
+            "translation": "（为吸引顾客到商店街而采取的举措）",
+            "correct": true
+          },
+          {
+            "text": "緑マネーの課題",
+            "translation": "（绿币面临的课题）",
+            "correct": false
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2014-07-概要理解"; 
+        let currentExamKey = "2014-07"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -284,10 +629,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -626,8 +971,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-<script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+<script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261016-summary-n1-2014-07-9cd102749bb3"></script>
+<script src="../shared/follow-listening.js?v=20261016-summary-n1-2014-07-9cd102749bb3"></script>
+<script src="../shared/follow-listening-entry.js?v=20261016-summary-n1-2014-07-9cd102749bb3"></script>
 </body>
 </html>

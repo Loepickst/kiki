@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261016-summary-n1-2012-12-0df45706e560">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,125 +192,330 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
 <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2012-12-概要理解": {
-                label: "2012年12月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2012.12-1.mp3",
-                        script: {
-                            question: "一番：会社の会議で男の人が話しています。男の人はオンラインショップの何について報告していますか。",
-                            questionTrans: "（第一题：在公司的会议上男人正在讲话。男人在报告关于在线商店的什么事情？）",
-                            dialogue: [
-                                { speaker: "男", text: "昨日午後4時10分、当社のオンラインショップがダウンしました。原因は新たに<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り扱（あつか）い：处理，办理，经销，经营。')\">取り扱い</span>を始めた有名店の<span class=\"keyword\" onclick=\"showTooltip(event, '限定（げんてい）：限定。')\">限定</span>チョコレートの販売開始直後、予想以上の人気で、処理能力を超える<span class=\"keyword\" onclick=\"showTooltip(event, 'アクセス（access）：访问，连接。')\">アクセス</span>が集中したためです。", trans: "（昨天下午4点10分，我司的在线商店瘫痪了。原因是新开始经销的名店限定巧克力在开始销售后不久，由于人气超乎预期，集中了超过处理能力的访问量。）" },
-                                { speaker: "男", text: "通常、お客様は商品を選択した後、配送先を<span class=\"keyword\" onclick=\"showTooltip(event, '指定（してい）：指定。')\">指定</span>するのですが、この配送先の画面にアクセスできない。または、画面が表示されるまでに時間がかかるなどの<span class=\"keyword\" onclick=\"showTooltip(event, '障害（しょうがい）：障碍，妨碍，故障。')\">障害</span>が発生しました。", trans: "（通常，顾客在选择商品后会指定配送地址，但当时却出现了无法连接到该配送地址的画面，或者是画面显示需要很长时间等故障。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在开头说“昨天下午4点10分，我司的在线商店瘫痪了（当社のオンラインショップがダウンしました）”，接着全文都在分析瘫痪的原因（访问集中）以及具体的故障表现（无法进入配送地址画面等）。这说明整段报告的主题就是“销售系统发生了问题”，符合选项2。')\">五時半には<span class=\"keyword\" onclick=\"showTooltip(event, '復旧（ふっきゅう）：恢复原状，修复。')\">復旧</span>しましたが、これまでに50件<span class=\"keyword\" onclick=\"showTooltip(event, '強（きょう）：（接在数量词后）多一点，略多，强。')\">強</span>の苦情がありました。</span></span>", trans: "（虽然在五点半已经修复了，但到目前为止接到了50多件投诉。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，文中明确提到“幸运的是，对订单数没有产生很大的影响（注文件数には大きな影響はありませんでした）”，说明销售额并未下降。关于选项3，文中提到的是访问集中导致系统瘫痪，并没有提到商品没库存了。关于选项4，结尾提到的是正在探讨是否需要改善“销售方法（販売方法）”，而不是“配送方法（配送方法）”。')\">幸い、注文件数には大きな影響はありませんでしたが、販売方法の改善が必要かどうかについては現在検討中です。</span></span>", trans: "（幸运的是，对订单数并没有产生很大的影响，但是否需要改善销售方法，目前正在探讨中。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "売り上げが下がったこと", translation: "（销售额下降的事情）", correct: false },
-                            { text: "販売システムで問題が起きたこと", translation: "（销售系统中发生了问题）", correct: true },
-                            { text: "取り扱い商品の在庫が不足したこと", translation: "（经销商品的库存不足的事情）", correct: false },
-                            { text: "配送方法の改善が必要なこと", translation: "（需要改善配送方法的事情）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        audio: "../assets/audio/2012.12-2.mp3",
-                        script: {
-                            question: "二番：駅前で市議会議員が演説をしています。議員は何を主張していますか。",
-                            questionTrans: "（第二题：在车站前市议员正在发表演讲。议员在主张什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "皆さん、佐倉市の公園についてどのようにお考えでしょうか。緑ある公園は子供の<span class=\"keyword\" onclick=\"showTooltip(event, '健全（けんぜん）：健全。')\">健全</span>な遊び場、市民の<span class=\"keyword\" onclick=\"showTooltip(event, '憩（いこ）い：休息，歇息。')\">憩い</span>の場として必要<span class=\"keyword\" onclick=\"showTooltip(event, '不可欠（ふかけつ）：不可或缺。')\">不可欠</span>です。町の中に緑を配置することで生活も<span class=\"keyword\" onclick=\"showTooltip(event, '潤（うるお）う：滋润，丰富。')\">潤い</span>ます。", trans: "（各位，关于佐仓市的公园大家是怎么想的呢？有绿化的公园作为孩子们健全的游乐场、市民休息的场所是不可或缺的。在城市中配置绿化也能滋润生活。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，议员提到小规模公园虽然也能起到滋润生活的作用，但如果考虑到城市环境的提升就需要大规模公园了，说明他主张的并非增加小公园，排除。')\">これらは小規模公園でも<span class=\"keyword\" onclick=\"showTooltip(event, '賄（まかな）う：提供，维持，应付。')\">賄う</span>ことができますが</span></span>、都市環境の向上を考えた場合、小学校の校庭程度の<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，提到小学操场只是为了比喻大规模公园的面积大小（程度），并不是主张扩建小学操场，排除。')\">大規模公園が必要です。</span></span>", trans: "（这些虽然靠小规模公园也能应付，但如果考虑到城市环境的提升，就需要小学操场那种程度的大规模公园了。）" },
-                                { speaker: "男", text: "大規模公園はそれだけではなく、災害時の避難場所として、また、町の資産価値を高めるためにも欠かすことはできないのです。", trans: "（大规模公园不仅如此，作为灾害时的避难场所，以及为了提高城市的资产价值，也是不可或缺的。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '议员在这里点出了核心主张：【我们佐仓市并没有承担这种作用的公园。我认为站前的工厂旧址是个绝好的地方（わが佐倉市にはこのような役割を担う公園がありません。駅前の工場跡地は絶好の場所だと考えます）】。结合前文对大规模公园重要性的强调，说明他主张在工厂旧址“建设大规模公园”。符合选项3。')\"><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，议员指出佐仓市目前并没有承担这种作用的大规模公园，所以需要新建，而不是去提高“现有（今ある）”公园的价值，排除。')\">しかし、残念ながら、わが佐倉市にはこのような役割を<span class=\"keyword\" onclick=\"showTooltip(event, '担（にな）う：承担，担负。')\">担う</span>公園がありません。駅前の工場<span class=\"keyword\" onclick=\"showTooltip(event, '跡地（あとち）：旧址，废址。')\">跡地</span>は<span class=\"keyword\" onclick=\"showTooltip(event, '絶好（ぜっこう）：绝好，极好。')\">絶好</span>の場所だと考えます。</span></span></span></span>", trans: "（但是，很遗憾，我们佐仓市并没有承担这种作用的公园。我认为站前的工厂旧址是个绝好的地方。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "今ある公園の価値を高めること", translation: "（提高现有公园的价值）", correct: false },
-                            { text: "小さい公園を増やすこと", translation: "（增加小公园）", correct: false },
-                            { text: "大きい公園を作ること", translation: "（建设大公园）", correct: true },
-                            { text: "小学校の校庭を広くすること", translation: "（扩建小学操场）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        audio: "../assets/audio/2012.12-3.mp3",
-                        script: {
-                            question: "三番：講演会で女の人が話しています。女の人は何について話していますか。",
-                            questionTrans: "（第三题：在演讲会上女人正在讲话。女人在谈论什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "これは私の知人のアメリカ人の話なんですが、彼はラジオを聞いて、あの司会者はいい人だとか、このタレントは美しい日本語を話すとか言って、何人かの話し手を<span class=\"keyword\" onclick=\"showTooltip(event, '贔屓（ひいき）にする：偏爱，偏袒，眷顾。')\">ひいきにしています</span>。", trans: "（这是我认识的一位美国人的故事，他听着广播，会说那位主持人是个好人啦，或者这个艺人说的日语很优美之类的，偏爱着好几位播音员。）" },
-                                { speaker: "女", text: "ところが、実は日本語がほとんどわからないんです。", trans: "（然而，实际上他几乎不懂日语。）" },
-                                { speaker: "女", text: "通常私たちが誰かの話を聞くときは、相手が話したことの意味を<span class=\"keyword\" onclick=\"showTooltip(event, '把握（はおく）：把握，掌握。')\">把握</span>することに集中しますが、単語や文法から意味を<span class=\"keyword\" onclick=\"showTooltip(event, '見出（みいだ）す：找出，发现。')\">見いだせない</span>彼にしてみれば、話す声こそが唯一の情報源なのです。", trans: "（通常我们在听别人讲话时，会集中精力去把握对方所说内容的意思，但对无法从单词和语法中找出意思的他来说，说话的声音才是唯一的信息源。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，女士恰恰是在反思我们平时【总是从单词和语法去思考所讲的内容，而没有太去意识到说话声音中包含的信息】，过度注重理解内容而忽略了声音，所以选项4与文章主旨不符，可以排除。关于选项1和3，文中也均未作为核心主旨探讨，排除。')\">そして、これは話されている内容を普段、私達が単語とか文法から考えてしまい、</span></span><span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女士通过一个不懂日语的美国人仅凭声音就能判断说话人特点的故事，得出了最后的结论：【这似乎让我重新思考了一件事，那就是我们平时……没有太去意识到说话声音中包含的信息（話している声に含まれている情報をあまり意識していないということを、改めて考えさせてくれている）】。这说明她想传达的是声音本身所包含信息的重要性，符合选项2。')\">話している声に含まれている情報をあまり意識していないということを、改めて考えさせてくれているように思えます。</span></span>", trans: "（而且，这似乎让我重新思考了一件事，那就是我们平时总是从单词和语法去思考所讲的内容，而没有太去意识到说话声音中包含的信息。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "声の出し方と職業の関係", translation: "（发声方式与职业的关系）", correct: false },
-                            { text: "声が持つ情報の大切さ", translation: "（声音所包含信息的重要性）", correct: true },
-                            { text: "美しい言葉遣いの必要性", translation: "（优美遣词造句的必要性）", correct: false },
-                            { text: "発言内容を理解することの重要性", translation: "（理解发言内容的重要性）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        audio: "../assets/audio/2012.12-4.mp3",
-                        script: {
-                            question: "四番：新商品の企画会議で、部長が話しています。部長は何について話していますか。",
-                            questionTrans: "（第四题：在新商品的企划会议上，部长正在讲话。部长在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2和3，部长在开头就说【光靠经验或者技术实力之类的，是不够的哦（経験とか技術力とか、そういったものだけじゃ十分じゃないんだよ）】，说明这些不是他强调的重点，可以排除。')\">売れる商品を開発するにはね、経験とか技術力とか、そういったものだけじゃ十分じゃないんだよ。</span></span>", trans: "（要开发能卖得出去的商品啊，光靠经验或者技术实力之类的，是不够的哦。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '部长点出了核心观点：【能否生产出好商品，说取决于你对客户观察得有多仔细也不为过（お客様をいかによく見ているかってことにかかっているといっても過言じゃない）】。')\">いい商品が生み出せるかどうかはお客様をいかによく見ているかってことにかかっているといっても<span class=\"keyword\" onclick=\"showTooltip(event, '過言（かごん）：言过其实，夸大其词。')\">過言</span>じゃない。</span></span>", trans: "（能否生产出好商品，说取决于你对客户观察得有多仔细也不为过。）" },
-                                { speaker: "男", text: "ええ、例えば、<span class=\"keyword\" onclick=\"showTooltip(event, '印鑑（いんかん）：印章。')\">印鑑</span>や<span class=\"keyword\" onclick=\"showTooltip(event, 'スタンプ（stamp）：图章，印章。')\">スタンプ</span>、これにはどっちが上か<span class=\"keyword\" onclick=\"showTooltip(event, '目印（めじるし）：记号，标记。')\">目印</span>がついてるけど、もし目印がなかったら、印鑑を押す時、向きがわからないでしょう。", trans: "（嗯，比如说印章或图章，这上面带有哪边是朝上的记号，如果没有记号的话，盖章的时候就会不知道方向对吧。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着部长举了印章的例子，说这是【观察到大多数人在盖印章……时，必定会确认方向的行动后开发出来的（……向きを確かめるという行動を見て開発したそうなんだ）】。选项1提到的“听取意见”在文中没有体现，部长强调的是观察行动，符合选项4。')\">これはほとんどの人が印鑑やスタンプを押す時、必ず向きを確かめるという行動を見て開発したそうなんだ。</span></span>", trans: "（听说这是观察到大多数人在盖印章或图章时，必定会确认方向的行动后开发出来的。）" },
-                                { speaker: "男", text: "こんなとこに開発のヒントは<span class=\"keyword\" onclick=\"showTooltip(event, '転（ころ）がる：滚动，（这里指）到处都是，随处可见。')\">転がってる</span>んだよ。つねにこういう<span class=\"keyword\" onclick=\"showTooltip(event, '視点（してん）：视角，观点。')\">視点</span>を頭に置いて、商品開発ってのをすすめていきたいよね。", trans: "（开发的灵感就散落隐藏在这些地方哦。希望能始终把这种视角放在脑海里，来推进商品开发呢。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "消費者の意見を聞くことの大切さ", translation: "（倾听消费者意见的重要性）", correct: false },
-                            { text: "商品開発の経験を積むことの大切さ", translation: "（积累商品开发经验的重要性）", correct: false },
-                            { text: "技術力を上げることの大切さ", translation: "（提高技术实力的重要性）", correct: false },
-                            { text: "消費者の行動を観察することの大切さ", translation: "（观察消费者行动的重要性）", correct: true }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        audio: "../assets/audio/2012.12-5.mp3",
-                        script: {
-                            question: "五番：テレビで女のアナウンサーが会社の経営について社長にインタビューしています。社長は会社の経営について、何が重要だと言っていますか。",
-                            questionTrans: "（第五题：在电视上，女播音员正在就公司经营问题采访社长。社长说关于公司经营，什么是重要的？）",
-                            dialogue: [
-                                { speaker: "女", text: "今日は、株式会社コヤマの小山社長にお越しいただき、お話を伺います。社長、よろしくお願い致します。", trans: "（今天，我们请到了小山株式会社的小山社长，来听听他的分享。社长，请多关照。）" },
-                                { speaker: "男", text: "こちらこそ、よろしくお願い致します。", trans: "（哪里哪里，也请您多关照。）" },
-                                { speaker: "女", text: "社長は大学を卒業すると同時に、この会社を立ち上げられたそうですね。この不況の中でも、売上げをどんどん伸ばしていらっしゃいますが、会社が成功するためには、何が必要なんでしょうか。", trans: "（听说社长您在大学毕业的同时，就创立了这家公司。在这样的经济不景气中，销售额还在不断增长，请问公司要取得成功，需要些什么呢？）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，社长提到【应该是不放过机会的果断吧（チャンスを逃さない思い切りのよさといったところでしょうか）】，但这只是抛出的引子，随后他马上说【并不是说只要有机会就果断往前冲（思い切って突っ走れと言っているのではありません）】，这和迅速决断有区别，不是他要强调的核心，排除。')\">そうですね。チャンスを逃さない<span class=\"keyword\" onclick=\"showTooltip(event, '思（おも）い切（き）りのよさ：果断，干脆。')\">思い切りのよさ</span>といったところでしょうか。</span></span>こう言うと、よく誤解されるのですが、チャンスがあれば、思い切って<span class=\"keyword\" onclick=\"showTooltip(event, '突（つ）っ走（はし）る：猛跑，（不顾一切地）往前冲。')\">突っ走れ</span>と言っているのではありません。", trans: "（嗯，是呢。我想应该是不放过机会的果断吧。这么说的话经常会被误解，但我并不是说只要有机会就果断往前冲。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '社长明确指出了关键所在：【必须看清什么是机会……为此，必须在平时就经常收集、分析信息（何がチャンスであるかをしっかりと見極め……情報を収集、分析する必要があるのです）】，符合选项2。')\">何がチャンスであるかをしっかりと<span class=\"keyword\" onclick=\"showTooltip(event, '見極（みきわ）める：看清，看透。')\">見極め</span>、実行に移すべきか、的確に判断しなければならず、そのためには、日頃から、つねに情報を収集、分析する必要があるのです。</span></span>また、リスクもしっかりと<span class=\"keyword\" onclick=\"showTooltip(event, '考慮（こうりょ）：考虑。')\">考慮</span>しなければなりません。", trans: "（必须看清什么是机会，并准确判断是否应该付诸实践，为此，必须在平时就经常收集、分析信息。另外，也必须充分考虑风险。）" },
-                                { speaker: "女", text: "なるほど。日頃から、努力されているんですね。", trans: "（原来如此。您平时就很努力呢。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '社长再次强调并总结：【如果在细致调查的基础上，能够客观地看待现状，就能抓住巨大的机会（念入りの調査に基づいて、現状を客観的に見ることが出来れば、大きなチャンスをものにできるのです）】。这直接呼应了选项2“客观地分析状况”。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '念入（ねんい）り：细心，仔细，周到。')\">念入り</span>の調査に基づいて、現状を客観的に見ることが出来れば、大きなチャンスをものにできるのです。</span></span>", trans: "（如果在细致调查的基础上，能够客观地看待现状，就能抓住巨大的机会。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，社长说【仅凭一时兴起的想法和单纯的果断，公司经营总有一天会陷入僵局的吧（思いつきと思い切りのよさだけでは、会社の経営というものはいずれ行き詰まるのではないでしょうか）】，说明光有好的想法是不够的，还需要客观分析，排除。选项1“不畏惧失败”在文中未被提及，也可排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '思（おも）いつき：一时想起，偶然的想法。')\">思いつき</span>と思い切りのよさだけでは、会社の経営というものはいずれ<span class=\"keyword\" onclick=\"showTooltip(event, '行（い）き詰（づ）まる：走投无路，陷入僵局。')\">行き詰まる</span>のではないでしょうか。</span></span>もちろん、条件によっては、どんなにすばらしいアイデアでも実行に移さないという決断をすることもあります。そういう意味での思い切りのよさは必要かもしれませんね。", trans: "（仅凭一时的想法和单纯的果断，公司经营这种东西总有一天会陷入僵局的吧。当然，根据条件的不同，有时也会做出无论多么棒的主意都不付诸实践的决断。在那种意义上的果断或许是必要的呢。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "失敗を恐れないこと", translation: "（不害怕失败）", correct: false },
-                            { text: "状況を客観的に分析すること", translation: "（客观地分析状况）", correct: true },
-                            { text: "すばやく決断すること", translation: "（迅速地做出决断）", correct: false },
-                            { text: "いいアイディアを生み出すこと", translation: "（产生好的主意）", correct: false }
-                        ]
-                    }
-                ]
+  "2012-12": {
+    "label": "2012年12月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2012.12-1.mp3",
+        "script": {
+          "question": "会社の会議で男の人が話しています。",
+          "questionTrans": "（在公司的会议上男人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "昨日午後4時10分、当社のオンラインショップがダウンしました。原因は新たに<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り扱（あつか）い：处理，办理，经销，经营。')\">取り扱い</span>を始めた有名店の<span class=\"keyword\" onclick=\"showTooltip(event, '限定（げんてい）：限定。')\">限定</span>チョコレートの販売開始直後、予想以上の人気で、処理能力を超える<span class=\"keyword\" onclick=\"showTooltip(event, 'アクセス（access）：访问，连接。')\">アクセス</span>が集中したためです。",
+              "trans": "（昨天下午4点10分，我司的在线商店瘫痪了。原因是新开始经销的名店限定巧克力在开始销售后不久，由于人气超乎预期，集中了超过处理能力的访问量。）"
+            },
+            {
+              "speaker": "男",
+              "text": "通常、お客様は商品を選択した後、配送先を<span class=\"keyword\" onclick=\"showTooltip(event, '指定（してい）：指定。')\">指定</span>するのですが、この配送先の画面にアクセスできない。または、画面が表示されるまでに時間がかかるなどの<span class=\"keyword\" onclick=\"showTooltip(event, '障害（しょうがい）：障碍，妨碍，故障。')\">障害</span>が発生しました。",
+              "trans": "（通常，顾客在选择商品后会指定配送地址，但当时却出现了无法连接到该配送地址的画面，或者是画面显示需要很长时间等故障。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在开头说“昨天下午4点10分，我司的在线商店瘫痪了（当社のオンラインショップがダウンしました）”，接着全文都在分析瘫痪的原因（访问集中）以及具体的故障表现（无法进入配送地址画面等）。这说明整段报告的主题就是“销售系统发生了问题”，符合选项2。')\">五時半には<span class=\"keyword\" onclick=\"showTooltip(event, '復旧（ふっきゅう）：恢复原状，修复。')\">復旧</span>しましたが、これまでに50件<span class=\"keyword\" onclick=\"showTooltip(event, '強（きょう）：（接在数量词后）多一点，略多，强。')\">強</span>の苦情がありました。</span></span>",
+              "trans": "（虽然在五点半已经修复了，但到目前为止接到了50多件投诉。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，文中明确提到“幸运的是，对订单数没有产生很大的影响（注文件数には大きな影響はありませんでした）”，说明销售额并未下降。关于选项3，文中提到的是访问集中导致系统瘫痪，并没有提到商品没库存了。关于选项4，结尾提到的是正在探讨是否需要改善“销售方法（販売方法）”，而不是“配送方法（配送方法）”。')\">幸い、注文件数には大きな影響はありませんでしたが、販売方法の改善が必要かどうかについては現在検討中です。</span></span>",
+              "trans": "（幸运的是，对订单数并没有产生很大的影响，但是否需要改善销售方法，目前正在探讨中。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人はオンラインショップの何について報告していますか。",
+              "trans": "（男人在报告关于在线商店的什么事情？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "売り上げが下がったこと",
+            "translation": "（销售额下降的事情）",
+            "correct": false
+          },
+          {
+            "text": "販売システムで問題が起きたこと",
+            "translation": "（销售系统中发生了问题）",
+            "correct": true
+          },
+          {
+            "text": "取り扱い商品の在庫が不足したこと",
+            "translation": "（经销商品的库存不足的事情）",
+            "correct": false
+          },
+          {
+            "text": "配送方法の改善が必要なこと",
+            "translation": "（需要改善配送方法的事情）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2012.12-2.mp3",
+        "script": {
+          "question": "駅前で市議会議員が演説をしています。",
+          "questionTrans": "（在车站前市议员正在发表演讲。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "皆さん、佐倉市の公園についてどのようにお考えでしょうか。緑ある公園は子供の<span class=\"keyword\" onclick=\"showTooltip(event, '健全（けんぜん）：健全。')\">健全</span>な遊び場、市民の<span class=\"keyword\" onclick=\"showTooltip(event, '憩（いこ）い：休息，歇息。')\">憩い</span>の場として必要<span class=\"keyword\" onclick=\"showTooltip(event, '不可欠（ふかけつ）：不可或缺。')\">不可欠</span>です。町の中に緑を配置することで生活も<span class=\"keyword\" onclick=\"showTooltip(event, '潤（うるお）う：滋润，丰富。')\">潤い</span>ます。",
+              "trans": "（各位，关于佐仓市的公园大家是怎么想的呢？有绿化的公园作为孩子们健全的游乐场、市民休息的场所是不可或缺的。在城市中配置绿化也能滋润生活。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，议员提到小规模公园虽然也能起到滋润生活的作用，但如果考虑到城市环境的提升就需要大规模公园了，说明他主张的并非增加小公园，排除。')\">これらは小規模公園でも<span class=\"keyword\" onclick=\"showTooltip(event, '賄（まかな）う：提供，维持，应付。')\">賄う</span>ことができますが</span></span>、都市環境の向上を考えた場合、小学校の校庭程度の<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，提到小学操场只是为了比喻大规模公园的面积大小（程度），并不是主张扩建小学操场，排除。')\">大規模公園が必要です。</span></span>",
+              "trans": "（这些虽然靠小规模公园也能应付，但如果考虑到城市环境的提升，就需要小学操场那种程度的大规模公园了。）"
+            },
+            {
+              "speaker": "男",
+              "text": "大規模公園はそれだけではなく、災害時の避難場所として、また、町の資産価値を高めるためにも欠かすことはできないのです。",
+              "trans": "（大规模公园不仅如此，作为灾害时的避难场所，以及为了提高城市的资产价值，也是不可或缺的。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '议员在这里点出了核心主张：【我们佐仓市并没有承担这种作用的公园。我认为站前的工厂旧址是个绝好的地方（わが佐倉市にはこのような役割を担う公園がありません。駅前の工場跡地は絶好の場所だと考えます）】。结合前文对大规模公园重要性的强调，说明他主张在工厂旧址“建设大规模公园”。符合选项3。')\"><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，议员指出佐仓市目前并没有承担这种作用的大规模公园，所以需要新建，而不是去提高“现有（今ある）”公园的价值，排除。')\">しかし、残念ながら、わが佐倉市にはこのような役割を<span class=\"keyword\" onclick=\"showTooltip(event, '担（にな）う：承担，担负。')\">担う</span>公園がありません。</span></span></span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '议员在这里点出了核心主张：【我们佐仓市并没有承担这种作用的公园。我认为站前的工厂旧址是个绝好的地方（わが佐倉市にはこのような役割を担う公園がありません。駅前の工場跡地は絶好の場所だと考えます）】。结合前文对大规模公园重要性的强调，说明他主张在工厂旧址“建设大规模公园”。符合选项3。')\"><span class=\"highlight-wrong\"><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，议员指出佐仓市目前并没有承担这种作用的大规模公园，所以需要新建，而不是去提高“现有（今ある）”公园的价值，排除。')\">駅前の工場<span class=\"keyword\" onclick=\"showTooltip(event, '跡地（あとち）：旧址，废址。')\">跡地</span>は<span class=\"keyword\" onclick=\"showTooltip(event, '絶好（ぜっこう）：绝好，极好。')\">絶好</span>の場所だと考えます。</span></span></span></span>",
+              "trans": "（但是，很遗憾，我们佐仓市并没有承担这种作用的公园。我认为站前的工厂旧址是个绝好的地方。）"
+            },
+            {
+              "speaker": "問",
+              "text": "議員は何を主張していますか。",
+              "trans": "（议员在主张什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "今ある公園の価値を高めること",
+            "translation": "（提高现有公园的价值）",
+            "correct": false
+          },
+          {
+            "text": "小さい公園を増やすこと",
+            "translation": "（增加小公园）",
+            "correct": false
+          },
+          {
+            "text": "大きい公園を作ること",
+            "translation": "（建设大公园）",
+            "correct": true
+          },
+          {
+            "text": "小学校の校庭を広くすること",
+            "translation": "（扩建小学操场）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2012.12-3.mp3",
+        "script": {
+          "question": "講演会で女の人が話しています。",
+          "questionTrans": "（在演讲会上女人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "これは私の知人のアメリカ人の話なんですが、彼はラジオを聞いて、あの司会者はいい人だとか、このタレントは美しい日本語を話すとか言って、何人かの話し手を<span class=\"keyword\" onclick=\"showTooltip(event, '贔屓（ひいき）にする：偏爱，偏袒，眷顾。')\">ひいきにしています</span>。",
+              "trans": "（这是我认识的一位美国人的故事，他听着广播，会说那位主持人是个好人啦，或者这个艺人说的日语很优美之类的，偏爱着好几位播音员。）"
+            },
+            {
+              "speaker": "女",
+              "text": "ところが、実は日本語がほとんどわからないんです。",
+              "trans": "（然而，实际上他几乎不懂日语。）"
+            },
+            {
+              "speaker": "女",
+              "text": "通常私たちが誰かの話を聞くときは、相手が話したことの意味を<span class=\"keyword\" onclick=\"showTooltip(event, '把握（はおく）：把握，掌握。')\">把握</span>することに集中しますが、単語や文法から意味を<span class=\"keyword\" onclick=\"showTooltip(event, '見出（みいだ）す：找出，发现。')\">見いだせない</span>彼にしてみれば、話す声こそが唯一の情報源なのです。",
+              "trans": "（通常我们在听别人讲话时，会集中精力去把握对方所说内容的意思，但对无法从单词和语法中找出意思的他来说，说话的声音才是唯一的信息源。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，女士恰恰是在反思我们平时【总是从单词和语法去思考所讲的内容，而没有太去意识到说话声音中包含的信息】，过度注重理解内容而忽略了声音，所以选项4与文章主旨不符，可以排除。关于选项1和3，文中也均未作为核心主旨探讨，排除。')\">そして、これは話されている内容を普段、私達が単語とか文法から考えてしまい、</span></span><span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女士通过一个不懂日语的美国人仅凭声音就能判断说话人特点的故事，得出了最后的结论：【这似乎让我重新思考了一件事，那就是我们平时……没有太去意识到说话声音中包含的信息（話している声に含まれている情報をあまり意識していないということを、改めて考えさせてくれている）】。这说明她想传达的是声音本身所包含信息的重要性，符合选项2。')\">話している声に含まれている情報をあまり意識していないということを、改めて考えさせてくれているように思えます。</span></span>",
+              "trans": "（而且，这似乎让我重新思考了一件事，那就是我们平时总是从单词和语法去思考所讲的内容，而没有太去意识到说话声音中包含的信息。）"
+            },
+            {
+              "speaker": "問",
+              "text": "女の人は何について話していますか。",
+              "trans": "（女人在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "声の出し方と職業の関係",
+            "translation": "（发声方式与职业的关系）",
+            "correct": false
+          },
+          {
+            "text": "声が持つ情報の大切さ",
+            "translation": "（声音所包含信息的重要性）",
+            "correct": true
+          },
+          {
+            "text": "美しい言葉遣いの必要性",
+            "translation": "（优美遣词造句的必要性）",
+            "correct": false
+          },
+          {
+            "text": "発言内容を理解することの重要性",
+            "translation": "（理解发言内容的重要性）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2012.12-4.mp3",
+        "script": {
+          "question": "新商品の企画会議で、部長が話しています。",
+          "questionTrans": "（在新商品的企划会议上，部长正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2和3，部长在开头就说【光靠经验或者技术实力之类的，是不够的哦（経験とか技術力とか、そういったものだけじゃ十分じゃないんだよ）】，说明这些不是他强调的重点，可以排除。')\">売れる商品を開発するにはね、経験とか技術力とか、そういったものだけじゃ十分じゃないんだよ。</span></span>",
+              "trans": "（要开发能卖得出去的商品啊，光靠经验或者技术实力之类的，是不够的哦。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '部长点出了核心观点：【能否生产出好商品，说取决于你对客户观察得有多仔细也不为过（お客様をいかによく見ているかってことにかかっているといっても過言じゃない）】。')\">いい商品が生み出せるかどうかはお客様をいかによく見ているかってことにかかっているといっても<span class=\"keyword\" onclick=\"showTooltip(event, '過言（かごん）：言过其实，夸大其词。')\">過言</span>じゃない。</span></span>",
+              "trans": "（能否生产出好商品，说取决于你对客户观察得有多仔细也不为过。）"
+            },
+            {
+              "speaker": "男",
+              "text": "ええ、例えば、<span class=\"keyword\" onclick=\"showTooltip(event, '印鑑（いんかん）：印章。')\">印鑑</span>や<span class=\"keyword\" onclick=\"showTooltip(event, 'スタンプ（stamp）：图章，印章。')\">スタンプ</span>、これにはどっちが上か<span class=\"keyword\" onclick=\"showTooltip(event, '目印（めじるし）：记号，标记。')\">目印</span>がついてるけど、もし目印がなかったら、印鑑を押す時、向きがわからないでしょう。",
+              "trans": "（嗯，比如说印章或图章，这上面带有哪边是朝上的记号，如果没有记号的话，盖章的时候就会不知道方向对吧。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着部长举了印章的例子，说这是【观察到大多数人在盖印章……时，必定会确认方向的行动后开发出来的（……向きを確かめるという行動を見て開発したそうなんだ）】。选项1提到的“听取意见”在文中没有体现，部长强调的是观察行动，符合选项4。')\">これはほとんどの人が印鑑やスタンプを押す時、必ず向きを確かめるという行動を見て開発したそうなんだ。</span></span>",
+              "trans": "（听说这是观察到大多数人在盖印章或图章时，必定会确认方向的行动后开发出来的。）"
+            },
+            {
+              "speaker": "男",
+              "text": "こんなとこに開発のヒントは<span class=\"keyword\" onclick=\"showTooltip(event, '転（ころ）がる：滚动，（这里指）到处都是，随处可见。')\">転がってる</span>んだよ。つねにこういう<span class=\"keyword\" onclick=\"showTooltip(event, '視点（してん）：视角，观点。')\">視点</span>を頭に置いて、商品開発ってのをすすめていきたいよね。",
+              "trans": "（开发的灵感就散落隐藏在这些地方哦。希望能始终把这种视角放在脑海里，来推进商品开发呢。）"
+            },
+            {
+              "speaker": "問",
+              "text": "部長は何について話していますか。",
+              "trans": "（部长在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "消費者の意見を聞くことの大切さ",
+            "translation": "（倾听消费者意见的重要性）",
+            "correct": false
+          },
+          {
+            "text": "商品開発の経験を積むことの大切さ",
+            "translation": "（积累商品开发经验的重要性）",
+            "correct": false
+          },
+          {
+            "text": "技術力を上げることの大切さ",
+            "translation": "（提高技术实力的重要性）",
+            "correct": false
+          },
+          {
+            "text": "消費者の行動を観察することの大切さ",
+            "translation": "（观察消费者行动的重要性）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2012.12-5.mp3",
+        "script": {
+          "question": "テレビで女のアナウンサーが会社の経営について社長にインタビューしています。",
+          "questionTrans": "（在电视上，女播音员正在就公司经营问题采访社长。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "今日は、株式会社コヤマの小山社長にお越しいただき、お話を伺います。社長、よろしくお願い致します。",
+              "trans": "（今天，我们请到了小山株式会社的小山社长，来听听他的分享。社长，请多关照。）"
+            },
+            {
+              "speaker": "男",
+              "text": "こちらこそ、よろしくお願い致します。",
+              "trans": "（哪里哪里，也请您多关照。）"
+            },
+            {
+              "speaker": "女",
+              "text": "社長は大学を卒業すると同時に、この会社を立ち上げられたそうですね。この不況の中でも、売上げをどんどん伸ばしていらっしゃいますが、会社が成功するためには、何が必要なんでしょうか。",
+              "trans": "（听说社长您在大学毕业的同时，就创立了这家公司。在这样的经济不景气中，销售额还在不断增长，请问公司要取得成功，需要些什么呢？）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，社长提到【应该是不放过机会的果断吧（チャンスを逃さない思い切りのよさといったところでしょうか）】，但这只是抛出的引子，随后他马上说【并不是说只要有机会就果断往前冲（思い切って突っ走れと言っているのではありません）】，这和迅速决断有区别，不是他要强调的核心，排除。')\">そうですね。チャンスを逃さない<span class=\"keyword\" onclick=\"showTooltip(event, '思（おも）い切（き）りのよさ：果断，干脆。')\">思い切りのよさ</span>といったところでしょうか。</span></span>こう言うと、よく誤解されるのですが、チャンスがあれば、思い切って<span class=\"keyword\" onclick=\"showTooltip(event, '突（つ）っ走（はし）る：猛跑，（不顾一切地）往前冲。')\">突っ走れ</span>と言っているのではありません。",
+              "trans": "（嗯，是呢。我想应该是不放过机会的果断吧。这么说的话经常会被误解，但我并不是说只要有机会就果断往前冲。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '社长明确指出了关键所在：【必须看清什么是机会……为此，必须在平时就经常收集、分析信息（何がチャンスであるかをしっかりと見極め……情報を収集、分析する必要があるのです）】，符合选项2。')\">何がチャンスであるかをしっかりと<span class=\"keyword\" onclick=\"showTooltip(event, '見極（みきわ）める：看清，看透。')\">見極め</span>、実行に移すべきか、的確に判断しなければならず、そのためには、日頃から、つねに情報を収集、分析する必要があるのです。</span></span>また、リスクもしっかりと<span class=\"keyword\" onclick=\"showTooltip(event, '考慮（こうりょ）：考虑。')\">考慮</span>しなければなりません。",
+              "trans": "（必须看清什么是机会，并准确判断是否应该付诸实践，为此，必须在平时就经常收集、分析信息。另外，也必须充分考虑风险。）"
+            },
+            {
+              "speaker": "女",
+              "text": "なるほど。日頃から、努力されているんですね。",
+              "trans": "（原来如此。您平时就很努力呢。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '社长再次强调并总结：【如果在细致调查的基础上，能够客观地看待现状，就能抓住巨大的机会（念入りの調査に基づいて、現状を客観的に見ることが出来れば、大きなチャンスをものにできるのです）】。这直接呼应了选项2“客观地分析状况”。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '念入（ねんい）り：细心，仔细，周到。')\">念入り</span>の調査に基づいて、現状を客観的に見ることが出来れば、大きなチャンスをものにできるのです。</span></span>",
+              "trans": "（如果在细致调查的基础上，能够客观地看待现状，就能抓住巨大的机会。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，社长说【仅凭一时兴起的想法和单纯的果断，公司经营总有一天会陷入僵局的吧（思いつきと思い切りのよさだけでは、会社の経営というものはいずれ行き詰まるのではないでしょうか）】，说明光有好的想法是不够的，还需要客观分析，排除。选项1“不畏惧失败”在文中未被提及，也可排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '思（おも）いつき：一时想起，偶然的想法。')\">思いつき</span>と思い切りのよさだけでは、会社の経営というものはいずれ<span class=\"keyword\" onclick=\"showTooltip(event, '行（い）き詰（づ）まる：走投无路，陷入僵局。')\">行き詰まる</span>のではないでしょうか。</span></span>もちろん、条件によっては、どんなにすばらしいアイデアでも実行に移さないという決断をすることもあります。そういう意味での思い切りのよさは必要かもしれませんね。",
+              "trans": "（仅凭一时的想法和单纯的果断，公司经营这种东西总有一天会陷入僵局的吧。当然，根据条件的不同，有时也会做出无论多么棒的主意都不付诸实践的决断。在那种意义上的果断或许是必要的呢。）"
+            },
+            {
+              "speaker": "問",
+              "text": "社長は会社の経営について、何が重要だと言っていますか。",
+              "trans": "（社长说关于公司经营，什么是重要的？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "失敗を恐れないこと",
+            "translation": "（不害怕失败）",
+            "correct": false
+          },
+          {
+            "text": "状況を客観的に分析すること",
+            "translation": "（客观地分析状况）",
+            "correct": true
+          },
+          {
+            "text": "すばやく決断すること",
+            "translation": "（迅速地做出决断）",
+            "correct": false
+          },
+          {
+            "text": "いいアイディアを生み出すこと",
+            "translation": "（产生好的主意）",
+            "correct": false
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2012-12-概要理解"; 
+        let currentExamKey = "2012-12"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -257,10 +537,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -599,8 +879,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-<script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+<script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261016-summary-n1-2012-12-0df45706e560"></script>
+<script src="../shared/follow-listening.js?v=20261016-summary-n1-2012-12-0df45706e560"></script>
+<script src="../shared/follow-listening-entry.js?v=20261016-summary-n1-2012-12-0df45706e560"></script>
 </body>
 </html>

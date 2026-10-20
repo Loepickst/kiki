@@ -4,16 +4,16 @@ const FULL_WORD_LIST = [
         "word": "辛い",
         "tone": "0",
         "pos": "い形",
-        "mean": "痛苦；辣",
-        "nuance": "痛苦（读作つらい，精神或肉体上感到难受）\n辣（读作からい，味道有刺激性）",
+        "mean": "痛苦、难受；艰难、吃力",
+        "nuance": "因悲伤、离别或不如意的经历而在精神上感到难以承受。\n身体不适或疲劳时，做某件事感到费力、难以坚持。",
         "examples": [
             {
                 "jp": "<strong class=\"ex-highlight\"><ruby>辛<rt>つら</rt></ruby>い</strong><ruby>経験<rt>けいけん</rt></ruby>を<ruby>乗<rt>の</rt></ruby>り<ruby>越<rt>こ</rt></ruby>える。",
                 "cn": "克服痛苦的经历。"
             },
             {
-                "jp": "このカレーはとても<strong class=\"ex-highlight\"><ruby>辛<rt>から</rt></ruby>い</strong>。",
-                "cn": "这个咖喱很辣。"
+                "jp": "<ruby>熱<rt>ねつ</rt></ruby>があって、<ruby>起<rt>お</rt></ruby>き<ruby>上<rt>あ</rt></ruby>がるのも<strong class=\"ex-highlight\"><ruby>辛<rt>つら</rt></ruby>い</strong>。",
+                "cn": "发着烧，连起身都很吃力。"
             }
         ],
         "category": "一类 · 物理感官、外观形态与材质",
@@ -21,7 +21,7 @@ const FULL_WORD_LIST = [
         "sourceNumber": 31,
         "word_html": "<ruby>辛<rt>つら</rt></ruby>い",
         "reading": "つらい",
-        "usage": "表示“痛苦”。",
+        "usage": "表示因悲伤、困境等感到痛苦难受，或因身体不适、疲劳而觉得做事吃力。",
         "vocabType": "i_adjective",
         "practiceItems": [
             {
@@ -6962,7 +6962,7 @@ const FULL_WORD_LIST = [
     {
         "id": "n2-adjective-i-56",
         "word": "重苦しい",
-        "tone": "6",
+        "tone": "5",
         "pos": "い形",
         "mean": "压抑",
         "nuance": "压抑（气氛、心情等沉重，让人感到不舒服）",
@@ -7348,7 +7348,7 @@ const FULL_WORD_LIST = [
                 "cn": "教室里很吵闹。"
             },
             {
-                "jp": "<ruby>最近<rt>さいきん</rt></ruby>、<ruby>世間<rt>せけん</rt></ruby>が<ruby>何<rt>なん</rt></ruby>かと<strong class=\"ex-highlight\"><ruby>騒<rt>さわ</rt></ruby>がしい</strong>。",
+                "jp": "<ruby>最近<rt>さいきん</rt></ruby>、<ruby>世間<rt>せけん</rt></ruby>が<ruby>何かと<rt>なにかと</rt></ruby><strong class=\"ex-highlight\"><ruby>騒<rt>さわ</rt></ruby>がしい</strong>。",
                 "cn": "最近社会上各种动荡。"
             }
         ],
@@ -7972,7 +7972,7 @@ const FULL_WORD_LIST = [
         "nuance": "没长性（容易对事物感到厌倦，不能持久）",
         "examples": [
             {
-                "jp": "<ruby>彼<rt>かれ</rt></ruby>は<strong class=\"ex-highlight\"><ruby>飽<rt>あ</rt></ruby>きっぽい</strong>ので、<ruby>何<rt>なん</rt></ruby>をやっても<ruby>長続<rt>ながつづ</rt></ruby>きしない。",
+                "jp": "<ruby>彼<rt>かれ</rt></ruby>は<strong class=\"ex-highlight\"><ruby>飽<rt>あ</rt></ruby>きっぽい</strong>ので、<ruby>何<rt>なに</rt></ruby>をやっても<ruby>長続<rt>ながつづ</rt></ruby>きしない。",
                 "cn": "他没长性，所以做什么都不长久。"
             }
         ],
@@ -10397,7 +10397,13 @@ const FULL_WORD_LIST = [
         "sourceCategoryName": "主观评价、定性与人际氛围",
         "sourceCategoryDisplayTitle": "一类 · 主观评价、定性与人际氛围",
         "sourceCategoryStandard": "带有明确的主观价值判断，常用于评价某件事物的优劣、合理性，或描述人际交往中的氛围与感观。",
-        "sourceAdjectiveType": "i"
+        "sourceAdjectiveType": "i",
+        "legacyWordIds": [
+            "n2-adjective-i-96"
+        ],
+        "legacyWords": [
+            "ものたりない"
+        ]
     },
     {
         "id": "n2-adjective-i-83",
@@ -12200,7 +12206,8 @@ const FULL_WORD_LIST = [
         "scheduleKind": "duplicate",
         "sourceCategoryId": "duplicate",
         "sourceCategoryName": "重复别名",
-        "sourceCategoryDisplayTitle": "重复别名"
+        "sourceCategoryDisplayTitle": "重复别名",
+        "duplicateOf": "n2-adjective-i-82"
     },
     {
         "id": "n2-adjective-na-1",
@@ -20449,7 +20456,7 @@ const FULL_WORD_LIST = [
     {
         "id": "n2-adjective-na-49",
         "word": "厄介",
-        "tone": "3",
+        "tone": "1",
         "pos": "な形",
         "mean": "麻烦；照顾",
         "nuance": "麻烦（处理起来费事，棘手）\n照顾（寄居他处或受人关照，多用于客套）",
@@ -26201,7 +26208,7 @@ const FULL_WORD_LIST = [
     {
         "id": "n2-adjective-na-82",
         "word": "和やか",
-        "tone": "3",
+        "tone": "2",
         "pos": "な形",
         "mean": "融洽",
         "nuance": "融洽（气氛和睦，让人感到放松）",
@@ -26549,7 +26556,7 @@ const FULL_WORD_LIST = [
     {
         "id": "n2-adjective-na-84",
         "word": "朗らか",
-        "tone": "3",
+        "tone": "2",
         "pos": "な形",
         "mean": "开朗；晴朗",
         "nuance": "开朗（性格明亮欢快，总是乐呵呵的）\n晴朗（天气好，天空明亮）",

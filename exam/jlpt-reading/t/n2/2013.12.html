@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情報検索 - 练习与解析</title>
+    <link rel="stylesheet" href="../../../../shared/domestic-fonts.css">
+    <link rel="stylesheet" href="../../shared/reading-content-redesign.css?v=20260907-first-paint">
+    <link rel="stylesheet" href="../../shared/reading-tools.css?v=20260809-14">
+    <link rel="stylesheet" href="../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+</head>
+<body id="top" class="kiki-unified-header-enabled reading-article-tools-page reading-tools-no-furigana reading-content-page reading-cloze-v2">
+    <header class="kiki-unified-header kiki-unified-header--practice" data-kiki-unified-header="practice" data-kiki-unified-header-host="reading-practice">
+        <div class="kiki-unified-header-left">
+            <a class="kiki-unified-brand" href="../../../../index.html" aria-label="返回 kiji 首页"><img src="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline" alt="kiji"></a>
+            <span class="kiki-unified-divider" aria-hidden="true"></span>
+            <a id="back-to-reading-index" class="kiki-unified-back" href="../../index.html?level=N2&type=search&browse=year" aria-label="返回上一页" data-kiki-dynamic-back>
+                <svg class="kiki-unified-back-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18 9 12l6-6"></path></svg>
+                <span class="kiki-unified-back-label">返回上一页</span>
+                <span class="kiki-unified-back-label-mobile" aria-hidden="true">返回</span>
+            </a>
+        </div>
+        <h1 class="kiki-unified-header-title">N2 · 情報検索</h1>
+        <div class="kiki-unified-header-right"><div class="top-actions top-bar-controls reading-editorial-actions"></div></div>
+    </header>
+
+    <nav class="quick-nav sketch-box">
+        <a href="#top" class="nav-link">Top</a>
+        <div class="nav-divider"></div>
+        <a href="#poster-content" class="nav-link">案内</a>
+        <div class="nav-divider"></div>
+        <a href="#q1-card" class="nav-link">問1</a>
+        <a href="#q2-card" class="nav-link">問2</a>
+    </nav>
+
+    <div class="layout-container">
+        <main class="article-section sketch-box" id="mainArticleContent">
+            <div class="article-meta">
+                <div class="meta-left">
+                    <span class="tag">N2 読解</span>
+                    <span class="article-title-info">2013年12月 · 情報検索</span>
+                </div>
+                <button class="translate-toggle-btn" onclick="toggleTranslation(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+                    参考訳
+                </button>
+            </div>
+
+            <div class="poster-box" id="poster-content">
+                <div class="poster-main-title" style="text-align: center;">留学生小論文コンテスト</div>
+                <div class="poster-main-title" style="text-align: center; margin-top: 8px; font-size: 1em;">小論文募集のご案内</div>
+                <div class="poster-intro">小森大学では、日本の大学に留学中の学生を対象とした小論文コンテストを実施します。</div>
+
+                <div class="article-translation">
+                    【留学生小论文比赛·征稿通知】小森大学面向正在日本大学留学的学生举办小论文比赛。
+                </div>
+
+                <div class="note-text ks-target target-q1" style="margin-top: 24px;"><strong>「テーマ」</strong>　自国における地球温暖化対策</div>
+                <div class="note-text" style="margin-top: 8px;">あなたの国の地球温暖化対策や、それについての意見を紹介してください。</div>
+                <div class="note-text" style="margin-top: 10px;">例：国の気候に合ったビジネススタイル（勤務時間、服装など）</div>
+                <div class="note-text" style="margin-top: 6px; padding-left: 2em;">資源やエネルギーを節約するための取り組み、工夫、習慣</div>
+
+                <div class="article-translation">
+                    【主题】本国应对全球变暖的措施。请介绍自己国家的相关对策及个人意见，例如符合本国气候的工作方式，或节约资源和能源的措施、做法及习惯。
+                </div>
+
+                <div class="note-text ks-target target-q1" style="margin-top: 24px;"><strong>「応募資格」</strong>　次の条件を両方とも満たす者</div>
+                <ul class="note-list ks-target target-q1">
+                    <li>現在、日本の大学、大学院に留学している外国人学生</li>
+                    <li>卒業後、日本で就職したいと考えている外国人学生</li>
+                </ul>
+
+                <div class="article-translation">
+                    【申请资格】必须同时满足两项条件：目前正在日本的大学或研究生院留学；毕业后希望在日本就业。
+                </div>
+
+                <div class="note-text" style="margin-top: 22px;"><strong>「募集期間」</strong>　2013年11月11日（月）〜12月17日（火）（12月17日必着）</div>
+                <div class="note-text" style="margin-top: 18px; font-weight: 700;">「賞及び賞品」</div>
+                <div class="note-text" style="margin-top: 8px; padding-left: 1em;">最優秀賞（一名：賞状および図書券3万円分）</div>
+                <div class="note-text" style="margin-top: 6px; padding-left: 1em;">優秀賞（3名程度：賞状および図書券1万円分）</div>
+                <div class="note-text" style="margin-top: 12px;">入賞者には2014年1月中旬に郵便で通知します。2014年2月9日に、小森大学において賞状および賞品の授与を行います。</div>
+
+                <div class="article-translation">
+                    【征稿及奖项】征稿期为2013年11月11日至12月17日，材料须在12月17日前送达。最高奖1名，获奖证书及3万日元图书券；优秀奖约3名，获奖证书及1万日元图书券。
+                </div>
+
+                <div class="note-text" style="margin-top: 24px; font-weight: 700;">「応募の決まり」</div>
+                <ol class="note-list" style="list-style: none; padding-left: 0;">
+                    <li class="ks-target target-q2">（1）小論文は日本語で作成してください。<br>
+                        　　文字数は4500〜5000字で、参考文献リストは文字数に含めません。<br>
+                        　　また、小論文とは別に、400字程度の要旨を応募用紙に記入してください。</li>
+                    <li class="ks-target target-q2">（2）小論文は、パソコンを使用して作成し、指定の応募用紙とともにEメールに添付して応募してください。応募用紙は、下記ホームページからダウンロードしてください。</li>
+                    <li class="ks-target target-q2">（3）小論文は未発表のものに限ります。（他のコンテスト等に出したものは不可）</li>
+                    <li class="ks-target target-q2">（4）応募は1名1点とします。</li>
+                </ol>
+
+                <div class="article-translation">
+                    【投稿规则】正文须用日语撰写，长度4,500—5,000字，参考文献表不计入字数；另在申请表填写约400字摘要。正文须用电脑制作，与官网下载的指定申请表一起作为电子邮件附件提交。作品必须未发表且未参加过其他比赛，每人限投一篇。
+                </div>
+
+                <div class="contact-info" style="text-align: left;">
+                    （応募先、問い合わせ）小森大学留学生センター「留学生小論文コンテスト」係<br>
+                    ホームページ：http://nihonngo.komori.ac.jp<br>
+                    Eメール：nihongo-komori@komori.ac.jp<br>
+                    住所：〒100-1234　小森市緑木町1丁目1番
+                </div>
+            </div>
+        </main>
+
+        <aside class="question-section" id="quizForm">
+            <div class="question-card sketch-box" data-question="q1" id="q1-card">
+                <div class="q-header"><div class="q-number" style="background: var(--marker-blue);">1</div><div class="q-text-wrapper">
+                    <div class="q-text">次の学生のうち、このコンテストの応募条件を満たしているのは誰か。
+                        <div class="q-table-responsive" style="margin-top: 14px;">
+                            <table class="q-table">
+                                <thead><tr><th>名前</th><th>現在の留学先</th><th>今後の予定</th><th>小論文のテーマ</th></tr></thead>
+                                <tbody>
+                                    <tr><td>チャン</td><td>日本の高校</td><td>日本の大学に進学</td><td>自国でのごみを減らす取り組みについて</td></tr>
+                                    <tr><td>アフマド</td><td>日本の大学</td><td>日本の大学院に進学</td><td>日本のオフィスでの節電対策について</td></tr>
+                                    <tr><td>ローズ</td><td>日本の大学</td><td>日本で働く</td><td>自国の資源の再利用について</td></tr>
+                                    <tr><td>ナタリア</td><td>日本の大学院</td><td>母国で働く</td><td>日本人の夏用ビジネススーツについて</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="source-jump-btn ks-theme-q1" onclick="jumpToTarget('q1')"><div class="ks-icon-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>クリックして応募資格・テーマの出処へ移動</span></div></div>
+                    </div><div class="q-text-trans">（以下学生中，谁满足本次比赛的申请条件？）</div>
+                </div></div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1"><input type="radio" name="q1" value="1" class="option-input"><div class="custom-radio">1</div><div class="option-content-wrapper"><div class="option-content">チャンさん</div><div class="option-trans">小张。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="2"><input type="radio" name="q1" value="2" class="option-input"><div class="custom-radio">2</div><div class="option-content-wrapper"><div class="option-content">アフマドさん</div><div class="option-trans">艾哈迈德。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="3"><input type="radio" name="q1" value="3" class="option-input"><div class="custom-radio">3</div><div class="option-content-wrapper"><div class="option-content">ローズさん</div><div class="option-trans">罗斯。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="4"><input type="radio" name="q1" value="4" class="option-input"><div class="custom-radio">4</div><div class="option-content-wrapper"><div class="option-content">ナタリアさん</div><div class="option-trans">娜塔莉亚。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                </div>
+            </div>
+
+            <div class="question-card sketch-box" data-question="q2" id="q2-card">
+                <div class="q-header"><div class="q-number" style="background: var(--marker-peach);">2</div><div class="q-text-wrapper">
+                    <div class="q-text">このコンテストに応募する際に注意しなければならないことは、次のうちどれか。<br>
+                        <div class="source-jump-btn ks-theme-q2" onclick="jumpToTarget('q2')"><div class="ks-icon-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>クリックして応募の決まりの出処へ移動</span></div></div>
+                    </div><div class="q-text-trans">（申请本次比赛时，必须注意的是以下哪一项？）</div>
+                </div></div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1"><input type="radio" name="q2" value="1" class="option-input"><div class="custom-radio">1</div><div class="option-content-wrapper"><div class="option-content">小論文は、要旨を含め5000字以内で書かなければならない。</div><div class="option-trans">小论文必须连同摘要在内控制在5,000字以内。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="2"><input type="radio" name="q2" value="2" class="option-input"><div class="custom-radio">2</div><div class="option-content-wrapper"><div class="option-content">応募用紙は、小論文より先に提出しなければならない。</div><div class="option-trans">申请表必须先于小论文提交。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="3"><input type="radio" name="q2" value="3" class="option-input"><div class="custom-radio">3</div><div class="option-content-wrapper"><div class="option-content">応募用紙は、大学に連絡して取り寄せなければならない。</div><div class="option-trans">必须联系大学索取申请表。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="4"><input type="radio" name="q2" value="4" class="option-input"><div class="custom-radio">4</div><div class="option-content-wrapper"><div class="option-content">一人が応募する小論文は、一点だけにしなければならない。</div><div class="option-trans">每个人只能提交一篇小论文。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                </div>
+            </div>
+            <div class="action-bar"><button type="button" class="submit-btn" id="submitBtn" onclick="submitAnswers()">答え合わせ</button></div>
+        </aside>
+    </div>
+
+    <div id="vocabTooltip" class="vocab-tooltip"></div>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (event) {
+                event.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#top') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        function toggleTranslation(btn) {
+            if (!document.getElementById('mainArticleContent').classList.contains('reviewed')) {
+                alert("请先完成所有题目（点击「答え合わせ」提交），然后再查看译文哦！");
+                return;
+            }
+            btn.classList.toggle('active');
+            document.querySelectorAll('.article-translation').forEach(el => el.classList.toggle('show'));
+        }
+
+        const answerData = {
+            q1: { correct: "3", optAnalysis: {
+                "1": "【✖ 排除】小张目前在日本的高中留学，不属于日本大学或研究生院在读学生，因此不满足申请资格。",
+                "2": "【✖ 排除】艾哈迈德目前在日本大学留学，但今后计划继续升学，并非毕业后在日本就业；主题写的也是日本办公室，不是本国的对策。",
+                "3": "【✔ 正解】罗斯目前在日本大学留学，计划在日本工作，论文主题是本国资源再利用，三项条件全部符合。",
+                "4": "【✖ 排除】娜塔莉亚虽在日本研究生院留学，但计划回国工作，不符合毕业后想在日本就业的条件；主题也不是本国的措施。"
+            }},
+            q2: { correct: "4", optAnalysis: {
+                "1": "【✖ 排除】正文须为4,500至5,000字；约400字摘要另行填写在申请表中，不计入正文的5,000字。",
+                "2": "【✖ 排除】小论文和指定申请表应一起作为电子邮件附件提交，没有要求申请表先交。",
+                "3": "【✖ 排除】申请表可直接从公告所列网站下载，无须联系大学索取。",
+                "4": "【✔ 正解】规则第（4）项明确写着「応募は1名1点」，即每人只能提交一篇作品。"
+            }}
+        };
+
+        document.querySelectorAll('.option-input').forEach(input => {
+            input.addEventListener('change', function () {
+                if (document.getElementById('submitBtn').disabled) return;
+                document.querySelectorAll(`input[name="${this.name}"]`).forEach(radio => radio.closest('.option-label').classList.remove('selected'));
+                if (this.checked) this.closest('.option-label').classList.add('selected');
+            });
+        });
+
+        document.querySelectorAll('.option-label').forEach(label => {
+            label.addEventListener('click', function () {
+                const group = this.closest('.options-group');
+                if (!group.classList.contains('reviewed')) return;
+                const detailBox = this.querySelector('.option-detail-analysis');
+                if (detailBox.classList.contains('show')) {
+                    detailBox.classList.remove('show');
+                    return;
+                }
+                group.querySelectorAll('.option-detail-analysis').forEach(box => box.classList.remove('show'));
+                detailBox.classList.add('show');
+            });
+        });
+
+        window.jumpToTarget = function (qName) {
+            const targets = document.querySelectorAll(`.target-${qName}`);
+            if (!targets.length) return;
+            targets[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targets.forEach(target => {
+                target.classList.add(`revealed-${qName}`);
+                target.classList.remove('flash-focus');
+                void target.offsetWidth;
+                target.classList.add('flash-focus');
+            });
+        };
+
+        function submitAnswers() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            if (!q1 || !q2) {
+                alert("すべての問いに答えてください。（请回答所有問題）");
+                return;
+            }
+            const userAnswers = { q1: q1.value, q2: q2.value };
+            let score = 0;
+            document.querySelectorAll('.option-input').forEach(input => {
+                input.disabled = true;
+                input.closest('.option-label').classList.add('disabled');
+            });
+            document.querySelectorAll('.options-group').forEach(group => group.classList.add('reviewed'));
+            document.getElementById('mainArticleContent').classList.add('reviewed');
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+
+            Object.keys(answerData).forEach(qName => {
+                const qCard = document.querySelector(`.question-card[data-question="${qName}"]`);
+                const data = answerData[qName];
+                const userValue = userAnswers[qName];
+                qCard.classList.add('reviewed');
+                qCard.querySelectorAll('.option-label').forEach(label => {
+                    const optionValue = label.querySelector('.option-input').value;
+                    if (optionValue === data.correct) {
+                        label.classList.add('is-correct');
+                        label.querySelector('.custom-radio').innerHTML = '✔';
+                    }
+                    if (optionValue === userValue && userValue !== data.correct) {
+                        label.classList.add('is-wrong');
+                        label.querySelector('.custom-radio').innerHTML = '✖';
+                    }
+                    label.querySelector('.option-detail-analysis').innerText = data.optAnalysis[optionValue];
+                });
+                if (userValue === data.correct) score++;
+            });
+
+            if (score === 2) {
+                btn.innerText = "全問正解！素晴らしい！";
+                btn.style.background = "var(--marker-mint)";
+                btn.style.color = "var(--green-pencil)";
+            } else {
+                btn.innerText = `完了 (${score}/2 正解)`;
+                btn.style.background = "var(--marker-peach)";
+                btn.style.color = "var(--red-pencil)";
+            }
+        }
+    </script>
+
+    <script src="../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="../../shared/reading-year-system.js?v=20260809-reading-mistakes"></script>
+    <script src="../../shared/reading-analysis-n2-search.js?v=20260904-n2-search-14"></script>
+    <script src="../../shared/reading-practice-redesign.js?v=20261011-scoped-lookup-3"></script>
+    <script src="../../shared/reading-tools.js?v=20261011-scoped-lookup-3"></script>
+    <script src="../../shared/reading-dt-year-session.js?v=20260809-reading-mistakes"></script>
+    <script src="../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../shared/selection-dictionary.js?v=20261012-lookup-spelling-2" data-lookup-scope="reading"></script>
+</body>
+</html>

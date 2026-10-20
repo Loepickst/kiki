@@ -1,44 +1,84 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>N1 外来語 - 練習</title>
     <!-- 引入优雅的衬线与无衬线字体，契合文字游戏与沉浸阅读风格 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+JP:wght@400;600&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../shared/domestic-fonts.css">
     <style>
         html {
             -webkit-text-size-adjust: 100%;
-        }
-
-        :root {
-            /* === 暖光理性辅导 ADV / 护眼原木色调色板 === */
-            --bg-grad-start: #FDFBF7;      /* 暖白书页色 */
-            --bg-grad-end: #F6EFE9;        /* 晨光浅杏色 */
-            
-            --panel-bg: #FFFFFF; /* 实色纸面，避免弹窗和结算面板发透 */
-            --panel-border: rgba(210, 195, 180, 0.6); /* 柔和纸质边框 */
-            
-            --text-strong: #3F3732;        /* 强调标题/关键正文 */
-            --text-main: #4A423E;          /* 主文本（深咖啡/墨褐，比纯黑更护眼） */
-            --text-secondary: #625851;     /* 次正文（稳定可读） */
-            --text-tertiary: #7E736B;      /* 弱提示（不再用 opacity 偷淡） */
-            --text-ruby: #726861;          /* 注音/小标注 */
-            --text-dim: var(--text-tertiary);
-            --text-accent: #C27A62;        /* 剧情高亮色（赤陶橘，温暖理性中带着傲娇感） */
-            
-            --accent-green: #5C946E;       /* 沉稳森绿（正确/成功） */
-            --accent-red: #D16B6B;         /* 柔和朱红（错误/生气） */
-            --accent-hover: rgba(194, 122, 98, 0.08); /* 暖橘悬浮背景 */
-
-            --glass-blur: blur(12px);      /* 毛玻璃滤镜 */
-            --shadow-soft: 0 8px 24px rgba(180, 160, 145, 0.15); /* 浅色暖光阴影 */
-            --shadow-glow: 0 0 12px rgba(194, 122, 98, 0.2); /* 橘色微光晕 */
-
-            --font-ui: "Noto Sans SC", "Noto Sans JP", -apple-system, sans-serif;
-            --font-serif: "Noto Serif SC", "Noto Serif JP", serif; /* 剧情主体使用衬线体 */
-            
-            --transition: 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         * {
@@ -56,29 +96,6 @@
             min-height: 100vh;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            background: var(--bg-grad-end);
-        }
-
-        /* 纯 CSS 绘制的静谧氛围背景 */
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 50% 0%, var(--bg-grad-start) 0%, var(--bg-grad-end) 80%);
-            z-index: -2;
-        }
-        
-        /* 隐约的网格背景，增加秩序感和纸张感 */
-        body::after {
-            content: "";
-            position: fixed;
-            inset: 0;
-            background-image: 
-                linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: -1;
-            pointer-events: none;
         }
 
         button, input {
@@ -1265,18 +1282,24 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="../shared/vocabulary-sketch-theme.css">
+    <link rel="stylesheet" href="../shared/vocabulary-base.css?v=20260907-current1">
     <link rel="stylesheet" href="practice-n1-loanwords-v2.css?v=20260731-sync1">
     <link rel="stylesheet" href="../shared/vocabulary-result-summary.css?v=20260807-4">
+    <link rel="stylesheet" href="../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+    <link rel="stylesheet" href="../shared/vocabulary-review-library.css?v=20260907-review3">
 </head>
-<body class="vocab-loanwords-practice">
-    <header class="practice-topbar">
+<body class="kiki-unified-header-enabled vocab-loanwords-practice">
+    <header class="practice-topbar" data-kiki-unified-header-host="page" data-kiki-header-pending>
         <a href="loanwords_n1.html" class="page-back-btn" id="page-back-btn" aria-label="返回单词背诵页面" data-kiki-unified-back data-kiki-dynamic-back>
             <span class="practice-back-mark" aria-hidden="true">‹</span>
             返回单词背诵页面
         </a>
         <h1 class="practice-topbar-title">N1 語彙特訓</h1>
         <div class="practice-session-actions header-actions" data-kiki-header-utility>
+            <a id="header-review-btn" href="loanwords_n1.html?review=1" data-mobile-label="错题库">错题库</a>
             <button
                 type="button"
                 class="practice-finish-trigger"
@@ -1418,17 +1441,17 @@
     </div>
 
     <!-- Import shared data -->
-    <script src="../../../shared/back-navigation.js?v=20260808-vocab-pos1"></script>
-    <script src="../../../shared/study-quest-test-runtime.js"></script>
-    <script src="../../../shared/study-quest-test-boot.js"></script>
-    <script src="n1_loanwords_data.js"></script>
+    <script src="../../../shared/back-navigation.js?v=20260907-first-paint"></script>
+    <script src="../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="n1_loanwords_data.js?v=20261016-n1-integrity1"></script>
     <script src="n1-loanwords-curriculum.js?v=20260801-groups2"></script>
     <script src="../shared/vocabulary-sentence-review-store.js"></script>
     <script src="../shared/vocabulary-option-lexicon.js"></script>
     <script src="../shared/vocabulary-sentence-analysis.js"></script>
 
     <script src="vocabulary-reading-helper.js"></script>
-    <script src="../shared/vocabulary-practice-core.js?v=20260807-1"></script>
+    <script src="../shared/vocabulary-practice-core.js?v=20261016-n1-integrity2"></script>
     <script src="../shared/vocabulary-temporary-unit.js?v=20260807-1"></script>
     <script src="../shared/vocabulary-result-summary.js?v=20260807-3"></script>
     <script>
@@ -4157,7 +4180,7 @@
 
         startApp();
     </script>
-    <script src="../../../shared/word-bank.js"></script>
-    <script src="../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+    <script src="../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
 </body>
 </html>

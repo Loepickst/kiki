@@ -25,7 +25,7 @@
         "mainCategory": "情态副词",
         "mainKey": "manner",
         "subTitle": "時間の長さを表す副詞",
-        "count": 12
+        "count": 11
     },
     {
         "id": "04",
@@ -43,7 +43,7 @@
         "mainCategory": "情态副词",
         "mainKey": "manner",
         "subTitle": "状態変化や発生を表す副詞",
-        "count": 28
+        "count": 27
     },
     {
         "id": "06",
@@ -88,7 +88,7 @@
         "mainCategory": "情态副词",
         "mainKey": "manner",
         "subTitle": "期待していたことの実現を表す副詞",
-        "count": 7
+        "count": 6
     },
     {
         "id": "11",
@@ -151,7 +151,7 @@
         "mainCategory": "情态副词",
         "mainKey": "manner",
         "subTitle": "こそあど系列",
-        "count": 12
+        "count": 11
     },
     {
         "id": "18",
@@ -160,7 +160,7 @@
         "mainCategory": "程度副词",
         "mainKey": "degree",
         "subTitle": "程度を表す副詞",
-        "count": 20
+        "count": 18
     },
     {
         "id": "19",
@@ -169,7 +169,7 @@
         "mainCategory": "程度副词",
         "mainKey": "degree",
         "subTitle": "比較を表す副詞",
-        "count": 13
+        "count": 12
     },
     {
         "id": "20",
@@ -187,7 +187,7 @@
         "mainCategory": "陈述副词",
         "mainKey": "statement",
         "subTitle": "「～ない」や否定を意味する動詞と呼応する副詞",
-        "count": 23
+        "count": 17
     },
     {
         "id": "22",
@@ -196,7 +196,7 @@
         "mainCategory": "陈述副词",
         "mainKey": "statement",
         "subTitle": "推量の助動詞「だろう／かもしれない／はずだ」と呼応する副詞",
-        "count": 18
+        "count": 16
     },
     {
         "id": "23",
@@ -205,7 +205,7 @@
         "mainCategory": "陈述副词",
         "mainKey": "statement",
         "subTitle": "「ようだ / そうだ / らしい」と呼応する副詞",
-        "count": 8
+        "count": 5
     },
     {
         "id": "24",
@@ -232,7 +232,7 @@
         "mainCategory": "陈述副词",
         "mainKey": "statement",
         "subTitle": "「～てしまった」と呼応する副詞",
-        "count": 2
+        "count": 0
     },
     {
         "id": "27",
@@ -241,7 +241,7 @@
         "mainCategory": "陈述副词",
         "mainKey": "statement",
         "subTitle": "「～ておく」と呼応する副詞",
-        "count": 3
+        "count": 2
     },
     {
         "id": "28",
@@ -250,7 +250,7 @@
         "mainCategory": "陈述副词",
         "mainKey": "statement",
         "subTitle": "仮定や理由を表す助詞と呼応する副詞",
-        "count": 10
+        "count": 5
     }
 ];
 
@@ -409,7 +409,13 @@
         "sourceSubTitle": "数量を表す副詞",
         "sourceGroupTitle": "（１） 多い",
         "sourceOrder": 3,
-        "sourceNumber": 3
+        "sourceNumber": 3,
+        "legacyWordIds": [
+            "adv-adv_hotondo_neg"
+        ],
+        "legacyWords": [
+            "ほとんど"
+        ]
     },
     {
         "id": "adv-adv_omoni",
@@ -825,7 +831,11 @@
         "sourceSubTitle": "数量を表す副詞",
         "sourceGroupTitle": "（２） 少ない",
         "sourceOrder": 11,
-        "sourceNumber": 11
+        "sourceNumber": 11,
+        "legacyWordIds": [
+            "adv-adv_sukoshi_time"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_wazuka",
@@ -929,7 +939,12 @@
         "sourceSubTitle": "数量を表す副詞",
         "sourceGroupTitle": "（２） 少ない",
         "sourceOrder": 13,
-        "sourceNumber": 13
+        "sourceNumber": 13,
+        "legacyWordIds": [
+            "adv-adv_tsui_unconscious",
+            "adv-adv_tsui_regret"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_seizei",
@@ -1449,7 +1464,11 @@
         "sourceSubTitle": "回数を表す副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 23,
-        "sourceNumber": 23
+        "sourceNumber": 23,
+        "legacyWordIds": [
+            "adv-adv_yoku_deg"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_itsumo",
@@ -1682,7 +1701,7 @@
                 "meaningNote": "",
                 "exampleJP": "絶えず努力を続けます。",
                 "exampleCN": "不断地持续努力。",
-                "exampleHTML": "<strong class=\"ex-highlight\"><ruby>絶<rt>た</rt></ruby>えず</strong><ruby>努<rt>ど</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<ruby>続<rt>しょく</rt></ruby>けます。",
+                "exampleHTML": "<strong class=\"ex-highlight\"><ruby>絶<rt>た</rt></ruby>えず</strong><ruby>努<rt>ど</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<ruby>続け<rt>つづけ</rt></ruby>ます。",
                 "target": "絶えず"
             }
         ],
@@ -1693,7 +1712,7 @@
         "nuance": "表示动作或状态连续发生没有中断。",
         "examples": [
             {
-                "jp": "<strong class=\"ex-highlight\"><ruby>絶<rt>た</rt></ruby>えず</strong><ruby>努<rt>ど</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<ruby>続<rt>しょく</rt></ruby>けます。",
+                "jp": "<strong class=\"ex-highlight\"><ruby>絶<rt>た</rt></ruby>えず</strong><ruby>努<rt>ど</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<ruby>続け<rt>つづけ</rt></ruby>ます。",
                 "cn": "不断地持续努力。"
             }
         ],
@@ -2385,7 +2404,11 @@
         "sourceSubTitle": "時間の長さを表す副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 41,
-        "sourceNumber": 41
+        "sourceNumber": 41,
+        "legacyWordIds": [
+            "adv-adv_zutto_comp"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_shuushi",
@@ -2566,7 +2589,7 @@
                 "meaningNote": "",
                 "exampleJP": "当分は今の仕事を続けます。",
                 "exampleCN": "近期会继续现在的工作。",
-                "exampleHTML": "<strong class=\"ex-highlight\"><ruby>当<rt>とう</rt></ruby><ruby>分<rt>ぶん</rt></ruby></strong>は今の<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>を<ruby>続<rt>しょく</rt></ruby>けます。",
+                "exampleHTML": "<strong class=\"ex-highlight\"><ruby>当<rt>とう</rt></ruby><ruby>分<rt>ぶん</rt></ruby></strong>は今の<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>を<ruby>続け<rt>つづけ</rt></ruby>ます。",
                 "target": "当分"
             }
         ],
@@ -2577,7 +2600,7 @@
         "nuance": "表示从现在开始的一段时间内预计会维持目前的状况。",
         "examples": [
             {
-                "jp": "<strong class=\"ex-highlight\"><ruby>当<rt>とう</rt></ruby><ruby>分<rt>ぶん</rt></ruby></strong>は今の<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>を<ruby>続<rt>しょく</rt></ruby>けます。",
+                "jp": "<strong class=\"ex-highlight\"><ruby>当<rt>とう</rt></ruby><ruby>分<rt>ぶん</rt></ruby></strong>は今の<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>を<ruby>続け<rt>つづけ</rt></ruby>ます。",
                 "cn": "近期会继续现在的工作。"
             }
         ],
@@ -2645,7 +2668,12 @@
         "sourceSubTitle": "時間の長さを表す副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 46,
-        "sourceNumber": 46
+        "sourceNumber": 46,
+        "legacyWordIds": [
+            "adv-adv_ittan_cond",
+            "adv-adv_ittan_reason"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_ichiou",
@@ -2801,7 +2829,9 @@
         "sourceSubTitle": "時間の長さを表す副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 49,
-        "sourceNumber": 49
+        "sourceNumber": 49,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_sukoshi"
     },
     {
         "id": "adv-adv_shoushou",
@@ -2957,7 +2987,11 @@
         "sourceSubTitle": "順序を表す副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 52,
-        "sourceNumber": 52
+        "sourceNumber": 52,
+        "legacyWordIds": [
+            "adv-adv_arakajime_teoku"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_ichidoni",
@@ -3398,7 +3432,7 @@
                 "meaningNote": "",
                 "exampleJP": "終わりに、感謝を申し上げます。",
                 "exampleCN": "在结尾，表达我的感谢。",
-                "exampleHTML": "<strong class=\"ex-highlight\"><ruby>終<rt>お</rt></ruby>わりに</strong>、<ruby>感<rt>かん</rt></ruby><ruby>謝<rt>しゃ</rt></ruby>を<ruby>申<rt>かさ</rt></ruby>し<ruby>上<rt>うえ</rt></ruby>げます。",
+                "exampleHTML": "<strong class=\"ex-highlight\"><ruby>終<rt>お</rt></ruby>わりに</strong>、<ruby>感<rt>かん</rt></ruby><ruby>謝<rt>しゃ</rt></ruby>を<ruby>申し上げ<rt>もうしあげ</rt></ruby>ます。",
                 "target": "終わりに"
             }
         ],
@@ -3409,7 +3443,7 @@
         "nuance": "表示接近结束的阶段，多用于致辞或文章的收尾。",
         "examples": [
             {
-                "jp": "<strong class=\"ex-highlight\"><ruby>終<rt>お</rt></ruby>わりに</strong>、<ruby>感<rt>かん</rt></ruby><ruby>謝<rt>しゃ</rt></ruby>を<ruby>申<rt>かさ</rt></ruby>し<ruby>上<rt>うえ</rt></ruby>げます。",
+                "jp": "<strong class=\"ex-highlight\"><ruby>終<rt>お</rt></ruby>わりに</strong>、<ruby>感<rt>かん</rt></ruby><ruby>謝<rt>しゃ</rt></ruby>を<ruby>申し上げ<rt>もうしあげ</rt></ruby>ます。",
                 "cn": "在结尾，表达我的感谢。"
             }
         ],
@@ -3789,7 +3823,13 @@
         "sourceSubTitle": "状態変化や発生を表す副詞",
         "sourceGroupTitle": "（１） 自然・無意識の行為",
         "sourceOrder": 68,
-        "sourceNumber": 68
+        "sourceNumber": 68,
+        "legacyWordIds": [
+            "adv-adv_nantonaku_comp"
+        ],
+        "legacyWords": [
+            "なんとなく"
+        ]
     },
     {
         "id": "adv-adv_shirazushirazu",
@@ -3945,7 +3985,9 @@
         "sourceSubTitle": "状態変化や発生を表す副詞",
         "sourceGroupTitle": "（１） 自然・無意識の行為",
         "sourceOrder": 71,
-        "sourceNumber": 71
+        "sourceNumber": 71,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_tsui"
     },
     {
         "id": "adv-adv_ukkari",
@@ -3997,7 +4039,11 @@
         "sourceSubTitle": "状態変化や発生を表す副詞",
         "sourceGroupTitle": "（１） 自然・無意識の行為",
         "sourceOrder": 72,
-        "sourceNumber": 72
+        "sourceNumber": 72,
+        "legacyWordIds": [
+            "adv-adv_ukkari_regret"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_mousugu",
@@ -4257,7 +4303,12 @@
         "sourceSubTitle": "状態変化や発生を表す副詞",
         "sourceGroupTitle": "（２） 事態の接近、将来の発生",
         "sourceOrder": 77,
-        "sourceNumber": 77
+        "sourceNumber": 77,
+        "legacyWordIds": [
+            "adv-adv_sonouchi_kosoado",
+            "adv-adv_sonouchi_est"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_yagate",
@@ -4309,7 +4360,11 @@
         "sourceSubTitle": "状態変化や発生を表す副詞",
         "sourceGroupTitle": "（２） 事態の接近、将来の発生",
         "sourceOrder": 78,
-        "sourceNumber": 78
+        "sourceNumber": 78,
+        "legacyWordIds": [
+            "adv-adv_yagate_est"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_izure",
@@ -4438,7 +4493,7 @@
                 "meaningNote": "",
                 "exampleJP": "少しずつ日本語が上手になっています。",
                 "exampleCN": "日语一点点地变好了。",
-                "exampleHTML": "<strong class=\"ex-highlight\"><ruby>少<rt>すこ</rt></ruby>しずつ</strong><ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>が<ruby>上<rt>う</rt></ruby><ruby>手<rt>まい</rt></ruby>になっています。",
+                "exampleHTML": "<strong class=\"ex-highlight\"><ruby>少<rt>すこ</rt></ruby>しずつ</strong><ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>が<ruby>上手<rt>じょうず</rt></ruby>になっています。",
                 "target": "少しずつ"
             }
         ],
@@ -4449,7 +4504,7 @@
         "nuance": "表示事物以极小的幅度进行累积或发生改变。",
         "examples": [
             {
-                "jp": "<strong class=\"ex-highlight\"><ruby>少<rt>すこ</rt></ruby>しずつ</strong><ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>が<ruby>上<rt>う</rt></ruby><ruby>手<rt>まい</rt></ruby>になっています。",
+                "jp": "<strong class=\"ex-highlight\"><ruby>少<rt>すこ</rt></ruby>しずつ</strong><ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>が<ruby>上手<rt>じょうず</rt></ruby>になっています。",
                 "cn": "日语一点点地变好了。"
             }
         ],
@@ -5010,7 +5065,7 @@
                 "meaningNote": "",
                 "exampleJP": "危ないと思って、とっさにブレーキを踏みました。",
                 "exampleCN": "觉得危险，下意识地踩了刹车。",
-                "exampleHTML": "危ないと<ruby>思<rt>おぼ</rt></ruby>って、<strong class=\"ex-highlight\">とっさに</strong>ブレーキを踏みました。",
+                "exampleHTML": "危ないと<ruby>思っ<rt>おもっ</rt></ruby>て、<strong class=\"ex-highlight\">とっさに</strong>ブレーキを踏みました。",
                 "target": "とっさに"
             }
         ],
@@ -5021,7 +5076,7 @@
         "nuance": "表示面临突发状况时，身体或大脑瞬间、反射性地做出反应。",
         "examples": [
             {
-                "jp": "危ないと<ruby>思<rt>おぼ</rt></ruby>って、<strong class=\"ex-highlight\">とっさに</strong>ブレーキを踏みました。",
+                "jp": "危ないと<ruby>思っ<rt>おもっ</rt></ruby>て、<strong class=\"ex-highlight\">とっさに</strong>ブレーキを踏みました。",
                 "cn": "觉得危险，下意识地踩了刹车。"
             }
         ],
@@ -5426,7 +5481,7 @@
                 "meaningNote": "",
                 "exampleJP": "問題の解決に向けて早急に対応いたします。",
                 "exampleCN": "为了解决问题会火速应对。",
-                "exampleHTML": "<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>の<ruby>解<rt>かい</rt></ruby><ruby>決<rt>けつ</rt></ruby>に<ruby>向<rt>きょう</rt></ruby>けて<strong class=\"ex-highlight\"><ruby>早<rt>そう</rt></ruby><ruby>急<rt>きゅう</rt></ruby>に</strong><ruby>対<rt>たい</rt></ruby><ruby>応<rt>おう</rt></ruby>いたします。",
+                "exampleHTML": "<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>の<ruby>解<rt>かい</rt></ruby><ruby>決<rt>けつ</rt></ruby>に<ruby>向け<rt>むけ</rt></ruby>て<strong class=\"ex-highlight\"><ruby>早<rt>そう</rt></ruby><ruby>急<rt>きゅう</rt></ruby>に</strong><ruby>対<rt>たい</rt></ruby><ruby>応<rt>おう</rt></ruby>いたします。",
                 "target": "早急に"
             }
         ],
@@ -5437,7 +5492,7 @@
         "nuance": "同样是正式表达，强调为了解决眼前的问题而尽可能快地采取对策。",
         "examples": [
             {
-                "jp": "<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>の<ruby>解<rt>かい</rt></ruby><ruby>決<rt>けつ</rt></ruby>に<ruby>向<rt>きょう</rt></ruby>けて<strong class=\"ex-highlight\"><ruby>早<rt>そう</rt></ruby><ruby>急<rt>きゅう</rt></ruby>に</strong><ruby>対<rt>たい</rt></ruby><ruby>応<rt>おう</rt></ruby>いたします。",
+                "jp": "<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>の<ruby>解<rt>かい</rt></ruby><ruby>決<rt>けつ</rt></ruby>に<ruby>向け<rt>むけ</rt></ruby>て<strong class=\"ex-highlight\"><ruby>早<rt>そう</rt></ruby><ruby>急<rt>きゅう</rt></ruby>に</strong><ruby>対<rt>たい</rt></ruby><ruby>応<rt>おう</rt></ruby>いたします。",
                 "cn": "为了解决问题会火速应对。"
             }
         ],
@@ -5842,7 +5897,7 @@
                 "meaningNote": "",
                 "exampleJP": "外国語、例えば英語を勉強します。",
                 "exampleCN": "学习外语，例如英语。",
-                "exampleHTML": "<ruby>外国語<rt>ご</rt></ruby>、<strong class=\"ex-highlight\"><ruby>例<rt>たと</rt></ruby>えば</strong><ruby>英<rt>えい</rt></ruby><ruby>語<rt>ご</rt></ruby>を<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>します。",
+                "exampleHTML": "<ruby>外国語<rt>がいこくご</rt></ruby>、<strong class=\"ex-highlight\"><ruby>例<rt>たと</rt></ruby>えば</strong><ruby>英<rt>えい</rt></ruby><ruby>語<rt>ご</rt></ruby>を<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>します。",
                 "target": "例えば"
             }
         ],
@@ -5853,7 +5908,7 @@
         "nuance": "为了让对方更容易理解，从同类事物中举出一个具体的代表进行说明。",
         "examples": [
             {
-                "jp": "<ruby>外国語<rt>ご</rt></ruby>、<strong class=\"ex-highlight\"><ruby>例<rt>たと</rt></ruby>えば</strong><ruby>英<rt>えい</rt></ruby><ruby>語<rt>ご</rt></ruby>を<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>します。",
+                "jp": "<ruby>外国語<rt>がいこくご</rt></ruby>、<strong class=\"ex-highlight\"><ruby>例<rt>たと</rt></ruby>えば</strong><ruby>英<rt>えい</rt></ruby><ruby>語<rt>ご</rt></ruby>を<ruby>勉<rt>べん</rt></ruby><ruby>強<rt>きょう</rt></ruby>します。",
                 "cn": "学习外语，例如英语。"
             }
         ],
@@ -5869,7 +5924,11 @@
         "sourceSubTitle": "言い換えや例示の副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 108,
-        "sourceNumber": 108
+        "sourceNumber": 108,
+        "legacyWordIds": [
+            "adv-adv_tatoeba_cond"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_marude",
@@ -5921,7 +5980,12 @@
         "sourceSubTitle": "喩えを表す副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 109,
-        "sourceNumber": 109
+        "sourceNumber": 109,
+        "legacyWordIds": [
+            "adv-adv_marude_neg",
+            "adv-adv_marude_youdari"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_samo",
@@ -5973,7 +6037,11 @@
         "sourceSubTitle": "喩えを表す副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 110,
-        "sourceNumber": 110
+        "sourceNumber": 110,
+        "legacyWordIds": [
+            "adv-adv_samo_youdai"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_atakamo",
@@ -6025,7 +6093,11 @@
         "sourceSubTitle": "喩えを表す副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 111,
-        "sourceNumber": 111
+        "sourceNumber": 111,
+        "legacyWordIds": [
+            "adv-adv_atakamo_youdai"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_iwayuru",
@@ -6389,7 +6461,13 @@
         "sourceSubTitle": "期待していたことの実現を表す副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 118,
-        "sourceNumber": 118
+        "sourceNumber": 118,
+        "legacyWordIds": [
+            "adv-adv_dounika_nanitoka"
+        ],
+        "legacyWords": [
+            "どうにか / なんとか"
+        ]
     },
     {
         "id": "adv-adv_nandaka",
@@ -6493,7 +6571,9 @@
         "sourceSubTitle": "期待していたことの実現を表す副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 120,
-        "sourceNumber": 120
+        "sourceNumber": 120,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_nantonaku"
     },
     {
         "id": "adv-adv_yahari",
@@ -7077,8 +7157,8 @@
         "subTitle": "真面目な態度を表す副詞",
         "groupTitle": "",
         "word": "ひたむきに / 一心に",
-        "wordHTML": "ひたむきに / <ruby>一<rt>いち</rt></ruby><ruby>心<rt>こころ</rt></ruby>に",
-        "kana": "いっしんに",
+        "wordHTML": "ひたむきに / <ruby>一心に<rt>いっしんに</rt></ruby>",
+        "kana": "ひたむきに／いっしんに",
         "type": "情态副词",
         "pitch": "",
         "posPitchRaw": "情态副词",
@@ -7090,7 +7170,7 @@
                 "meaningNote": "",
                 "exampleJP": "目標に向けて一心に走っています。",
                 "exampleCN": "正朝着目标专心奔跑。",
-                "exampleHTML": "<ruby>目<rt>もく</rt></ruby><ruby>標<rt>ひょう</rt></ruby>に<ruby>向<rt>きょう</rt></ruby>けて<strong class=\"ex-highlight\"><ruby>一<rt>い</rt></ruby><ruby>心<rt>っしん</rt></ruby>に</strong>走っています。",
+                "exampleHTML": "<ruby>目<rt>もく</rt></ruby><ruby>標<rt>ひょう</rt></ruby>に<ruby>向け<rt>むけ</rt></ruby>て<strong class=\"ex-highlight\"><ruby>一<rt>い</rt></ruby><ruby>心<rt>っしん</rt></ruby>に</strong>走っています。",
                 "target": "一心に"
             }
         ],
@@ -7101,13 +7181,13 @@
         "nuance": "表示一心一意，不受周围任何多余干扰地朝着明确目标前进。",
         "examples": [
             {
-                "jp": "<ruby>目<rt>もく</rt></ruby><ruby>標<rt>ひょう</rt></ruby>に<ruby>向<rt>きょう</rt></ruby>けて<strong class=\"ex-highlight\"><ruby>一<rt>い</rt></ruby><ruby>心<rt>っしん</rt></ruby>に</strong>走っています。",
+                "jp": "<ruby>目<rt>もく</rt></ruby><ruby>標<rt>ひょう</rt></ruby>に<ruby>向け<rt>むけ</rt></ruby>て<strong class=\"ex-highlight\"><ruby>一<rt>い</rt></ruby><ruby>心<rt>っしん</rt></ruby>に</strong>走っています。",
                 "cn": "正朝着目标专心奔跑。"
             }
         ],
         "category": "认真态度",
-        "word_html": "ひたむきに / <ruby>一<rt>いち</rt></ruby><ruby>心<rt>こころ</rt></ruby>に",
-        "reading": "いっしんに",
+        "word_html": "ひたむきに / <ruby>一心に<rt>いっしんに</rt></ruby>",
+        "reading": "ひたむきに／いっしんに",
         "usage": "表示一心一意，不受周围任何多余干扰地朝着明确目标前进。",
         "vocabType": "adverb",
         "sourceCategoryId": "13",
@@ -7194,7 +7274,7 @@
                 "meaningNote": "",
                 "exampleJP": "アリは冬に備えて、せっせと食料を運んでいます。",
                 "exampleCN": "蚂蚁为了防备寒冬，正勤奋地搬运粮食。",
-                "exampleHTML": "アリは冬に<ruby>備<rt>つぶさ</rt></ruby>えて、<strong class=\"ex-highlight\">せっせと</strong><ruby>食<rt>しょく</rt></ruby><ruby>料<rt>りょう</rt></ruby>を運んでいます。",
+                "exampleHTML": "アリは冬に<ruby>備え<rt>そなえ</rt></ruby>て、<strong class=\"ex-highlight\">せっせと</strong><ruby>食<rt>しょく</rt></ruby><ruby>料<rt>りょう</rt></ruby>を運んでいます。",
                 "target": "せっせと"
             }
         ],
@@ -7205,7 +7285,7 @@
         "nuance": "表示不偷懒、默默无闻地，极有规律地勤恳重复某项日常事务或积攒工作。",
         "examples": [
             {
-                "jp": "アリは冬に<ruby>備<rt>つぶさ</rt></ruby>えて、<strong class=\"ex-highlight\">せっせと</strong><ruby>食<rt>しょく</rt></ruby><ruby>料<rt>りょう</rt></ruby>を運んでいます。",
+                "jp": "アリは冬に<ruby>備え<rt>そなえ</rt></ruby>て、<strong class=\"ex-highlight\">せっせと</strong><ruby>食<rt>しょく</rt></ruby><ruby>料<rt>りょう</rt></ruby>を運んでいます。",
                 "cn": "蚂蚁为了防备寒冬，正勤奋地搬运粮食。"
             }
         ],
@@ -7712,9 +7792,9 @@
                 "meaning": "表示在客观条件极难达到、或其实并非理想状态下，退而求其次地勉强做出某种要求或选择，常与“如果……”搭配。",
                 "meaningBold": "表示在客观条件极难达到、或其实并非理想状态下，退而求其次地勉强做出某种要求或选择，常与“如果……”搭配。",
                 "meaningNote": "",
-                "exampleJP": "強いて選ぶなら、这就是比较好。",
+                "exampleJP": "強いて選ぶなら、こちらのほうがいい。",
                 "exampleCN": "硬要选的话，这个比较好。",
-                "exampleHTML": "<strong class=\"ex-highlight\"><ruby>強<rt>し</rt></ruby>いて</strong><ruby>選<rt>えら</rt></ruby>ぶなら、这就是比较好。",
+                "exampleHTML": "<strong class=\"ex-highlight\"><ruby>強<rt>し</rt></ruby>いて</strong><ruby>選<rt>えら</rt></ruby>ぶなら、こちらのほうがいい。",
                 "target": "強いて"
             }
         ],
@@ -7725,7 +7805,7 @@
         "nuance": "表示在客观条件极难达到、或其实并非理想状态下，退而求其次地勉强做出某种要求或选择，常与“如果……”搭配。",
         "examples": [
             {
-                "jp": "<strong class=\"ex-highlight\"><ruby>強<rt>し</rt></ruby>いて</strong><ruby>選<rt>えら</rt></ruby>ぶなら、这就是比较好。",
+                "jp": "<strong class=\"ex-highlight\"><ruby>強<rt>し</rt></ruby>いて</strong><ruby>選<rt>えら</rt></ruby>ぶなら、こちらのほうがいい。",
                 "cn": "硬要选的话，这个比较好。"
             }
         ],
@@ -8076,9 +8156,9 @@
                 "meaning": "用于追溯事物在最初始的前提条件或基本源头，经常带有对整体发展过程进行重新审视的探索语感。",
                 "meaningBold": "用于追溯事物在最初始的前提条件或基本源头，经常带有对整体发展过程进行重新审视的探索语感。",
                 "meaningNote": "",
-                "exampleJP": "そもそも，这就是错误的开始。",
+                "exampleJP": "そもそも、これが間違いの始まりだった。",
                 "exampleCN": "说起来，这就是错误的开始。",
-                "exampleHTML": "<strong class=\"ex-highlight\">そもそも</strong>，这就是错误的开始。",
+                "exampleHTML": "<strong class=\"ex-highlight\">そもそも</strong>、これが<ruby>間違<rt>まちが</rt></ruby>いの<ruby>始<rt>はじ</rt></ruby>まりだった。",
                 "target": "そもそも"
             }
         ],
@@ -8089,7 +8169,7 @@
         "nuance": "用于追溯事物在最初始的前提条件或基本源头，经常带有对整体发展过程进行重新审视的探索语感。",
         "examples": [
             {
-                "jp": "<strong class=\"ex-highlight\">そもそも</strong>，这就是错误的开始。",
+                "jp": "<strong class=\"ex-highlight\">そもそも</strong>、これが<ruby>間違<rt>まちが</rt></ruby>いの<ruby>始<rt>はじ</rt></ruby>まりだった。",
                 "cn": "说起来，这就是错误的开始。"
             }
         ],
@@ -8702,7 +8782,7 @@
                 "meaningNote": "",
                 "exampleJP": "練習を続ければ、そのうちできるようになります。",
                 "exampleCN": "如果坚持练习，不久之后就会做好的。",
-                "exampleHTML": "<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>を<ruby>続<rt>しょく</rt></ruby>ければ、<strong class=\"ex-highlight\">そのうち</strong>できるようになります。",
+                "exampleHTML": "<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>を<ruby>続けれ<rt>つづけれ</rt></ruby>ば、<strong class=\"ex-highlight\">そのうち</strong>できるようになります。",
                 "target": "そのうち"
             }
         ],
@@ -8713,7 +8793,7 @@
         "nuance": "指在当前的状况延续中，在不远的时间内预计会发生后续动作或迎来状态改变。",
         "examples": [
             {
-                "jp": "<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>を<ruby>続<rt>しょく</rt></ruby>ければ、<strong class=\"ex-highlight\">そのうち</strong>できるようになります。",
+                "jp": "<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>を<ruby>続けれ<rt>つづけれ</rt></ruby>ば、<strong class=\"ex-highlight\">そのうち</strong>できるようになります。",
                 "cn": "如果坚持练习，不久之后就会做好的。"
             }
         ],
@@ -8729,7 +8809,9 @@
         "sourceSubTitle": "こそあど系列",
         "sourceGroupTitle": "",
         "sourceOrder": 163,
-        "sourceNumber": 163
+        "sourceNumber": 163,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_sonouchi"
     },
     {
         "id": "adv-adv_hijouni",
@@ -8885,7 +8967,11 @@
         "sourceSubTitle": "程度を表す副詞",
         "sourceGroupTitle": "（１） 高程度",
         "sourceOrder": 166,
-        "sourceNumber": 166
+        "sourceNumber": 166,
+        "legacyWordIds": [
+            "adv-adv_totemo_neg"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_ooini",
@@ -9170,7 +9256,7 @@
                 "meaningNote": "",
                 "exampleJP": "日本語がずいぶん上手になりましたね。",
                 "exampleCN": "日语变得相当擅长了呢。",
-                "exampleHTML": "<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>が<strong class=\"ex-highlight\">ずいぶん</strong><ruby>上<rt>う</rt></ruby><ruby>手<rt>まい</rt></ruby>になりましたね。",
+                "exampleHTML": "<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>が<strong class=\"ex-highlight\">ずいぶん</strong><ruby>上手<rt>じょうず</rt></ruby>になりましたね。",
                 "target": "ずいぶん"
             }
         ],
@@ -9181,7 +9267,7 @@
         "nuance": "描述程度超出一般规律或预想。通常带有说话人感到惊讶、意外的主观评价。",
         "examples": [
             {
-                "jp": "<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>が<strong class=\"ex-highlight\">ずいぶん</strong><ruby>上<rt>う</rt></ruby><ruby>手<rt>まい</rt></ruby>になりましたね。",
+                "jp": "<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>が<strong class=\"ex-highlight\">ずいぶん</strong><ruby>上手<rt>じょうず</rt></ruby>になりましたね。",
                 "cn": "日语变得相当擅长了呢。"
             }
         ],
@@ -9249,7 +9335,9 @@
         "sourceSubTitle": "程度を表す副詞",
         "sourceGroupTitle": "（１） 高程度",
         "sourceOrder": 173,
-        "sourceNumber": 173
+        "sourceNumber": 173,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_yoku"
     },
     {
         "id": "adv-adv_sanzan",
@@ -9457,7 +9545,11 @@
         "sourceSubTitle": "程度を表す副詞",
         "sourceGroupTitle": "（２） 中程度以上",
         "sourceOrder": 177,
-        "sourceNumber": 177
+        "sourceNumber": 177,
+        "legacyWordIds": [
+            "adv-adv_nakanaka_neg"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_kanari_deg",
@@ -9769,7 +9861,9 @@
         "sourceSubTitle": "程度を表す副詞",
         "sourceGroupTitle": "（３） 低程度",
         "sourceOrder": 183,
-        "sourceNumber": 183
+        "sourceNumber": 183,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_nantoka"
     },
     {
         "id": "adv-adv_zutto_comp",
@@ -9821,7 +9915,9 @@
         "sourceSubTitle": "比較を表す副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 184,
-        "sourceNumber": 184
+        "sourceNumber": 184,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_zutto"
     },
     {
         "id": "adv-adv_mushiro",
@@ -9898,7 +9994,7 @@
                 "meaningNote": "",
                 "exampleJP": "こんなに悩むなら、いっそ全部やり直そう。",
                 "exampleCN": "既然这么纠结，干脆全部重新做吧。",
-                "exampleHTML": "こんなに悩むなら、<strong class=\"ex-highlight\">いっそ</strong><ruby>全<rt>ぜん</rt></ruby><ruby>部<rt>ぶ</rt></ruby>やり<ruby>直<rt>あたい</rt></ruby>そう。",
+                "exampleHTML": "こんなに悩むなら、<strong class=\"ex-highlight\">いっそ</strong><ruby>全<rt>ぜん</rt></ruby><ruby>部<rt>ぶ</rt></ruby><ruby>やり直そ<rt>やりなおそ</rt></ruby>う。",
                 "target": "いっそ"
             }
         ],
@@ -9909,7 +10005,7 @@
         "nuance": "描述在左右为难的节点上，由于权衡利弊，往往决定采取极其利落且彻底的非常规手段来一劳永逸地处理问题。",
         "examples": [
             {
-                "jp": "こんなに悩むなら、<strong class=\"ex-highlight\">いっそ</strong><ruby>全<rt>ぜん</rt></ruby><ruby>部<rt>ぶ</rt></ruby>やり<ruby>直<rt>あたい</rt></ruby>そう。",
+                "jp": "こんなに悩むなら、<strong class=\"ex-highlight\">いっそ</strong><ruby>全<rt>ぜん</rt></ruby><ruby>部<rt>ぶ</rt></ruby><ruby>やり直そ<rt>やりなおそ</rt></ruby>う。",
                 "cn": "既然这么纠结，干脆全部重新做吧。"
             }
         ],
@@ -9950,7 +10046,7 @@
                 "meaningNote": "",
                 "exampleJP": "漢字は大人でも難しいのだから、まして子供には書けません。",
                 "exampleCN": "汉字连大人都觉得难，何况小孩子写不出来。",
-                "exampleHTML": "<ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>は<ruby>大<rt>たい</rt></ruby><ruby>人<rt>じん</rt></ruby>でも難しいのだから、<strong class=\"ex-highlight\">まして</strong><ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>には書けません。",
+                "exampleHTML": "<ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>は<ruby>大人<rt>おとな</rt></ruby>でも難しいのだから、<strong class=\"ex-highlight\">まして</strong><ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>には書けません。",
                 "target": "まして"
             }
         ],
@@ -9961,7 +10057,7 @@
         "nuance": "描述在前项较轻条件尚且如此的前提下，后项作为更具说服力的极端例子，其情况和结论自然更加无需多言。",
         "examples": [
             {
-                "jp": "<ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>は<ruby>大<rt>たい</rt></ruby><ruby>人<rt>じん</rt></ruby>でも難しいのだから、<strong class=\"ex-highlight\">まして</strong><ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>には書けません。",
+                "jp": "<ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>は<ruby>大人<rt>おとな</rt></ruby>でも難しいのだから、<strong class=\"ex-highlight\">まして</strong><ruby>子<rt>こ</rt></ruby><ruby>供<rt>ども</rt></ruby>には書けません。",
                 "cn": "汉字连大人都觉得难，何况小孩子写不出来。"
             }
         ],
@@ -10549,7 +10645,11 @@
         "sourceSubTitle": "断定「～だ / 〜する」と呼応する副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 198,
-        "sourceNumber": 198
+        "sourceNumber": 198,
+        "legacyWordIds": [
+            "adv-adv_zettaini_neg"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_mattaku_pos",
@@ -10572,9 +10672,9 @@
                 "meaning": "与肯定陈述搭配，指代某种状态或评价达到了毫无保留的极好程度，常用作高度附和对方观点。",
                 "meaningBold": "与肯定陈述搭配，指代某种状态或评价达到了毫无保留的极好程度，常用作高度附和对方观点。",
                 "meaningNote": "",
-                "exampleJP": "彼の意見には、私也全く同感です。",
+                "exampleJP": "彼の意見には、私も全く同感です。",
                 "exampleCN": "他的意见，我也完全赞同。",
-                "exampleHTML": "彼の<ruby>意<rt>い</rt></ruby><ruby>見<rt>けん</rt></ruby>には、私也<strong class=\"ex-highlight\"><ruby>全<rt>まった</rt></ruby>く</strong><ruby>同<rt>どう</rt></ruby><ruby>感<rt>かん</rt></ruby>です。",
+                "exampleHTML": "彼の<ruby>意<rt>い</rt></ruby><ruby>見<rt>けん</rt></ruby>には、<ruby>私<rt>わたし</rt></ruby>も<strong class=\"ex-highlight\"><ruby>全<rt>まった</rt></ruby>く</strong><ruby>同<rt>どう</rt></ruby><ruby>感<rt>かん</rt></ruby>です。",
                 "target": "全く"
             }
         ],
@@ -10585,7 +10685,7 @@
         "nuance": "与肯定陈述搭配，指代某种状态或评价达到了毫无保留的极好程度，常用作高度附和对方观点。",
         "examples": [
             {
-                "jp": "彼の<ruby>意<rt>い</rt></ruby><ruby>見<rt>けん</rt></ruby>には、私也<strong class=\"ex-highlight\"><ruby>全<rt>まった</rt></ruby>く</strong><ruby>同<rt>どう</rt></ruby><ruby>感<rt>かん</rt></ruby>です。",
+                "jp": "彼の<ruby>意<rt>い</rt></ruby><ruby>見<rt>けん</rt></ruby>には、<ruby>私<rt>わたし</rt></ruby>も<strong class=\"ex-highlight\"><ruby>全<rt>まった</rt></ruby>く</strong><ruby>同<rt>どう</rt></ruby><ruby>感<rt>かん</rt></ruby>です。",
                 "cn": "他的意见，我也完全赞同。"
             }
         ],
@@ -10601,7 +10701,11 @@
         "sourceSubTitle": "断定「～だ / 〜する」と呼応する副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 199,
-        "sourceNumber": 199
+        "sourceNumber": 199,
+        "legacyWordIds": [
+            "adv-adv_mattaku_neg"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_mochiron",
@@ -10678,7 +10782,7 @@
                 "meaningNote": "",
                 "exampleJP": "その書類は、確かに受け取りました。",
                 "exampleCN": "那份文件，我确实收到了。",
-                "exampleHTML": "その<ruby>書<rt>しょ</rt></ruby><ruby>類<rt>るい</rt></ruby>は、<strong class=\"ex-highlight\"><ruby>確<rt>たし</rt></ruby>かに</strong><ruby>受<rt>う</rt></ruby>け<ruby>取<rt>とり</rt></ruby>りました。",
+                "exampleHTML": "その<ruby>書<rt>しょ</rt></ruby><ruby>類<rt>るい</rt></ruby>は、<strong class=\"ex-highlight\"><ruby>確<rt>たし</rt></ruby>かに</strong><ruby>受け取り<rt>うけとり</rt></ruby>ました。",
                 "target": "確かに"
             }
         ],
@@ -10689,7 +10793,7 @@
         "nuance": "提示说话人认同并指明某项客观事实的依据，证实该状态具备极高的真实性与说服力。",
         "examples": [
             {
-                "jp": "その<ruby>書<rt>しょ</rt></ruby><ruby>類<rt>るい</rt></ruby>は、<strong class=\"ex-highlight\"><ruby>確<rt>たし</rt></ruby>かに</strong><ruby>受<rt>う</rt></ruby>け<ruby>取<rt>とり</rt></ruby>りました。",
+                "jp": "その<ruby>書<rt>しょ</rt></ruby><ruby>類<rt>るい</rt></ruby>は、<strong class=\"ex-highlight\"><ruby>確<rt>たし</rt></ruby>かに</strong><ruby>受け取り<rt>うけとり</rt></ruby>ました。",
                 "cn": "那份文件，我确实收到了。"
             }
         ],
@@ -10809,7 +10913,9 @@
         "sourceSubTitle": "「～ない」や否定を意味する動詞と呼応する副詞",
         "sourceGroupTitle": "（１） 全面否定",
         "sourceOrder": 203,
-        "sourceNumber": 203
+        "sourceNumber": 203,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_zettaini_pos"
     },
     {
         "id": "adv-adv_mattaku_neg",
@@ -10861,7 +10967,9 @@
         "sourceSubTitle": "「～ない」や否定を意味する動詞と呼応する副詞",
         "sourceGroupTitle": "（１） 全面否定",
         "sourceOrder": 204,
-        "sourceNumber": 204
+        "sourceNumber": 204,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_mattaku_pos"
     },
     {
         "id": "adv-adv_sappari",
@@ -10965,7 +11073,9 @@
         "sourceSubTitle": "「～ない」や否定を意味する動詞と呼応する副詞",
         "sourceGroupTitle": "（１） 全面否定",
         "sourceOrder": 206,
-        "sourceNumber": 206
+        "sourceNumber": 206,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_marude"
     },
     {
         "id": "adv-adv_chittomo",
@@ -10977,8 +11087,8 @@
         "subTitle": "「～ない」や否定を意味する動詞と呼応する副詞",
         "groupTitle": "（１） 全面否定",
         "word": "ちっとも / 少しも",
-        "wordHTML": "ちっとも / <ruby>少<rt>しばら</rt></ruby>しも",
-        "kana": "すこしも",
+        "wordHTML": "ちっとも / <ruby>少し<rt>すこし</rt></ruby>も",
+        "kana": "ちっとも／すこしも",
         "type": "陈述副词",
         "pitch": "",
         "posPitchRaw": "陈述副词",
@@ -11006,8 +11116,8 @@
             }
         ],
         "category": "否定呼应",
-        "word_html": "ちっとも / <ruby>少<rt>しばら</rt></ruby>しも",
-        "reading": "すこしも",
+        "word_html": "ちっとも / <ruby>少し<rt>すこし</rt></ruby>も",
+        "reading": "ちっとも／すこしも",
         "usage": "与句尾否定式呼应，提示某种变化的量或程度表现得极其微弱、微乎其微。",
         "vocabType": "adverb",
         "sourceCategoryId": "21",
@@ -11250,7 +11360,7 @@
                 "meaningNote": "",
                 "exampleJP": "値段があまりにも高くて、買えません。",
                 "exampleCN": "价格过于高昂，买不起。",
-                "exampleHTML": "<ruby>値<rt>ね</rt></ruby><ruby>段<rt>だん</rt></ruby>が<strong class=\"ex-highlight\">あまりにも</strong><ruby>高<rt>こう</rt></ruby>くて、買えません。",
+                "exampleHTML": "<ruby>値<rt>ね</rt></ruby><ruby>段<rt>だん</rt></ruby>が<strong class=\"ex-highlight\">あまりにも</strong><ruby>高く<rt>たかく</rt></ruby>て、買えません。",
                 "target": "あまりにも"
             }
         ],
@@ -11261,7 +11371,7 @@
         "nuance": "在表达局部否定时，常指程度或数量高出了正常限度过多，导致产生不符合心意的结果。",
         "examples": [
             {
-                "jp": "<ruby>値<rt>ね</rt></ruby><ruby>段<rt>だん</rt></ruby>が<strong class=\"ex-highlight\">あまりにも</strong><ruby>高<rt>こう</rt></ruby>くて、買えません。",
+                "jp": "<ruby>値<rt>ね</rt></ruby><ruby>段<rt>だん</rt></ruby>が<strong class=\"ex-highlight\">あまりにも</strong><ruby>高く<rt>たかく</rt></ruby>て、買えません。",
                 "cn": "价格过于高昂，买不起。"
             }
         ],
@@ -11329,7 +11439,9 @@
         "sourceSubTitle": "「～ない」や否定を意味する動詞と呼応する副詞",
         "sourceGroupTitle": "（２） 婉曲・部分否定",
         "sourceOrder": 213,
-        "sourceNumber": 213
+        "sourceNumber": 213,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_hotondo"
     },
     {
         "id": "adv-adv_taishite",
@@ -11797,7 +11909,9 @@
         "sourceSubTitle": "「～ない」や否定を意味する動詞と呼応する副詞",
         "sourceGroupTitle": "（３） 可能形「〜（ら）れない／不可能を意味する動詞」と呼応",
         "sourceOrder": 222,
-        "sourceNumber": 222
+        "sourceNumber": 222,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_nanaka_deg"
     },
     {
         "id": "adv-adv_totemo_neg",
@@ -11849,7 +11963,9 @@
         "sourceSubTitle": "「～ない」や否定を意味する動詞と呼応する副詞",
         "sourceGroupTitle": "（３） 可能形「〜（ら）れない／不可能を意味する動詞」と呼応",
         "sourceOrder": 223,
-        "sourceNumber": 223
+        "sourceNumber": 223,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_totemo"
     },
     {
         "id": "adv-adv_toutei",
@@ -12082,7 +12198,7 @@
                 "meaningNote": "",
                 "exampleJP": "練習を続ければ、そのうちできるようになります。",
                 "exampleCN": "如果坚持练习，不久之后就会做好的。",
-                "exampleHTML": "<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>を<ruby>続<rt>しょく</rt></ruby>ければ、<strong class=\"ex-highlight\">そのうち</strong>できるようになります。",
+                "exampleHTML": "<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>を<ruby>続けれ<rt>つづけれ</rt></ruby>ば、<strong class=\"ex-highlight\">そのうち</strong>できるようになります。",
                 "target": "そのうち"
             }
         ],
@@ -12093,7 +12209,7 @@
         "nuance": "呼应状态的发展变化，提示在未来不久的时间维度里，某项预期的变化往往会显现出来。",
         "examples": [
             {
-                "jp": "<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>を<ruby>続<rt>しょく</rt></ruby>ければ、<strong class=\"ex-highlight\">そのうち</strong>できるようになります。",
+                "jp": "<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>を<ruby>続けれ<rt>つづけれ</rt></ruby>ば、<strong class=\"ex-highlight\">そのうち</strong>できるようになります。",
                 "cn": "如果坚持练习，不久之后就会做好的。"
             }
         ],
@@ -12109,7 +12225,9 @@
         "sourceSubTitle": "推量の助動詞「だろう／かもしれない／はずだ」と呼応する副詞",
         "sourceGroupTitle": "（１） 推量の助動詞と呼応するもの",
         "sourceOrder": 228,
-        "sourceNumber": 228
+        "sourceNumber": 228,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_sonouchi"
     },
     {
         "id": "adv-adv_yagate_est",
@@ -12161,7 +12279,9 @@
         "sourceSubTitle": "推量の助動詞「だろう／かもしれない／はずだ」と呼応する副詞",
         "sourceGroupTitle": "（１） 推量の助動詞と呼応するもの",
         "sourceOrder": 229,
-        "sourceNumber": 229
+        "sourceNumber": 229,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_yagate"
     },
     {
         "id": "adv-adv_kitto",
@@ -12238,7 +12358,7 @@
                 "meaningNote": "",
                 "exampleJP": "家族と離れて、さぞ寂しいことでしょう。",
                 "exampleCN": "远离家人，想必十分寂寞吧。",
-                "exampleHTML": "<ruby>家<rt>か</rt></ruby><ruby>族<rt>ぞく</rt></ruby>と<ruby>離<rt>かか</rt></ruby>れて、<strong class=\"ex-highlight\">さぞ</strong>寂しいことでしょう。",
+                "exampleHTML": "<ruby>家<rt>か</rt></ruby><ruby>族<rt>ぞく</rt></ruby>と<ruby>離れ<rt>はなれ</rt></ruby>て、<strong class=\"ex-highlight\">さぞ</strong>寂しいことでしょう。",
                 "target": "さぞ"
             }
         ],
@@ -12249,7 +12369,7 @@
         "nuance": "常与「〜でしょう」或「〜だろう」呼应，带有极强的同理心，对他人所处的处境、情感进行感同身受的想象推测。",
         "examples": [
             {
-                "jp": "<ruby>家<rt>か</rt></ruby><ruby>族<rt>ぞく</rt></ruby>と<ruby>離<rt>かか</rt></ruby>れて、<strong class=\"ex-highlight\">さぞ</strong>寂しいことでしょう。",
+                "jp": "<ruby>家<rt>か</rt></ruby><ruby>族<rt>ぞく</rt></ruby>と<ruby>離れ<rt>はなれ</rt></ruby>て、<strong class=\"ex-highlight\">さぞ</strong>寂しいことでしょう。",
                 "cn": "远离家人，想必十分寂寞吧。"
             }
         ],
@@ -12342,7 +12462,7 @@
                 "meaningNote": "",
                 "exampleJP": "なんと美しい景色なのでしょう。",
                 "exampleCN": "多么美丽的景色啊。",
-                "exampleHTML": "<strong class=\"ex-highlight\">なんと</strong><ruby>美<rt>うつく</rt></ruby>しい<ruby>景<rt>げ</rt></ruby><ruby>色<rt>しき</rt></ruby>なのでしょう。",
+                "exampleHTML": "<strong class=\"ex-highlight\">なんと</strong><ruby>美<rt>うつく</rt></ruby>しい<ruby>景色<rt>けしき</rt></ruby>なのでしょう。",
                 "target": "なんと"
             }
         ],
@@ -12353,7 +12473,7 @@
         "nuance": "与句尾感叹结构呼应，表示对某种状态或程度感到由衷的惊叹与赞美。",
         "examples": [
             {
-                "jp": "<strong class=\"ex-highlight\">なんと</strong><ruby>美<rt>うつく</rt></ruby>しい<ruby>景<rt>げ</rt></ruby><ruby>色<rt>しき</rt></ruby>なのでしょう。",
+                "jp": "<strong class=\"ex-highlight\">なんと</strong><ruby>美<rt>うつく</rt></ruby>しい<ruby>景色<rt>けしき</rt></ruby>なのでしょう。",
                 "cn": "多么美丽的景色啊。"
             }
         ],
@@ -12473,7 +12593,11 @@
         "sourceSubTitle": "推量の助動詞「だろう／かもしれない／はずだ」と呼応する副詞",
         "sourceGroupTitle": "（１） 推量の助動詞と呼応するもの",
         "sourceOrder": 235,
-        "sourceNumber": 235
+        "sourceNumber": 235,
+        "legacyWordIds": [
+            "adv-adv_donnani_te"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_dorehodo_gantan",
@@ -13097,7 +13221,9 @@
         "sourceSubTitle": "「ようだ / そうだ / らしい」と呼応する副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 247,
-        "sourceNumber": 247
+        "sourceNumber": 247,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_marude"
     },
     {
         "id": "adv-adv_samo_youdai",
@@ -13149,7 +13275,9 @@
         "sourceSubTitle": "「ようだ / そうだ / らしい」と呼応する副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 248,
-        "sourceNumber": 248
+        "sourceNumber": 248,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_samo"
     },
     {
         "id": "adv-adv_atakamo_youdai",
@@ -13201,7 +13329,9 @@
         "sourceSubTitle": "「ようだ / そうだ / らしい」と呼応する副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 249,
-        "sourceNumber": 249
+        "sourceNumber": 249,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_atakamo"
     },
     {
         "id": "adv-adv_choudo",
@@ -14241,7 +14371,9 @@
         "sourceSubTitle": "「～てしまった」と呼応する副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 269,
-        "sourceNumber": 269
+        "sourceNumber": 269,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_tsui"
     },
     {
         "id": "adv-adv_ukkari_regret",
@@ -14293,7 +14425,9 @@
         "sourceSubTitle": "「～てしまった」と呼応する副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 270,
-        "sourceNumber": 270
+        "sourceNumber": 270,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_ukkari"
     },
     {
         "id": "adv-adv_arakajime_teoku",
@@ -14345,7 +14479,9 @@
         "sourceSubTitle": "「～ておく」と呼応する副詞",
         "sourceGroupTitle": "",
         "sourceOrder": 271,
-        "sourceNumber": 271
+        "sourceNumber": 271,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_arakajime"
     },
     {
         "id": "adv-adv_jizenni_teoku",
@@ -14553,7 +14689,11 @@
         "sourceSubTitle": "仮定や理由を表す助詞と呼応する副詞",
         "sourceGroupTitle": "（１） 「～たら / 〜ば / 〜なら」と呼応するもの",
         "sourceOrder": 275,
-        "sourceNumber": 275
+        "sourceNumber": 275,
+        "legacyWordIds": [
+            "adv-adv_karini_te"
+        ],
+        "legacyWords": []
     },
     {
         "id": "adv-adv_manichi",
@@ -14657,7 +14797,9 @@
         "sourceSubTitle": "仮定や理由を表す助詞と呼応する副詞",
         "sourceGroupTitle": "（１） 「～たら / 〜ば / 〜なら」と呼応するもの",
         "sourceOrder": 277,
-        "sourceNumber": 277
+        "sourceNumber": 277,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_ittan"
     },
     {
         "id": "adv-adv_tatoeba_cond",
@@ -14709,7 +14851,9 @@
         "sourceSubTitle": "仮定や理由を表す助詞と呼応する副詞",
         "sourceGroupTitle": "（１） 「～たら / 〜ば / 〜なら」と呼応するもの",
         "sourceOrder": 278,
-        "sourceNumber": 278
+        "sourceNumber": 278,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_tatoeba"
     },
     {
         "id": "adv-adv_tatoe_te",
@@ -14813,7 +14957,9 @@
         "sourceSubTitle": "仮定や理由を表す助詞と呼応する副詞",
         "sourceGroupTitle": "（２） 「～ても」と呼応するもの",
         "sourceOrder": 280,
-        "sourceNumber": 280
+        "sourceNumber": 280,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_karini_cond"
     },
     {
         "id": "adv-adv_ikura_te",
@@ -14917,7 +15063,9 @@
         "sourceSubTitle": "仮定や理由を表す助詞と呼応する副詞",
         "sourceGroupTitle": "（２） 「～ても」と呼応するもの",
         "sourceOrder": 282,
-        "sourceNumber": 282
+        "sourceNumber": 282,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_donnani_gantan"
     },
     {
         "id": "adv-adv_ittan_reason",
@@ -14969,11 +15117,13 @@
         "sourceSubTitle": "仮定や理由を表す助詞と呼応する副詞",
         "sourceGroupTitle": "（３） 「～からには / 〜以上」と呼応するもの",
         "sourceOrder": 283,
-        "sourceNumber": 283
+        "sourceNumber": 283,
+        "scheduleKind": "duplicate",
+        "duplicateOf": "adv-adv_ittan"
     }
 ];
 
-    const ALL_DEFINED_WORDS = FULL_WORD_LIST.filter((word) => word && word.word && word.word !== '（準備中）');
+    const ALL_DEFINED_WORDS = FULL_WORD_LIST.filter((word) => word && word.word && word.word !== '（準備中）' && !word.duplicateOf);
     const WORDS_PER_DAY = 20;
     const N2_ADVERB_DATA = { categories: ADVERB_CATEGORY_LIST, vocabulary: FULL_WORD_LIST };
 

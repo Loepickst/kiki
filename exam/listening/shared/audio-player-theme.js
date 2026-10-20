@@ -1,5 +1,22 @@
 (function() {
     const DEFAULT_SKIP_SECONDS = 6;
+    const LISTENING_TYPE_NAMES = {
+        task: '課題理解',
+        point: 'ポイント理解',
+        summary: '概要理解',
+        immediate: '即時応答',
+        integrated: '総合理解',
+        listening: '聴解'
+    };
+    // One short hint per question type; feedback stays a single line.
+    const LISTENING_GUIDE_TIPS = {
+        task: '听清最后要先做哪件事。',
+        point: '先读问题和选项，再听准要点。',
+        summary: '选项只在音频里，先抓主旨。',
+        immediate: '听完一句，选最自然的回应。',
+        integrated: '边听边记，最后再比较。',
+        listening: '先听清条件，再作答。'
+    };
 
     const playerState = {
         initialized: false,
@@ -33,7 +50,7 @@
 
         listeningPetAssetsPromise = new Promise((resolve, reject) => {
             const cssHref = new URL('../../../../../shared/home-pet.css', document.baseURI).href;
-            const scriptSrc = new URL('../../../../../shared/home-pet.js', document.baseURI).href;
+            const scriptSrc = new URL('../../../../../shared/home-pet-github-20261020.js', document.baseURI).href;
 
             if (!document.querySelector(`link[data-listening-pet-css="true"][href="${cssHref}"]`)) {
                 const link = document.createElement('link');
@@ -185,7 +202,8 @@
 
     function buildListeningIntro(labelText) {
         const level = detectListeningLevel();
-        const queryYear = new URLSearchParams(window.location.search).get('year');
+        const rawYear = new URLSearchParams(window.location.search).get('year');
+        const queryYear = window.ListeningExamKey?.normalize(rawYear) || rawYear;
         const queryYearMatch = String(queryYear || '').match(/^(\d{4})-(\d{1,2})$/);
         const yearLabel = queryYearMatch
             ? `${queryYearMatch[1]}年${Number(queryYearMatch[2])}月`
@@ -202,11 +220,12 @@
         intro.className = 'listening-page-intro';
         intro.innerHTML = `
             <div>
-                <p class="listening-page-eyebrow">日本語能力試験 ・ ${level} ・ 年度练习</p>
-                <h2 class="listening-page-title">[${level}] ${displayLabel}</h2>
+                <p class="listening-page-eyebrow">${LISTENING_TYPE_NAMES[detectListeningPracticeSubType()]} · 年度真题</p>
+                <h2 class="listening-page-title"><span class="listening-context-level">[${level}] </span>${displayLabel === '年度练习' ? (location.pathname.match(/\/years\/(\d{4}(?:[.-]\d+)?)/)?.[1] || displayLabel) : displayLabel}</h2>
             </div>
             <div class="listening-progress" aria-label="题目进度">
-                <div class="listening-progress-meta"><span>问题</span><strong>1</strong><span>/</span><span class="listening-progress-total">1</span></div>
+                <div class="listening-progress-dots" aria-hidden="true"></div>
+                <div class="listening-progress-meta"><strong>1</strong><span>/</span><span class="listening-progress-total">1</span></div>
                 <div class="listening-progress-track"><span class="listening-progress-value"></span></div>
             </div>
         `;
@@ -223,7 +242,7 @@
         const avatarUrl = new URL('../../../../../assets/listening/music-duo-cover-longhair-headphones-v3.png', document.baseURI).href;
         note.innerHTML = `
             <span class="listening-mentor-avatar"><img src="${avatarUrl}" alt="一二三"></span>
-            <span data-listening-guide-text>先听清条件，再看图判断吧。</span>
+            <span data-listening-guide-text>${LISTENING_GUIDE_TIPS[detectListeningPracticeSubType()]}</span>
         `;
         cardHeader.appendChild(note);
     }
@@ -237,8 +256,8 @@
         const footer = document.createElement('div');
         footer.className = 'listening-card-footer';
         footer.innerHTML = `
-            <span>选择答案后进入反馈</span>
-            <button type="button" class="listening-skip-button">暂时跳过&nbsp;›</button>
+            <span></span>
+            <button type="button" class="listening-skip-button">跳过&nbsp;›</button>
         `;
         const skip = footer.querySelector('.listening-skip-button');
         if (skip) {
@@ -258,9 +277,9 @@
         }
 
         const messages = {
-            thinking: '先听清条件，再判断彼此的关系吧。',
-            correct: '节奏抓得很准，继续保持。',
-            wrong: '差一点，再听一次关键条件吧。'
+            thinking: LISTENING_GUIDE_TIPS[detectListeningPracticeSubType()],
+            correct: '答对了，继续下一题。',
+            wrong: '再听一遍关键处。'
         };
         target.textContent = messages[state] || messages.thinking;
     }
@@ -281,13 +300,21 @@
             if (current) current.textContent = String(position.current);
             if (total) total.textContent = String(position.total);
             if (bar) bar.style.width = `${Math.min(100, (position.current / position.total) * 100)}%`;
+            const dots = intro.querySelector('.listening-progress-dots');
+            if (dots) {
+                dots.hidden = position.total > 20;
+                dots.innerHTML = position.total > 20 ? '' : Array.from({ length: position.total }, (_, index) => {
+                    const state = index + 1 === position.current ? 'is-current' : (index + 1 < position.current ? 'is-passed' : '');
+                    return `<i class="${state}"></i>`;
+                }).join('');
+            }
         }
 
-        const footerMessage = document.querySelector('.listening-card-footer > span');
-        if (footerMessage) {
-            footerMessage.textContent = document.getElementById('appContainer')?.classList.contains('mode-explanation')
-                ? '解析已展开，可继续下一题'
-                : '选择答案后进入反馈';
+        const skipButton = document.querySelector('.listening-card-footer .listening-skip-button');
+        if (skipButton) {
+            skipButton.innerHTML = document.getElementById('appContainer')?.classList.contains('mode-explanation')
+                ? '下一题&nbsp;›'
+                : '跳过&nbsp;›';
         }
 
         document.querySelectorAll('.options-list .option-text').forEach((optionText) => {
@@ -337,12 +364,12 @@
             const back = header.querySelector('.back-btn');
             if (back) {
                 back.href = new URL('../index.html?browse=year', window.location.href).href;
-                back.setAttribute('aria-label', '年度一覧へ戻る');
-                back.setAttribute('title', '年度一覧へ戻る');
+                back.setAttribute('aria-label', '返回年度真题');
+                back.setAttribute('title', '返回年度真题');
                 back.innerHTML = `
                     <svg class="kiki-unified-back-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18 9 12l6-6"></path></svg>
-                    <span class="kiki-unified-back-label">年度一覧へ戻る</span>
-                    <span class="kiki-unified-back-label-mobile" aria-hidden="true">戻る</span>
+                    <span class="kiki-unified-back-label">返回年度真题</span>
+                    <span class="kiki-unified-back-label-mobile" aria-hidden="true">返回</span>
                 `;
             }
             if (yearSource && yearSource !== titleTarget) {

@@ -1,0 +1,204 @@
+/* 轻松一读：Note 风格的查词气泡。内容接入真实词库后只替换数据来源。 */
+.reading-dictionary-card {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100dvh - 24px);
+    position: fixed;
+    z-index: 2400;
+    width: min(360px, calc(100vw - 24px));
+    padding: 15px 16px 14px;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    background: #fff;
+    color: #333;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .09);
+    font-family: var(--reading-ui, system-ui, sans-serif);
+    opacity: 0;
+    transform: translateY(8px) scale(.98);
+    transition: opacity 160ms ease, transform 160ms ease;
+    pointer-events: none;
+}
+
+.reading-dictionary-card.is-open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+/* 默认卡片在文字上方，箭头从卡片底部向下指向选中的词。 */
+.reading-dictionary-card::before {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    left: var(--dictionary-arrow-left, 50%);
+    bottom: -6px;
+    transform: translateX(-50%) rotate(45deg);
+    border-right: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
+    background: #fff;
+}
+
+/* 选中文字靠近顶部时，卡片翻到文字下方，箭头同步翻转。 */
+.reading-dictionary-card.is-below::before {
+    top: -6px;
+    bottom: auto;
+    border: 0;
+    border-left: 1px solid #e5e5e5;
+    border-top: 1px solid #e5e5e5;
+}
+
+.reading-dictionary-card-head,
+.reading-dictionary-card-tools {
+    display: flex;
+    align-items: center;
+}
+
+.reading-dictionary-card-head {
+    justify-content: space-between;
+    gap: 12px;
+    padding-right: 70px;
+}
+
+.reading-dictionary-card-tools {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    gap: 4px;
+}
+
+.reading-dictionary-card-word {
+    overflow-wrap: anywhere;
+    margin: 0;
+    color: #333;
+    font-family: var(--reading-display, "Noto Serif JP", serif);
+    font-size: 23px;
+    font-weight: 650;
+    letter-spacing: .05em;
+}
+
+.reading-dictionary-card-reading {
+    overflow-wrap: anywhere;
+    margin: 2px 0 0;
+    color: #777;
+    font-family: var(--reading-display, "Noto Serif JP", serif);
+    font-size: 13px;
+}
+
+.reading-dictionary-card-inflection {
+    margin: 7px 0 10px;
+    color: #888;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+.reading-dictionary-card-inflection[hidden] { display: none; }
+
+.reading-dictionary-card-tool {
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #777;
+    cursor: pointer;
+    transition: background .16s ease, color .16s ease, transform .16s ease;
+}
+
+.reading-dictionary-card-tool svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.65;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.reading-dictionary-card-tool:hover,
+.reading-dictionary-card-tool:focus-visible {
+    background: #f3f3f3;
+    color: #222;
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.reading-dictionary-card-tool.is-playing,
+.reading-dictionary-card-tool.is-saved {
+    background: #f0f0f0;
+    color: #222;
+}
+
+.reading-dictionary-card-tool.is-saved svg {
+    fill: currentColor;
+}
+
+.reading-dictionary-card-tool:disabled {
+    cursor: default;
+    opacity: .38;
+}
+
+.reading-dictionary-card-tool.is-error {
+    color: #a15f50;
+}
+
+.reading-dictionary-card-meaning {
+    margin: 0;
+    color: #454545;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+@media (max-width: 720px) {
+    .reading-dictionary-card {
+        width: min(340px, calc(100vw - 24px));
+        padding: 14px 15px 13px;
+    }
+
+    .reading-dictionary-card-word { font-size: 21px; }
+    .reading-dictionary-card-meaning { font-size: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reading-dictionary-card { transition: none; }
+}
+
+.reading-dictionary-card-choices {
+    width: 100%; margin: 0 0 12px; padding: 7px 9px;
+    border: 1px solid #e6e6e6; border-radius: 7px;
+    background: #fff; color: #414141; font: inherit; font-size: 13px;
+}
+.reading-dictionary-card-choices[hidden] { display: none; }
+.reading-dictionary-card-meaning { white-space: pre-line; min-height: 0; max-height: 45vh; overflow-y: auto; }
+.reading-dictionary-search { display: flex; gap: 6px; margin: 0 0 16px; }
+.reading-dictionary-search input { min-width: 0; width: 100%; border: 1px solid #e6e6e6; border-radius: 8px; background: #fff; padding: 9px 10px; font: inherit; font-size: 14px; color: #333; }
+.reading-dictionary-search button { flex: 0 0 36px; border: 0; border-radius: 8px; background: #f5f5f5; color: #666; cursor: pointer; }
+.reading-dictionary-search svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+
+/* Dictionary senses stay paired: Japanese definition followed by Chinese. */
+.reading-dictionary-card-meaning p { margin: 0; }
+.reading-dictionary-sense + .reading-dictionary-sense { margin-top: 16px; }
+.reading-dictionary-card-meaning p[lang="ja"] { color: #303330; line-height: 1.65; }
+.reading-dictionary-card-meaning p[lang="zh"] { color: #6b706c; font-size: .92em; line-height: 1.7; }
+.reading-dictionary-sense p + p { margin-top: 4px; }
+
+body.daily-reading-page.reading-selection-lookup .reading-sidebar { display: none; }
+body.daily-reading-page.reading-selection-lookup .reading-layout { display: block; max-width: 760px; margin-inline: auto; }
+body.daily-reading-page.reading-selection-lookup .reading-page-frame { padding-inline: 24px; }
+body.reading-selection-lookup [data-reading-article] [data-info] { background: transparent; border: 0; box-shadow: none; text-decoration: none; cursor: text; }
+
+/* The optional lookup never overrides the page visibility contract. */
+.reading-dictionary-card[hidden] { display: none !important; }
+.reading-dictionary-card-head > div:first-child { min-width: 0; }
+.reading-dictionary-card-head, .reading-dictionary-card-inflection, .reading-dictionary-card-choices, .reading-dictionary-collection { flex-shrink: 0; }
+.reading-dictionary-card-meaning { flex: 1 1 auto; min-height: 0; }
+.reading-dictionary-collection { display: flex; align-items: center; gap: 6px; margin: 8px 0 12px; font: 12px/1.5 system-ui, sans-serif; }
+.reading-dictionary-collection[hidden] { display: none !important; }
+.reading-dictionary-collection label { flex-shrink: 0; color: #777; }
+.reading-dictionary-collection select { flex: 1; min-width: 0; padding: 6px; border: 1px solid #e5e5e5; border-radius: 6px; color: #444; background: #fff; font: inherit; }
+.reading-dictionary-collection button { flex-shrink: 0; padding: 6px 8px; border: 0; border-radius: 6px; background: #f2f2f2; color: #555; font: inherit; cursor: pointer; }
+.reading-dictionary-collection button:disabled { opacity: .4; cursor: default; }

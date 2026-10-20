@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261016-summary-n1-2012-07-1d9c5c71cb1e">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,148 +192,397 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
 <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2012-07-概要理解": {
-                label: "2012年7月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2012.07-1.mp3", 
-                        script: {
-                            question: "一番：電気屋の店員が新しい掃除機について説明しています。電気屋の店員は主に何について話していますか。",
-                            questionTrans: "（第一题：电器店的店员正在说明新款吸尘器。电器店的店员主要在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '店员一上来就介绍了吸尘器【噪音小（騒音が小さく）】和【很轻（とても軽く）】这两个特点。')\">えー、この掃除機は<span class=\"keyword\" onclick=\"showTooltip(event, '騒音（そうおん）：噪音。')\">騒音</span>が小さく、テレビを見ている部屋で使っても<span class=\"keyword\" onclick=\"showTooltip(event, '邪魔（じゃま）：妨碍，打扰。')\">邪魔</span>になりません。それにとても軽く、階段でも<span class=\"keyword\" onclick=\"showTooltip(event, '楽（らく）に：轻松地，容易地。')\">楽に</span><span class=\"keyword\" onclick=\"showTooltip(event, '持（も）ち運（はこ）ぶ：携带，搬运。')\">持ち運べます</span>。</span></span>", trans: "（嗯，这款吸尘器噪音很小，即使在看电视的房间里使用也不会觉得打扰。而且非常轻，在楼梯上也能轻松搬运。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着店员又强调了最棒的一点是【不污染房间的空气（部屋の空気を汚さないことです）】，并解释了原理。通篇都是在说明吸尘器的功能和性能，符合选项1。')\">さらに、この商品の一番素晴らしい点は、ですね。部屋の空気を汚さないことです。汚れは掃除機の中でこのようにゴミときれいな空気に分けられ、外には綺麗な空気しか出ていきません。</span></span>", trans: "（此外，这件商品最棒的一点，是不会污染房间的空气。污垢在吸尘器里面像这样被分离成垃圾和干净的空气，排到外面的只有干净的空气。）" },
-                                { speaker: "男", text: "うーん、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，店员虽然提到了【价格稍微偏高（価格は少し高めですが）】，但这只是转折铺垫，并非主要谈论的主题，可以排除。')\">今までのものより価格は少し高めですが</span></span>、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，店员最后说【也是非常推荐有宝宝的家庭使用的商品（赤ちゃんがいるご家庭にもぜひおすすめしたい商品です）】，这只是说明适用对象，而不是整段话的中心主题，可以排除。同时文中也没有提到具体的使用方法，排除选项3。')\">赤ちゃんがいるご家庭にもぜひおすすめしたい商品です。</span></span>", trans: "（嗯，虽然价格比以往的稍微偏高一些，但也是非常推荐有宝宝的家庭使用的商品。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "掃除機の性能", translation: "（吸尘器的性能）", correct: true },
-                            { text: "掃除機の価格", translation: "（吸尘器的价格）", correct: false },
-                            { text: "掃除機の使い方", translation: "（吸尘器的使用方法）", correct: false },
-                            { text: "掃除機を買う人", translation: "（买吸尘器的人）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        audio: "../assets/audio/2012.07-2.mp3",
-                        script: {
-                            question: "二番：男の学生が女の学生に電話をかけています。男の学生は女の学生に何を頼んでいますか。",
-                            questionTrans: "（第二题：男学生正在给女学生打电话。男学生在拜托女学生做什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "もしもし、高橋だけど、今いい？", trans: "（喂，我是高桥，现在方便吗？）" },
-                                { speaker: "女", text: "うん。何？", trans: "（嗯。什么事？）" },
-                                { speaker: "男", text: "あのさ、俺、コンビニでバイトやってるのを知ってるよね。最近卒業でやめる人が多くてね。人手が足りなくて困ってるんだよ。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男生确实提到自己因为课堂报告等很忙，但这只是说明他无法增加排班的原因，并不是这通电话要拜托的事情，可以排除。')\">俺も最近授業のレポートとかで忙しいし。</span></span>", trans: "（那个啊，你知道我在便利店打工吧。最近因为毕业辞职的人很多。人手不足很头疼呢。我最近也因为课堂的报告等很忙。）" },
-                                { speaker: "女", text: "レポートならいつも手伝ってあげてるでしょう？", trans: "（报告的话我不是一直都在帮你嘛？）" },
-                                { speaker: "男", text: "あ、それは感謝していますよ。", trans: "（啊，那个我很感谢你哦。）" },
-                                { speaker: "女", text: "あっ、そう？", trans: "（啊，是吗？）" },
-                                { speaker: "男", text: "で、もうすぐ四年だから、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，男生说【马上就大四了，必须得找工作了（仕事探さなきゃならないし）】，这是他自己的情况，并不是拜托女生给他介绍新工作，排除。')\">仕事探さなきゃならないし。</span></span>これ以上バイト入れらんないんだよね。で、店長が誰かいないかって探してるんだよ。", trans: "（然后，马上就大四了，也必须得找工作了。我没法再增加打工排班了。所以，店长在找有没有人能来。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，女生说自己【打工已经排满了（目一杯バイトしてるからね）】，说明男生并不是让女生来打工，排除。')\">えー？私ももう<span class=\"keyword\" onclick=\"showTooltip(event, '目一杯（めいっぱい）：竭尽全力，最大限度。')\">目一杯</span>バイトしてるからね。</span></span>", trans: "（诶？我的打工也已经排满了呢。）" },
-                                { speaker: "男", text: "うん、それは分かってる。じゃなくて、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男生在铺垫了人手不足和自己无法多排班后，明确问女生【有没有认识的人（心当たりないかな）】。结合前面提到的【店长在找有没有人能来（店長が誰かいないかって探してるんだよ）】，这说明他是在拜托女生介绍能来打工的人，符合选项4。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '心当（こころあ）たり：线索，头绪，猜想。')\">心当たり</span>ないかな。</span></span>", trans: "（嗯，那个我知道。不是让你来，是你有没有认识的人啊。）" },
-                                { speaker: "女", text: "ふうん。分かった。じゃ、ちょっと考えてみるね。", trans: "（嗯。知道了。那，我稍微想一想哦。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "レポートを手伝ってほしい", translation: "（希望能帮忙写报告）", correct: false },
-                            { text: "新しい仕事を紹介してほしい", translation: "（希望能介绍新工作）", correct: false },
-                            { text: "アルバイトをしてほしい", translation: "（希望对方来打工）", correct: false },
-                            { text: "アルバイトができる人を紹介してほしい", translation: "（希望能介绍可以打工的人）", correct: true }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        audio: "../assets/audio/2012.07-3.mp3",
-                        script: {
-                            question: "三番：ラジオを聞いています。男の人は何を呼びかけていますか。",
-                            questionTrans: "（第三题：正在听广播。男人在呼吁什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "こんにちは。ふじ町夏祭り実行委員会からのお知らせです。", trans: "（大家好。这里是富士町夏日祭执行委员会的通知。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，广播中确实提到了【夏日祭（夏祭り）】，但这是为了说明背景，并不是在呼吁大家参加活动本身，可以排除。')\">八月八日から十日まで<span class=\"keyword\" onclick=\"showTooltip(event, '恒例（こうれい）：惯例，常例。')\">恒例</span>の夏祭りが開催されます。</span></span>", trans: "（8月8日到10日将举办一年一度的夏日祭。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，广播提到【烟花大会（花火大会）】也是作为今年预计来场人数会很多的背景信息，排除。')\">今年は50周年に当たるため、花火大会も同時開催され、例年を<span class=\"keyword\" onclick=\"showTooltip(event, '上回（うわまわ）る：超出，超过。')\">上回る</span>来場者数が<span class=\"keyword\" onclick=\"showTooltip(event, '見込（みこ）む：预料，预计。')\">見込まれます</span>。</span></span>", trans: "（由于今年正值50周年，烟花大会也将同时举行，预计来场人数将超往年。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '广播中明确提出了核心诉求：为了让来场的各位能度过愉快的时光，【想开展由志愿者进行的清扫活动（ボランティアによる清掃活動を行いたいと思います）】，并在最后呼吁大家协助，符合选项4的“呼吁参加清扫志愿者”。')\">そこで、夏祭り開催中来場される方々に気持ち良く過ごしていただくため、ボランティアによる<span class=\"keyword\" onclick=\"showTooltip(event, '清掃（せいそう）：清扫，打扫。')\">清掃</span>活動を行いたいと思います。</span></span>時間は午前七時より約一時間程度で、集合場所は中央公園の駐車場です。", trans: "（因此，为了让在夏日祭期间来场的各位能度过愉快的时光，我们想开展由志愿者进行的清扫活动。时间是从上午7点开始大约1小时左右，集合地点是中央公园的停车场。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '选项2“参加执行委员会”在广播中并未提及，排除。')\">皆様、是非ご協力くださいますよう、お願い申し上げます。</span></span>", trans: "（请大家务必给予协助，拜托了。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "夏祭りへの参加", translation: "（参加夏日祭）", correct: false },
-                            { text: "実行委員会への参加", translation: "（参加执行委员会）", correct: false },
-                            { text: "花火大会への参加", translation: "（参加烟花大会）", correct: false },
-                            { text: "清掃ボランティアへの参加", translation: "（参加清扫志愿者）", correct: true }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        audio: "../assets/audio/2012.07-4.mp3",
-                        script: {
-                            question: "四番：大学の授業で先生が話しています。先生は何について話していますか。",
-                            questionTrans: "（第四题：在大学的课堂上老师正在讲话。老师在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "都市部は地面が<span class=\"keyword\" onclick=\"showTooltip(event, 'アスファルト（asphalt）：柏油，沥青。')\">アスファルト</span>で<span class=\"keyword\" onclick=\"showTooltip(event, '覆（おお）う：覆盖，蒙上。')\">覆われて</span>いますから、雨水は地面に<span class=\"keyword\" onclick=\"showTooltip(event, '染（し）み込（こ）む：渗入，浸透。')\">染み込まない</span>で、下水道に流れるようになっています。", trans: "（因为都市的地面被柏油覆盖着，所以雨水无法渗入地下，而是流向下水道。）" },
-                                { speaker: "男", text: "ところが、近年、増加している<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，老师提到集中暴雨是导致内涝的原因之一，但并没有探讨“集中暴雨本身”发生的原因，可以排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '集中豪雨（しゅうちゅうごうう）：集中暴雨，特大暴雨。')\">集中豪雨</span></span></span>では<span class=\"keyword\" onclick=\"showTooltip(event, '想定（そうてい）：设想，预期。')\">想定</span>を超える量の雨水が<span class=\"keyword\" onclick=\"showTooltip(event, '一気（いっき）に：一口气，一下子。')\">一気に</span>下水に流れ込むために、<span class=\"keyword\" onclick=\"showTooltip(event, '溢（あふ）れ出（だ）す：溢出，流出。')\">溢れ出して</span>しまいます。", trans: "（然而，在近年来不断增加的集中暴雨中，超出预想水量的雨水会一口气流入下水道，导致其溢出。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师明确指出了前半段讲话的核心：【这就是在都市地区发生内涝灾害的原因（これが都市部で浸水の被害が起こる原因です）】。')\">これが都市部で<span class=\"keyword\" onclick=\"showTooltip(event, '浸水（しんすい）：进水，水淹，内涝。')\">浸水</span>の被害が起こる原因です。</span></span>", trans: "（这就是在都市地区发生内涝灾害的原因。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着老师给出了解决问题的方法：【因此，作为其对策，在地下设置蓄水池的举措正在推广（で、その対策として、地下にタンクを設置する取り組みが広がっています）】。前半段讲内涝原因，后半段讲对策，完全符合选项3。')\">で、その対策として、地下に<span class=\"keyword\" onclick=\"showTooltip(event, 'タンク（tank）：槽，罐，蓄水池。')\">タンク</span>を設置する<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り組（く）み：举措，努力。')\">取り組み</span>が広がっています。</span></span>", trans: "（因此，作为其对策，在地下设置蓄水池的举措正在推广。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，老师提到建蓄水池储水是为了“减轻下水道负担”，并没有说是为了“利用”这些雨水，排除。关于选项2，老师只是开头提了一句都市的雨水会流向下水道，这只是背景介绍，并非主要探讨的机制，也可排除。')\">タンクに雨水を<span class=\"keyword\" onclick=\"showTooltip(event, '貯（た）める：积攒，储存。')\">貯める</span>ことで下水道の負担を減らし、被害を<span class=\"keyword\" onclick=\"showTooltip(event, '抑（おさ）える：抑制，控制。')\">抑えます</span>。</span></span>", trans: "（通过将雨水储存在蓄水池中来减轻下水道的负担，从而抑制灾害。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "集中豪雨が起こる理由", translation: "（集中暴雨发生的原因）", correct: false },
-                            { text: "雨水を下水道に流す仕組み", translation: "（让雨水流向下水道的机制）", correct: false },
-                            { text: "浸水被害の原因と対策", translation: "（内涝灾害的原因和对策）", correct: true },
-                            { text: "雨水を利用する取り組み", translation: "（利用雨水的举措）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        audio: "../assets/audio/2012.07-5.mp3",
-                        script: {
-                            question: "五番：ラジオで女の人が話しています。女の人は主に何について話していますか。",
-                            questionTrans: "（第五题：在广播里女人正在讲话。女人主要在谈论什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "みなさん、こんにちは、お昼のひととき、如何お過ごしですか。今日は私の学生時代の話をしたいと思うんですけど。", trans: "（大家好，中午时光过得怎么样？今天我想讲讲我学生时代的故事。）" },
-                                { speaker: "女", text: "私学生時代、バスケットボールをやってたんですね。で、ある日、大阪出身の先輩に、これ直しといてってボールを渡されたことがあったんです。あ、私生まれも育ちも東京なんですけどね。", trans: "（我学生时代，是打篮球的呢。然后，有一天，一位大阪出身的前辈把球递给我，说“把这个弄好（直す）”。啊，我生在东京长在东京哦。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和2，虽然女士提到了篮球和想要修理它，但这只是讲述误会发生时的具体情境，并非她讲话的核心主题，可以排除。')\">で、私、ボールを見ながら、<span class=\"keyword\" onclick=\"showTooltip(event, '修理（しゅうり）：修理。')\">修理</span>するところなんかないのにおかしいなあってみてたんですよ。</span></span>", trans: "（然后，我看着球，心想明明没有哪里需要修理的，真奇怪啊，就这么看着。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女士讲述了东京人（自己）和大阪人（前辈）对同一个词理解不同的经历，明确了前辈口中的词其实是“收拾”的意思，这符合选项3所说的语言的地域差异。')\">そうしたら、先輩に「あ、ごめん。分からなかったよね。<span class=\"keyword\" onclick=\"showTooltip(event, '片付（かたづ）ける：整理，收拾。')\">片付けて</span>おいてって意味だったの」って言われて、びっくりしたことがありました。</span></span>", trans: "（接着，前辈对我说“啊，抱歉。你不懂对吧。是叫你收起来的意思”，让我吃了一惊。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，虽然故事涉及到了前辈，但重点是因为出身地不同导致的词汇含义误解，而不是针对前辈的遣词造句（礼貌用语等），排除。')\">私は引っ越した経験もないので、本当びっくりしました。みなさんもこんな経験ありませんか。</span></span>", trans: "（我也没有搬过家，所以真的吓了一跳。大家也有过这样的经历吗？）" }
-                            ]
-                        },
-                        options: [
-                            { text: "バスケットボールの練習", translation: "（篮球的练习）", correct: false },
-                            { text: "ボールの修理方法", translation: "（球的修理方法）", correct: false },
-                            { text: "言葉の地域差", translation: "（语言的地域差异）", correct: true },
-                            { text: "先輩に対する言葉遣い", translation: "（对前辈的遣词造句）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 6,
-                        audio: "../assets/audio/2012.07-6.mp3",
-                        script: {
-                            question: "六番：テレビで女の人が話しています。女の人は何について話していますか。",
-                            questionTrans: "（第六题：在电视上，一位女士正在讲话。这位女士在谈论什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女士说【最近像这样讲述农业的乐趣和失败经历的机会变多了（最近こうして農業の楽しさや失敗談なんかをお話しする機会が増えたのですが）】，但这只是作为引子，并不是今天这段话的核心主题，可以排除。')\">えー、最近こうして農業の楽しさや失敗談なんかをお話しする機会が増えたのですが</span></span>、実は私も農家としてはまだまだ<span class=\"keyword\" onclick=\"showTooltip(event, '駆（か）け出（だ）し：新手，初学者。')\">かけだし</span>です。１０年前までは、ごく普通のOLでした。", trans: "（嗯，最近像这样讲述农业的乐趣和失败经历的机会变多了，但其实我作为农民还只是个新手。直到10年前，我还是一名极普通的OL。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女士明确抛出话题中心：【那样的我之所以觉醒去务农，孩子的存在占了很大的原因（そんな私が農業に目覚めたのは子供の存在が大きいです）】。接下来全是在解释这个原因。')\">そんな私が農業に<span class=\"keyword\" onclick=\"showTooltip(event, '目覚（めざ）める：觉醒，醒悟。')\">目覚めた</span>のは子供の存在が大きいです。</span></span>子育てをするようになったら、子供の口に入るものが気になってきたんですね。", trans: "（那样的我之所以觉醒去务农，孩子的存在占了很大的原因。开始育儿之后，就变得很在意孩子吃进嘴里的东西了呢。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，女士提到【在生产阶段使用了什么样的农药，准确来说并不清楚（生産段階でどんな農薬が使われているか、正確には分かりませんよね）】，这是她担忧的事情，但她整段话的目的是解释自己为何务农，而不是单纯探讨无农药农业，排除。')\">例えば、野菜一つ取っても、生産段階でどんな農薬が使われているか、正確には分かりませんよね。</span></span>でも、親としては、やっぱり安全なものを子供に食べさせたいと思ったんです。", trans: "（比如说，就拿一种蔬菜来说，在生产阶段使用了什么样的农药，准确来说并不清楚对吧。但是，作为父母，果然还是想让孩子吃安全的东西。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '最后总结：【因此，就想着那就自己来种尽可能安全的东西吧，于是进入了这个世界（それで、じゃ自分でできる限り安全なものを作ろうって思って、この世界に入りました）】。通篇都在阐述她从普通OL转行务农的契机和理由，符合选项4。选项2在文中完全没有提及，也可排除。')\">それで、じゃ自分でできる限り安全なものを作ろうって思って、この世界に入りました。</span></span>", trans: "（因此，就想着那就自己来种尽可能安全的东西吧，于是进入了这个世界（农业）。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "農業の楽しさや失敗", translation: "（农业的乐趣和失败）", correct: false },
-                            { text: "子育てと農業の両立", translation: "（育儿与农业的兼顾）", correct: false },
-                            { text: "農薬を使わない農業", translation: "（不使用农药的农业）", correct: false },
-                            { text: "農業を始めた理由", translation: "（开始务农的理由）", correct: true }
-                        ]
-                    }
-                ]
+  "2012-07": {
+    "label": "2012年7月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2012.07-1.mp3",
+        "script": {
+          "question": "電気屋の店員が新しい掃除機について説明しています。",
+          "questionTrans": "（电器店的店员正在说明新款吸尘器。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '店员一上来就介绍了吸尘器【噪音小（騒音が小さく）】和【很轻（とても軽く）】这两个特点。')\">えー、この掃除機は<span class=\"keyword\" onclick=\"showTooltip(event, '騒音（そうおん）：噪音。')\">騒音</span>が小さく、テレビを見ている部屋で使っても<span class=\"keyword\" onclick=\"showTooltip(event, '邪魔（じゃま）：妨碍，打扰。')\">邪魔</span>になりません。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '店员一上来就介绍了吸尘器【噪音小（騒音が小さく）】和【很轻（とても軽く）】这两个特点。')\">それにとても軽く、階段でも<span class=\"keyword\" onclick=\"showTooltip(event, '楽（らく）に：轻松地，容易地。')\">楽に</span><span class=\"keyword\" onclick=\"showTooltip(event, '持（も）ち運（はこ）ぶ：携带，搬运。')\">持ち運べます</span>。</span></span>",
+              "trans": "（嗯，这款吸尘器噪音很小，即使在看电视的房间里使用也不会觉得打扰。而且非常轻，在楼梯上也能轻松搬运。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着店员又强调了最棒的一点是【不污染房间的空气（部屋の空気を汚さないことです）】，并解释了原理。通篇都是在说明吸尘器的功能和性能，符合选项1。')\">さらに、この商品の一番素晴らしい点は、ですね。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着店员又强调了最棒的一点是【不污染房间的空气（部屋の空気を汚さないことです）】，并解释了原理。通篇都是在说明吸尘器的功能和性能，符合选项1。')\">部屋の空気を汚さないことです。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着店员又强调了最棒的一点是【不污染房间的空气（部屋の空気を汚さないことです）】，并解释了原理。通篇都是在说明吸尘器的功能和性能，符合选项1。')\">汚れは掃除機の中でこのようにゴミときれいな空気に分けられ、外には綺麗な空気しか出ていきません。</span></span>",
+              "trans": "（此外，这件商品最棒的一点，是不会污染房间的空气。污垢在吸尘器里面像这样被分离成垃圾和干净的空气，排到外面的只有干净的空气。）"
+            },
+            {
+              "speaker": "男",
+              "text": "うーん、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，店员虽然提到了【价格稍微偏高（価格は少し高めですが）】，但这只是转折铺垫，并非主要谈论的主题，可以排除。')\">今までのものより価格は少し高めですが</span></span>、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，店员最后说【也是非常推荐有宝宝的家庭使用的商品（赤ちゃんがいるご家庭にもぜひおすすめしたい商品です）】，这只是说明适用对象，而不是整段话的中心主题，可以排除。同时文中也没有提到具体的使用方法，排除选项3。')\">赤ちゃんがいるご家庭にもぜひおすすめしたい商品です。</span></span>",
+              "trans": "（嗯，虽然价格比以往的稍微偏高一些，但也是非常推荐有宝宝的家庭使用的商品。）"
+            },
+            {
+              "speaker": "問",
+              "text": "電気屋の店員は主に何について話していますか。",
+              "trans": "（电器店的店员主要在谈论什么？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "掃除機の性能",
+            "translation": "（吸尘器的性能）",
+            "correct": true
+          },
+          {
+            "text": "掃除機の価格",
+            "translation": "（吸尘器的价格）",
+            "correct": false
+          },
+          {
+            "text": "掃除機の使い方",
+            "translation": "（吸尘器的使用方法）",
+            "correct": false
+          },
+          {
+            "text": "掃除機を買う人",
+            "translation": "（买吸尘器的人）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2012.07-2.mp3",
+        "script": {
+          "question": "男の学生が女の学生に電話をかけています。",
+          "questionTrans": "（男学生正在给女学生打电话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "もしもし、高橋だけど、今いい？",
+              "trans": "（喂，我是高桥，现在方便吗？）"
+            },
+            {
+              "speaker": "女",
+              "text": "うん。何？",
+              "trans": "（嗯。什么事？）"
+            },
+            {
+              "speaker": "男",
+              "text": "あのさ、俺、コンビニでバイトやってるのを知ってるよね。最近卒業でやめる人が多くてね。人手が足りなくて困ってるんだよ。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男生确实提到自己因为课堂报告等很忙，但这只是说明他无法增加排班的原因，并不是这通电话要拜托的事情，可以排除。')\">俺も最近授業のレポートとかで忙しいし。</span></span>",
+              "trans": "（那个啊，你知道我在便利店打工吧。最近因为毕业辞职的人很多。人手不足很头疼呢。我最近也因为课堂的报告等很忙。）"
+            },
+            {
+              "speaker": "女",
+              "text": "レポートならいつも手伝ってあげてるでしょう？",
+              "trans": "（报告的话我不是一直都在帮你嘛？）"
+            },
+            {
+              "speaker": "男",
+              "text": "あ、それは感謝していますよ。",
+              "trans": "（啊，那个我很感谢你哦。）"
+            },
+            {
+              "speaker": "女",
+              "text": "あっ、そう？",
+              "trans": "（啊，是吗？）"
+            },
+            {
+              "speaker": "男",
+              "text": "で、もうすぐ四年だから、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，男生说【马上就大四了，必须得找工作了（仕事探さなきゃならないし）】，这是他自己的情况，并不是拜托女生给他介绍新工作，排除。')\">仕事探さなきゃならないし。</span></span>これ以上バイト入れらんないんだよね。で、店長が誰かいないかって探してるんだよ。",
+              "trans": "（然后，马上就大四了，也必须得找工作了。我没法再增加打工排班了。所以，店长在找有没有人能来。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，女生说自己【打工已经排满了（目一杯バイトしてるからね）】，说明男生并不是让女生来打工，排除。')\">えー？私ももう<span class=\"keyword\" onclick=\"showTooltip(event, '目一杯（めいっぱい）：竭尽全力，最大限度。')\">目一杯</span>バイトしてるからね。</span></span>",
+              "trans": "（诶？我的打工也已经排满了呢。）"
+            },
+            {
+              "speaker": "男",
+              "text": "うん、それは分かってる。じゃなくて、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男生在铺垫了人手不足和自己无法多排班后，明确问女生【有没有认识的人（心当たりないかな）】。结合前面提到的【店长在找有没有人能来（店長が誰かいないかって探してるんだよ）】，这说明他是在拜托女生介绍能来打工的人，符合选项4。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '心当（こころあ）たり：线索，头绪，猜想。')\">心当たり</span>ないかな。</span></span>",
+              "trans": "（嗯，那个我知道。不是让你来，是你有没有认识的人啊。）"
+            },
+            {
+              "speaker": "女",
+              "text": "ふうん。分かった。じゃ、ちょっと考えてみるね。",
+              "trans": "（嗯。知道了。那，我稍微想一想哦。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の学生は女の学生に何を頼んでいますか。",
+              "trans": "（男学生在拜托女学生做什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "レポートを手伝ってほしい",
+            "translation": "（希望能帮忙写报告）",
+            "correct": false
+          },
+          {
+            "text": "新しい仕事を紹介してほしい",
+            "translation": "（希望能介绍新工作）",
+            "correct": false
+          },
+          {
+            "text": "アルバイトをしてほしい",
+            "translation": "（希望对方来打工）",
+            "correct": false
+          },
+          {
+            "text": "アルバイトができる人を紹介してほしい",
+            "translation": "（希望能介绍可以打工的人）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2012.07-3.mp3",
+        "script": {
+          "question": "ラジオを聞いています。",
+          "questionTrans": "（正在听广播。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "こんにちは。ふじ町夏祭り実行委員会からのお知らせです。",
+              "trans": "（大家好。这里是富士町夏日祭执行委员会的通知。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，广播中确实提到了【夏日祭（夏祭り）】，但这是为了说明背景，并不是在呼吁大家参加活动本身，可以排除。')\">八月八日から十日まで<span class=\"keyword\" onclick=\"showTooltip(event, '恒例（こうれい）：惯例，常例。')\">恒例</span>の夏祭りが開催されます。</span></span>",
+              "trans": "（8月8日到10日将举办一年一度的夏日祭。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，广播提到【烟花大会（花火大会）】也是作为今年预计来场人数会很多的背景信息，排除。')\">今年は50周年に当たるため、花火大会も同時開催され、例年を<span class=\"keyword\" onclick=\"showTooltip(event, '上回（うわまわ）る：超出，超过。')\">上回る</span>来場者数が<span class=\"keyword\" onclick=\"showTooltip(event, '見込（みこ）む：预料，预计。')\">見込まれます</span>。</span></span>",
+              "trans": "（由于今年正值50周年，烟花大会也将同时举行，预计来场人数将超往年。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '广播中明确提出了核心诉求：为了让来场的各位能度过愉快的时光，【想开展由志愿者进行的清扫活动（ボランティアによる清掃活動を行いたいと思います）】，并在最后呼吁大家协助，符合选项4的“呼吁参加清扫志愿者”。')\">そこで、夏祭り開催中来場される方々に気持ち良く過ごしていただくため、ボランティアによる<span class=\"keyword\" onclick=\"showTooltip(event, '清掃（せいそう）：清扫，打扫。')\">清掃</span>活動を行いたいと思います。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '广播中明确提出了核心诉求：为了让来场的各位能度过愉快的时光，【想开展由志愿者进行的清扫活动（ボランティアによる清掃活動を行いたいと思います）】，并在最后呼吁大家协助，符合选项4的“呼吁参加清扫志愿者”。')\"></span></span>時間は午前七時より約一時間程度で、集合場所は中央公園の駐車場です。",
+              "trans": "（因此，为了让在夏日祭期间来场的各位能度过愉快的时光，我们想开展由志愿者进行的清扫活动。时间是从上午7点开始大约1小时左右，集合地点是中央公园的停车场。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '选项2“参加执行委员会”在广播中并未提及，排除。')\">皆様、是非ご協力くださいますよう、お願い申し上げます。</span></span>",
+              "trans": "（请大家务必给予协助，拜托了。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人は何を呼びかけていますか。",
+              "trans": "（男人在呼吁什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "夏祭りへの参加",
+            "translation": "（参加夏日祭）",
+            "correct": false
+          },
+          {
+            "text": "実行委員会への参加",
+            "translation": "（参加执行委员会）",
+            "correct": false
+          },
+          {
+            "text": "花火大会への参加",
+            "translation": "（参加烟花大会）",
+            "correct": false
+          },
+          {
+            "text": "清掃ボランティアへの参加",
+            "translation": "（参加清扫志愿者）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2012.07-4.mp3",
+        "script": {
+          "question": "大学の授業で先生が話しています。",
+          "questionTrans": "（在大学的课堂上老师正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "都市部は地面が<span class=\"keyword\" onclick=\"showTooltip(event, 'アスファルト（asphalt）：柏油，沥青。')\">アスファルト</span>で<span class=\"keyword\" onclick=\"showTooltip(event, '覆（おお）う：覆盖，蒙上。')\">覆われて</span>いますから、雨水は地面に<span class=\"keyword\" onclick=\"showTooltip(event, '染（し）み込（こ）む：渗入，浸透。')\">染み込まない</span>で、下水道に流れるようになっています。",
+              "trans": "（因为都市的地面被柏油覆盖着，所以雨水无法渗入地下，而是流向下水道。）"
+            },
+            {
+              "speaker": "男",
+              "text": "ところが、近年、増加している<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，老师提到集中暴雨是导致内涝的原因之一，但并没有探讨“集中暴雨本身”发生的原因，可以排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '集中豪雨（しゅうちゅうごうう）：集中暴雨，特大暴雨。')\">集中豪雨</span></span></span>では<span class=\"keyword\" onclick=\"showTooltip(event, '想定（そうてい）：设想，预期。')\">想定</span>を超える量の雨水が<span class=\"keyword\" onclick=\"showTooltip(event, '一気（いっき）に：一口气，一下子。')\">一気に</span>下水に流れ込むために、<span class=\"keyword\" onclick=\"showTooltip(event, '溢（あふ）れ出（だ）す：溢出，流出。')\">溢れ出して</span>しまいます。",
+              "trans": "（然而，在近年来不断增加的集中暴雨中，超出预想水量的雨水会一口气流入下水道，导致其溢出。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师明确指出了前半段讲话的核心：【这就是在都市地区发生内涝灾害的原因（これが都市部で浸水の被害が起こる原因です）】。')\">これが都市部で<span class=\"keyword\" onclick=\"showTooltip(event, '浸水（しんすい）：进水，水淹，内涝。')\">浸水</span>の被害が起こる原因です。</span></span>",
+              "trans": "（这就是在都市地区发生内涝灾害的原因。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着老师给出了解决问题的方法：【因此，作为其对策，在地下设置蓄水池的举措正在推广（で、その対策として、地下にタンクを設置する取り組みが広がっています）】。前半段讲内涝原因，后半段讲对策，完全符合选项3。')\">で、その対策として、地下に<span class=\"keyword\" onclick=\"showTooltip(event, 'タンク（tank）：槽，罐，蓄水池。')\">タンク</span>を設置する<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り組（く）み：举措，努力。')\">取り組み</span>が広がっています。</span></span>",
+              "trans": "（因此，作为其对策，在地下设置蓄水池的举措正在推广。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，老师提到建蓄水池储水是为了“减轻下水道负担”，并没有说是为了“利用”这些雨水，排除。关于选项2，老师只是开头提了一句都市的雨水会流向下水道，这只是背景介绍，并非主要探讨的机制，也可排除。')\">タンクに雨水を<span class=\"keyword\" onclick=\"showTooltip(event, '貯（た）める：积攒，储存。')\">貯める</span>ことで下水道の負担を減らし、被害を<span class=\"keyword\" onclick=\"showTooltip(event, '抑（おさ）える：抑制，控制。')\">抑えます</span>。</span></span>",
+              "trans": "（通过将雨水储存在蓄水池中来减轻下水道的负担，从而抑制灾害。）"
+            },
+            {
+              "speaker": "問",
+              "text": "先生は何について話していますか。",
+              "trans": "（老师在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "集中豪雨が起こる理由",
+            "translation": "（集中暴雨发生的原因）",
+            "correct": false
+          },
+          {
+            "text": "雨水を下水道に流す仕組み",
+            "translation": "（让雨水流向下水道的机制）",
+            "correct": false
+          },
+          {
+            "text": "浸水被害の原因と対策",
+            "translation": "（内涝灾害的原因和对策）",
+            "correct": true
+          },
+          {
+            "text": "雨水を利用する取り組み",
+            "translation": "（利用雨水的举措）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2012.07-5.mp3",
+        "script": {
+          "question": "ラジオで女の人が話しています。",
+          "questionTrans": "（在广播里女人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "みなさん、こんにちは、お昼のひととき、如何お過ごしですか。今日は私の学生時代の話をしたいと思うんですけど。私学生時代、バスケットボールをやってたんですね。で、ある日、大阪出身の先輩に、これ直しといてってボールを渡されたことがあったんです。あ、私生まれも育ちも東京なんですけどね。",
+              "trans": "（大家好，中午时光过得怎么样？今天我想讲讲我学生时代的故事。我学生时代，是打篮球的呢。然后，有一天，一位大阪出身的前辈把球递给我，说“把这个弄好（直す）”。啊，我生在东京长在东京哦。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和2，虽然女士提到了篮球和想要修理它，但这只是讲述误会发生时的具体情境，并非她讲话的核心主题，可以排除。')\">で、私、ボールを見ながら、<span class=\"keyword\" onclick=\"showTooltip(event, '修理（しゅうり）：修理。')\">修理</span>するところなんかないのにおかしいなあってみてたんですよ。</span></span>",
+              "trans": "（然后，我看着球，心想明明没有哪里需要修理的，真奇怪啊，就这么看着。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女士讲述了东京人（自己）和大阪人（前辈）对同一个词理解不同的经历，明确了前辈口中的词其实是“收拾”的意思，这符合选项3所说的语言的地域差异。')\">そうしたら、先輩に「あ、ごめん。分からなかったよね。<span class=\"keyword\" onclick=\"showTooltip(event, '片付（かたづ）ける：整理，收拾。')\">片付けて</span>おいてって意味だったの」って言われて、びっくりしたことがありました。</span></span>",
+              "trans": "（接着，前辈对我说“啊，抱歉。你不懂对吧。是叫你收起来的意思”，让我吃了一惊。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，虽然故事涉及到了前辈，但重点是因为出身地不同导致的词汇含义误解，而不是针对前辈的遣词造句（礼貌用语等），排除。')\">私は引っ越した経験もないので、本当びっくりしました。</span></span><span class=\"highlight-wrong\"><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，虽然故事涉及到了前辈，但重点是因为出身地不同导致的词汇含义误解，而不是针对前辈的遣词造句（礼貌用语等），排除。')\">みなさんもこんな経験ありませんか。</span></span>",
+              "trans": "（我也没有搬过家，所以真的吓了一跳。大家也有过这样的经历吗？）"
+            },
+            {
+              "speaker": "問",
+              "text": "女の人は主に何について話していますか。",
+              "trans": "（女人主要在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "バスケットボールの練習",
+            "translation": "（篮球的练习）",
+            "correct": false
+          },
+          {
+            "text": "ボールの修理方法",
+            "translation": "（球的修理方法）",
+            "correct": false
+          },
+          {
+            "text": "言葉の地域差",
+            "translation": "（语言的地域差异）",
+            "correct": true
+          },
+          {
+            "text": "先輩に対する言葉遣い",
+            "translation": "（对前辈的遣词造句）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "audio": "../assets/audio/2012.07-6.mp3",
+        "script": {
+          "question": "テレビで女の人が話しています。",
+          "questionTrans": "（在电视上，一位女士正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女士说【最近像这样讲述农业的乐趣和失败经历的机会变多了（最近こうして農業の楽しさや失敗談なんかをお話しする機会が増えたのですが）】，但这只是作为引子，并不是今天这段话的核心主题，可以排除。')\">えー、最近こうして農業の楽しさや失敗談なんかをお話しする機会が増えたのですが</span></span>、実は私も農家としてはまだまだ<span class=\"keyword\" onclick=\"showTooltip(event, '駆（か）け出（だ）し：新手，初学者。')\">かけだし</span>です。１０年前までは、ごく普通のOLでした。",
+              "trans": "（嗯，最近像这样讲述农业的乐趣和失败经历的机会变多了，但其实我作为农民还只是个新手。直到10年前，我还是一名极普通的OL。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女士明确抛出话题中心：【那样的我之所以觉醒去务农，孩子的存在占了很大的原因（そんな私が農業に目覚めたのは子供の存在が大きいです）】。接下来全是在解释这个原因。')\">そんな私が農業に<span class=\"keyword\" onclick=\"showTooltip(event, '目覚（めざ）める：觉醒，醒悟。')\">目覚めた</span>のは子供の存在が大きいです。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '女士明确抛出话题中心：【那样的我之所以觉醒去务农，孩子的存在占了很大的原因（そんな私が農業に目覚めたのは子供の存在が大きいです）】。接下来全是在解释这个原因。')\"></span></span>子育てをするようになったら、子供の口に入るものが気になってきたんですね。",
+              "trans": "（那样的我之所以觉醒去务农，孩子的存在占了很大的原因。开始育儿之后，就变得很在意孩子吃进嘴里的东西了呢。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，女士提到【在生产阶段使用了什么样的农药，准确来说并不清楚（生産段階でどんな農薬が使われているか、正確には分かりませんよね）】，这是她担忧的事情，但她整段话的目的是解释自己为何务农，而不是单纯探讨无农药农业，排除。')\">例えば、野菜一つ取っても、生産段階でどんな農薬が使われているか、正確には分かりませんよね。</span></span><span class=\"highlight-wrong\"><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，女士提到【在生产阶段使用了什么样的农药，准确来说并不清楚（生産段階でどんな農薬が使われているか、正確には分かりませんよね）】，这是她担忧的事情，但她整段话的目的是解释自己为何务农，而不是单纯探讨无农药农业，排除。')\"></span></span>でも、親としては、やっぱり安全なものを子供に食べさせたいと思ったんです。",
+              "trans": "（比如说，就拿一种蔬菜来说，在生产阶段使用了什么样的农药，准确来说并不清楚对吧。但是，作为父母，果然还是想让孩子吃安全的东西。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '最后总结：【因此，就想着那就自己来种尽可能安全的东西吧，于是进入了这个世界（それで、じゃ自分でできる限り安全なものを作ろうって思って、この世界に入りました）】。通篇都在阐述她从普通OL转行务农的契机和理由，符合选项4。选项2在文中完全没有提及，也可排除。')\">それで、じゃ自分でできる限り安全なものを作ろうって思って、この世界に入りました。</span></span>",
+              "trans": "（因此，就想着那就自己来种尽可能安全的东西吧，于是进入了这个世界（农业）。）"
+            },
+            {
+              "speaker": "問",
+              "text": "女の人は何について話していますか。",
+              "trans": "（这位女士在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "農業の楽しさや失敗",
+            "translation": "（农业的乐趣和失败）",
+            "correct": false
+          },
+          {
+            "text": "子育てと農業の両立",
+            "translation": "（育儿与农业的兼顾）",
+            "correct": false
+          },
+          {
+            "text": "農薬を使わない農業",
+            "translation": "（不使用农药的农业）",
+            "correct": false
+          },
+          {
+            "text": "農業を始めた理由",
+            "translation": "（开始务农的理由）",
+            "correct": true
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2012-07-概要理解"; 
+        let currentExamKey = "2012-07"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -280,10 +604,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -622,8 +946,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-<script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+<script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261016-summary-n1-2012-07-1d9c5c71cb1e"></script>
+<script src="../shared/follow-listening.js?v=20261016-summary-n1-2012-07-1d9c5c71cb1e"></script>
+<script src="../shared/follow-listening-entry.js?v=20261016-summary-n1-2012-07-1d9c5c71cb1e"></script>
 </body>
 </html>

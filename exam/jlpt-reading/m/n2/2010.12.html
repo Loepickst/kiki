@@ -1,17 +1,91 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>2010年12月・中篇読解演習</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;600;700;900&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../shared/reading-content-redesign.css?v=20260811-n2-short-footnotes-3">
+  <link rel="stylesheet" href="../../../../shared/domestic-fonts.css">
+    <link rel="stylesheet" href="../../shared/reading-content-redesign.css?v=20260907-first-paint">
     <link rel="stylesheet" href="../../shared/reading-tools.css?v=20260809-14">
+    <link rel="stylesheet" href="../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
 </head>
-<body class="reading-content-page reading-cloze-v2">
+<body class="kiki-unified-header-enabled reading-content-page reading-cloze-v2">
   <header class="kiki-unified-header kiki-unified-header--practice" data-kiki-unified-header="practice" data-kiki-unified-header-host="reading-practice">
     <div class="kiki-unified-header-left">
-        <a class="kiki-unified-brand" href="/index.html" aria-label="返回 kiji 首页"><img src="/assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline" alt="kiji"></a>
+        <a class="kiki-unified-brand" href="../../../../index.html" aria-label="返回 kiji 首页"><img src="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline" alt="kiji"></a>
         <span class="kiki-unified-divider" aria-hidden="true"></span>
         <a id="back-to-reading-index" class="kiki-unified-back" href="../../index.html?level=N2&type=middle&browse=year" aria-label="返回上一页" data-kiki-dynamic-back>
             <svg class="kiki-unified-back-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18 9 12l6-6"></path></svg>
@@ -92,7 +166,7 @@
         <section class="qcard sketch" id="qcard-66"><div class="q-head"><div class="qnum bg-blue">66</div><div><div class="qtext"><u>社員食堂で低カロリーの定食を食べる</u>ことがどんな良い結果につながるのか。</div><div class="qtrans">在员工食堂吃低卡路里套餐，会带来怎样的好结果？</div></div></div><div class="options"><label class="option"><input type="radio" name="q66" value="1"><span class="radio">1</span><span class="ocont"><span class="otext">社員の健康が守られ、社会の役に立つことにもなる。</span><span class="otrans">既能守护员工健康，也能对社会有所帮助。</span></span><span class="hint">选项解析</span><div class="detail"></div></label><label class="option"><input type="radio" name="q66" value="2"><span class="radio">2</span><span class="ocont"><span class="otext">社員に定食代の一部が返金され、寄付をする余裕ができる。</span><span class="otrans">员工会收到部分餐费返还，从而有余力捐款。</span></span><span class="hint">选项解析</span><div class="detail"></div></label><label class="option"><input type="radio" name="q66" value="3"><span class="radio">3</span><span class="ocont"><span class="otext">会社で寄付が日常のことになり、食生活に対する意識も高まる。</span><span class="otrans">在公司里捐款会成为日常，员工对饮食生活的意识也会提高。</span></span><span class="hint">选项解析</span><div class="detail"></div></label><label class="option"><input type="radio" name="q66" value="4"><span class="radio">4</span><span class="ocont"><span class="otext">会社は社会の役に立つことができ、食堂の経費の節約にもなる。</span><span class="otrans">公司能对社会有所帮助，也能节省食堂经费。</span></span><span class="hint">选项解析</span><div class="detail"></div></label></div><div class="exp"><div class="exp-title">✎ 中文解析</div><div class="keybox"><div class="klabel">【原文依据】</div><div class="kstext"></div></div><div class="exp-content"></div></div></section>
         <section class="qcard sketch" id="qcard-67"><div class="q-head"><div class="qnum bg-peach">67</div><div><div class="qtext">この文章では、これまでの寄付にはどのような問題があったと述べているか。</div><div class="qtrans">本文认为以往的捐款存在什么问题？</div></div></div><div class="options"><label class="option"><input type="radio" name="q67" value="1"><span class="radio">1</span><span class="ocont"><span class="otext">寄付をする方法があまり知られていない。</span><span class="otrans">捐款方法不太为人所知。</span></span><span class="hint">选项解析</span><div class="detail"></div></label><label class="option"><input type="radio" name="q67" value="2"><span class="radio">2</span><span class="ocont"><span class="otext">寄付をすることが社会的に評価されにくい。</span><span class="otrans">捐款行为不容易受到社会评价。</span></span><span class="hint">选项解析</span><div class="detail"></div></label><label class="option"><input type="radio" name="q67" value="3"><span class="radio">3</span><span class="ocont"><span class="otext">寄付をするのに手間がかかるシステムである。</span><span class="otrans">捐款制度需要花费时间和精力。</span></span><span class="hint">选项解析</span><div class="detail"></div></label><label class="option"><input type="radio" name="q67" value="4"><span class="radio">4</span><span class="ocont"><span class="otext">寄付をするためには経済的に余裕がなければならない。</span><span class="otrans">必须有经济余力才能捐款。</span></span><span class="hint">选项解析</span><div class="detail"></div></label></div><div class="exp"><div class="exp-title">✎ 中文解析</div><div class="keybox"><div class="klabel">【原文依据】</div><div class="kstext"></div></div><div class="exp-content"></div></div></section>
         <section class="qcard sketch" id="qcard-68"><div class="q-head"><div class="qnum bg-mint">68</div><div><div class="qtext">この文章における新しい寄付とはどういうものか。</div><div class="qtrans">本文中的“新的捐款”是怎样的？</div></div></div><div class="options"><label class="option"><input type="radio" name="q68" value="1"><span class="radio">1</span><span class="ocont"><span class="otext">企業が社員や消費者の意思にかかわりなく積極的に行うもの</span><span class="otrans">企业不管员工或消费者意愿而积极进行的捐款。</span></span><span class="hint">选项解析</span><div class="detail"></div></label><label class="option"><input type="radio" name="q68" value="2"><span class="radio">2</span><span class="ocont"><span class="otext">企業が慈善事業のためではなく利益を上げるために行うもの</span><span class="otrans">企业不是为了慈善事业，而是为了提高利润进行的捐款。</span></span><span class="hint">选项解析</span><div class="detail"></div></label><label class="option"><input type="radio" name="q68" value="3"><span class="radio">3</span><span class="ocont"><span class="otext">社員や消費者が手軽に寄付ができて企業側に利点があるもの</span><span class="otrans">员工和消费者可以轻松捐款，同时企业方面也有好处。</span></span><span class="hint">选项解析</span><div class="detail"></div></label><label class="option"><input type="radio" name="q68" value="4"><span class="radio">4</span><span class="ocont"><span class="otext">社員や消費者が気がつかないうちに社会貢献に参加できるもの</span><span class="otrans">员工和消费者在没有察觉的情况下参与社会贡献。</span></span><span class="hint">选项解析</span><div class="detail"></div></label></div><div class="exp"><div class="exp-title">✎ 中文解析</div><div class="keybox"><div class="klabel">【原文依据】</div><div class="kstext"></div></div><div class="exp-content"></div></div></section>
-        <div class="page-nav"><button type="button" class="navbtn" onclick="switchPage(2)">◀ 前の文章</button><button class="submit-btn" id="submitBtn3" onclick="submitAnswers(3,[66,67,68])">全文答え合わせ</button><button type="button" class="navbtn hidden">次の文章 ▶</button></div>
+        <div class="page-nav"><button type="button" class="navbtn" onclick="switchPage(2)">◀ 前の文章</button><button type="button" class="navbtn hidden">次の文章 ▶</button></div>
       </aside>
     </div>
   </div>
@@ -116,17 +190,18 @@
     function toggleTranslation(btn,page){const article=document.getElementById('articleContent'+page);if(!article.classList.contains('reviewed')){alert('请先完成本篇所有题目并点击「全文答え合わせ」，再查看参考译文。');return}btn.classList.toggle('active');document.querySelectorAll(`#page-${page} .translation`).forEach(t=>t.classList.toggle('show'))}
     function switchPage(page){document.querySelectorAll('.page-container').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});document.getElementById('tooltip').classList.remove('show')}
   </script>
-  <script src="../../../../shared/study-quest-test-runtime.js"></script>
-  <script src="../../../../shared/study-quest-test-boot.js"></script>
+  <script src="../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+  <script src="../../../../shared/study-quest-test-boot-github-20261020.js"></script>
   <script src="../../shared/reading-year-system.js?v=20260809-reading-mistakes"></script>
   <script src="../../categories/index.js?v=20260814-n2-middle-content-domains"></script>
   <script src="../../shared/reading-category-system.js?v=20260814-n2-middle-content-domains"></script>
   <script src="../../shared/reading-n2-middle-session.js?v=20260814-n2-middle-content-domains"></script>
-    <script src="../../../../shared/word-bank.js?v=20260808-reading-tools"></script>
+    <script src="../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
     
 
 <script src="../../shared/reading-analysis-n2-middle.js?v=20260811-unified-analysis-1"></script>
-<script src="../../shared/reading-practice-redesign.js?v=20260814-n2-middle-content-domains"></script>
-<script src="../../shared/reading-tools.js?v=20260811-reading-single-source-1"></script>
+<script src="../../shared/reading-practice-redesign.js?v=20261011-scoped-lookup-3"></script>
+<script src="../../shared/reading-tools.js?v=20261011-scoped-lookup-3"></script>
+    <script src="../../../../shared/selection-dictionary.js?v=20261012-lookup-spelling-2" data-lookup-scope="reading"></script>
 </body>
 </html>

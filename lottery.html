@@ -1,10 +1,79 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>御神签 - kikiの日本語の家</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;700&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>塔罗占卜 - kikiの日本語の家</title>
     <link rel="stylesheet" href="shared/home-pet.css?v=20260717-ronin-unlock1">
     <style>
         :root {
@@ -3000,6 +3069,50 @@
             object-fit: cover; filter: none; opacity: 1;
         }
         .collection-item.full-art-item:focus-visible { outline: 2px solid var(--accent-gold); outline-offset: 3px; }
+
+        /* 图鉴缩略图放大；未解锁的普通卡显示模糊剪影，保留“还差这一张”的期待感 */
+        .rarity-grid .collection-item:not(.full-art-item) .item-icon {
+            width: 100%;
+            max-width: 132px;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            margin-bottom: 10px;
+            padding: 0;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .rarity-grid .collection-item:not(.full-art-item) .collection-icon-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .rarity-grid .collection-item.locked .item-icon:not(.mystery-icon) {
+            position: relative;
+            background: #ebe7dd;
+        }
+
+        .rarity-grid .collection-item.locked .collection-icon-img {
+            filter: blur(5px) grayscale(0.85) opacity(0.5);
+            transform: scale(1.12);
+        }
+
+        .rarity-grid .collection-item.locked .item-icon:not(.mystery-icon)::after {
+            content: "？";
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            color: rgba(70, 64, 52, 0.55);
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .rarity-grid .collection-item.unlocked:hover {
+            transform: none;
+        }
         .preview-overlay.is-full-art { align-items: center; padding: 24px; }
         .preview-card.is-full-art {
             width: min(88vw, calc((100dvh - 96px) * 2 / 3), 520px); max-width: none;
@@ -3017,25 +3130,29 @@
         .preview-card.is-full-art .preview-close { top: -14px; right: -14px; background: #faf4e8; color: #403b34; border-radius: 50%; }
     </style>
     <link rel="stylesheet" href="shared/site-fonts.css">
-    <link rel="stylesheet" href="shared/unified-header.css?v=20260907-first-paint" data-kiki-unified-header-style>
-    <link rel="preload" as="script" href="shared/unified-header.js?v=20260907-first-paint">
-    <script src="shared/navigation-routes.js?v=20260907" defer></script>
+    <link rel="stylesheet" href="shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
     <link rel="preload" as="image" href="assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
     <link rel="stylesheet" href="shared/fonts/noto-serif-jp/noto-serif-jp-variable.css">
-    <link rel="stylesheet" href="shared/lottery-tarot-cover.css?v=20260909-brush19">
+    <link rel="stylesheet" href="shared/lottery-tarot-cover-github-20261020.css?v=20261012-art-resilience1">
     <link rel="preload" as="image" href="assets/lottery-tarot-draw-button.webp">
     <link rel="preload" as="image" href="assets/lottery-tarot-card-back-v2.webp">
     <link rel="preload" as="image" href="assets/lottery-tarot-card-front.webp">
-    <link rel="stylesheet" href="shared/lottery-tarot-flow.css?v=20260910-nr-reveal1">
-    <link rel="stylesheet" href="shared/lottery-full-art.css?v=20260910-nr-jewel1">
+    <link rel="stylesheet" href="shared/lottery-tarot-flow-github-20261020.css?v=20261016-dark-reveal1">
+    <link rel="stylesheet" href="shared/lottery-dealer.css?v=20261016-dark-reveal1">
+    <link rel="stylesheet" href="shared/lottery-full-art-github-20261020.css?v=20261016-k-village1">
     <link rel="stylesheet" href="shared/lottery-nr-preview.css?v=20260922-8">
     <link rel="preload" as="font" href="shared/fonts/yuji-syuku/yuji-syuku-tarot-headings-v2.woff2" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="shared/lottery-items.css?v=20261012-kr-choice1">
+    <link rel="stylesheet" href="shared/fonts/noto-serif-sc/index.css">
+    <link rel="stylesheet" href="shared/lottery-album.css?v=20261016-k-village1">
 </head>
 <body class="kiki-unified-header-enabled lottery-tarot-page">
     <header data-kiki-unified-header-host="page" data-kiki-header-pending>
         <a href="index.html" class="back-btn">主页</a>
         <h1>今日はどんな幸運が待っているかな？</h1>
-        <button class="collection-btn" id="openCollectionBtn" data-mobile-label="图鉴"><span class="collection-btn-desktop">奖品一览</span><span class="collection-btn-mobile">图鉴</span></button>
+        <button class="collection-btn" id="openCollectionBtn" data-mobile-label="图鉴"><span class="collection-btn-desktop">图鉴</span><span class="collection-btn-mobile">图鉴</span></button>
     </header>
 
     <main lang="ja" class="lottery-stage lottery-stage--tarot" aria-labelledby="tarotTitle">
@@ -3054,8 +3171,8 @@
                 >
             </picture>
             <div class="magic-glow" id="magicGlow"></div>
-            <button class="limited-event-notice" id="foilEventUseBtn" type="button" aria-label="ホロ確定券を使う" title="使用すると、次に引くホロ対応カードが必ずホロになります">
-                <span class="limited-event-icon" aria-hidden="true">光</span>
+            <button class="limited-event-notice" id="foilEventUseBtn" type="button" aria-label="使用闪卡券" title="点一下预留一张，下一张支持闪卡的卡必为闪卡">
+                <span class="limited-event-icon" aria-hidden="true">闪</span>
                 <span class="limited-event-count" id="foilEventCount">×2</span>
             </button>
         </div>
@@ -3072,16 +3189,18 @@
             <span class="tarot-button-face" aria-hidden="true"><img src="assets/lottery-tarot-draw-button.webp" width="2137" height="736" alt="" decoding="async"></span>
             <span class="tarot-button-state" aria-hidden="true"><span class="draw-label-desktop" lang="ja">カードを引く</span><span class="draw-label-mobile">カードを引く</span></span>
         </button>
-        <button class="daily-tarot-entry" id="dailyTarotEntry" type="button" hidden>今日のタロット・愚者</button>
+        <p id="foilTicketStatus" role="status" hidden style="font-size:12px;line-height:1.6;color:var(--text-secondary);margin:8px 0">已预留 1 张闪卡券</p>
+        <button class="daily-tarot-entry" id="dailyTarotEntry" type="button" hidden>今日塔罗 · 愚者</button>
         </section>
 
         <dialog class="tarot-choice-dialog" id="tarotChoiceDialog" aria-labelledby="tarotChoiceHeading" aria-describedby="tarotChoiceHint">
-            <button class="tarot-choice-close" id="closeTarotChoiceBtn" type="button" aria-label="カードを閉じる" autofocus>×</button>
+            <button class="tarot-choice-close" id="closeTarotChoiceBtn" type="button" aria-label="关闭" autofocus>×</button>
             <div class="tarot-entry-transition" id="tarotEntryTransition" aria-hidden="true" hidden></div>
             <section class="tarot-prologue" id="tarotPrologue" tabindex="-1" aria-label="今日のタロットからのメッセージ" hidden>
                 <p class="tarot-prologue-copy" id="tarotPrologueCopy" lang="zh-CN" aria-hidden="true"></p>
                 <p class="tarot-prologue-readable" id="tarotPrologueReadable" lang="zh-CN" role="status"></p>
             </section>
+            <div class="tarot-dealer" id="tarotDealer" aria-hidden="true"></div>
             <div class="tarot-choice-heading">
                 <p id="tarotChoiceEyebrow">今日の運勢</p>
                 <h2 id="tarotChoiceHeading" lang="ja">今日の運勢</h2>
@@ -3089,7 +3208,7 @@
             <div class="tarot-reading-layout" id="tarotReadingLayout">
                 <div class="tarot-card-column">
                     <div class="tarot-draw-ritual" role="group" aria-label="並んだカード"></div>
-                    <p class="tarot-daily-effect" id="tarotDailyEffect" lang="zh-CN" hidden><span id="tarotDailyEffectText"></span></p>
+                    <p class="tarot-daily-effect" id="tarotDailyEffect" lang="zh-CN" hidden><span class="tarot-blessing-label" lang="ja">今日の加護</span><span id="tarotDailyEffectText"></span></p>
                     <p class="tarot-choice-hint" id="tarotChoiceHint" role="status">心を静めて、カードが並ぶのを待ちましょう…</p>
                 </div>
                 <div class="tarot-fortune-panel" id="tarotFortunePanel">
@@ -3099,11 +3218,12 @@
                     </section>
                     <div class="tarot-reading-controls" id="tarotReadingControls" hidden>
                         <div class="tarot-page-navigation">
-                            <button id="tarotPrevious" type="button" aria-label="前のカード">←</button>
+                            <button id="tarotPrevious" type="button" aria-label="上一张">←</button>
                             <span class="tarot-page-number" id="tarotPageNumber" aria-live="polite"></span>
-                            <button id="tarotNext" type="button" aria-label="次のカード">→</button>
+                            <button id="tarotNext" type="button" aria-label="下一张">→</button>
                         </div>
                         <button class="tarot-continue" id="tarotContinue" type="button">抽取今日小卡</button>
+                        <button class="tarot-continue tarot-finish-collection" id="tarotFinishCollection" type="button" lang="zh-CN" hidden>去图鉴看看</button>
                     </div>
                 </div>
             </div>
@@ -3113,39 +3233,48 @@
 
     </main>
 
-    <div class="modal-overlay" id="collectionModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title-group">
-                    <h2>宝もの</h2>
-                </div>
-                <div class="modal-header-actions">
-                    <button type="button" class="modal-action-btn" id="exportCollectionBtn">导出</button>
-                    <button type="button" class="modal-action-btn" id="importCollectionBtn">导入</button>
-                    <button type="button" class="close-btn" id="closeCollectionBtn" aria-label="关闭图鉴">&times;</button>
+    <div class="modal-overlay kiki-album" id="collectionModal">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="albumTitle">
+            <div class="album-head">
+                <div class="modal-header">
+                    <div class="modal-title-group">
+                        <h2 id="albumTitle" lang="ja">カード図鑑</h2>
+                    </div>
+                    <div class="album-stats" id="albumStats" aria-live="polite">
+                        <p><b id="albumStatOwned">0</b><span>/ <span id="albumStatTotal">0</span></span><small>已收集</small></p>
+                        <p><b id="albumStatFoil">0</b><small>闪卡</small></p>
+                        <p><b id="albumStatSets">0</b><span>/ <span id="albumStatSetTotal">0</span></span><small>套组集齐</small></p>
+                    </div>
+                    <div class="modal-header-actions">
+                        <button type="button" class="close-btn" id="closeCollectionBtn" aria-label="关闭图鉴">&times;</button>
+                    </div>
                 </div>
             </div>
 
-            <div class="modal-tabs" id="modalTabs">
-                <button type="button" class="modal-tab active" data-modal-tab="collection">图鉴</button>
-                <button type="button" class="modal-tab" data-modal-tab="themes">套组</button>
-                <button type="button" class="modal-tab" data-modal-tab="shop">兑换所</button>
+            <div class="album-bar">
+                <div class="modal-tabs" id="modalTabs" role="tablist">
+                    <button type="button" class="modal-tab active" data-modal-tab="collection">小卡</button>
+                    <button type="button" class="modal-tab" data-modal-tab="themes">套组</button>
+                    <button type="button" class="modal-tab" data-modal-tab="items">道具</button>
+                </div>
             </div>
 
             <section class="modal-panel active" data-modal-panel="collection">
                 <div class="collection-toolbar">
-                    <select class="collection-filter-mobile" id="collectionFilterMobile" aria-label="筛选图鉴卡片">
-                        <option value="all">全部卡片</option>
-                        <option value="unlocked">只看已解锁</option>
-                        <option value="locked">只看未解锁</option>
-                    </select>
                     <div class="collection-filters" id="collectionFilters">
                         <button type="button" class="collection-filter-btn active" data-collection-filter="all">全部</button>
-                        <button type="button" class="collection-filter-btn" data-collection-filter="unlocked">只看已解锁</button>
-                        <button type="button" class="collection-filter-btn" data-collection-filter="locked">只看未解锁</button>
+                        <button type="button" class="collection-filter-btn" data-collection-filter="unlocked">已收集</button>
+                        <button type="button" class="collection-filter-btn" data-collection-filter="locked">未收集</button>
                     </div>
-                    <div class="collection-stats" id="collectionStats">总收集进度：0 / 0</div>
+                    <select class="collection-filter-mobile" id="collectionFilterMobile" aria-label="按收集状态筛选">
+                        <option value="all">全部</option>
+                        <option value="unlocked">已收集</option>
+                        <option value="locked">未收集</option>
+                    </select>
+                    <select class="album-pool-select" id="collectionPoolFilter" aria-label="按卡池筛选"><option value="all">全部卡池</option><option value="normal">常驻</option><option value="limited">限定</option></select>
+                    <div class="collection-stats" id="collectionStats" hidden></div>
                 </div>
+                <nav class="album-rarity-index" id="albumRarityIndex" aria-label="按稀有度跳转"></nav>
                 <div class="collection-grid" id="collectionGrid"></div>
             </section>
 
@@ -3154,18 +3283,31 @@
                 <div class="theme-set-grid" id="themeSetGrid"></div>
             </section>
 
-            <section class="modal-panel" data-modal-panel="shop">
-                <div class="shop-summary">
-                    <div class="shop-summary-copy">
-                        <h3 class="shop-summary-title">卡片点数</h3>
-                        <p class="shop-summary-note">卡片解锁二阶段后，再次重复抽到即可积累点数。</p>
-                    </div>
-                    <div class="shop-balance" aria-label="当前卡片点数">
-                        <strong class="shop-balance-value" id="shopPointsBalance">0</strong>
-                        <span class="shop-balance-label">点</span>
+            <section class="modal-panel" data-modal-panel="items">
+                <div class="album-wallet">
+                    <div class="shop-summary">
+                        <div class="shop-summary-copy">
+                            <h3 class="shop-summary-title">点数</h3>
+                            <p class="shop-summary-note">小卡解锁隐藏卡面以后，再抽到同一张就会得到点数。</p>
+                        </div>
+                        <div class="shop-balance" aria-label="当前点数">
+                            <strong class="shop-balance-value" id="shopPointsBalance">0</strong>
+                            <span class="shop-balance-label">点</span>
+                        </div>
                     </div>
                 </div>
+                <h3 class="album-subhead">兑换</h3>
                 <div class="shop-grid" id="shopGrid"></div>
+                <h3 class="album-subhead">持有的道具</h3>
+                <div id="inventoryItems"></div>
+                <h3 class="album-subhead">存档</h3>
+                <div class="album-backup">
+                    <p>换设备或清理浏览器之前，先导出一份存档；之后用「导入」恢复。</p>
+                    <div class="album-backup-actions">
+                        <button type="button" class="modal-action-btn" id="exportCollectionBtn">导出存档</button>
+                        <button type="button" class="modal-action-btn" id="importCollectionBtn">导入存档</button>
+                    </div>
+                </div>
             </section>
         </div>
     </div>
@@ -3193,15 +3335,22 @@
         </div>
     </div>
 
-    <script src="shared/lottery-full-art.js?v=20260910-nr-jewel1"></script>
+    <link rel="stylesheet" href="shared/lottery-moon.css?v=3">
+    <script src="shared/lottery-moon.js?v=20261008-once"></script>
+    <script src="shared/lottery-full-art-github-20261020.js?v=20261016-k-village1"></script>
     <script src="shared/lottery-nr-preview.js?v=20260922-8"></script>
-    <script src="shared/omikuji-catalog.js?v=20260910-nr-draw1"></script>
-    <script src="shared/lottery-transactions.js?v=20260910-reroll32"></script>
-    <script src="shared/kiki-inventory.js?v=20260910-effects29"></script>
-    <script src="shared/home-pet.js?v=20260717-ronin-unlock1"></script>
-    <script src="shared/lottery-tarot-effects.js?v=20260910-rest-day1"></script>
-    <script src="shared/lottery-tarot-rules.js?v=20260910-messages2"></script>
-    <script src="shared/lottery-tarot-flow.js?v=20260910-nr-reveal1"></script>
+    <script src="shared/omikuji-catalog-github-20261020.js?v=20261016-k-village1"></script>
+    <script src="shared/lottery-album-thumbs.js?v=20261016-k-village1"></script>
+    <script src="shared/lottery-runtime-status.js?v=20261015-album1"></script>
+    <script src="shared/lottery-transactions-github-20261020.js?v=20261009-storage-recovery2"></script>
+    <script src="shared/kiki-inventory-github-20261020.js?v=20261015-album1"></script>
+    <script src="shared/lottery-kr-choice.js?v=20261015-album1"></script>
+    <script src="shared/lottery-items.js?v=20261015-book2"></script>
+    <script src="shared/home-pet-github-20261020.js?v=20260928-local-assets1"></script>
+    <script src="shared/lottery-tarot-effects-github-20261020.js?v=20261018-sun-copy1"></script>
+    <script src="shared/lottery-tarot-rules-github-20261020.js?v=20261018-sun-copy1"></script>
+    <script src="shared/lottery-dealer.js?v=20261013-dealer5"></script>
+    <script src="shared/lottery-tarot-flow-github-20261020.js?v=20261018-sun-copy1"></script>
     <script>
         (async function initializeLottery() {
         await window.KikiLotteryTransactions.ready;
@@ -3245,7 +3394,7 @@
         const COLA_TREAT_UNLOCK_ID = 'colaTreat';
         const COLA_FORTUNE_ID = 'f19';
         const RONIN_SKIN_FORTUNE_ID = 'f45';
-        const FALLBACK_IMAGE_URL = 'https://via.placeholder.com/300x320?text=Card+Missing';
+        const FALLBACK_IMAGE_URL = 'assets/lottery-tarot-card-back-v2.webp';
 
         const omikujiCatalogApi = window.OmikujiCatalog || null;
         const inventoryApi = window.KikiInventory || null;
@@ -3281,6 +3430,7 @@
         const foilEventCount = document.getElementById('foilEventCount');
         const lotteryStage = document.querySelector('.lottery-stage');
         let isDrawing = false;
+        let foilActionPending = false;
         let tarotFlow = null;
 
         const collectionModal = document.getElementById('collectionModal');
@@ -3328,6 +3478,8 @@
 
         let currentCollectionFilter = 'all';
         let currentModalTab = 'collection';
+        let currentPoolFilter = 'all';
+        let itemsController = null;
         let currentState = null;
         let remain = 0;
         let backupToastTimer = 0;
@@ -3472,6 +3624,20 @@
             migratedEntry.preferredVariant = 'foil';
             delete migratedEntry.hiddenStage3UnlockedAt;
             return migratedEntry;
+        }
+
+        // 下一次每日刷新的时间点（按抽签所用时区的日期变化二分查找）
+        function getNextLotteryReset(now = Date.now()) {
+            const today = getTodayString(now);
+            let low = now;
+            let high = now + 26 * 3600 * 1000;
+            if (getTodayString(high) === today) return high;
+            while (high - low > 30 * 1000) {
+                const mid = Math.floor((low + high) / 2);
+                if (getTodayString(mid) === today) low = mid;
+                else high = mid;
+            }
+            return high;
         }
 
         function getTodayString(timestamp = Date.now()) {
@@ -3811,59 +3977,65 @@
         }
 
         function syncFoilEventDisplay() {
-            if (!foilEventUseBtn || !foilEventCount) {
-                return;
+            if (!foilEventUseBtn || !foilEventCount) return;
+            const status = inventoryApi ? null : getFoilEventStatus();
+            const itemCount = inventoryApi ? inventoryApi.getItemCount('foilTicket') : status.displayRemaining;
+            const isArmed = inventoryApi ? inventoryApi.isEffectActive('nextFoil') : status.isArmed;
+            const canUse = itemCount > 0;
+            foilEventUseBtn.disabled = isDrawing || foilActionPending || (!isArmed && !canUse);
+            foilEventUseBtn.classList.toggle('is-armed', isArmed);
+            foilEventUseBtn.classList.toggle('is-claimed', !isArmed && !canUse);
+            foilEventUseBtn.setAttribute('aria-pressed', String(isArmed));
+            foilEventCount.textContent = isArmed ? `×${itemCount} · 已预留 1 张` : `×${itemCount}`;
+            const message = isArmed
+                ? '已预留 1 张，用在下一张支持闪卡的卡上，跨天保留；再点一下可以取消。'
+                : canUse ? '点一下预留 1 张，下一张支持闪卡的卡必为闪卡；没用掉之前可以取消。'
+                : '没有闪卡券。';
+            foilEventUseBtn.title = message;
+            foilEventUseBtn.setAttribute('aria-label', `闪卡券：${message} 持有 ${itemCount} 张`);
+            const note = document.getElementById('foilTicketStatus');
+            if (note) {
+                note.hidden = !isArmed;
+                note.textContent = isArmed ? '已预留 1 张闪卡券 · 没用掉跨天保留 · 点「闪」取消' : '';
             }
-            if (isDrawing) {
-                foilEventUseBtn.disabled = true;
-                return;
-            }
-            if (inventoryApi) {
-                const itemCount = inventoryApi.getItemCount('foilTicket');
-                const isArmed = inventoryApi.isEffectActive('nextFoil');
-                const isAvailable = itemCount > 0 && !isArmed;
-                const isConsumed = itemCount <= 0 && !isArmed;
+        }
 
-                foilEventUseBtn.classList.toggle('is-armed', isArmed);
-                foilEventUseBtn.classList.toggle('is-claimed', isConsumed);
-                foilEventCount.textContent = `×${itemCount}`;
-
-                if (isArmed) {
-                    foilEventUseBtn.disabled = true;
-                    foilEventUseBtn.title = 'ホロ確定券を使用中です。次のホロ対応カードが必ずホロになります';
-                    foilEventUseBtn.setAttribute('aria-label', `ホロ確定券を使用中です。所持数${itemCount}枚`);
-                    return;
-                }
-                foilEventUseBtn.disabled = !isAvailable;
-                foilEventUseBtn.title = isConsumed ? 'ホロ確定券を持っていません' : '使用すると、次に引くホロ対応カードが必ずホロになります';
-                foilEventUseBtn.setAttribute('aria-label', isConsumed ? 'ホロ確定券の所持数はゼロです' : `ホロ確定券を使う。所持数${itemCount}枚`);
-                return;
-            }
+        function cancelFoilEventCard() {
+            if (inventoryApi && !inventoryApi.cancelFoilTicket()) return false;
             const state = getLimitedEventState();
             const status = getFoilEventStatus(state);
-            const { isAvailable, isArmed, isConsumed } = status;
-
-            foilEventUseBtn.classList.toggle('is-armed', isArmed);
-            foilEventUseBtn.classList.toggle('is-claimed', isConsumed);
-            foilEventCount.textContent = `×${status.displayRemaining}`;
-
-            if (isArmed) {
-                foilEventUseBtn.disabled = true;
-                foilEventUseBtn.title = 'ホロ確定券を使用中です。次のホロ対応カードが必ずホロになります';
-                foilEventUseBtn.setAttribute('aria-label', `ホロ確定券を使用中です。残り${status.displayRemaining}枚`);
-                return;
+            if (!inventoryApi && !status.isArmed) return false;
+            if (status.isArmed) {
+                state[foilOnceEvent.id] = { ...status.record, armedAt: 0, activatedAt: 0 };
+                saveLimitedEventState(state);
             }
+            return true;
+        }
 
-            if (isConsumed) {
-                foilEventUseBtn.disabled = true;
-                foilEventUseBtn.title = 'ホロ確定券は使用済みです';
-                foilEventUseBtn.setAttribute('aria-label', 'ホロ確定券は使用済みです。残りはゼロ枚です');
-                return;
+        async function toggleFoilTicket() {
+            if (foilActionPending || isDrawing) return;
+            // Capture the requested action before waiting for the shared lock.
+            // Two tabs both clicking "use" must not toggle each other off.
+            const cancel = isFoilEventArmed();
+            foilActionPending = true;
+            window.KikiLotteryStatus?.pending(true);
+            syncFoilEventDisplay();
+            try {
+                const applied = await window.KikiLotteryTransactions.run('foil-ticket', () =>
+                    cancel ? cancelFoilEventCard() : activateFoilEventCard());
+                if (applied) showBackupToast(cancel
+                    ? '已取消预留，闪卡券退回 1 张'
+                    : '已预留 1 张闪卡券，用在下一张支持闪卡的卡上，跨天保留');
+            } catch (error) {
+                console.error('Foil ticket update failed', error);
+                window.KikiLotteryStatus?.report(error);
+                showBackupToast(error?.message || '闪卡券状态未能保存，请重试', 'error');
+            } finally {
+                foilActionPending = false;
+                window.KikiLotteryStatus?.pending(false);
+                syncFoilEventDisplay();
+                syncActionButtonState();
             }
-
-            foilEventUseBtn.disabled = !isAvailable;
-            foilEventUseBtn.title = '使用すると、次に引くホロ対応カードが必ずホロになります';
-            foilEventUseBtn.setAttribute('aria-label', `ホロ確定券を使う。所持数${status.displayRemaining}枚`);
         }
 
         function resolveFoilDraw(fortune, existingEntry, round = null, random = Math.random) {
@@ -4214,10 +4386,12 @@
             return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
         }
 
+        // 图鉴里抽卡得来的是常态，不再逐张标注；只标出其他来源。
         function getSourceLabel(fortune) {
             if (!fortune) {
-                return '未知';
+                return '';
             }
+            if (fortune.acquireMode === 'three_card_guarantee') return '';
             if (fortune.obtainable === false || fortune.isIndependentDraw) return '特殊卡';
             if (fortune.acquireMode === 'set_reward') {
                 return '套组';
@@ -4225,7 +4399,10 @@
             if (fortune.acquireMode === 'growth') {
                 return '成长';
             }
-            return '抽卡';
+            if (fortune.acquireMode === 'achievement') {
+                return '成就';
+            }
+            return '';
         }
 
         function getAvailabilityLabel(fortune) {
@@ -4401,7 +4578,7 @@
         }
 
         function grantFortune(fortune, options = {}) {
-            if (!fortune || fortune.obtainable === false || fortune.acquireMode === 'unavailable') throw new Error('このカードはまだ入手できません');
+            if (!fortune || fortune.obtainable === false || fortune.acquireMode === 'unavailable') throw new Error('这张卡暂时无法获得');
             const meta = migrateLegacyCollectionIfNeeded();
             const now = Number.isFinite(Number(options.obtainedAt)) ? Number(options.obtainedAt) : Date.now();
             const existing = meta[fortune.id];
@@ -4819,10 +4996,13 @@
             return { mode: 'restore', addedCount: 0 };
         }
 
+        // 可抽时按钮文字画在插画里（カードを引く）；抽完后盖上的状态字用中文。
         function setActionButtonLabel(desktopLabel, mobileLabel = desktopLabel) {
+            const lang = /[\u3040-\u30ff]/u.test(desktopLabel) ? 'ja' : 'zh-CN';
             drawBtn.setAttribute('aria-label', desktopLabel);
             drawBtn.querySelector('.draw-label-desktop').textContent = desktopLabel;
             drawBtn.querySelector('.draw-label-mobile').textContent = mobileLabel;
+            drawBtn.querySelector('.tarot-button-state')?.setAttribute('lang', lang);
         }
 
         function syncActionButtonState() {
@@ -4833,11 +5013,11 @@
             dailyTarotEntry.hidden = !dailyTarot;
             dailyTarotEntry.disabled = isDrawing;
             if (dailyTarot) {
-                dailyTarotEntry.textContent = `今日のタロット・${dailyTarot.title}`;
-                dailyTarotEntry.setAttribute('aria-label', `今日のタロットを見る：${dailyTarot.title}。${dailyTarot.effectText || ''}`);
+                dailyTarotEntry.textContent = `今日塔罗 · ${dailyTarot.title}`;
+                dailyTarotEntry.setAttribute('aria-label', `查看今日塔罗：${dailyTarot.title}。${dailyTarot.effectText || ''}`);
             }
             drawBtn.disabled = isDrawing || (remain <= 0 && Boolean(dailyTarot) && !tarotFlow?.hasHand());
-            setActionButtonLabel(drawBtn.disabled && !isDrawing ? 'また明日' : 'カードを引く');
+            setActionButtonLabel(drawBtn.disabled && !isDrawing ? '明天再来' : 'カードを引く');
         }
 
         function resetTarotCover() {
@@ -4913,6 +5093,7 @@
                 : null;
             const displayFortune = getVariantDisplayFortune(fortune, entry, activeVariant);
             const isFoilDisplay = activeVariant === 'foil' && hasFoil;
+            const isMoonViewer = displayFortune.id === 'sp_yueji';
 
             window.KikiNRPreview?.clear();
             currentPreviewFortuneId = fortune.id;
@@ -4928,19 +5109,28 @@
                 <span class="preview-title-main">${escapeHtml(displayFortune.title)}</span>
                 <span class="preview-title-count">×${escapeHtml(obtainedCount)}</span>
             `;
-            previewTitle.style.color = displayFortune.color;
+            const previewRarityColor = displayFortune.rarity === 'NR' ? '' : rarityColors[displayFortune.rarity] || displayFortune.color;
+            previewCard.style.setProperty('--rarity', previewRarityColor || '#89644F');
             previewCard.classList.toggle('is-foil', isFoilDisplay);
             previewCard.classList.toggle('is-full-art', Boolean(displayFortune.fullArt));
+            previewCard.classList.toggle('is-moon-viewer', isMoonViewer);
             previewOverlay.classList.toggle('is-full-art', Boolean(displayFortune.fullArt));
-            previewImage.parentElement.classList.toggle('kiki-full-art', Boolean(displayFortune.fullArt));
+            const imageContainer = previewImage.parentElement;
+            imageContainer.classList.toggle('kiki-full-art', Boolean(displayFortune.fullArt));
+            imageContainer.querySelector('.moon-card-live')?.remove();
             const artCaption = document.getElementById('previewFullArtCaption');
-            artCaption.hidden = !displayFortune.fullArt;
-            artCaption.innerHTML = displayFortune.fullArt ? window.KikiFullArt.caption(displayFortune) : '';
+            artCaption.hidden = isMoonViewer || !displayFortune.fullArt;
+            artCaption.innerHTML = isMoonViewer ? '' : displayFortune.fullArt ? window.KikiFullArt.caption(displayFortune) : '';
+            if (isMoonViewer) {
+                const viewer = document.createElement('iframe');
+                viewer.className = 'moon-card-live';
+                viewer.title = '月吉动态卡面，按住拖动可转动';
+                viewer.src = 'assets/moon-card/viewer.html';
+                imageContainer.appendChild(viewer);
+            }
             previewCard.setAttribute('aria-label', displayFortune.title);
-            previewCard.style.borderColor = isFoilDisplay ? '' : displayFortune.color;
             previewRarityBadge.textContent = displayFortune.rarity;
             previewRarityBadge.classList.toggle('nr-rarity-badge', displayFortune.rarity === 'NR');
-            previewRarityBadge.style.background = displayFortune.rarity === 'NR' ? '' : rarityColors[displayFortune.rarity] || displayFortune.color;
             previewDesc.textContent = displayFortune.desc;
             if (displayFortune.rarity === 'NR') window.KikiNRPreview?.show(previewImage.parentElement, displayFortune);
 
@@ -4959,8 +5149,8 @@
 
             if (hasFoil) {
                 metaRows.push(
-                    { label: '普通版本', value: `×${variants.normalCount}` },
-                    { label: '闪卡版本', value: `×${variants.foilCount}` }
+                    { label: '普通版', value: `×${variants.normalCount}` },
+                    { label: '闪卡版', value: `×${variants.foilCount}` }
                 );
             }
 
@@ -4969,7 +5159,11 @@
             }
             const availabilityLabel = getAvailabilityLabel(fortune);
             if (availabilityLabel) {
-                metaRows.push({ label: '限定规则', value: availabilityLabel });
+                metaRows.push({ label: '限定', value: availabilityLabel });
+            }
+            const sourceLabel = getSourceLabel(fortune);
+            if (sourceLabel) {
+                metaRows.push({ label: '来源', value: sourceLabel });
             }
 
             previewMeta.innerHTML = metaRows.map((row) => `
@@ -5013,9 +5207,10 @@
             updateFilterButtons();
 
             let hasVisibleItem = false;
+            const indexSections = [];
 
             rarityOrder.forEach((rarity) => {
-                const items = collectionCatalog.filter((fortune) => fortune.rarity === rarity);
+                const items = collectionCatalog.filter((fortune) => fortune.rarity === rarity && (currentPoolFilter === 'all' || fortune.poolType === currentPoolFilter));
                 if (!items.length) {
                     return;
                 }
@@ -5033,6 +5228,7 @@
                 hasVisibleItem = true;
                 const section = document.createElement('div');
                 section.className = 'rarity-section';
+                section.id = `album-rarity-${rarity}`;
 
                 const title = document.createElement('div');
                 title.className = 'rarity-title';
@@ -5040,7 +5236,10 @@
                     const entry = meta[fortune.id];
                     return Boolean(entry && entry.count > 0);
                 }).length;
-                title.innerHTML = `<span class="rarity-badge-small${rarity === 'NR' ? ' nr-rarity-badge' : ''}"${rarity === 'NR' ? '' : ` style="background:${rarityColors[rarity] || 'var(--accent)'}"`}>${escapeHtml(getRarityLabel(rarity))}</span> 收集进度：${unlockedInRarity}/${items.length}`;
+                indexSections.push({ rarity, owned: unlockedInRarity, total: items.length });
+                // 页眉：稀有度、收集数，以及每张卡一颗的小圆点。
+                const dots = items.map((fortune) => `<i${meta[fortune.id] && meta[fortune.id].count > 0 ? ' class="is-on"' : ''}></i>`).join('');
+                title.innerHTML = `<span class="album-page-rarity" style="--rarity:${escapeHtml(albumRarityColor(rarity))}">${escapeHtml(getRarityLabel(rarity))}</span><span class="album-page-count">${unlockedInRarity}/${items.length}</span><span class="album-page-dots" style="--rarity:${escapeHtml(albumRarityColor(rarity))}" aria-hidden="true">${dots}</span>`;
                 section.appendChild(title);
 
                 const grid = document.createElement('div');
@@ -5058,76 +5257,56 @@
                     const isMystery = Boolean(fortune.mysteryUntilObtained && !isUnlocked);
                     const isLockedExclusive = Boolean(!isUnlocked && fortune.guaranteedOnce);
                     const availabilityLabel = getAvailabilityLabel(fortune);
-                    const sourceLabel = availabilityLabel
-                        ? `${getSourceLabel(fortune)} · ${availabilityLabel}`
-                        : getSourceLabel(fortune);
+                    const sourceLabel = [getSourceLabel(fortune), availabilityLabel].filter(Boolean).join(' · ');
                     const div = document.createElement('div');
-                    div.className = `collection-item ${isUnlocked ? 'unlocked' : 'locked'}${isFoilDisplay ? ' is-foil' : ''}${isLockedExclusive ? ' exclusive-locked-item' : ''}`;
+                    div.className = `collection-item album-card ${isUnlocked ? 'unlocked' : 'locked'}${isFoilDisplay ? ' is-foil' : ''}${isLockedExclusive ? ' exclusive-locked-item' : ''}`;
                     div.dataset.fortuneId = fortune.id;
                     if (lastObtained && lastObtained.id === fortune.id) {
                         div.classList.add('latest-target');
                     }
-                    if (isUnlocked && !isFoilDisplay) {
-                        div.style.borderColor = fortune.color || 'var(--accent)';
-                    }
 
+                    const lockedMark = isLockedExclusive ? (fortune.lockedCollectionMark || '？') : isMystery ? '？' : isLockedMr ? '謎' : '';
+                    const slotNumber = albumNumber(items.indexOf(fortune) + 1);
                     div.innerHTML = `
-                        ${isLockedExclusive ? '' : `<div class="item-source">${escapeHtml(sourceLabel)}</div>`}
-                        ${isUnlocked && entry && entry.isNew ? '<div class="item-new-badge">新获得</div>' : ''}
-                        ${isLockedExclusive
-                            ? `<div class="item-icon mystery-icon">
-                                <span class="collection-mystery-mark">${escapeHtml(fortune.lockedCollectionMark || '？')}</span>
-                            </div>`
-                            : isMystery
-                            ? `<div class="item-icon mystery-icon"><span class="collection-mystery-mark">？</span></div>`
-                            : isLockedMr
-                            ? `<div class="item-icon mystery-icon">
-                                <span class="collection-mystery-mark">謎</span>
-                            </div>`
-                            : `<div class="item-icon">
-                                <img src="${escapeHtml(displayFortune.icon)}" alt="${escapeHtml(displayFortune.title)}" class="collection-icon-img">
-                            </div>`}
-                        <div class="item-title">${isUnlocked
-                            ? escapeHtml(displayFortune.title)
-                            : escapeHtml(isLockedExclusive ? (fortune.lockedCollectionTitle || fortune.title) : '???')}</div>
-                        ${isUnlocked && entry ? `<div class="item-count">×${entry.count}</div>` : ''}
-                        ${isLockedExclusive ? '' : `<div class="item-rarity${fortune.rarity === 'NR' ? ' nr-rarity-badge' : ''}"${fortune.rarity === 'NR' ? '' : ` style="background:${escapeHtml(rarityColors[fortune.rarity] || fortune.color || 'var(--accent)')}"`}>${escapeHtml(fortune.rarity)}</div>`}
+                        ${isUnlocked
+                            ? albumCardMarkup(displayFortune, fortune.rarity, slotNumber, entry ? entry.count : 0)
+                            : albumEmptyMarkup(fortune.rarity, fortune, slotNumber, lockedMark,
+                                isLockedExclusive ? (fortune.lockedCollectionTitle || fortune.title) : '???', !isLockedExclusive)}
+                        ${isLockedExclusive ? '' : albumTagMarkup(sourceLabel)}
+                        ${isUnlocked && entry && entry.isNew ? '<span class="item-new-badge album-new">新</span>' : ''}
                     `;
 
-                    if (fortune.fullArt && isUnlocked) {
-                        div.classList.add('full-art-item');
-                        div.classList.add('kiki-full-art');
-                        div.innerHTML = window.KikiFullArt.render(displayFortune);
+                    if (isUnlocked || fortune.previewAvailable) {
+                        // Album tiles share one layout; special artwork belongs in detail view.
                         div.setAttribute('role', 'button');
                         div.tabIndex = 0;
-                        div.setAttribute('aria-label', `${fortune.title}，${fortune.rarity}${fortune.obtainable === false ? '，暂未开放获取' : ''}`);
+                        div.setAttribute('aria-label', `${isUnlocked ? fortune.title : '未收集的小卡'}，${fortune.rarity}${isUnlocked && entry ? `，已获得 ${entry.count} 次` : ''}${fortune.obtainable === false ? '，暂未开放获取' : ''}`);
                         div.addEventListener('keydown', event => {
                             if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openPreview(fortune); }
                         });
-                    }
-
-                    const itemImage = div.querySelector('.collection-icon-img');
-                    if (itemImage) {
-                        itemImage.addEventListener('error', () => {
-                            itemImage.src = 'https://via.placeholder.com/40';
-                        }, { once: true });
-                    }
-
-                    if (isUnlocked || fortune.previewAvailable) {
                         div.addEventListener('click', () => openPreview(fortune));
                     }
                     grid.appendChild(div);
                 });
 
                 section.appendChild(grid);
+                const foot = document.createElement('div');
+                foot.className = 'album-page-foot';
+                foot.textContent = albumNumber(indexSections.length);
+                section.appendChild(foot);
                 collectionGrid.appendChild(section);
             });
 
             if (!hasVisibleItem) {
-                collectionGrid.innerHTML = '<div class="collection-empty">当前筛选下还没有对应卡片。</div>';
+                collectionGrid.innerHTML = '<div class="collection-empty">这个筛选下还没有小卡。</div>';
             }
 
-            collectionStats.textContent = `总收集进度：${unlockedIds.length} / ${collectionCatalog.length}`;
+            renderAlbumIndex(indexSections);
+            renderAlbumTotal(meta);
+            if (collectionGrid.querySelectorAll) bindAlbumImageFallback(collectionGrid);
+            const poolCards = collectionCatalog.filter(card => currentPoolFilter === 'all' || card.poolType === currentPoolFilter);
+            collectionStats.hidden = currentPoolFilter === 'all';
+            collectionStats.textContent = `${currentPoolFilter === 'limited' ? '限定' : '常驻'} · 已收集 ${poolCards.filter(card => unlockedIds.includes(card.id)).length} / ${poolCards.length}`;
 
             if (preserveScroll) {
                 requestAnimationFrame(() => {
@@ -5157,6 +5336,83 @@
             }
         }
 
+        // 收藏手册：每个稀有度一页，卡位按编号排；收到的小卡插在卡袋里，没收到的留空位。
+        function albumRarityColor(rarity, fortune) {
+            return rarityColors[rarity] || (fortune && fortune.color) || '#ae8c67';
+        }
+
+        function albumRarityMarkup(rarity, fortune) {
+            return `<span class="album-rarity${rarity === 'NR' ? ' nr-rarity-badge' : ''}" style="--rarity:${escapeHtml(albumRarityColor(rarity, fortune))}">${escapeHtml(getRarityLabel(rarity))}</span>`;
+        }
+
+        function albumNumber(index) {
+            return index > 0 ? String(index).padStart(2, '0') : '';
+        }
+
+        // 图鉴列表用小尺寸缩略图，详情页仍用原图。
+        function albumThumb(src) {
+            const key = String(src || '').split('?')[0];
+            return (window.KikiAlbumThumbs && window.KikiAlbumThumbs[key]) || src;
+        }
+
+        function albumTagMarkup(label) {
+            return label ? `<span class="item-source album-tag">${escapeHtml(label)}</span>` : '';
+        }
+
+        function albumCardMarkup(card, rarity, number = '', count = 0, imageClass = 'collection-icon-img') {
+            return `<span class="album-pocket"><span class="album-sleeve${card.fullArt ? ' is-full-art' : ''}${card.quoteOnly ? ' is-quote-only' : ''}">
+                    <span class="album-card-top">${number ? `<span class="album-no">No.${number}</span>` : '<span></span>'}${albumRarityMarkup(rarity, card)}</span>
+                    <span class="item-icon album-art"><img src="${escapeHtml(albumThumb(card.icon))}" data-full-src="${escapeHtml(card.icon)}" alt="${escapeHtml(card.title)}" class="${imageClass}" loading="lazy" decoding="async"></span>
+                    <span class="album-card-name${card.quoteOnly ? ' is-quote-only' : ''}"><span class="item-title album-name">${escapeHtml(card.title)}</span>${count > 1 ? `<span class="item-count album-count">×${count}</span>` : ''}</span>
+                </span></span>`;
+        }
+
+        function albumEmptyMarkup(rarity, fortune, number = '', mark = '', title = '???', showRarity = true) {
+            const center = mark
+                ? `<span class="collection-mystery-mark">${escapeHtml(mark)}</span>`
+                : number ? `<span class="album-ghost-no">${number}</span>` : '';
+            return `<span class="album-pocket is-empty"><span class="album-sleeve is-empty">
+                    <span class="album-card-top">${number ? `<span class="album-no">No.${number}</span>` : '<span></span>'}${showRarity ? albumRarityMarkup(rarity, fortune) : ''}</span>
+                    <span class="album-ghost">${center}</span>
+                    <span class="album-card-name"><span class="item-title album-name">${escapeHtml(title)}</span></span>
+                </span></span>`;
+        }
+
+        // 缩略图缺失时退回原图，原图也坏了再用卡背。
+        function bindAlbumImageFallback(root) {
+            root.querySelectorAll('img[data-full-src]').forEach((image) => {
+                image.addEventListener('error', () => {
+                    const full = image.dataset.fullSrc;
+                    if (full && image.getAttribute('src') !== full) image.src = full;
+                    else image.src = 'assets/lottery-tarot-card-back-v2.webp';
+                });
+            });
+        }
+
+        function renderAlbumTotal(meta) {
+            const owned = document.getElementById('albumStatOwned');
+            if (!owned) return;
+            const ownedCards = collectionCatalog.filter((card) => Boolean(meta[card.id] && meta[card.id].count > 0));
+            const foilCards = ownedCards.filter((card) => getCollectionVariantCounts(meta[card.id], meta[card.id].count).foilCount > 0);
+            const playableSets = typeof themeSets === 'undefined' ? [] : themeSets.filter((set) => !set.isPlaceholder && !set.excludeFromCompletionTotals);
+            const completeSets = playableSets.filter((set) => omikujiCatalogApi.getThemeSetProgress(meta, set.id)?.allCollected).length;
+            owned.textContent = String(ownedCards.length);
+            document.getElementById('albumStatTotal').textContent = String(collectionCatalog.length);
+            document.getElementById('albumStatFoil').textContent = String(foilCards.length);
+            document.getElementById('albumStatSets').textContent = String(completeSets);
+            document.getElementById('albumStatSetTotal').textContent = String(playableSets.length);
+        }
+
+        function renderAlbumIndex(sections) {
+            const index = document.getElementById('albumRarityIndex');
+            if (!index) return;
+            index.innerHTML = sections.map(({ rarity, owned, total }) => `
+                <button type="button" class="album-jump${owned === total ? ' is-complete' : ''}" data-album-jump="${escapeHtml(rarity)}" style="--rarity:${escapeHtml(albumRarityColor(rarity))}">
+                    <b>${escapeHtml(getRarityLabel(rarity))}</b><span>${owned}/${total}</span>
+                </button>`).join('');
+        }
+
+        // 套组：成员卡位排成一行，集齐后最后一格放进奖励卡。
         function renderThemeSets() {
             const meta = migrateLegacyCollectionIfNeeded();
             const playableThemeSets = themeSets.filter((themeSet) => !themeSet.excludeFromCompletionTotals);
@@ -5169,7 +5425,7 @@
             const placeholderHint = placeholderThemeSets.length
                 ? ` · ${placeholderThemeSets.map((themeSet) => `${themeSet.title}待开放`).join('，')}`
                 : '';
-            themeSetSummary.textContent = `已集齐 ${completedSets} / ${playableThemeSets.length} 套${placeholderHint}`;
+            themeSetSummary.textContent = `收集套组中的全部小卡；设有集齐奖励的套组会自动发放奖励卡。已集齐 ${completedSets} / ${playableThemeSets.length} 套${placeholderHint}`;
             themeSetGrid.innerHTML = themeSets.map((themeSet) => {
                 const progress = omikujiCatalogApi.getThemeSetProgress(meta, themeSet.id);
                 if (!progress) {
@@ -5177,15 +5433,11 @@
                 }
 
                 if (progress.isPlaceholder) {
-                    const memberMarkup = (progress.placeholderMembers || []).map((item, index) => `
-                        <button type="button" class="theme-member locked" disabled>
-                            <span class="theme-placeholder-thumb">${index + 1}</span>
-                            <span class="theme-member-name">${escapeHtml(item && item.label ? item.label : '待开放成员')}</span>
-                            <span class="theme-member-hint">${escapeHtml(item && item.hint ? item.hint : '待开放')}</span>
+                    const memberMarkup = (progress.placeholderMembers || []).map((item) => `
+                        <button type="button" class="theme-member album-card locked" disabled>
+                            ${albumEmptyMarkup('', null, '', '', item && item.label ? item.label : '待开放', false)}
                         </button>
                     `).join('');
-                    const placeholderReward = progress.placeholderReward || {};
-
                     return `
                         <article class="theme-set-card">
                             <div class="theme-card-header">
@@ -5193,17 +5445,8 @@
                                 <div class="theme-status-tag">待开放</div>
                             </div>
                             <p class="theme-card-intro">${escapeHtml(themeSet.intro)}</p>
-                            <div class="theme-member-grid">${memberMarkup}</div>
-                            <div class="theme-reward-block">
-                                <div class="theme-reward-header">
-                                    <span class="theme-reward-label">终章奖励</span>
-                                    <span class="theme-reward-state locked">${escapeHtml(placeholderReward.hint || '待开放')}</span>
-                                </div>
-                                <button type="button" class="theme-reward-card locked" disabled>
-                                    <span class="theme-placeholder-thumb">终</span>
-                                    <span class="theme-reward-name">${escapeHtml(placeholderReward.label || '终章占位')}</span>
-                                    <span class="theme-reward-hint">${escapeHtml(placeholderReward.hint || '待开放')}</span>
-                                </button>
+                            <div class="album-spread">
+                                <div class="theme-member-grid">${memberMarkup}</div>
                             </div>
                         </article>
                     `;
@@ -5212,7 +5455,6 @@
                 const rewardCard = omikujiCatalogApi.getFortuneById(themeSet.rewardCardId);
                 const setCompleted = Boolean(progress.allCollected);
                 const rewardUnlocked = Boolean(setCompleted && progress.rewardUnlocked);
-                const rewardStateLabel = rewardUnlocked ? '终章已入藏' : '终章待解锁';
 
                 const memberMarkup = themeSet.cardIds.map((cardId) => {
                     const card = omikujiCatalogApi.getFortuneById(cardId);
@@ -5222,57 +5464,46 @@
 
                     const entry = meta[cardId];
                     const unlocked = Boolean(entry && entry.count > 0);
-                    if (!unlocked && isMysteryFortune(card)) {
+                    if (!unlocked) {
                         return `
-                            <button type="button" class="theme-member mystery-card" disabled>
-                                <span class="theme-placeholder-thumb theme-locked-thumb">謎</span>
-                                <span class="theme-member-name">謎</span>
+                            <button type="button" class="theme-member album-card locked${isMysteryFortune(card) ? ' mystery-card' : ''}" disabled aria-label="未收集的小卡">
+                                ${albumEmptyMarkup(card.rarity, card, '', isMysteryFortune(card) ? '謎' : '？')}
                             </button>
                         `;
                     }
 
                     return `
-                        <button type="button" class="theme-member ${unlocked ? 'unlocked' : 'locked'}" ${unlocked ? `data-theme-card-id="${escapeHtml(cardId)}"` : 'disabled'}>
-                            ${unlocked
-                                ? `<img class="theme-member-thumb" src="${escapeHtml(card.icon)}" alt="${escapeHtml(card.title)}">`
-                                : '<span class="theme-placeholder-thumb theme-locked-thumb">?</span>'}
-                            <span class="theme-member-name">${unlocked ? escapeHtml(card.title) : '???'}</span>
+                        <button type="button" class="theme-member album-card unlocked" data-theme-card-id="${escapeHtml(cardId)}" aria-label="${escapeHtml(card.title)}">
+                            ${albumCardMarkup(card, card.rarity, '', entry.count, 'theme-member-thumb')}
                         </button>
                     `;
                 }).join('');
 
                 return `
-                    <article class="theme-set-card">
+                    <article class="theme-set-card${setCompleted ? ' is-complete' : ''}">
                         <div class="theme-card-header">
                             <h3 class="theme-card-title">${escapeHtml(themeSet.title)}</h3>
                             <div class="theme-progress-pill${themeSet.excludeFromCompletionTotals ? ' is-placeholder' : ''}">${progress.unlockedCount}/${progress.totalCount}</div>
+                            ${setCompleted ? '<div class="album-seal" aria-label="已集齐">集齐</div>' : ''}
                         </div>
                         <p class="theme-card-intro">${escapeHtml(themeSet.intro)}</p>
-                        <div class="theme-member-grid">${memberMarkup}</div>
-                        <div class="theme-reward-block">
-                            <div class="theme-reward-header">
-                                <span class="theme-reward-label">终章奖励</span>
-                                <span class="theme-reward-state${rewardUnlocked ? '' : ' locked'}">${escapeHtml(rewardStateLabel)}</span>
-                            </div>
-                            <button type="button" class="theme-reward-card ${rewardUnlocked ? 'unlocked' : 'locked'}" ${rewardUnlocked ? `data-theme-card-id="${escapeHtml(themeSet.rewardCardId)}"` : 'disabled'}>
-                                ${rewardUnlocked
-                                    ? `<img class="theme-reward-thumb" src="${escapeHtml(rewardCard.icon)}" alt="${escapeHtml(rewardCard.title)}">`
-                                    : '<span class="theme-placeholder-thumb theme-locked-thumb">謎</span>'}
-                                <span class="theme-reward-name">${rewardUnlocked ? escapeHtml(rewardCard.title) : '终章剪影'}</span>
-                            </button>
+                        <div class="album-spread">
+                            <div class="theme-member-grid">${memberMarkup}</div>
+                            ${rewardCard ? `<div class="theme-reward-block">
+                                <span class="theme-reward-label">集齐奖励</span>
+                                <button type="button" class="theme-reward-card album-card ${rewardUnlocked ? 'unlocked' : 'locked'}" ${rewardUnlocked ? `data-theme-card-id="${escapeHtml(themeSet.rewardCardId)}" aria-label="${escapeHtml(rewardCard.title)}"` : 'disabled aria-label="集齐奖励，尚未获得"'}>
+                                    ${rewardUnlocked
+                                        ? albumCardMarkup(rewardCard, rewardCard.rarity, '', 0, 'theme-reward-thumb')
+                                        : albumEmptyMarkup(rewardCard ? rewardCard.rarity : 'MR', rewardCard, '', '謎')}
+                                </button>
+                                <span class="theme-reward-state${rewardUnlocked ? '' : ' locked'}">${rewardUnlocked ? '已获得' : `还差 ${progress.totalCount - progress.unlockedCount} 张`}</span>
+                            </div>` : ''}
                         </div>
                     </article>
                 `;
             }).join('');
 
-            themeSetGrid.querySelectorAll('.theme-member-thumb, .theme-reward-thumb').forEach((image) => {
-                image.addEventListener('error', () => {
-                    const placeholder = document.createElement('span');
-                    placeholder.className = 'theme-placeholder-thumb theme-locked-thumb';
-                    placeholder.textContent = image.classList.contains('theme-reward-thumb') ? '终' : '?';
-                    image.replaceWith(placeholder);
-                }, { once: true });
-            });
+            bindAlbumImageFallback(themeSetGrid);
         }
 
         function renderShop() {
@@ -5281,7 +5512,7 @@
             }
             if (!inventoryApi) {
                 shopPointsBalance.textContent = '0';
-                shopGrid.innerHTML = '<div class="collection-empty">兑换所暂时无法载入</div>';
+                shopGrid.innerHTML = '<div class="collection-empty">兑换暂时无法载入</div>';
                 return;
             }
 
@@ -5294,17 +5525,16 @@
 
             shopGrid.innerHTML = offers.map((offer) => {
                 const status = inventoryApi.getOfferStatus(offer.id);
-                const heldCount = inventoryApi.getItemCount(offer.itemId);
                 const buttonLabel = status.remaining <= 0
-                    ? '本月已兑完'
-                    : (status.balance < offer.cost ? `需要 ${offer.cost} 点` : `${offer.cost} 点兑换`);
+                    ? '本月已换完'
+                    : (status.balance < offer.cost ? `还差 ${offer.cost - status.balance} 点` : `用 ${offer.cost} 点兑换`);
                 return `
-                    <article class="shop-offer">
-                        <div class="shop-ticket-icon" aria-hidden="true">券</div>
+                    <article class="shop-offer ticket ticket--foil">
+                        <div class="shop-ticket-icon inventory-coupon foil" aria-hidden="true"><b>闪</b><small>${escapeHtml(offer.cost)} 点</small></div>
                         <div class="shop-offer-copy">
-                            <h3 class="shop-offer-title">${escapeHtml(offer.title)} · 持有 ×${heldCount}</h3>
-                            <p class="shop-offer-desc">${escapeHtml(offer.description)}</p>
-                            <p class="shop-offer-limit">本月还可兑换 ${status.remaining} / ${status.limit}</p>
+                            <div class="ticket-head"><h3 class="shop-offer-title">${escapeHtml(offer.title)}</h3></div>
+                            <p class="shop-offer-desc">用 ${escapeHtml(offer.cost)} 点换 1 张。</p>
+                            <p class="shop-offer-limit ticket-note">本月还能换 ${status.remaining} / ${status.limit} 张</p>
                         </div>
                         <button type="button" class="shop-purchase-btn" data-shop-offer-id="${escapeHtml(offer.id)}" ${status.canPurchase ? '' : 'disabled'}>${escapeHtml(buttonLabel)}</button>
                     </article>
@@ -5326,31 +5556,33 @@
                 renderThemeSets();
                 return;
             }
+            // 道具页同时放点数兑换和持有的券。
+            itemsController?.render();
             renderShop();
         }
 
         function getResultMetaText(drawRecord, extras) {
             const parts = [];
             if (drawRecord.isNew) {
-                parts.push('初めてのお迎え');
+                parts.push('首次获得');
             } else if (drawRecord.isDuplicate) {
-                parts.push(`これまでに${drawRecord.meta.count}枚獲得`);
+                parts.push(`已获得 ${drawRecord.meta.count} 次`);
             }
             if (extras.unlockedThemeRewards.length > 0) {
-                parts.push('シリーズの最終カードを獲得しました');
+                parts.push('集齐套组，获得奖励卡');
             }
             if (Array.isArray(extras.startedUnlockPools) && extras.startedUnlockPools.length > 0) {
                 extras.startedUnlockPools.forEach((pool) => {
                     if (pool && pool.title) {
-                        parts.push(`「${pool.title}」が始まりました`);
+                        parts.push(`「${pool.title}」已开启`);
                     }
                 });
             }
             if (extras.didUnlockColaTreat) {
-                parts.push('柴犬とのふれあい「コーラをあげる」が使えるようになりました');
+                parts.push('已解锁柴犬互动：喂可乐');
             }
             if (extras.didUnlockRoninSkin) {
-                parts.push('柴犬の着せ替え「浪人」が使えるようになりました');
+                parts.push('已解锁柴犬皮肤：浪客');
             }
             return parts.join(' · ');
         }
@@ -5432,7 +5664,7 @@
                 // awards stay pending instead of replacing the promised card.
                 const candidates = getNormalDrawEntries(collectionMeta).filter(entry => entry.fortune.rarity === 'UR');
                 const selected = tarotRules.pick(tarotRules.normalize(candidates), random);
-                if (!selected) throw new Error('現在、抽選できるURカードがありません');
+                if (!selected) throw new Error('现在没有可抽的 UR 卡');
                 const fortune = { ...selected.fortune, tarotSelection: { branch: 'normal', deferSpecial: true, fallback: false } };
                 advanceSelectedSpecialPool(fortune);
                 return fortune;
@@ -5521,6 +5753,8 @@
                 const tarot = dailyTarotStore.getTarot();
                 if (!tarot || getRemainingDraws() <= 0) throw new Error('Daily draw unavailable');
                 dailyTarotStore.saveTarot(tarot);
+                window.KikiMoonCard?.assign(hand, Math.random, getCollectionMeta());
+                dailyTarotStore.commitHand(hand);
                 const round = hand.round;
                 if (round.history.length >= round.quota) throw new Error('This hand is complete');
                 hand.round = round;
@@ -5531,9 +5765,13 @@
 
         function settleNormalCard(hand, slot, preset = null, charge = true) {
             const round = hand.round;
-            const randomFortune = preset || drawFortuneWithSpecialPool(round);
-            if (preset) advanceSelectedSpecialPool(preset);
             const collectionMetaBeforeDraw = getCollectionMeta();
+            // A provisional moon card may have become owned through an import
+            // or another settlement before this draft is accepted.
+            const eligiblePreset = preset && preset.id === window.KikiMoonCard?.id
+                && !window.KikiMoonCard.canObtain(collectionMetaBeforeDraw) ? null : preset;
+            const randomFortune = eligiblePreset || window.KikiMoonCard?.pick(hand, slot, omikujiCatalogApi.moonFortune, collectionMetaBeforeDraw) || drawFortuneWithSpecialPool(round);
+            if (eligiblePreset) advanceSelectedSpecialPool(eligiblePreset);
             const alreadyOwned = hasCollectedFortune(randomFortune.id, collectionMetaBeforeDraw);
             const completeBefore = new Set(themeSets.filter(set => !set.isPlaceholder && set.cardIds.every(id => hasCollectedFortune(id, collectionMetaBeforeDraw))).map(set => set.id));
             const foilResult = resolveFoilDraw(randomFortune, collectionMetaBeforeDraw[randomFortune.id] || null, round);
@@ -5573,17 +5811,30 @@
             const normalDisplay = getVariantDisplayFortune(randomFortune, drawRecord.meta, 'normal');
             const display = drawRecord.isFoil ? getVariantDisplayFortune(randomFortune, drawRecord.meta, 'foil') : normalDisplay;
             const notes = [];
-            if (duplicatePointResult.awarded) notes.push(`重複カード・${duplicatePointResult.awarded}ポイント`);
-            if (settlement.rewards.points) notes.push(settlement.rewards.fallback ? '候補がないため、3ポイントを補償しました' : `タロットの恵み・${settlement.rewards.points}ポイント`);
-            if (settlement.rewards.foilPity) notes.push(`ホロ保証までの進みが${settlement.rewards.foilPity}増えました`);
-            if (settlement.rewards.seriesPity) notes.push(`シリーズ保証までの進みが${settlement.rewards.seriesPity}増えました`);
-            const card = { kind: 'normal', id: randomFortune.id, title: display.title, desc: display.desc, fullArt: Boolean(randomFortune.fullArt),
+            if (duplicatePointResult.awarded) notes.push(`重复卡 +${duplicatePointResult.awarded} 点`);
+            if (settlement.rewards.points) notes.push(settlement.rewards.fallback ? '没有可抽的候选卡，补偿 3 点' : `塔罗加护 +${settlement.rewards.points} 点`);
+            if (settlement.rewards.foilPity) notes.push(`闪卡保底进度 +${settlement.rewards.foilPity}`);
+            if (settlement.rewards.seriesPity) notes.push(`系列保底进度 +${settlement.rewards.seriesPity}`);
+            const card = { kind: 'normal', id: randomFortune.id, title: display.title, desc: display.desc, fullArt: Boolean(randomFortune.fullArt), quoteOnly: Boolean(randomFortune.quoteOnly),
                 icon: display.icon, normalIcon: normalDisplay.icon, rarity: randomFortune.rarity, isFoil: drawRecord.isFoil,
-                isNew: !alreadyOwned, settlementId: rewardId, meta: [getResultMetaText(drawRecord, extras), ...notes].filter(Boolean).join(' · ') };
+                isNew: !alreadyOwned, settlementId: rewardId,
+                meta: [getResultMetaText(drawRecord, extras), ...notes].filter(Boolean).join(' · ') };
             if (charge) { currentState = getDailyState(); saveDailyState(currentState.count + 1); }
             hand.slots[slot] = card;
             hand.index = slot;
             hand.round = settlement.round;
+            // Some tarot effects decide after the first two outcomes that the
+            // hand ends at two cards. Compact the already revealed cards so a
+            // third empty desktop position cannot remain as a dead control.
+            if (hand.round.quota < hand.slots.length && hand.round.history.length >= hand.round.quota) {
+                const revealed = hand.round.history.slice(0, hand.round.quota)
+                    .map(item => hand.slots[item.slot])
+                    .filter(Boolean);
+                hand.slots = [...revealed.slice(0, hand.round.quota)];
+                hand.round.history = hand.round.history.slice(0, hand.round.quota)
+                    .map((item, index) => ({ ...item, slot: index }));
+                hand.index = Math.min(hand.index, Math.max(0, hand.slots.length - 1));
+            }
             // Deal the bonus only after the first three have settled; it is
             // an ordinary counted draw, never a hidden extra award.
             if (hand.round.history.length === 3 && hand.round.quota === 4 && currentState.count < MAX_DAILY_COUNT && hand.slots.length === 3) hand.slots.push(null);
@@ -5604,12 +5855,12 @@
                     advanceSelectedSpecialPool(prior);
                     grantFortune(prior, { variant: 'normal' });
                 }
-                const fortune = drawFortuneWithSpecialPool(hand.round);
+                const fortune = window.KikiMoonCard?.pick(hand, slot, omikujiCatalogApi.moonFortune, getCollectionMeta()) || drawFortuneWithSpecialPool(hand.round);
                 const owned = hasCollectedFortune(fortune.id, getCollectionMeta());
                 const display = getVariantDisplayFortune(fortune, getCollectionMeta()[fortune.id], 'normal');
-                return { kind: 'normal', id: fortune.id, title: display.title, desc: display.desc, fullArt: Boolean(fortune.fullArt),
+                return { kind: 'normal', id: fortune.id, title: display.title, desc: display.desc, fullArt: Boolean(fortune.fullArt), quoteOnly: Boolean(fortune.quoteOnly),
                     icon: display.icon, normalIcon: display.icon, rarity: fortune.rarity, isNew: !owned, isFoil: false,
-                    pendingFortune: fortune, meta: '未確定・受け取り時にホロ判定と報酬を確定します' };
+                    pendingFortune: fortune, meta: '未确定 · 收下时再判定闪卡和奖励' };
             });
             hand.slots[slot] = card; hand.index = slot;
             hand.round.history.push({ slot, id: card.id, rarity: card.rarity, isNew: card.isNew, isNormal: tarotEffects.normal(card.rarity) });
@@ -5620,7 +5871,7 @@
 
         function acceptProvisionalHand(hand) {
             const pending = hand.round.history.map(item => ({ slot: item.slot, fortune: hand.slots[item.slot].pendingFortune }));
-            if (pending.some(item => !item.fortune)) throw new Error('仮のカードを復元できませんでした');
+            if (pending.some(item => !item.fortune)) throw new Error('无法恢复暂存的卡');
             const index = hand.index;
             hand.round = { ...hand.round, history: [], accepted: true };
             for (const item of pending) settleNormalCard(hand, item.slot, item.fortune, false);
@@ -5635,7 +5886,7 @@
                 if (!hand || hand.id !== request.handId || !tarotEffects.canRerollHand(hand)) return { hand, refreshOnly: true };
                 if (request.action === 'keep') return acceptProvisionalHand(hand);
                 if (request.action !== 'reroll') throw new Error('Unknown card decision');
-                if (tarotRules.config.testMode && getRemainingDraws() < 3) throw new Error('テスト用の抽選枠が足りません');
+                if (tarotRules.config.testMode && getRemainingDraws() < 3) throw new Error('测试抽卡次数不足');
                 const id = `${hand.id}:reroll`;
                 const next = { id, date: hand.date, page: 0, index: 0, slots: [null, null, null],
                     round: { ...tarotEffects.createRound(hand.round.effect, id), rerollUsed: true } };
@@ -5710,6 +5961,12 @@
             });
         });
 
+        document.getElementById('albumRarityIndex')?.addEventListener('click', (event) => {
+            const jump = event.target.closest('[data-album-jump]');
+            if (!jump) return;
+            document.getElementById(`album-rarity-${jump.dataset.albumJump}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
         collectionFilterMobile.addEventListener('change', () => {
             currentCollectionFilter = collectionFilterMobile.value;
             renderCollection();
@@ -5750,7 +6007,7 @@
             }
             const result = inventoryApi.purchaseOffer(offerId);
             if (!result.ok) {
-                showBackupToast(result.reason === 'balance' ? '卡片点数不足' : '本月兑换次数已用完', 'error');
+                showBackupToast(result.reason === 'balance' ? '点数不足' : '本月兑换次数已用完', 'error');
                 renderShop();
                 return;
             }
@@ -5762,12 +6019,14 @@
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape' && previewOverlay.classList.contains('active')) {
                 previewOverlay.classList.remove('active');
+                document.querySelector('.preview-image-container > .moon-card-live')?.remove();
                 window.KikiNRPreview?.clear();
             }
         });
 
         previewClose.addEventListener('click', () => {
             previewOverlay.classList.remove('active');
+            document.querySelector('.preview-image-container > .moon-card-live')?.remove();
             window.KikiNRPreview?.clear();
         });
 
@@ -5803,6 +6062,7 @@
         previewOverlay.addEventListener('click', (event) => {
             if (event.target === previewOverlay) {
                 previewOverlay.classList.remove('active');
+                document.querySelector('.preview-image-container > .moon-card-live')?.remove();
             window.KikiNRPreview?.clear();
             }
         });
@@ -5819,7 +6079,7 @@
                 const payload = validateLotteryBackup(parsed);
                 const isUnlockPatch = payload.mode === 'unlock_all_cards';
                 const shouldImport = window.confirm(isUnlockPatch
-                    ? '将补齐所有尚未解锁的卡片，现有收藏和抽签记录不会改变。确定继续吗？'
+                    ? '将补齐所有未收集的小卡，已有的收集和抽卡记录不会改变。确定继续吗？'
                     : '导入后会覆盖当前本地数据记录，确定继续吗？');
                 if (!shouldImport) {
                     return;
@@ -5828,7 +6088,7 @@
                 const importResult = applyLotteryBackup(payload);
                 refreshLotteryUIAfterImport();
                 showBackupToast(isUnlockPatch
-                    ? `全卡片图鉴已补齐${importResult.addedCount ? ` · 新增 ${importResult.addedCount} 张` : ''}`
+                    ? `图鉴已补齐${importResult.addedCount ? ` · 新增 ${importResult.addedCount} 张` : ''}`
                     : '数据记录已恢复');
             } catch (error) {
                 showBackupToast(error && error.message ? error.message : '导入失败', 'error');
@@ -5837,22 +6097,38 @@
             }
         });
 
-        drawBtn.addEventListener('click', () => tarotFlow.open());
-        dailyTarotEntry.addEventListener('click', () => tarotFlow.viewTarot());
-        foilEventUseBtn.addEventListener('click', () => {
-            const shouldUseFoilCard = window.confirm('次に引くホロ対応カードが必ずホロになります。ホロ確定券を使いますか？');
-            if (!shouldUseFoilCard) {
-                return;
-            }
-            if (activateFoilEventCard()) {
-                showBackupToast('ホロ確定券を使いました。次のホロ対応カードが必ずホロになります');
+        const krChoiceService = window.KikiKrChoice.create({
+            catalog: omikujiCatalogApi, inventory: inventoryApi, transactions: window.KikiLotteryTransactions,
+            grant(card) {
+                const record = grantFortune(card, { variant: 'normal' });
+                const points = awardDuplicateCardPoints(card, record, 1);
+                const startedPools = getStartedUnlockPoolsForDraw(card, record).map(pool => pool.title);
+                const rewards = syncThemeRewardUnlocks().map(reward => reward.fortune.title);
+                return { cardId: card.id, title: card.title, count: record.meta.count, isNew: record.isNew, points: points.awarded, rewards, startedPools };
             }
         });
+        itemsController = window.KikiLotteryItems.create({
+            container: document.getElementById('inventoryItems'), catalog: omikujiCatalogApi, inventory: inventoryApi,
+            getMeta: getCollectionMeta, redeem: krChoiceService.redeem, useFoil: toggleFoilTicket,
+            onReceived(result) {
+                const card = omikujiCatalogApi.getFortuneById(result.cardId);
+                renderActiveModalPanel();
+                // The reward is already saved; viewing it must not write outside the transaction.
+                renderPreview(card, 'normal'); previewOverlay.classList.add('active');
+                showBackupToast(`已获得 ${result.title}（普通版）${result.points ? ` · +${result.points} 点` : ''}${result.startedPools.length ? ' · 美食系列已开启' : ''}${result.rewards.length ? ` · 套组奖励：${result.rewards.join('、')}` : ''}`);
+            }
+        });
+        document.getElementById('collectionPoolFilter').addEventListener('change', event => {
+            currentPoolFilter = event.target.value; renderCollection();
+        });
+        drawBtn.addEventListener('click', () => tarotFlow.open());
+        dailyTarotEntry.addEventListener('click', () => tarotFlow.viewTarot());
+        foilEventUseBtn.addEventListener('click', toggleFoilTicket);
 
         if (inventoryApi && inventoryApi.changeEvent) {
             window.addEventListener(inventoryApi.changeEvent, () => {
                 syncFoilEventDisplay();
-                if (collectionModal.classList.contains('active') && currentModalTab === 'shop') {
+                if (collectionModal.classList.contains('active') && currentModalTab === 'items') {
                     renderShop();
                 }
             });
@@ -5861,11 +6137,17 @@
         tarotFlow = window.KikiTarotFlow.create({
             storage: lotteryStorage,
             getDay: getTodayString,
+            getNextReset: getNextLotteryReset,
+            onViewCollection: () => openCollectionBtn.click(),
             getRemaining: getRemainingDraws,
             testMode: tarotRules.config.testMode,
             transact: fn => window.KikiLotteryTransactions.run('daily-tarot', () => { acceptExpiredDraft(); return fn(); }),
             saveHand: hand => window.KikiLotteryTransactions.run('card-navigation', () => dailyTarotStore.saveHand(hand)),
-            prepareHand: newGroup => window.KikiLotteryTransactions.run('tarot-hand', () => dailyTarotStore.beginHand(getRemainingDraws(), tarotRules.config.testMode, newGroup)),
+            prepareHand: newGroup => window.KikiLotteryTransactions.run('tarot-hand', () => {
+                const hand = dailyTarotStore.beginHand(getRemainingDraws(), tarotRules.config.testMode, newGroup);
+                if (hand) { window.KikiMoonCard?.assign(hand, Math.random, getCollectionMeta()); dailyTarotStore.commitHand(hand); }
+                return hand;
+            }),
             drawNormal: drawNormalCard,
             decideHand: decideNormalHand,
             onOpenChange(open) {
@@ -5874,6 +6156,8 @@
                 syncActionButtonState();
                 syncFoilEventDisplay();
             },
+            onPendingChange: value => window.KikiLotteryStatus?.pending(value),
+            onError: error => { window.KikiLotteryStatus?.report(error); showBackupToast(error?.message || '抽卡未能完成，请重试', 'error'); },
             onChange: syncActionButtonState
         });
         await window.KikiLotteryTransactions.run('lottery-initialize', () => {
@@ -5885,8 +6169,29 @@
         syncActionButtonState();
         syncFoilEventDisplay();
         if (collectionModal.classList.contains('active')) renderActiveModalPanel();
-        })().catch(error => { console.error('Lottery initialization failed', error); });
+        window.KikiLotteryStatus?.ready();
+        function refreshLotterySession(resume = false) {
+            tarotFlow.refresh({ resume });
+            if (collectionModal.classList.contains('active')) renderActiveModalPanel({ preserveScroll: true });
+            syncActionButtonState();
+            syncFoilEventDisplay();
+        }
+        // Only a page restored from the browser cache needs to rebuild a dialog;
+        // the first pageshow can arrive late and must not cut short the deal.
+        window.addEventListener('pageshow', event => refreshLotterySession(Boolean(event.persisted)));
+        window.addEventListener('focus', () => refreshLotterySession());
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) refreshLotterySession(true);
+        });
+        window.addEventListener('storage', event => {
+            if (!event.key || ['lotteryState_v2', 'kikiDailyTarot_v1', 'kikiDailyNormalHand_v1', INVENTORY_KEY, LIMITED_EVENT_STATE_KEY].includes(event.key)) {
+                refreshLotterySession();
+            }
+        });
+        // Also update at midnight when the page stays in the foreground.
+        window.setInterval(() => { if (!document.hidden) refreshLotterySession(); }, 15000);
+        })().catch(error => { window.KikiLotteryStatus?.fail(error); console.error('Lottery initialization failed', error); });
     </script>
-    <script src="shared/unified-header.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
 </body>
 </html>

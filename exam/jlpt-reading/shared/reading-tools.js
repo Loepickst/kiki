@@ -412,6 +412,7 @@
             analysisBtn.textContent = "解析";
         }
         document.body.classList.remove("show-analysis");
+        window.dispatchEvent(new CustomEvent("kiji-reading:analysis", { detail: { open: false } }));
         document.querySelectorAll(".option-item.expanded").forEach((item) => item.classList.remove("expanded"));
         document.querySelectorAll(".key-sentence.active").forEach((item) => item.classList.remove("active"));
     }
@@ -423,6 +424,7 @@
         analysisBtn.classList.add("active");
         analysisBtn.textContent = "解析";
         document.body.classList.add("show-analysis");
+        window.dispatchEvent(new CustomEvent("kiji-reading:analysis", { detail: { open: true } }));
     }
 
     function syncAnalysisLock() {
@@ -893,6 +895,7 @@
             if (isTestMode && state.testSubmitted) {
                 state.testPhase = "analysis";
             }
+            window.dispatchEvent(new CustomEvent("kiji-reading:analysis", { detail: { open: true } }));
             syncAnalysisLock();
         },
         completeTest(options = {}) {

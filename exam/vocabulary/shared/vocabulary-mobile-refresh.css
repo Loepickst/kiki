@@ -1,0 +1,305 @@
+/* 単語暗記 · phone layout (2026-10-09, rev 2)
+   One mobile-only layer for the ten N1/N2 word pages: journey directory and word card.
+   Layout and content only: every colour below is taken from the pages' existing palette
+   (warm directory, blue-grey word card). Desktop, data and behaviour are unchanged. */
+/* Dictionary sense numbers ① ② …; older engines fall back to 1 2 …. */
+@counter-style vm-circled { system: fixed; symbols: '①' '②' '③' '④' '⑤' '⑥' '⑦' '⑧' '⑨' '⑩'; suffix: ''; }
+.vm-reading { display: none; }
+@media (max-width: 767px) {
+    :root {
+        /* Directory palette (n1-journey / verbs-n2-directory) */
+        --vd-ink: #302f2a;
+        --vd-muted: #6e6b64;
+        --vd-faint: #9a8f84;
+        --vd-accent: #934d36;
+        --vd-rose: #b86f6b;
+        --vd-line: #e7e2d9;
+        --vd-paper: #fffdf9;
+        --vd-soft: #f3ede3;
+        --vd-dot: #d7dce6;
+        /* Word card palette (verbs-n1-display-v2) */
+        --vc-ink: #202534;
+        --vc-text: #3f4659;
+        --vc-muted: #737b8d;
+        --vc-navy: #35415f;
+        --vc-tint: #e9edf6;
+        --vc-tint-2: #f8f9fc;
+        --vc-note: #f5f6fa;
+        --vc-line: #e5e8ef;
+        --vc-line-2: #d7dce6;
+        --vc-rose: #b86f6b;
+        --vc-rose-soft: #f7eceb;
+        --vc-rose-line: #d8b4b1;
+        --vc-green: #4e776b;
+    }
+
+    /* =====================================================================
+       Header: round back button / two-line title (level · 単語暗記 over the category) / 错题库 pill.
+       Overrides the compact shared mobile header (unified-header-github-20261020.css uses !important).
+       ===================================================================== */
+    :root body .kiki-unified-header {
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important; align-items: center !important;
+        height: calc(56px + env(safe-area-inset-top, 0px)) !important; min-height: 56px !important; padding-inline: 12px !important; column-gap: 8px !important;
+    }
+    :root body .kiki-unified-header .kiki-unified-header-left { justify-self: start; min-width: 0; }
+    :root body .kiki-unified-header #back-btn {
+        display: inline-flex !important; align-items: center !important; justify-content: center !important;
+        width: 40px !important; min-width: 40px !important; height: 40px !important; min-height: 40px !important; padding: 0 !important; margin: 0 !important;
+        border: 0 !important; border-radius: 50% !important; background: var(--vd-soft) !important; color: var(--vd-ink) !important; font-size: 0 !important;
+    }
+    :root body .kiki-unified-header #back-btn svg { width: 18px !important; height: 18px !important; margin: 0 !important; }
+    :root body .kiki-unified-header #back-btn :is(.kiki-unified-back-label, .kiki-unified-back-label-mobile) { display: none !important; }
+    :root body .kiki-unified-header #back-btn:active { background: var(--vd-line) !important; }
+    /* Title: the category is what changes between pages, so it gets the weight. */
+    :root body .kiki-unified-header .kiki-unified-header-title:not([data-vm-category=""])[data-vm-category] {
+        display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-width: 0; max-width: 100%;
+        font-size: 0 !important; line-height: 1 !important; text-align: center;
+    }
+    :root body .kiki-unified-header .kiki-unified-header-title[data-vm-level]::before {
+        content: attr(data-vm-level) !important; display: block !important; color: var(--vd-accent); font: 600 10px/1.4 var(--mobile-sans, "Noto Sans SC", sans-serif); letter-spacing: .14em;
+    }
+    :root body .kiki-unified-header .kiki-unified-header-title:not([data-vm-category=""])[data-vm-category]::after {
+        content: attr(data-vm-category) !important; display: block !important; max-width: 100%; overflow: hidden; color: var(--vd-ink); font: 600 17px/1.35 "Noto Sans JP", "Noto Sans SC", sans-serif;
+        letter-spacing: .04em; white-space: nowrap; text-overflow: ellipsis;
+    }
+    /* 错题库: icon + label pill; the count badge appears only when there is something to review. */
+    :root body .kiki-unified-header .kiki-unified-header-right { justify-self: end; min-width: 0; }
+    :root body .kiki-unified-header #header-review-btn {
+        display: inline-flex !important; align-items: center !important; gap: 5px !important; width: auto !important; min-width: 0 !important;
+        height: 34px !important; min-height: 34px !important; padding: 0 12px 0 10px !important; border: 1px solid var(--vd-line) !important; border-radius: 999px !important;
+        font-size: 13px !important; font-weight: 600 !important; line-height: 1 !important; white-space: nowrap !important;
+    }
+    :root body .kiki-unified-header #header-review-btn::before { content: none !important; display: none !important; }
+    :root body .kiki-unified-header #header-review-btn > svg { display: block !important; flex: 0 0 auto; width: 15px; height: 15px; }
+    :root body .kiki-unified-header #header-review-btn > span:not([data-review-count]) { display: inline !important; }
+    :root body .kiki-unified-header #header-review-btn > [data-review-count] { display: none !important; }
+    :root body .kiki-unified-header #header-review-btn.vm-has-count > [data-review-count] {
+        display: inline-grid !important; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+        background: var(--vd-accent); color: var(--vd-paper); font-size: 11px; font-variant-numeric: tabular-nums;
+    }
+
+    /* Inside 错题库 the header offers 再次练习 instead; the 错题库 button would only reopen the same list. */
+    :root body .kiki-unified-header .kiki-unified-header-right:has(#vocabulary-review-retry:not([hidden])) #header-review-btn { display: none !important; }
+    :root body .kiki-unified-header #vocabulary-review-retry {
+        width: auto !important; min-width: 0 !important; height: 34px !important; min-height: 34px !important; padding: 0 14px !important; border-radius: 999px !important; white-space: nowrap !important;
+    }
+    :root body .kiki-unified-header #vocabulary-review-retry::before { font-size: 13px !important; font-weight: 600 !important; }
+
+    /* =====================================================================
+       Directory: stage list first, nothing repeated.
+       "当前学习 …" and "已完成 n / 18 天" repeat the open stage and the stamp count, so they go.
+       ===================================================================== */
+    :root body .n1-journey-directory { display: flex; flex-direction: column; gap: 0; padding-bottom: 32px; }
+    :root body .n1-journey-directory :is(.directory-mentor-portrait, .directory-heading-copy, .adv-section-kicker, .n2-stamp-thumbnail) { display: none !important; }
+
+    /* Section heading with the N1 / N2 switch. */
+    :root body .n1-journey-directory .directory-section-heading { order: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 4px 0 12px; padding: 0; border: 0; }
+    :root body .n1-journey-directory .directory-section-heading h2 { margin: 0; font-size: 18px; line-height: 1.4; }
+    :root body .n1-journey-directory .vocabulary-level-switcher { margin: 0; padding: 0; }
+    :root body .n1-journey-directory .vocabulary-level-tabs { display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; }
+    :root body .n1-journey-directory .vocabulary-level-tab { width: 46px; min-width: 46px; height: 32px; min-height: 32px; padding: 0; border-radius: 999px; font-size: 13px; }
+
+    /* Stages: one bordered card each, number seal, title, a day-by-day bar, status. */
+    :root body .n1-journey-directory .curriculum-stage-list { order: 2; display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; border: 0; }
+    :root body .n1-journey-directory .curriculum-stage { margin: 0; padding: 0; border: 1px solid var(--vd-line); border-radius: 14px; background: var(--vd-paper); overflow: hidden; }
+    :root body .n1-journey-directory .curriculum-stage::before, :root body .n1-journey-directory .curriculum-stage::after { display: none; }
+    :root body .n1-journey-directory .curriculum-stage-header {
+        display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 0; margin: 0; padding: 14px 12px 14px 14px; border: 0;
+    }
+    :root body .n1-journey-directory .curriculum-stage-number { display: grid; place-items: center; width: 36px; height: 36px; margin: 0; border-radius: 10px; background: var(--vd-soft); color: var(--vd-accent); }
+    :root body .n1-journey-directory .stage-number-digit { color: inherit; font-size: 13px; line-height: 1; }
+    :root body .n1-journey-directory :is(.stage-number-chapter, .stage-kicker-label) { display: none; }
+    :root body .n1-journey-directory .curriculum-stage-copy { display: flex; flex-direction: column-reverse; gap: 8px; min-width: 0; }
+    :root body .n1-journey-directory .curriculum-stage-copy h3 { margin: 0; font-size: 16px; line-height: 1.4; overflow-wrap: anywhere; }
+    :root body .n1-journey-directory .curriculum-stage-copy small { display: block; margin: 0; line-height: 0; }
+    :root body .n1-journey-directory .journey-stage-trail { display: flex; gap: 3px; width: 100%; max-width: 150px; margin: 0; }
+    :root body .n1-journey-directory .journey-stage-trail i { flex: 1 1 0; width: auto; max-width: 22px; height: 4px; margin: 0; border: 0; border-radius: 2px; background: var(--vd-dot); transform: none; box-shadow: none; }
+    :root body .n1-journey-directory .journey-stage-trail i.is-done { background: var(--vd-accent); }
+    :root body .n1-journey-directory .journey-stage-trail i.is-current { background: var(--vd-rose); }
+    :root body .n1-journey-directory .curriculum-stage-practice.n2-journey-toggle {
+        display: inline-flex; align-items: center; gap: 4px; min-width: 0; height: 28px; min-height: 28px; margin: 0; padding: 0 10px; border: 0; border-radius: 999px;
+        background: var(--vd-soft); box-shadow: none; font-size: 12px; white-space: nowrap;
+    }
+    :root body .n1-journey-directory .n2-journey-toggle svg { width: 12px; height: 12px; transition: transform .2s ease; }
+    :root body .n1-journey-directory .curriculum-stage.is-open .n2-journey-toggle svg { transform: rotate(180deg); }
+    :root body .n1-journey-directory .curriculum-stage[data-stage-state="locked"] .n2-journey-toggle { padding-right: 0; background: transparent; }
+    :root body .n1-journey-directory .curriculum-stage[data-stage-state="locked"] .curriculum-stage-number { color: var(--vd-faint); }
+    :root body .n1-journey-directory .curriculum-stage[data-stage-state="locked"] .curriculum-stage-copy h3 { color: var(--vd-muted); font-weight: 500; }
+
+    /* Open stage: today's day as the single action; "当前学习" and the 01 order are dropped. */
+    :root body .n1-journey-directory .n2-journey-panel { margin: 0; padding: 0 12px 12px; border: 0; }
+    :root body .n1-journey-directory .n2-journey-current { margin: 0; padding: 0; border: 0; }
+    :root body .n1-journey-directory :is(.n2-journey-current-label, .curriculum-unit-order) { display: none; }
+    :root body .n1-journey-directory .curriculum-unit {
+        display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "copy state" "count count"; align-items: center; gap: 10px 12px;
+        width: 100%; min-height: 0; margin: 0; padding: 14px; border: 0; border-radius: 10px; background: var(--vd-soft); box-shadow: none; text-align: left; cursor: pointer;
+    }
+    :root body .n1-journey-directory .curriculum-unit::before, :root body .n1-journey-directory .curriculum-unit::after { display: none; }
+    :root body .n1-journey-directory .curriculum-unit-copy { grid-area: copy; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    :root body .n1-journey-directory .curriculum-unit-copy strong { font-size: 16px; line-height: 1.4; }
+    :root body .n1-journey-directory .curriculum-unit-copy small { font-size: 13px; line-height: 1.5; }
+    :root body .n1-journey-directory .curriculum-unit-count {
+        grid-area: count; display: flex; flex-direction: row-reverse; align-items: center; justify-content: flex-end; gap: 10px; width: auto; margin: 0;
+        font-size: 12px; line-height: 1.5; font-variant-numeric: tabular-nums; white-space: nowrap;
+    }
+    :root body .n1-journey-directory .journey-day-progress { display: block; flex: 1; width: auto; max-width: none; height: 4px; margin: 0; border-radius: 2px; overflow: hidden; }
+    :root body .n1-journey-directory .journey-day-progress span { display: block; height: 100%; border-radius: 2px; background: var(--vd-accent); }
+    :root body .n1-journey-directory .curriculum-unit.is-current .curriculum-unit-state {
+        grid-area: state; display: inline-flex; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px;
+        background: var(--vd-accent); color: var(--vd-paper); font-size: 13px; font-weight: 600; white-space: nowrap;
+    }
+    :root body .n1-journey-directory .curriculum-unit.is-pending { border: 1px solid var(--vd-line); background: var(--vd-paper); }
+    :root body .n1-journey-directory .curriculum-unit.is-pending .curriculum-unit-state { grid-area: state; font-size: 13px; }
+    :root body .n1-journey-directory .journey-pending-list { display: flex; flex-direction: column; gap: 8px; padding-top: 8px; }
+    :root body .n1-journey-directory .directory-history { margin: 10px 0 0; padding: 0; border: 0; background: none; }
+    :root body .n1-journey-directory .directory-history > summary {
+        display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; padding: 0 2px; border: 0; border-top: 1px solid var(--vd-line);
+        font-size: 13px; list-style: none; cursor: pointer;
+    }
+    :root body .n1-journey-directory .directory-history > summary::-webkit-details-marker { display: none; }
+    :root body .n1-journey-directory .directory-history > summary svg { width: 12px; height: 12px; transition: transform .2s ease; }
+    :root body .n1-journey-directory .directory-history[open] > summary svg { transform: rotate(180deg); }
+    :root body .n1-journey-directory .journey-stage-footer { display: flex; justify-content: flex-end; margin: 6px 0 0; padding: 0; border: 0; }
+    :root body .n1-journey-directory .journey-text-button { min-height: 36px; padding: 0 2px; font-size: 13px; }
+    :root body .n1-journey-directory .directory-journey-notice { order: 0; margin: 4px 0 12px; border-radius: 12px; }
+    :root body .n1-journey-directory .n2-journey-footer { order: 3; margin: 20px 0 0; }
+
+    /* Stamp book: one slim row after the stages (its count already says how many days are done). */
+    :root body .n1-journey-directory .directory-heading { order: 4; display: block !important; width: auto; height: auto; margin: 16px 0 0; padding: 0; border: 0; background: none; box-shadow: none; }
+    :root body .n1-journey-directory .n2-stamp-entry {
+        display: flex !important; align-items: center; gap: 10px; width: 100%; min-height: 52px; margin: 0 !important; padding: 10px 14px;
+        border: 1px solid var(--vd-line) !important; border-radius: 14px; background: var(--vd-paper); box-shadow: none; text-align: left; cursor: pointer;
+    }
+    :root body .n1-journey-directory .n2-stamp-entry-copy { display: flex !important; flex: 1; align-items: baseline; gap: 8px; min-width: 0; }
+    :root body .n1-journey-directory .n2-stamp-entry-copy > strong { flex: 0 0 auto; width: auto; font-size: 15px; }
+    :root body .n1-journey-directory .n2-stamp-entry-copy > span:not(.n2-stamp-entry-link) { flex: 1; width: auto; min-width: 0; font-size: 12px; white-space: nowrap; }
+    :root body .n1-journey-directory .n2-stamp-entry-link { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 2px; margin: 0; font-size: 12px; }
+
+    /* =====================================================================
+       Word card: one card, no word strip. The chapter / topic / "已学" line above is removed.
+       ===================================================================== */
+    :root body .study-unit-line { display: none !important; }
+    :root body #word-detail-view { padding-top: 16px; }
+
+    /* No word strip on a phone: previous / next at the bottom moves through the day. */
+    :root body .study-workspace { display: block; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+    :root body .study-word-index { display: none !important; }
+
+    /* The card: a dictionary entry. */
+    :root body .study-detail-panel { display: block; margin: 0; padding: 0 16px; border: 1px solid var(--vc-line); border-radius: 14px; background: #fff; box-shadow: 0 8px 24px rgba(38, 46, 66, .06); overflow: visible; }
+
+    /* Headword block: headword / reading with pitch line + accent + 发音 / part of speech. 收藏 sits in the corner. */
+    :root body .study-word-header { margin: 0 -16px; padding: 18px 16px 14px; border: 0; border-bottom: 1px solid var(--vc-line); border-radius: 14px 14px 0 0; background: var(--vc-tint-2); }
+    :root body .study-word-title-row {
+        display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; grid-template-areas: "word word word save" "reading speak . ." "tags tags tags tags";
+        align-items: center; gap: 6px 10px; margin: 0;
+    }
+    :root body .study-word-title { display: contents; }
+    :root body .study-word-title h2 { grid-area: word; align-self: end; min-width: 0; margin: 0; font-size: 34px; line-height: 1.25; letter-spacing: .04em; overflow-wrap: anywhere; }
+    :root body .study-word-title h2 rt { font-size: 12px; letter-spacing: .06em; }
+    /* The reading line carries the furigana, so the headword stays clean. */
+    :root body .vm-has-reading .study-word-title h2 rt { display: none; }
+    :root body .vm-reading { grid-area: reading; display: flex !important; align-items: center; gap: 8px; min-width: 0; margin: 0; color: var(--vc-text); font-size: 16px; line-height: 1; letter-spacing: .06em; }
+    :root body .vm-kana { display: inline-flex; padding-top: 5px; white-space: nowrap; }
+    :root body .vm-mora { position: relative; display: inline-block; padding: 3px .5px 0; border-top: 1.5px solid transparent; }
+    :root body .vm-mora.is-high { border-top-color: var(--vc-navy); }
+    :root body .vm-mora.is-drop::after { content: ''; position: absolute; top: -1.5px; right: 0; width: 1.5px; height: 7px; background: var(--vc-navy); }
+    :root body .vm-accent { color: var(--vc-navy); font-size: 15px; letter-spacing: 0; }
+    :root body .vm-has-accent .study-tone { display: none; }
+    :root body .study-word-title > div { grid-area: tags; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 2px 0 0; }
+    /* When the accent moved to the reading line, a tag row holding only the tone chip collapses. */
+    :root body .vm-has-accent .study-word-title > div:not(:has(> :not(.study-tone))) { display: none; }
+    :root body :is(.study-tone, .study-pos, .study-origin) { display: inline-flex; align-items: center; height: 22px; margin: 0; padding: 0 8px; border: 0; border-radius: 5px; font-size: 12px; line-height: 1; }
+    :root body .study-tone::before { content: '声调'; margin-right: 4px; font-size: 10px; opacity: .8; }
+    :root body .study-origin { background: #fff; color: var(--vc-muted); box-shadow: inset 0 0 0 1px var(--vc-line); }
+    :root body .study-origin::before { content: '原词'; margin-right: 5px; font-size: 10px; opacity: .8; }
+    :root body .study-pronounce {
+        grid-area: speak; position: relative; display: flex; align-items: center; justify-content: center; width: 34px; min-width: 34px; height: 34px; min-height: 34px; margin: 0; padding: 0;
+        border: 0; border-radius: 50%; background: var(--vc-tint); box-shadow: none; color: var(--vc-navy); font-size: 0 !important; line-height: 0; cursor: pointer;
+    }
+    :root body .study-pronounce::before {
+        content: '' !important; display: block; width: 16px; height: 16px; margin: 0; border: 0; transform: none; background: currentColor !important; color: inherit !important;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9.5v5h3.5L12 18.5v-13L7.5 9.5H4Z' fill='%23000'/%3E%3Cpath d='M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11'/%3E%3C/svg%3E") center / contain no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9.5v5h3.5L12 18.5v-13L7.5 9.5H4Z' fill='%23000'/%3E%3Cpath d='M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+    :root body .study-pronounce:active, :root body .study-pronounce.is-playing { background: var(--vc-navy); color: #fff; }
+    :root body .study-pronounce.is-playing::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--vc-line-2); animation: vm-ring 1.1s ease-out infinite; }
+    @keyframes vm-ring { from { transform: scale(.9); opacity: 1; } to { transform: scale(1.18); opacity: 0; } }
+    :root body .detail-save {
+        grid-area: save; align-self: start; position: relative; display: flex; align-items: center; justify-content: center; width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin: -6px -8px 0 0; padding: 0;
+        border: 0; border-radius: 50%; background: transparent; box-shadow: none; color: var(--vc-muted); font-size: 0 !important; line-height: 0; cursor: pointer;
+    }
+    :root body .detail-save::before {
+        content: ''; display: block; width: 21px; height: 21px; background: currentColor; color: inherit;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8L12 3.6Z'/%3E%3C/svg%3E") center / contain no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8L12 3.6Z'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+    :root body .detail-save.active { background: var(--vc-rose-soft); color: var(--vc-rose); }
+    :root body .detail-save.active::before {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8L12 3.6Z'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8L12 3.6Z'/%3E%3C/svg%3E");
+    }
+    /* In the 错题库 list the button reads "移出错题库": keep the words. */
+    :root body .detail-save.review-remove { width: auto; height: 32px; min-height: 32px; margin: 0; padding: 0 12px; border: 1px solid var(--vc-rose-line); border-radius: 999px; font-size: 12px !important; line-height: 1; }
+    :root body .detail-save.review-remove::before { display: none; }
+
+    /* Senses: ① ② … ; meaning in bold, nuance below, examples indented on a thin rule. */
+    :root body .study-usage-section { margin: 0; padding: 18px 0 2px; border: 0; background: none; counter-reset: vm-sense; }
+    :root body .study-section-heading { display: none !important; }
+    :root body .study-usage-group { counter-increment: vm-sense; display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 0 8px; margin: 0; padding: 0 0 18px; border: 0; background: none; }
+    :root body .study-usage-group + .study-usage-group { padding-top: 0; border-top: 0; }
+    :root body .study-section-heading + .study-usage-group:not(:has(~ .study-usage-group)) { grid-template-columns: minmax(0, 1fr); }
+    :root body .study-section-heading + .study-usage-group:not(:has(~ .study-usage-group)) .study-usage-number { display: none; }
+    :root body .study-usage-number { display: block; width: auto; height: auto; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; color: var(--vc-navy); font-size: 0 !important; line-height: 1; }
+    :root body .study-usage-number::before { content: counter(vm-sense, vm-circled); font-size: 16px; line-height: 26px; }
+    :root body .study-usage-copy { display: flex; flex-direction: column; gap: 1px; margin: 0; }
+    :root body .study-usage-copy strong { font-size: 16px; line-height: 26px; }
+    :root body .study-usage-copy span { font-size: 13px; line-height: 1.65; }
+    :root body .study-example { margin: 8px 0 0; padding: 0 0 0 12px; border: 0; border-left: 2px solid var(--vc-line-2); border-radius: 0; background: none; box-shadow: none; }
+    :root body .study-example::before { display: none; }
+    :root body .study-example-jp { margin: 0; font-size: 16px; line-height: 1.95; }
+    :root body .study-example-jp rt { font-size: 10px; }
+    :root body .study-example .ex-highlight { padding: 0 2px; border-radius: 3px; font-weight: 600; }
+    :root body .study-example-cn { display: block; margin-top: 2px; font-size: 13px; line-height: 1.6; }
+    /* Collocations (N2): one labelled line, items separated by ／. */
+    :root body .study-patterns-inline { display: flex; flex-wrap: nowrap; align-items: baseline; gap: 10px; margin: 0 0 18px; padding: 12px 0 0; border: 0; border-top: 1px solid var(--vc-line); background: none; }
+    :root body .study-usage-group .study-patterns-inline { margin: 10px 0 0; padding-top: 0; border-top: 0; }
+    :root body .study-patterns-label { flex: 0 0 auto; display: inline-flex; align-items: center; height: 20px; margin: 0; padding: 0 6px; border-radius: 4px; background: var(--vc-tint); color: var(--vc-navy); font-size: 11px; line-height: 1; }
+    :root body .study-pattern-list { display: block; flex: 1; min-width: 0; margin: 0; padding: 0; list-style: none; font-size: 14px; line-height: 1.8; }
+    :root body .study-pattern-item { display: inline; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; }
+    :root body .study-pattern-item + .study-pattern-item::before { content: '／'; position: static; margin: 0 4px; color: var(--vc-line-2); }
+
+    /* Memory tip: a light note at the end, shown only when it adds something (see vocabulary-mobile-refresh.js). */
+    :root body .study-mentor-note {
+        display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: start; gap: 10px; margin: 0 0 16px; padding: 12px 14px;
+        border: 0; border-radius: 12px; background: var(--vc-note); box-shadow: none;
+    }
+    :root body .study-mentor-note.is-redundant { display: none; }
+    :root body .study-mentor-note::before { display: none; }
+    :root body .study-mentor-note img { width: 28px; height: 28px; margin: 0; border-radius: 50%; object-fit: cover; }
+    :root body .study-mentor-note strong { display: block; margin: 0 0 2px; font-size: 12px; line-height: 1.5; }
+    :root body .study-mentor-note p { margin: 0; font-size: 14px; line-height: 1.75; }
+
+    /* Previous / next: a bar within thumb reach; the "第 n 个，共 m 个" line is dropped. */
+    :root body .study-detail-footer {
+        position: sticky; bottom: 0; z-index: 5; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 10px;
+        margin: 0 -16px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border: 0; border-top: 1px solid var(--vc-line); border-radius: 0 0 14px 14px; background: #fff;
+    }
+    :root body .study-detail-footer > span { display: none; }
+    :root body .study-detail-footer button {
+        width: 100% !important; max-width: none; min-width: 0; height: 46px; min-height: 46px; margin: 0; padding: 0 12px; overflow: hidden; border-radius: 10px;
+        font-size: 14px; font-weight: 600; line-height: 1; white-space: nowrap; text-overflow: ellipsis; justify-self: stretch; box-shadow: none;
+    }
+    :root body .study-detail-footer [data-study-nav="-1"] { border: 1px solid var(--vc-line); background: #fff; }
+    :root body .study-detail-footer [data-study-nav="1"] { border: 0; background: var(--vc-navy); color: #fff; }
+    :root body .study-detail-footer [data-study-nav="1"]:disabled { background: var(--vc-tint); color: var(--vc-muted); }
+}
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+    :root body .study-pronounce.is-playing::after { animation: none; }
+    :root body .n1-journey-directory :is(.n2-journey-toggle svg, .directory-history > summary svg) { transition: none; }
+}
+@media (max-width: 359px) {
+    :root body .study-word-title h2 { font-size: 28px; }
+    :root body .study-detail-footer { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); }
+    :root body .n1-journey-directory .curriculum-stage-header { gap: 10px; }
+}

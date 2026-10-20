@@ -18,10 +18,12 @@
             N2: "../n2/adverbs_n2.html"
         },
         mimetic: {
-            N1: "../n1/mimetic_n1.html"
+            N1: "../n1/mimetic_n1.html",
+            N2: "../n2/mimetic_n2.html"
         },
         loanwords: {
-            N1: "../n1/loanwords_n1.html"
+            N1: "../n1/loanwords_n1.html",
+            N2: "../n2/loanwords_n2.html"
         }
     };
 

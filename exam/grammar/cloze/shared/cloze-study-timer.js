@@ -6,7 +6,7 @@
     // N1 and N2 now share one practice-page shell. Older N2 documents only
     // provide the content nodes, so normalise their semantic hooks before the
     // unified header and the redesign layer inspect the page.
-    document.body.classList.add('grammar-app', 'cloze-app', 'cloze-practice-page');
+    document.body.classList.add('grammar-app', 'cloze-app', 'cloze-practice-page', 'cloze-annotations-locked');
     if (!document.body.dataset.readingHighlightLevel) {
         document.body.dataset.readingHighlightLevel = inferredLevel;
     }
@@ -27,11 +27,15 @@
     if (legacyActions) legacyActions.classList.add('header-right-slot');
     [
         ['cloze-shared-grammar-redesign', new URL('../../grammar/grammar-redesign.css', bootstrapBase).href],
-        ['cloze-shared-practice-redesign', new URL('./cloze-redesign.css', bootstrapBase).href],
+        ['cloze-shared-practice-redesign', new URL('./cloze-redesign.css?v=20260901-option-analysis-2', bootstrapBase).href],
         ['cloze-shared-reading-tools', new URL('../../../jlpt-reading/shared/reading-tools.css', bootstrapBase).href],
         ['cloze-shared-mobile', new URL('./cloze-practice-mobile.css', bootstrapBase).href]
     ].forEach(([id, href]) => {
-        if (document.getElementById(id)) return;
+        const existing = document.getElementById(id);
+        if (existing) {
+            if (existing.href !== href) existing.href = href;
+            return;
+        }
         const link = document.createElement('link');
         link.id = id;
         link.rel = 'stylesheet';
@@ -41,7 +45,7 @@
     if (!document.getElementById('cloze-practice-redesign-script')) {
         const redesignScript = document.createElement('script');
         redesignScript.id = 'cloze-practice-redesign-script';
-        redesignScript.src = new URL('./cloze-practice-redesign.js', bootstrapBase).href;
+        redesignScript.src = new URL('./cloze-practice-redesign.js?v=20260901-option-analysis-2', bootstrapBase).href;
         document.body.appendChild(redesignScript);
     }
 

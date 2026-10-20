@@ -63,6 +63,10 @@
         const reviewStore = global.VocabularyReviewStore || null;
         const readingHelper = global.VocabularyReadingHelper || null;
         const moduleKey = asText(config.moduleKey || config.sentenceReviewModuleKey);
+        const preserveReadings = /^n1_(verbs|adjectives|adverbs|mimetic|loanwords)$/.test(moduleKey);
+        const refreshReviewWords = /^n[12]_(verbs|adjectives|adverbs|mimetic|loanwords)$/.test(moduleKey);
+        const listeningEnabled = Boolean(global.VocabularyListeningPractice?.enabled(moduleKey));
+        const typedReviewTypes = ['reading', 'meaning', ...(listeningEnabled ? ['listening'] : [])];
         const starKeyPrefix = asText(config.starKeyPrefix || 'study_quest_test_v1_vocab_star::');
         const typeLabels = config.practiceTypeLabels || config.typeLabels || {};
         const limits = {
@@ -72,8 +76,8 @@
         };
         const supportText = {
             sentence: '结合语境，选择最合适的词汇。',
-            reading: '请准确拼写出该词的读音。',
-            meaning: '它的核心释义是什么？请仔细辨析。',
+            reading: '输入假名读音。',
+            meaning: '选择对应释义。',
             ...(config.supportText || {})
         };
         let sentenceAnswerLookupCache = null;
@@ -84,10 +88,11 @@
         }
 
         function getAllDefinedWords() {
-            if (typeof config.getAllDefinedWords === 'function') return asArray(config.getAllDefinedWords());
+            const valid = (word) => word && word.word !== '（準備中）' && !word.duplicateOf;
+            if (typeof config.getAllDefinedWords === 'function') return asArray(config.getAllDefinedWords()).filter(valid);
             const explicit = asArray(config.allDefinedWords);
-            if (explicit.length) return explicit;
-            return getFullWordList().filter((word) => word && word.word !== '（準備中）');
+            if (explicit.length) return explicit.filter(valid);
+            return getFullWordList().filter(valid);
         }
 
         function getDays() {
@@ -165,8 +170,13 @@
             if (!reviewStore || !word || typeof reviewStore.restoreKeyword !== 'function') return;
             const storageId = getWordStorageId(word);
             const surface = asText(word && word.word);
-            if (storageId) reviewStore.restoreKeyword(moduleKey, storageId);
-            if (surface && surface !== storageId) reviewStore.restoreKeyword(moduleKey, surface);
+            // A new N2 mistake must restore the entire retained/retired identity,
+            // including callers holding an older lightweight word snapshot.
+            const current = refreshReviewWords ? findWordByStorageId(storageId) || findWordByStorageId(surface) || word : word;
+            const ids = preserveReadings ? getReviewIdentityIds(current) : refreshReviewWords
+                ? unique([storageId, surface, getWordStorageId(current), current.word, ...asArray(current.legacyWordIds), ...asArray(current.legacyWords)])
+                : unique([storageId, surface]);
+            ids.forEach((id) => reviewStore.restoreKeyword(moduleKey, id));
         }
 
         function collectWordsByIndexes(indexes) {
@@ -175,8 +185,8 @@
             const seen = new Set();
             asArray(indexes).forEach((index) => {
                 const word = fullWords[index];
-                if (!word || word.word === '（準備中）') return;
-                const key = asText(word.word || index);
+                if (!word || word.word === '（準備中）' || word.duplicateOf) return;
+                const key = preserveReadings ? getWordKey(word) : asText(word.word || index);
                 if (seen.has(key)) return;
                 seen.add(key);
                 collected.push(word);
@@ -201,7 +211,7 @@
             if (day) return collectWordsByIndexes(day.wordIds);
             const wordsPerDay = Number(config.wordsPerDay) || 20;
             const start = (Number(dayId) - 1) * wordsPerDay;
-            return getFullWordList().slice(start, start + wordsPerDay).filter((word) => word && word.word !== '（準備中）');
+            return getFullWordList().slice(start, start + wordsPerDay).filter((word) => word && word.word !== '（準備中）' && !word.duplicateOf);
         }
 
         function getStageWords(stageId) {
@@ -222,7 +232,7 @@
         function getStarredWords() {
             try {
                 return getFullWordList().filter((word) => {
-                    return word && word.word !== '（準備中）' && global.localStorage.getItem(getVocabStarKey(word.word)) === 'true';
+                    return word && word.word !== '（準備中）' && !word.duplicateOf && global.localStorage.getItem(getVocabStarKey(word.word)) === 'true';
                 });
             } catch (error) {
                 return [];
@@ -480,9 +490,53 @@
         function findWordByStorageId(wordId) {
             const normalized = asText(wordId);
             if (!normalized) return null;
+            if (preserveReadings) return findWordByReviewSnapshot({ wordId: normalized, wordLabel: normalized });
             return getAllDefinedWords().find((candidate) => {
-                return getWordStorageId(candidate) === normalized || asText(candidate && candidate.word) === normalized;
+                return getWordStorageId(candidate) === normalized || asText(candidate && candidate.word) === normalized
+                    || (refreshReviewWords && [...asArray(candidate.legacyWordIds), ...asArray(candidate.legacyWords)].some((id) => asText(id) === normalized));
             }) || null;
+        }
+
+        let identityIndex = null;
+        function getIdentityIndex() {
+            const source = getFullWordList();
+            if (identityIndex && identityIndex.source === source) return identityIndex;
+            const byId = new Map(), byLabel = new Map();
+            getAllDefinedWords().forEach((word) => {
+                unique([asText(word.id), getWordStorageId(word), ...asArray(word.legacyWordIds)]).forEach((id) => byId.set(id, word));
+                unique([word.word, ...asArray(word.legacyWords)]).forEach((label) => {
+                    if (!byLabel.has(label)) byLabel.set(label, []);
+                    byLabel.get(label).push(word);
+                });
+            });
+            identityIndex = { source, byId, byLabel };
+            return identityIndex;
+        }
+
+        // An own-module sentence ID survives the old homograph retry bug,
+        // so it wins over stale word metadata. Other records use explicit IDs,
+        // then their stored reading and finally the original first card.
+        function findWordByReviewSnapshot(snapshot) {
+            if (!snapshot) return null;
+            const nested = snapshot.word && typeof snapshot.word === 'object' ? snapshot.word : snapshot;
+            const ownQuestionId = asText(snapshot.questionId).startsWith(moduleKey + '::') ? extractWordIdFromSentenceQuestionId(snapshot.questionId) : '';
+            const ids = [ownQuestionId, typeof snapshot === 'string' ? snapshot : '', snapshot.wordId, snapshot.id, nested.wordId, nested.id].map(asText).filter(Boolean);
+            const index = getIdentityIndex();
+            for (const id of ids) {
+                const exact = index.byId.get(id);
+                if (exact) return exact;
+            }
+            const label = asText(typeof snapshot === 'string' ? snapshot : nested.wordLabel || nested.word || snapshot.wordLabel);
+            const matches = index.byLabel.get(label) || [];
+            const reading = normalizeLookupValue(nested.reading || getKanaDisplayText(nested.word_html, ''));
+            return matches.find((word) => reading && normalizeLookupValue(word.reading || getKanaDisplayText(word.word_html, '')) === reading) || matches[0] || null;
+        }
+
+        function getReviewIdentityIds(word) {
+            const current = findWordByReviewSnapshot(word) || word;
+            const first = getIdentityIndex().byLabel.get(current.word)?.[0];
+            return unique([getWordStorageId(current), ...asArray(current.legacyWordIds), ...asArray(current.legacyWords),
+                ...(!first || getWordKey(first) === getWordKey(current) ? [current.word] : [])]);
         }
 
         function extractWordIdFromSentenceQuestionId(questionId) {
@@ -494,6 +548,10 @@
         }
 
         function findWordBySentenceSnapshot(snapshot) {
+            if (preserveReadings) {
+                const current = findWordByReviewSnapshot(snapshot);
+                if (current) return current;
+            }
             const directIds = [
                 snapshot && snapshot.wordId,
                 snapshot && snapshot.wordLabel,
@@ -784,11 +842,15 @@
             const prompt = getReadingPromptForWord(word);
             if (!prompt || !prompt.surfaceText || !prompt.fullKana || prompt.editableCount <= 0) return null;
             const esc = typeof config.escapeHtml === 'function' ? config.escapeHtml : defaultEscapeHtml;
+            const ambiguousReading = preserveReadings && (getIdentityIndex().byLabel.get(word.word) || [])
+                .some((other) => normalizeLookupValue(other.reading) !== normalizeLookupValue(word.reading));
+            const meaningHint = ambiguousReading
+                ? `<p class="question-sub-text" lang="zh-CN">释义：${esc(extractPrimaryMeaning(word))}</p>` : '';
             return {
                 kind: 'reading',
                 answerMode: 'input',
                 word,
-                questionHtml: formatQuestionHtml(esc(prompt.surfaceText), 'reading'),
+                questionHtml: formatQuestionHtml(esc(prompt.surfaceText), 'reading') + meaningHint,
                 cn: '',
                 correctAnswer: prompt.fullKana,
                 options: [],
@@ -814,6 +876,11 @@
                 pool.push({ word, meaning });
             });
             return pool.slice(0, 3);
+        }
+
+        function buildListeningQuestionSpec(word) {
+            if (!listeningEnabled) return null;
+            return global.VocabularyListeningPractice?.buildQuestion(moduleKey, word, shuffleArray, getAllDefinedWords()) || null;
         }
 
         function buildMeaningQuestionSpec(word, sourcePool) {
@@ -882,6 +949,8 @@
                 ? '句子选词'
                 : question.kind === 'meaning'
                 ? '假名选义'
+                : question.kind === 'listening'
+                ? '听音选义'
                 : question.kind === 'reading' || question.answerMode === 'input'
                 ? '读音填空'
                 : '错题';
@@ -897,7 +966,8 @@
         }
 
         function getEligibleWordsForPracticeType(words, type = getPracticeType()) {
-            const pool = asArray(words);
+            const pool = asArray(words).filter((word) => word && !word.duplicateOf);
+            if (type === 'listening') return listeningEnabled ? pool.filter((word) => buildListeningQuestionSpec(word)) : [];
             if (type === 'reading') {
                 return pool.filter((word) => {
                     const prompt = getReadingPromptForWord(word);
@@ -955,34 +1025,102 @@
 
         function removeSentenceReviewQuestion(question) {
             if (!sentenceReviewStore || !question || !question.questionId) return false;
+            if (refreshReviewWords) {
+                const ids = unique([question.questionId, ...asArray(question.reviewQuestionIds)]);
+                return ids.reduce((removed, id) => sentenceReviewStore.removeQuestion(moduleKey, id) || removed, false);
+            }
             return sentenceReviewStore.removeQuestion(moduleKey, question.questionId);
         }
 
         function recordTypedReviewWord(question, type = getPracticeType()) {
-            if (!reviewStore || !question || !question.word || !['reading', 'meaning'].includes(type)) return false;
+            if (!reviewStore || !question || !question.word || !typedReviewTypes.includes(type)) return false;
             const word = question.word;
             const wordId = getWordStorageId(word);
-            reviewStore.saveTypedWord(moduleKey, type, {
+            const saved = reviewStore.saveTypedWord(moduleKey, type, {
                 ...cloneLiteWord(word),
                 wordId,
                 wordLabel: word.word || getWordDisplayText(word)
             });
+            if (type === 'listening' && !saved) return false;
             reviewStore.incrementTypedMistakeCount(moduleKey, type, wordId, 1);
             return true;
         }
 
         function removeTypedReviewWord(question, type = getPracticeType()) {
-            if (!reviewStore || !question || !question.word || !['reading', 'meaning'].includes(type)) return false;
+            if (!reviewStore || !question || !question.word || !typedReviewTypes.includes(type)) return false;
+            if (preserveReadings) {
+                const current = findWordByReviewSnapshot(question.word) || question.word;
+                let removed = false;
+                asArray(reviewStore.listTypedWords(moduleKey, type)).forEach((snapshot) => {
+                    const resolved = findWordByReviewSnapshot(snapshot);
+                    if (resolved && getWordKey(resolved) === getWordKey(current)) removed = reviewStore.removeTypedWord(moduleKey, type, snapshot.wordId || snapshot.id || snapshot.word) || removed;
+                });
+                return removed;
+            }
+            if (refreshReviewWords) {
+                const word = question.word;
+                const aliases = new Set(unique([getWordStorageId(word), word.word, ...asArray(word.legacyWordIds), ...asArray(word.legacyWords)]));
+                let removed = false;
+                asArray(reviewStore.listTypedWords(moduleKey, type)).forEach((snapshot) => {
+                    if (![snapshot.wordId, snapshot.id, snapshot.wordLabel, snapshot.word].some((id) => aliases.has(asText(id)))) return;
+                    removed = reviewStore.removeTypedWord(moduleKey, type, snapshot.wordId || snapshot.id || snapshot.word) || removed;
+                });
+                return removed;
+            }
             return reviewStore.removeTypedWord(moduleKey, type, getWordStorageId(question.word));
         }
 
         function getTypedReviewWords(type = getPracticeType()) {
-            if (!reviewStore || !['reading', 'meaning'].includes(type)) return [];
-            return asArray(reviewStore.listTypedWords(moduleKey, type));
+            if (!reviewStore || !typedReviewTypes.includes(type)) return [];
+            const snapshots = asArray(reviewStore.listTypedWords(moduleKey, type));
+            if (!refreshReviewWords) return snapshots;
+            const seen = new Set();
+            return snapshots.map((snapshot) => {
+                if (preserveReadings) return findWordByReviewSnapshot(snapshot) || snapshot;
+                const ids = [snapshot.wordId, snapshot.id, snapshot.wordLabel, snapshot.word];
+                return ids.map(findWordByStorageId).find(Boolean) || snapshot;
+            }).filter((word) => {
+                const id = getWordStorageId(word);
+                if (!id || word.duplicateOf || seen.has(id)) return false;
+                seen.add(id);
+                return true;
+            });
+        }
+
+        function clearResolvedListeningKeyword(word) {
+            if (!listeningEnabled || !reviewStore || !sentenceReviewStore || !word) return;
+            const current = findWordByReviewSnapshot(word) || word;
+            const currentId = getWordStorageId(current);
+            const ids = getReviewIdentityIds(current);
+            const matches = (snapshot) => {
+                const resolved = findWordByReviewSnapshot(snapshot);
+                return resolved && getWordStorageId(resolved) === currentId;
+            };
+            // A failed removal remains pending. Other exercise kinds, including
+            // retired sentence IDs, must never be hidden by listening success.
+            const pending = typedReviewTypes.some((kind) => asArray(reviewStore.listTypedWords(moduleKey, kind)).some(matches))
+                || asArray(sentenceReviewStore.listQuestions(moduleKey)).some(matches);
+            if (pending) return;
+            let starred = false;
+            try { starred = ids.some((id) => global.localStorage.getItem(getVocabStarKey(id)) === 'true'); } catch (_) { /* storage unavailable */ }
+            const hasHistory = ids.some((id) => reviewStore.getTypedMistakeCount(moduleKey, 'listening', id) > 0
+                || sentenceReviewStore.getWordMistakeCount(moduleKey, id) > 0);
+            if (!starred && !hasHistory) return;
+            ids.forEach((id) => {
+                try { global.localStorage.removeItem(getVocabStarKey(id)); } catch (_) { /* keep stored records intact */ }
+                // Historical mistake counts remain; dismissal prevents them
+                // from recreating a completed keyword as a legacy mistake.
+                reviewStore.dismissKeyword(moduleKey, id);
+            });
         }
 
         function handleCorrectAnswer(question, type = getPracticeType()) {
             if (!question) return;
+            if (question.kind === 'listening' && listeningEnabled) {
+                removeTypedReviewWord(question, 'listening');
+                clearResolvedListeningKeyword(question.word);
+                return;
+            }
             if (question.kind === 'sentence' || type === 'sentence') {
                 removeSentenceReviewQuestion(question);
                 return;
@@ -993,8 +1131,19 @@
         function handleWrongAnswer(question, type = getPracticeType()) {
             if (!question || !question.word) return { starred: false };
             const word = question.word;
+            if (question.kind === 'listening') {
+                if (!listeningEnabled) return { starred: false, saved: false };
+                const saved = recordTypedReviewWord(question, 'listening');
+                const wordId = getWordStorageId(word);
+                let starred = false;
+                if (saved) {
+                    restoreReviewKeyword(word);
+                    try { const key = getVocabStarKey(word.word); starred = global.localStorage.getItem(key) !== 'true'; global.localStorage.setItem(key, 'true'); } catch (_) { /* pending record remains usable */ }
+                }
+                return { starred, saved, wordId };
+            }
             restoreReviewKeyword(word);
-            const wordId = word.word || getWordDisplayText(word);
+            const wordId = preserveReadings ? getWordStorageId(word) : word.word || getWordDisplayText(word);
             let starred = false;
             try {
                 const key = getVocabStarKey(wordId);
@@ -1044,11 +1193,17 @@
 
         function getSentenceReviewQuestions() {
             if (!sentenceReviewStore) return [];
-            return sentenceReviewStore.listQuestions(moduleKey).map((snapshot) => {
+            const questions = sentenceReviewStore.listQuestions(moduleKey).map((snapshot) => {
                 if (!snapshot || snapshot.kind !== 'sentence' || !snapshot.questionId) return null;
                 const baseWord = findWordBySentenceSnapshot(snapshot);
                 const practiceItem = findCurrentPracticeSourceForSnapshot(snapshot, baseWord);
-                const rebuiltQuestion = shouldRebuildSentenceReviewQuestion(snapshot, baseWord, practiceItem)
+                const legacyIds = [...asArray(baseWord.legacyWordIds), ...asArray(baseWord.legacyWords)].map(asText);
+                const retiredSource = refreshReviewWords && [snapshot.wordId, snapshot.wordLabel, snapshot.word?.id, snapshot.word?.word, extractWordIdFromSentenceQuestionId(snapshot.questionId)]
+                    .some((id) => id && legacyIds.includes(asText(id)));
+                // An obsolete duplicate has no independent exercise any more.
+                // Keep its saved record, but do not invent a new cloze from an example.
+                if (retiredSource && !practiceItem) return null;
+                const rebuiltQuestion = ((preserveReadings && practiceItem) || retiredSource || shouldRebuildSentenceReviewQuestion(snapshot, baseWord, practiceItem))
                     ? buildSentenceQuestionSpec(baseWord, practiceItem)
                     : null;
                 const sourceMeta = getSentenceSourceMeta(baseWord, practiceItem);
@@ -1073,7 +1228,12 @@
                         questionHtml: rebuiltQuestion.questionHtml,
                         cn: rebuiltQuestion.cn || '',
                         sentenceCn: rebuiltQuestion.sentenceCn || '',
+                        analysis: rebuiltQuestion.analysis || '',
                         typingText: rebuiltQuestion.typingText || ''
+                    } : {}),
+                    ...(refreshReviewWords ? {
+                        reviewQuestionIds: [snapshot.questionId],
+                        reviewCanonicalQuestionId: rebuiltQuestion?.questionId || (practiceItem ? createSentenceQuestionId(baseWord, practiceItem.sourceKind, practiceItem.sourceIndex) : snapshot.questionId)
                     } : {}),
                     questionId: snapshot.questionId,
                     kind: 'sentence',
@@ -1086,6 +1246,15 @@
                     reviewAnalysis
                 };
             }).filter(Boolean);
+            if (!refreshReviewWords) return questions;
+            const uniqueQuestions = new Map();
+            questions.forEach((question) => {
+                const key = question.reviewCanonicalQuestionId;
+                const existing = uniqueQuestions.get(key);
+                if (existing) existing.reviewQuestionIds = unique([...existing.reviewQuestionIds, ...question.reviewQuestionIds]);
+                else uniqueQuestions.set(key, question);
+            });
+            return Array.from(uniqueQuestions.values());
         }
 
         function prepareQuestionSet(context, type = getPracticeType()) {
@@ -1096,19 +1265,22 @@
                     questions: reviewQuestions
                 };
             }
-            if (context && context.mode === 'review' && ['reading', 'meaning'].includes(type)) {
+            if (context && context.mode === 'review' && typedReviewTypes.includes(type)) {
                 const typedWords = getTypedReviewWords(type);
                 const questions = typedWords.map((word) => {
+                    if (type === 'listening') return buildListeningQuestionSpec(word);
                     if (type === 'reading') return buildReadingQuestionSpec(word);
                     return buildMeaningQuestionSpec(word, typedWords);
                 }).filter(Boolean);
                 return { targetWords: typedWords, questions };
             }
+            if (type === 'listening' && !['day', 'review'].includes(context?.mode)) return { targetWords: [], questions: [] };
             const eligiblePool = getEligibleWordsForPracticeType(context && context.pool, type);
             const limit = getQuestionLimitForContext(context, eligiblePool);
             const targetWords = shuffleArray(eligiblePool).slice(0, Math.min(limit, eligiblePool.length));
             const questions = targetWords.map((word) => {
                 if (type === 'reading') return buildReadingQuestionSpec(word);
+                if (type === 'listening') return buildListeningQuestionSpec(word);
                 if (type === 'meaning') return buildMeaningQuestionSpec(word, eligiblePool);
                 return buildSentenceQuestionSpec(word);
             }).filter(Boolean);
@@ -1205,6 +1377,8 @@
             normalizeSentencePresetOptions,
             buildSentenceFallbackOptions,
             findWordBySentenceSnapshot,
+            findWordByReviewSnapshot,
+            getReviewIdentityIds,
             buildSentenceOptionDetails,
             buildSentenceReviewAnalysis,
             createSentenceQuestionSnapshot,
@@ -1218,6 +1392,7 @@
             buildSentenceQuestionSpec,
             buildReadingQuestionSpec,
             buildMeaningQuestionSpec,
+            buildListeningQuestionSpec,
             buildResultWrongDetail,
             prepareQuestionSet,
             buildReviewSummaryItems,
@@ -1231,5 +1406,9 @@
         });
     }
 
-    global.VocabularyPracticeCore = Object.freeze({ create });
+    function getWordKey(word) {
+        return asText(word && (word.id ?? word.word));
+    }
+
+    global.VocabularyPracticeCore = Object.freeze({ create, getWordKey });
 })(typeof window !== 'undefined' ? window : globalThis);

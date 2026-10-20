@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N2 外来語 - 単語暗記</title>
+    <!-- 引入优雅的衬线与无衬线字体，契合沉浸阅读风格 -->
+    <link rel="stylesheet" href="../../../shared/domestic-fonts.css">
+    <link rel="stylesheet" href="../../../shared/site-fonts.css">
+    <link rel="stylesheet" href="../shared/vocabulary-base.css?v=20260907-white-header">
+    <link rel="stylesheet" href="../n1/loanwords-n1-display-v2.css?v=20260907-header-layout2">
+    <link rel="stylesheet" href="../n1/loanwords-n1-directory-v2.css?v=20261007-card-grid">
+    <link rel="stylesheet" href="../shared/vocabulary-level-switcher.css?v=20260808-1">
+    <link rel="stylesheet" href="verbs-n2-directory-n1.css?v=20260905-2">
+    <link rel="stylesheet" href="verbs-n2-stamps.css?v=20260907-4">
+    <link rel="stylesheet" href="../shared/vocabulary-stamps-grid.css?v=20261008-shared1">
+    <link rel="stylesheet" href="../n1/n1-journey.css?v=20261008-shared2">
+    <style>
+        .loanword-variant-slash {
+            display: inline-block;
+            margin: 0 .12em;
+            color: var(--vocab-faint);
+            font-family: var(--font-ui);
+            font-size: .72em;
+            font-weight: 500;
+        }
+
+        .study-word-title h2 {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+
+        .study-patterns-inline {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 7px 14px;
+            margin: 2px 0 0 48px;
+            padding: 10px 0 2px;
+            border-top: 1px dashed var(--vocab-line);
+        }
+
+        .study-patterns-label {
+            flex: 0 0 auto;
+            color: var(--vocab-faint);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .05em;
+        }
+
+        .study-pattern-list {
+            display: flex;
+            flex: 1 1 360px;
+            flex-wrap: wrap;
+            gap: 4px 18px;
+            min-width: 0;
+        }
+
+        .study-pattern-item {
+            position: relative;
+            color: var(--vocab-ink-soft);
+            font-family: var(--font-serif);
+            font-size: calc(var(--study-example-jp-size) - 2px);
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .study-pattern-item + .study-pattern-item::before {
+            position: absolute;
+            left: -11px;
+            color: var(--vocab-line-strong);
+            content: "·";
+        }
+
+        @media (max-width: 820px) {
+            .study-word-title h2 {
+                display: block;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .study-patterns-inline {
+                display: block;
+                margin-left: 38px;
+            }
+
+            .study-patterns-label {
+                display: block;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../../shared/unified-header-github-20261020.css?v=20260907-white-header" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+    <link rel="stylesheet" href="../shared/vocabulary-review-library.css?v=20260907-review3">
+    <link rel="stylesheet" href="../shared/vocabulary-mobile-refresh.css?v=20261009-hdr3">
+    <script src="../shared/vocabulary-mobile-refresh.js?v=20261009-hdr1" defer></script>
+</head>
+<body class="vocabulary-study-page kiki-unified-header-enabled vocab-loanwords-page">
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending>
+        <a id="back-btn" class="back-btn" href="#" aria-label="返回上一页" data-kiki-dynamic-back>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            返回
+        </a>
+        <h1 id="page-title">N2 外来語</h1>
+        <div class="header-actions">
+            <button type="button" id="vocabulary-review-retry" hidden>再次练习</button>
+            <button type="button" id="header-review-btn" data-mobile-label="错题库">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 3h13a1 1 0 0 1 1 1v17H6a3 3 0 0 1-3-3V6a3 3 0 0 1 2-3Z"/><path d="M7 3v14M3 17h16M11 8h4M11 12h4"/></svg>
+                <span>错题库</span><span data-review-count>0</span>
+            </button>
+            <div class="font-size-control" aria-label="切换内容字号">
+                <button
+                    type="button"
+                    id="font-size-trigger"
+                    class="font-size-trigger"
+                    aria-haspopup="menu"
+                    aria-expanded="false"
+                    aria-controls="font-size-drawer"
+                >
+                    <span class="font-size-trigger-mark" aria-hidden="true">Aa</span>
+                    <span id="font-size-current-label" class="font-size-trigger-label">标准</span>
+                    <span class="font-size-trigger-chevron" aria-hidden="true">⌄</span>
+                </button>
+                <div id="font-size-drawer" class="font-size-drawer" role="menu" aria-hidden="true">
+                    <button type="button" class="font-size-option" data-detail-font-size="small" role="menuitemradio" aria-checked="false">
+                        <span class="font-size-option-glyph">A−</span>
+                        <span class="font-size-option-copy">小字号</span>
+                        <span class="font-size-option-check" aria-hidden="true">✓</span>
+                    </button>
+                    <button type="button" class="font-size-option" data-detail-font-size="medium" role="menuitemradio" aria-checked="true">
+                        <span class="font-size-option-glyph">A</span>
+                        <span class="font-size-option-copy">标准字号</span>
+                        <span class="font-size-option-check" aria-hidden="true">✓</span>
+                    </button>
+                    <button type="button" class="font-size-option" data-detail-font-size="large" role="menuitemradio" aria-checked="false">
+                        <span class="font-size-option-glyph">A+</span>
+                        <span class="font-size-option-copy">大字号</span>
+                        <span class="font-size-option-check" aria-hidden="true">✓</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- View 1: Day Selection List -->
+        <div id="days-view" class="days-grid">
+            <!-- Injected by JS -->
+        </div>
+
+        <!-- View 2: Word List (Directory) -->
+        <div id="word-list-view" class="hidden">
+            <div id="word-list-container">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+
+        <!-- View 3: Word Detail (Flashcard) -->
+        <div id="word-detail-view" class="hidden">
+            <!-- Injected by JS -->
+        </div>
+    </div>
+
+    <script src="../../../shared/nhk-audio.js?v=20261006-core-audio-1"></script>
+    <script src="../../../shared/core-vocabulary-audio-data.js?v=20261016-n1-integrity1"></script>
+    <script src="../../../shared/core-vocabulary-audio.js?v=20261016-n1-integrity1"></script>
+    <script src="n2_loanwords_data.js?v=20261016-n2-integrity2"></script>
+    <script src="../shared/vocabulary-memory-hint.js?v=20260815-yota1"></script>
+    <script src="n2-loanwords-curriculum.js?v=20260902-parity1"></script>
+    <script src="../shared/vocabulary-learning-journey.js?v=20261008-shared1"></script>
+    <script src="../shared/vocabulary-stamp-collection.js?v=20261008-art-pending1"></script>
+    <script src="../shared/vocabulary-journey-directory.js?v=20261008-shared1"></script>
+    <script src="n2-loanwords-stamp-collection.js?v=20261008-shared1"></script>
+    <script src="../shared/vocabulary-sentence-review-store.js"></script>
+    <script src="../n1/vocabulary-reading-helper.js"></script>
+    <script src="../shared/vocabulary-sentence-analysis.js"></script>
+    <script src="../shared/vocabulary-practice-core.js?v=20261016-n1-integrity1"></script>
+    <script src="../shared/vocabulary-review-library.js?v=20261016-n1-integrity1"></script>
+    <script>
+        const CURRICULUM_DAYS = Array.isArray(window.LAB_N2_LOANWORD_DAYS) ? window.LAB_N2_LOANWORD_DAYS : [];
+        const CURRICULUM_STAGES = Array.isArray(window.LAB_N2_LOANWORD_STAGES) ? window.LAB_N2_LOANWORD_STAGES : [];
+        const CURRICULUM_GROUPS = Array.isArray(window.LAB_N2_LOANWORD_GROUPS) ? window.LAB_N2_LOANWORD_GROUPS : [];
+        const LOCAL_AUDIO_BY_WORD_ID = new Map();
+        const STAR_KEY_PREFIX = 'study_quest_test_v1_n2_loanwords_vocab_star::';
+        const LEGACY_STAR_KEY_PREFIX = 'study_quest_test_v1_vocab_star::';
+        const LAST_DAY_STORAGE_KEY = 'study_quest_test_v1_n2_loanwords_last_day';
+        const LEARNED_WORDS_STORAGE_KEY = 'study_quest_test_v1_n2_loanwords_learned_words';
+        const LEARNING_JOURNEY_STORAGE_KEY = 'study_quest_test_v1_n2_loanwords_learning_journey_v1';
+        const INDEX_COLLAPSED_STORAGE_KEY = 'study_quest_test_v1_n2_loanwords_index_collapsed';
+        const DETAIL_FONT_SIZE_STORAGE_KEY = 'study_quest_test_v1_n2_loanwords_detail_font_size';
+        const PET_SETTINGS_STORAGE_KEY = 'study_quest_test_v1_kiki_pet_settings_v1';
+        const VOCABULARY_DIRECTORY_HREF = './loanwords_n2.html';
+        const N2_VOCABULARY_HOME_HREF = '../../../index.html#exam/exam-vocabulary';
+        const BACK_ICON_HTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>';
+        const SENTENCE_REVIEW_MODULE_KEY = 'n2_loanwords';
+        const sentenceReviewStore = window.VocabularySentenceReviewStore || null;
+        const reviewStore = window.VocabularyReviewStore || null;
+
+        let currentView = 'days';
+        let currentDay = 1;
+        let currentDailyWords = [];
+        let currentWordIndex = 0;
+        let activeVocabularyAudio = null;
+        let activeSpeechUtterance = null;
+        let activePronounceButton = null;
+        let isWordIndexCollapsed = safeGetItem(INDEX_COLLAPSED_STORAGE_KEY) === 'true';
+        let currentDetailFontSize = normalizeDetailFontSize(safeGetItem(DETAIL_FONT_SIZE_STORAGE_KEY));
+        let directoryScrollY = 0;
+        let wordIndexScrollTop = 0;
+        let isBackNavigationLocked = false;
+
+        const backBtn = document.getElementById('back-btn');
+        const pageTitle = document.getElementById('page-title');
+        const daysView = document.getElementById('days-view');
+        const wordListView = document.getElementById('word-list-view');
+        const wordDetailView = document.getElementById('word-detail-view');
+        const detailFontSizeButtons = document.querySelectorAll('[data-detail-font-size]');
+        const fontSizeControl = document.querySelector('.font-size-control');
+        const fontSizeTrigger = document.getElementById('font-size-trigger');
+        const fontSizeDrawer = document.getElementById('font-size-drawer');
+        const fontSizeCurrentLabel = document.getElementById('font-size-current-label');
+        const reviewLibrary = window.VocabularyReviewLibrary.create({
+            moduleKey: SENTENCE_REVIEW_MODULE_KEY,
+            starKeyPrefix: STAR_KEY_PREFIX,
+            getStarKey: getVocabStarKey,
+            getFullWordList: () => FULL_WORD_LIST,
+            openList: selectStarredWords,
+            openWord: openWordDetail,
+            setTitle: (title) => pageTitle.textContent = title,
+            setBack: (label) => configureBackButton(label, VOCABULARY_DIRECTORY_HREF + (label === '返回错题库' ? '?review=1' : '')),
+            showPractice: () => {
+                currentDay = -1;
+                currentView = 'review-practice';
+                reviewLibrary.setRoute(true);
+                updateUI();
+                window.scrollTo(0, 0);
+            }
+        });
+
+        function safeGetItem(key) {
+            try {
+                return localStorage.getItem(key);
+            } catch (error) {
+                console.warn('LocalStorage access denied', error);
+                return null;
+            }
+        }
+
+        function safeSetItem(key, value) {
+            try {
+                localStorage.setItem(key, value);
+                return true;
+            } catch (error) {
+                console.warn('LocalStorage write denied', error);
+                return false;
+            }
+        }
+
+        function safeRemoveItem(key) {
+            try {
+                localStorage.removeItem(key);
+            } catch (error) {
+                console.warn('LocalStorage remove denied', error);
+            }
+        }
+
+        function normalizeDetailFontSize(value) {
+            return ['small', 'medium', 'large'].includes(value) ? value : 'medium';
+        }
+
+        function applyDetailFontSize(size, shouldPersist = true) {
+            currentDetailFontSize = normalizeDetailFontSize(size);
+            document.body.dataset.vocabFontSize = currentDetailFontSize;
+            detailFontSizeButtons.forEach((button) => {
+                const isActive = button.dataset.detailFontSize === currentDetailFontSize;
+                button.classList.toggle('is-active', isActive);
+                button.setAttribute('aria-checked', String(isActive));
+            });
+            if (fontSizeCurrentLabel) {
+                fontSizeCurrentLabel.textContent = {
+                    small: '小',
+                    medium: '标准',
+                    large: '大'
+                }[currentDetailFontSize];
+            }
+            if (shouldPersist) {
+                safeSetItem(DETAIL_FONT_SIZE_STORAGE_KEY, currentDetailFontSize);
+            }
+        }
+
+        function setFontSizeDrawerOpen(shouldOpen, shouldFocus = false) {
+            if (!fontSizeControl || !fontSizeTrigger || !fontSizeDrawer) return;
+            fontSizeControl.classList.toggle('is-open', shouldOpen);
+            fontSizeTrigger.setAttribute('aria-expanded', String(shouldOpen));
+            fontSizeDrawer.setAttribute('aria-hidden', String(!shouldOpen));
+            if (shouldOpen && shouldFocus) {
+                window.requestAnimationFrame(() => {
+                    fontSizeDrawer.querySelector('.font-size-option.is-active')?.focus();
+                });
+            }
+        }
+
+        function escapeHtml(value) {
+            return String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[char]));
+        }
+
+        function getPetSystemUserName() {
+            if (window.HomePetSystem && typeof window.HomePetSystem.getUserName === 'function') {
+                const systemName = String(window.HomePetSystem.getUserName() || '').trim();
+                if (systemName) return Array.from(systemName).slice(0, 16).join('');
+            }
+            try {
+                const settings = JSON.parse(safeGetItem(PET_SETTINGS_STORAGE_KEY) || '{}');
+                return Array.from(String(settings && settings.userName ? settings.userName : '').trim())
+                    .slice(0, 16)
+                    .join('');
+            } catch (error) {
+                return '';
+            }
+        }
+
+        function isPlaceholderWord(word) {
+            const surface = String(word && word.word ? word.word : '').trim();
+            return !surface || surface === '（準備中）' || surface === '---';
+        }
+
+        function getVocabStarKey(wordId) {
+            return `${STAR_KEY_PREFIX}${String(wordId || '').trim()}`;
+        }
+
+        function getWordStorageId(word) {
+            return String(word && (word.id || word.word) ? (word.id || word.word) : '').trim();
+        }
+
+        function getSentenceReviewQuestionCount() {
+            return sentenceReviewStore ? sentenceReviewStore.getQuestionCount(SENTENCE_REVIEW_MODULE_KEY) : 0;
+        }
+
+        function getSentenceMistakeCountForWord(word) {
+            if (!sentenceReviewStore) return 0;
+            const storageId = getWordStorageId(word);
+            const surface = String(word && word.word ? word.word : '').trim();
+            const primaryCount = storageId ? sentenceReviewStore.getWordMistakeCount(SENTENCE_REVIEW_MODULE_KEY, storageId) : 0;
+            if (primaryCount > 0) return primaryCount;
+            return surface ? sentenceReviewStore.getWordMistakeCount(SENTENCE_REVIEW_MODULE_KEY, surface) : 0;
+        }
+
+        function findWordByReviewIdentifier(wordId) {
+            const target = String(wordId || '').trim();
+            if (!target) return null;
+            const pools = [currentDailyWords, typeof FULL_WORD_LIST !== 'undefined' && Array.isArray(FULL_WORD_LIST) ? FULL_WORD_LIST : []];
+            for (const pool of pools) {
+                const found = pool.find((word) => {
+                    if (!word || isPlaceholderWord(word)) return false;
+                    const storageId = getWordStorageId(word);
+                    const surface = String(word.word || '').trim();
+                    return storageId === target || surface === target;
+                });
+                if (found) return found;
+            }
+            return null;
+        }
+
+        function getReviewKeywordIds(wordOrId) {
+            const ids = new Set();
+            if (typeof wordOrId === 'string') ids.add(wordOrId.trim());
+            const word = typeof wordOrId === 'string' ? findWordByReviewIdentifier(wordOrId) : wordOrId;
+            if (word) {
+                const storageId = getWordStorageId(word);
+                const surface = String(word.word || '').trim();
+                if (storageId) ids.add(storageId);
+                if (surface) ids.add(surface);
+            }
+            return Array.from(ids).filter(Boolean);
+        }
+
+        function isReviewKeywordDismissed(word) {
+            if (!reviewStore || typeof reviewStore.isKeywordDismissed !== 'function') return false;
+            return getReviewKeywordIds(word).some((wordId) => reviewStore.isKeywordDismissed(SENTENCE_REVIEW_MODULE_KEY, wordId));
+        }
+
+        function dismissReviewKeyword(wordOrId) {
+            reviewLibrary.removeWord(wordOrId);
+        }
+
+        function refreshReviewKeywordListAfterDismiss() {
+            if (currentDay !== -1) return;
+            currentDailyWords = getReviewableWords();
+            if (currentDailyWords.length === 0) {
+                currentWordIndex = 0;
+                currentView = 'list';
+                renderWordList(currentDailyWords);
+                updateUI();
+                return;
+            }
+            if (currentView === 'detail') {
+                currentWordIndex = Math.min(currentWordIndex, currentDailyWords.length - 1);
+                renderDetailCard();
+                updateUI();
+                return;
+            }
+            renderWordList(currentDailyWords);
+            updateUI();
+        }
+
+        function getSentenceReviewWords() {
+            if (!sentenceReviewStore || typeof FULL_WORD_LIST === 'undefined' || !Array.isArray(FULL_WORD_LIST)) return [];
+            const trackedIds = new Set(sentenceReviewStore.listTrackedWordIds(SENTENCE_REVIEW_MODULE_KEY));
+            if (trackedIds.size === 0) return [];
+            return FULL_WORD_LIST.filter((word) => {
+                if (!word || isPlaceholderWord(word)) return false;
+                const storageId = getWordStorageId(word);
+                const surface = String(word.word || '').trim();
+                return trackedIds.has(storageId) || trackedIds.has(surface);
+            });
+        }
+
+        function getTypedReviewCount(type) {
+            return reviewStore ? reviewStore.getTypedCount(SENTENCE_REVIEW_MODULE_KEY, type) : 0;
+        }
+
+        function getTypedReviewSnapshots(type) {
+            return reviewStore ? reviewStore.listTypedWords(SENTENCE_REVIEW_MODULE_KEY, type) : [];
+        }
+
+        function findWordByReviewSnapshot(snapshot) {
+            if (!snapshot || typeof FULL_WORD_LIST === 'undefined' || !Array.isArray(FULL_WORD_LIST)) return null;
+            const wordId = String(snapshot.wordId || snapshot.id || '').trim();
+            const wordLabel = String(snapshot.wordLabel || snapshot.word || '').trim();
+            return FULL_WORD_LIST.find((word) => {
+                if (!word || isPlaceholderWord(word)) return false;
+                const storageId = getWordStorageId(word);
+                const surface = String(word.word || '').trim();
+                return (wordId && (storageId === wordId || surface === wordId)) || (wordLabel && surface === wordLabel);
+            }) || null;
+        }
+
+        function getTypedReviewWords(type) {
+            return getTypedReviewSnapshots(type).map(findWordByReviewSnapshot).filter(Boolean);
+        }
+
+        function getTypedReviewWordIds() {
+            const ids = new Set();
+            ['reading', 'meaning'].forEach((type) => {
+                getTypedReviewSnapshots(type).forEach((snapshot) => {
+                    const wordId = String(snapshot && snapshot.wordId || '').trim();
+                    const wordLabel = String(snapshot && (snapshot.wordLabel || snapshot.word) || '').trim();
+                    if (wordId) ids.add(wordId);
+                    if (wordLabel) ids.add(wordLabel);
+                });
+            });
+            return ids;
+        }
+
+        function getSentenceTrackedWordIds() {
+            return sentenceReviewStore ? new Set(sentenceReviewStore.listTrackedWordIds(SENTENCE_REVIEW_MODULE_KEY)) : new Set();
+        }
+
+        function getLegacyStarredWords() {
+            const typedIds = getTypedReviewWordIds();
+            const sentenceIds = getSentenceTrackedWordIds();
+            return getStarredWords().filter((word) => {
+                const storageId = getWordStorageId(word);
+                const surface = String(word && word.word || '').trim();
+                return !typedIds.has(storageId) && !typedIds.has(surface) && !sentenceIds.has(storageId) && !sentenceIds.has(surface);
+            });
+        }
+
+        function getReviewableWords() {
+            return reviewLibrary.getWords();
+        }
+
+        function getReviewWordCount() {
+            return getReviewableWords().length;
+        }
+
+        function migrateLegacyProgress() {
+            if (typeof FULL_WORD_LIST === 'undefined' || !Array.isArray(FULL_WORD_LIST)) return;
+            FULL_WORD_LIST.forEach((word) => {
+                if (!word || isPlaceholderWord(word)) return;
+                const legacyKey = `${LEGACY_STAR_KEY_PREFIX}${word.word}`;
+                if (safeGetItem(legacyKey) === 'true' && safeGetItem(getVocabStarKey(word.word)) !== 'true') {
+                    safeSetItem(getVocabStarKey(word.word), 'true');
+                }
+            });
+        }
+
+        function getLastStudiedDay() {
+            return parseInt(safeGetItem(LAST_DAY_STORAGE_KEY) || '', 10) || 0;
+        }
+
+        function setLastStudiedDay(dayId) {
+            safeSetItem(LAST_DAY_STORAGE_KEY, String(dayId));
+        }
+
+        function getCurriculumDay(dayId) {
+            return CURRICULUM_DAYS.find((day) => Number(day.id) === Number(dayId)) || null;
+        }
+
+        function getCurriculumStage(stageId) {
+            return CURRICULUM_STAGES.find((stage) => Number(stage.id) === Number(stageId)) || null;
+        }
+
+        function getCurriculumGroup(groupId) {
+            return CURRICULUM_GROUPS.find((group) => Number(group.id) === Number(groupId)) || null;
+        }
+
+        function collectWordsByIndexes(indexes) {
+            if (!Array.isArray(indexes) || typeof FULL_WORD_LIST === 'undefined' || !Array.isArray(FULL_WORD_LIST)) return [];
+            const seen = new Set();
+            return indexes.map((index) => FULL_WORD_LIST[index]).filter((word) => {
+                if (!word || isPlaceholderWord(word)) return false;
+                if (seen.has(word.word)) return false;
+                seen.add(word.word);
+                return true;
+            });
+        }
+
+        function getDayWords(dayId) {
+            const day = getCurriculumDay(dayId);
+            if (day && Array.isArray(day.wordIds)) {
+                return collectWordsByIndexes(day.wordIds);
+            }
+            if (typeof FULL_WORD_LIST === 'undefined' || !Array.isArray(FULL_WORD_LIST)) return [];
+            const wordsPerDay = typeof WORDS_PER_DAY !== 'undefined' ? WORDS_PER_DAY : 20;
+            const start = (dayId - 1) * wordsPerDay;
+            const size = wordsPerDay;
+            return FULL_WORD_LIST.slice(start, start + size).filter((word) => !isPlaceholderWord(word));
+        }
+
+        function getAllCurriculumWords() {
+            if (CURRICULUM_DAYS.length > 0) {
+                return collectWordsByIndexes(CURRICULUM_DAYS.flatMap((day) => Array.isArray(day.wordIds) ? day.wordIds : []));
+            }
+            return (typeof FULL_WORD_LIST !== 'undefined' && Array.isArray(FULL_WORD_LIST)) ? FULL_WORD_LIST.filter((word) => !isPlaceholderWord(word)) : [];
+        }
+
+        function getStarredWords() {
+            return (typeof FULL_WORD_LIST !== 'undefined' && Array.isArray(FULL_WORD_LIST))
+                ? FULL_WORD_LIST.filter((word) => !isPlaceholderWord(word) && safeGetItem(getVocabStarKey(word.word)) === 'true')
+                : [];
+        }
+
+        function getStarredCount() {
+            return getStarredWords().length;
+        }
+
+        function openReviewBank() {
+            selectStarredWords();
+        }
+
+        function selectStarredWords() {
+            if (currentView === 'days') directoryScrollY = window.scrollY;
+            if (typeof closePracticePicker === 'function') closePracticePicker();
+            currentDay = -1;
+            currentDailyWords = getReviewableWords();
+            currentWordIndex = 0;
+            wordIndexScrollTop = 0;
+            currentView = 'list';
+            reviewLibrary.setRoute(true);
+            updateUI();
+            window.scrollTo(0, 0);
+        }
+
+        // Learning journey, directory and word-list marks: shared/vocabulary-journey-directory.js
+        const journey = window.VocabularyJourneyDirectory.create({
+            days: CURRICULUM_DAYS,
+            stages: CURRICULUM_STAGES,
+            storage: { get: safeGetItem, set: safeSetItem },
+            keys: { learned: LEARNED_WORDS_STORAGE_KEY, journey: LEARNING_JOURNEY_STORAGE_KEY },
+            readLastDay: getLastStudiedDay,
+            writeLastDay: setLastStudiedDay,
+            getWordStorageId,
+            getDayWords,
+            stamp: window.N2LoanwordStampCollection || null,
+            hasDayPractice: false,
+            hasStagePractice: false,
+            labels: {
+                mentorName: '阳太',
+                greeting: (name, done) => (done ? '全部学完啦！想复习随时回来！' : (name ? `今天也来认识几个新词吧，${name}！` : '今天也来认识几个新词吧！')),
+                sectionTitle: '学習日程',
+                stageKicker: () => '大分類',
+                stageName: (stage) => String(stage.groupTitle || stage.title || '外来語'),
+                stageNameLang: 'zh-CN',
+                dayLabel: (day, id) => (day && day.title) || `${id}日目`,
+                dayName: (day, id) => (day ? `${day.groupTitle} ${day.title}` : `第 ${id} 天`),
+                cardKicker: (day) => (day && day.groupTitle) || '外来語',
+                currentLine: (day) => (day ? `${day.groupTitle} · ${day.title}` : '')
+            }
+        });
+
+        function markCurrentWordLearned() {
+            if (Number(currentDay) > 0) journey.markWordLearned(currentDailyWords[currentWordIndex]);
+        }
+
+        function renderDays() {
+            journey.renderDirectory(daysView, {
+                userName: getPetSystemUserName(),
+                onSelectDay: selectDay
+            });
+        }
+
+        function selectDay(dayId) {
+            if (!journey.isAccessible(dayId)) return;
+            journey.clearNotice();
+            directoryScrollY = window.scrollY;
+            // Reviewing a finished day must not move the "current day" pointer.
+            if (!journey.isCompleted(dayId)) setLastStudiedDay(dayId);
+            currentDay = dayId;
+            currentDailyWords = getDayWords(dayId);
+            currentWordIndex = journey.resumeIndex(dayId, currentDailyWords);
+            wordIndexScrollTop = 0;
+            currentView = 'detail';
+            renderDetailCard();
+            updateUI();
+        }
+
+        function renderWordList(words) {
+            const container = document.getElementById('word-list-container');
+            if (currentDay === -1) {
+                reviewLibrary.renderList(container);
+                return;
+            }
+            container.classList.remove('vocabulary-review-list');
+            container.innerHTML = '';
+            const isReviewKeywordList = currentDay === -1;
+
+            if (words.length === 0) {
+                container.innerHTML = `
+                    <div style="padding:42px 20px; text-align:center; color:var(--text-dim); font-weight:700; line-height:1.8;">
+                        ${isReviewKeywordList ? '看错关键词已经清空。句子题如果还有待回放，可以从错题库入口继续复盘。' : '这一组词条还在整理中。'}
+                    </div>
+                `;
+                window.scrollTo(0, 0);
+                return;
+            }
+
+            words.forEach((wordData, index) => {
+                const item = document.createElement('div');
+                item.className = 'word-list-item';
+                const wordId = wordData.word;
+                const isStarred = safeGetItem(getVocabStarKey(wordId)) === 'true';
+                const actionClass = isReviewKeywordList ? 'active review-remove' : (isStarred ? 'active' : '');
+                const actionLabel = isReviewKeywordList ? '移出' : '🔖';
+                const actionTitle = isReviewKeywordList ? '移出错题词' : '加入错题本';
+                const sentenceMistakeCount = getSentenceMistakeCountForWord(wordData);
+                const sentenceMistakeHtml = sentenceMistakeCount > 0
+                    ? `<div style="font-size:12px; font-weight:600; color: var(--text-dim); line-height:1.5;">句子错 ${sentenceMistakeCount} 次</div>`
+                    : '';
+                item.innerHTML = `
+                    <div style="min-width:0; display:flex; flex-direction:column; gap:4px;">
+                        <div class="list-word-text">${wordData.word_html || wordData.word}</div>
+                        ${sentenceMistakeHtml}
+                    </div>
+                    <div class="list-actions">
+                        <div class="mark-btn ${actionClass}" data-word="${escapeHtml(wordId)}" title="${actionTitle}" aria-label="${actionTitle}">${actionLabel}</div>
+                        <div class="list-arrow">›</div>
+                    </div>
+                `;
+                item.addEventListener('click', (event) => {
+                    const btn = event.target.closest('.mark-btn');
+                    if (btn) {
+                        event.stopPropagation();
+                        toggleMark(btn, wordId);
+                        return;
+                    }
+                    openWordDetail(index);
+                });
+                container.appendChild(item);
+            });
+
+            window.scrollTo(0, 0);
+        }
+
+        function toggleMark(button, wordId) {
+            if (currentDay === -1) {
+                dismissReviewKeyword(wordId);
+                refreshReviewKeywordListAfterDismiss();
+                return;
+            }
+            const storageKey = getVocabStarKey(wordId);
+            const nextActive = safeGetItem(storageKey) !== 'true';
+            if (nextActive) {
+                safeSetItem(storageKey, 'true');
+                if (reviewStore && typeof reviewStore.restoreKeyword === 'function') {
+                    getReviewKeywordIds(wordId).forEach((id) => reviewStore.restoreKeyword(SENTENCE_REVIEW_MODULE_KEY, id));
+                }
+            } else {
+                safeRemoveItem(storageKey);
+            }
+            button.classList.toggle('active', nextActive);
+        }
+
+        function restorePronounceButton(button) {
+            if (!button) return;
+            button.classList.remove('is-playing');
+            button.textContent = '发音';
+        }
+
+        function getLoanwordSpokenForm(wordData) {
+            return String(wordData.reading || wordData.word || '').trim();
+        }
+
+        function stopVocabularyPlayback() {
+            window.KijiCoreVocabularyAudio.stop();
+        }
+
+        function speakVocabularyWord(wordData, button) {
+            window.KijiCoreVocabularyAudio.play('n2/loanwords', wordData, button);
+        }
+
+        function openWordDetail(index) {
+            if (currentView === 'detail' && index !== currentWordIndex) {
+                markCurrentWordLearned();
+            }
+            currentWordIndex = index;
+            currentView = 'detail';
+            renderDetailCard();
+            updateUI();
+        }
+
+        function restoreWordIndexPosition(container) {
+            const wordList = container.querySelector('.study-word-list');
+            if (!wordList) return;
+
+            wordList.scrollTop = wordIndexScrollTop;
+            if (!isWordIndexCollapsed) {
+                const selectedWord = wordList.querySelector('.study-word-link.is-selected');
+                if (selectedWord) {
+                    const listRect = wordList.getBoundingClientRect();
+                    const selectedRect = selectedWord.getBoundingClientRect();
+                    if (selectedRect.top < listRect.top) {
+                        wordList.scrollTop -= listRect.top - selectedRect.top;
+                    } else if (selectedRect.bottom > listRect.bottom) {
+                        wordList.scrollTop += selectedRect.bottom - listRect.bottom;
+                    }
+                }
+            }
+            wordIndexScrollTop = wordList.scrollTop;
+        }
+
+        function renderDetailCard() {
+            stopVocabularyPlayback();
+            const container = document.getElementById('word-detail-view');
+            const previousWordList = container.querySelector('.study-word-list');
+            if (previousWordList) {
+                wordIndexScrollTop = previousWordList.scrollTop;
+            }
+            const wordData = currentDailyWords[currentWordIndex];
+            if (!wordData) return;
+
+            const toneHtml = wordData.tone ? `<span class="study-tone">${escapeHtml(wordData.tone)}</span>` : '';
+            const posHtml = wordData.pos ? `<span class="study-pos">${escapeHtml(wordData.pos)}</span>` : '';
+            const originHtml = wordData.origin ? `<span class="study-origin">${escapeHtml(wordData.origin)}</span>` : '';
+            const meanings = wordData.mean ? wordData.mean.split(/[；;]/).map((item) => item.trim()).filter(Boolean) : [];
+            const nuances = wordData.nuance
+                ? wordData.nuance.split('\n').map((line) => line.trim().replace(/^\d+\.\s*/, '')).filter(Boolean)
+                : [];
+            const examples = Array.isArray(wordData.examples) ? wordData.examples : [];
+            const count = Math.max(meanings.length, nuances.length, examples.length);
+            const isReviewKeywordList = currentDay === -1;
+            const isTemporaryUnit = currentDay === -2;
+            const isReviewStyleUnit = isReviewKeywordList || isTemporaryUnit;
+            const dayData = isReviewStyleUnit ? null : getCurriculumDay(currentDay);
+            const unitTitle = isTemporaryUnit ? '本次错词复习' : (isReviewKeywordList ? '错题词汇' : (dayData && dayData.title ? dayData.title : `${currentDay}日目`));
+            const unitLabel = isTemporaryUnit ? '临时单元' : (isReviewKeywordList ? 'N2 外来語 · 错题库' : journey.chapterLabel(currentDay));
+            const coreText = String(wordData.memoryHint || '').trim()
+                || (window.VocabularyMemoryHint
+                    ? window.VocabularyMemoryHint.buildHint(wordData, 'yota')
+                    : (nuances[0] || meanings.join('；') || '先把片假名词形和它在日语中的实际意思连起来。'));
+            const directoryTitle = isTemporaryUnit ? '本次错词' : (isReviewKeywordList ? '错题词汇' : '本日词汇');
+            const learnedCount = isReviewStyleUnit
+                ? Math.min(currentWordIndex + 1, currentDailyWords.length)
+                : journey.getLearnedWordCount(currentDailyWords);
+            const progress = journey.getProgressPercent(learnedCount, currentDailyWords.length);
+
+            const wordListHtml = journey.wordListHtml(currentDailyWords, currentWordIndex, isReviewStyleUnit);
+            const routeHtml = journey.routeHtml(currentDailyWords, currentWordIndex, isReviewStyleUnit);
+
+            let definitionsHtml = '';
+            for (let index = 0; index < count; index += 1) {
+                const meanText = meanings[index] || (meanings.length === 1 && index === 0 ? meanings[0] : '');
+                const nuanceText = nuances[index] || '';
+                const example = examples[index];
+
+                definitionsHtml += `
+                    <div class="study-usage-group">
+                        <div class="study-usage-number">${String(index + 1).padStart(2, '0')}</div>
+                        <div>
+                            <div class="study-usage-copy">
+                                ${meanText ? `<strong class="hide-target">${escapeHtml(meanText)}</strong>` : '<strong>典型用法</strong>'}
+                                ${nuanceText ? `<span class="hide-target">${escapeHtml(nuanceText)}</span>` : ''}
+                            </div>
+                            ${example ? `
+                                <div class="study-example">
+                                    <p class="study-example-jp" lang="ja">${example.jp}</p>
+                                    <span class="hide-target study-example-cn">${escapeHtml(example.cn)}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            const isFirst = currentWordIndex === 0;
+            const isLast = currentWordIndex === currentDailyWords.length - 1;
+            const lastAction = isReviewStyleUnit ? null : journey.lastWordAction(currentDay, currentDailyWords, currentWordIndex);
+            const patterns = Array.isArray(wordData.patterns) ? wordData.patterns.filter(Boolean) : [];
+            const wordId = wordData.word;
+            const isStarred = safeGetItem(getVocabStarKey(wordId)) === 'true';
+            const actionClass = isReviewKeywordList ? 'active review-remove' : (isStarred ? 'active' : '');
+            const actionLabel = isReviewKeywordList ? '移出错题库' : (isStarred ? '★ 已收藏' : '☆ 收藏');
+            const actionTitle = isReviewKeywordList ? '移出错题词' : '加入错题本';
+            const spokenForm = getLoanwordSpokenForm(wordData);
+
+            container.innerHTML = `
+                <div class="study-unit-line">
+                    <div class="study-unit-copy">
+                        <span class="study-unit-label">${escapeHtml(unitLabel)}</span>
+                        <strong class="study-unit-title">${escapeHtml(unitTitle)}</strong>
+                    </div>
+                    <div class="study-unit-progress" aria-label="已学习 ${learnedCount}/${currentDailyWords.length} 个词汇">
+                        ${routeHtml}
+                        <span>${learnedCount} / ${currentDailyWords.length}</span>
+                        <i class="study-progress-track"><span style="width:${progress}%"></span></i>
+                    </div>
+                </div>
+
+                <section class="study-workspace ${isWordIndexCollapsed ? 'is-index-collapsed' : ''}">
+                    <aside class="study-word-index">
+                        <div class="study-index-header">
+                            <div class="study-index-title">
+                                <strong>${escapeHtml(directoryTitle)}</strong>
+                                <span>${currentDailyWords.length} 词</span>
+                            </div>
+                            <button
+                                type="button"
+                                class="study-index-toggle"
+                                data-index-toggle
+                                aria-expanded="${isWordIndexCollapsed ? 'false' : 'true'}"
+                                aria-label="${isWordIndexCollapsed ? '展开词汇目录' : '收起词汇目录'}"
+                                title="${isWordIndexCollapsed ? '展开词汇目录' : '收起词汇目录'}"
+                            >${isWordIndexCollapsed ? '›' : '‹'}</button>
+                        </div>
+                        <nav class="study-word-list" aria-label="${escapeHtml(directoryTitle)}">
+                            ${wordListHtml}
+                        </nav>
+                    </aside>
+
+                    <article class="study-detail-panel">
+                        <header class="study-word-header">
+                            <div class="study-word-title-row">
+                                <div class="study-word-title">
+                                    <h2>${wordData.word_html || escapeHtml(wordData.word)}</h2>
+                                    <div>
+                                        ${toneHtml}
+                                        ${posHtml}
+                                        ${originHtml}
+                                    </div>
+                                    <button type="button" class="study-pronounce" data-study-pronounce aria-label="播放 ${escapeHtml(spokenForm)} 的日语发音">发音</button>
+                                </div>
+                                <button type="button" class="detail-save ${actionClass}" data-detail-mark title="${actionTitle}" aria-label="${actionTitle}">${actionLabel}</button>
+                            </div>
+                        </header>
+
+                        <section class="study-usage-section">
+                            <div class="study-section-heading">
+                                <h3>用法与例句</h3>
+                                <p>结合词源和日语语境理解实际用法</p>
+                            </div>
+                            ${definitionsHtml || '<div class="study-usage-group"><div class="study-usage-number">01</div><div class="study-usage-copy"><span>内容整理中</span></div></div>'}
+                            ${patterns.length > 0 ? `
+                                <div class="study-patterns-inline" aria-label="常用搭配">
+                                    <span class="study-patterns-label">常用搭配</span>
+                                    <div class="study-pattern-list">
+                                        ${patterns.map((pattern) => `<span class="study-pattern-item" lang="ja">${escapeHtml(pattern)}</span>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </section>
+
+                        <aside class="study-mentor-note">
+                            <img src="../n1/icon/wailaiyu-cutout.png?v=20260731" alt="" aria-hidden="true" onerror="this.hidden=true">
+                            <div>
+                                <strong>阳太的记忆提示</strong>
+                                <p>${escapeHtml(coreText)}</p>
+                            </div>
+                        </aside>
+
+                        <footer class="study-detail-footer">
+                            <button type="button" data-study-nav="-1" ${isFirst ? 'disabled' : ''}>‹ 上一词${!isFirst ? `　${escapeHtml(currentDailyWords[currentWordIndex - 1].word)}` : ''}</button>
+                            <span>第 ${currentWordIndex + 1} 个，共 ${currentDailyWords.length} 个</span>
+                            <button type="button" data-study-nav="1" class="${isLast && lastAction ? lastAction.className : ''}">${isLast ? (lastAction ? lastAction.label : '返回目录 ›') : `下一词　${escapeHtml(currentDailyWords[currentWordIndex + 1].word)} ›`}</button>
+                        </footer>
+                    </article>
+                </section>
+            `;
+
+            restoreWordIndexPosition(container);
+            container.querySelectorAll('[data-study-word-index]').forEach((button) => {
+                button.addEventListener('click', () => openWordDetail(Number(button.dataset.studyWordIndex)));
+            });
+            container.querySelector('[data-index-toggle]')?.addEventListener('click', (event) => {
+                isWordIndexCollapsed = !isWordIndexCollapsed;
+                safeSetItem(INDEX_COLLAPSED_STORAGE_KEY, String(isWordIndexCollapsed));
+                const workspace = container.querySelector('.study-workspace');
+                workspace?.classList.toggle('is-index-collapsed', isWordIndexCollapsed);
+                event.currentTarget.textContent = isWordIndexCollapsed ? '›' : '‹';
+                event.currentTarget.setAttribute('aria-expanded', isWordIndexCollapsed ? 'false' : 'true');
+                event.currentTarget.setAttribute('aria-label', isWordIndexCollapsed ? '展开词汇目录' : '收起词汇目录');
+                event.currentTarget.setAttribute('title', isWordIndexCollapsed ? '展开词汇目录' : '收起词汇目录');
+            });
+            container.querySelector('[data-detail-mark]')?.addEventListener('click', (event) => {
+                toggleMark(event.currentTarget, wordId);
+                if (!isReviewKeywordList) {
+                    renderDetailCard();
+                }
+            });
+            container.querySelector('[data-study-pronounce]')?.addEventListener('click', (event) => {
+                speakVocabularyWord(wordData, event.currentTarget);
+            });
+            container.querySelectorAll('[data-study-nav]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const direction = Number(button.dataset.studyNav);
+                    if (isLast && direction === 1 && !isReviewStyleUnit) {
+                        finishLastWord();
+                        return;
+                    }
+                    if (isLast && direction === 1) {
+                        returnToVocabularyDirectory();
+                        return;
+                    }
+                    navigateWord(direction);
+                });
+            });
+        }
+
+        function navigateWord(direction) {
+            const nextIndex = currentWordIndex + direction;
+            if (nextIndex >= 0 && nextIndex < currentDailyWords.length) {
+                markCurrentWordLearned();
+                currentWordIndex = nextIndex;
+                renderDetailCard();
+            }
+        }
+
+        // Last word: confirm the day (stamp + unlock), resume unlearned words, or go back.
+        function finishLastWord() {
+            const dayId = currentDay;
+            const result = journey.completeLastWord(dayId, currentDailyWords, currentWordIndex);
+            if (result.next === 'word') {
+                currentWordIndex = result.index;
+                renderDetailCard();
+                return;
+            }
+            if (result.next === 'celebrate') directoryScrollY = 0;
+            returnToVocabularyDirectory();
+            if (result.next === 'celebrate') {
+                window.requestAnimationFrame(() => {
+                    journey.focusNotice(daysView);
+                    journey.celebrate(dayId);
+                });
+            }
+        }
+
+        function configureBackButton(label, href) {
+            backBtn.setAttribute('href', href);
+            backBtn.setAttribute('aria-label', label);
+            backBtn.innerHTML = `${BACK_ICON_HTML}<span class="kiki-unified-back-label">${escapeHtml(label)}</span><span class="kiki-unified-back-label-mobile" aria-hidden="true">返回</span>`;
+        }
+
+        function returnToVocabularyDirectory() {
+            reviewLibrary.setRoute(false);
+            currentView = 'days';
+            renderDays();
+            updateUI();
+            window.requestAnimationFrame(() => {
+                window.scrollTo({ top: directoryScrollY, behavior: 'auto' });
+            });
+        }
+
+        function handleBackNavigation(event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            if (currentDay === -1 && currentView !== 'days' && currentView !== 'list') {
+                selectStarredWords();
+                return;
+            }
+            if (isBackNavigationLocked) return;
+            isBackNavigationLocked = true;
+            if (currentView === 'days') {
+                window.location.assign(N2_VOCABULARY_HOME_HREF);
+                return;
+            }
+            returnToVocabularyDirectory();
+            window.setTimeout(() => {
+                isBackNavigationLocked = false;
+            }, 300);
+        }
+
+        function updateUI() {
+            if (currentView !== 'detail') {
+                stopVocabularyPlayback();
+                setFontSizeDrawerOpen(false);
+            }
+            daysView.classList.add('hidden');
+            wordListView.classList.add('hidden');
+            wordDetailView.classList.add('hidden');
+            document.body.classList.toggle('study-detail-active', currentView === 'detail');
+            document.body.classList.toggle('study-days-active', currentView === 'days');
+            if (reviewLibrary.update(currentView, currentDay)) return;
+
+            if (currentView === 'days') {
+                daysView.classList.remove('hidden');
+                pageTitle.textContent = 'N2 外来語';
+                configureBackButton('返回词汇入口', N2_VOCABULARY_HOME_HREF);
+                return;
+            }
+
+            if (currentView === 'list') {
+                wordListView.classList.remove('hidden');
+                pageTitle.textContent = currentDay === -1 ? '错题合集' : `${getCurriculumDay(currentDay)?.title || `${currentDay}日目`}`;
+                if (currentDailyWords.length > 0) {
+                    renderWordList(currentDailyWords);
+                }
+                configureBackButton('返回目录', VOCABULARY_DIRECTORY_HREF);
+                return;
+            }
+
+            wordDetailView.classList.remove('hidden');
+            pageTitle.textContent = 'N2 外来語';
+            configureBackButton('返回目录', VOCABULARY_DIRECTORY_HREF);
+        }
+
+        document.addEventListener('click', (event) => {
+            const dynamicBack = event.target instanceof Element
+                ? event.target.closest('#back-btn[data-kiki-dynamic-back]')
+                : null;
+            if (!dynamicBack) return;
+            handleBackNavigation(event);
+        }, true);
+        applyDetailFontSize(currentDetailFontSize, false);
+        detailFontSizeButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                applyDetailFontSize(button.dataset.detailFontSize);
+                setFontSizeDrawerOpen(false);
+                fontSizeTrigger?.focus();
+            });
+        });
+        fontSizeTrigger?.addEventListener('click', () => {
+            const shouldOpen = !fontSizeControl.classList.contains('is-open');
+            setFontSizeDrawerOpen(shouldOpen, shouldOpen);
+        });
+        document.addEventListener('click', (event) => {
+            if (fontSizeControl && !fontSizeControl.contains(event.target)) {
+                setFontSizeDrawerOpen(false);
+            }
+        });
+
+        migrateLegacyProgress();
+        // Snapshot legacy progress before any day can be opened in this session.
+        journey.getState();
+        renderDays();
+        updateUI();
+
+        window.addEventListener('storage', (event) => {
+            if (![LEARNING_JOURNEY_STORAGE_KEY, LEARNED_WORDS_STORAGE_KEY].includes(event.key)) return;
+            journey.invalidate();
+            if (currentView === 'days') renderDays();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && fontSizeControl?.classList.contains('is-open')) {
+                setFontSizeDrawerOpen(false);
+                fontSizeTrigger?.focus();
+            }
+        });
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+        const minSwipeDistance = 50;
+
+        document.addEventListener('touchstart', (event) => {
+            touchStartX = event.changedTouches[0].screenX;
+            touchStartY = event.changedTouches[0].screenY;
+        }, false);
+
+        document.addEventListener('touchend', (event) => {
+            touchEndX = event.changedTouches[0].screenX;
+            touchEndY = event.changedTouches[0].screenY;
+            if (currentView !== 'detail') return;
+            const distanceX = touchEndX - touchStartX;
+            const distanceY = touchEndY - touchStartY;
+            if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > minSwipeDistance) {
+                navigateWord(distanceX < 0 ? 1 : -1);
+            }
+        }, false);
+        if (new URLSearchParams(window.location.search).get('review') === '1') {
+            selectStarredWords();
+        }
+    </script>
+    <script src="../shared/vocabulary-level-switcher.js?v=20260808-1"></script>
+    <script src="../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+</body>
+</html>

@@ -181,37 +181,141 @@
         };
     }
 
-    function modernizeExplanationBlock(box) {
-        if (!box || box.dataset.clozeExplanationModernized === 'true') return;
-        const originalBody = box.querySelector(':scope > div > div:last-child');
-        if (!originalBody) return;
-        const { primary, alternatives } = splitExplanationHtml(originalBody.innerHTML);
-        box.innerHTML = `
-            <article class="cloze-explanation-card">
-                <header class="cloze-explanation-heading">
-                    <strong>解析</strong>
-                </header>
-                <div class="cloze-explanation-primary">${primary}</div>
-                ${alternatives ? `
-                    <section class="cloze-explanation-alternatives">
-                        <h4>其他选项</h4>
-                        <div>${alternatives}</div>
-                    </section>` : ''}
-            </article>`;
-        box.dataset.clozeExplanationModernized = 'true';
+    function htmlToPlainText(source) {
+        const holder = document.createElement('div');
+        holder.innerHTML = String(source || '').replace(/<br\s*\/?>/gi, '\n');
+        return (holder.textContent || '')
+            .replace(/\u00a0/g, ' ')
+            .replace(/[ \t]+/g, ' ')
+            .replace(/\s*\n\s*/g, '\n')
+            .trim();
     }
 
-    function modernizeExplanationBlocks() {
+    function getOptionAnalysis(question) {
+        const count = Array.isArray(question?.options) ? question.options.length : 0;
+        const translations = Array.from({ length: count }, (_, index) => (
+            Array.isArray(question?.optionTranslations) ? String(question.optionTranslations[index] || '') : ''
+        ));
+        const explicit = Array.isArray(question?.optionExplanations) ? question.optionExplanations : [];
+        const details = Array.from({ length: count }, (_, index) => String(explicit[index] || ''));
+
+        if (!details.every(Boolean)) {
+            const { primary, alternatives } = splitExplanationHtml(question?.explanation || '');
+            if (Number.isInteger(question?.correctIndex) && !details[question.correctIndex]) {
+                details[question.correctIndex] = htmlToPlainText(primary);
+            }
+            const alternativeText = htmlToPlainText(alternatives);
+            const pattern = /(?:^|\n)\s*(\d+)[.\uff0e\u3001]\s*([\s\S]*?)(?=(?:\n\s*\d+[.\uff0e\u3001]\s)|$)/g;
+            let match;
+            while ((match = pattern.exec(alternativeText))) {
+                const index = Number(match[1]) - 1;
+                if (index >= 0 && index < count && !details[index]) details[index] = match[2].trim();
+            }
+        }
+
+        return {
+            translations,
+            details: details.map((detail, index) => detail || (
+                index === question?.correctIndex
+                    ? '该选项与上下文的语法关系和语意衔接一致。'
+                    : '该选项与本句的语法关系或上下文语意不符。'
+            ))
+        };
+    }
+
+    function enhanceQuestionOptionAnalysis(block, question) {
+        if (!block || !question || block.dataset.clozeOptionAnalysisReady === 'true') return;
+        const buttons = [...block.querySelectorAll('.cloze-option-btn')];
+        if (!buttons.length) return;
+        const { translations, details } = getOptionAnalysis(question);
+
+        buttons.forEach((button, index) => {
+            const optionText = button.querySelector('.option-text');
+            if (!optionText) return;
+            const body = document.createElement('span');
+            body.className = 'cloze-option-body';
+            const line = document.createElement('span');
+            line.className = 'cloze-option-line';
+            optionText.before(body);
+            body.appendChild(line);
+            line.appendChild(optionText);
+
+            const translation = document.createElement('span');
+            translation.className = 'cloze-option-translation';
+            translation.textContent = translations[index] || '';
+            if (!translations[index]) translation.classList.add('is-empty');
+            line.appendChild(translation);
+
+            const chevron = document.createElement('span');
+            chevron.className = 'cloze-option-chevron';
+            chevron.setAttribute('aria-hidden', 'true');
+            chevron.textContent = '⌄';
+            line.appendChild(chevron);
+
+            const rationale = document.createElement('span');
+            rationale.className = 'cloze-option-rationale';
+            rationale.textContent = details[index];
+            body.appendChild(rationale);
+
+            button.setAttribute('aria-expanded', 'false');
+            button.dataset.clozeOptionAnalysis = 'true';
+        });
+
+        const legacyBox = block.querySelector('.explanation-box');
+        if (legacyBox) {
+            legacyBox.setAttribute('aria-hidden', 'true');
+            legacyBox.dataset.clozeLegacyExplanation = 'hidden';
+        }
+        block.dataset.clozeOptionAnalysisReady = 'true';
+    }
+
+    function enhanceQuestionOptionAnalyses() {
         normalizeLegacyMarkup();
-        document.querySelectorAll('.explanation-box').forEach(modernizeExplanationBlock);
+        if (typeof clozeData === 'undefined' || !Array.isArray(clozeData.questions)) return;
+        clozeData.questions.forEach(question => {
+            enhanceQuestionOptionAnalysis(document.getElementById(`question-block-${question.id}`), question);
+        });
     }
 
     function watchQuestionRendering() {
         const container = document.getElementById('questions-container');
         if (!container) return;
-        modernizeExplanationBlocks();
-        const observer = new MutationObserver(modernizeExplanationBlocks);
+        enhanceQuestionOptionAnalyses();
+        const observer = new MutationObserver(enhanceQuestionOptionAnalyses);
         observer.observe(container, { childList: true, subtree: true });
+    }
+
+    function syncOptionAnalysisAvailability() {
+        const resultSection = document.getElementById('result-section');
+        const submitted = Boolean(resultSection && !resultSection.classList.contains('hidden'));
+        document.body.classList.toggle('cloze-option-analysis-ready', submitted);
+        document.querySelectorAll('.question-block').forEach(block => {
+            block.classList.toggle('is-option-analysis-ready', submitted);
+            if (!submitted) {
+                block.querySelectorAll('.cloze-option-btn.is-analysis-open').forEach(button => {
+                    button.classList.remove('is-analysis-open');
+                    button.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+    }
+
+    function installOptionAnalysisInteraction() {
+        document.addEventListener('click', event => {
+            const button = event.target.closest('.cloze-option-btn[data-cloze-option-analysis="true"]');
+            if (!button || !document.body.classList.contains('cloze-option-analysis-ready')) return;
+            event.preventDefault();
+            const block = button.closest('.question-block');
+            const willOpen = !button.classList.contains('is-analysis-open');
+            block?.querySelectorAll('.cloze-option-btn.is-analysis-open').forEach(item => {
+                item.classList.remove('is-analysis-open');
+                item.setAttribute('aria-expanded', 'false');
+            });
+            if (willOpen) {
+                button.classList.add('is-analysis-open');
+                button.setAttribute('aria-expanded', 'true');
+            }
+        });
     }
 
     function buildMentorMarkup() {
@@ -234,7 +338,7 @@
             context.className = 'cloze-practice-context';
             const count = typeof clozeData !== 'undefined' && Array.isArray(clozeData.questions) ? clozeData.questions.length : 0;
             context.innerHTML = `
-                <div><span class="cloze-practice-context__kicker">日本語能力試験 · ${getLevel()} · 年度练习</span><h1>[${getLevel()}] ${getSession()}</h1></div>
+                <div><span class="cloze-practice-context__kicker">日本語能力試験 · ${getLevel()} · 年度练习</span><h1><span class="cloze-context-level">[${getLevel()}] </span>${getSession()}</h1></div>
                 <div class="cloze-practice-context__meta"><span>完形填空</span><strong>${count} 个空</strong></div>`;
             shell.insertBefore(context, articleCard);
         }
@@ -244,7 +348,18 @@
             heading.className = 'cloze-article-heading';
             articleCard.insertBefore(heading, articleCard.firstChild);
             heading.appendChild(articleTitle);
-            heading.insertAdjacentHTML('beforeend', buildMentorMarkup());
+            const guide = document.createElement('details');
+            guide.className = 'cloze-mobile-guide';
+            const guideViewport = window.matchMedia('(max-width: 767px)');
+            guide.open = !guideViewport.matches;
+            const placeGuide = () => {
+                guide.open = !guideViewport.matches;
+                const context = document.getElementById('cloze-practice-context');
+                (guideViewport.matches && context ? context : heading).appendChild(guide);
+            };
+            guideViewport.addEventListener('change', placeGuide);
+            guide.innerHTML = '<summary>解题提示</summary>' + buildMentorMarkup();
+            placeGuide();
         }
     }
 
@@ -252,6 +367,8 @@
         const mentor = document.getElementById('cloze-mentor-feedback');
         const copy = mentor?.querySelector('p');
         if (!mentor || !copy) return;
+        const guide = mentor.closest('details');
+        if (guide) guide.open = true;
         mentor.classList.remove('is-thinking', 'is-correct', 'is-wrong');
         const isPerfect = correct === total;
         mentor.classList.add(isPerfect ? 'is-correct' : 'is-wrong');
@@ -315,15 +432,30 @@
         section.dataset.clozeRedesigning = 'done';
     }
 
+    function syncAnnotationAvailability() {
+        const resultSection = document.getElementById('result-section');
+        const submitted = Boolean(resultSection && !resultSection.classList.contains('hidden'));
+        document.body.classList.toggle('cloze-annotations-locked', !submitted);
+        syncOptionAnalysisAvailability();
+        if (!submitted) {
+            document.getElementById('global-annotation-bubble')?.classList.remove('is-visible');
+        }
+    }
+
     function watchResult() {
         const section = document.getElementById('result-section');
         if (!section) return;
+        syncAnnotationAvailability();
         const observer = new MutationObserver(() => {
+            syncAnnotationAvailability();
             if (section.dataset.clozeRedesigning === 'done') return;
             window.setTimeout(renderResultSummary, 20);
         });
         observer.observe(section, { childList:true, attributes:true, attributeFilter:['class'] });
-        document.getElementById('submit-btn')?.addEventListener('click', () => window.setTimeout(renderResultSummary, 40));
+        document.getElementById('submit-btn')?.addEventListener('click', () => window.setTimeout(() => {
+            syncAnnotationAvailability();
+            renderResultSummary();
+        }, 40));
     }
 
     function init() {
@@ -333,6 +465,7 @@
         buildPracticeContext();
         renderReviewNotice();
         watchQuestionRendering();
+        installOptionAnalysisInteraction();
         watchResult();
         modernizeTimerUI();
         retireLegacyHeader();

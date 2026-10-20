@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261017-summary-n1-2019-07-27b30edba567">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,147 +192,397 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
     <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2019-07-概要理解": {
-                label: "2019年07月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2019.07-1.mp3",
-                        script: {
-                            question: "一番：大学の先生が授業で話しています。先生は何について話していますか。",
-                            questionTrans: "（第一题：在大学的课堂上，老师正在讲话。老师在谈论什么？）",
-                            dialogue: [
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '老师在开头虽然提到了语音翻译技术的提升，但这只是为了引出后续关于【为什么还要学外语】的探讨，并不是在专门论述该技术的“可能性”，可以排除。')\">コンピューターが話し言葉を<span class=\"keyword\" onclick=\"showTooltip(event, '瞬時（しゅんじ）：瞬时，瞬间。')\">瞬時</span>に他の言語に翻訳してくれる音声翻訳技術が向上し、外国語ができなくても、異なる言語を話す人とのコミュニケーションが可能になってきました。</span></span>", "trans": "（计算机能够将口语瞬间翻译成其他语言的语音翻译技术不断提升，即使不懂外语，和说不同语言的人交流也变得可能了。）" },
-                                { "speaker": "男", "text": "では、こんな時代に外国語を学ぼうという人はいるでしょうか。", "trans": "（那么，在这样的时代，还有人想要去学外语吗？）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师提出了“在翻译技术发达的时代为什么还要学外语”的问题，并给出了回答：【学习其他语言就是了解其文化。进而，也会成为重新审视自己的语言和文化的契机（他の言語を学ぶことはその文化を知ること。ひいては、自分の言葉や文化を捉えなおすきっかけともなります）】。这说明整段讲话都在论述“学习外语的意义”，符合选项3。')\">他の言語を学ぶことはその文化を知ること。<span class=\"keyword\" onclick=\"showTooltip(event, 'ひいては：进而，甚至。')\">ひいては</span>、自分の言葉や文化を<span class=\"keyword\" onclick=\"showTooltip(event, '捉（とら）えなおす：重新审视，重新认识。')\">捉えなおす</span>きっかけともなります。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，虽然文中提到了重新审视自己的语言和文化，但这只是学习外语带来的“其中一个结果/附带作用（ひいては…きっかけとなる）”，并不能代表全文探讨学习外语的主旨，排除。')\"></span></span>", "trans": "（学习其他的语言，就是了解那种文化。进而，这也会成为重新审视自己的语言和文化的契机。）" },
-                                { "speaker": "男", "text": "<span class=\"keyword\" onclick=\"showTooltip(event, '未知（みち）：未知。')\">未知</span>の言語に触れて初めて気づくことも多いでしょう。", "trans": "（有很多事情，恐怕是接触了未知的语言后才初次意识到的吧。）" },
-                                { "speaker": "男", "text": "機械<span class=\"keyword\" onclick=\"showTooltip(event, '任（まか）せ：任凭，托付（不管）。')\">任せ</span>にせず、学んだ言葉でコミュニケーションが取れることは、喜びであり、人生を豊かにしてくれるものです。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中虽然提到了交流，但并没有探讨提高交流能力的具体“方法”，可以排除。')\"></span></span>", "trans": "（如果让机器代劳，而不用学到的语言去交流的话，那可是件憾事。用自己学到的语言进行交流，是一种喜悦，也是能让人生变得丰富多彩的事情。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "音声翻訳技術の可能性", "translation": "（语音翻译技术的可能性）", "correct": false },
-                            { "text": "コミュニケーション力の高め方", "translation": "（提高沟通能力的方法）", "correct": false },
-                            { "text": "外国語を学ぶことの意味", "translation": "（学习外语的意义）", "correct": true },
-                            { "text": "自分の言葉を見直すことの重要性", "translation": "（重新审视自己语言的重要性）", "correct": false }
-                        ]
-                    },
-                    {
-                        "id": 2,
-                        "audio": "../assets/audio/2019.07-2.mp3",
-                        "script": {
-                            "question": "二番：留守番電話に、自動車の修理会社の人からメッセージが入っています。このメッセージで言いたいことは何ですか。",
-                            "questionTrans": "（第二题：在电话留言中，有汽车修理公司的人留下的信息。这条留言想说的是什么？）",
-                            "dialogue": [
-                                { "speaker": "男", "text": "森田カーズの渡辺です。ご依頼のあったお車のエアコンの<span class=\"keyword\" onclick=\"showTooltip(event, '修理（しゅうり）：修理。')\">修理</span>の件でお電話しました。", "trans": "（我是森田车行的渡边。我打电话来是关于您委托的汽车空调修理的事情。）" },
-                                { "speaker": "男", "text": "状態を確認しまして、やはり一部部品を<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り替（か）える：更换。')\">取り替える</span>ことになりましたが。<span class=\"keyword\" onclick=\"showTooltip(event, 'あいにく：不凑巧，偏巧。')\">あいにく</span><span class=\"keyword\" onclick=\"showTooltip(event, '在庫（ざいこ）：库存。')\">在庫</span>を<span class=\"keyword\" onclick=\"showTooltip(event, '切（き）らす：用尽，没有了。')\">切らして</span>おりまして、メーカーから<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り寄（よ）せる：索取，调货，函购。')\">取り寄せて</span>おります。", "trans": "（我们确认了状态，还是决定要更换一部分零件。不巧的是刚好没库存了，目前正从厂家调货。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，男人说引擎和轮胎等状况都“良好（良好でした）”，除了本来委托的空调外并没有发现其他需要修的地方，排除。')\">ええ、お車の状態も確認させていただきましたが、エンジンやタイヤなどの<span class=\"keyword\" onclick=\"showTooltip(event, 'コンディション（condition）：状态，状况。')\">コンディション</span>は<span class=\"keyword\" onclick=\"showTooltip(event, '良好（りょうこう）：良好。')\">良好</span>でした。</span></span>", "trans": "（嗯，我们也确认了您爱车的状态，引擎和轮胎等状况都很好。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在这里点出了留言的核心目的：【前几天我们通知您后天上午交车，但目前看来直到零件送到还需要几天时间（先日、あさっての午前中にお引渡しとご案内しましたが、部品が届くまであと数日かかる見込みです）】。这就说明修理完成（交车）的时间会比原计划推迟。符合选项3。')\"><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，目前零件还没送到，修理还没有完成，排除。关于选项4，男人说“决定要更换一部分零件”并且“正在从厂家调货”，说明这是已经决定并正在执行的事项，而不是在征求客人的同意（问可不可以换），排除。')\">先日、あさっての午前中にお<span class=\"keyword\" onclick=\"showTooltip(event, '引渡（ひきわた）し：交付，移交（此处指交车）。')\">引渡し</span>とご案内しましたが、部品が届くまであと数日かかる<span class=\"keyword\" onclick=\"showTooltip(event, '見込（みこ）み：预定，估计，可能性。')\">見込み</span>です。</span></span></span></span>", "trans": "（前几天我们通知您后天上午交车，但目前看来直到零件送到还需要几天时间。）" },
-                                { "speaker": "男", "text": "<span class=\"keyword\" onclick=\"showTooltip(event, '改（あらた）めて：重新，再次。')\">改めて</span>ご連絡差し上げます。", "trans": "（我会再联系您的。）" }
-                            ]
-                        },
-                        "options": [
-                            { "text": "車の修理が完了した", "translation": "（汽车修理完成了）", "correct": false },
-                            { "text": "車に修理が必要なところが見つかった", "translation": "（发现了汽车需要修理的地方）", "correct": false },
-                            { "text": "車の修理完了が予定より遅れる", "translation": "（汽车修理完成的时间比计划推迟了）", "correct": true },
-                            { "text": "部品を交換してもいいか教えてほしい", "translation": "（想知道能不能更换零件）", "correct": false }
-                        ]
-                    },
-                    {
-                        "id": 3,
-                        "audio": "../assets/audio/2019.07-3.mp3",
-                        "script": {
-                            "question": "三番：テレビで、レポーターが市役所の男の人にインタビューしています。男の人は何について話していますか。",
-                            "questionTrans": "（第三题：在电视上，记者正在采访市役所的男人。男人在谈论什么？）",
-                            "dialogue": [
-                                { "speaker": "女", "text": "今日は、川田市で<span class=\"keyword\" onclick=\"showTooltip(event, '移住（いじゅう）：移居，迁居。')\">移住</span>者への支援を担当していらっしゃる鈴木さんにお話を伺います。川田市に移住してくる人が増えているそうですが。", "trans": "（今天，我们来采访负责支援移居川田市人员的铃木先生。听说移居到川田市的人正在增加。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男人提到人口减少只是作为市里开展移居支援的起因（背景），并没有探讨它给经济带来了什么具体的影响，排除。')\">ええ、人口減少の解決策として、十年前から、県外から川田市に移住してくる人を積極的に支援しているんですが。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中明确说到最近“30代到40代”拖家带口移居的情况增加了，这与“老龄化”刚好相反，排除。')\">最近は、三十代から四十代の方が、ご家族で移住してくるケースが増えてきています。</span></span>", "trans": "（是的，作为人口减少的解决对策，从十年前开始，我们就一直在积极支援从县外移居到川田市的人。最近，三四十岁的人带着家人移居过来的情况越来越多了。）" },
-                                { "speaker": "女", "text": "そうですか。", "trans": "（这样啊。）" },
-                                { "speaker": "男", "text": "以前は地方移住というと、退職後、田舎で<span class=\"keyword\" onclick=\"showTooltip(event, 'のんびり：悠闲地，无忧无虑地。')\">のんびり</span>暮らしたいという人が多かったんですが。今は<span class=\"keyword\" onclick=\"showTooltip(event, '就業（しゅうぎょう）：就业，就职。')\">就業</span>を希望する人が多く、移住後の仕事を見つけられるかどうかが課題となっています。移住してよかったと思っていただけるには、経済的に安定した生活が必要ですから。", "trans": "（以前说到移居地方，很多都是退休后想在乡下悠闲生活的人。但现在希望就业的人很多，移居后能不能找到工作成了一个课题。因为要想让大家觉得移居过来真好，经济稳定的生活是必不可少的。）" },
-                                { "speaker": "女", "text": "確かにそうですね。", "trans": "（确实是这样呢。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在这里点出了核心话题：面对移居者需要工作这一课题，【作为市里，也在从各个方面进行支持（市としても、さまざまな面からサポートをしています）】。后续紧接着列举了介绍工作、为创业者介绍当地人脉等具体对策。这完全符合选项2“为移居川田市的人提供的支援策”。')\">市としても、さまざまな面からサポートをしています。</span></span>川田市のような経済規模の小さいところでは、業種や職種に限りはありますが、積極的に仕事を<span class=\"keyword\" onclick=\"showTooltip(event, '斡旋（あっせん）：斡旋，居中调停，介绍。')\">斡旋</span>しています。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，虽然男人的支援策中包含了工作介绍，但并没有去具体探讨或列举哪些工作是“适合”移居者的，且后续还提到了创业支援等其它层面的支持，排除。')\">飲食店などご自身で<span class=\"keyword\" onclick=\"showTooltip(event, '起業（きぎょう）：创业。')\">起業</span>するケースも少なくないです。そういう方には、地元の生産者や商店街の方を紹介したりすることもあります。</span></span>", "trans": "（作为市里，我们也在从各个方面进行支持。在像川田市这样经济规模较小的地方，行业和工种虽然有限，但我们也在积极地帮忙介绍工作。像开餐饮店等自己创业的情况也不少。对于这类人，我们有时会介绍当地的生产者或商店街的人给他们。）" },
-                                { "speaker": "女", "text": "へえ、そうなんですか。地元の<span class=\"keyword\" onclick=\"showTooltip(event, '活性化（かっせいか）：活性化，激活。')\">活性化</span>にも繋がりそうですね。", "trans": "（哎，是这样吗。感觉也会带动当地的活性化呢。）" }
-                            ]
-                        },
-                        "options": [
-                            { "text": "川田市の人口減少による経済への影響", "translation": "（川田市人口减少对经济的影响）", "correct": false },
-                            { "text": "川田市に移住する人のための支援策", "translation": "（为移居川田市的人提供的支援策）", "correct": true },
-                            { "text": "川田市に移住する人の高齢化", "translation": "（移居川田市的人的老龄化）", "correct": false },
-                            { "text": "川田市への移住者に適した仕事", "translation": "（适合移居川田市的人的工作）", "correct": false }
-                        ]
-                    },
-                    {
-                        "id": 4,
-                        "audio": "../assets/audio/2019.07-4.mp3",
-                        "script": {
-                            "question": "四番：市民講座で講師が話しています。講師は何について話していますか。",
-                            "questionTrans": "（第四题：在市民讲座上，讲师正在讲话。讲师在谈论什么？）",
-                            "dialogue": [
-                                { "speaker": "男", "text": "まだ食べられるのに捨てられてしまう食品を<span class=\"keyword\" onclick=\"showTooltip(event, '食品（しょくひん）ロス：食品损耗，食物浪费。')\">食品ロス</span>といいます。", "trans": "（明明还能吃却被扔掉的食品被称为“食品损耗（食物浪费）”。）" },
-                                { "speaker": "男", "text": "流通プロセスや各家庭で大量に発生していて、今大きな問題となっています。", "trans": "（在流通环节和各个家庭中大量产生，现在成了一个大问题。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '讲师在开头提出了“食物损耗”的问题，接着点出核心：【食品加工厂和超市等也在认真应对这个问题（食品メーカーやスーパーなども、この問題に真剣に取り組んでいますが）】。后续全文分别列举了厂家（下功夫、改良容器）和超市（打折促销）采取的具体对策。这完全符合选项1“为了防止食品损耗的企业的努力”。')\">食品メーカーやスーパーなども、この問題に真剣に取り組んでいますが、その対策の一つが賞味期間の長期化です。</span></span>", "trans": "（食品加工厂和超市等也在认真应对这个问题，其对策之一就是延长保质期。）" },
-                                { "speaker": "男", "text": "賞味期間が短いために<span class=\"keyword\" onclick=\"showTooltip(event, '売（う）れ残（のこ）る：卖剩下，滞销。')\">売れ残ったり</span>、<span class=\"keyword\" onclick=\"showTooltip(event, '廃棄（はいき）：废弃，丢弃。')\">廃棄</span>されたりすることを防ごうというのです。", "trans": "（这是为了防止因为保质期短而卖不出去或者被废弃。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，讲师提到氧气是导致食品变质的元凶，只是为了说明厂家为什么要改良容器，并没有去具体探讨氧气导致变质的“科学机制（仕組み）”，可以排除。关于选项4，改良容器只是食品厂家采取的对策中的“其中一项”，不足以概括超市打折等其他内容，属于以偏概全，排除。')\">メーカーは食品の<span class=\"keyword\" onclick=\"showTooltip(event, '劣化（れっか）：劣化，变质。')\">劣化</span>の<span class=\"keyword\" onclick=\"showTooltip(event, '元凶（げんきょう）：元凶，罪魁祸首。')\">元凶</span>となる酸素を<span class=\"keyword\" onclick=\"showTooltip(event, '排除（はいじょ）：排除，消除。')\">排除</span>しようと、食品の製造工程に工夫をしたり、容器を改良したりしています。</span></span>", "trans": "（厂家为了排除导致食品变质的元凶——氧气，在食品的制造工序上下功夫，或者改良容器。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中主要讲述的是厂家和超市等“企业方”的对策，并未提及“消费者”的态度或意识，可以排除选项2。')\">また、スーパーなどでは、賞味期限<span class=\"keyword\" onclick=\"showTooltip(event, '間近（まぢか）：临近，就在眼前。')\">間近</span>の商品を<span class=\"keyword\" onclick=\"showTooltip(event, '格安（かくやす）：格外便宜，廉价。')\">格安</span>で販売し、売れ残りが出ないようにしているところも増えています。</span></span>", "trans": "（另外，在超市等地方，以极低的价格销售临近保质期的商品，努力不产生滞销品的地方也在增加。）" }
-                            ]
-                        },
-                        "options": [
-                            { "text": "食品ロスを防ぐための企業の努力", "translation": "（为了防止食品损耗的企业努力）", "correct": true },
-                            { "text": "賞味期間に対する消費者の意識", "translation": "（消费者对保质期的意识）", "correct": false },
-                            { "text": "酸素が食品を劣化させる仕組み", "translation": "（氧气导致食品变质的机制）", "correct": false },
-                            { "text": "新しい食品容器の開発", "translation": "（新食品容器的开发）", "correct": false }
-                        ]
-                    },
-                    {
-                        "id": 5,
-                        "audio": "../assets/audio/2019.07-5.mp3",
-                        "script": {
-                            "question": "五番：講演会で男の人が話しています。男の人は何について話していますか。",
-                            "questionTrans": "（第五题：在演讲会上，男人正在讲话。男人在谈论什么？）",
-                            "dialogue": [
-                                { "speaker": "男", "text": "山林は自然のまま<span class=\"keyword\" onclick=\"showTooltip(event, '放置（ほうち）：放置，搁置。')\">放置</span>するのではなく、木を適切に<span class=\"keyword\" onclick=\"showTooltip(event, '伐採（ばっさい）：采伐，砍伐。')\">伐採</span>したり、保護したり、<span class=\"keyword\" onclick=\"showTooltip(event, '常時（じょうじ）：经常，平时，随时。')\">常時</span><span class=\"keyword\" onclick=\"showTooltip(event, '手入（てい）れ：修理，照料，保养。')\">手入れ</span>をする必要がありますが、近年林業に<span class=\"keyword\" onclick=\"showTooltip(event, '従事（じゅうじ）：从事。')\">従事</span>する人が高齢化しています。", "trans": "（山林不能就这么任由它自然生长，而是需要适当地砍伐树木、进行保护，平时经常照料才行，但近年来从事林业的人正在老龄化。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男人开头提到需要管理和照料山林，只是为了引出目前从事林业的人老龄化（人手不足）这一背景现状，并没有详细探讨具体的“管理方法”，排除。')\">林業の仕事は<span class=\"keyword\" onclick=\"showTooltip(event, '地道（じみち）：脚踏实地，踏实。')\">地道</span>で危険も<span class=\"keyword\" onclick=\"showTooltip(event, '伴（ともな）う：伴随，随着。')\">伴う</span>イメージがあるため、<span class=\"keyword\" onclick=\"showTooltip(event, '後継者（こうけいしゃ）：继承人，接班人。')\">後継者</span>が見つからないという<span class=\"keyword\" onclick=\"showTooltip(event, '現状（げんじょう）：现状。')\">現状</span>があり、このままでは<span class=\"keyword\" onclick=\"showTooltip(event, '衰退（すいたい）：衰退。')\">衰退</span>していくことが<span class=\"keyword\" onclick=\"showTooltip(event, '懸念（けねん）：担忧，担心。')\">懸念</span>されます。</span></span>", "trans": "（因为林业工作给人一种踏实且伴随着危险的印象，所以目前面临着找不到接班人的现状，长此以往，人们担忧它会逐渐衰退。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，文中提到林业给人危险的印象导致找不到接班人，并没有探讨林业对年轻人有什么“魅力”，排除。')\">林業のイメージを変え、魅力を広く<span class=\"keyword\" onclick=\"showTooltip(event, 'アピール（appeal）：呼吁，吸引，宣传。')\">アピール</span>していくことが今後の課題でしょう。</span></span>", "trans": "（改变林业的印象，将它的魅力广泛宣传出去，是今后的课题吧。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在最后明确提出了核心主张：【必须增加支撑林业的年轻人，并进行培养（林業を支える若者を増やし、育成していく必要があります）】。整段讲话从指出老龄化、后继无人的现状，落脚到必须增加和培养年轻人才，完全符合选项2“林业中确保人才的必要性”。')\">林業を支える若者を増やし、<span class=\"keyword\" onclick=\"showTooltip(event, '育成（いくせい）：培养，育成。')\">育成</span>していく必要があります。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中最后呼吁需要增加并培养年轻人，但并未具体探讨“如何培养”的方法，可以排除。')\"></span></span>", "trans": "（必须增加支撑林业的年轻人，并进行培养。）" }
-                            ]
-                        },
-                        "options": [
-                            { "text": "山林を管理する方法", "translation": "（管理山林的方法）", "correct": false },
-                            { "text": "林業における人材確保の必要性", "translation": "（林业中确保人才的必要性）", "correct": true },
-                            { "text": "林業の後継者育成の方法", "translation": "（培养林业接班人的方法）", "correct": false },
-                            { "text": "若者にとっての林業の魅力", "translation": "（林业对年轻人的魅力）", "correct": false }
-                        ]
-                    },
-                    {
-                        "id": 6,
-                        "audio": "../assets/audio/2019.07-6.mp3",
-                        "script": {
-                            "question": "六番：テレビでアナウンサーが東電機という会社について話しています。アナウンサーは東電機の何について話していますか。",
-                            "questionTrans": "（第六题：在电视上，播音员正在谈论一家叫东电机的公司。播音员在谈论东电机的什么？）",
-                            "dialogue": [
-                                { "speaker": "女", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '播音员在开头就点出了报道的核心：【东电机提出了将电脑事业的全部业务转移到有业务合作关系的西山公司的方针（パソコン事業のすべてを業務提携している西山に移行する方針を打ち出しました）】。后续全文都在解释这个方针的具体变化和目的，这符合选项3“电脑事业的方针转换”。')\">電機メーカーの東電機がパソコン事業のすべてを業務提携している西山に<span class=\"keyword\" onclick=\"showTooltip(event, '移行（いこう）：转移，过渡。')\">移行</span>する方針を<span class=\"keyword\" onclick=\"showTooltip(event, '打（う）ち出（だ）す：提出，打出。')\">打ち出しました</span>。</span></span>", "trans": "（电机制造商东电机提出了将电脑事业的全部业务转移到有业务合作关系的西山公司的方针。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中只提到将电脑事业“委托/转移”给西山，并没有提到两家公司要“合并（合併）”，可以排除。')\">東電機は五年前、パソコンの開発製造で急成長中の西山と業務提携を開始しました。</span></span>", "trans": "（东电机在五年前，与在电脑开发制造方面正飞速发展的西山公司开始了业务合作。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，文中提到将新产品的企划到销售都委托给西山，但这只是说明业务委托范围的扩大，而不是在报道某个具体的新产品“开始销售”，可以排除。')\">以来、パソコンの製造は西山の工場に<span class=\"keyword\" onclick=\"showTooltip(event, '委託（いたく）：委托。')\">委託</span>してきましたが、今回、パソコンの経営戦略は西山のほうが優れていると判断し、製造だけでなく、新製品の企画から販売までのすべてを西山に<span class=\"keyword\" onclick=\"showTooltip(event, '委（ゆだ）ねる：委托，交给。')\">委ねる</span>方針です。</span></span>", "trans": "（从那以后，电脑的制造一直委托给西山的工厂，但这次，判断在电脑的经营战略上西山公司更胜一筹，因此计划不仅是制造，就连新产品的企划到销售的全部环节都委托给西山。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，文中提到的是借助西山的诀窍加速面向海外的电脑的“开发”，而不是在海外“制造”，并且这只是转移业务的目的之一，无法概括全段，可以排除。')\">東電機としては今まで<span class=\"keyword\" onclick=\"showTooltip(event, '弱点（じゃくてん）：弱点。')\">弱点</span>だった海外向けパソコンの開発も、西山の<span class=\"keyword\" onclick=\"showTooltip(event, 'ノーハウ（know-how）：诀窍，专业技术。')\">ノーハウ</span>で加速したい考えです。</span></span>", "trans": "（东电机也希望借助西山的专业技术，加速开发至今为止一直是其弱项的面向海外的电脑。）" }
-                            ]
-                        },
-                        "options": [
-                            { "text": "新製品の販売開始", "translation": "（新产品的开始销售）", "correct": false },
-                            { "text": "業務提携している会社との合併", "translation": "（与业务合作公司的合并）", "correct": false },
-                            { "text": "パソコン事業の方針転換", "translation": "（电脑事业的方针转换）", "correct": true },
-                            { "text": "海外でのパソコンの製造", "translation": "（在海外的电脑制造）", "correct": false }
-                        ]
-                    }
-                ]
+  "2019-07": {
+    "label": "2019年07月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2019.07-1.mp3",
+        "script": {
+          "question": "大学の先生が授業で話しています。",
+          "questionTrans": "（在大学的课堂上，老师正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '老师在开头虽然提到了语音翻译技术的提升，但这只是为了引出后续关于【为什么还要学外语】的探讨，并不是在专门论述该技术的“可能性”，可以排除。')\">コンピューターが話し言葉を<span class=\"keyword\" onclick=\"showTooltip(event, '瞬時（しゅんじ）：瞬时，瞬间。')\">瞬時</span>に他の言語に翻訳してくれる音声翻訳技術が向上し、外国語ができなくても、異なる言語を話す人とのコミュニケーションが可能になってきました。</span></span>",
+              "trans": "（计算机能够将口语瞬间翻译成其他语言的语音翻译技术不断提升，即使不懂外语，和说不同语言的人交流也变得可能了。）"
+            },
+            {
+              "speaker": "女",
+              "text": "では、こんな時代に外国語を学ぼうという人はいるでしょうか。",
+              "trans": "（那么，在这样的时代，还有人想要去学外语吗？）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师提出了“在翻译技术发达的时代为什么还要学外语”的问题，并给出了回答：【学习其他语言就是了解其文化。进而，也会成为重新审视自己的语言和文化的契机（他の言語を学ぶことはその文化を知ること。ひいては、自分の言葉や文化を捉えなおすきっかけともなります）】。这说明整段讲话都在论述“学习外语的意义”，符合选项3。')\">他の言語を学ぶことはその文化を知ること。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师提出了“在翻译技术发达的时代为什么还要学外语”的问题，并给出了回答：【学习其他语言就是了解其文化。进而，也会成为重新审视自己的语言和文化的契机（他の言語を学ぶことはその文化を知ること。ひいては、自分の言葉や文化を捉えなおすきっかけともなります）】。这说明整段讲话都在论述“学习外语的意义”，符合选项3。')\"><span class=\"keyword\" onclick=\"showTooltip(event, 'ひいては：进而，甚至。')\">ひいては</span>、自分の言葉や文化を<span class=\"keyword\" onclick=\"showTooltip(event, '捉（とら）えなおす：重新审视，重新认识。')\">捉えなおす</span>きっかけともなります。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师提出了“在翻译技术发达的时代为什么还要学外语”的问题，并给出了回答：【学习其他语言就是了解其文化。进而，也会成为重新审视自己的语言和文化的契机（他の言語を学ぶことはその文化を知ること。ひいては、自分の言葉や文化を捉えなおすきっかけともなります）】。这说明整段讲话都在论述“学习外语的意义”，符合选项3。')\"></span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，虽然文中提到了重新审视自己的语言和文化，但这只是学习外语带来的“其中一个结果/附带作用（ひいては…きっかけとなる）”，并不能代表全文探讨学习外语的主旨，排除。')\"></span></span>",
+              "trans": "（学习其他的语言，就是了解那种文化。进而，这也会成为重新审视自己的语言和文化的契机。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"keyword\" onclick=\"showTooltip(event, '未知（みち）：未知。')\">未知</span>の言語に触れて初めて気づくことも多いでしょう。",
+              "trans": "（有很多事情，恐怕是接触了未知的语言后才初次意识到的吧。）"
+            },
+            {
+              "speaker": "女",
+              "text": "機械<span class=\"keyword\" onclick=\"showTooltip(event, '任（まか）せ：任凭，托付（不管）。')\">任せ</span>にせず、学んだ言葉でコミュニケーションが取れることは、喜びであり、人生を豊かにしてくれるものです。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中虽然提到了交流，但并没有探讨提高交流能力的具体“方法”，可以排除。')\"></span></span>",
+              "trans": "（如果让机器代劳，而不用学到的语言去交流的话，那可是件憾事。用自己学到的语言进行交流，是一种喜悦，也是能让人生变得丰富多彩的事情。）"
+            },
+            {
+              "speaker": "問",
+              "text": "先生は何について話していますか。",
+              "trans": "（老师在谈论什么？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "音声翻訳技術の可能性",
+            "translation": "（语音翻译技术的可能性）",
+            "correct": false
+          },
+          {
+            "text": "コミュニケーション力の高め方",
+            "translation": "（提高沟通能力的方法）",
+            "correct": false
+          },
+          {
+            "text": "外国語を学ぶことの意味",
+            "translation": "（学习外语的意义）",
+            "correct": true
+          },
+          {
+            "text": "自分の言葉を見直すことの重要性",
+            "translation": "（重新审视自己语言的重要性）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2019.07-2.mp3",
+        "script": {
+          "question": "留守番電話に、自動車の修理会社の人からメッセージが入っています。",
+          "questionTrans": "（在电话留言中，有汽车修理公司的人留下的信息。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "森田カーズの渡辺です。ご依頼のあったお車のエアコンの<span class=\"keyword\" onclick=\"showTooltip(event, '修理（しゅうり）：修理。')\">修理</span>の件でお電話しました。",
+              "trans": "（我是森田车行的渡边。我打电话来是关于您委托的汽车空调修理的事情。）"
+            },
+            {
+              "speaker": "男",
+              "text": "状態を確認しまして、やはり一部部品を<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り替（か）える：更换。')\">取り替える</span>ことになりましたが。<span class=\"keyword\" onclick=\"showTooltip(event, 'あいにく：不凑巧，偏巧。')\">あいにく</span><span class=\"keyword\" onclick=\"showTooltip(event, '在庫（ざいこ）：库存。')\">在庫</span>を<span class=\"keyword\" onclick=\"showTooltip(event, '切（き）らす：用尽，没有了。')\">切らして</span>おりまして、メーカーから<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り寄（よ）せる：索取，调货，函购。')\">取り寄せて</span>おります。",
+              "trans": "（我们确认了状态，还是决定要更换一部分零件。不巧的是刚好没库存了，目前正从厂家调货。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，男人说引擎和轮胎等状况都“良好（良好でした）”，除了本来委托的空调外并没有发现其他需要修的地方，排除。')\">ええ、お車の状態も確認させていただきましたが、エンジンやタイヤなどの<span class=\"keyword\" onclick=\"showTooltip(event, 'コンディション（condition）：状态，状况。')\">コンディション</span>は<span class=\"keyword\" onclick=\"showTooltip(event, '良好（りょうこう）：良好。')\">良好</span>でした。</span></span>",
+              "trans": "（嗯，我们也确认了您爱车的状态，引擎和轮胎等状况都很好。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在这里点出了留言的核心目的：【前几天我们通知您后天上午交车，但目前看来直到零件送到还需要几天时间（先日、あさっての午前中にお引渡しとご案内しましたが、部品が届くまであと数日かかる見込みです）】。这就说明修理完成（交车）的时间会比原计划推迟。符合选项3。')\"><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，目前零件还没送到，修理还没有完成，排除。关于选项4，男人说“决定要更换一部分零件”并且“正在从厂家调货”，说明这是已经决定并正在执行的事项，而不是在征求客人的同意（问可不可以换），排除。')\">先日、あさっての午前中にお<span class=\"keyword\" onclick=\"showTooltip(event, '引渡（ひきわた）し：交付，移交（此处指交车）。')\">引渡し</span>とご案内しましたが、部品が届くまであと数日かかる<span class=\"keyword\" onclick=\"showTooltip(event, '見込（みこ）み：预定，估计，可能性。')\">見込み</span>です。</span></span></span></span>",
+              "trans": "（前几天我们通知您后天上午交车，但目前看来直到零件送到还需要几天时间。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"keyword\" onclick=\"showTooltip(event, '改（あらた）めて：重新，再次。')\">改めて</span>ご連絡差し上げます。",
+              "trans": "（我会再联系您的。）"
+            },
+            {
+              "speaker": "問",
+              "text": "このメッセージで言いたいことは何ですか。",
+              "trans": "（这条留言想说的是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "車の修理が完了した",
+            "translation": "（汽车修理完成了）",
+            "correct": false
+          },
+          {
+            "text": "車に修理が必要なところが見つかった",
+            "translation": "（发现了汽车需要修理的地方）",
+            "correct": false
+          },
+          {
+            "text": "車の修理完了が予定より遅れる",
+            "translation": "（汽车修理完成的时间比计划推迟了）",
+            "correct": true
+          },
+          {
+            "text": "部品を交換してもいいか教えてほしい",
+            "translation": "（想知道能不能更换零件）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2019.07-3.mp3",
+        "script": {
+          "question": "テレビで、レポーターが市役所の男の人にインタビューしています。",
+          "questionTrans": "（在电视上，记者正在采访市役所的男人。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "今日は、川田市で<span class=\"keyword\" onclick=\"showTooltip(event, '移住（いじゅう）：移居，迁居。')\">移住</span>者への支援を担当していらっしゃる鈴木さんにお話を伺います。川田市に移住してくる人が増えているそうですが。",
+              "trans": "（今天，我们来采访负责支援移居川田市人员的铃木先生。听说移居到川田市的人正在增加。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男人提到人口减少只是作为市里开展移居支援的起因（背景），并没有探讨它给经济带来了什么具体的影响，排除。')\">ええ、人口減少の解決策として、十年前から、県外から川田市に移住してくる人を積極的に支援しているんですが。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中明确说到最近“30代到40代”拖家带口移居的情况增加了，这与“老龄化”刚好相反，排除。')\">最近は、三十代から四十代の方が、ご家族で移住してくるケースが増えてきています。</span></span>",
+              "trans": "（是的，作为人口减少的解决对策，从十年前开始，我们就一直在积极支援从县外移居到川田市的人。最近，三四十岁的人带着家人移居过来的情况越来越多了。）"
+            },
+            {
+              "speaker": "女",
+              "text": "そうですか。",
+              "trans": "（这样啊。）"
+            },
+            {
+              "speaker": "男",
+              "text": "以前は地方移住というと、退職後、田舎で<span class=\"keyword\" onclick=\"showTooltip(event, 'のんびり：悠闲地，无忧无虑地。')\">のんびり</span>暮らしたいという人が多かったんですが。今は<span class=\"keyword\" onclick=\"showTooltip(event, '就業（しゅうぎょう）：就业，就职。')\">就業</span>を希望する人が多く、移住後の仕事を見つけられるかどうかが課題となっています。移住してよかったと思っていただけるには、経済的に安定した生活が必要ですから。",
+              "trans": "（以前说到移居地方，很多都是退休后想在乡下悠闲生活的人。但现在希望就业的人很多，移居后能不能找到工作成了一个课题。因为要想让大家觉得移居过来真好，经济稳定的生活是必不可少的。）"
+            },
+            {
+              "speaker": "女",
+              "text": "確かにそうですね。",
+              "trans": "（确实是这样呢。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在这里点出了核心话题：面对移居者需要工作这一课题，【作为市里，也在从各个方面进行支持（市としても、さまざまな面からサポートをしています）】。后续紧接着列举了介绍工作、为创业者介绍当地人脉等具体对策。这完全符合选项2“为移居川田市的人提供的支援策”。')\">市としても、さまざまな面からサポートをしています。</span></span>川田市のような経済規模の小さいところでは、業種や職種に限りはありますが、積極的に仕事を<span class=\"keyword\" onclick=\"showTooltip(event, '斡旋（あっせん）：斡旋，居中调停，介绍。')\">斡旋</span>しています。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，虽然男人的支援策中包含了工作介绍，但并没有去具体探讨或列举哪些工作是“适合”移居者的，且后续还提到了创业支援等其它层面的支持，排除。')\">飲食店などご自身で<span class=\"keyword\" onclick=\"showTooltip(event, '起業（きぎょう）：创业。')\">起業</span>するケースも少なくないです。そういう方には、地元の生産者や商店街の方を紹介したりすることもあります。</span></span>",
+              "trans": "（作为市里，我们也在从各个方面进行支持。在像川田市这样经济规模较小的地方，行业和工种虽然有限，但我们也在积极地帮忙介绍工作。像开餐饮店等自己创业的情况也不少。对于这类人，我们有时会介绍当地的生产者或商店街的人给他们。）"
+            },
+            {
+              "speaker": "女",
+              "text": "へえ、そうなんですか。地元の<span class=\"keyword\" onclick=\"showTooltip(event, '活性化（かっせいか）：活性化，激活。')\">活性化</span>にも繋がりそうですね。",
+              "trans": "（哎，是这样吗。感觉也会带动当地的活性化呢。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人は何について話していますか。",
+              "trans": "（男人在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "川田市の人口減少による経済への影響",
+            "translation": "（川田市人口减少对经济的影响）",
+            "correct": false
+          },
+          {
+            "text": "川田市に移住する人のための支援策",
+            "translation": "（为移居川田市的人提供的支援策）",
+            "correct": true
+          },
+          {
+            "text": "川田市に移住する人の高齢化",
+            "translation": "（移居川田市的人的老龄化）",
+            "correct": false
+          },
+          {
+            "text": "川田市への移住者に適した仕事",
+            "translation": "（适合移居川田市的人的工作）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2019.07-4.mp3",
+        "script": {
+          "question": "市民講座で講師が話しています。",
+          "questionTrans": "（在市民讲座上，讲师正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "まだ食べられるのに捨てられてしまう食品を<span class=\"keyword\" onclick=\"showTooltip(event, '食品（しょくひん）ロス：食品损耗，食物浪费。')\">食品ロス</span>といいます。",
+              "trans": "（明明还能吃却被扔掉的食品被称为“食品损耗（食物浪费）”。）"
+            },
+            {
+              "speaker": "男",
+              "text": "流通プロセスや各家庭で大量に発生していて、今大きな問題となっています。",
+              "trans": "（在流通环节和各个家庭中大量产生，现在成了一个大问题。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '讲师在开头提出了“食物损耗”的问题，接着点出核心：【食品加工厂和超市等也在认真应对这个问题（食品メーカーやスーパーなども、この問題に真剣に取り組んでいますが）】。后续全文分别列举了厂家（下功夫、改良容器）和超市（打折促销）采取的具体对策。这完全符合选项1“为了防止食品损耗的企业的努力”。')\">食品メーカーやスーパーなども、この問題に真剣に取り組んでいますが、その対策の一つが賞味期間の長期化です。</span></span>",
+              "trans": "（食品加工厂和超市等也在认真应对这个问题，其对策之一就是延长保质期。）"
+            },
+            {
+              "speaker": "男",
+              "text": "賞味期間が短いために<span class=\"keyword\" onclick=\"showTooltip(event, '売（う）れ残（のこ）る：卖剩下，滞销。')\">売れ残ったり</span>、<span class=\"keyword\" onclick=\"showTooltip(event, '廃棄（はいき）：废弃，丢弃。')\">廃棄</span>されたりすることを防ごうというのです。",
+              "trans": "（这是为了防止因为保质期短而卖不出去或者被废弃。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，讲师提到氧气是导致食品变质的元凶，只是为了说明厂家为什么要改良容器，并没有去具体探讨氧气导致变质的“科学机制（仕組み）”，可以排除。关于选项4，改良容器只是食品厂家采取的对策中的“其中一项”，不足以概括超市打折等其他内容，属于以偏概全，排除。')\">メーカーは食品の<span class=\"keyword\" onclick=\"showTooltip(event, '劣化（れっか）：劣化，变质。')\">劣化</span>の<span class=\"keyword\" onclick=\"showTooltip(event, '元凶（げんきょう）：元凶，罪魁祸首。')\">元凶</span>となる酸素を<span class=\"keyword\" onclick=\"showTooltip(event, '排除（はいじょ）：排除，消除。')\">排除</span>しようと、食品の製造工程に工夫をしたり、容器を改良したりしています。</span></span>",
+              "trans": "（厂家为了排除导致食品变质的元凶——氧气，在食品的制造工序上下功夫，或者改良容器。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中主要讲述的是厂家和超市等“企业方”的对策，并未提及“消费者”的态度或意识，可以排除选项2。')\">また、スーパーなどでは、賞味期限<span class=\"keyword\" onclick=\"showTooltip(event, '間近（まぢか）：临近，就在眼前。')\">間近</span>の商品を<span class=\"keyword\" onclick=\"showTooltip(event, '格安（かくやす）：格外便宜，廉价。')\">格安</span>で販売し、売れ残りが出ないようにしているところも増えています。</span></span>",
+              "trans": "（另外，在超市等地方，以极低的价格销售临近保质期的商品，努力不产生滞销品的地方也在增加。）"
+            },
+            {
+              "speaker": "問",
+              "text": "講師は何について話していますか。",
+              "trans": "（讲师在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "食品ロスを防ぐための企業の努力",
+            "translation": "（为了防止食品损耗的企业努力）",
+            "correct": true
+          },
+          {
+            "text": "賞味期間に対する消費者の意識",
+            "translation": "（消费者对保质期的意识）",
+            "correct": false
+          },
+          {
+            "text": "酸素が食品を劣化させる仕組み",
+            "translation": "（氧气导致食品变质的机制）",
+            "correct": false
+          },
+          {
+            "text": "新しい食品容器の開発",
+            "translation": "（新食品容器的开发）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2019.07-5.mp3",
+        "script": {
+          "question": "講演会で男の人が話しています。",
+          "questionTrans": "（在演讲会上，男人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "山林は自然のまま<span class=\"keyword\" onclick=\"showTooltip(event, '放置（ほうち）：放置，搁置。')\">放置</span>するのではなく、木を適切に<span class=\"keyword\" onclick=\"showTooltip(event, '伐採（ばっさい）：采伐，砍伐。')\">伐採</span>したり、保護したり、<span class=\"keyword\" onclick=\"showTooltip(event, '常時（じょうじ）：经常，平时，随时。')\">常時</span><span class=\"keyword\" onclick=\"showTooltip(event, '手入（てい）れ：修理，照料，保养。')\">手入れ</span>をする必要がありますが、近年林業に<span class=\"keyword\" onclick=\"showTooltip(event, '従事（じゅうじ）：从事。')\">従事</span>する人が高齢化しています。",
+              "trans": "（山林不能就这么任由它自然生长，而是需要适当地砍伐树木、进行保护，平时经常照料才行，但近年来从事林业的人正在老龄化。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男人开头提到需要管理和照料山林，只是为了引出目前从事林业的人老龄化（人手不足）这一背景现状，并没有详细探讨具体的“管理方法”，排除。')\">林業の仕事は<span class=\"keyword\" onclick=\"showTooltip(event, '地道（じみち）：脚踏实地，踏实。')\">地道</span>で危険も<span class=\"keyword\" onclick=\"showTooltip(event, '伴（ともな）う：伴随，随着。')\">伴う</span>イメージがあるため、<span class=\"keyword\" onclick=\"showTooltip(event, '後継者（こうけいしゃ）：继承人，接班人。')\">後継者</span>が見つからないという<span class=\"keyword\" onclick=\"showTooltip(event, '現状（げんじょう）：现状。')\">現状</span>があり、このままでは<span class=\"keyword\" onclick=\"showTooltip(event, '衰退（すいたい）：衰退。')\">衰退</span>していくことが<span class=\"keyword\" onclick=\"showTooltip(event, '懸念（けねん）：担忧，担心。')\">懸念</span>されます。</span></span>",
+              "trans": "（因为林业工作给人一种踏实且伴随着危险的印象，所以目前面临着找不到接班人的现状，长此以往，人们担忧它会逐渐衰退。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，文中提到林业给人危险的印象导致找不到接班人，并没有探讨林业对年轻人有什么“魅力”，排除。')\">林業のイメージを変え、魅力を広く<span class=\"keyword\" onclick=\"showTooltip(event, 'アピール（appeal）：呼吁，吸引，宣传。')\">アピール</span>していくことが今後の課題でしょう。</span></span>",
+              "trans": "（改变林业的印象，将它的魅力广泛宣传出去，是今后的课题吧。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在最后明确提出了核心主张：【必须增加支撑林业的年轻人，并进行培养（林業を支える若者を増やし、育成していく必要があります）】。整段讲话从指出老龄化、后继无人的现状，落脚到必须增加和培养年轻人才，完全符合选项2“林业中确保人才的必要性”。')\">林業を支える若者を増やし、<span class=\"keyword\" onclick=\"showTooltip(event, '育成（いくせい）：培养，育成。')\">育成</span>していく必要があります。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中最后呼吁需要增加并培养年轻人，但并未具体探讨“如何培养”的方法，可以排除。')\"></span></span>",
+              "trans": "（必须增加支撑林业的年轻人，并进行培养。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人は何について話していますか。",
+              "trans": "（男人在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "山林を管理する方法",
+            "translation": "（管理山林的方法）",
+            "correct": false
+          },
+          {
+            "text": "林業における人材確保の必要性",
+            "translation": "（林业中确保人才的必要性）",
+            "correct": true
+          },
+          {
+            "text": "林業の後継者育成の方法",
+            "translation": "（培养林业接班人的方法）",
+            "correct": false
+          },
+          {
+            "text": "若者にとっての林業の魅力",
+            "translation": "（林业对年轻人的魅力）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "audio": "../assets/audio/2019.07-6.mp3",
+        "script": {
+          "question": "テレビでアナウンサーが東電機という会社について話しています。",
+          "questionTrans": "（在电视上，播音员正在谈论一家叫东电机的公司。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '播音员在开头就点出了报道的核心：【东电机提出了将电脑事业的全部业务转移到有业务合作关系的西山公司的方针（パソコン事業のすべてを業務提携している西山に移行する方針を打ち出しました）】。后续全文都在解释这个方针的具体变化和目的，这符合选项3“电脑事业的方针转换”。')\">電機メーカーの東電機がパソコン事業のすべてを業務提携している西山に<span class=\"keyword\" onclick=\"showTooltip(event, '移行（いこう）：转移，过渡。')\">移行</span>する方針を<span class=\"keyword\" onclick=\"showTooltip(event, '打（う）ち出（だ）す：提出，打出。')\">打ち出しました</span>。</span></span>",
+              "trans": "（电机制造商东电机提出了将电脑事业的全部业务转移到有业务合作关系的西山公司的方针。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中只提到将电脑事业“委托/转移”给西山，并没有提到两家公司要“合并（合併）”，可以排除。')\">東電機は五年前、パソコンの開発製造で急成長中の西山と業務提携を開始しました。</span></span>",
+              "trans": "（东电机在五年前，与在电脑开发制造方面正飞速发展的西山公司开始了业务合作。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，文中提到将新产品的企划到销售都委托给西山，但这只是说明业务委托范围的扩大，而不是在报道某个具体的新产品“开始销售”，可以排除。')\">以来、パソコンの製造は西山の工場に<span class=\"keyword\" onclick=\"showTooltip(event, '委託（いたく）：委托。')\">委託</span>してきましたが、今回、パソコンの経営戦略は西山のほうが優れていると判断し、製造だけでなく、新製品の企画から販売までのすべてを西山に<span class=\"keyword\" onclick=\"showTooltip(event, '委（ゆだ）ねる：委托，交给。')\">委ねる</span>方針です。</span></span>",
+              "trans": "（从那以后，电脑的制造一直委托给西山的工厂，但这次，判断在电脑的经营战略上西山公司更胜一筹，因此计划不仅是制造，就连新产品的企划到销售的全部环节都委托给西山。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，文中提到的是借助西山的诀窍加速面向海外的电脑的“开发”，而不是在海外“制造”，并且这只是转移业务的目的之一，无法概括全段，可以排除。')\">東電機としては今まで<span class=\"keyword\" onclick=\"showTooltip(event, '弱点（じゃくてん）：弱点。')\">弱点</span>だった海外向けパソコンの開発も、西山の<span class=\"keyword\" onclick=\"showTooltip(event, 'ノーハウ（know-how）：诀窍，专业技术。')\">ノーハウ</span>で加速したい考えです。</span></span>",
+              "trans": "（东电机也希望借助西山的专业技术，加速开发至今为止一直是其弱项的面向海外的电脑。）"
+            },
+            {
+              "speaker": "問",
+              "text": "アナウンサーは東電機の何について話していますか。",
+              "trans": "（播音员在谈论东电机的什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "新製品の販売開始",
+            "translation": "（新产品的开始销售）",
+            "correct": false
+          },
+          {
+            "text": "業務提携している会社との合併",
+            "translation": "（与业务合作公司的合并）",
+            "correct": false
+          },
+          {
+            "text": "パソコン事業の方針転換",
+            "translation": "（电脑事业的方针转换）",
+            "correct": true
+          },
+          {
+            "text": "海外でのパソコンの製造",
+            "translation": "（在海外的电脑制造）",
+            "correct": false
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2019-07-概要理解"; 
+        let currentExamKey = "2019-07"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -279,10 +604,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -621,8 +946,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-<script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+<script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261017-summary-n1-2019-07-27b30edba567"></script>
+<script src="../shared/follow-listening.js?v=20261017-summary-n1-2019-07-27b30edba567"></script>
+<script src="../shared/follow-listening-entry.js?v=20261017-summary-n1-2019-07-27b30edba567"></script>
 </body>
 </html>

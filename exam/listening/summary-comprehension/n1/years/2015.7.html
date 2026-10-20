@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261016-summary-n1-2015-07-33aa9df9930e">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,236 +192,402 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
 <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2015-07-概要理解": {
-                label: "2015年07月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2015.07-1.mp3",
-                        script: {
-                            question: "一番：ラジオで男の人が話しています。男の人は何について話していますか。",
-                            questionTrans: "（第一题：在广播里男人正在讲话。男人在谈论什么？）",
-                            dialogue: [
-                                {
-                                    speaker: "男",
-                                    text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男人一开始提到看到猫的样子会被治愈，但这只是引出核心话题的背景，并不是在专门谈论猫给“人”带来的治愈，排除。')\">猫が喉をごろごろと鳴らしながら気持ちよさそうに寝ている姿はかわいらしくて、見ているだけで<span class=\"keyword\" onclick=\"showTooltip(event, '癒（いや）される：被治愈，被抚慰。')\">癒されます</span>。</span></span>",
-                                    trans: "（猫咪一边喉咙发出呼噜呼噜的声音，一边看起来很舒服地睡着的样子十分可爱，只是看着就被治愈了呢。）"
-                                },
-                                {
-                                    speaker: "男",
-                                    text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中提到了母猫为了让小猫安心会发出这个声音，但并没有提到这是表达爱情的方法，排除。')\">これは、母猫が子猫を安心させるためによく出す音なんですが</span></span>、他にも気分がいい時や、<span class=\"keyword\" onclick=\"showTooltip(event, 'リラックス（relax）：放松。')\">リラックス</span>しているときも鳴らしています。",
-                                    trans: "（这虽然是母猫为了让小猫安心而经常发出的声音，但在其它心情好的时候，或是放松的时候也会发出来。）"
-                                },
-                                {
-                                    speaker: "男",
-                                    text: "でも実は、体調が悪いときにもこの音を出していると言われているんですよ。",
-                                    trans: "（但其实，据说在身体状况不好的时候也会发出这个声音哦。）"
-                                },
-                                {
-                                    speaker: "男",
-                                    text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在列举了猫发出这个声音的各种情况（让小猫安心、放松时、生病时）后，总结出【关于猫发出的这个呼噜声，可能还有什么特别的力量（ごろごろには他にも何か特別な力があるのではないかと思っているんです）】。这就说明整段讲话都在探讨“猫喉咙发出的声音（的作用/秘密）”，符合选项3。')\"><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，文中提到猫骨折恢复快，是为了说明这可能与喉咙发出的声音有关，并没有专门探讨骨折恢复快的方法，排除。')\">猫は<span class=\"keyword\" onclick=\"showTooltip(event, '骨折（こっせつ）：骨折。')\">骨折</span>しても他の動物と比べて、<span class=\"keyword\" onclick=\"showTooltip(event, '倍（ばい）：倍，加倍。')\">倍</span>以上の速さで<span class=\"keyword\" onclick=\"showTooltip(event, '回復（かいふく）：恢复，康复。')\">回復</span>するそうですが</span></span>、その秘密ももしかしたら、この音を出すことと関係があるのかもしれないという話を聞いたことがあります。私はこのごろごろには他にも何か特別な力があるのではないかと思っているんです。</span></span>",
-                                    trans: "（据说猫即使骨折了，和其它动物相比，也会以快一倍以上的速度恢复，我曾听说那个秘密说不定也和发出这个声音有关系。我觉得这个呼噜声可能还有什么特别的力量。）"
-                                }
-                            ]
-                        },
-                        options: [
-                            { text: "猫が人にもたらす癒し", translation: "（猫给人们带来的治愈）", correct: false },
-                            { text: "猫の愛情表現の方法", translation: "（猫表达爱情的方法）", correct: false },
-                            { text: "猫が出す喉の音", translation: "（猫喉咙发出的声音）", correct: true },
-                            { text: "猫の回復の速さ", translation: "（猫的恢复速度）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        audio: "../assets/audio/2015.07-2.mp3",
-                        script: {
-                            question: "二番：テレビで男の人が話しています。男の人は何について話していますか。",
-                            questionTrans: "（第二题：在电视上男人正在讲话。男人在谈论什么？）",
-                            dialogue: [
-                                {
-                                    speaker: "男",
-                                    text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人一开始就提出了核心话题：销售额突然飙升（売り上げが一気に跳ね上がった）。后续全段都是在解释其背后的原因，符合选项1。')\">えー、このクリップトメールは創立以来わが社でずっと販売してきた商品ですが、ある年を<span class=\"keyword\" onclick=\"showTooltip(event, '境（さかい）：分界，界限。')\">境</span>に、売り上げが<span class=\"keyword\" onclick=\"showTooltip(event, '一気（いっき）に：一口气，一下子。')\">一気に</span><span class=\"keyword\" onclick=\"showTooltip(event, '跳（は）ね上（あ）がる：跳起，猛增。')\">跳ね上がった</span>んです。</span></span>",
-                                    trans: "（嗯，这款夹子“Tomail（取停止/阻挡落榜之意）”是我们公司自创立以来一直销售的商品，但以某一年为界，销售额一下子飙升了。）"
-                                },
-                                {
-                                    speaker: "男",
-                                    text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中明确表示当时【没有改良设计也没有调整价格（デザインの改良や、価格の見直しもなかった）】，直接排除。')\">デザインの改良や、価格の<span class=\"keyword\" onclick=\"showTooltip(event, '見直（みなお）し：重新评估，调整。')\">見直し</span>もなかったときのことでしたので</span></span>、一体どうしたのか<span class=\"keyword\" onclick=\"showTooltip(event, '見当（けんとう）がつかない：毫无头绪，猜不透。')\">見当もつかなかった</span>のですが、消費者アンケートの結果からあることが分かりました。",
-                                    trans: "（因为那时既没有改良设计，也没有调整价格，所以完全摸不着头脑到底是怎么回事，但从消费者问卷调查的结果中明白了一件事。）"
-                                },
-                                {
-                                    speaker: "男",
-                                    text: "受験を<span class=\"keyword\" onclick=\"showTooltip(event, '控（ひか）える：面临，临近。')\">控えた</span>お子さんを持つ親が、受験を前に食卓に勝てそうな名前の食べ物、例えば、とんかつなどを並べるというようなことをしますが、私どもの「トメール」もその<span class=\"keyword\" onclick=\"showTooltip(event, '親御（おやご）さん：父母（敬称）。')\">親御さん</span>の気持ちにお応えできたようです。",
-                                    trans: "（那些有即将参加考试的孩子的父母，在考试前会在餐桌上摆上名字听起来能赢的食物，例如炸猪排等。我们公司的“Tomail”似乎也回应了父母们的这种心情。）"
-                                },
-                                {
-                                    speaker: "男",
-                                    text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '这段话讲述的是这件老产品被消费者赋予了祈求考试合格的寓意而热销，并不是介绍公司内部【商品开发的内幕故事】或【开发者倾注的情感】，排除选项2和4。')\">「落ちる」のを「トメール」、なるほどなと、<span class=\"keyword\" onclick=\"showTooltip(event, 'せめてもの：至少的，起码的。')\">せめてもの</span>親心が<span class=\"keyword\" onclick=\"showTooltip(event, 'クチコミ（口コミ）：口碑，口头传闻。')\">クチコミ</span>となってネット上で広がったわけなんですね。</span></span>",
-                                    trans: "（借取“让落榜停止”的寓意，原来如此，父母起码的关爱之心化作口碑在网络上流传开来了呢。）"
-                                }
-                            ]
-                        },
-                        options: [
-                            { text: "商品が急に売れ出した理由", translation: "（商品突然热销的理由）", correct: true },
-                            { text: "商品開発の裏話", translation: "（商品开发的内幕故事）", correct: false },
-                            { text: "商品デザインを改良したきっかけ", translation: "（改良商品设计的契机）", correct: false },
-                            { text: "開発者が商品に込めた気持ち", translation: "（开发者倾注在商品中的感情）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        audio: "../assets/audio/2015.07-3.mp3",
-                        script: {
-                            question: "三番：テレビでサッカー選手が話しています。サッカー選手は主に、何について話していますか。",
-                            questionTrans: "（第三题：在电视上，一位足球运动员正在讲话。这位足球运动员主要在谈论什么？）",
-                            dialogue: [
-                                {
-                                    speaker: "男",
-                                    text: "えー、私はこの度、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男选手一开始就宣布了核心决定：【这次，我决定为我的现役生涯画上句号（現役生活に終止符を打つことにいたしました）】，即决定退役。后续全文都在讲述导致这个决定的过程，符合选项3。')\">現役生活に<span class=\"keyword\" onclick=\"showTooltip(event, '終止符（しゅうしふ）を打（う）つ：画上句号，终止。')\">終止符を打つ</span>ことにいたしました。</span></span>",
-                                    trans: "（嗯，这次，我决定为我的现役生涯画上句号。）"
-                                },
-                                {
-                                    speaker: "男",
-                                    text: "昨年、試合中に<span class=\"keyword\" onclick=\"showTooltip(event, '負傷（ふしょう）：负伤，受伤。')\">負傷</span>してしまい、大きな手術を受けました。",
-                                    trans: "（去年，我在比赛中受了伤，接受了大型手术。）"
-                                },
-                                {
-                                    speaker: "男",
-                                    text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男选手确实提到了复出，但这只是退役经过中的一部分，且后文转折表示自己对表现不满意，并非单纯讲述复出的喜悦，排除。')\">必死の<span class=\"keyword\" onclick=\"showTooltip(event, 'リハビリ（rehabilitation）：康复训练。')\">リハビリ</span>が<span class=\"keyword\" onclick=\"showTooltip(event, '実（みの）る：结出果实，取得成果。')\">実って</span>、今シーズン<span class=\"keyword\" onclick=\"showTooltip(event, '終盤（しゅうばん）：终盘，最后阶段。')\">終盤</span>には何とか試合に出場することができ</span></span>、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中虽然提到了夺冠获得了无上的感动，但这是团队的成绩，紧接着他就用“但如果说个人表现令人满意的话，并非如此”进行了转折，说明这不是他讲话的主旨，排除。')\">最後は、チーム<span class=\"keyword\" onclick=\"showTooltip(event, '悲願（ひがん）：悲愿，宿愿，一直以来的心愿。')\">悲願</span>の優勝を<span class=\"keyword\" onclick=\"showTooltip(event, '果（は）たす：完成，实现。')\">果たす</span>ことができました。チームとしては最高の結果を得て、<span class=\"keyword\" onclick=\"showTooltip(event, 'この上（うえ）ない：无上的，无比的。')\">この上ない</span>感動は味わいましたが</span></span>、個人的に満足のいくプレーができたといえば、そうではありません。",
-                                    trans: "（拼命的康复训练取得了成果，在本赛季最后阶段总算能够出场比赛，最后，实现了队伍一直以来的夺冠心愿。作为团队取得了最好的结果，体会到了无上的感动，但如果说个人的表现令人满意的话，并非如此。）"
-                                },
-                                {
-                                    speaker: "男",
-                                    text: "自身が<span class=\"keyword\" onclick=\"showTooltip(event, '納得（なっとく）：理解，接受，满意。')\">納得</span>のいくプレーができなくなった<span class=\"keyword\" onclick=\"showTooltip(event, '以上（いじょう）：既然……就……。')\">以上</span>、今後<span class=\"keyword\" onclick=\"showTooltip(event, '継続（けいぞく）：继续，持续。')\">継続</span>していくことは難しいと感じました。",
-                                    trans: "（既然已经无法做出让自己满意的表现了，我感到今后很难再继续下去了。）"
-                                },
-                                {
-                                    speaker: "男",
-                                    text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，在结尾表达对周围人的感谢是退役演讲的标准环节，但整段话的核心是交代退役的理由和经过，因此排除选项4。')\">怪我をして辛かったときに、支えてくれたファンやスタッフの方々、チームメート、そして家族には、感謝の気持ちでいっぱいです。</span></span>",
-                                    trans: "（对于在受伤痛苦时支持我的各位粉丝、工作人员、队友，还有家人，我心中充满了感激。）"
-                                }
-                            ]
-                        },
-                        options: [
-                            { text: "怪我が治って、復帰できた喜び", translation: "（伤愈复出的喜悦）", correct: false },
-                            { text: "優勝したときの感動", translation: "（夺冠时的感动）", correct: false },
-                            { text: "引退を決意した経緯", translation: "（决定退役的经过）", correct: true },
-                            { text: "選手を支える人々の大切さ", translation: "（支持选手的人们的重要性）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        audio: "../assets/audio/2015.07-4.mp3",
-                        script: {
-                            question: "四番：大学で、女の学生と男の学生が話しています。男の学生はいま進路についてどう思っていますか。",
-                            questionTrans: "（第四题：在大学里，女学生和男学生正在聊天。男学生现在对未来的出路是怎么想的？）",
-                            dialogue: [
-                                {
-                                    speaker: "女",
-                                    text: "このまえ、大学院に行くか、就職するか迷ってるって言ってたけど、<span class=\"keyword\" onclick=\"showTooltip(event, '進路（しんろ）：出路，前进的道路。')\">進路</span>、どうするか決めた？",
-                                    trans: "（之前你说在考研和就业之间犹豫，现在出路定下来了吗？）"
-                                },
-                                {
-                                    speaker: "男",
-                                    text: "それがさあ、先輩に「大学院に行こうかと思ってるんですけど」って相談したら、「就職するのが嫌なだけじゃないのか」って言われてさあ、最初はそんなことあるもんかってちょっと<span class=\"keyword\" onclick=\"showTooltip(event, 'むっとする：生气，发怒，感到憋气。')\">むっとした</span>んだけど、いろいろ話してたら、先輩に言われたこと、<span class=\"keyword\" onclick=\"showTooltip(event, '案外（あんがい）：意想不到，出乎意料。')\">案外</span>当たってるかもって思ってきて。",
-                                    trans: "（那个啊，我找学长商量说“我考虑要不要去考研”，结果他跟我说“你该不会只是不想去工作吧”。一开始我还挺生气的，心想哪有这种事，但聊着聊着，我就觉得学长说的可能出乎意料地准。）"
-                                },
-                                {
-                                    speaker: "女",
-                                    text: "そうなんだ。",
-                                    trans: "（是嘛。）"
-                                },
-                                {
-                                    speaker: "男",
-                                    text: "うん。周りが就職活動をし始めたから、焦ってきちゃって、でも、<span class=\"keyword\" onclick=\"showTooltip(event, '流（なが）される：随波逐流，被带动。')\">流されない</span>ぞって思って、自分なりにしっかり考えたつもりだったんだけど、結局嫌なことを<span class=\"keyword\" onclick=\"showTooltip(event, '先延（さきの）ばし：推迟，拖延。')\">先延ばし</span>にしてただけだなあって。",
-                                    trans: "（嗯。因为周围的人都开始找工作了，我就有点焦急。虽然心里想着“我可不能随波逐流”，也觉得自己有在好好思考，但结果其实只是把讨厌的事情给推迟了而已。）"
-                                },
-                                {
-                                    speaker: "女",
-                                    text: "うーん。",
-                                    trans: "（嗯。）"
-                                },
-                                {
-                                    speaker: "男",
-                                    text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中男生表示自己之前并没有认真思考过未来想做什么工作或研究什么，且最后指出“现在清楚自己该思考什么了”，说明他并未做出考研或就业的最终决定，而是准备重新认真考虑。因此排除前三个选项。')\">今大学院に行く必要があるのかとか、行くにしても、なにを研究したいのかっていうのは、<span class=\"keyword\" onclick=\"showTooltip(event, '二（に）の次（つぎ）：次要，放在第二位。')\">二の次</span>になってたし、将来どんな仕事がしたいのかってのも、ちゃんと考えてたわけではないことに気がついたんだ。</span></span>",
-                                    trans: "（现在是不是有必要考研、就算去考研到底想研究什么之类的，都被我放在次要位置了。我也意识到，自己其实并没有认真想过将来到底想做怎样的工作。）"
-                                },
-                                {
-                                    speaker: "女",
-                                    text: "そっか、じゃあ、<span class=\"keyword\" onclick=\"showTooltip(event, '振（ふ）り出（だ）しに戻（もど）る：回到起点，从头再来。')\">振り出しに戻っちゃった</span>ね。",
-                                    trans: "（这样啊，那等于又回到起点了呢。）"
-                                },
-                                {
-                                    speaker: "男",
-                                    text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男生提到“意识到自己并没有好好考虑过……现在清楚了自己该想什么”，说明他现在的状态是想要重新好好思考未来的出路，符合选项4“想再好好考虑一下”。')\">そうでもないよ。今自分が何を考えなきゃいけないかがはっきりしたから、<span class=\"keyword\" onclick=\"showTooltip(event, '大（おお）いなる：巨大的，伟大的。')\">大いなる</span><span class=\"keyword\" onclick=\"showTooltip(event, '進歩（しんぽ）：进步。')\">進歩</span>さ。</span></span>",
-                                    trans: "（那倒也不是。因为现在我已经清楚自己该思考什么了，这算是个很大的进步啦。）"
-                                },
-                                {
-                                    speaker: "女",
-                                    text: "うーん。",
-                                    trans: "（嗯。）"
-                                }
-                            ]
-                        },
-                        options: [
-                            { text: "大学院に行きたいが就職する", translation: "（想考研但去就业）", correct: false },
-                            { text: "就職したいが大学院に行く", translation: "（想就业但去考研）", correct: false },
-                            { text: "就職した後で大学院に行く", translation: "（就业之后去考研）", correct: false },
-                            { text: "進学か就職かもっとよく考えたい", translation: "（想再好好考虑一下升学还是就业）", correct: true }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        audio: "../assets/audio/2015.07-5.mp3",
-                        script: {
-                            question: "五番：テレビで専門家が話しています。専門家が言いたいことはなんですか。",
-                            questionTrans: "（第五题：在电视上专家正在讲话。专家想说的是什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "現在、若い世代では<span class=\"keyword\" onclick=\"showTooltip(event, '共働（ともばたら）き：双职工，夫妻都工作。')\">共働き</span>の家庭も多く、出産後働きつづける女性が増え、労働と育児の<span class=\"keyword\" onclick=\"showTooltip(event, '両立（りょうりつ）：兼顾，两立。')\">両立</span>という問題に<span class=\"keyword\" onclick=\"showTooltip(event, '直面（ちょくめん）：面临，面对。')\">直面</span>している人が少なくありません。", trans: "（现在，年轻一代中双职工家庭很多，产后继续工作的女性增加，面临兼顾工作和育儿问题的人不在少数。）" },
-                                { speaker: "女", text: "また、今後高齢化が進むと、働きながら家族の<span class=\"keyword\" onclick=\"showTooltip(event, '介護（かいご）：护理，照料。')\">介護</span>をする人が増えることも<span class=\"keyword\" onclick=\"showTooltip(event, '懸念（けねん）：担忧，担心。')\">懸念</span>されます。", trans: "（此外，如果今后老龄化加剧，边工作边护理家人的情况增加也令人担忧。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '专家指出了工作与育儿、护理等兼顾的困难，但并未主张单纯支援女性、让年轻人认识护理重要性或培养专业人才，这些都不是这段话的核心论点，排除前三个选项。')\">こういった問題は長時間労働が<span class=\"keyword\" onclick=\"showTooltip(event, '常態化（じょうたいか）：常态化。')\">常態化</span>している企業があることや<span class=\"keyword\" onclick=\"showTooltip(event, '有給休暇（ゆうきゅうきゅうか）：带薪休假。')\">有給休暇</span>を積極的に取得しない人がいるという現状をなんとかしなければ、解決は難しいと考えます。</span></span>", trans: "（我认为，如果不设法改变一些企业长时间劳动常态化、以及人们不积极休带薪假的现状，这些问题就很难解决。）" },
-                                { speaker: "女", text: "最近では、企業が出産、育児、介護など、各種休業制度を<span class=\"keyword\" onclick=\"showTooltip(event, '設（もう）ける：设立，设置。')\">設けて</span>いますが、制度を導入するだけでは、十分とはいえません。", trans: "（最近，企业设立了生育、育儿、护理等各种休假制度，但仅仅引入制度并不能说就足够了。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '专家在最后总结了自己的核心观点：【难道不是到了该好好重新审视企业和劳动者所处的这种现状的时候了吗？（企業や労働者が置かれているこうした現状をしっかりと見直す時期に来ているのではないでしょうか）】。这里的“现状”就是指前面提到的长时间劳动和不休假等劳动状态。这与选项4“应该改善现在的劳动状态”完全契合。')\">企業や労働者が置かれているこうした現状をしっかりと見直す時期に来ているのではないでしょうか。</span></span>", trans: "（难道不是到了该好好重新审视企业和劳动者所处的这种现状的时候了吗？）" }
-                            ]
-                        },
-                        options: [
-                            { text: "女性の社会進出を支援すべきだ", translation: "（应该支援女性步入社会）", correct: false },
-                            { text: "若い世代も介護の重要性を認識すべきだ", translation: "（年轻一代也应该认识到护理的重要性）", correct: false },
-                            { text: "介護や保育を担う人材を育成すべきだ", translation: "（应该培养承担护理和保育的人才）", correct: false },
-                            { text: "現在の労働のあり方を改善すべきだ", translation: "（应该改善现在的劳动状态/方式）", correct: true }
-                        ]
-                    },
-                    {
-                        id: 6,
-                        audio: "../assets/audio/2015.07-6.mp3",
-                        script: {
-                            question: "六番：経済研究所のセミナーでデータ分析の専門家が話しています。専門家は主に何について話していますか。",
-                            questionTrans: "（第六题：在经济研究所的研讨会上，数据分析专家正在讲话。专家主要在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "えー、企業は自社における仕入れや売り上げの記録など様々なデータを<span class=\"keyword\" onclick=\"showTooltip(event, '蓄積（ちくせき）：积累，积蓄。')\">蓄積</span>してますが、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中开头确实提到了“进货和销售记录等各种各样的数据”，但这只是引入话题的背景，不是整段演讲的核心内容，可以排除。')\">データは数値そのままでは<span class=\"keyword\" onclick=\"showTooltip(event, '何ら（なんら）：任何，毫无（后接否定）。')\">何ら</span>意味を持ちません。</span></span>", trans: "（嗯，企业虽然积累了公司内部进货和销售记录等各种各样的数据，但数据如果只是单纯的数值，是没有任何意义的。）" },
-                                { speaker: "男", text: "私たちの仕事はそれぞれの数値の関連性を分析し、企業にとって<span class=\"keyword\" onclick=\"showTooltip(event, '有益（ゆうえき）：有益，有好处。')\">有益</span>となる新たな可能性を示すことです。", trans: "（我们的工作是分析各个数值之间的关联性，向企业展示对其有益的新可能性。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '专家明确提出核心观点：【在展示数据的分析结果时……有必要在展示方法上下功夫（データの分析結果を呈示する際は……見せ方を工夫する必要があります）】。后续通过举例和总结进一步论证了视觉呈现的重要性，符合选项1。')\">データの分析結果を<span class=\"keyword\" onclick=\"showTooltip(event, '呈示（ていじ）：提示，展示。')\">呈示</span>する際は、普段データを目にすることがない人でもよく理解でき、活用できるよう、見せ方を工夫する必要があります。</span></span>", trans: "（在展示数据的分析结果时，为了让平时不接触数据的人也能很好地理解并加以运用，有必要在展示方法上下功夫。）" },
-                                { speaker: "男", text: "例えば、客が一度の買い物で購入する商品の関連性が分かるように、図で示すことがありますが、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中举例说明了通过图表等视觉加工能让人“发现改善点”，并没有探讨对同一结果存在多种不同的解读或解释，排除选项2。')\">線の<span class=\"keyword\" onclick=\"showTooltip(event, '濃淡（のうたん）：浓淡，深浅。')\">濃淡</span>やグラフの種類等、視覚的にはわかりやすくするだけでも、<span class=\"keyword\" onclick=\"showTooltip(event, '入荷量（にゅうかりょう）：进货量。')\">入荷量</span>なり、<span class=\"keyword\" onclick=\"showTooltip(event, '陳列（ちんれつ）：陈列，摆放。')\">陳列</span>方法なりの改善点に気づくことができるんですよ。</span></span>", trans: "（例如，为了让人明白顾客在一次购物中购买商品的关联性，有时会用图表来展示，仅仅是在视觉上将其做得更容易看懂，比如线条的深浅、图表的种类等，就能让人注意到进货量或者陈列方法上的改善点。）" },
-                                { speaker: "男", text: "データから数値以外の物まで読み取ることができるよう加工を<span class=\"keyword\" onclick=\"showTooltip(event, '施（ほどこ）す：施加，施行。')\">施す</span>。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，专家在最后强调了对数据进行加工使其易于理解是他们的使命，并没有诉苦说加工过程有多么“困难”，因此可以排除。')\">それが我々の<span class=\"keyword\" onclick=\"showTooltip(event, '使命（しめい）：使命。')\">使命</span>と考えています。</span></span>", trans: "（对数据进行加工，使其能让人从中读取出数值以外的东西。我们认为这就是我们的使命。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "分析結果の提示方法の重要性", translation: "（分析结果的展示方法的重要性）", correct: true },
-                            { text: "分析結果の解釈の多様性", translation: "（分析结果解释的多样性）", correct: false },
-                            { text: "企業に蓄積されたデータの種類", translation: "（企业积累的数据种类）", correct: false },
-                            { text: "データを加工することの難しさ", translation: "（加工数据的困难程度）", correct: false }
-                        ]
-                    }
-                ]
+  "2015-07": {
+    "label": "2015年07月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2015.07-1.mp3",
+        "script": {
+          "question": "ラジオで男の人が話しています。",
+          "questionTrans": "（在广播里男人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男人一开始提到看到猫的样子会被治愈，但这只是引出核心话题的背景，并不是在专门谈论猫给“人”带来的治愈，排除。')\">猫が喉をごろごろと鳴らしながら気持ちよさそうに寝ている姿はかわいらしくて、見ているだけで<span class=\"keyword\" onclick=\"showTooltip(event, '癒（いや）される：被治愈，被抚慰。')\">癒されます</span>。</span></span>",
+              "trans": "（猫咪一边喉咙发出呼噜呼噜的声音，一边看起来很舒服地睡着的样子十分可爱，只是看着就被治愈了呢。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中提到了母猫为了让小猫安心会发出这个声音，但并没有提到这是表达爱情的方法，排除。')\">これは、母猫が子猫を安心させるためによく出す音なんですが</span></span>、他にも気分がいい時や、<span class=\"keyword\" onclick=\"showTooltip(event, 'リラックス（relax）：放松。')\">リラックス</span>しているときも鳴らしています。",
+              "trans": "（这虽然是母猫为了让小猫安心而经常发出的声音，但在其它心情好的时候，或是放松的时候也会发出来。）"
+            },
+            {
+              "speaker": "男",
+              "text": "でも実は、体調が悪いときにもこの音を出していると言われているんですよ。",
+              "trans": "（但其实，据说在身体状况不好的时候也会发出这个声音哦。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在列举了猫发出这个声音的各种情况（让小猫安心、放松时、生病时）后，总结出【关于猫发出的这个呼噜声，可能还有什么特别的力量（ごろごろには他にも何か特別な力があるのではないかと思っているんです）】。这就说明整段讲话都在探讨“猫喉咙发出的声音（的作用/秘密）”，符合选项3。')\"><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，文中提到猫骨折恢复快，是为了说明这可能与喉咙发出的声音有关，并没有专门探讨骨折恢复快的方法，排除。')\">猫は<span class=\"keyword\" onclick=\"showTooltip(event, '骨折（こっせつ）：骨折。')\">骨折</span>しても他の動物と比べて、<span class=\"keyword\" onclick=\"showTooltip(event, '倍（ばい）：倍，加倍。')\">倍</span>以上の速さで<span class=\"keyword\" onclick=\"showTooltip(event, '回復（かいふく）：恢复，康复。')\">回復</span>するそうですが</span></span>、その秘密ももしかしたら、この音を出すことと関係があるのかもしれないという話を聞いたことがあります。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在列举了猫发出这个声音的各种情况（让小猫安心、放松时、生病时）后，总结出【关于猫发出的这个呼噜声，可能还有什么特别的力量（ごろごろには他にも何か特別な力があるのではないかと思っているんです）】。这就说明整段讲话都在探讨“猫喉咙发出的声音（的作用/秘密）”，符合选项3。')\">私はこのごろごろには他にも何か特別な力があるのではないかと思っているんです。</span></span>",
+              "trans": "（据说猫即使骨折了，和其它动物相比，也会以快一倍以上的速度恢复，我曾听说那个秘密说不定也和发出这个声音有关系。我觉得这个呼噜声可能还有什么特别的力量。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人は何について話していますか。",
+              "trans": "（男人在谈论什么？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "猫が人にもたらす癒し",
+            "translation": "（猫给人们带来的治愈）",
+            "correct": false
+          },
+          {
+            "text": "猫の愛情表現の方法",
+            "translation": "（猫表达爱情的方法）",
+            "correct": false
+          },
+          {
+            "text": "猫が出す喉の音",
+            "translation": "（猫喉咙发出的声音）",
+            "correct": true
+          },
+          {
+            "text": "猫の回復の速さ",
+            "translation": "（猫的恢复速度）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2015.07-2.mp3",
+        "script": {
+          "question": "テレビで男の人が話しています。",
+          "questionTrans": "（在电视上男人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人一开始就提出了核心话题：销售额突然飙升（売り上げが一気に跳ね上がった）。后续全段都是在解释其背后的原因，符合选项1。')\">えー、このクリップトメールは創立以来わが社でずっと販売してきた商品ですが、ある年を<span class=\"keyword\" onclick=\"showTooltip(event, '境（さかい）：分界，界限。')\">境</span>に、売り上げが<span class=\"keyword\" onclick=\"showTooltip(event, '一気（いっき）に：一口气，一下子。')\">一気に</span><span class=\"keyword\" onclick=\"showTooltip(event, '跳（は）ね上（あ）がる：跳起，猛增。')\">跳ね上がった</span>んです。</span></span>",
+              "trans": "（嗯，这款夹子“Tomail（取停止/阻挡落榜之意）”是我们公司自创立以来一直销售的商品，但以某一年为界，销售额一下子飙升了。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中明确表示当时【没有改良设计也没有调整价格（デザインの改良や、価格の見直しもなかった）】，直接排除。')\">デザインの改良や、価格の<span class=\"keyword\" onclick=\"showTooltip(event, '見直（みなお）し：重新评估，调整。')\">見直し</span>もなかったときのことでしたので</span></span>、一体どうしたのか<span class=\"keyword\" onclick=\"showTooltip(event, '見当（けんとう）がつかない：毫无头绪，猜不透。')\">見当もつかなかった</span>のですが、消費者アンケートの結果からあることが分かりました。",
+              "trans": "（因为那时既没有改良设计，也没有调整价格，所以完全摸不着头脑到底是怎么回事，但从消费者问卷调查的结果中明白了一件事。）"
+            },
+            {
+              "speaker": "男",
+              "text": "受験を<span class=\"keyword\" onclick=\"showTooltip(event, '控（ひか）える：面临，临近。')\">控えた</span>お子さんを持つ親が、受験を前に食卓に勝てそうな名前の食べ物、例えば、とんかつなどを並べるというようなことをしますが、私どもの「トメール」もその<span class=\"keyword\" onclick=\"showTooltip(event, '親御（おやご）さん：父母（敬称）。')\">親御さん</span>の気持ちにお応えできたようです。",
+              "trans": "（那些有即将参加考试的孩子的父母，在考试前会在餐桌上摆上名字听起来能赢的食物，例如炸猪排等。我们公司的“Tomail”似乎也回应了父母们的这种心情。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '这段话讲述的是这件老产品被消费者赋予了祈求考试合格的寓意而热销，并不是介绍公司内部【商品开发的内幕故事】或【开发者倾注的情感】，排除选项2和4。')\">「落ちる」のを「トメール」、なるほどなと、<span class=\"keyword\" onclick=\"showTooltip(event, 'せめてもの：至少的，起码的。')\">せめてもの</span>親心が<span class=\"keyword\" onclick=\"showTooltip(event, 'クチコミ（口コミ）：口碑，口头传闻。')\">クチコミ</span>となってネット上で広がったわけなんですね。</span></span>",
+              "trans": "（借取“让落榜停止”的寓意，原来如此，父母起码的关爱之心化作口碑在网络上流传开来了呢。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人は何について話していますか。",
+              "trans": "（男人在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "商品が急に売れ出した理由",
+            "translation": "（商品突然热销的理由）",
+            "correct": true
+          },
+          {
+            "text": "商品開発の裏話",
+            "translation": "（商品开发的内幕故事）",
+            "correct": false
+          },
+          {
+            "text": "商品デザインを改良したきっかけ",
+            "translation": "（改良商品设计的契机）",
+            "correct": false
+          },
+          {
+            "text": "開発者が商品に込めた気持ち",
+            "translation": "（开发者倾注在商品中的感情）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2015.07-3.mp3",
+        "script": {
+          "question": "テレビでサッカー選手が話しています。",
+          "questionTrans": "（在电视上，一位足球运动员正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "えー、私はこの度、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男选手一开始就宣布了核心决定：【这次，我决定为我的现役生涯画上句号（現役生活に終止符を打つことにいたしました）】，即决定退役。后续全文都在讲述导致这个决定的过程，符合选项3。')\">現役生活に<span class=\"keyword\" onclick=\"showTooltip(event, '終止符（しゅうしふ）を打（う）つ：画上句号，终止。')\">終止符を打つ</span>ことにいたしました。</span></span>",
+              "trans": "（嗯，这次，我决定为我的现役生涯画上句号。）"
+            },
+            {
+              "speaker": "男",
+              "text": "昨年、試合中に<span class=\"keyword\" onclick=\"showTooltip(event, '負傷（ふしょう）：负伤，受伤。')\">負傷</span>してしまい、大きな手術を受けました。",
+              "trans": "（去年，我在比赛中受了伤，接受了大型手术。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男选手确实提到了复出，但这只是退役经过中的一部分，且后文转折表示自己对表现不满意，并非单纯讲述复出的喜悦，排除。')\">必死の<span class=\"keyword\" onclick=\"showTooltip(event, 'リハビリ（rehabilitation）：康复训练。')\">リハビリ</span>が<span class=\"keyword\" onclick=\"showTooltip(event, '実（みの）る：结出果实，取得成果。')\">実って</span>、今シーズン<span class=\"keyword\" onclick=\"showTooltip(event, '終盤（しゅうばん）：终盘，最后阶段。')\">終盤</span>には何とか試合に出場することができ</span></span>、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中虽然提到了夺冠获得了无上的感动，但这是团队的成绩，紧接着他就用“但如果说个人表现令人满意的话，并非如此”进行了转折，说明这不是他讲话的主旨，排除。')\">最後は、チーム<span class=\"keyword\" onclick=\"showTooltip(event, '悲願（ひがん）：悲愿，宿愿，一直以来的心愿。')\">悲願</span>の優勝を<span class=\"keyword\" onclick=\"showTooltip(event, '果（は）たす：完成，实现。')\">果たす</span>ことができました。</span></span><span class=\"highlight-wrong\"><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中虽然提到了夺冠获得了无上的感动，但这是团队的成绩，紧接着他就用“但如果说个人表现令人满意的话，并非如此”进行了转折，说明这不是他讲话的主旨，排除。')\">チームとしては最高の結果を得て、<span class=\"keyword\" onclick=\"showTooltip(event, 'この上（うえ）ない：无上的，无比的。')\">この上ない</span>感動は味わいましたが</span></span>、個人的に満足のいくプレーができたといえば、そうではありません。",
+              "trans": "（拼命的康复训练取得了成果，在本赛季最后阶段总算能够出场比赛，最后，实现了队伍一直以来的夺冠心愿。作为团队取得了最好的结果，体会到了无上的感动，但如果说个人的表现令人满意的话，并非如此。）"
+            },
+            {
+              "speaker": "男",
+              "text": "自身が<span class=\"keyword\" onclick=\"showTooltip(event, '納得（なっとく）：理解，接受，满意。')\">納得</span>のいくプレーができなくなった<span class=\"keyword\" onclick=\"showTooltip(event, '以上（いじょう）：既然……就……。')\">以上</span>、今後<span class=\"keyword\" onclick=\"showTooltip(event, '継続（けいぞく）：继续，持续。')\">継続</span>していくことは難しいと感じました。",
+              "trans": "（既然已经无法做出让自己满意的表现了，我感到今后很难再继续下去了。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，在结尾表达对周围人的感谢是退役演讲的标准环节，但整段话的核心是交代退役的理由和经过，因此排除选项4。')\">怪我をして辛かったときに、支えてくれたファンやスタッフの方々、チームメート、そして家族には、感謝の気持ちでいっぱいです。</span></span>",
+              "trans": "（对于在受伤痛苦时支持我的各位粉丝、工作人员、队友，还有家人，我心中充满了感激。）"
+            },
+            {
+              "speaker": "問",
+              "text": "サッカー選手は主に、何について話していますか。",
+              "trans": "（这位足球运动员主要在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "怪我が治って、復帰できた喜び",
+            "translation": "（伤愈复出的喜悦）",
+            "correct": false
+          },
+          {
+            "text": "優勝したときの感動",
+            "translation": "（夺冠时的感动）",
+            "correct": false
+          },
+          {
+            "text": "引退を決意した経緯",
+            "translation": "（决定退役的经过）",
+            "correct": true
+          },
+          {
+            "text": "選手を支える人々の大切さ",
+            "translation": "（支持选手的人们的重要性）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2015.07-4.mp3",
+        "script": {
+          "question": "大学で、女の学生と男の学生が話しています。",
+          "questionTrans": "（在大学里，女学生和男学生正在聊天。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "このまえ、大学院に行くか、就職するか迷ってるって言ってたけど、<span class=\"keyword\" onclick=\"showTooltip(event, '進路（しんろ）：出路，前进的道路。')\">進路</span>、どうするか決めた？",
+              "trans": "（之前你说在考研和就业之间犹豫，现在出路定下来了吗？）"
+            },
+            {
+              "speaker": "男",
+              "text": "それがさあ、先輩に「大学院に行こうかと思ってるんですけど」って相談したら、「就職するのが嫌なだけじゃないのか」って言われてさあ、最初はそんなことあるもんかってちょっと<span class=\"keyword\" onclick=\"showTooltip(event, 'むっとする：生气，发怒，感到憋气。')\">むっとした</span>んだけど、いろいろ話してたら、先輩に言われたこと、<span class=\"keyword\" onclick=\"showTooltip(event, '案外（あんがい）：意想不到，出乎意料。')\">案外</span>当たってるかもって思ってきて。",
+              "trans": "（那个啊，我找学长商量说“我考虑要不要去考研”，结果他跟我说“你该不会只是不想去工作吧”。一开始我还挺生气的，心想哪有这种事，但聊着聊着，我就觉得学长说的可能出乎意料地准。）"
+            },
+            {
+              "speaker": "女",
+              "text": "そうなんだ。",
+              "trans": "（是嘛。）"
+            },
+            {
+              "speaker": "男",
+              "text": "うん。周りが就職活動をし始めたから、焦ってきちゃって、でも、<span class=\"keyword\" onclick=\"showTooltip(event, '流（なが）される：随波逐流，被带动。')\">流されない</span>ぞって思って、自分なりにしっかり考えたつもりだったんだけど、結局嫌なことを<span class=\"keyword\" onclick=\"showTooltip(event, '先延（さきの）ばし：推迟，拖延。')\">先延ばし</span>にしてただけだなあって。",
+              "trans": "（嗯。因为周围的人都开始找工作了，我就有点焦急。虽然心里想着“我可不能随波逐流”，也觉得自己有在好好思考，但结果其实只是把讨厌的事情给推迟了而已。）"
+            },
+            {
+              "speaker": "女",
+              "text": "うーん。",
+              "trans": "（嗯。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中男生表示自己之前并没有认真思考过未来想做什么工作或研究什么，且最后指出“现在清楚自己该思考什么了”，说明他并未做出考研或就业的最终决定，而是准备重新认真考虑。因此排除前三个选项。')\">今大学院に行く必要があるのかとか、行くにしても、なにを研究したいのかっていうのは、<span class=\"keyword\" onclick=\"showTooltip(event, '二（に）の次（つぎ）：次要，放在第二位。')\">二の次</span>になってたし、将来どんな仕事がしたいのかってのも、ちゃんと考えてたわけではないことに気がついたんだ。</span></span>",
+              "trans": "（现在是不是有必要考研、就算去考研到底想研究什么之类的，都被我放在次要位置了。我也意识到，自己其实并没有认真想过将来到底想做怎样的工作。）"
+            },
+            {
+              "speaker": "女",
+              "text": "そっか、じゃあ、<span class=\"keyword\" onclick=\"showTooltip(event, '振（ふ）り出（だ）しに戻（もど）る：回到起点，从头再来。')\">振り出しに戻っちゃった</span>ね。",
+              "trans": "（这样啊，那等于又回到起点了呢。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男生提到“意识到自己并没有好好考虑过……现在清楚了自己该想什么”，说明他现在的状态是想要重新好好思考未来的出路，符合选项4“想再好好考虑一下”。')\">そうでもないよ。今自分が何を考えなきゃいけないかがはっきりしたから、<span class=\"keyword\" onclick=\"showTooltip(event, '大（おお）いなる：巨大的，伟大的。')\">大いなる</span><span class=\"keyword\" onclick=\"showTooltip(event, '進歩（しんぽ）：进步。')\">進歩</span>さ。</span></span>",
+              "trans": "（那倒也不是。因为现在我已经清楚自己该思考什么了，这算是个很大的进步啦。）"
+            },
+            {
+              "speaker": "女",
+              "text": "うーん。",
+              "trans": "（嗯。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の学生はいま進路についてどう思っていますか。",
+              "trans": "（男学生现在对未来的出路是怎么想的？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "大学院に行きたいが就職する",
+            "translation": "（想考研但去就业）",
+            "correct": false
+          },
+          {
+            "text": "就職したいが大学院に行く",
+            "translation": "（想就业但去考研）",
+            "correct": false
+          },
+          {
+            "text": "就職した後で大学院に行く",
+            "translation": "（就业之后去考研）",
+            "correct": false
+          },
+          {
+            "text": "進学か就職かもっとよく考えたい",
+            "translation": "（想再好好考虑一下升学还是就业）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2015.07-5.mp3",
+        "script": {
+          "question": "テレビで専門家が話しています。",
+          "questionTrans": "（在电视上专家正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "現在、若い世代では<span class=\"keyword\" onclick=\"showTooltip(event, '共働（ともばたら）き：双职工，夫妻都工作。')\">共働き</span>の家庭も多く、出産後働きつづける女性が増え、労働と育児の<span class=\"keyword\" onclick=\"showTooltip(event, '両立（りょうりつ）：兼顾，两立。')\">両立</span>という問題に<span class=\"keyword\" onclick=\"showTooltip(event, '直面（ちょくめん）：面临，面对。')\">直面</span>している人が少なくありません。",
+              "trans": "（现在，年轻一代中双职工家庭很多，产后继续工作的女性增加，面临兼顾工作和育儿问题的人不在少数。）"
+            },
+            {
+              "speaker": "女",
+              "text": "また、今後高齢化が進むと、働きながら家族の<span class=\"keyword\" onclick=\"showTooltip(event, '介護（かいご）：护理，照料。')\">介護</span>をする人が増えることも<span class=\"keyword\" onclick=\"showTooltip(event, '懸念（けねん）：担忧，担心。')\">懸念</span>されます。",
+              "trans": "（此外，如果今后老龄化加剧，边工作边护理家人的情况增加也令人担忧。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '专家指出了工作与育儿、护理等兼顾的困难，但并未主张单纯支援女性、让年轻人认识护理重要性或培养专业人才，这些都不是这段话的核心论点，排除前三个选项。')\">こういった問題は長時間労働が<span class=\"keyword\" onclick=\"showTooltip(event, '常態化（じょうたいか）：常态化。')\">常態化</span>している企業があることや<span class=\"keyword\" onclick=\"showTooltip(event, '有給休暇（ゆうきゅうきゅうか）：带薪休假。')\">有給休暇</span>を積極的に取得しない人がいるという現状をなんとかしなければ、解決は難しいと考えます。</span></span>",
+              "trans": "（我认为，如果不设法改变一些企业长时间劳动常态化、以及人们不积极休带薪假的现状，这些问题就很难解决。）"
+            },
+            {
+              "speaker": "女",
+              "text": "最近では、企業が出産、育児、介護など、各種休業制度を<span class=\"keyword\" onclick=\"showTooltip(event, '設（もう）ける：设立，设置。')\">設けて</span>いますが、制度を導入するだけでは、十分とはいえません。",
+              "trans": "（最近，企业设立了生育、育儿、护理等各种休假制度，但仅仅引入制度并不能说就足够了。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '专家在最后总结了自己的核心观点：【难道不是到了该好好重新审视企业和劳动者所处的这种现状的时候了吗？（企業や労働者が置かれているこうした現状をしっかりと見直す時期に来ているのではないでしょうか）】。这里的“现状”就是指前面提到的长时间劳动和不休假等劳动状态。这与选项4“应该改善现在的劳动状态”完全契合。')\">企業や労働者が置かれているこうした現状をしっかりと見直す時期に来ているのではないでしょうか。</span></span>",
+              "trans": "（难道不是到了该好好重新审视企业和劳动者所处的这种现状的时候了吗？）"
+            },
+            {
+              "speaker": "問",
+              "text": "専門家が言いたいことはなんですか。",
+              "trans": "（专家想说的是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "女性の社会進出を支援すべきだ",
+            "translation": "（应该支援女性步入社会）",
+            "correct": false
+          },
+          {
+            "text": "若い世代も介護の重要性を認識すべきだ",
+            "translation": "（年轻一代也应该认识到护理的重要性）",
+            "correct": false
+          },
+          {
+            "text": "介護や保育を担う人材を育成すべきだ",
+            "translation": "（应该培养承担护理和保育的人才）",
+            "correct": false
+          },
+          {
+            "text": "現在の労働のあり方を改善すべきだ",
+            "translation": "（应该改善现在的劳动状态/方式）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "audio": "../assets/audio/2015.07-6.mp3",
+        "script": {
+          "question": "経済研究所のセミナーでデータ分析の専門家が話しています。",
+          "questionTrans": "（在经济研究所的研讨会上，数据分析专家正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "えー、企業は自社における仕入れや売り上げの記録など様々なデータを<span class=\"keyword\" onclick=\"showTooltip(event, '蓄積（ちくせき）：积累，积蓄。')\">蓄積</span>してますが、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中开头确实提到了“进货和销售记录等各种各样的数据”，但这只是引入话题的背景，不是整段演讲的核心内容，可以排除。')\">データは数値そのままでは<span class=\"keyword\" onclick=\"showTooltip(event, '何ら（なんら）：任何，毫无（后接否定）。')\">何ら</span>意味を持ちません。</span></span>",
+              "trans": "（嗯，企业虽然积累了公司内部进货和销售记录等各种各样的数据，但数据如果只是单纯的数值，是没有任何意义的。）"
+            },
+            {
+              "speaker": "男",
+              "text": "私たちの仕事はそれぞれの数値の関連性を分析し、企業にとって<span class=\"keyword\" onclick=\"showTooltip(event, '有益（ゆうえき）：有益，有好处。')\">有益</span>となる新たな可能性を示すことです。",
+              "trans": "（我们的工作是分析各个数值之间的关联性，向企业展示对其有益的新可能性。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '专家明确提出核心观点：【在展示数据的分析结果时……有必要在展示方法上下功夫（データの分析結果を呈示する際は……見せ方を工夫する必要があります）】。后续通过举例和总结进一步论证了视觉呈现的重要性，符合选项1。')\">データの分析結果を<span class=\"keyword\" onclick=\"showTooltip(event, '呈示（ていじ）：提示，展示。')\">呈示</span>する際は、普段データを目にすることがない人でもよく理解でき、活用できるよう、見せ方を工夫する必要があります。</span></span>",
+              "trans": "（在展示数据的分析结果时，为了让平时不接触数据的人也能很好地理解并加以运用，有必要在展示方法上下功夫。）"
+            },
+            {
+              "speaker": "男",
+              "text": "例えば、客が一度の買い物で購入する商品の関連性が分かるように、図で示すことがありますが、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中举例说明了通过图表等视觉加工能让人“发现改善点”，并没有探讨对同一结果存在多种不同的解读或解释，排除选项2。')\">線の<span class=\"keyword\" onclick=\"showTooltip(event, '濃淡（のうたん）：浓淡，深浅。')\">濃淡</span>やグラフの種類等、視覚的にはわかりやすくするだけでも、<span class=\"keyword\" onclick=\"showTooltip(event, '入荷量（にゅうかりょう）：进货量。')\">入荷量</span>なり、<span class=\"keyword\" onclick=\"showTooltip(event, '陳列（ちんれつ）：陈列，摆放。')\">陳列</span>方法なりの改善点に気づくことができるんですよ。</span></span>",
+              "trans": "（例如，为了让人明白顾客在一次购物中购买商品的关联性，有时会用图表来展示，仅仅是在视觉上将其做得更容易看懂，比如线条的深浅、图表的种类等，就能让人注意到进货量或者陈列方法上的改善点。）"
+            },
+            {
+              "speaker": "男",
+              "text": "データから数値以外の物まで読み取ることができるよう加工を<span class=\"keyword\" onclick=\"showTooltip(event, '施（ほどこ）す：施加，施行。')\">施す</span>。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，专家在最后强调了对数据进行加工使其易于理解是他们的使命，并没有诉苦说加工过程有多么“困难”，因此可以排除。')\">それが我々の<span class=\"keyword\" onclick=\"showTooltip(event, '使命（しめい）：使命。')\">使命</span>と考えています。</span></span>",
+              "trans": "（对数据进行加工，使其能让人从中读取出数值以外的东西。我们认为这就是我们的使命。）"
+            },
+            {
+              "speaker": "問",
+              "text": "専門家は主に何について話していますか。",
+              "trans": "（专家主要在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "分析結果の提示方法の重要性",
+            "translation": "（分析结果的展示方法的重要性）",
+            "correct": true
+          },
+          {
+            "text": "分析結果の解釈の多様性",
+            "translation": "（分析结果解释的多样性）",
+            "correct": false
+          },
+          {
+            "text": "企業に蓄積されたデータの種類",
+            "translation": "（企业积累的数据种类）",
+            "correct": false
+          },
+          {
+            "text": "データを加工することの難しさ",
+            "translation": "（加工数据的困难程度）",
+            "correct": false
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2015-07-概要理解"; 
+        let currentExamKey = "2015-07"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -368,10 +609,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -710,8 +951,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-<script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+<script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261016-summary-n1-2015-07-33aa9df9930e"></script>
+<script src="../shared/follow-listening.js?v=20261016-summary-n1-2015-07-33aa9df9930e"></script>
+<script src="../shared/follow-listening-entry.js?v=20261016-summary-n1-2015-07-33aa9df9930e"></script>
 </body>
 </html>

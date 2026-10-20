@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261017-summary-n1-2017-12-334cb2e6610a">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,147 +192,397 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
     <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2017-12-概要理解": {
-                label: "2017年12月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2017.12-1.mp3",
-                        script: {
-                            question: "一番：テレビで市の職員が話しています。市の職員は、何について話していますか。",
-                            questionTrans: "（第一题：在电视上，市政府的职员正在讲话。市政府职员在谈论什么？）",
-                            dialogue: [
-                                { "speaker": "女", "text": "緑市ではここ数年、伝統的な建築技法で作られた古い民家を購入したり、借りたりする人が急増しています。", "trans": "（在绿市，这几年购买或租用以传统建筑技法建造的古民居的人正在激增。）" },
-                                { "speaker": "女", "text": "家の外観や構造を<span class=\"keyword\" onclick=\"showTooltip(event, '維持（いじ）：维持。')\">維持</span>しつつ、中を<span class=\"keyword\" onclick=\"showTooltip(event, '改築（かいちく）：改建。')\">改築</span>して、住居や店舗などにするんですね。", "trans": "（在维持房屋外观和构造的同时，对内部进行改建，用作住宅或店铺等呢。）" },
-                                { "speaker": "女", "text": "古い建築物には独特な味がありますし、<span class=\"keyword\" onclick=\"showTooltip(event, '放置（ほうち）：放置，搁置。')\">放置</span>されていた空き家が再生することで、<span class=\"keyword\" onclick=\"showTooltip(event, '防犯（ぼうはん）：防范犯罪。')\">防犯</span>上の不安も<span class=\"keyword\" onclick=\"showTooltip(event, '解消（かいしょう）：消除。')\">解消</span>されます。", "trans": "（古老的建筑物有着独特的韵味，而且原本被闲置的空屋获得新生，防范犯罪方面的担忧也随之消除了。）" },
-                                { "speaker": "女", "text": "また将来的には、そのような民家が多い地域で、昔の町並みを<span class=\"keyword\" onclick=\"showTooltip(event, '復元（ふくげん）：复原，恢复原貌。')\">復元</span>し、それを観光資源として、町を<span class=\"keyword\" onclick=\"showTooltip(event, '活性化（かっせいか）：活性化，使充满活力。')\">活性化</span>させることも検討しています。", "trans": "（此外，在未来，我们也在探讨在那种古民居较多的地区，复原过去的街景，并将其作为旅游资源，让城镇重新焕发活力。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '职员在这里总结了这番举措的价值所在：【改建虽然要花相应的功夫，但可以说它有着超越这些功夫的价值（改築にはそれなりに手間もかかりますが、それを上回るものがあると言えそうです）】。结合前面提到的作住宅、做店铺、防范犯罪、旅游资源等，整段话都在强调重新利用古民居所带来的种种“好处（メリット）”，因此选3。')\">改築にはそれなりに<span class=\"keyword\" onclick=\"showTooltip(event, '手間（てま）：劳力和时间，功夫。')\">手間</span>もかかりますが、それを<span class=\"keyword\" onclick=\"showTooltip(event, '上回（うわまわ）る：超过，超出。')\">上回る</span>ものがあると言えそうです。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，文中明确提到“对内部进行改建（中を改築して）”，排除“不改建”的说法。关于选项2，文中讲到了不仅作为住宅，还作为店铺和旅游资源，并非仅仅探讨作为住宅的“宜居程度”，排除。关于选项4，虽然结尾提到改建要花功夫，但立刻用欲扬先抑的手法强调了其超越困难的价值，重点在于好处，而非探讨“困难程度”，排除。')\"></span></span>", "trans": "（改建确实需要花费相应的功夫，但可以说它有着超越这些功夫的价值。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "古い民家を改築しないで保存する意義", "translation": "（不改建而保存古民居的意义）", "correct": false },
-                            { "text": "古い民家の住みやすさ", "translation": "（古民居的宜居程度）", "correct": false },
-                            { "text": "古い民家を再利用するメリット", "translation": "（再利用古民居的好处）", "correct": true },
-                            { "text": "古い民家を再生することの難しさ", "translation": "（让古民居重获新生的困难程度）", "correct": false }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        audio: "../assets/audio/2017.12-2.mp3",
-                        script: {
-                            question: "二番：電話で女の人と男の人が話しています。男の人は、部品の納期と価格について、何と言っていますか。",
-                            questionTrans: "（第二题：在电话里女人和男人正在讲话。男人关于零件的交货期和价格是怎么说的？）",
-                            dialogue: [
-                                { "speaker": "女", "text": "はい。青空自動車の伊藤です。", "trans": "（您好。这里是青空汽车的伊藤。）" },
-                                { "speaker": "男", "text": "もしもし、いつもお世話になっております。太陽製作所の渡辺です。", "trans": "（喂，一直以来承蒙您的关照。我是太阳制作所的渡边。）" },
-                                { "speaker": "女", "text": "あ、渡辺さん、お世話になっております。", "trans": "（啊，渡边先生，承蒙您的关照。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '男人在这里明确表示【似乎无法满足您希望本月中旬交货的要求（今月中旬という納期のご希望にはお応えできそうにないんですが）】，说明无法满足交货期的要求。排除了认为能满足交货期要求的选项1和3。')\">昨日ご注文いただきました部品の<span class=\"keyword\" onclick=\"showTooltip(event, '納期（のうき）：交货期。')\">納期</span>と価格の件でご連絡しました。実は、このところの原材料や原油価格の<span class=\"keyword\" onclick=\"showTooltip(event, '高騰（こうとう）：高涨，物价飞涨。')\">高騰</span>で、部品の生産が<span class=\"keyword\" onclick=\"showTooltip(event, '難航（なんこう）：难以推进，进展不顺利。')\">難航</span>していまして。大変申し訳ありませんが、今月中旬という納期のご希望にはお<span class=\"keyword\" onclick=\"showTooltip(event, '応（こた）える：响应，满足（要求、期待等）。')\">応え</span>できそうにないんですが。</span></span>", "trans": "（我联系您是为了您昨天订购的零件的交货期和价格的事情。实际上，由于最近原材料和原油价格高涨，零件的生产进展得很不顺利。非常抱歉，我们似乎无法满足您希望本月中旬交货的要求了。）" },
-                                { "speaker": "女", "text": "そうですか。", "trans": "（这样啊。）" },
-                                { "speaker": "男", "text": "ただ、<span class=\"keyword\" onclick=\"showTooltip(event, 'めど（目処）が立（た）つ：有眉目，有希望（解决）。')\">めどは立ち</span>つつありますので、今月末にはお届けできそうです。それから、取引価格の<span class=\"keyword\" onclick=\"showTooltip(event, '値引（ねび）き：降价，打折。')\">値引き</span>のご要望ですが。", "trans": "（不过，现在渐渐有了眉目，大概本月底能给您送达。另外，关于您要求交易价格打折的事。）" },
-                                { "speaker": "女", "text": "はい。", "trans": "（嗯。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人接着提出了条件：【如果您能谅解交货期的事情，我们将按照您的希望进行交易（納期の件、ご了承いただけましたら、ご希望通りお取引させていただきます）】。这里的“按照希望进行交易”指的就是答应女方打折的要求。综上所述，交货期无法满足，但价格可以满足。符合选项4。')\">こちらも、原材料費が値上がりしているため、大変厳しい状況ではございますが、納期の件、ご<span class=\"keyword\" onclick=\"showTooltip(event, '了承（りょうしょう）：谅解，同意。')\">了承</span>いただけましたら、ご希望通りお取引させていただきます。</span></span>", "trans": "（由于原材料费上涨，我们这边的状况也非常严峻，但是，如果您能谅解交货期的事情，我们将按照您的希望（的价格）进行交易。）" },
-                                { "speaker": "女", "text": "わかりました。では社内で<span class=\"keyword\" onclick=\"showTooltip(event, '検討（けんとう）：探讨，研究。')\">検討</span>して、後ほどご連絡いたします。", "trans": "（明白了。那么我会在公司内部探讨一下，稍后再联系您。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "納期も価格も希望に応えられる", "translation": "（交货期和价格都能满足要求）", "correct": false },
-                            { "text": "納期も価格も希望に応えられない", "translation": "（交货期和价格都无法满足要求）", "correct": false },
-                            { "text": "納期だけ希望に応えられる", "translation": "（只能满足交货期的要求）", "correct": false },
-                            { "text": "価格だけ希望に応えられる", "translation": "（只能满足价格的要求）", "correct": true }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        audio: "../assets/audio/2017.12-3.mp3",
-                        script: {
-                            question: "三番：ラジオで女の人が話しています。女の人が伝えたいことは何ですか。",
-                            questionTrans: "（第三题：在广播里女人正在讲话。女人想传达的是什么？）",
-                            dialogue: [
-                                { "speaker": "女", "text": "日本では古くから「ツバメが低く飛ぶと雨が降る」と言われてきました。", "trans": "（在日本，自古以来就有“燕子低飞会下雨”的说法。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，虽然女人提到了现在的科学能够解释这个现象，但这只是为了引出接下来对古人的赞叹，并未探讨气象学进步的“速度”，排除。')\">今でこそ、これは科学的に明らかになっていますが</span></span>、あっ、つまり、雨雲が近づき、湿度が上がると。ツバメのえさとなる<span class=\"keyword\" onclick=\"showTooltip(event, '羽虫（はむし）：飞虫。')\">羽虫</span>が高く飛べなくなるためなんですね。", "trans": "（虽说现在这在科学上已经被证明了，啊，也就是说，当雨云靠近、湿度上升时，作为燕子食物的飞虫就飞不高了，是因为这个原因呢。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人用“但是（でも）”进行转折，引出整段话的核心主旨：【在那个还没有气象学的时代，当时的人们从眼前的自然现象中找出一定法则的能力，真让人钦佩（まだ気象学もない時代に、目の前の自然現象から一定の法則を見出す当時の人の力には、感心させられます）】。后续内容都是在赞叹古人能从微小的变化中发现真理，这完全符合选项2“古人观察力的敏锐”。')\">でも、まだ気象学もない時代に、目の前の自然現象から一定の法則を<span class=\"keyword\" onclick=\"showTooltip(event, '見出（みいだ）す：找出，发现。')\">見出す</span>当時の人の力には、<span class=\"keyword\" onclick=\"showTooltip(event, '感心（かんしん）：钦佩，感叹。')\">感心</span>させられます。</span></span>", "trans": "（但是，在那个还没有气象学的时代，当时的人们从眼前的自然现象中找出一定法则的能力，真让人钦佩。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中虽然提到了天气对人的影响比现在大，也提到了湿度对飞虫的影响，但这都是为了解释古人为何有如此观察力，并不是这段话的最终结论，排除。')\">昔は、天候や天気が人に<span class=\"keyword\" onclick=\"showTooltip(event, '及（およ）ぼす：波及，带来（影响等）。')\">およぼす</span>影響が今より大きかったことも理由なのでしょうが。</span></span>", "trans": "（过去，天气或气候对人造成的影响比现在更大，这或许也是一个理由吧。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，女人赞叹的是古人创造出这些传说的观察力，并没有呼吁现代人去“验证”这些传说的重要性，排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '微（かす）か：微小，微弱。')\">微か</span>な<span class=\"keyword\" onclick=\"showTooltip(event, '変調（へんちょう）：变化，反常。')\">変調</span>から真実を発見する能力の高さは現代の私たちとは<span class=\"keyword\" onclick=\"showTooltip(event, '大違（おおちが）い：大不相同。')\">大違い</span>ですね。</span></span>", "trans": "（这种从微小的变化中发现真理的极高能力，和现代的我们是大不相同的呢。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "気象学の進歩の速さ", "translation": "（气象学进步的速度）", "correct": false },
-                            { "text": "昔の人の観察力の鋭さ", "translation": "（古人观察力的敏锐）", "correct": true },
-                            { "text": "気候や天気が生物に与える影響", "translation": "（气候或天气对生物造成的影响）", "correct": false },
-                            { "text": "言い伝えを検証することの大切さ", "translation": "（验证传说的重要性）", "correct": false }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        audio: "../assets/audio/2017.12-4.mp3",
-                        script: {
-                            question: "四番：大学で先生が話しています。先生の話のテーマはなんですか。",
-                            questionTrans: "（第四题：在大学里老师正在讲话。老师讲话的主题是什么？）",
-                            dialogue: [
-                                { "speaker": "男", "text": "昆虫の中には、例えば、蝶や蜂、蛾など、幼虫のころと成長した後で、その<span class=\"keyword\" onclick=\"showTooltip(event, '形態（けいたい）：形态。')\">形態</span>が大きく異なるものがいます。", "trans": "（在昆虫当中，例如蝴蝶、蜜蜂、飞蛾等，有一些在幼虫时期和长大之后，其形态会有很大的不同。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，老师提到摄取营养是为了说明幼虫为何长成那种形态的“原因”，而不是单纯地去探讨昆虫成长都需要哪些营养，排除。')\">これらの昆虫は、幼虫の時は、<span class=\"keyword\" onclick=\"showTooltip(event, 'くびれ（括れ）：凹处，腰部变细的地方。')\">くびれ</span>のない長い<span class=\"keyword\" onclick=\"showTooltip(event, '胴体（どうたい）：躯干。')\">胴体</span>に短い足といった<span class=\"keyword\" onclick=\"showTooltip(event, '原始的（げんしてき）：原始的。')\">原始的</span>で単純な外見をしているのですが、これは、成長するための栄養を体内にできるだけ多く<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り込（こ）む：摄取，拿进。')\">取り込み</span>、<span class=\"keyword\" onclick=\"showTooltip(event, '蓄（たくわ）える：储存，积蓄。')\">蓄える</span>のにとても適した形なのです。</span></span>", "trans": "（这些昆虫在幼虫时，虽然有着没有凹凸（腰身）的细长躯干和短小足部这种原始且单纯的外表，但这是为了在体内尽可能多地摄取并储存成长所需的营养，而非常适合的形状。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师通过“但是（しかし）”引出成虫阶段，解释长出翅膀是为了寻找交配对象。综合前后，整段话都在解释昆虫在幼虫期（为了储能）和成虫期（为了繁殖）形态不同的具体理由，符合选项4“昆虫形态的变化及其理由”。')\">しかし、<span class=\"keyword\" onclick=\"showTooltip(event, 'いったん：一旦。')\">いったん</span>成長し、<span class=\"keyword\" onclick=\"showTooltip(event, '生殖（せいしょく）：生殖。')\">生殖</span>能力が<span class=\"keyword\" onclick=\"showTooltip(event, '備（そな）わる：具备，具有。')\">備わる</span>と、今度は繁殖が生存の目的となるため、</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，老师提到移动范围是为了说明长翅膀的原因，并没有去比较“不同种类”昆虫移动范围的差异。关于选项3，提到寻找交配对象也是为了解释翅膀的作用，而非详细探讨昆虫具体的繁殖方式。两者皆排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '交配（こうはい）：交配。')\">交配</span>相手を有利に探せるよう、より広い範囲を移動することができる羽を手に入れるというわけです。</span></span>", "trans": "（但是，一旦长大并具备了生殖能力，这次繁殖就成了生存的目的，因此为了能更有利地寻找交配对象，它们就长出了能移动更广范围的翅膀。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "昆虫の種類による移動範囲の違い", "translation": "（不同种类昆虫移动范围的区别）", "correct": false },
-                            { "text": "昆虫の成長に必要な栄養", "translation": "（昆虫成长所需的营养）", "correct": false },
-                            { "text": "昆虫の繁殖の仕方", "translation": "（昆虫的繁殖方式）", "correct": false },
-                            { "text": "昆虫の形の変化とその理由", "translation": "（昆虫形态的变化及其理由）", "correct": true }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        audio: "../assets/audio/2017.12-5.mp3",
-                        script: {
-                            question: "五番：新入社員の研修会で、講師が話しています。講師の話のテーマはなんですか。",
-                            questionTrans: "（第五题：在针对新员工的研修会上，讲师正在讲话。讲师讲话的主题是什么？）",
-                            dialogue: [
-                                { "speaker": "女", "text": "小売店の多くでは、客が店の中をどのように歩くかを意識して、店内の<span class=\"keyword\" onclick=\"showTooltip(event, 'レイアウト（layout）：布局，配置。')\">レイアウト</span>を決めています。", "trans": "（在许多零售店里，店家会意识到顾客在店里是如何走动的，以此来决定店内的布局。）" },
-                                { "speaker": "女", "text": "例えば、スーパーの多くでは、客に店内を一周歩かせるために、入り口から壁<span class=\"keyword\" onclick=\"showTooltip(event, 'ぞい（沿い）：沿着。')\">ぞい</span>に<span class=\"keyword\" onclick=\"showTooltip(event, 'ぐるっと：环绕一圈地。')\">ぐるっと</span>購買率が高い食品を<span class=\"keyword\" onclick=\"showTooltip(event, '陳列（ちんれつ）：陈列，摆放。')\">陳列</span>しています。", "trans": "（例如，在许多超市里，为了让顾客在店内走上一圈，会沿着墙壁环绕一圈地陈列购买率高的食品。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，讲师探讨的是如何让顾客走更长的距离以增加购买机会，这反而可能会让顾客觉得购物不那么“直接便利”（要走远路），其根本目的是为了店家的收益，而不是为了“让顾客好买东西（買い物をしやすくする）”，排除。')\">そうすることで、客は自然と長い距離を歩くことになり、目的以外の商品も目にしたり手に取ったりする機会が増え、それが購入の<span class=\"keyword\" onclick=\"showTooltip(event, '促進（そくしん）：促进。')\">促進</span>につながるのです。</span></span>", "trans": "（那样做的话，顾客自然就会走很长的距离，看到或拿起目的之外的商品的机会就会增加，这也就促进了购买。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '讲师在这里点出了核心主旨：不管是超市把高购买率食品放墙边，还是家电卖场把高关注度商品放深处，都是为了【图谋提升销售额（売り上げアップを図っている）】。整段话都在探讨如何通过商品的配置（レイアウト/奥に置く）来增加收益，符合选项1。')\">これはスーパーに限ったことではなく、ええ、例えば、家電販売店でも同様のことが言えますが、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，这里比较的是两者“商品摆放位置”的差异，并没有探讨店员的“待客方式（接客）”的区别，排除。')\">家電販売店の場合は、スーパーとは多少異なり</span></span>、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中只是提到了去利用“购买率高”或“关注度高”的商品来布局，但并没有教大家如何去“辨别”哪些是高购买率商品，排除。')\">客の関心が高い商品を店の入り口から遠い奥に置くことで</span></span>、売り上げアップを<span class=\"keyword\" onclick=\"showTooltip(event, '図（はか）る：图谋，谋求。')\">図っている</span>ところが<span class=\"keyword\" onclick=\"showTooltip(event, '多（おお）く見受（みう）けられる：经常能看到，随处可见。')\">多く見受けられます</span>。</span></span>", "trans": "（这不仅限于超市，嗯，例如在家电大卖场也能说同样的话。不过家电大卖场的情况和超市多少有些不同，经常能看到它们通过将顾客关注度高的商品放在离店门较远的深处，以此来图谋提升销售额。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "収益を上げるための商品の配置", "translation": "（为了提升收益的商品配置）", "correct": true },
-                            { "text": "買い物をしやすくするための店の工夫", "translation": "（为了让购物更方便而下的工夫）", "correct": false },
-                            { "text": "購買率が高い商品の見分け方", "translation": "（购买率高的商品的辨别方法）", "correct": false },
-                            { "text": "スーパーと家電販売店の接客の違い", "translation": "（超市和家电大卖场待客方式的区别）", "correct": false }
-                        ]
-                    },
-                    {
-                        id: 6,
-                        audio: "../assets/audio/2017.12-6.mp3",
-                        script: {
-                            question: "六番：大学の授業で先生が話しています。先生は、何について話していますか。",
-                            questionTrans: "（第六题：在大学的课堂上，老师正在讲话。老师在谈论什么？）",
-                            dialogue: [
-                                { "speaker": "男", "text": "ええ、生活排水などによって海に過度な栄養成分が<span class=\"keyword\" onclick=\"showTooltip(event, '流入（りゅうにゅう）：流入。')\">流入</span>すると、微生物の<span class=\"keyword\" onclick=\"showTooltip(event, '増殖（ぞうしょく）：增殖，繁殖。')\">増殖</span>が進み、海水の汚染が進行します。", "trans": "（嗯，如果因为生活污水等导致过度的营养成分流入海洋，微生物的增殖就会加剧，海水污染也会随之恶化。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师在这里引出了核心话题：【抑制微生物的增殖就显得很重要，而在这方面起到帮助作用的，是一种叫做牡蛎的贝类（微生物増殖の抑制が重要なんですが、その助けとなっているのが、かきという貝です）】。后续内容都在详细解释牡蛎是如何发挥这种作用的，完全符合选项2“牡蛎带来的水质改善作用”。')\">そこで、微生物増殖の<span class=\"keyword\" onclick=\"showTooltip(event, '抑制（よくせい）：抑制。')\">抑制</span>が重要なんですが、その助けとなっているのが、かきという貝です。</span></span>フライにしたり、鍋料理に入れるとおいしいですよね。", "trans": "（因此，抑制微生物的增殖就显得很重要，而在这方面起到帮助作用的，是一种叫做牡蛎的贝类。做成炸牡蛎或者放进火锅里都很好吃呢。）" },
-                                { "speaker": "男", "text": "かきは海中の微生物を主な餌としていて、海水を体内に取り込んでは、餌を<span class=\"keyword\" onclick=\"showTooltip(event, '濾（こ）しとる：过滤，滤取。')\">濾しとり</span>、<span class=\"keyword\" onclick=\"showTooltip(event, '澄（す）む：清澈，清澄。')\">澄んだ</span>水を吐き出すんです。", "trans": "（牡蛎以海中的微生物为主要食物，将海水吸入体内后，滤取食物，然后吐出清澈的水。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中提到一天过滤200升海水，是为了量化说明牡蛎的过滤能力强，并不是在探讨“养殖牡蛎需要多少水”，排除。')\">一匹につき、一日200リットルもの海水を<span class=\"keyword\" onclick=\"showTooltip(event, '濾過（ろか）：过滤。')\">濾過</span>するので</span></span>、濁った海水の掃除屋としてかきを養殖している地域もあります。", "trans": "（因为每只牡蛎一天能过滤多达200升的海水，所以也有将其作为浑浊海水的“清洁工”来养殖的地区。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，老师讲的是用牡蛎去净化浑浊的海水，最后提到这种牡蛎不适合食用，并没有探讨哪种水质“适合牡蛎生长”，排除。关于选项4，文中说牡蛎以微生物为食，微生物增殖不仅不是牡蛎的危机，反而是牡蛎能发挥清洁作用的前提，排除。')\">まあ、こういう環境で育ったかきは、食用には向かないそうですがね。</span></span>", "trans": "（不过，在这种环境下长大的牡蛎，似乎不适合食用就是了。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "かきの成育に適した水質", "translation": "（适合牡蛎生长的水质）", "correct": false },
-                            { "text": "かきによる水質改善作用", "translation": "（牡蛎带来的水质改善作用）", "correct": true },
-                            { "text": "かきの養殖に必要な水の量", "translation": "（牡蛎养殖所需的水量）", "correct": false },
-                            { "text": "微生物の増殖によるかきの危機", "translation": "（微生物增殖给牡蛎造成的危机）", "correct": false }
-                        ]
-                    }
-                ]
+  "2017-12": {
+    "label": "2017年12月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2017.12-1.mp3",
+        "script": {
+          "question": "テレビで市の職員が話しています。",
+          "questionTrans": "（在电视上，市政府的职员正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "緑市ではここ数年、伝統的な建築技法で作られた古い民家を購入したり、借りたりする人が急増しています。",
+              "trans": "（在绿市，这几年购买或租用以传统建筑技法建造的古民居的人正在激增。）"
+            },
+            {
+              "speaker": "女",
+              "text": "家の外観や構造を<span class=\"keyword\" onclick=\"showTooltip(event, '維持（いじ）：维持。')\">維持</span>しつつ、中を<span class=\"keyword\" onclick=\"showTooltip(event, '改築（かいちく）：改建。')\">改築</span>して、住居や店舗などにするんですね。",
+              "trans": "（在维持房屋外观和构造的同时，对内部进行改建，用作住宅或店铺等呢。）"
+            },
+            {
+              "speaker": "女",
+              "text": "古い建築物には独特な味がありますし、<span class=\"keyword\" onclick=\"showTooltip(event, '放置（ほうち）：放置，搁置。')\">放置</span>されていた空き家が再生することで、<span class=\"keyword\" onclick=\"showTooltip(event, '防犯（ぼうはん）：防范犯罪。')\">防犯</span>上の不安も<span class=\"keyword\" onclick=\"showTooltip(event, '解消（かいしょう）：消除。')\">解消</span>されます。",
+              "trans": "（古老的建筑物有着独特的韵味，而且原本被闲置的空屋获得新生，防范犯罪方面的担忧也随之消除了。）"
+            },
+            {
+              "speaker": "女",
+              "text": "また将来的には、そのような民家が多い地域で、昔の町並みを<span class=\"keyword\" onclick=\"showTooltip(event, '復元（ふくげん）：复原，恢复原貌。')\">復元</span>し、それを観光資源として、町を<span class=\"keyword\" onclick=\"showTooltip(event, '活性化（かっせいか）：活性化，使充满活力。')\">活性化</span>させることも検討しています。",
+              "trans": "（此外，在未来，我们也在探讨在那种古民居较多的地区，复原过去的街景，并将其作为旅游资源，让城镇重新焕发活力。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '职员在这里总结了这番举措的价值所在：【改建虽然要花相应的功夫，但可以说它有着超越这些功夫的价值（改築にはそれなりに手間もかかりますが、それを上回るものがあると言えそうです）】。结合前面提到的作住宅、做店铺、防范犯罪、旅游资源等，整段话都在强调重新利用古民居所带来的种种“好处（メリット）”，因此选3。')\">改築にはそれなりに<span class=\"keyword\" onclick=\"showTooltip(event, '手間（てま）：劳力和时间，功夫。')\">手間</span>もかかりますが、それを<span class=\"keyword\" onclick=\"showTooltip(event, '上回（うわまわ）る：超过，超出。')\">上回る</span>ものがあると言えそうです。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，文中明确提到“对内部进行改建（中を改築して）”，排除“不改建”的说法。关于选项2，文中讲到了不仅作为住宅，还作为店铺和旅游资源，并非仅仅探讨作为住宅的“宜居程度”，排除。关于选项4，虽然结尾提到改建要花功夫，但立刻用欲扬先抑的手法强调了其超越困难的价值，重点在于好处，而非探讨“困难程度”，排除。')\"></span></span>",
+              "trans": "（改建确实需要花费相应的功夫，但可以说它有着超越这些功夫的价值。）"
+            },
+            {
+              "speaker": "問",
+              "text": "市の職員は、何について話していますか。",
+              "trans": "（市政府职员在谈论什么？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "古い民家を改築しないで保存する意義",
+            "translation": "（不改建而保存古民居的意义）",
+            "correct": false
+          },
+          {
+            "text": "古い民家の住みやすさ",
+            "translation": "（古民居的宜居程度）",
+            "correct": false
+          },
+          {
+            "text": "古い民家を再利用するメリット",
+            "translation": "（再利用古民居的好处）",
+            "correct": true
+          },
+          {
+            "text": "古い民家を再生することの難しさ",
+            "translation": "（让古民居重获新生的困难程度）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2017.12-2.mp3",
+        "script": {
+          "question": "電話で女の人と男の人が話しています。",
+          "questionTrans": "（在电话里女人和男人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "はい。青空自動車の伊藤です。",
+              "trans": "（您好。这里是青空汽车的伊藤。）"
+            },
+            {
+              "speaker": "男",
+              "text": "もしもし、いつもお世話になっております。太陽製作所の渡辺です。",
+              "trans": "（喂，一直以来承蒙您的关照。我是太阳制作所的渡边。）"
+            },
+            {
+              "speaker": "女",
+              "text": "あ、渡辺さん、お世話になっております。",
+              "trans": "（啊，渡边先生，承蒙您的关照。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '男人在这里明确表示【似乎无法满足您希望本月中旬交货的要求（今月中旬という納期のご希望にはお応えできそうにないんですが）】，说明无法满足交货期的要求。排除了认为能满足交货期要求的选项1和3。')\">昨日ご注文いただきました部品の<span class=\"keyword\" onclick=\"showTooltip(event, '納期（のうき）：交货期。')\">納期</span>と価格の件でご連絡しました。実は、このところの原材料や原油価格の<span class=\"keyword\" onclick=\"showTooltip(event, '高騰（こうとう）：高涨，物价飞涨。')\">高騰</span>で、部品の生産が<span class=\"keyword\" onclick=\"showTooltip(event, '難航（なんこう）：难以推进，进展不顺利。')\">難航</span>していまして。大変申し訳ありませんが、今月中旬という納期のご希望にはお<span class=\"keyword\" onclick=\"showTooltip(event, '応（こた）える：响应，满足（要求、期待等）。')\">応え</span>できそうにないんですが。</span></span>",
+              "trans": "（我联系您是为了您昨天订购的零件的交货期和价格的事情。实际上，由于最近原材料和原油价格高涨，零件的生产进展得很不顺利。非常抱歉，我们似乎无法满足您希望本月中旬交货的要求了。）"
+            },
+            {
+              "speaker": "女",
+              "text": "そうですか。",
+              "trans": "（这样啊。）"
+            },
+            {
+              "speaker": "男",
+              "text": "ただ、<span class=\"keyword\" onclick=\"showTooltip(event, 'めど（目処）が立（た）つ：有眉目，有希望（解决）。')\">めどは立ち</span>つつありますので、今月末にはお届けできそうです。それから、取引価格の<span class=\"keyword\" onclick=\"showTooltip(event, '値引（ねび）き：降价，打折。')\">値引き</span>のご要望ですが。",
+              "trans": "（不过，现在渐渐有了眉目，大概本月底能给您送达。另外，关于您要求交易价格打折的事。）"
+            },
+            {
+              "speaker": "女",
+              "text": "はい。",
+              "trans": "（嗯。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人接着提出了条件：【如果您能谅解交货期的事情，我们将按照您的希望进行交易（納期の件、ご了承いただけましたら、ご希望通りお取引させていただきます）】。这里的“按照希望进行交易”指的就是答应女方打折的要求。综上所述，交货期无法满足，但价格可以满足。符合选项4。')\">こちらも、原材料費が値上がりしているため、大変厳しい状況ではございますが、納期の件、ご<span class=\"keyword\" onclick=\"showTooltip(event, '了承（りょうしょう）：谅解，同意。')\">了承</span>いただけましたら、ご希望通りお取引させていただきます。</span></span>",
+              "trans": "（由于原材料费上涨，我们这边的状况也非常严峻，但是，如果您能谅解交货期的事情，我们将按照您的希望（的价格）进行交易。）"
+            },
+            {
+              "speaker": "女",
+              "text": "わかりました。では社内で<span class=\"keyword\" onclick=\"showTooltip(event, '検討（けんとう）：探讨，研究。')\">検討</span>して、後ほどご連絡いたします。",
+              "trans": "（明白了。那么我会在公司内部探讨一下，稍后再联系您。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人は、部品の納期と価格について、何と言っていますか。",
+              "trans": "（男人关于零件的交货期和价格是怎么说的？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "納期も価格も希望に応えられる",
+            "translation": "（交货期和价格都能满足要求）",
+            "correct": false
+          },
+          {
+            "text": "納期も価格も希望に応えられない",
+            "translation": "（交货期和价格都无法满足要求）",
+            "correct": false
+          },
+          {
+            "text": "納期だけ希望に応えられる",
+            "translation": "（只能满足交货期的要求）",
+            "correct": false
+          },
+          {
+            "text": "価格だけ希望に応えられる",
+            "translation": "（只能满足价格的要求）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2017.12-3.mp3",
+        "script": {
+          "question": "ラジオで女の人が話しています。",
+          "questionTrans": "（在广播里女人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "日本では古くから「ツバメが低く飛ぶと雨が降る」と言われてきました。",
+              "trans": "（在日本，自古以来就有“燕子低飞会下雨”的说法。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，虽然女人提到了现在的科学能够解释这个现象，但这只是为了引出接下来对古人的赞叹，并未探讨气象学进步的“速度”，排除。')\">今でこそ、これは科学的に明らかになっていますが</span></span>、あっ、つまり、雨雲が近づき、湿度が上がると。ツバメのえさとなる<span class=\"keyword\" onclick=\"showTooltip(event, '羽虫（はむし）：飞虫。')\">羽虫</span>が高く飛べなくなるためなんですね。",
+              "trans": "（虽说现在这在科学上已经被证明了，啊，也就是说，当雨云靠近、湿度上升时，作为燕子食物的飞虫就飞不高了，是因为这个原因呢。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人用“但是（でも）”进行转折，引出整段话的核心主旨：【在那个还没有气象学的时代，当时的人们从眼前的自然现象中找出一定法则的能力，真让人钦佩（まだ気象学もない時代に、目の前の自然現象から一定の法則を見出す当時の人の力には、感心させられます）】。后续内容都是在赞叹古人能从微小的变化中发现真理，这完全符合选项2“古人观察力的敏锐”。')\">でも、まだ気象学もない時代に、目の前の自然現象から一定の法則を<span class=\"keyword\" onclick=\"showTooltip(event, '見出（みいだ）す：找出，发现。')\">見出す</span>当時の人の力には、<span class=\"keyword\" onclick=\"showTooltip(event, '感心（かんしん）：钦佩，感叹。')\">感心</span>させられます。</span></span>",
+              "trans": "（但是，在那个还没有气象学的时代，当时的人们从眼前的自然现象中找出一定法则的能力，真让人钦佩。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中虽然提到了天气对人的影响比现在大，也提到了湿度对飞虫的影响，但这都是为了解释古人为何有如此观察力，并不是这段话的最终结论，排除。')\">昔は、天候や天気が人に<span class=\"keyword\" onclick=\"showTooltip(event, '及（およ）ぼす：波及，带来（影响等）。')\">およぼす</span>影響が今より大きかったことも理由なのでしょうが。</span></span>",
+              "trans": "（过去，天气或气候对人造成的影响比现在更大，这或许也是一个理由吧。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，女人赞叹的是古人创造出这些传说的观察力，并没有呼吁现代人去“验证”这些传说的重要性，排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '微（かす）か：微小，微弱。')\">微か</span>な<span class=\"keyword\" onclick=\"showTooltip(event, '変調（へんちょう）：变化，反常。')\">変調</span>から真実を発見する能力の高さは現代の私たちとは<span class=\"keyword\" onclick=\"showTooltip(event, '大違（おおちが）い：大不相同。')\">大違い</span>ですね。</span></span>",
+              "trans": "（这种从微小的变化中发现真理的极高能力，和现代的我们是大不相同的呢。）"
+            },
+            {
+              "speaker": "問",
+              "text": "女の人が伝えたいことは何ですか。",
+              "trans": "（女人想传达的是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "気象学の進歩の速さ",
+            "translation": "（气象学进步的速度）",
+            "correct": false
+          },
+          {
+            "text": "昔の人の観察力の鋭さ",
+            "translation": "（古人观察力的敏锐）",
+            "correct": true
+          },
+          {
+            "text": "気候や天気が生物に与える影響",
+            "translation": "（气候或天气对生物造成的影响）",
+            "correct": false
+          },
+          {
+            "text": "言い伝えを検証することの大切さ",
+            "translation": "（验证传说的重要性）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2017.12-4.mp3",
+        "script": {
+          "question": "大学で先生が話しています。",
+          "questionTrans": "（在大学里老师正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "昆虫の中には、例えば、蝶や蜂、蛾など、幼虫のころと成長した後で、その<span class=\"keyword\" onclick=\"showTooltip(event, '形態（けいたい）：形态。')\">形態</span>が大きく異なるものがいます。",
+              "trans": "（在昆虫当中，例如蝴蝶、蜜蜂、飞蛾等，有一些在幼虫时期和长大之后，其形态会有很大的不同。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，老师提到摄取营养是为了说明幼虫为何长成那种形态的“原因”，而不是单纯地去探讨昆虫成长都需要哪些营养，排除。')\">これらの昆虫は、幼虫の時は、<span class=\"keyword\" onclick=\"showTooltip(event, 'くびれ（括れ）：凹处，腰部变细的地方。')\">くびれ</span>のない長い<span class=\"keyword\" onclick=\"showTooltip(event, '胴体（どうたい）：躯干。')\">胴体</span>に短い足といった<span class=\"keyword\" onclick=\"showTooltip(event, '原始的（げんしてき）：原始的。')\">原始的</span>で単純な外見をしているのですが、これは、成長するための栄養を体内にできるだけ多く<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り込（こ）む：摄取，拿进。')\">取り込み</span>、<span class=\"keyword\" onclick=\"showTooltip(event, '蓄（たくわ）える：储存，积蓄。')\">蓄える</span>のにとても適した形なのです。</span></span>",
+              "trans": "（这些昆虫在幼虫时，虽然有着没有凹凸（腰身）的细长躯干和短小足部这种原始且单纯的外表，但这是为了在体内尽可能多地摄取并储存成长所需的营养，而非常适合的形状。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师通过“但是（しかし）”引出成虫阶段，解释长出翅膀是为了寻找交配对象。综合前后，整段话都在解释昆虫在幼虫期（为了储能）和成虫期（为了繁殖）形态不同的具体理由，符合选项4“昆虫形态的变化及其理由”。')\">しかし、<span class=\"keyword\" onclick=\"showTooltip(event, 'いったん：一旦。')\">いったん</span>成長し、<span class=\"keyword\" onclick=\"showTooltip(event, '生殖（せいしょく）：生殖。')\">生殖</span>能力が<span class=\"keyword\" onclick=\"showTooltip(event, '備（そな）わる：具备，具有。')\">備わる</span>と、今度は繁殖が生存の目的となるため、</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，老师提到移动范围是为了说明长翅膀的原因，并没有去比较“不同种类”昆虫移动范围的差异。关于选项3，提到寻找交配对象也是为了解释翅膀的作用，而非详细探讨昆虫具体的繁殖方式。两者皆排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '交配（こうはい）：交配。')\">交配</span>相手を有利に探せるよう、より広い範囲を移動することができる羽を手に入れるというわけです。</span></span>",
+              "trans": "（但是，一旦长大并具备了生殖能力，这次繁殖就成了生存的目的，因此为了能更有利地寻找交配对象，它们就长出了能移动更广范围的翅膀。）"
+            },
+            {
+              "speaker": "問",
+              "text": "先生の話のテーマはなんですか。",
+              "trans": "（老师讲话的主题是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "昆虫の種類による移動範囲の違い",
+            "translation": "（不同种类昆虫移动范围的区别）",
+            "correct": false
+          },
+          {
+            "text": "昆虫の成長に必要な栄養",
+            "translation": "（昆虫成长所需的营养）",
+            "correct": false
+          },
+          {
+            "text": "昆虫の繁殖の仕方",
+            "translation": "（昆虫的繁殖方式）",
+            "correct": false
+          },
+          {
+            "text": "昆虫の形の変化とその理由",
+            "translation": "（昆虫形态的变化及其理由）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2017.12-5.mp3",
+        "script": {
+          "question": "新入社員の研修会で、講師が話しています。",
+          "questionTrans": "（在针对新员工的研修会上，讲师正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "小売店の多くでは、客が店の中をどのように歩くかを意識して、店内の<span class=\"keyword\" onclick=\"showTooltip(event, 'レイアウト（layout）：布局，配置。')\">レイアウト</span>を決めています。",
+              "trans": "（在许多零售店里，店家会意识到顾客在店里是如何走动的，以此来决定店内的布局。）"
+            },
+            {
+              "speaker": "女",
+              "text": "例えば、スーパーの多くでは、客に店内を一周歩かせるために、入り口から壁<span class=\"keyword\" onclick=\"showTooltip(event, 'ぞい（沿い）：沿着。')\">ぞい</span>に<span class=\"keyword\" onclick=\"showTooltip(event, 'ぐるっと：环绕一圈地。')\">ぐるっと</span>購買率が高い食品を<span class=\"keyword\" onclick=\"showTooltip(event, '陳列（ちんれつ）：陈列，摆放。')\">陳列</span>しています。",
+              "trans": "（例如，在许多超市里，为了让顾客在店内走上一圈，会沿着墙壁环绕一圈地陈列购买率高的食品。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，讲师探讨的是如何让顾客走更长的距离以增加购买机会，这反而可能会让顾客觉得购物不那么“直接便利”（要走远路），其根本目的是为了店家的收益，而不是为了“让顾客好买东西（買い物をしやすくする）”，排除。')\">そうすることで、客は自然と長い距離を歩くことになり、目的以外の商品も目にしたり手に取ったりする機会が増え、それが購入の<span class=\"keyword\" onclick=\"showTooltip(event, '促進（そくしん）：促进。')\">促進</span>につながるのです。</span></span>",
+              "trans": "（那样做的话，顾客自然就会走很长的距离，看到或拿起目的之外的商品的机会就会增加，这也就促进了购买。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '讲师在这里点出了核心主旨：不管是超市把高购买率食品放墙边，还是家电卖场把高关注度商品放深处，都是为了【图谋提升销售额（売り上げアップを図っている）】。整段话都在探讨如何通过商品的配置（レイアウト/奥に置く）来增加收益，符合选项1。')\">これはスーパーに限ったことではなく、ええ、例えば、家電販売店でも同様のことが言えますが、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，这里比较的是两者“商品摆放位置”的差异，并没有探讨店员的“待客方式（接客）”的区别，排除。')\">家電販売店の場合は、スーパーとは多少異なり</span></span>、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中只是提到了去利用“购买率高”或“关注度高”的商品来布局，但并没有教大家如何去“辨别”哪些是高购买率商品，排除。')\">客の関心が高い商品を店の入り口から遠い奥に置くことで</span></span>、売り上げアップを<span class=\"keyword\" onclick=\"showTooltip(event, '図（はか）る：图谋，谋求。')\">図っている</span>ところが<span class=\"keyword\" onclick=\"showTooltip(event, '多（おお）く見受（みう）けられる：经常能看到，随处可见。')\">多く見受けられます</span>。</span></span>",
+              "trans": "（这不仅限于超市，嗯，例如在家电大卖场也能说同样的话。不过家电大卖场的情况和超市多少有些不同，经常能看到它们通过将顾客关注度高的商品放在离店门较远的深处，以此来图谋提升销售额。）"
+            },
+            {
+              "speaker": "問",
+              "text": "講師の話のテーマはなんですか。",
+              "trans": "（讲师讲话的主题是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "収益を上げるための商品の配置",
+            "translation": "（为了提升收益的商品配置）",
+            "correct": true
+          },
+          {
+            "text": "買い物をしやすくするための店の工夫",
+            "translation": "（为了让购物更方便而下的工夫）",
+            "correct": false
+          },
+          {
+            "text": "購買率が高い商品の見分け方",
+            "translation": "（购买率高的商品的辨别方法）",
+            "correct": false
+          },
+          {
+            "text": "スーパーと家電販売店の接客の違い",
+            "translation": "（超市和家电大卖场待客方式的区别）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "audio": "../assets/audio/2017.12-6.mp3",
+        "script": {
+          "question": "大学の授業で先生が話しています。",
+          "questionTrans": "（在大学的课堂上，老师正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "ええ、生活排水などによって海に過度な栄養成分が<span class=\"keyword\" onclick=\"showTooltip(event, '流入（りゅうにゅう）：流入。')\">流入</span>すると、微生物の<span class=\"keyword\" onclick=\"showTooltip(event, '増殖（ぞうしょく）：增殖，繁殖。')\">増殖</span>が進み、海水の汚染が進行します。",
+              "trans": "（嗯，如果因为生活污水等导致过度的营养成分流入海洋，微生物的增殖就会加剧，海水污染也会随之恶化。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师在这里引出了核心话题：【抑制微生物的增殖就显得很重要，而在这方面起到帮助作用的，是一种叫做牡蛎的贝类（微生物増殖の抑制が重要なんですが、その助けとなっているのが、かきという貝です）】。后续内容都在详细解释牡蛎是如何发挥这种作用的，完全符合选项2“牡蛎带来的水质改善作用”。')\">そこで、微生物増殖の<span class=\"keyword\" onclick=\"showTooltip(event, '抑制（よくせい）：抑制。')\">抑制</span>が重要なんですが、その助けとなっているのが、かきという貝です。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师在这里引出了核心话题：【抑制微生物的增殖就显得很重要，而在这方面起到帮助作用的，是一种叫做牡蛎的贝类（微生物増殖の抑制が重要なんですが、その助けとなっているのが、かきという貝です）】。后续内容都在详细解释牡蛎是如何发挥这种作用的，完全符合选项2“牡蛎带来的水质改善作用”。')\"></span></span>フライにしたり、鍋料理に入れるとおいしいですよね。",
+              "trans": "（因此，抑制微生物的增殖就显得很重要，而在这方面起到帮助作用的，是一种叫做牡蛎的贝类。做成炸牡蛎或者放进火锅里都很好吃呢。）"
+            },
+            {
+              "speaker": "男",
+              "text": "かきは海中の微生物を主な餌としていて、海水を体内に取り込んでは、餌を<span class=\"keyword\" onclick=\"showTooltip(event, '濾（こ）しとる：过滤，滤取。')\">濾しとり</span>、<span class=\"keyword\" onclick=\"showTooltip(event, '澄（す）む：清澈，清澄。')\">澄んだ</span>水を吐き出すんです。",
+              "trans": "（牡蛎以海中的微生物为主要食物，将海水吸入体内后，滤取食物，然后吐出清澈的水。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中提到一天过滤200升海水，是为了量化说明牡蛎的过滤能力强，并不是在探讨“养殖牡蛎需要多少水”，排除。')\">一匹につき、一日200リットルもの海水を<span class=\"keyword\" onclick=\"showTooltip(event, '濾過（ろか）：过滤。')\">濾過</span>するので</span></span>、濁った海水の掃除屋としてかきを養殖している地域もあります。",
+              "trans": "（因为每只牡蛎一天能过滤多达200升的海水，所以也有将其作为浑浊海水的“清洁工”来养殖的地区。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，老师讲的是用牡蛎去净化浑浊的海水，最后提到这种牡蛎不适合食用，并没有探讨哪种水质“适合牡蛎生长”，排除。关于选项4，文中说牡蛎以微生物为食，微生物增殖不仅不是牡蛎的危机，反而是牡蛎能发挥清洁作用的前提，排除。')\">まあ、こういう環境で育ったかきは、食用には向かないそうですがね。</span></span>",
+              "trans": "（不过，在这种环境下长大的牡蛎，似乎不适合食用就是了。）"
+            },
+            {
+              "speaker": "問",
+              "text": "先生は、何について話していますか。",
+              "trans": "（老师在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "かきの成育に適した水質",
+            "translation": "（适合牡蛎生长的水质）",
+            "correct": false
+          },
+          {
+            "text": "かきによる水質改善作用",
+            "translation": "（牡蛎带来的水质改善作用）",
+            "correct": true
+          },
+          {
+            "text": "かきの養殖に必要な水の量",
+            "translation": "（牡蛎养殖所需的水量）",
+            "correct": false
+          },
+          {
+            "text": "微生物の増殖によるかきの危機",
+            "translation": "（微生物增殖给牡蛎造成的危机）",
+            "correct": false
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2017-12-概要理解"; 
+        let currentExamKey = "2017-12"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -279,10 +604,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -621,8 +946,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-    <script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261017-summary-n1-2017-12-334cb2e6610a"></script>
+<script src="../shared/follow-listening.js?v=20261017-summary-n1-2017-12-334cb2e6610a"></script>
+<script src="../shared/follow-listening-entry.js?v=20261017-summary-n1-2017-12-334cb2e6610a"></script>
 </body>
 </html>

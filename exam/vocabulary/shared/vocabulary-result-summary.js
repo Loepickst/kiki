@@ -260,12 +260,18 @@
             ? '<span class="vocab-result-avatar"><img src="' + escapeHtml(mentor.avatar) + '" alt=""></span>'
             : '<span class="vocab-result-avatar" aria-hidden="true"></span>';
         const hasWrongWords = wrongWords.length > 0;
+        const endedEarly = options.endedEarly === true;
+        const incomplete = endedEarly || options.incomplete === true;
+        const completionLabel = endedEarly ? '本轮提前结束' : incomplete ? '本轮部分作答' : '本轮完成';
+        const reviewTitle = hasWrongWords ? '本次需要巩固的词汇' : incomplete ? '已作答部分没有错题' : '本轮词汇已全部掌握';
+        const reviewNote = hasWrongWords ? '点击词汇查看原题、答案与翻译' : incomplete ? '只统计已作答内容，未作答部分不作掌握判断' : '没有需要额外回看的错词';
+        const emptyMessage = incomplete ? '尚未完成全部题目，可以稍后继续练习。' : '保持这份节奏，继续下一组学习吧。';
         const secondaryText = String(options.secondaryText || (hasWrongWords ? '返回词汇目录' : '再练一次'));
         const primaryText = String(options.primaryText || (hasWrongWords ? '用词卡复习这 ' + wrongWords.length + ' 个词' : '返回词汇目录'));
 
         card.innerHTML = '<section class="vocab-result-hero">'
             + '<div>'
-            + '<p class="vocab-result-eyebrow">' + escapeHtml(level) + ' 词汇练习 · 本轮完成</p>'
+            + '<p class="vocab-result-eyebrow">' + escapeHtml(level) + ' 词汇练习 · ' + escapeHtml(completionLabel) + '</p>'
             + '<h1 class="vocab-result-title">' + escapeHtml(title) + '</h1>'
             + '</div>'
             + '<div class="vocab-result-mentor">' + avatarMarkup
@@ -278,10 +284,10 @@
             + '<div class="vocab-result-metric"><span class="vocab-result-metric-label">用时</span><strong class="vocab-result-metric-value">' + escapeHtml(formatDuration(elapsed)) + '</strong></div>'
             + '</section>'
             + '<section class="vocab-result-review">'
-            + '<div class="vocab-result-review-head"><div><h2 class="vocab-result-review-title">' + (hasWrongWords ? '本次需要巩固的词汇' : '本轮词汇已全部掌握') + '</h2>'
-            + '<span class="vocab-result-review-note">' + (hasWrongWords ? '点击词汇查看原题、答案与翻译' : '没有需要额外回看的错词') + '</span></div>'
+            + '<div class="vocab-result-review-head"><div><h2 class="vocab-result-review-title">' + escapeHtml(reviewTitle) + '</h2>'
+            + '<span class="vocab-result-review-note">' + escapeHtml(reviewNote) + '</span></div>'
             + '<span class="vocab-result-review-count">' + wrongWords.length + ' 词</span></div>'
-            + '<div class="vocab-result-wrong-list">' + (rows || '<div class="vocab-result-empty">保持这份节奏，继续下一组学习吧。</div>') + '</div>'
+            + '<div class="vocab-result-wrong-list">' + (rows || '<div class="vocab-result-empty">' + escapeHtml(emptyMessage) + '</div>') + '</div>'
             + '</section>'
             + '<div class="vocab-result-actions">'
             + '<button type="button" class="vocab-result-action is-secondary">' + secondaryText + '</button>'

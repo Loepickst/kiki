@@ -384,7 +384,7 @@
                 "word": "かねがね",
                 "word_html": "かねがね",
                 "reading": "かねがね",
-                "tone": "0",
+                "tone": "2",
                 "pos": "副",
                 "mean": "早就",
                 "nuance": "从以前开始就存在的状态或听闻",
@@ -760,8 +760,8 @@
         },
         {
                 "word": "相変わらず",
-                "word_html": "相変わらず",
-                "reading": "相変わらず",
+                "word_html": "<ruby>相変<rt>あいか</rt></ruby>わらず",
+                "reading": "あいかわらず",
                 "tone": "0",
                 "pos": "副",
                 "mean": "照旧",
@@ -949,8 +949,8 @@
         },
         {
                 "word": "当分",
-                "word_html": "当分",
-                "reading": "当分",
+                "word_html": "<ruby>当分<rt>とうぶん</rt></ruby>",
+                "reading": "とうぶん",
                 "tone": "0",
                 "pos": "副",
                 "mean": "暂时",
@@ -1138,8 +1138,8 @@
         },
         {
                 "word": "絶えず",
-                "word_html": "絶えず",
-                "reading": "絶えず",
+                "word_html": "<ruby>絶<rt>た</rt></ruby>えず",
+                "reading": "たえず",
                 "tone": "1",
                 "pos": "副",
                 "mean": "不断",
@@ -1596,8 +1596,8 @@
         },
         {
                 "word": "前もって",
-                "word_html": "前もって",
-                "reading": "前もって",
+                "word_html": "<ruby>前<rt>まえ</rt></ruby>もって",
+                "reading": "まえもって",
                 "tone": "3",
                 "pos": "副",
                 "mean": "预先",
@@ -1974,9 +1974,9 @@
         },
         {
                 "word": "いつの間に",
-                "word_html": "いつの間に",
-                "reading": "いつの間に",
-                "tone": "4",
+                "word_html": "いつの<ruby>間<rt>ま</rt></ruby>に",
+                "reading": "いつのまに",
+                "tone": "0",
                 "pos": "副",
                 "mean": "不知不觉",
                 "nuance": "在未察觉的期间内发生了某种变化",
@@ -2352,8 +2352,8 @@
         },
         {
                 "word": "従来",
-                "word_html": "従来",
-                "reading": "従来",
+                "word_html": "<ruby>従来<rt>じゅうらい</rt></ruby>",
+                "reading": "じゅうらい",
                 "tone": "1",
                 "pos": "副",
                 "mean": "以往",
@@ -2919,8 +2919,8 @@
         },
         {
                 "word": "今に",
-                "word_html": "今に",
-                "reading": "今に",
+                "word_html": "<ruby>今<rt>いま</rt></ruby>に",
+                "reading": "いまに",
                 "tone": "1",
                 "pos": "副",
                 "mean": "迟早",
@@ -3108,8 +3108,8 @@
         },
         {
                 "word": "今にも",
-                "word_html": "今にも",
-                "reading": "今にも",
+                "word_html": "<ruby>今<rt>いま</rt></ruby>にも",
+                "reading": "いまにも",
                 "tone": "1",
                 "pos": "副",
                 "mean": "马上",
@@ -3675,8 +3675,8 @@
         },
         {
                 "word": "近々",
-                "word_html": "近々",
-                "reading": "近々",
+                "word_html": "<ruby>近々<rt>ちかぢか</rt></ruby>",
+                "reading": "ちかぢか",
                 "tone": "0",
                 "pos": "副",
                 "mean": "近期",
@@ -3864,8 +3864,8 @@
         },
         {
                 "word": "追って",
-                "word_html": "追って",
-                "reading": "追って",
+                "word_html": "<ruby>追<rt>お</rt></ruby>って",
+                "reading": "おって",
                 "tone": "0",
                 "pos": "副",
                 "mean": "随后",
@@ -4053,9 +4053,9 @@
         },
         {
                 "word": "時折",
-                "word_html": "時折",
-                "reading": "時折",
-                "tone": "2",
+                "word_html": "<ruby>時折<rt>ときおり</rt></ruby>",
+                "reading": "ときおり",
+                "tone": "0",
                 "pos": "副",
                 "mean": "有时",
                 "nuance": "偶尔发生，比「ときどき」频率稍低",
@@ -4431,8 +4431,8 @@
         },
         {
                 "word": "滅多に",
-                "word_html": "滅多に",
-                "reading": "滅多に",
+                "word_html": "<ruby>滅多<rt>めった</rt></ruby>に",
+                "reading": "めったに",
                 "tone": "1",
                 "pos": "副",
                 "mean": "几乎不",
@@ -4809,8 +4809,8 @@
         },
         {
                 "word": "再三",
-                "word_html": "再三",
-                "reading": "再三",
+                "word_html": "<ruby>再三<rt>さいさん</rt></ruby>",
+                "reading": "さいさん",
                 "tone": "0",
                 "pos": "副",
                 "mean": "三番五次",
@@ -5376,9 +5376,9 @@
         },
         {
                 "word": "年中",
-                "word_html": "年中",
-                "reading": "年中",
-                "tone": "0/1",
+                "word_html": "<ruby>年中<rt>ねんじゅう</rt></ruby>",
+                "reading": "ねんじゅう",
+                "tone": "1",
                 "pos": "副",
                 "mean": "一年到头",
                 "nuance": "处于某种持续的状态中",
@@ -5754,8 +5754,8 @@
         },
         {
                 "word": "一切",
-                "word_html": "一切",
-                "reading": "一切",
+                "word_html": "<ruby>一切<rt>いっさい</rt></ruby>",
+                "reading": "いっさい",
                 "tone": "1",
                 "pos": "副",
                 "mean": "全然",
@@ -6132,8 +6132,8 @@
         },
         {
                 "word": "少しも",
-                "word_html": "少しも",
-                "reading": "少しも",
+                "word_html": "<ruby>少<rt>すこ</rt></ruby>しも",
+                "reading": "すこしも",
                 "tone": "2",
                 "pos": "副",
                 "mean": "一点也",
@@ -6512,7 +6512,7 @@
                 "word": "そう",
                 "word_html": "そう",
                 "reading": "そう",
-                "tone": "1",
+                "tone": "0",
                 "pos": "副",
                 "mean": "那么",
                 "nuance": "程度未达到那个地步，后续接否定形式",
@@ -6698,9 +6698,9 @@
                 }
         },
         {
-                "word": "大（たい）して",
-                "word_html": "大（たい）して",
-                "reading": "大（たい）して",
+                "word": "大して",
+                "word_html": "<ruby>大<rt>たい</rt></ruby>して",
+                "reading": "たいして",
                 "tone": "1",
                 "pos": "副",
                 "mean": "并不怎么",
@@ -6759,8 +6759,8 @@
                                         },
                                         {
                                                 "value": "たいして",
-                                                "baseForm": "大（たい）して",
-                                                "wordLabel": "大（たい）して",
+                                                "baseForm": "大して",
+                                                "wordLabel": "大して",
                                                 "meaning": "并没有太",
                                                 "usage": "与否定表达连用，指事物在数量、价值或程度上并不显著",
                                                 "collocation": {
@@ -6840,8 +6840,8 @@
                                 },
                                 {
                                         "value": "たいして",
-                                        "baseForm": "大（たい）して",
-                                        "wordLabel": "大（たい）して",
+                                        "baseForm": "大して",
+                                        "wordLabel": "大して",
                                         "meaning": "并没有太",
                                         "usage": "与否定表达连用，指事物在数量、价值或程度上并不显著",
                                         "collocation": {
@@ -6884,7 +6884,8 @@
                                         "isResolved": true
                                 }
                         ]
-                }
+                },
+                "legacyWords": ["大（たい）して"]
         },
         {
                 "word": "とても",
@@ -6948,8 +6949,8 @@
                                         },
                                         {
                                                 "value": "たいして",
-                                                "baseForm": "大（たい）して",
-                                                "wordLabel": "大（たい）して",
+                                                "baseForm": "大して",
+                                                "wordLabel": "大して",
                                                 "meaning": "并没有太",
                                                 "usage": "与否定表达连用，指事物在数量、价值或程度上并不显著",
                                                 "collocation": {
@@ -7029,8 +7030,8 @@
                                 },
                                 {
                                         "value": "たいして",
-                                        "baseForm": "大（たい）して",
-                                        "wordLabel": "大（たい）して",
+                                        "baseForm": "大して",
+                                        "wordLabel": "大して",
                                         "meaning": "并没有太",
                                         "usage": "与否定表达连用，指事物在数量、价值或程度上并不显著",
                                         "collocation": {
@@ -7077,8 +7078,8 @@
         },
         {
                 "word": "決して",
-                "word_html": "決して",
-                "reading": "決して",
+                "word_html": "<ruby>決<rt>けっ</rt></ruby>して",
+                "reading": "けっして",
                 "tone": "0",
                 "pos": "副",
                 "mean": "决不",
@@ -7152,8 +7153,8 @@
                                         },
                                         {
                                                 "value": "たいして",
-                                                "baseForm": "大（たい）して",
-                                                "wordLabel": "大（たい）して",
+                                                "baseForm": "大して",
+                                                "wordLabel": "大して",
                                                 "meaning": "并没有太",
                                                 "usage": "与否定表达连用，指事物在数量、价值或程度上并不显著",
                                                 "collocation": {
@@ -7233,8 +7234,8 @@
                                 },
                                 {
                                         "value": "たいして",
-                                        "baseForm": "大（たい）して",
-                                        "wordLabel": "大（たい）して",
+                                        "baseForm": "大して",
+                                        "wordLabel": "大して",
                                         "meaning": "并没有太",
                                         "usage": "与否定表达连用，指事物在数量、价值或程度上并不显著",
                                         "collocation": {
@@ -7266,9 +7267,9 @@
         },
         {
                 "word": "必ずしも",
-                "word_html": "必ずしも",
-                "reading": "必ずしも",
-                "tone": "1",
+                "word_html": "<ruby>必<rt>かなら</rt></ruby>ずしも",
+                "reading": "かならずしも",
+                "tone": "4",
                 "pos": "副",
                 "mean": "未必",
                 "nuance": "表示不完全的否定",
@@ -7515,8 +7516,8 @@
                                         },
                                         {
                                                 "value": "たいして",
-                                                "baseForm": "大（たい）して",
-                                                "wordLabel": "大（たい）して",
+                                                "baseForm": "大して",
+                                                "wordLabel": "大して",
                                                 "meaning": "并没有太",
                                                 "usage": "与否定表达连用，指事物在数量、价值或程度上并不显著",
                                                 "collocation": {
@@ -7596,8 +7597,8 @@
                                 },
                                 {
                                         "value": "たいして",
-                                        "baseForm": "大（たい）して",
-                                        "wordLabel": "大（たい）して",
+                                        "baseForm": "大して",
+                                        "wordLabel": "大して",
                                         "meaning": "并没有太",
                                         "usage": "与否定表达连用，指事物在数量、价值或程度上并不显著",
                                         "collocation": {
@@ -7833,8 +7834,8 @@
         },
         {
                 "word": "一向",
-                "word_html": "一向",
-                "reading": "一向",
+                "word_html": "<ruby>一向<rt>いっこう</rt></ruby>",
+                "reading": "いっこう",
                 "tone": "0",
                 "pos": "副",
                 "mean": "丝毫不",
@@ -8402,7 +8403,7 @@
                 "word": "おそらく",
                 "word_html": "おそらく",
                 "reading": "おそらく",
-                "tone": "0",
+                "tone": "2",
                 "pos": "副",
                 "mean": "恐怕",
                 "nuance": "基于某种根据做出的可能性较高的客观推测",
@@ -9912,8 +9913,8 @@
         },
         {
                 "word": "一見",
-                "word_html": "一見",
-                "reading": "一見",
+                "word_html": "<ruby>一見<rt>いっけん</rt></ruby>",
+                "reading": "いっけん",
                 "tone": "0",
                 "pos": "副",
                 "mean": "乍一看",
@@ -10668,8 +10669,8 @@
         },
         {
                 "word": "万一",
-                "word_html": "万一",
-                "reading": "万一",
+                "word_html": "<ruby>万一<rt>まんいち</rt></ruby>",
+                "reading": "まんいち",
                 "tone": "1",
                 "pos": "副",
                 "mean": "万一",
@@ -10857,8 +10858,8 @@
         },
         {
                 "word": "仮に",
-                "word_html": "仮に",
-                "reading": "仮に",
+                "word_html": "<ruby>仮<rt>かり</rt></ruby>に",
+                "reading": "かりに",
                 "tone": "0",
                 "pos": "副",
                 "mean": "假设",
@@ -11046,8 +11047,8 @@
         },
         {
                 "word": "強いて",
-                "word_html": "強いて",
-                "reading": "強いて",
+                "word_html": "<ruby>強<rt>し</rt></ruby>いて",
+                "reading": "しいて",
                 "tone": "1",
                 "pos": "副",
                 "mean": "勉强",
@@ -11235,8 +11236,8 @@
         },
         {
                 "word": "一体",
-                "word_html": "一体",
-                "reading": "一体",
+                "word_html": "<ruby>一体<rt>いったい</rt></ruby>",
+                "reading": "いったい",
                 "tone": "0",
                 "pos": "副",
                 "mean": "到底",
@@ -11424,8 +11425,8 @@
         },
         {
                 "word": "果たして",
-                "word_html": "果たして",
-                "reading": "果たして",
+                "word_html": "<ruby>果<rt>は</rt></ruby>たして",
+                "reading": "はたして",
                 "tone": "2",
                 "pos": "副",
                 "mean": "究竟",
@@ -11991,8 +11992,8 @@
         },
         {
                 "word": "何とぞ",
-                "word_html": "何とぞ",
-                "reading": "何とぞ",
+                "word_html": "<ruby>何<rt>なに</rt></ruby>とぞ",
+                "reading": "なにとぞ",
                 "tone": "0",
                 "pos": "副",
                 "mean": "恳请",
@@ -12369,9 +12370,9 @@
         },
         {
                 "word": "危うく",
-                "word_html": "危うく",
-                "reading": "危うく",
-                "tone": "3",
+                "word_html": "<ruby>危<rt>あや</rt></ruby>うく",
+                "reading": "あやうく",
+                "tone": "0",
                 "pos": "副",
                 "mean": "险些",
                 "nuance": "差一点就发生了不好的事情",
@@ -12558,8 +12559,8 @@
         },
         {
                 "word": "案の定",
-                "word_html": "案の定",
-                "reading": "案の定",
+                "word_html": "<ruby>案<rt>あん</rt></ruby>の<ruby>定<rt>じょう</rt></ruby>",
+                "reading": "あんのじょう",
                 "tone": "3",
                 "pos": "副",
                 "mean": "果然",

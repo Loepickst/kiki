@@ -6,7 +6,7 @@
     const TYPED_WORD_KEY_PREFIX = 'study_quest_test_v1_vocab_review_words::';
     const TYPED_COUNT_KEY_PREFIX = 'study_quest_test_v1_vocab_review_counts::';
     const DISMISSED_KEYWORD_KEY_PREFIX = 'study_quest_test_v1_vocab_review_dismissed_keywords::';
-    const SUPPORTED_TYPED_REVIEW_TYPES = new Set(['reading', 'meaning']);
+    const SUPPORTED_TYPED_REVIEW_TYPES = new Set(['reading', 'meaning', 'listening']);
 
     function resolveStorage() {
         try {

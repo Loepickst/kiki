@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情報検索 - 练习与解析</title>
+    <link rel="stylesheet" href="../../../../shared/domestic-fonts.css">
+    <link rel="stylesheet" href="../../shared/reading-content-redesign.css?v=20260907-first-paint">
+    <link rel="stylesheet" href="../../shared/reading-tools.css?v=20260809-14">
+    <link rel="stylesheet" href="../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+</head>
+<body id="top" class="kiki-unified-header-enabled reading-article-tools-page reading-tools-no-furigana reading-content-page reading-cloze-v2">
+    <header class="kiki-unified-header kiki-unified-header--practice" data-kiki-unified-header="practice" data-kiki-unified-header-host="reading-practice">
+        <div class="kiki-unified-header-left">
+            <a class="kiki-unified-brand" href="../../../../index.html" aria-label="返回 kiji 首页"><img src="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline" alt="kiji"></a>
+            <span class="kiki-unified-divider" aria-hidden="true"></span>
+            <a id="back-to-reading-index" class="kiki-unified-back" href="../../index.html?level=N2&type=search&browse=year" aria-label="返回上一页" data-kiki-dynamic-back>
+                <svg class="kiki-unified-back-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18 9 12l6-6"></path></svg>
+                <span class="kiki-unified-back-label">返回上一页</span>
+                <span class="kiki-unified-back-label-mobile" aria-hidden="true">返回</span>
+            </a>
+        </div>
+        <h1 class="kiki-unified-header-title">N2 · 情報検索</h1>
+        <div class="kiki-unified-header-right"><div class="top-actions top-bar-controls reading-editorial-actions"></div></div>
+    </header>
+
+    <nav class="quick-nav sketch-box">
+        <a href="#top" class="nav-link">Top</a>
+        <div class="nav-divider"></div>
+        <a href="#poster-content" class="nav-link">案内</a>
+        <div class="nav-divider"></div>
+        <a href="#q1-card" class="nav-link">問1</a>
+        <a href="#q2-card" class="nav-link">問2</a>
+    </nav>
+
+    <div class="layout-container">
+        <main class="article-section sketch-box" id="mainArticleContent">
+            <div class="article-meta">
+                <div class="meta-left">
+                    <span class="tag">N2 読解</span>
+                    <span class="article-title-info">2015年7月 · 情報検索</span>
+                </div>
+                <button class="translate-toggle-btn" onclick="toggleTranslation(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+                    参考訳
+                </button>
+            </div>
+
+            <div class="poster-box" id="poster-content">
+                <div class="poster-main-title" style="text-align: center;">バーベキュー会場開設のお知らせ</div>
+                <div class="poster-main-title" style="text-align: center; margin-top: 8px; font-size: 1em;">南の丘公園内で、本格的なバーベキューが楽しめます</div>
+
+                <div class="article-translation">
+                    【烧烤场开放通知】在南之丘公园内可以享受正宗的户外烧烤。
+                </div>
+
+                <div class="note-text" style="margin-top: 24px;"><strong>「開設期間」</strong>　4月1日〜11月30日</div>
+                <div class="note-text" style="margin-top: 12px;"><strong>「利用時間」</strong>　①10：30〜14：30（4時間）　　②15：00〜19：30（4時間）</div>
+                <div class="note-text ks-target target-q1" style="margin-top: 12px;"><strong>「利用料金」</strong>　個人：1,200円（1名分）</div>
+                <ul class="note-list" style="margin-top: 12px;">
+                    <li class="ks-target target-q2">施設および調理器具使用料となります。</li>
+                    <li>バーベキューの材料は、各自ご持参いただくか、会場内で下記の＜バーベキューセット＞をご購入ください。</li>
+                    <li class="ks-target target-q2">飲み物も自由にお持ち込みいただけます。会場内でも販売しております。</li>
+                    <li class="ks-target target-q2">利用時間①②を続けて利用される場合、利用料金は2回分必要となります。</li>
+                </ul>
+
+                <div class="article-translation">
+                    【开放与费用】开放期为4月1日至11月30日。第一时段10:30—14:30，第二时段15:00—19:30，各4小时。个人场地费每人1,200日元，包含设施及烹饪器具使用费。食材可自带或购买会场套餐，饮料也可自带。连续使用两个时段须支付两次场地费。
+                </div>
+
+                <div class="note-text" style="margin-top: 22px; font-weight: 700;">＜団体割引＞</div>
+                <div class="note-text ks-target target-q1" style="margin-top: 8px;">団体でのご利用は割引料金が適用されます。20名以上：1,000円（1名分）</div>
+
+                <div class="note-text" style="margin-top: 22px; font-weight: 700;">＜バーベキューセット＞</div>
+                <div class="note-text" style="margin-top: 8px;">バーベキューに必要な材料がそろったお得なセットです。以下の2種類のメニューからいずれかをお選びください。</div>
+                <div class="table-responsive" style="margin-top: 12px;">
+                    <table class="availability-table ks-target target-q1" style="min-width: 720px;">
+                        <tbody>
+                            <tr><td><strong>ボリュームセット</strong></td><td>2,000円（1名分）</td><td>数種類のお肉と野菜がたっぷり</td></tr>
+                            <tr><td><strong>ミックスセット</strong></td><td>2,400円（1名分）</td><td>お肉と魚介類の両方が楽しめる</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="article-translation">
+                    【团体优惠与套餐】20人以上的团体，场地费优惠为每人1,000日元。丰盛套餐每人2,000日元，包含多种肉类和大量蔬菜；混合套餐每人2,400日元，可同时享用肉类与海鲜。
+                </div>
+
+                <div class="note-text" style="margin-top: 24px; font-weight: 700;">「利用方法」</div>
+                <ul class="note-list">
+                    <li>ホームページ、またはお電話で、事前にご予約ください。</li>
+                    <li class="ks-target target-q2">ご利用日の1か月前から先着順でご予約を受け付けます。団体でご予約のお客様は、2か月前から優先予約が可能です。</li>
+                    <li>空きがある場合のみ、当日のご利用も可能です。</li>
+                    <li class="ks-target target-q2">料金は、ご利用日当日、会場でお支払いください。</li>
+                </ul>
+
+                <div class="article-translation">
+                    【使用方法】请通过网站或电话提前预约。普通预约从使用日前一个月起按先到先得受理，团体可从两个月前开始优先预约。仅在有空位时接受当天使用；费用在使用当天于会场支付。
+                </div>
+
+                <div class="note-text" style="margin-top: 22px; font-weight: 700;">「注意」</div>
+                <ol class="note-list" style="list-style: none; padding-left: 0;">
+                    <li class="ks-target target-q2">（1）お客様が調理器具を持ち込むことはできません。</li>
+                    <li>（2）花火やカラオケなど他の利用者や近隣の住民の方への迷惑となる行為は禁止です。</li>
+                    <li>（3）屋外施設のため、強風などの悪天候により営業を中止する場合があります。</li>
+                </ol>
+
+                <div class="article-translation">
+                    【注意事项】顾客不能自带烹饪器具。禁止烟花、卡拉OK等会打扰他人或附近居民的行为。由于是户外设施，遇强风等恶劣天气可能停止营业。
+                </div>
+
+                <div class="contact-info">
+                    南の丘公園バーベキュー予約センター<br>
+                    ホームページ：http://www.mimaminooka-koen.com/bbq　電話：0558-055-5555
+                </div>
+            </div>
+        </main>
+
+        <aside class="question-section" id="quizForm">
+            <div class="question-card sketch-box" data-question="q1" id="q1-card">
+                <div class="q-header"><div class="q-number" style="background: var(--marker-blue);">1</div><div class="q-text-wrapper">
+                    <div class="q-text">チェさんは、職場の同僚とバーベキューに行くことになった。費用を調べるように頼まれたので、日時と人数などを聞いてメモをした。費用は一人いくらかかるか。
+                        <div class="q-table-responsive" style="margin-top: 14px;">
+                            <table class="q-table">
+                                <thead><tr><th colspan="2" style="text-align: left;">チェさんのメモ</th></tr></thead>
+                                <tbody>
+                                    <tr><td>● 11月15日（日）10：30〜14：30</td><td>● 参加者　25人</td></tr>
+                                    <tr><td>● ボリュームセット　25人分</td><td>● 飲み物は会社から持参</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="source-jump-btn ks-theme-q1" onclick="jumpToTarget('q1')"><div class="ks-icon-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>クリックして団体料金・セット料金の出処へ移動</span></div></div>
+                    </div><div class="q-text-trans">（小崔要和同事一起去烧烤，受托调查费用。11月15日10:30—14:30，共25人，每人购买丰盛套餐，饮料由公司自带。每人需要多少钱？）</div>
+                </div></div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1"><input type="radio" name="q1" value="1" class="option-input"><div class="custom-radio">1</div><div class="option-content-wrapper"><div class="option-content">利用料金1,000円のみ</div><div class="option-trans">只支付场地费1,000日元。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="2"><input type="radio" name="q1" value="2" class="option-input"><div class="custom-radio">2</div><div class="option-content-wrapper"><div class="option-content">利用料金1,200円のみ</div><div class="option-trans">只支付场地费1,200日元。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="3"><input type="radio" name="q1" value="3" class="option-input"><div class="custom-radio">3</div><div class="option-content-wrapper"><div class="option-content">利用料金1,000円とバーベキューセット代2,000円</div><div class="option-trans">场地费1,000日元，加烧烤套餐费2,000日元。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="4"><input type="radio" name="q1" value="4" class="option-input"><div class="custom-radio">4</div><div class="option-content-wrapper"><div class="option-content">利用料金1,200円とバーベキューセット代2,000円</div><div class="option-trans">场地费1,200日元，加烧烤套餐费2,000日元。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                </div>
+            </div>
+
+            <div class="question-card sketch-box" data-question="q2" id="q2-card">
+                <div class="q-header"><div class="q-number" style="background: var(--marker-peach);">2</div><div class="q-text-wrapper">
+                    <div class="q-text">この施設を利用する際に気をつけなければならないことは、次のうちどれか。<br>
+                        <div class="source-jump-btn ks-theme-q2" onclick="jumpToTarget('q2')"><div class="ks-icon-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>クリックして利用方法・注意事項の出処へ移動</span></div></div>
+                    </div><div class="q-text-trans">（使用该设施时，以下哪一项是必须注意的？）</div>
+                </div></div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1"><input type="radio" name="q2" value="1" class="option-input"><div class="custom-radio">1</div><div class="option-content-wrapper"><div class="option-content">飲み物と調理器具は、各自が持参する。</div><div class="option-trans">饮料和烹饪器具都由各人自带。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="2"><input type="radio" name="q2" value="2" class="option-input"><div class="custom-radio">2</div><div class="option-content-wrapper"><div class="option-content">10：30から19：00まで利用する場合、2回分の利用料金を払う。</div><div class="option-trans">从10:30使用到19:00时，需要支付两次场地费。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="3"><input type="radio" name="q2" value="3" class="option-input"><div class="custom-radio">3</div><div class="option-content-wrapper"><div class="option-content">団体で利用する場合、予約は2か月前にしておく。</div><div class="option-trans">团体使用时，必须提前两个月预约。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="4"><input type="radio" name="q2" value="4" class="option-input"><div class="custom-radio">4</div><div class="option-content-wrapper"><div class="option-content">予約と料金の支払いは、利用の前日までに済ませておく。</div><div class="option-trans">预约和费用支付都必须在使用前一天完成。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                </div>
+            </div>
+            <div class="action-bar"><button type="button" class="submit-btn" id="submitBtn" onclick="submitAnswers()">答え合わせ</button></div>
+        </aside>
+    </div>
+
+    <div id="vocabTooltip" class="vocab-tooltip"></div>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (event) {
+                event.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#top') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        function toggleTranslation(btn) {
+            if (!document.getElementById('mainArticleContent').classList.contains('reviewed')) {
+                alert("请先完成所有题目（点击「答え合わせ」提交），然后再查看译文哦！");
+                return;
+            }
+            btn.classList.toggle('active');
+            document.querySelectorAll('.article-translation').forEach(el => el.classList.toggle('show'));
+        }
+
+        const answerData = {
+            q1: { correct: "3", optAnalysis: {
+                "1": "【✖ 排除】25人可享受团体价，每人场地费确为1,000日元，但题目还注明购买25人份的丰盛套餐，因此不能只算场地费。",
+                "2": "【✖ 排除】个人价是1,200日元，但25人属于20人以上团体，应适用每人1,000日元的团体价；而且本项漏算了套餐费。",
+                "3": "【✔ 正解】25人满足团体优惠条件，场地费每人1,000日元；丰盛套餐每人2,000日元。饮料自带不另收费，所以每人的费用由这两项组成。",
+                "4": "【✖ 排除】套餐费2,000日元正确，但25人应适用每人1,000日元的团体场地费，不应按个人价1,200日元计算。"
+            }},
+            q2: { correct: "2", optAnalysis: {
+                "1": "【✖ 排除】饮料可以自由自带，但烹饪器具使用费已包含在场地费中，而且注意事项明确禁止顾客自带烹饪器具。",
+                "2": "【✔ 正解】10:30至19:00横跨利用时间①和②。公告明确规定连续使用①②时，需要支付两次场地费。",
+                "3": "【✖ 排除】团体可以从两个月前开始优先预约，并不是必须恰好提前两个月预约；有空位时甚至可当天使用。",
+                "4": "【✖ 排除】预约应事先办理，但费用是在使用当天于会场支付，不需要在前一天付清。"
+            }}
+        };
+
+        document.querySelectorAll('.option-input').forEach(input => {
+            input.addEventListener('change', function () {
+                if (document.getElementById('submitBtn').disabled) return;
+                document.querySelectorAll(`input[name="${this.name}"]`).forEach(radio => radio.closest('.option-label').classList.remove('selected'));
+                if (this.checked) this.closest('.option-label').classList.add('selected');
+            });
+        });
+
+        document.querySelectorAll('.option-label').forEach(label => {
+            label.addEventListener('click', function () {
+                const group = this.closest('.options-group');
+                if (!group.classList.contains('reviewed')) return;
+                const detailBox = this.querySelector('.option-detail-analysis');
+                if (detailBox.classList.contains('show')) {
+                    detailBox.classList.remove('show');
+                    return;
+                }
+                group.querySelectorAll('.option-detail-analysis').forEach(box => box.classList.remove('show'));
+                detailBox.classList.add('show');
+            });
+        });
+
+        window.jumpToTarget = function (qName) {
+            const targets = document.querySelectorAll(`.target-${qName}`);
+            if (!targets.length) return;
+            targets[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targets.forEach(target => {
+                target.classList.add(`revealed-${qName}`);
+                target.classList.remove('flash-focus');
+                void target.offsetWidth;
+                target.classList.add('flash-focus');
+            });
+        };
+
+        function submitAnswers() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            if (!q1 || !q2) {
+                alert("すべての問いに答えてください。（请回答所有問題）");
+                return;
+            }
+            const userAnswers = { q1: q1.value, q2: q2.value };
+            let score = 0;
+            document.querySelectorAll('.option-input').forEach(input => {
+                input.disabled = true;
+                input.closest('.option-label').classList.add('disabled');
+            });
+            document.querySelectorAll('.options-group').forEach(group => group.classList.add('reviewed'));
+            document.getElementById('mainArticleContent').classList.add('reviewed');
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+
+            Object.keys(answerData).forEach(qName => {
+                const qCard = document.querySelector(`.question-card[data-question="${qName}"]`);
+                const data = answerData[qName];
+                const userValue = userAnswers[qName];
+                qCard.classList.add('reviewed');
+                qCard.querySelectorAll('.option-label').forEach(label => {
+                    const optionValue = label.querySelector('.option-input').value;
+                    if (optionValue === data.correct) {
+                        label.classList.add('is-correct');
+                        label.querySelector('.custom-radio').innerHTML = '✔';
+                    }
+                    if (optionValue === userValue && userValue !== data.correct) {
+                        label.classList.add('is-wrong');
+                        label.querySelector('.custom-radio').innerHTML = '✖';
+                    }
+                    label.querySelector('.option-detail-analysis').innerText = data.optAnalysis[optionValue];
+                });
+                if (userValue === data.correct) score++;
+            });
+
+            if (score === 2) {
+                btn.innerText = "全問正解！素晴らしい！";
+                btn.style.background = "var(--marker-mint)";
+                btn.style.color = "var(--green-pencil)";
+            } else {
+                btn.innerText = `完了 (${score}/2 正解)`;
+                btn.style.background = "var(--marker-peach)";
+                btn.style.color = "var(--red-pencil)";
+            }
+        }
+    </script>
+
+    <script src="../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="../../shared/reading-year-system.js?v=20260809-reading-mistakes"></script>
+    <script src="../../shared/reading-analysis-n2-search.js?v=20260904-n2-search-11"></script>
+    <script src="../../shared/reading-practice-redesign.js?v=20261011-scoped-lookup-3"></script>
+    <script src="../../shared/reading-tools.js?v=20261011-scoped-lookup-3"></script>
+    <script src="../../shared/reading-dt-year-session.js?v=20260809-reading-mistakes"></script>
+    <script src="../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../shared/selection-dictionary.js?v=20261012-lookup-spelling-2" data-lookup-scope="reading"></script>
+</body>
+</html>

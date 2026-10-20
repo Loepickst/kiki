@@ -3,7 +3,7 @@ const DAY1_WORDS = [
     {
         "word": "からっ",
         "word_html": "からっ",
-        "tone": "0",
+        "tone": "2",
         "pos": "副",
         "mean": "干透，晴朗；开朗",
         "nuance": "1. 水分完全蒸发干透，或天空晴朗无云。常作副词「からっと」使用。\n2. 性格爽快，不留心结。",
@@ -24,7 +24,8 @@ const DAY1_WORDS = [
             "cn": "天空一下子放晴，心情很好。",
             "options": ["からっと", "じめっと", "しっとり", "どんより"],
             "answer": "からっと"
-        }
+        },
+        "reading": "からっ"
     },
     {
         "word": "ざっ",
@@ -45,7 +46,8 @@ const DAY1_WORDS = [
             "cn": "时间不多了，请大致说明一下内容。",
             "options": ["ざっと", "じっと", "ぼうっと", "ぬっと"],
             "answer": "ざっと"
-        }
+        },
+        "reading": "ざっ"
     },
     {
         "word": "さらっ",
@@ -71,7 +73,8 @@ const DAY1_WORDS = [
             "cn": "他是那种连讨厌的事也能轻描淡写放下的人。",
             "options": ["さらっと", "どろっと", "ぐらっと", "べたっと"],
             "answer": "さらっと"
-        }
+        },
+        "reading": "さらっ"
     },
     {
         "word": "スッ",
@@ -97,12 +100,13 @@ const DAY1_WORDS = [
             "cn": "把想说的话说出来后，心里一下子舒畅了。",
             "options": ["もやもや", "ずきずき", "スッと", "いらいら"],
             "answer": "スッと"
-        }
+        },
+        "reading": "スッ"
     },
     {
         "word": "ちらっ",
         "word_html": "ちらっ",
-        "tone": "0",
+        "tone": "2",
         "pos": "副",
         "mean": "一瞥，稍微",
         "nuance": "1. 视线短暂地扫过，或者隐约听到一点。常作副词「ちらっと」使用。",
@@ -118,7 +122,8 @@ const DAY1_WORDS = [
             "cn": "喜欢的人朝这边看过来，我和他一瞬间对上了眼。",
             "options": ["じろじろ", "まじまじ", "ちらっと", "きょろきょろ"],
             "answer": "ちらっと"
-        }
+        },
+        "reading": "ちらっ"
     },
     {
         "word": "ぼうっ",
@@ -144,7 +149,8 @@ const DAY1_WORDS = [
             "cn": "发烧了，头脑昏昏沉沉的。",
             "options": ["きりきり", "ぼうっと", "きびきび", "すらすら"],
             "answer": "ぼうっと"
-        }
+        },
+        "reading": "ぼうっ"
     },
     {
         "word": "ほっ",
@@ -165,7 +171,8 @@ const DAY1_WORDS = [
             "cn": "迷路的孩子找到了，父母松了一口气。",
             "options": ["はっと", "ぎょっと", "ほっと", "むっと"],
             "answer": "ほっと"
-        }
+        },
+        "reading": "ほっ"
     },
     {
         "word": "むっ",
@@ -191,7 +198,8 @@ const DAY1_WORDS = [
             "cn": "被批评后，他露出了不高兴的表情。",
             "options": ["にこっと", "ほっと", "むっと", "きょとんと"],
             "answer": "むっと"
-        }
+        },
+        "reading": "むっ"
     },
     {
         "word": "あっさり",
@@ -217,7 +225,8 @@ const DAY1_WORDS = [
             "cn": "比起浓厚的拉面，我更想吃清淡的乌冬。",
             "options": ["ぎっしり", "あっさり", "こっそり", "がっくり"],
             "answer": "あっさり"
-        }
+        },
+        "reading": "あっさり"
     },
     {
         "word": "うっとり",
@@ -238,7 +247,8 @@ const DAY1_WORDS = [
             "cn": "我出神地望着盛开的樱花。",
             "options": ["ぼんやり", "うっとり", "きっぱり", "がっかり"],
             "answer": "うっとり"
-        }
+        },
+        "reading": "うっとり"
     }
 ];
 const DAY2_WORDS = [
@@ -266,7 +276,8 @@ const DAY2_WORDS = [
             "cn": "这碗拉面的汤很浓厚，味道重是它的特点。",
             "options": ["こってり", "さらっと", "あっさり", "すっきり"],
             "answer": "こってり"
-        }
+        },
+        "reading": "こってり"
     },
     {
         "word": "がらり",
@@ -287,7 +298,8 @@ const DAY2_WORDS = [
             "cn": "天气突然大变，一下子冷了起来。",
             "options": ["がらりと", "こっそり", "ちらっと", "ぼうっと"],
             "answer": "がらりと"
-        }
+        },
+        "reading": "がらり"
     },
     {
         "word": "ぎっしり",
@@ -308,7 +320,8 @@ const DAY2_WORDS = [
             "cn": "电车里满员，乘客挤得满满当当。",
             "options": ["ぎっしり", "すっきり", "けろりと", "げっそり"],
             "answer": "ぎっしり"
-        }
+        },
+        "reading": "ぎっしり"
     },
     {
         "word": "きっぱり",
@@ -325,11 +338,12 @@ const DAY2_WORDS = [
             }
         ],
         "practice": {
-            "question": "<ruby>誘<rt>さそ</rt></ruby>われたが、<ruby>誘<rt>ゆう</rt></ruby><ruby>惑<rt>わく</ruby>に<span class='ex-highlight'>____</span>と<ruby>断<rt>ことわ</rt></ruby>った。",
+            "question": "<ruby>誘<rt>さそ</rt></ruby>われたが、<ruby>誘<rt>ゆう</rt></ruby><ruby>惑<rt>わく</rt></ruby>に<span class='ex-highlight'>____</span>と<ruby>断<rt>ことわ</rt></ruby>った。",
             "cn": "虽然被邀请了，但他断然拒绝了。",
             "options": ["きっぱり", "あっさり", "うっとり", "こっそり"],
             "answer": "きっぱり"
-        }
+        },
+        "reading": "きっぱり"
     },
     {
         "word": "ぐったり",
@@ -350,7 +364,8 @@ const DAY2_WORDS = [
             "cn": "激烈奔跑之后，身体累得瘫软，动不了了。",
             "options": ["ぐったり", "すっきり", "ちらりと", "ばったり"],
             "answer": "ぐったり"
-        }
+        },
+        "reading": "ぐったり"
     },   
     {
         "word": "ばったり",
@@ -376,7 +391,8 @@ const DAY2_WORDS = [
             "cn": "在街上偶然遇见了以前的同学。",
             "options": ["ばったり", "ちらっと", "ぼうっと", "がらりと"],
             "answer": "ばったり"
-        }
+        },
+        "reading": "ばったり"
     },
     {
         "word": "がっくり",
@@ -402,12 +418,13 @@ const DAY2_WORDS = [
             "cn": "考试没通过，他沮丧地垂下了肩。",
             "options": ["がっくり", "こっそり", "けろりと", "ぎっしり"],
             "answer": "がっくり"
-        }
+        },
+        "reading": "がっくり"
     },
     {
         "word": "けろり",
         "word_html": "けろり",
-        "tone": "0",
+        "tone": "2",
         "pos": "副",
         "mean": "若无其事；全好了",
         "nuance": "1. 发生了意外或做了错事，却像没事儿一样，常接「ている形」。\n2. 病痛或不快的情绪完全消失。",
@@ -424,11 +441,12 @@ const DAY2_WORDS = [
             }
         ],
         "practice": {
-            "question": "<ruby>大<rt>おお</rt></ruby>きな<ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>をしても、<ruby>彼<rt>かれ</rt></ruby>は<span class='ex-highlight'>____</ruby>としていて<ruby>平<rt>へい</rt></ruby><ruby>然<rt>ぜん</rt></ruby>だ。",
+            "question": "<ruby>大<rt>おお</rt></ruby>きな<ruby>失<rt>しっ</rt></ruby><ruby>敗<rt>ぱい</rt></ruby>をしても、<ruby>彼<rt>かれ</rt></ruby>は<span class='ex-highlight'>____</span>としていて<ruby>平<rt>へい</rt></ruby><ruby>然<rt>ぜん</rt></ruby>だ。",
             "cn": "即使犯了大错，他也一副若无其事的样子。",
             "options": ["けろり", "がっくり", "むっと", "ぼうっと"],
             "answer": "けろり"
-        }
+        },
+        "reading": "けろり"
     },
     {
         "word": "げっそり",
@@ -454,7 +472,8 @@ const DAY2_WORDS = [
             "cn": "连续一周只吃咖喱，胃都受不了了。",
             "options": ["げっそり", "すっきり", "こってり", "しっとり"],
             "answer": "げっそり"
-        }
+        },
+        "reading": "げっそり"
     },
     {
         "word": "こっそり",
@@ -475,7 +494,8 @@ const DAY2_WORDS = [
             "cn": "我趁妈妈没发现，偷偷吃了饼干。",
             "options": ["こっそり", "きっぱり", "がらり", "ちらっ"],
             "answer": "こっそり"
-        }
+        },
+        "reading": "こっそり"
     }
 ];
 const DAY3_WORDS = [
@@ -508,7 +528,8 @@ const DAY3_WORDS = [
             "cn": "明明是新员工，他却有很踏实的想法。",
             "options": ["しっかり", "すっきり", "ぼんやり", "うっかり"],
             "answer": "しっかり"
-        }
+        },
+        "reading": "しっかり"
     },
     {
         "word": "じっくり",
@@ -525,11 +546,12 @@ const DAY3_WORDS = [
             }
         ],
         "practice": {
-            "question": "<ruby>大<rt>おお</rt></ruby>きな<ruby>決<rt>けっ</rt></ruby><ruby>断<rt>だん</rt></ruby>をする<ruby>前<rt>まえ</rt></ruby>に、<span class='ex-highlight'>____</span><ruby>話<rt>はな</rt></ruby>し<ruby>合<rt>あ</rt></ruby>いましょう。",
+            "question": "<ruby>大<rt>おお</rt></ruby>きな<ruby>決<rt>けつ</rt></ruby><ruby>断<rt>だん</rt></ruby>をする<ruby>前<rt>まえ</rt></ruby>に、<span class='ex-highlight'>____</span><ruby>話<rt>はな</rt></ruby>し<ruby>合<rt>あ</rt></ruby>いましょう。",
             "cn": "做重大决定前，我们好好深入谈一谈吧。",
             "options": ["じっくり", "ぴったり", "ぼんやり", "ぐっすり"],
             "answer": "じっくり"
-        }
+        },
+        "reading": "じっくり"
     },
     {
         "word": "しっとり",
@@ -555,7 +577,8 @@ const DAY3_WORDS = [
             "cn": "下雨天，古都的街景显得湿润而优美。",
             "options": ["しっとり", "ぐったり", "きっぱり", "がっちり"],
             "answer": "しっとり"
-        }
+        },
+        "reading": "しっとり"
     },
     {
         "word": "すっきり",
@@ -581,7 +604,8 @@ const DAY3_WORDS = [
             "cn": "误会解开后，心情清爽了。",
             "options": ["すっきり", "しっとり", "こっそり", "ぼんやり"],
             "answer": "すっきり"
-        }
+        },
+        "reading": "すっきり"
     },
     {
         "word": "ずっしり",
@@ -607,7 +631,8 @@ const DAY3_WORDS = [
             "cn": "装着金币的箱子沉甸甸的。",
             "options": ["ずっしり", "ぴったり", "すっきり", "あっさり"],
             "answer": "ずっしり"
-        }
+        },
+        "reading": "ずっしり"
     },
     {
         "word": "ずらり",
@@ -628,7 +653,8 @@ const DAY3_WORDS = [
             "cn": "美术馆里名画一幅接一幅地排列着。",
             "options": ["ずらり", "ちらり", "ぼんやり", "うっかり"],
             "answer": "ずらり"
-        }
+        },
+        "reading": "ずらり"
     },
     {
         "word": "ずばり",
@@ -654,7 +680,8 @@ const DAY3_WORDS = [
             "cn": "算命师一下子说中了我的职业。",
             "options": ["ずばり", "ぼんやり", "ふんわり", "うっかり"],
             "answer": "ずばり"
-        }
+        },
+        "reading": "ずばり"
     },
     {
         "word": "ちらり",
@@ -675,7 +702,8 @@ const DAY3_WORDS = [
             "cn": "和喜欢的人目光一瞬间相遇了。",
             "options": ["ちらり", "じっくり", "まじまじ", "ぼんやり"],
             "answer": "ちらり"
-        }
+        },
+        "reading": "ちらり"
     },
     {
         "word": "てっきり",
@@ -696,7 +724,8 @@ const DAY3_WORDS = [
             "cn": "我一直以为他比我小。",
             "options": ["てっきり", "しっかり", "すっきり", "きっぱり"],
             "answer": "てっきり"
-        }
+        },
+        "reading": "てっきり"
     },
     {
         "word": "どっさり",
@@ -717,7 +746,8 @@ const DAY3_WORDS = [
             "cn": "暑假作业布置了一大堆。",
             "options": ["どっさり", "ぴったり", "しっとり", "ちらり"],
             "answer": "どっさり"
-        }
+        },
+        "reading": "どっさり"
     }
 ];
 const DAY4_WORDS = [
@@ -745,7 +775,8 @@ const DAY4_WORDS = [
             "cn": "如果知道答案，就清楚地说出来。",
             "options": ["はっきり", "ひっそり", "こっそり", "すっきり"],
             "answer": "はっきり"
-        }
+        },
+        "reading": "はっきり"
     },
     {
         "word": "ひっそり",
@@ -771,7 +802,8 @@ const DAY4_WORDS = [
             "cn": "深山里静静地坐落着一座古寺。",
             "options": ["ひっそり", "ぴったり", "はっきり", "どっさり"],
             "answer": "ひっそり"
-        }
+        },
+        "reading": "ひっそり"
     },
     {
         "word": "うんざり",
@@ -792,7 +824,8 @@ const DAY4_WORDS = [
             "cn": "每天重复同样的事，让人厌烦。",
             "options": ["うんざり", "すんなり", "しっとり", "しんなり"],
             "answer": "うんざり"
-        }
+        },
+        "reading": "うんざり"
     },
     {
         "word": "しょんぼり",
@@ -813,7 +846,8 @@ const DAY4_WORDS = [
             "cn": "输掉比赛后，选手们垂头丧气。",
             "options": ["しょんぼり", "はっきり", "すっきり", "きっぱり"],
             "answer": "しょんぼり"
-        }
+        },
+        "reading": "しょんぼり"
     },
     {
         "word": "しんなり",
@@ -834,7 +868,8 @@ const DAY4_WORDS = [
             "cn": "煮过的蔬菜变软了，吃起来更方便。",
             "options": ["しんなり", "ふんわり", "すんなり", "ひんやり"],
             "answer": "しんなり"
-        }
+        },
+        "reading": "しんなり"
     },
     {
         "word": "すんなり",
@@ -860,7 +895,8 @@ const DAY4_WORDS = [
             "cn": "本以为会遭到反对，没想到意外顺利地获批了。",
             "options": ["すんなり", "はっきり", "ずばり", "きっぱり"],
             "answer": "すんなり"
-        }
+        },
+        "reading": "すんなり"
     },
     {
         "word": "どんより",
@@ -881,7 +917,8 @@ const DAY4_WORDS = [
             "cn": "房间里的空气阴沉沉的，令人压抑。",
             "options": ["どんより", "ひんやり", "ぼんやり", "ふんわり"],
             "answer": "どんより"
-        }
+        },
+        "reading": "どんより"
     },
     {
         "word": "びっしょり",
@@ -902,7 +939,8 @@ const DAY4_WORDS = [
             "cn": "跑了一阵，后背被汗湿透了。",
             "options": ["びっしょり", "しっとり", "たっぷり", "すっきり"],
             "answer": "びっしょり"
-        }
+        },
+        "reading": "びっしょり"
     },
     {
         "word": "ひんやり",
@@ -923,7 +961,8 @@ const DAY4_WORDS = [
             "cn": "清晨的高原，风凉丝丝的，很舒服。",
             "options": ["ひんやり", "しんみり", "どんより", "ぼんやり"],
             "answer": "ひんやり"
-        }
+        },
+        "reading": "ひんやり"
     },
     {
         "word": "ふんわり",
@@ -949,7 +988,8 @@ const DAY4_WORDS = [
             "cn": "烤出了松软的海绵蛋糕。",
             "options": ["ふんわり", "しんなり", "ぐったり", "げっそり"],
             "answer": "ふんわり"
-        }
+        },
+        "reading": "ふんわり"
     }
 ];
 const DAY5_WORDS = [
@@ -977,7 +1017,8 @@ const DAY5_WORDS = [
             "cn": "没有眼镜，远处模模糊糊看不清。",
             "options": ["ぼんやり", "はっきり", "すっきり", "きっぱり"],
             "answer": "ぼんやり"
-        }
+        },
+        "reading": "ぼんやり"
     },
     {
         "word": "やんわり",
@@ -998,7 +1039,8 @@ const DAY5_WORDS = [
             "cn": "我委婉地提醒了下属的失误。",
             "options": ["やんわり", "ずばり", "きっぱり", "しっかり"],
             "answer": "やんわり"
-        }
+        },
+        "reading": "やんわり"
     },
     {
         "word": "うろうろ",
@@ -1019,7 +1061,8 @@ const DAY5_WORDS = [
             "cn": "一个可疑男人在我家周围转来转去。",
             "options": ["うろうろ", "すらすら", "ぼろぼろ", "きらきら"],
             "answer": "うろうろ"
-        }
+        },
+        "reading": "うろうろ"
     },
     {
         "word": "うろちょろ",
@@ -1040,7 +1083,8 @@ const DAY5_WORDS = [
             "cn": "小狗在脚边跑来跑去，很危险。",
             "options": ["うろちょろ", "ひそひそ", "のろのろ", "ふらふら"],
             "answer": "うろちょろ"
-        }
+        },
+        "reading": "うろちょろ"
     },
     {
         "word": "がさがさ",
@@ -1066,7 +1110,8 @@ const DAY5_WORDS = [
             "cn": "因为干燥，皮肤粗糙。",
             "options": ["がさがさ", "すべすべ", "つやつや", "きらきら"],
             "answer": "がさがさ"
-        }
+        },
+        "reading": "がさがさ"
     },
     {
         "word": "がやがや",
@@ -1087,7 +1132,8 @@ const DAY5_WORDS = [
             "cn": "会议一结束，房间里一下子吵闹起来。",
             "options": ["がやがや", "しんしん", "ひっそり", "すらすら"],
             "answer": "がやがや"
-        }
+        },
+        "reading": "がやがや"
     },
     {
         "word": "からから",
@@ -1113,7 +1159,8 @@ const DAY5_WORDS = [
             "cn": "没浇水，土干得透透的。",
             "options": ["からから", "びしょびしょ", "じめじめ", "ねばねば"],
             "answer": "からから"
-        }
+        },
+        "reading": "からから"
     },
     {
         "word": "ぎくしゃく",
@@ -1134,7 +1181,8 @@ const DAY5_WORDS = [
             "cn": "因为紧张，动作变得僵硬不自然。",
             "options": ["ぎくしゃく", "すらすら", "のびのび", "きびきび"],
             "answer": "ぎくしゃく"
-        }
+        },
+        "reading": "ぎくしゃく"
     },
     {
         "word": "ぐずぐず",
@@ -1155,7 +1203,8 @@ const DAY5_WORDS = [
             "cn": "别磨磨蹭蹭的，快点准备。",
             "options": ["ぐずぐず", "きびきび", "さっさと", "すらすら"],
             "answer": "ぐずぐず"
-        }
+        },
+        "reading": "ぐずぐず"
     },
     {
         "word": "ぐちゃぐちゃ",
@@ -1181,7 +1230,8 @@ const DAY5_WORDS = [
             "cn": "摔了一跤，番茄被压得稀烂。",
             "options": ["ぐちゃぐちゃ", "ころころ", "さらさら", "つるつる"],
             "answer": "ぐちゃぐちゃ"
-        }
+        },
+        "reading": "ぐちゃぐちゃ"
     },    
 ];
 const DAY6_WORDS = [
@@ -1210,7 +1260,8 @@ const DAY6_WORDS = [
             "cn": "牙齿摇摇晃晃的，快要掉了。",
             "options": ["ぐらぐら", "ごろごろ", "がらがら", "ごつごつ"],
             "answer": "ぐらぐら"
-        }
+        },
+        "reading": "ぐらぐら"
     },
     {
         "word": "ごちゃごちゃ",
@@ -1236,7 +1287,8 @@ const DAY6_WORDS = [
             "cn": "脑子里乱成一团，整理不出来。",
             "options": ["ごちゃごちゃ", "すっきり", "さっぱり", "ぺらぺら"],
             "answer": "ごちゃごちゃ"
-        }
+        },
+        "reading": "ごちゃごちゃ"
     },
     {
         "word": "ごつごつ",
@@ -1257,7 +1309,8 @@ const DAY6_WORDS = [
             "cn": "父亲的手因多年工作变得粗糙坚硬。",
             "options": ["ごつごつ", "つるつる", "すべすべ", "ふわふわ"],
             "answer": "ごつごつ"
-        }
+        },
+        "reading": "ごつごつ"
     },
     {
         "word": "ごろごろ",
@@ -1288,7 +1341,8 @@ const DAY6_WORDS = [
             "cn": "岩石从山上咕噜咕噜地滚落下来。",
             "options": ["ごろごろ", "ころころ", "ぶらぶら", "ふらふら"],
             "answer": "ごろごろ"
-        }
+        },
+        "reading": "ごろごろ"
     },
     {
         "word": "さらさら",
@@ -1314,7 +1368,8 @@ const DAY6_WORDS = [
             "cn": "这支笔出墨很顺滑，写起来方便。",
             "options": ["さらさら", "ざらざら", "ぎしぎし", "ぱさぱさ"],
             "answer": "さらさら"
-        }
+        },
+        "reading": "さらさら"
     },
     {
         "word": "ざらざら",
@@ -1335,7 +1390,8 @@ const DAY6_WORDS = [
             "cn": "因为沙尘，地板摸起来粗糙。",
             "options": ["ざらざら", "さらさら", "ぬるぬる", "つるつる"],
             "answer": "ざらざら"
-        }
+        },
+        "reading": "ざらざら"
     },
     {
         "word": "じめじめ",
@@ -1361,7 +1417,8 @@ const DAY6_WORDS = [
             "cn": "他总是阴沉沉的，很消极。",
             "options": ["じめじめ", "しめじめ", "しくしく", "しょぼしょぼ"],
             "answer": "じめじめ"
-        }
+        },
+        "reading": "じめじめ"
     },
     {
         "word": "じわじわ",
@@ -1382,7 +1439,8 @@ const DAY6_WORDS = [
             "cn": "药效慢慢显现出来了。",
             "options": ["じわじわ", "じゃあじゃあ", "びりびり", "きりきり"],
             "answer": "じわじわ"
-        }
+        },
+        "reading": "じわじわ"
     },
     {
         "word": "せかせか",
@@ -1403,7 +1461,8 @@ const DAY6_WORDS = [
             "cn": "在城市里过着匆匆忙忙的生活很累。",
             "options": ["せかせか", "のびのび", "ゆったり", "のろのろ"],
             "answer": "せかせか"
-        }
+        },
+        "reading": "せかせか"
     },
     {
         "word": "もやもや",
@@ -1429,7 +1488,8 @@ const DAY6_WORDS = [
             "cn": "不知道事件真相，心里总觉得堵得慌。",
             "options": ["もやもや", "すっきり", "はっきり", "くっきり"],
             "answer": "もやもや"
-        }
+        },
+        "reading": "もやもや"
     },
 ];
 const DAY7_WORDS = [
@@ -1462,7 +1522,8 @@ const DAY7_WORDS = [
             "cn": "血不停地流个不停。",
             "options": ["だらだら", "たらたら", "ぽたぽた", "さらさら"],
             "answer": "だらだら"
-        }
+        },
+        "reading": "だらだら"
     },
     {
         "word": "てきぱき",
@@ -1483,7 +1544,8 @@ const DAY7_WORDS = [
             "cn": "她麻利地处理家务。",
             "options": ["てきぱき", "どきどき", "わくわく", "ふわふわ"],
             "answer": "てきぱき"
-        }
+        },
+        "reading": "てきぱき"
     },
     {
         "word": "どきどき",
@@ -1504,12 +1566,13 @@ const DAY7_WORDS = [
             "cn": "在喜欢的人面前，心脏怦怦直跳。",
             "options": ["どきどき", "きらきら", "ぴかぴか", "すらすら"],
             "answer": "どきどき"
-        }
+        },
+        "reading": "どきどき"
     },
     {
         "word": "どろどろ",
         "word_html": "どろどろ",
-        "tone": "0",
+        "tone": "0／1",
         "pos": "副",
         "mean": "黏糊糊，融化貌；泥泞不堪；错综复杂，阴暗",
         "nuance": "1. 固体溶化或混合液体变得黏稠的状态。\n2. 沾满泥巴的样子。\n3. 人际关系复杂，充满嫉妒或算计，常接「ている形」。",
@@ -1535,7 +1598,8 @@ const DAY7_WORDS = [
             "cn": "雪融化了，道路泥泞不堪。",
             "options": ["どろどろ", "さらさら", "かちかち", "つるつる"],
             "answer": "どろどろ"
-        }
+        },
+        "reading": "どろどろ"
     },
     {
         "word": "ぬるぬる",
@@ -1556,7 +1620,8 @@ const DAY7_WORDS = [
             "cn": "手上沾了肥皂，滑溜溜的。",
             "options": ["ぬるぬる", "つるつる", "すべすべ", "さらさら"],
             "answer": "ぬるぬる"
-        }
+        },
+        "reading": "ぬるぬる"
     },
     {
         "word": "ねばねば",
@@ -1577,7 +1642,8 @@ const DAY7_WORDS = [
             "cn": "秋葵切碎后会变得黏糊糊的。",
             "options": ["ねばねば", "さらさら", "ぱさぱさ", "ごつごつ"],
             "answer": "ねばねば"
-        }
+        },
+        "reading": "ねばねば"
     },
     {
         "word": "すいすい",
@@ -1603,7 +1669,8 @@ const DAY7_WORDS = [
             "cn": "鱼在水中轻快地游着。",
             "options": ["すいすい", "ぶらぶら", "のろのろ", "よちよち"],
             "answer": "すいすい"
-        }
+        },
+        "reading": "すいすい"
     },
     {
         "word": "すくすく",
@@ -1624,12 +1691,13 @@ const DAY7_WORDS = [
             "cn": "孩子在父母的关爱下茁壮成长。",
             "options": ["すくすく", "のびのび", "いきいき", "きびきび"],
             "answer": "すくすく"
-        }
+        },
+        "reading": "すくすく"
     },
     {
         "word": "すべすべ",
         "word_html": "すべすべ",
-        "tone": "0",
+        "tone": "1",
         "pos": "副",
         "mean": "光滑，滑润",
         "nuance": "1. 表面摸起来非常平滑，常接「ている形」。",
@@ -1645,7 +1713,8 @@ const DAY7_WORDS = [
             "cn": "泡完温泉后，皮肤变得光滑。",
             "options": ["すべすべ", "ざらざら", "がさがさ", "ごつごつ"],
             "answer": "すべすべ"
-        }
+        },
+        "reading": "すべすべ"
     },
     {
         "word": "はきはき",
@@ -1662,11 +1731,12 @@ const DAY7_WORDS = [
             }
         ],
         "practice": {
-            "question": "<ruby>面接<rt>めんせつ</rt></ruby>では<span class='ex-highlight'>____</span>した<ruby>態度<rt>たいど</rt></ruby>が<ruby>好<rt>す</rt></ruby>まれる。",
+            "question": "<ruby>面接<rt>めんせつ</rt></ruby>では<span class='ex-highlight'>____</span>した<ruby>態度<rt>たいど</rt></ruby>が<ruby>好<rt>この</rt></ruby>まれる。",
             "cn": "面试时，清晰爽快的态度很受欢迎。",
             "options": ["はきはき", "もじもじ", "うじうじ", "ぶつぶつ"],
             "answer": "はきはき"
-        }
+        },
+        "reading": "はきはき"
     }
 ];
 const DAY8_WORDS = [
@@ -1689,7 +1759,8 @@ const DAY8_WORDS = [
             "cn": "乌龟慢吞吞地走着。",
             "options": ["のろのろ", "すいすい", "てきぱき", "はきはき"],
             "answer": "のろのろ"
-        }
+        },
+        "reading": "のろのろ"
     },
     {
         "word": "ふらふら",
@@ -1715,7 +1786,8 @@ const DAY8_WORDS = [
             "cn": "因为贫血，头晕得快要倒下。",
             "options": ["ふらふら", "ぴかぴか", "てきぱき", "もりもり"],
             "answer": "ふらふら"
-        }
+        },
+        "reading": "ふらふら"
     },
     {
         "word": "ぶらぶら",
@@ -1746,12 +1818,13 @@ const DAY8_WORDS = [
             "cn": "因为没事做，我在商店街闲逛。",
             "options": ["ぶらぶら", "きびきび", "ばりばり", "がんがん"],
             "answer": "ぶらぶら"
-        }
+        },
+        "reading": "ぶらぶら"
     },
     {
         "word": "べたべた",
         "word_html": "べたべた",
-        "tone": "1",
+        "tone": "0／1",
         "pos": "副",
         "mean": "黏糊糊；贴满，涂满；黏人，腻歪",
         "nuance": "1. 沾满汗水或黏性物质，触感不快。\n2. 到处贴满纸张或涂满颜料。\n3. 男女或亲子之间过于亲昵。",
@@ -1762,7 +1835,7 @@ const DAY8_WORDS = [
                 "image": "./image(mime)/betabeta1.png"
             },
             {
-                "jp": "<ruby>壁<rt>かべ</rt></ruby>にポスターが<span class='ex-highlight'>べたべた（と）<ruby>贴<rt>は</rt></ruby>られて</span>いる。",
+                "jp": "<ruby>壁<rt>かべ</rt></ruby>にポスターが<span class='ex-highlight'>べたべた（と）<ruby>貼<rt>は</rt></ruby>られて</span>いる。",
                 "cn": "墙上贴满了海报。",
                 "image": "./image(mime)/betabeta2.png"
             },
@@ -1777,7 +1850,8 @@ const DAY8_WORDS = [
             "cn": "手上沾了果酱，黏糊糊的。",
             "options": ["べたべた", "さらさら", "すべすべ", "つるつる"],
             "answer": "べたべた"
-        }
+        },
+        "reading": "べたべた"
     },
     {
         "word": "へとへと",
@@ -1798,7 +1872,8 @@ const DAY8_WORDS = [
             "cn": "爬到山顶后，累得筋疲力尽。",
             "options": ["へとへと", "めきめき", "のびのび", "いきいき"],
             "answer": "へとへと"
-        }
+        },
+        "reading": "へとへと"
     },
     {
         "word": "めきめき",
@@ -1819,7 +1894,8 @@ const DAY8_WORDS = [
             "cn": "技艺突飞猛进。",
             "options": ["めきめき", "めそめそ", "おどおど", "くよくよ"],
             "answer": "めきめき"
-        }
+        },
+        "reading": "めきめき"
     },
     {
         "word": "めそめそ",
@@ -1840,7 +1916,8 @@ const DAY8_WORDS = [
             "cn": "不要总为小事哭哭啼啼。",
             "options": ["めそめそ", "はきはき", "にこにこ", "げらげら"],
             "answer": "めそめそ"
-        }
+        },
+        "reading": "めそめそ"
     },
     {
         "word": "めちゃめちゃ",
@@ -1851,7 +1928,7 @@ const DAY8_WORDS = [
         "nuance": "1. 程度极深，多用于口语。\n2. 事物被破坏或毫无条理的状态。",
         "examples": [
             {
-                "jp": "<ruby>今<rt>きょう</rt></ruby>のテストは<span class='ex-highlight'>めちゃめちゃ<ruby>難<rt>むずか</rt></ruby>しかった</span>。",
+                "jp": "<ruby>今日<rt>きょう</rt></ruby>のテストは<span class='ex-highlight'>めちゃめちゃ<ruby>難<rt>むずか</rt></ruby>しかった</span>。",
                 "cn": "今天的考试非常难。",
                 "image": "./image(mime)/mechamecha1.png"
             },
@@ -1866,7 +1943,8 @@ const DAY8_WORDS = [
             "cn": "计划变得一团糟。",
             "options": ["めちゃめちゃ", "ぴかぴか", "すらすら", "ぺらぺら"],
             "answer": "めちゃめちゃ"
-        }
+        },
+        "reading": "めちゃめちゃ"
     },
     {
         "word": "ずけずけ",
@@ -1887,7 +1965,8 @@ const DAY8_WORDS = [
             "cn": "她对谁都直言不讳。",
             "options": ["ずけずけ", "こそこそ", "ひそひそ", "ぶつぶつ"],
             "answer": "ずけずけ"
-        }
+        },
+        "reading": "ずけずけ"
     },
     {
         "word": "ぼそぼそ",
@@ -1913,7 +1992,8 @@ const DAY8_WORDS = [
             "cn": "他一副没自信的样子，小声嘟囔着说话。",
             "options": ["ぼそぼそ", "はきはき", "ぺらぺら", "すらすら"],
             "answer": "ぼそぼそ"
-        }
+        },
+        "reading": "ぼそぼそ"
     }
 ];
 const DAY9_WORDS = [
@@ -1936,7 +2016,8 @@ const DAY9_WORDS = [
             "cn": "电车迟迟不来，我很焦躁。",
             "options": ["いらいら", "はらはら", "びくびく", "うすうす"],
             "answer": "いらいら"
-        }
+        },
+        "reading": "いらいら"
     },
     {
         "word": "はらはら",
@@ -1952,7 +2033,7 @@ const DAY9_WORDS = [
                 "image": "./image(mime)/harahara1.png"
             },
             {
-                "jp": "<ruby>子<rt>こ</rt></ruby><ruby>ども<rt>ども</rt></ruby>の<ruby>木<rt>き</rt></ruby><ruby>登<rt>の</rt></ruby>りを<ruby>見<rt>み</rt></ruby>て、<span class='ex-highlight'>はらはらした</span>。",
+                "jp": "<ruby>子<rt>こ</rt></ruby><ruby>ども<rt>ども</rt></ruby>の<ruby>木<rt>き</rt></ruby><ruby>登<rt>のぼ</rt></ruby>りを<ruby>見<rt>み</rt></ruby>て、<span class='ex-highlight'>はらはらした</span>。",
                 "cn": "看着孩子爬树，捏一把汗。",
                 "image": "./image(mime)/harahara2.png"
             }
@@ -1962,7 +2043,8 @@ const DAY9_WORDS = [
             "cn": "樱花花瓣纷纷飘落。",
             "options": ["はらはら", "いらいら", "びくびく", "おどおど"],
             "answer": "はらはら"
-        }
+        },
+        "reading": "はらはら"
     },
     {
         "word": "びくびく",
@@ -1983,7 +2065,8 @@ const DAY9_WORDS = [
             "cn": "以为会被父母骂，心里战战兢兢。",
             "options": ["びくびく", "いらいら", "はらはら", "うずうず"],
             "answer": "びくびく"
-        }
+        },
+        "reading": "びくびく"
     },
     {
         "word": "おどおど",
@@ -1994,7 +2077,7 @@ const DAY9_WORDS = [
         "nuance": "1. 因为害怕或缺乏自信而内心不安、举止怯懦的样子。常接「ている形」。",
         "examples": [
             {
-                "jp": "<ruby>面<rt>めん</rt></ruby><ruby>接<rt>せつ</rt></ruby>で<ruby>紧<rt>きん</rt></ruby><ruby>张<rt>ちょう</rt></ruby>して、<span class='ex-highlight'>おどおどしている</span>。",
+                "jp": "<ruby>面<rt>めん</rt></ruby><ruby>接<rt>せつ</rt></ruby>で<ruby>緊<rt>きん</rt></ruby><ruby>張<rt>ちょう</rt></ruby>して、<span class='ex-highlight'>おどおどしている</span>。",
                 "cn": "面试时太紧张，战战兢兢的。",
                 "image": "./image(mime)/odoodo.png"
             }
@@ -2004,7 +2087,8 @@ const DAY9_WORDS = [
             "cn": "他看起来没自信，总是畏畏缩缩。",
             "options": ["おどおど", "いらいら", "はらはら", "ひしひし"],
             "answer": "おどおど"
-        }
+        },
+        "reading": "おどおど"
     },
     {
         "word": "まごまご",
@@ -2025,7 +2109,8 @@ const DAY9_WORDS = [
             "cn": "在车站不知道怎么换乘，慌里慌张了起来。",
             "options": ["まごまご", "いらいら", "はらはら", "うずうず"],
             "answer": "まごまご"
-        }
+        },
+        "reading": "まごまご"
     },
     {
         "word": "そわそわ",
@@ -2046,7 +2131,8 @@ const DAY9_WORDS = [
             "cn": "发布录取结果的日子，一早就心神不宁。",
             "options": ["そわそわ", "いらいら", "くよくよ", "うすうす"],
             "answer": "そわそわ"
-        }
+        },
+        "reading": "そわそわ"
     },
     {
         "word": "ひしひし",
@@ -2057,7 +2143,7 @@ const DAY9_WORDS = [
         "nuance": "1. 强烈地感受到某种压迫感、责任感或感情。",
         "examples": [
             {
-                "jp": "<ruby>亲<rt>おや</rt></ruby>のありがたみを<span class='ex-highlight'>ひしひし（と）<ruby>感<rt>かん</rt></ruby>じた</span>。",
+                "jp": "<ruby>親<rt>おや</rt></ruby>のありがたみを<span class='ex-highlight'>ひしひし（と）<ruby>感<rt>かん</rt></ruby>じた</span>。",
                 "cn": "深切地感受到了父母的恩情。",
                 "image": "./image(mime)/hishihishi.png"
             }
@@ -2067,7 +2153,8 @@ const DAY9_WORDS = [
             "cn": "我深切感受到责任的重大。",
             "options": ["ひしひし", "いらいら", "はらはら", "まごまご"],
             "answer": "ひしひし"
-        }
+        },
+        "reading": "ひしひし"
     },
     {
         "word": "うすうす",
@@ -2088,7 +2175,8 @@ const DAY9_WORDS = [
             "cn": "我隐约察觉到他可能就是犯人。",
             "options": ["うすうす", "いらいら", "はらはら", "うずうず"],
             "answer": "うすうす"
-        }
+        },
+        "reading": "うすうす"
     },
     {
         "word": "うずうず",
@@ -2109,7 +2197,8 @@ const DAY9_WORDS = [
             "cn": "我迫不及待想早点去旅行。",
             "options": ["うずうず", "いらいら", "はらはら", "くよくよ"],
             "answer": "うずうず"
-        }
+        },
+        "reading": "うずうず"
     },
     {
         "word": "くよくよ",
@@ -2130,7 +2219,8 @@ const DAY9_WORDS = [
             "cn": "已经过去的事，再一直烦恼也没办法。",
             "options": ["くよくよ", "いらいら", "はらはら", "そわそわ"],
             "answer": "くよくよ"
-        }
+        },
+        "reading": "くよくよ"
     }
 ];
 

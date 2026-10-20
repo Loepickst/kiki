@@ -10,28 +10,7 @@
     }
 
     function normalizeExamKey(value) {
-        if (window.ListeningProgress && typeof window.ListeningProgress.normalizeExamKey === 'function') {
-            return window.ListeningProgress.normalizeExamKey(value);
-        }
-
-        const text = String(value || '').trim();
-        if (!text) return '';
-
-        const normalizedText = text
-            .replace(/[．。]/g, '.')
-            .replace(/\./g, '-');
-
-        let match = normalizedText.match(/^(?:N[123]-)?(\d{4})-(\d{1,2})$/i);
-        if (match) {
-            return `${match[1]}-${String(parseInt(match[2], 10)).padStart(2, '0')}`;
-        }
-
-        match = text.match(/^(?:N[123]-)?(\d{4})年(\d{1,2})月$/i);
-        if (match) {
-            return `${match[1]}-${String(parseInt(match[2], 10)).padStart(2, '0')}`;
-        }
-
-        return normalizedText;
+        return window.ListeningExamKey.normalize(value);
     }
 
     function formatDisplayYear(examKey) {
@@ -256,6 +235,27 @@
         return `${getSharedPracticePath()}?${params.toString()}`;
     }
 
+    function buildCategoryDirectoryUrl(config) {
+        const folders = {
+            task_comprehension: 'task-comprehension',
+            point_comprehension: 'point-comprehension',
+            overview_comprehension: 'summary-comprehension',
+            summary_comprehension: 'summary-comprehension',
+            immediate_response: 'immediate-response',
+            integrated_comprehension: 'integrated-comprehension'
+        };
+        const folder = folders[normalizeType(config && config.type)];
+        const level = normalizeLevel(config && config.level);
+        const practice = new URL(getSharedPracticePath(), window.location.href);
+        if (!folder || !/^N[123]$/.test(level)) return new URL('../../../index.html#exam/exam-listening', practice).href;
+        const url = new URL(`../${folder}/${level.toLowerCase()}/index.html`, practice);
+        url.searchParams.set('browse', 'category');
+        if (config.categoryId) url.searchParams.set('category', String(config.categoryId));
+        const setNumber = normalizeSetNumber(config.setNumber);
+        if (setNumber) url.searchParams.set('set', String(setNumber));
+        return url.href;
+    }
+
     function buildLastQuestionKey(type, level, categoryId) {
         return `${STORAGE_PREFIX}${normalizeType(type)}::${normalizeLevel(level)}::${String(categoryId || '').trim()}`;
     }
@@ -310,6 +310,23 @@
         }
 
         localStorage.setItem(key, JSON.stringify(normalized));
+        window.ListeningProgress?.savePracticePosition(type, level, 'category', {
+            ...normalized,
+            categoryId,
+            setNumber: question.setNumber || 0
+        });
+    }
+
+    function getRecentPractice(type, level) {
+        const position = window.ListeningProgress?.getPracticePosition(type, level, 'category');
+        if (!position) return null;
+        const category = getCategory(type, level, position.categoryId);
+        if (!category) return null;
+        const items = position.setNumber
+            ? getCategorySetItems(type, level, position.categoryId, position.setNumber)
+            : getCategoryItems(type, level, position.categoryId);
+        const index = items.findIndex((item) => item.sourceExamKey === position.examKey && item.questionId === position.questionId);
+        return index < 0 ? null : { ...position, category, index };
     }
 
     function getLastSetQuestion(type, level, categoryId, setNumber) {
@@ -433,6 +450,8 @@
         getCategorySetItems,
         getCategorySetProgress,
         buildCategoryPracticeUrl,
+        buildCategoryDirectoryUrl,
+        getRecentPractice,
         getLastQuestion,
         saveLastQuestion,
         getLastSetQuestion,

@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261016-summary-n1-2016-07-eacd7d49b032">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,146 +192,387 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
 <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2016-07-概要理解": {
-                label: "2016年07月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2016.07-1.mp3",
-                        script: {
-                            question: "一番：女の学生と男の学生が話しています。男の学生は、今住んでいる家での生活について、どう思っていますか。",
-                            questionTrans: "（第一题：女学生和男学生正在聊天。男学生对于现在住的家里的生活是怎么想的？）",
-                            dialogue: [
-                                { "speaker": "女", "text": "ね、中山くん、大学の近くの<span class=\"keyword\" onclick=\"showTooltip(event, '一軒家（いっけんや）：独栋房子，独门独院。')\">一軒家</span>に住んでるんだってね。実家じゃなかったよね。", "trans": "（哎，中山同学，听说你住在大学附近的一栋独栋房子里啊。不是在你老家吧。）" },
-                                { "speaker": "男", "text": "うん。石田さんという人のところなんだけどね。「異世代ホームシェア」っていって、一人暮らしのお年寄りが学生向けに部屋を安く提供してくれてるんだ。いわゆる「<span class=\"keyword\" onclick=\"showTooltip(event, '下宿（げしゅく）：寄宿，租修别人的房间住。')\">下宿</span>」だね。", "trans": "（嗯。是住在一位叫石田先生的家里。这叫“跨世代共享住宅”，就是独居的老年人把房间便宜地提供给学生。也就是所谓的“寄宿”啦。）" },
-                                { "speaker": "女", "text": "へー。お年寄りのところに下宿ってどんな感じ？", "trans": "（诶——。寄宿在老年人那里是什么感觉啊？）" },
-                                { "speaker": "男", "text": "うん、生活リズムが違うし、お風呂に入る時間が遅いとか、電気は<span class=\"keyword\" onclick=\"showTooltip(event, 'こまめに：勤快地，频繁地。')\">こまめに</span>消してほしいとか、いろいろうるさく注意されることもあるけど。", "trans": "（嗯，生活节奏不同，比如会因为洗澡时间太晚，或者希望我勤关灯等事情，被啰啰嗦嗦地提醒各种注意事项。）" },
-                                { "speaker": "女", "text": "へええ。", "trans": "（哎呀。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男学生在这里进行转折，提到虽然会被啰嗦，但石田先生多才多艺又博学，聊天很有趣，并不无聊（退屈しないよ）。这说明他对这段生活的评价整体上是积极的。')\">でも石田さん<span class=\"keyword\" onclick=\"showTooltip(event, '多趣味（たしゅみ）：爱好广泛。')\">多趣味</span>で<span class=\"keyword\" onclick=\"showTooltip(event, '博学（はくがく）：博学，知识渊博。')\">博学</span>だから、いろんなこと知ってて、話聞いてると気がついたら深夜になってるってこともあるんだ。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，男学生明确表示了“不无聊（退屈しないよ）”，并且后文提到还是需要顾虑的，所以排除了选项4。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '退屈（たいくつ）：无聊，闷。')\">退屈</span>しないよ。</span></span></span></span>", "trans": "（不过石田先生爱好广泛又博学，知道很多事情，听他说话有时回过神来都已经深夜了。一点都不无聊哦。）" },
-                                { "speaker": "女", "text": "ふーん、私だったら他人と生活するのは<span class=\"keyword\" onclick=\"showTooltip(event, '気（き）をつかう：费心，顾虑，照顾别人的情绪。')\">気をつかっちゃう</span>なあ。", "trans": "（嗯——，要是我的话，和别人一起生活会觉得很费心呢。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男生回答“确实还是需要费些心的（それなりにね）”，排除了认为“完全不需要顾虑”的选项3。接着他补充道“彼此彼此（お互い様だから）”，表明他理解并接受这种互相体谅的状态。综合前文的“虽然啰嗦但很有趣”，得出结论是：虽然有时需要顾虑，但感觉还不赖。符合选项2。')\"><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，虽然男生承认需要顾虑，但他并没有觉得“不舒服/不自在（居心地がよくない）”，反而觉得很有趣，排除选项1。选项3中说“完全不需要顾虑”与原文不符，排除。')\">まあ、それなりにね。でも、石田さんにしても、他人のぼくが入ってきたわけだし、<span class=\"keyword\" onclick=\"showTooltip(event, 'お互（たが）い様（さま）：彼此彼此，互相都一样。')\">お互い様</span>だから。</span></span></span></span>", "trans": "（嘛，确实多少还是要费些心的。但是，对石田先生来说，也是我这个外人住了进来，大家都是彼此彼此嘛。）" },
-                                { "speaker": "女", "text": "そっか。", "trans": "（这样啊。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "気をつかってばかりで居心地がよくない", "translation": "（总是在顾虑别人，感觉很不自在）", "correct": false },
-                            { "text": "気をつかうこともあるが悪くはない", "translation": "（虽然有时也需要顾虑别人，但感觉还不赖）", "correct": true },
-                            { "text": "気をつかうこともなく満足している", "translation": "（完全不需要顾虑别人，感到很满意）", "correct": false },
-                            { "text": "気をつかうことはないが退屈だ", "translation": "（虽然不需要顾虑别人，但是很无聊）", "correct": false }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        audio: "../assets/audio/2016.07-2.mp3",
-                        script: {
-                            question: "二番：テレビでスポーツコメンテーターが話しています。スポーツコメンテーターは主に何について話していますか。",
-                            questionTrans: "（第二题：在电视上体育评论员正在讲话。体育评论员主要在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和选项2，评论员在开头虽然提到了日常饮食和打造强壮身体，但这只是引出后续观点的背景介绍，并不是讲话的中心主题，可以排除。')\">プロのスポーツ選手は日頃からバランスのよい食事を意識し、<span class=\"keyword\" onclick=\"showTooltip(event, '並々（なみなみ）ならぬ：非比寻常的，不寻常的。')\">並々ならぬ</span>努力とトレーニングを重ねることで、強く<span class=\"keyword\" onclick=\"showTooltip(event, 'しなやか：柔软，柔韧。')\">しなやか</span>な肉体を手に入れていますが</span></span>、", trans: "（职业体育选手平时就有意识地保持营养均衡的饮食，通过不断付出非比寻常的努力和训练，获得了强壮柔韧的肉体，但）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '评论员用“但（が）”进行转折，引出真正的重点：顶尖选手拥有在紧迫场面下保持平静的【内在力量（内面の強さ）】，即精神力量。并且强调了这种力量对于取得好成绩的必要性。这符合选项3“培养精神力量的重要性”。')\">中でもトップクラスの選手は肉体面に加え、「ここぞ」という<span class=\"keyword\" onclick=\"showTooltip(event, '緊迫（きんぱく）：紧迫，紧张。')\">緊迫</span>した場面で<span class=\"keyword\" onclick=\"showTooltip(event, '平静（へいせい）：平静，镇静。')\">平静</span>を保つことができる強さをもっています。観客が<span class=\"keyword\" onclick=\"showTooltip(event, 'かたずをのむ（固唾を呑む）：屏息凝视，紧张地注视。')\">かたずをのんで</span>見守るような場面でも<span class=\"keyword\" onclick=\"showTooltip(event, '動（どう）じる：动摇，惊慌。')\">動じる</span>ことなく本来の力が発揮できる内面の強さ、試合でよい結果を出すにはこの点に<span class=\"keyword\" onclick=\"showTooltip(event, '特化（とっか）：特化，专门强化。')\">特化</span>したトレーニングが<span class=\"keyword\" onclick=\"showTooltip(event, '不可欠（ふかけつ）：不可或缺。')\">不可欠</span>です。</span></span>", trans: "（在他们之中，顶尖选手除了肉体层面，还拥有在“关键时刻”这种紧迫场面下保持平静的强大力量。在观众都屏息凝视的场面下也毫不动摇、能发挥出原有实力的内在力量，为了在比赛中取得好成绩，专门针对这一点的训练是不可或缺的。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，虽然提到了需要进行相关的训练，但整段讲话并没有具体介绍消除紧张的“训练方法”，可以排除。')\">これは試合の結果を大きく<span class=\"keyword\" onclick=\"showTooltip(event, '左右（さゆう）：左右，支配，影响。')\">左右</span>する要素だといえるでしょう。</span></span>", trans: "（可以说这是极大左右比赛结果的要素。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "日々の食事内容が試合に与える影響", translation: "（日常饮食内容对比赛的影响）", correct: false },
-                            { text: "強くしなやかな体の作り方", translation: "（打造强壮柔韧身体的方法）", correct: false },
-                            { text: "精神力を養うことの重要性", translation: "（培养精神力量的重要性）", correct: true },
-                            { text: "緊張を解くためのトレーニング方法", translation: "（消除紧张的训练方法）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        audio: "../assets/audio/2016.07-3.mp3",
-                        script: {
-                            question: "三番：会社で社長が話しています。社長は主に何について話していますか。",
-                            questionTrans: "（第三题：在公司里，社长正在讲话。社长主要在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "わが社は加工食品メーカーとして、開業以来、お客様に喜んでいただける商品作りに<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り組（く）む：致力于，埋头于。')\">取り組んで</span>いますが、さらに広く多くの方にわが社の味を知っていただくため、海外に<span class=\"keyword\" onclick=\"showTooltip(event, '進出（しんしゅつ）：进入，打入（新领域/海外）。')\">進出</span>する構想を長年持ち続けてきました。", trans: "（我司作为一家加工食品制造商，自开业以来，一直致力于制作能让顾客满意的商品，但为了让更多的人了解我们公司的味道，我们常年怀揣着进军海外的构想。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '社长在这里提出了核心话题：【（虽然曾因业绩不佳担心过）总算有望在下个年度着手建设海外工厂了（ようやく来年度、海外工場建設に着手できる見込みとなりました）】。后续提到了一系列围绕海外工厂的课题和目标，这说明整段讲话都在围绕“新开展的海外事业”展开，符合选项1。')\">一時期<span class=\"keyword\" onclick=\"showTooltip(event, '業績（ぎょうせき）：业绩。')\">業績</span>が<span class=\"keyword\" onclick=\"showTooltip(event, '振（ふ）るう：活跃，兴旺（常接否定表示不佳）。')\">振るわず</span>実現が危ぶまれたこともありましたが、<span class=\"keyword\" onclick=\"showTooltip(event, 'ようやく：总算，终于。')\">ようやく</span>来年度、海外工場建設に<span class=\"keyword\" onclick=\"showTooltip(event, '着手（ちゃくしゅ）：着手，开始。')\">着手</span>できる見込みとなりました。</span></span>", trans: "（虽然曾有一段时期因为业绩不佳而担心无法实现，但总算有望在下个年度着手建设海外工厂了。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2和选项3，社长强调的是在当地工厂要生产出“和以往一样高品质”的商品，并没有提到要开发“新商品”或是探讨商品开发的细节，因此排除。')\">現地での人員の<span class=\"keyword\" onclick=\"showTooltip(event, '確保（かくほ）：确保。')\">確保</span>や教育、<span class=\"keyword\" onclick=\"showTooltip(event, '販路（はんろ）：销路。')\">販路</span>の新規<span class=\"keyword\" onclick=\"showTooltip(event, '開拓（かいたく）：开拓。')\">開拓</span>など課題は山積していますが、現地工場でも品質を<span class=\"keyword\" onclick=\"showTooltip(event, '損（そこ）なう：损害，损坏。')\">損なう</span>ことのないよう、これまでどおり質の高い商品を生産し、販売していきたいと思います。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，文中虽然提到了下年度工厂建设的“预期（見込み）”以及曾经的“业绩（業績）”，但这都是为了说明海外事业的进展，并不是专门对“下年度业绩预期”进行报告，排除。')\"></span></span>", trans: "（虽然还堆积着确保和教育当地人员、开拓新销路等课题，但为了不损害品质，我们希望在当地工厂也能像以往一样生产并销售高品质的商品。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "新たに展開する海外事業", translation: "（新开展的海外事业）", correct: true },
-                            { text: "質の高い商品の開発", translation: "（高品质商品的开发）", correct: false },
-                            { text: "来年度発売する新商品", translation: "（下年度发售的新商品）", correct: false },
-                            { text: "来年度の業績見込み", translation: "（下年度的业绩预期）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        audio: "../assets/audio/2016.07-4.mp3",
-                        script: {
-                            question: "四番：ラジオで女の人が話しています。女の人が言いたいことは何ですか。",
-                            questionTrans: "（第四题：在广播里女人正在讲话。女人想说的是什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "みなさんは、日々の生活の中で頑張っていることはありますか。勉強や仕事、あるいは貯金などさまざまだと思います。", trans: "（大家在日常生活中，有没有正在努力做的事情呢？我想有学习、工作，或者是存钱等各种各样的事情。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和选项2，女人确实提到了定下高目标并为之努力回报会很大，但这只是前半段的铺垫，随后立刻用“反面（相反）”进行了转折，指出了过度的坏处，所以这并不是她最终想表达的核心主旨，排除。')\">何事も高い目標を<span class=\"keyword\" onclick=\"showTooltip(event, '掲（かか）げる：提出，标榜。')\">掲げ</span>、諦めることなく、それに向かって努力すれば、それだけ自分にかえってくるものも大きいのは確かです。</span></span>", trans: "（无论什么事，如果设定很高的目标，不放弃地朝着它努力的话，确实自己得到的回报也会相应地很大。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人用“反面（反之/相反）”进行转折，指出了核心问题所在：【反之，如果做得过度，也有可能导致视野变窄，或者破坏平衡（反面、過度に行うと、視野が狭くなったり、バランスを崩すこともあります）】。后续存钱的例子也是为了说明“做得太过火”的负面影响。这说明她想传达的是做事情不能过度，符合选项3。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '反面（はんめん）：反面，另一方面。')\">反面</span>、<span class=\"keyword\" onclick=\"showTooltip(event, '過度（かど）：过度。')\">過度</span>に行うと、<span class=\"keyword\" onclick=\"showTooltip(event, '視野（しや）：视野。')\">視野</span>が狭くなったり、バランスを<span class=\"keyword\" onclick=\"showTooltip(event, '崩（くず）す：破坏，弄乱。')\">崩す</span>こともあります。</span></span>", trans: "（但是反过来，如果做得过度了，也会导致视野变窄，或者破坏平衡。）" },
-                                { speaker: "女", text: "たとえば、貯金するために、日々頑張って節約をしているという方がいらっしゃるかもしれませんが、<span class=\"keyword\" onclick=\"showTooltip(event, '行（い）き過（す）ぎる：做得过火，过度。')\">行き過ぎる</span>と、周りから<span class=\"keyword\" onclick=\"showTooltip(event, 'けち：小气，吝啬。')\">けち</span>で付き合いにくい人だと思われてしまうこともあります。", trans: "（例如，可能有人为了存钱而每天努力节约，但如果做得太过火，也会被周围人认为是个小气、难以交往的人。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，文中明明说的是“不放弃（諦めることなく）”，选项却说“放弃是关键”，意思完全相反，直接排除。')\">このような点を<span class=\"keyword\" onclick=\"showTooltip(event, '考慮（こうりょ）：考虑。')\">考慮</span>しつつ、目標に向かって頑張ることで、よりよい生活が送れるのだと思います。</span></span>", trans: "（考虑到这些问题，同时朝着目标努力，我想这样才能过上更好的生活。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "何をやるにも全力で取り組むべきだ", translation: "（无论做什么都应该全力以赴）", correct: false },
-                            { text: "何をやるにも目標を高めにしたほうがいい", translation: "（无论做什么最好都把目标定高一点）", correct: false },
-                            { text: "何をやるにも行き過ぎないことが大切だ", translation: "（无论做什么都不过度是很重要的）", correct: true },
-                            { text: "何をやるにも諦めが肝心だ", translation: "（无论做什么放弃都是关键的）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        audio: "../assets/audio/2016.07-5.mp3",
-                        script: {
-                            question: "五番：テレビでコメンテーターが国立公園について話しています。コメンテーターが言いたいことは何ですか。",
-                            questionTrans: "（第五题：在电视上，评论员正在谈论国立公园。评论员想说的是什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "国立公園に指定されている桜高原が今、危機に<span class=\"keyword\" onclick=\"showTooltip(event, '直面（ちょくめん）：面临，面对。')\">直面</span>しています。", trans: "（被指定为国立公园的樱高原，现在正面临着危机。）" },
-                                { speaker: "女", text: "これまで、自然保護の観点から、地元の西山市によって、立ち入り人数や時間の<span class=\"keyword\" onclick=\"showTooltip(event, '規制（きせい）：规制，限制。')\">規制</span>がなされてきましたが、その制約の厳しさから、訪れる人が<span class=\"keyword\" onclick=\"showTooltip(event, '激減（げきげん）：骤减，锐减。')\">激減</span>し、それによって、地元の人々の関心までもが<span class=\"keyword\" onclick=\"showTooltip(event, '薄（うす）れる：变淡，淡薄。')\">薄れてきている</span>のです。", trans: "（一直以来，从自然保护的观点出发，当地的西山市对进入的人数和时间进行了限制，但由于制约过于严格，来访的游客骤减，由此导致连当地人的关心程度也变得越来越淡薄。）" },
-                                { speaker: "女", text: "桜高原では、これまで地元の非営利団体がボランティアを<span class=\"keyword\" onclick=\"showTooltip(event, '募（つの）る：招募，募集。')\">募って</span>、清掃活動を行うなど、積極的に保護活動に取り組んできましたが、ここ数年は、人が集まらず、以前のような活動ができなくなっているそうです。", trans: "（在樱高原，一直以来当地的非营利组织都会招募志愿者，进行清扫活动等，积极致力于保护活动，但据说这几年因为召集不到人，已经无法像以前那样开展活动了。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '评论员在最后给出了核心建议：【这并非是一个二选一的问题，而是重新确认公开的目的，并重新审视管理和运营的方式，这难道不是当务之急吗？（管理、運営のあり方を見直すことが急務ではないでしょうか）】。这就意味着她主张应该重新考虑（修改）现在的规定内容，完全符合选项2。')\">保護か公開か、<span class=\"keyword\" onclick=\"showTooltip(event, '二者択一（にしゃたくいつ）：二选一。')\">二者択一</span>ではなく、何のための公開か、その目的を再確認し、管理、運営のあり方を見直すことが<span class=\"keyword\" onclick=\"showTooltip(event, '急務（きゅうむ）：当务之急。')\">急務</span>ではないでしょうか。</span></span>", trans: "（是保护还是公开，这并非是一个二选一的问题，而是为了什么而公开，重新确认其目的，并重新审视管理、运营的方式，这难道不是当务之急吗？）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，文中提到游客减少是因为“限制太严格”，而不是宣传不够，排除。关于选项3，文中已经指出“制约的严格”带来了危机（志愿活动办不下去等），所以显然不该“更加严格”，排除。关于选项4，评论员是对地方政府目前的“严格管理模式”提出质疑，呼吁重新审视，而不是单纯地“全权交给地方政府”，排除。')\">自治体の対応が期待されます。</span></span>", trans: "（期待地方政府能有所应对。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "訪れる人を増やすために宣伝をするべきだ", translation: "（为了增加游客应该进行宣传）", correct: false },
-                            { text: "現在の規制内容を再考するべきだ", translation: "（应该重新考虑现在的规定内容）", correct: true },
-                            { text: "自然保護の規制を厳格にするべきだ", translation: "（应该使自然保护的规定更加严格）", correct: false },
-                            { text: "自然保護活動は自治体に任せるべきだ", translation: "（自然保护活动应该交给地方政府负责）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 6,
-                        audio: "../assets/audio/2016.07-6.mp3",
-                        script: {
-                            question: "六番：テレビで労働問題の専門家が話しています。専門家は主に何について話していますか。",
-                            questionTrans: "（第六题：在电视上劳动问题的专家正在讲话。专家主要在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于前三个选项：工作时间和健康的关系（选项1）只是作为引出话题的背景被提及；文中并没有探讨如何提高工作者的健康意识（选项2）；虽然提到了带薪休假取得率一直很低，但并没有专门分析其“变化”的趋势（选项3）。因此这三项均可排除。')\">働く人にとって、労働時間と日常生活のバランスを<span class=\"keyword\" onclick=\"showTooltip(event, '保（たも）つ：保持，维持。')\">保つ</span>ことは大切で、これも健康維持にも<span class=\"keyword\" onclick=\"showTooltip(event, '不可欠（ふかけつ）：不可或缺。')\">不可欠</span>ですが、現実はなかなか思うようにいかないようです。</span></span>", trans: "（对于工作的人来说，保持工作时间和日常生活的平衡是很重要的，这也是维持健康所不可或缺的，但现实似乎很难如愿。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '专家在交代了背景后，明确指出了核心话题：【因此，政府提出了促进带薪休假取得的方针（そこで、政府は有給休暇の取得を促進する方針を打ち出しました）】。随后又详细列举了政府鼓励企业的具体做法（设立统一休息日、让员工提交休假计划等）。整段话都在围绕政府的这一举措展开，完全符合选项4。')\">そこで、政府は<span class=\"keyword\" onclick=\"showTooltip(event, '有給休暇（ゆうきゅうきゅうか）：带薪休假。')\">有給休暇</span>の<span class=\"keyword\" onclick=\"showTooltip(event, '取得（しゅとく）：取得，获得。')\">取得</span>を<span class=\"keyword\" onclick=\"showTooltip(event, '促進（そくしん）：促进。')\">促進</span>する方針を<span class=\"keyword\" onclick=\"showTooltip(event, '打（う）ち出（だ）す：提出（方针、政策等）。')\">打ち出しました</span>。</span></span>", trans: "（因此，政府提出了促进带薪休假取得的方针。）" },
-                                { speaker: "男", text: "有給の取得率は<span class=\"keyword\" onclick=\"showTooltip(event, '恒常的（こうじょうてき）：恒常地，经常地。')\">恒常的</span>に低く<span class=\"keyword\" onclick=\"showTooltip(event, '推移（すいい）：推移，演变。')\">推移</span>していて、ここを何とかすることが、現状の改善に向けた大きな一歩だと考えているからです。", trans: "（因为带薪休假的取得率一直处于较低水平，政府认为设法解决这个问题，是迈向改善现状的一大步。）" },
-                                { speaker: "男", text: "<span class=\"keyword\" onclick=\"showTooltip(event, 'とはいえ：话虽如此，尽管如此。')\">とはいえ</span>、長年続いてきた働き方の習慣を変えるのは容易なことではありません。", trans: "（话虽如此，要改变长年以来的工作方式和习惯并非易事。）" },
-                                { speaker: "男", text: "政府は、事業者に対して、一斉休業日を<span class=\"keyword\" onclick=\"showTooltip(event, '設（もう）ける：设立，设置。')\">設ける</span>ことや、<span class=\"keyword\" onclick=\"showTooltip(event, '従業員（じゅうぎょういん）：员工。')\">従業員</span>に一年間の休暇取得計画を提出させることを<span class=\"keyword\" onclick=\"showTooltip(event, '奨励（しょうれい）：鼓励，奖励。')\">奨励</span>しています。", trans: "（政府鼓励企业设立统一休息日，或者让员工提交为期一年的休假计划。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "労働時間と健康の関係", translation: "（工作时间与健康的关系）", correct: false },
-                            { text: "働く人の健康意識を高める方法", translation: "（提高工作者健康意识的方法）", correct: false },
-                            { text: "有給休暇の取得率の変化", translation: "（带薪休假取得率的变化）", correct: false },
-                            { text: "有給休暇の取得率をあげる政府の取り組み", translation: "（政府为提高带薪休假取得率而采取的举措）", correct: true }
-                        ]
-                    }
-                ]
+  "2016-07": {
+    "label": "2016年07月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2016.07-1.mp3",
+        "script": {
+          "question": "女の学生と男の学生が話しています。",
+          "questionTrans": "（女学生和男学生正在聊天。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "ね、中山くん、大学の近くの<span class=\"keyword\" onclick=\"showTooltip(event, '一軒家（いっけんや）：独栋房子，独门独院。')\">一軒家</span>に住んでるんだってね。実家じゃなかったよね。",
+              "trans": "（哎，中山同学，听说你住在大学附近的一栋独栋房子里啊。不是在你老家吧。）"
+            },
+            {
+              "speaker": "男",
+              "text": "うん。石田さんという人のところなんだけどね。「異世代ホームシェア」っていって、一人暮らしのお年寄りが学生向けに部屋を安く提供してくれてるんだ。いわゆる「<span class=\"keyword\" onclick=\"showTooltip(event, '下宿（げしゅく）：寄宿，租修别人的房间住。')\">下宿</span>」だね。",
+              "trans": "（嗯。是住在一位叫石田先生的家里。这叫“跨世代共享住宅”，就是独居的老年人把房间便宜地提供给学生。也就是所谓的“寄宿”啦。）"
+            },
+            {
+              "speaker": "女",
+              "text": "へー。お年寄りのところに下宿ってどんな感じ？",
+              "trans": "（诶——。寄宿在老年人那里是什么感觉啊？）"
+            },
+            {
+              "speaker": "男",
+              "text": "うん、生活リズムが違うし、お風呂に入る時間が遅いとか、電気は<span class=\"keyword\" onclick=\"showTooltip(event, 'こまめに：勤快地，频繁地。')\">こまめに</span>消してほしいとか、いろいろうるさく注意されることもあるけど。",
+              "trans": "（嗯，生活节奏不同，比如会因为洗澡时间太晚，或者希望我勤关灯等事情，被啰啰嗦嗦地提醒各种注意事项。）"
+            },
+            {
+              "speaker": "女",
+              "text": "へええ。",
+              "trans": "（哎呀。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男学生在这里进行转折，提到虽然会被啰嗦，但石田先生多才多艺又博学，聊天很有趣，并不无聊（退屈しないよ）。这说明他对这段生活的评价整体上是积极的。')\">でも石田さん<span class=\"keyword\" onclick=\"showTooltip(event, '多趣味（たしゅみ）：爱好广泛。')\">多趣味</span>で<span class=\"keyword\" onclick=\"showTooltip(event, '博学（はくがく）：博学，知识渊博。')\">博学</span>だから、いろんなこと知ってて、話聞いてると気がついたら深夜になってるってこともあるんだ。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，男学生明确表示了“不无聊（退屈しないよ）”，并且后文提到还是需要顾虑的，所以排除了选项4。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '退屈（たいくつ）：无聊，闷。')\">退屈</span>しないよ。</span></span></span></span>",
+              "trans": "（不过石田先生爱好广泛又博学，知道很多事情，听他说话有时回过神来都已经深夜了。一点都不无聊哦。）"
+            },
+            {
+              "speaker": "女",
+              "text": "ふーん、私だったら他人と生活するのは<span class=\"keyword\" onclick=\"showTooltip(event, '気（き）をつかう：费心，顾虑，照顾别人的情绪。')\">気をつかっちゃう</span>なあ。",
+              "trans": "（嗯——，要是我的话，和别人一起生活会觉得很费心呢。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男生回答“确实还是需要费些心的（それなりにね）”，排除了认为“完全不需要顾虑”的选项3。接着他补充道“彼此彼此（お互い様だから）”，表明他理解并接受这种互相体谅的状态。综合前文的“虽然啰嗦但很有趣”，得出结论是：虽然有时需要顾虑，但感觉还不赖。符合选项2。')\"><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，虽然男生承认需要顾虑，但他并没有觉得“不舒服/不自在（居心地がよくない）”，反而觉得很有趣，排除选项1。选项3中说“完全不需要顾虑”与原文不符，排除。')\">まあ、それなりにね。でも、石田さんにしても、他人のぼくが入ってきたわけだし、<span class=\"keyword\" onclick=\"showTooltip(event, 'お互（たが）い様（さま）：彼此彼此，互相都一样。')\">お互い様</span>だから。</span></span></span></span>",
+              "trans": "（嘛，确实多少还是要费些心的。但是，对石田先生来说，也是我这个外人住了进来，大家都是彼此彼此嘛。）"
+            },
+            {
+              "speaker": "女",
+              "text": "そっか。",
+              "trans": "（这样啊。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の学生は、今住んでいる家での生活について、どう思っていますか。",
+              "trans": "（男学生对于现在住的家里的生活是怎么想的？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "気をつかってばかりで居心地がよくない",
+            "translation": "（总是在顾虑别人，感觉很不自在）",
+            "correct": false
+          },
+          {
+            "text": "気をつかうこともあるが悪くはない",
+            "translation": "（虽然有时也需要顾虑别人，但感觉还不赖）",
+            "correct": true
+          },
+          {
+            "text": "気をつかうこともなく満足している",
+            "translation": "（完全不需要顾虑别人，感到很满意）",
+            "correct": false
+          },
+          {
+            "text": "気をつかうことはないが退屈だ",
+            "translation": "（虽然不需要顾虑别人，但是很无聊）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2016.07-2.mp3",
+        "script": {
+          "question": "テレビでスポーツコメンテーターが話しています。",
+          "questionTrans": "（在电视上体育评论员正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和选项2，评论员在开头虽然提到了日常饮食和打造强壮身体，但这只是引出后续观点的背景介绍，并不是讲话的中心主题，可以排除。')\">プロのスポーツ選手は日頃からバランスのよい食事を意識し、<span class=\"keyword\" onclick=\"showTooltip(event, '並々（なみなみ）ならぬ：非比寻常的，不寻常的。')\">並々ならぬ</span>努力とトレーニングを重ねることで、強く<span class=\"keyword\" onclick=\"showTooltip(event, 'しなやか：柔软，柔韧。')\">しなやか</span>な肉体を手に入れていますが</span></span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '评论员用“但（が）”进行转折，引出真正的重点：顶尖选手拥有在紧迫场面下保持平静的【内在力量（内面の強さ）】，即精神力量。并且强调了这种力量对于取得好成绩的必要性。这符合选项3“培养精神力量的重要性”。')\">中でもトップクラスの選手は肉体面に加え、「ここぞ」という<span class=\"keyword\" onclick=\"showTooltip(event, '緊迫（きんぱく）：紧迫，紧张。')\">緊迫</span>した場面で<span class=\"keyword\" onclick=\"showTooltip(event, '平静（へいせい）：平静，镇静。')\">平静</span>を保つことができる強さをもっています。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '评论员用“但（が）”进行转折，引出真正的重点：顶尖选手拥有在紧迫场面下保持平静的【内在力量（内面の強さ）】，即精神力量。并且强调了这种力量对于取得好成绩的必要性。这符合选项3“培养精神力量的重要性”。')\">観客が<span class=\"keyword\" onclick=\"showTooltip(event, 'かたずをのむ（固唾を呑む）：屏息凝视，紧张地注视。')\">かたずをのんで</span>見守るような場面でも<span class=\"keyword\" onclick=\"showTooltip(event, '動（どう）じる：动摇，惊慌。')\">動じる</span>ことなく本来の力が発揮できる内面の強さ、試合でよい結果を出すにはこの点に<span class=\"keyword\" onclick=\"showTooltip(event, '特化（とっか）：特化，专门强化。')\">特化</span>したトレーニングが<span class=\"keyword\" onclick=\"showTooltip(event, '不可欠（ふかけつ）：不可或缺。')\">不可欠</span>です。</span></span>",
+              "trans": "（职业体育选手平时就有意识地保持营养均衡的饮食，通过不断付出非比寻常的努力和训练，获得了强壮柔韧的肉体，但在他们之中，顶尖选手除了肉体层面，还拥有在“关键时刻”这种紧迫场面下保持平静的强大力量。在观众都屏息凝视的场面下也毫不动摇、能发挥出原有实力的内在力量，为了在比赛中取得好成绩，专门针对这一点的训练是不可或缺的。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，虽然提到了需要进行相关的训练，但整段讲话并没有具体介绍消除紧张的“训练方法”，可以排除。')\">これは試合の結果を大きく<span class=\"keyword\" onclick=\"showTooltip(event, '左右（さゆう）：左右，支配，影响。')\">左右</span>する要素だといえるでしょう。</span></span>",
+              "trans": "（可以说这是极大左右比赛结果的要素。）"
+            },
+            {
+              "speaker": "問",
+              "text": "スポーツコメンテーターは主に何について話していますか。",
+              "trans": "（体育评论员主要在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "日々の食事内容が試合に与える影響",
+            "translation": "（日常饮食内容对比赛的影响）",
+            "correct": false
+          },
+          {
+            "text": "強くしなやかな体の作り方",
+            "translation": "（打造强壮柔韧身体的方法）",
+            "correct": false
+          },
+          {
+            "text": "精神力を養うことの重要性",
+            "translation": "（培养精神力量的重要性）",
+            "correct": true
+          },
+          {
+            "text": "緊張を解くためのトレーニング方法",
+            "translation": "（消除紧张的训练方法）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2016.07-3.mp3",
+        "script": {
+          "question": "会社で社長が話しています。",
+          "questionTrans": "（在公司里，社长正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "わが社は加工食品メーカーとして、開業以来、お客様に喜んでいただける商品作りに<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り組（く）む：致力于，埋头于。')\">取り組んで</span>いますが、さらに広く多くの方にわが社の味を知っていただくため、海外に<span class=\"keyword\" onclick=\"showTooltip(event, '進出（しんしゅつ）：进入，打入（新领域/海外）。')\">進出</span>する構想を長年持ち続けてきました。",
+              "trans": "（我司作为一家加工食品制造商，自开业以来，一直致力于制作能让顾客满意的商品，但为了让更多的人了解我们公司的味道，我们常年怀揣着进军海外的构想。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '社长在这里提出了核心话题：【（虽然曾因业绩不佳担心过）总算有望在下个年度着手建设海外工厂了（ようやく来年度、海外工場建設に着手できる見込みとなりました）】。后续提到了一系列围绕海外工厂的课题和目标，这说明整段讲话都在围绕“新开展的海外事业”展开，符合选项1。')\">一時期<span class=\"keyword\" onclick=\"showTooltip(event, '業績（ぎょうせき）：业绩。')\">業績</span>が<span class=\"keyword\" onclick=\"showTooltip(event, '振（ふ）るう：活跃，兴旺（常接否定表示不佳）。')\">振るわず</span>実現が危ぶまれたこともありましたが、<span class=\"keyword\" onclick=\"showTooltip(event, 'ようやく：总算，终于。')\">ようやく</span>来年度、海外工場建設に<span class=\"keyword\" onclick=\"showTooltip(event, '着手（ちゃくしゅ）：着手，开始。')\">着手</span>できる見込みとなりました。</span></span>",
+              "trans": "（虽然曾有一段时期因为业绩不佳而担心无法实现，但总算有望在下个年度着手建设海外工厂了。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2和选项3，社长强调的是在当地工厂要生产出“和以往一样高品质”的商品，并没有提到要开发“新商品”或是探讨商品开发的细节，因此排除。')\">現地での人員の<span class=\"keyword\" onclick=\"showTooltip(event, '確保（かくほ）：确保。')\">確保</span>や教育、<span class=\"keyword\" onclick=\"showTooltip(event, '販路（はんろ）：销路。')\">販路</span>の新規<span class=\"keyword\" onclick=\"showTooltip(event, '開拓（かいたく）：开拓。')\">開拓</span>など課題は山積していますが、現地工場でも品質を<span class=\"keyword\" onclick=\"showTooltip(event, '損（そこ）なう：损害，损坏。')\">損なう</span>ことのないよう、これまでどおり質の高い商品を生産し、販売していきたいと思います。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，文中虽然提到了下年度工厂建设的“预期（見込み）”以及曾经的“业绩（業績）”，但这都是为了说明海外事业的进展，并不是专门对“下年度业绩预期”进行报告，排除。')\"></span></span>",
+              "trans": "（虽然还堆积着确保和教育当地人员、开拓新销路等课题，但为了不损害品质，我们希望在当地工厂也能像以往一样生产并销售高品质的商品。）"
+            },
+            {
+              "speaker": "問",
+              "text": "社長は主に何について話していますか。",
+              "trans": "（社长主要在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "新たに展開する海外事業",
+            "translation": "（新开展的海外事业）",
+            "correct": true
+          },
+          {
+            "text": "質の高い商品の開発",
+            "translation": "（高品质商品的开发）",
+            "correct": false
+          },
+          {
+            "text": "来年度発売する新商品",
+            "translation": "（下年度发售的新商品）",
+            "correct": false
+          },
+          {
+            "text": "来年度の業績見込み",
+            "translation": "（下年度的业绩预期）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2016.07-4.mp3",
+        "script": {
+          "question": "ラジオで女の人が話しています。",
+          "questionTrans": "（在广播里女人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "みなさんは、日々の生活の中で頑張っていることはありますか。勉強や仕事、あるいは貯金などさまざまだと思います。",
+              "trans": "（大家在日常生活中，有没有正在努力做的事情呢？我想有学习、工作，或者是存钱等各种各样的事情。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和选项2，女人确实提到了定下高目标并为之努力回报会很大，但这只是前半段的铺垫，随后立刻用“反面（相反）”进行了转折，指出了过度的坏处，所以这并不是她最终想表达的核心主旨，排除。')\">何事も高い目標を<span class=\"keyword\" onclick=\"showTooltip(event, '掲（かか）げる：提出，标榜。')\">掲げ</span>、諦めることなく、それに向かって努力すれば、それだけ自分にかえってくるものも大きいのは確かです。</span></span>",
+              "trans": "（无论什么事，如果设定很高的目标，不放弃地朝着它努力的话，确实自己得到的回报也会相应地很大。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人用“反面（反之/相反）”进行转折，指出了核心问题所在：【反之，如果做得过度，也有可能导致视野变窄，或者破坏平衡（反面、過度に行うと、視野が狭くなったり、バランスを崩すこともあります）】。后续存钱的例子也是为了说明“做得太过火”的负面影响。这说明她想传达的是做事情不能过度，符合选项3。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '反面（はんめん）：反面，另一方面。')\">反面</span>、<span class=\"keyword\" onclick=\"showTooltip(event, '過度（かど）：过度。')\">過度</span>に行うと、<span class=\"keyword\" onclick=\"showTooltip(event, '視野（しや）：视野。')\">視野</span>が狭くなったり、バランスを<span class=\"keyword\" onclick=\"showTooltip(event, '崩（くず）す：破坏，弄乱。')\">崩す</span>こともあります。</span></span>",
+              "trans": "（但是反过来，如果做得过度了，也会导致视野变窄，或者破坏平衡。）"
+            },
+            {
+              "speaker": "女",
+              "text": "たとえば、貯金するために、日々頑張って節約をしているという方がいらっしゃるかもしれませんが、<span class=\"keyword\" onclick=\"showTooltip(event, '行（い）き過（す）ぎる：做得过火，过度。')\">行き過ぎる</span>と、周りから<span class=\"keyword\" onclick=\"showTooltip(event, 'けち：小气，吝啬。')\">けち</span>で付き合いにくい人だと思われてしまうこともあります。",
+              "trans": "（例如，可能有人为了存钱而每天努力节约，但如果做得太过火，也会被周围人认为是个小气、难以交往的人。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，文中明明说的是“不放弃（諦めることなく）”，选项却说“放弃是关键”，意思完全相反，直接排除。')\">このような点を<span class=\"keyword\" onclick=\"showTooltip(event, '考慮（こうりょ）：考虑。')\">考慮</span>しつつ、目標に向かって頑張ることで、よりよい生活が送れるのだと思います。</span></span>",
+              "trans": "（考虑到这些问题，同时朝着目标努力，我想这样才能过上更好的生活。）"
+            },
+            {
+              "speaker": "問",
+              "text": "女の人が言いたいことは何ですか。",
+              "trans": "（女人想说的是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "何をやるにも全力で取り組むべきだ",
+            "translation": "（无论做什么都应该全力以赴）",
+            "correct": false
+          },
+          {
+            "text": "何をやるにも目標を高めにしたほうがいい",
+            "translation": "（无论做什么最好都把目标定高一点）",
+            "correct": false
+          },
+          {
+            "text": "何をやるにも行き過ぎないことが大切だ",
+            "translation": "（无论做什么都不过度是很重要的）",
+            "correct": true
+          },
+          {
+            "text": "何をやるにも諦めが肝心だ",
+            "translation": "（无论做什么放弃都是关键的）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2016.07-5.mp3",
+        "script": {
+          "question": "テレビでコメンテーターが国立公園について話しています。",
+          "questionTrans": "（在电视上，评论员正在谈论国立公园。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "国立公園に指定されている桜高原が今、危機に<span class=\"keyword\" onclick=\"showTooltip(event, '直面（ちょくめん）：面临，面对。')\">直面</span>しています。",
+              "trans": "（被指定为国立公园的樱高原，现在正面临着危机。）"
+            },
+            {
+              "speaker": "女",
+              "text": "これまで、自然保護の観点から、地元の西山市によって、立ち入り人数や時間の<span class=\"keyword\" onclick=\"showTooltip(event, '規制（きせい）：规制，限制。')\">規制</span>がなされてきましたが、その制約の厳しさから、訪れる人が<span class=\"keyword\" onclick=\"showTooltip(event, '激減（げきげん）：骤减，锐减。')\">激減</span>し、それによって、地元の人々の関心までもが<span class=\"keyword\" onclick=\"showTooltip(event, '薄（うす）れる：变淡，淡薄。')\">薄れてきている</span>のです。",
+              "trans": "（一直以来，从自然保护的观点出发，当地的西山市对进入的人数和时间进行了限制，但由于制约过于严格，来访的游客骤减，由此导致连当地人的关心程度也变得越来越淡薄。）"
+            },
+            {
+              "speaker": "女",
+              "text": "桜高原では、これまで地元の非営利団体がボランティアを<span class=\"keyword\" onclick=\"showTooltip(event, '募（つの）る：招募，募集。')\">募って</span>、清掃活動を行うなど、積極的に保護活動に取り組んできましたが、ここ数年は、人が集まらず、以前のような活動ができなくなっているそうです。",
+              "trans": "（在樱高原，一直以来当地的非营利组织都会招募志愿者，进行清扫活动等，积极致力于保护活动，但据说这几年因为召集不到人，已经无法像以前那样开展活动了。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '评论员在最后给出了核心建议：【这并非是一个二选一的问题，而是重新确认公开的目的，并重新审视管理和运营的方式，这难道不是当务之急吗？（管理、運営のあり方を見直すことが急務ではないでしょうか）】。这就意味着她主张应该重新考虑（修改）现在的规定内容，完全符合选项2。')\">保護か公開か、<span class=\"keyword\" onclick=\"showTooltip(event, '二者択一（にしゃたくいつ）：二选一。')\">二者択一</span>ではなく、何のための公開か、その目的を再確認し、管理、運営のあり方を見直すことが<span class=\"keyword\" onclick=\"showTooltip(event, '急務（きゅうむ）：当务之急。')\">急務</span>ではないでしょうか。</span></span>",
+              "trans": "（是保护还是公开，这并非是一个二选一的问题，而是为了什么而公开，重新确认其目的，并重新审视管理、运营的方式，这难道不是当务之急吗？）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，文中提到游客减少是因为“限制太严格”，而不是宣传不够，排除。关于选项3，文中已经指出“制约的严格”带来了危机（志愿活动办不下去等），所以显然不该“更加严格”，排除。关于选项4，评论员是对地方政府目前的“严格管理模式”提出质疑，呼吁重新审视，而不是单纯地“全权交给地方政府”，排除。')\">自治体の対応が期待されます。</span></span>",
+              "trans": "（期待地方政府能有所应对。）"
+            },
+            {
+              "speaker": "問",
+              "text": "コメンテーターが言いたいことは何ですか。",
+              "trans": "（评论员想说的是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "訪れる人を増やすために宣伝をするべきだ",
+            "translation": "（为了增加游客应该进行宣传）",
+            "correct": false
+          },
+          {
+            "text": "現在の規制内容を再考するべきだ",
+            "translation": "（应该重新考虑现在的规定内容）",
+            "correct": true
+          },
+          {
+            "text": "自然保護の規制を厳格にするべきだ",
+            "translation": "（应该使自然保护的规定更加严格）",
+            "correct": false
+          },
+          {
+            "text": "自然保護活動は自治体に任せるべきだ",
+            "translation": "（自然保护活动应该交给地方政府负责）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "audio": "../assets/audio/2016.07-6.mp3",
+        "script": {
+          "question": "テレビで労働問題の専門家が話しています。",
+          "questionTrans": "（在电视上劳动问题的专家正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于前三个选项：工作时间和健康的关系（选项1）只是作为引出话题的背景被提及；文中并没有探讨如何提高工作者的健康意识（选项2）；虽然提到了带薪休假取得率一直很低，但并没有专门分析其“变化”的趋势（选项3）。因此这三项均可排除。')\">働く人にとって、労働時間と日常生活のバランスを<span class=\"keyword\" onclick=\"showTooltip(event, '保（たも）つ：保持，维持。')\">保つ</span>ことは大切で、これも健康維持にも<span class=\"keyword\" onclick=\"showTooltip(event, '不可欠（ふかけつ）：不可或缺。')\">不可欠</span>ですが、現実はなかなか思うようにいかないようです。</span></span>",
+              "trans": "（对于工作的人来说，保持工作时间和日常生活的平衡是很重要的，这也是维持健康所不可或缺的，但现实似乎很难如愿。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '专家在交代了背景后，明确指出了核心话题：【因此，政府提出了促进带薪休假取得的方针（そこで、政府は有給休暇の取得を促進する方針を打ち出しました）】。随后又详细列举了政府鼓励企业的具体做法（设立统一休息日、让员工提交休假计划等）。整段话都在围绕政府的这一举措展开，完全符合选项4。')\">そこで、政府は<span class=\"keyword\" onclick=\"showTooltip(event, '有給休暇（ゆうきゅうきゅうか）：带薪休假。')\">有給休暇</span>の<span class=\"keyword\" onclick=\"showTooltip(event, '取得（しゅとく）：取得，获得。')\">取得</span>を<span class=\"keyword\" onclick=\"showTooltip(event, '促進（そくしん）：促进。')\">促進</span>する方針を<span class=\"keyword\" onclick=\"showTooltip(event, '打（う）ち出（だ）す：提出（方针、政策等）。')\">打ち出しました</span>。</span></span>",
+              "trans": "（因此，政府提出了促进带薪休假取得的方针。）"
+            },
+            {
+              "speaker": "男",
+              "text": "有給の取得率は<span class=\"keyword\" onclick=\"showTooltip(event, '恒常的（こうじょうてき）：恒常地，经常地。')\">恒常的</span>に低く<span class=\"keyword\" onclick=\"showTooltip(event, '推移（すいい）：推移，演变。')\">推移</span>していて、ここを何とかすることが、現状の改善に向けた大きな一歩だと考えているからです。",
+              "trans": "（因为带薪休假的取得率一直处于较低水平，政府认为设法解决这个问题，是迈向改善现状的一大步。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"keyword\" onclick=\"showTooltip(event, 'とはいえ：话虽如此，尽管如此。')\">とはいえ</span>、長年続いてきた働き方の習慣を変えるのは容易なことではありません。",
+              "trans": "（话虽如此，要改变长年以来的工作方式和习惯并非易事。）"
+            },
+            {
+              "speaker": "男",
+              "text": "政府は、事業者に対して、一斉休業日を<span class=\"keyword\" onclick=\"showTooltip(event, '設（もう）ける：设立，设置。')\">設ける</span>ことや、<span class=\"keyword\" onclick=\"showTooltip(event, '従業員（じゅうぎょういん）：员工。')\">従業員</span>に一年間の休暇取得計画を提出させることを<span class=\"keyword\" onclick=\"showTooltip(event, '奨励（しょうれい）：鼓励，奖励。')\">奨励</span>しています。",
+              "trans": "（政府鼓励企业设立统一休息日，或者让员工提交为期一年的休假计划。）"
+            },
+            {
+              "speaker": "問",
+              "text": "専門家は主に何について話していますか。",
+              "trans": "（专家主要在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "労働時間と健康の関係",
+            "translation": "（工作时间与健康的关系）",
+            "correct": false
+          },
+          {
+            "text": "働く人の健康意識を高める方法",
+            "translation": "（提高工作者健康意识的方法）",
+            "correct": false
+          },
+          {
+            "text": "有給休暇の取得率の変化",
+            "translation": "（带薪休假取得率的变化）",
+            "correct": false
+          },
+          {
+            "text": "有給休暇の取得率をあげる政府の取り組み",
+            "translation": "（政府为提高带薪休假取得率而采取的举措）",
+            "correct": true
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2016-07-概要理解"; 
+        let currentExamKey = "2016-07"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -278,10 +594,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -620,8 +936,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-<script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+<script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261016-summary-n1-2016-07-eacd7d49b032"></script>
+<script src="../shared/follow-listening.js?v=20261016-summary-n1-2016-07-eacd7d49b032"></script>
+<script src="../shared/follow-listening-entry.js?v=20261016-summary-n1-2016-07-eacd7d49b032"></script>
 </body>
 </html>

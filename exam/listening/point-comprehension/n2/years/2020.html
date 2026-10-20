@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ポイント理解 - 聴解練習 (N2 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
     <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20260830-sentence-console-r2">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="#" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,16 +192,18 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../../shared/study-quest-test-runtime.js"></script>
-    <script src="../../../../shared/study-quest-test-boot.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
+    <script src="../shared/follow-listening-timelines.js?v=20260825-n2-point-manual-2020-december-r2"></script>
+    <script src="../../../task-comprehension/n2/shared/follow-listening.js?v=20260830-sentence-console-r2"></script>
     <script>
         // --- Data Structure (针对要点理解 Point Comprehension 的特制数据) ---
         // 解析中包含了您要求规范使用的语法表达，移除了绝对化的表达（如：必然，一定，必须等），词汇提示框未作任何词法解析。
         const examData = {
-            "N2-2020-12": {
+            "2020-12": {
                 label: "2020年12月 (N2)",
                 questions: [
                     {
@@ -140,7 +217,7 @@
                                 { speaker: "男", text: "ああ、それは、犬の<span class=\"keyword\" onclick=\"showTooltip(event, '無駄吠（むだぼ）え：乱叫，白费力气地叫。')\">無駄吠え</span>と呼ばれるものです。ただ犬は決して無駄に吠えているわけじゃないので、何か原因があると思います。何かありませんか。", trans: "（啊，这就是我们常说的狗狗“乱叫”。不过呢，狗狗肯定不会平白无故地乱叫，应该是有些什么原因。您仔细回想一下，有没有什么线索？）" },
                                 { speaker: "女", text: "そうですね…", trans: "（这个嘛……）" },
                                 { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span>例えば、運動が足りないので散歩に行きたいとか</span>、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"keyword\" onclick=\"showTooltip(event, '餌（えさ）：诱饵，饲料，食物。')\">餌</span>が足りないとか…</span>", trans: "（比如说，是不是运动量不够想出去遛弯啦，或者是没吃饱之类的……）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">② ③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2和选项3，女士明确表示【每天都带它去散步（毎日散歩しています）】且【狗粮也管够（餌も充分にやってます）】，不符合选项描述，故可排除。')\">うんん、毎日散歩していますし、餌も<span class=\"keyword\" onclick=\"showTooltip(event, '充分（じゅうぶん）：充分，足够。')\">充分</span>にやってますが</span></span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女士提到搬家后才出现这种情况，说明是生活环境的变化导致的，符合选项4的描述。')\">最近引っ越したんですけど、引っ越す前は、こんなことなかったんです。</span></span>", trans: "（没呢，每天都带它出去散步，狗粮也管够。不过，我们最近刚搬了家，搬家之前它是不会这样的。）" },
+                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">② ③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2和选项3，女士明确表示【每天都带它去散步（毎日散歩しています）】且【狗粮也管够（餌も充分にやってます）】，不符合选项描述，故可排除。')\">うーん、毎日散歩していますし、餌も<span class=\"keyword\" onclick=\"showTooltip(event, '充分（じゅうぶん）：充分，足够。')\">充分</span>にやってますが</span></span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女士提到搬家后才出现这种情况，说明是生活环境的变化导致的，符合选项4的描述。')\">最近引っ越したんですけど、引っ越す前は、こんなことなかったんです。</span></span>", trans: "（嗯……每天都带它出去散步，狗粮也管够。不过，我们最近刚搬了家，搬家之前它是不会这样的。）" },
                                 { speaker: "男", text: "ああ、そうですか。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span>では、しばらく様子を見てあげてください、新しいところに慣れれば、自然と吠えなくなると思いますよ。</span>", trans: "（啊，原来是这样。那您就先观察一段时间看看吧，等它适应了新环境，自然就不会再叫了。）" }
                             ]
                         },
@@ -187,7 +264,7 @@
                                 { speaker: "女", text: "<span class=\"keyword\" onclick=\"showTooltip(event, 'ドレッシング（dressing）：（沙拉等用的）调味汁，调料。')\">ドレッシング</span>の味も夏向きのさっぱりとしたものにしてみたんですが、ちょっと<span class=\"keyword\" onclick=\"showTooltip(event, '召（め）し上（あ）がる：吃，喝（「食べる」「飲む」的尊敬语）。')\">召し上がって</span>みてください。", trans: "（沙拉酱的味道我也试着调成了适合夏天清爽口味的，您稍微尝一下看看。）" },
                                 { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于改变沙拉酱味道，店长品尝后表示【挺不错的嘛（いいんじゃない）】，并没有建议更换，可排除。')\">うん。いいんじゃない。</span></span>ただ、この一皿だけではちょっと量が少なくないかなあ。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '店长觉得量有点少，因此给出的明确建议是【把沙拉里的肉加量（肉の量を増やして）】，符合选项3的描述。')\">サラダに入ってる肉の量を増やして<span class=\"keyword\" onclick=\"showTooltip(event, '食（た）べ応（ごた）え：吃头，满足感。')\">食べ応え</span>があるようにしたら。</span></span>", trans: "（嗯，挺不错的嘛。不过，就这一盘的话，量是不是有点少啊。要不把沙拉里的肉加量，让它吃起来更有满足感一些？）" },
                                 { speaker: "女", text: "でもそうすると、値段をもう少し上げないと...", trans: "（但是那样的话，价格就得多提高一点了……）" },
-                                { speaker: "男", text: "うん、そうだね。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于降价，店长表示【如果分量足又好吃，稍微贵一点也没关系（少しくらい高くても大丈夫）】，并没有建议降价，可排除。')\">でも、<span class=\"keyword\" onclick=\"showTooltip(event, 'ボリュウム（volume）：分量，体积。')\">ボリュウム</span>があっておいしければ、少しくらい高くても大丈夫だと思う。</span></span>", trans: "（嗯，也是呢。不过，如果分量足又好吃的话，我觉得稍微贵一点也没关系的。）" },
+                                { speaker: "男", text: "うーん、そうだね。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于降价，店长表示【如果分量足又好吃，稍微贵一点也没关系（少しくらい高くても大丈夫）】，并没有建议降价，可排除。')\">でも、<span class=\"keyword\" onclick=\"showTooltip(event, 'ボリュウム（volume）：分量，体积。')\">ボリュウム</span>があっておいしければ、少しくらい高くても大丈夫だと思う。</span></span>", trans: "（嗯，也是呢。不过，如果分量足又好吃的话，我觉得稍微贵一点也没关系的。）" },
                                 { speaker: "女", text: "分かりました。", trans: "（我知道了。）" }
                             ]
                         },
@@ -270,7 +347,7 @@
             }
         };
 
-        let currentExamKey = "N2-2020-12"; 
+        let currentExamKey = "2020-12"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'point-comprehension';
@@ -297,6 +374,12 @@
             }
 
             updateQuestionSelect();
+            if(window.setupListeningPlayer) {
+                window.setupListeningPlayer({
+                    subtitle: document.title.replace(/\s*\((N1|N2|N3)\)\s*$/, ''),
+                    skipSeconds: 10
+                });
+            }
             if (listeningRewardHooks) listeningRewardHooks.startRun();
             renderQuestion();
         }
@@ -528,7 +611,8 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
 </body>
 </html>

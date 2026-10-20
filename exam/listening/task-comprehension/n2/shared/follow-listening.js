@@ -5,6 +5,7 @@
     let activeButton = null;
     let sentenceAudio = null;
     let playbackToken = 0;
+    let playbackOptions = null;
     let boundaryFrame = 0;
     let boundaryTimer = 0;
     let pendingSeekCancel = null;
@@ -23,6 +24,16 @@
     const SEEK_TOLERANCE_SECONDS = 0.08;
     const SEEK_TIMEOUT_MS = 800;
 
+    function playbackRate() {
+        return playbackOptions && playbackOptions.rate || SENTENCE_RATES[sentenceRateIndex];
+    }
+
+    function reportPlayback(phase) {
+        const options = playbackOptions;
+        if (phase !== 'playing') playbackOptions = null;
+        if (options && typeof options.onState === 'function') options.onState(phase);
+    }
+
     function getAudioKey(audioSrc) {
         if (!audioSrc) return '';
         const cleanSrc = String(audioSrc).split(/[?#]/, 1)[0];
@@ -37,7 +48,9 @@
         return {
             key,
             timeline: (
-                window.KijiN2TaskTimelineMap
+                window.KijiN2SummaryTimelineMap
+                || window.KijiN2IntegratedTimelineMap
+                || window.KijiN2TaskTimelineMap
                 || window.KijiN1TaskTimelineMap
                 || window.KijiN1PointTimelineMap
                 || {}
@@ -246,24 +259,38 @@
             const translationNode = children.find((child) => child.classList.contains('translation')) || children[1];
             if (!textNode) return;
 
-            const source = document.createElement('div');
-            configureSource(source);
-            const mainline = document.createElement('div');
-            mainline.className = 'follow-listening-mainline';
-            const contentNode = document.createElement('span');
-            contentNode.className = 'follow-listening-content';
-            contentNode.innerHTML = textNode.innerHTML;
-            mainline.appendChild(contentNode);
-            const button = createSentenceButton(clip, `第${index + 1}句を聞く`, timeline);
-            if (button) mainline.appendChild(button);
-            source.appendChild(mainline);
-            if (translationNode && translationNode.innerHTML) {
-                const translation = document.createElement('div');
-                translation.className = 'translation follow-listening-translation';
-                translation.innerHTML = translationNode.innerHTML;
-                source.appendChild(translation);
-            }
-            speakerText.replaceChildren(source);
+            const subsegments = Array.isArray(clip.segments) && clip.segments.length
+                ? clip.segments
+                : [{ ...clip, html: textNode.innerHTML, trans: translationNode && translationNode.innerHTML }];
+            const sources = subsegments.map((subsegment, subIndex) => {
+                const source = document.createElement('div');
+                configureSource(source);
+                const mainline = document.createElement('div');
+                mainline.className = 'follow-listening-mainline';
+                const contentNode = document.createElement('span');
+                contentNode.className = 'follow-listening-content';
+                contentNode.innerHTML = subsegment.html != null
+                    ? subsegment.html
+                    : (subsegment.text != null ? String(subsegment.text) : textNode.innerHTML);
+                mainline.appendChild(contentNode);
+                const label = subsegments.length > 1
+                    ? `第${index + 1}句・${subIndex + 1}段を聞く`
+                    : `第${index + 1}句を聞く`;
+                const button = createSentenceButton(subsegment, label, timeline);
+                if (button) mainline.appendChild(button);
+                source.appendChild(mainline);
+                const translationHtml = subsegment.trans != null
+                    ? subsegment.trans
+                    : (translationNode && translationNode.innerHTML);
+                if (translationHtml) {
+                    const translation = document.createElement('div');
+                    translation.className = 'translation follow-listening-translation';
+                    translation.innerHTML = translationHtml;
+                    source.appendChild(translation);
+                }
+                return source;
+            }).filter(Boolean);
+            speakerText.replaceChildren(...sources);
             speakerText.dataset.followTimelineKey = key;
         });
     }
@@ -276,7 +303,12 @@
         // Every sentence in one question uses the same source file, so this
         // makes metadata available before the first speaker-button click and
         // prevents a cold player from briefly starting at 0:00.
-        const preloadClip = timeline.question || (Array.isArray(timeline.lines) && timeline.lines.find(Boolean));
+        const firstLine = Array.isArray(timeline.lines) && timeline.lines.find(Boolean);
+        const preloadClip = timeline.question || (
+            firstLine && Array.isArray(firstLine.segments) && firstLine.segments.length
+                ? firstLine.segments[0]
+                : firstLine
+        );
         const normalizedPreloadClip = normalizeSegment(
             preloadClip,
             timeline.endGuard,
@@ -305,6 +337,7 @@
         }
         getSentenceEntries();
         syncConsoleUi();
+        syncMode();
     }
 
     function scheduleAdaptTranscript() {
@@ -384,6 +417,13 @@
     function getAudio() {
         if (!sentenceAudio) sentenceAudio = document.getElementById('sentenceAudioElement');
         return sentenceAudio;
+    }
+
+    function supportsPreciseAudioFetch() {
+        // Local file pages cannot fetch file:// URLs for Web Audio decoding.
+        // Use the native audio element there so opening a year page directly
+        // from Finder still plays the exact sentence range.
+        return !document.location || document.location.protocol !== 'file:';
     }
 
     function resetButton() {
@@ -589,17 +629,19 @@
             audio.onerror = null;
         }
         resetButton();
+        reportPlayback('stopped');
     }
 
     function startFallbackPlayback(audioSrc, startTime, endTime, boundaryEndTime, token) {
         const audio = getAudio();
         if (!audio || token !== playbackToken) return;
-        const finish = () => {
+        const finish = (phase = 'ended') => {
             if (token !== playbackToken) return;
             clearBoundaryMonitor();
             audio.pause();
             if (Number.isFinite(audio.duration)) audio.currentTime = Math.max(0, startTime);
             resetButton();
+            reportPlayback(typeof phase === 'string' ? phase : 'ended');
         };
         const monitorBoundary = () => {
             if (token !== playbackToken || !Number.isFinite(endTime)) return;
@@ -620,30 +662,33 @@
         };
         const start = () => {
             if (token !== playbackToken) return;
-            audio.playbackRate = SENTENCE_RATES[sentenceRateIndex];
+            audio.playbackRate = playbackRate();
             audio.muted = false;
             audio.volume = 1;
             const promise = audio.play();
             if (promise && typeof promise.then === 'function') {
                 promise.then(() => {
                     if (token !== playbackToken) return;
+                    reportPlayback('playing');
                     boundaryFrame = requestAnimationFrame(monitorBoundary);
                     scheduleBoundaryCheck();
-                }).catch(finish);
+                }).catch(() => finish('error'));
             } else {
+                reportPlayback('playing');
                 boundaryFrame = requestAnimationFrame(monitorBoundary);
                 scheduleBoundaryCheck();
             }
         };
 
         audio.onended = finish;
-        audio.onerror = finish;
+        audio.onerror = () => finish('error');
         const resolvedSrc = new URL(audioSrc, document.baseURI).href;
-        if (audio.src !== resolvedSrc) {
+        audio.preload = 'auto';
+        if (audio.src !== resolvedSrc || audio.readyState < 1) {
             audio.src = resolvedSrc;
             audio.load();
         }
-        seekBeforePlayback(audio, startTime, token, start, finish);
+        seekBeforePlayback(audio, startTime, token, start, () => finish('error'));
     }
 
     async function startPrecisePlayback(options) {
@@ -672,7 +717,7 @@
             const source = context.createBufferSource();
             const gain = context.createGain();
             source.buffer = buffer;
-            source.playbackRate.value = SENTENCE_RATES[sentenceRateIndex];
+            source.playbackRate.value = playbackRate();
             source.connect(gain);
             gain.connect(context.destination);
             preciseSource = source;
@@ -680,8 +725,8 @@
 
             const offset = startFrame / sampleRate;
             const duration = frameCount / sampleRate;
-            const playbackRate = SENTENCE_RATES[sentenceRateIndex];
-            const wallDuration = duration / playbackRate;
+            const rate = playbackRate();
+            const wallDuration = duration / rate;
             const requestedFade = Number.isFinite(fadeOut) ? Math.max(0, fadeOut) : PRECISE_FADE_SECONDS;
             const fadeDuration = Math.min(requestedFade, wallDuration / 2);
             const startAt = context.currentTime + 0.004;
@@ -699,8 +744,10 @@
                 source.disconnect();
                 gain.disconnect();
                 resetButton();
+                reportPlayback('ended');
             };
             source.start(startAt, offset, duration);
+            reportPlayback('playing');
         } catch (error) {
             if (token !== playbackToken || activeButton !== button) return;
             releasePrecisePlayback();
@@ -718,14 +765,17 @@
         playButton(button);
     }
 
-    function playButton(button) {
+    function playButton(button, options = null) {
         const audioSrc = button.dataset.audioSrc;
         const startTime = Number(button.dataset.audioStart || 0);
         const endTime = Number(button.dataset.audioEnd);
         const configuredEndGuard = Number(button.dataset.audioEndGuard);
         const sampleAccurate = button.dataset.audioSampleAccurate === 'true';
         const fadeOut = Number(button.dataset.audioFadeOut);
-        if (!audioSrc || !getAudio()) return;
+        if (!audioSrc || !getAudio()) {
+            if (options && options.onState) options.onState('error');
+            return;
+        }
         if (activeButton === button) {
             stop();
             return;
@@ -733,6 +783,7 @@
 
         stop();
         activeButton = button;
+        playbackOptions = options;
         const token = playbackToken;
         const boundaryEndTime = getBoundaryEndTime(startTime, endTime, configuredEndGuard);
         button.classList.add('is-playing');
@@ -740,7 +791,7 @@
         setConsoleStatus(`正在播放第 ${currentSentenceIndex + 1} 句原音。`);
         syncConsoleUi();
 
-        const context = sampleAccurate ? getPreciseAudioContext() : null;
+        const context = sampleAccurate && supportsPreciseAudioFetch() ? getPreciseAudioContext() : null;
         if (context && Number.isFinite(endTime)) {
             startPrecisePlayback({
                 context,
@@ -757,10 +808,13 @@
         startFallbackPlayback(audioSrc, startTime, endTime, boundaryEndTime, token);
     }
 
-    function playCurrentSentence() {
+    function playCurrentSentence(options = null) {
         const entry = getSentenceEntries()[currentSentenceIndex];
-        if (!entry) return;
-        playButton(entry.button);
+        if (!entry) {
+            if (options && options.onState) options.onState('error');
+            return;
+        }
+        playButton(entry.button, options);
     }
 
     function moveSentence(delta) {

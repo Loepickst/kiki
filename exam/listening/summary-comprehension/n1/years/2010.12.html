@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261015-summary-n1-2010-12-b8791a7e0e86">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,117 +192,290 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
 <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2010-12-概要理解": {
-                label: "2010年12月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2010.12-1.mp3", 
-                        script: {
-                            question: "一番：ボランティアグループの会長が話しています。会長の話のテーマは何ですか。",
-                            questionTrans: "（第一题：志愿者团体的会长正在讲话。会长讲话的主题是什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "私はこのボランティアグループの会長をしています。", trans: "（我是这个志愿者团体的会长。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '会长按照时间顺序，讲述了团体从【大约10年前（10年くらい前に）】开始，经历了【成立之初（発足当時は）】、【之后（その後）】，一直讲到【今天（今に至っている）】的发展过程。这说明她是在讲述该团体的发展历史，符合选项2。')\">私たちのグループは10年くらい前に５人の学生がボランティアサークルとして活動したのが始まりです。<span class=\"keyword\" onclick=\"showTooltip(event, '発足（ほっそく）：成立，出发。')\">発足</span>当時は<span class=\"keyword\" onclick=\"showTooltip(event, '近隣（きんりん）：附近，邻近。')\">近隣</span>の小学校や病院に行って活動していたのですが、その後地域の方と協力するようになり、<span class=\"keyword\" onclick=\"showTooltip(event, '実績（じっせき）：实绩，实际成绩。')\">実績</span>を<span class=\"keyword\" onclick=\"showTooltip(event, '積（つ）む：积累，积攒。')\">積んで</span>きました。</span></span>", trans: "（我们的团体大约在10年前，由5名学生作为志愿者社团开展活动而开始的。成立之初我们是去附近的公立小学和医院开展活动的，但之后开始与当地居民合作，积累了实绩。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"opt-tag tag-wrong\">③</span><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和3，会长并没有谈论团体成立的目的和具体的成员构成，可以排除。关于选项4，文中虽然提到了现在进行着规模更大的活动，但这只是作为历史发展的一环来叙述的，并不是全篇的中心主题，排除。')\">市から依頼を受けるようになったのを<span class=\"keyword\" onclick=\"showTooltip(event, '機（き）に：以……为契机。')\">機に</span>より規模の大きい活動をするようになり、今に<span class=\"keyword\" onclick=\"showTooltip(event, '至（いた）る：到达，一直到。')\">至っている</span>というわけです。</span></span>", trans: "（以开始接受市政府委托为契机，我们开始开展规模更大的活动，就这样一直发展到了今天。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "グループの目的", translation: "（团体的目的）", correct: false },
-                            { text: "グループの歴史", translation: "（团体的历史）", correct: true },
-                            { text: "グループのメンバー", translation: "（团体的成员）", correct: false },
-                            { text: "グループの現在の活動内容", translation: "（团体现在的活动内容）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        audio: "../assets/audio/2010.12-2.mp3",
-                        script: {
-                            question: "二番：テレビで栄養学の専門家が話しています。この専門家は何の話をしていますか。",
-                            questionTrans: "（第二题：在电视上营养学专家正在讲话。这位专家在谈论什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "コーヒーは体に悪いというイメージを持つ人もいるようですが、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '专家在开头就提出【有报告称它也有预防疾病的效果（病気を予防する効果もあることが報告されています）】，接着列举了预防糖尿病、癌症和心脏病的数据和事例。通篇都在阐述咖啡对身体的积极作用，符合选项2。')\">病気を<span class=\"keyword\" onclick=\"showTooltip(event, '予防（よぼう）：预防。')\">予防</span>する効果もあることが<span class=\"keyword\" onclick=\"showTooltip(event, '報告（ほうこく）：报告。')\">報告</span>されています。</span></span>", trans: "（似乎也有人认为咖啡对身体不好，但有报告称它也有预防疾病的效果。）" },
-                                { speaker: "女", text: "ええ、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和4，文中只提到了【一天喝三杯以上咖啡的人（コーヒーを一日三杯以上飲む人は）】的患病概率比较，并没有探讨喝咖啡的人口比例或整体的消费量，可以排除。')\">ある調査ではコーヒーを一日三杯以上飲む人は、<span class=\"keyword\" onclick=\"showTooltip(event, '糖尿病（とうにょうびょう）：糖尿病。')\">糖尿病</span>が<span class=\"keyword\" onclick=\"showTooltip(event, '発症（はっしょう）：发病，发作。')\">発症</span>する可能性が、ほとんど飲まない人より４０パーセント少ないという結果が出ています。</span></span>", trans: "（嗯，有项调查结果显示，一天喝三杯以上咖啡的人，患糖尿病的可能性比几乎不喝的人要低40%。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，专家介绍了咖啡能预防癌症和心脏病，但并未具体说明是咖啡里的哪种成分在起作用，排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '癌（がん）：癌，癌症。')\">癌</span>や心臓病の予防にも効果があるという報告もあります。</span></span>", trans: "（也有报告称，它对预防癌症和心脏病也有效果。）" },
-                                { speaker: "女", text: "コーヒーを飲むと<span class=\"keyword\" onclick=\"showTooltip(event, '胃（い）が荒（あ）れる：伤胃，胃部不适。')\">胃が荒れる</span>という話があるかもしれませんが、それは<span class=\"keyword\" onclick=\"showTooltip(event, '過剰（かじょう）な：过剩的，过量的。')\">過剰な</span><span class=\"keyword\" onclick=\"showTooltip(event, '摂取（せっしゅ）：摄取，吸收。')\">摂取</span>によるものと思われます。まあ、コーヒーに限らずなんでも過剰な摂取はよくありません。", trans: "（可能有人会说喝咖啡会伤胃，但那被认为是由于过量摄取所导致的。嘛，不限于咖啡，任何东西过量摄取都是不好的。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "コーヒーを飲む人の割合", translation: "（喝咖啡的人的比例）", correct: false },
-                            { text: "コーヒーの効果", translation: "（咖啡的效果）", correct: true },
-                            { text: "コーヒーの成分", translation: "（咖啡的成分）", correct: false },
-                            { text: "コーヒーの消費量", translation: "（咖啡的消费量）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        audio: "../assets/audio/2010.12-3.mp3",
-                        script: {
-                            question: "三番：留守番電話のメッセージを聞いています。何についてのメッセージですか。",
-                            questionTrans: "（第三题：正在听电话留言。这是关于什么的留言？）",
-                            dialogue: [
-                                { speaker: "男", text: "お世話になっております。朝日商事の佐藤です。あの、先日ご注文いただいた商品の件なんですが、ご依頼の１００個は<span class=\"keyword\" onclick=\"showTooltip(event, '入手（にゅうしゅ）：取得，得到。')\">入手</span>できませんでしたが、８０個はなんとか確保いたしました。", trans: "（承蒙您的关照。我是朝日商事的佐藤。那个，关于您前几天订购的商品，您要求的100个我们没能弄到，但想办法确保了80个。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男士明确提出了他这通电话的核心诉求：【所以，这80个可不可以，请您告诉我（で、この80個でよろしいかどうか、お教えください）】，这符合选项1的“确认商品数量”。')\">で、この８０個でよろしいかどうか、お教えください。</span></span>", trans: "（所以，这80个可不可以，请您告诉我。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，男士说【商品价格看来能控制在您希望的范围内（商品の価格はご希望の範囲に抑えられそうですし）】，说明价格已经谈妥，不需要再交涉了，排除。')\">商品の価格はご希望の範囲に抑えられそうですし、</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男士说【送达日期也和前几天告知您的一样，没有变更（お届けの日も先日お伝えしたとおりで変更はありません）】，明确否定了送货日期的变更，排除。')\">お届けの日も先日お伝えしたとおりで変更はありません。</span></span>", trans: "（商品价格看来能控制在您希望的范围内，送达日期也和前几天告知您的一样，没有变更。）" },
-                                { speaker: "男", text: "後ほどこちらからお電話いたしますので、ご指示お願いいたします。それでは失礼致します。", trans: "（稍后我会再给您打电话，请您指示。那么我先挂了。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "商品の数の確認", translation: "（确认商品数量）", correct: true },
-                            { text: "価格の交渉", translation: "（价格交涉）", correct: false },
-                            { text: "配達日の変更", translation: "（变更送货日期）", correct: false },
-                            { text: "注文方法の変更", translation: "（变更订购方法）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        audio: "../assets/audio/2010.12-4.mp3",
-                        script: {
-                            question: "四番：テレビで作家がインタビューに答えています。作家が伝えたいことは何ですか。",
-                            questionTrans: "（第四题：在电视上，作家正在接受采访。作家想传达的事情是什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "先生は世界各地を回られて旅行の本をたくさん書かれていますが、海外旅行を計画している人たちに一言お願いします。", trans: "（老师您走遍了世界各地，写了很多关于旅行的书，请对正在计划海外旅行的人们说几句吧。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，作家表示【就算面对无人居住的遗迹，也只会有种在自己房间里看指南书的感觉（誰も住んでいない遺跡を目の前にしても自分の部屋でガイドブックを眺めているような感じを受けてしまうんです）】，可见他并不推荐去遗迹，排除。')\">そうですね、有名な遺跡などに行く人も多いと思うんですが、僕は誰も住んでいない遺跡を目の前にしても自分の部屋でガイドブックを<span class=\"keyword\" onclick=\"showTooltip(event, '眺（なが）める：眺望，注视，凝视。')\">眺めている</span>ような感じを受けてしまうんです。</span></span>", trans: "（嗯，我想去著名遗迹等地的人也很多，但我自己就算面对无人居住的遗迹，也只会有种在自己房间里看指南书的感觉。）" },
-                                { speaker: "男", text: "普通の人が暮らす町に行ったほうが<span class=\"keyword\" onclick=\"showTooltip(event, '異国（いこく）：异国。')\">異国</span>へ来たことを肌で感じることが出来ます。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '作家明确建议【去人们居住的地方散步看看怎么样？（人々が住んでいるところを散策してみてはどうでしょうか）】，并且认为生活中的声音、气味最能刺激五官。这符合选项3的“接触人们的生活”。')\">人々が住んでいるところを<span class=\"keyword\" onclick=\"showTooltip(event, '散策（さんさく）：散步，随便走走。')\">散策</span>してみてはどうでしょうか。生活から生まれる音や<span class=\"keyword\" onclick=\"showTooltip(event, 'ざわめき：嘈杂声，人声鼎沸。')\">ざわめき</span>、<span class=\"keyword\" onclick=\"showTooltip(event, '匂（にお）い：气味。')\">匂い</span>、そういうものほど<span class=\"keyword\" onclick=\"showTooltip(event, '五感（ごかん）：五官，五种感觉。')\">五感</span>を刺激するものはないと思うんです。</span></span>", trans: "（去普通人生活的城镇，更能切身体会到自己来到了异国。去人们居住的地方散步看看怎么样？我认为没有比生活中产生的声音、嘈杂声、气味更能刺激五官的东西了。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，作家说【光靠学习那个国家的历史是得不到这些的（その国の歴史を学ぶだけでは得られないものです）】，意思是只学历史不够，要亲身体验生活，所以排除。选项1的内容也没有被作家作为建议提出，排除。')\">これはその国の歴史を学ぶだけでは得られないものです。</span></span>", trans: "（这些是光靠学习那个国家的历史所无法获得的。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "旅行の本を読んでおいた方がいい", translation: "（最好事先读一读旅行书）", correct: false },
-                            { text: "遺跡を訪れた方がいい", translation: "（去访问遗迹比较好）", correct: false },
-                            { text: "人々の生活に触れた方がいい", translation: "（接触人们的生活比较好）", correct: true },
-                            { text: "その国の歴史を学ぶべきだ", translation: "（应该学习那个国家的历史）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        audio: "../assets/audio/2010.12-5.mp3",
-                        script: {
-                            question: "五番：社長が新入社員に話しています。社長が伝えたいことは何ですか。",
-                            questionTrans: "（第五题：社长正在对新员工讲话。社长想传达的事情是什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "新入社員の皆さん、皆さんは<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，社长开篇提到了【为了在竞争社会中生存下去（競争社会を生き抜くためには）】，但这只是当前的时代背景，并不是他要求大家具有竞争心，可以排除。')\">昨今の競争社会を<span class=\"keyword\" onclick=\"showTooltip(event, '生（い）き抜（ぬ）く：活下去，生存到底。')\">生き抜く</span>ためには</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和3，社长提到大家可能认为拥有一项不输给任何人的本领很重要，但他随后否定了这种看法，说【从一开始就把目标锁定在一件事上，会导致视野变窄，不能称之为上策（始めから一つのことに的を絞るのは視野が狭くなり得策とは言えないでしょう）】，排除了只关注一个专长（专业）的做法。')\">誰にも負けない何かを一つ持っていることが大切だと思っているかもしれません。</span></span>ですが、この不確かな時代いつどんな経験がどんな場面で役立つかは誰にもわかりません。ですから始めから一つのことに<span class=\"keyword\" onclick=\"showTooltip(event, '的（まと）を絞（しぼ）る：集中目标，锁定目标。')\">的を絞る</span>のは視野が狭くなり<span class=\"keyword\" onclick=\"showTooltip(event, '得策（とくさく）：上策，好办法。')\">得策</span>とは言えないでしょう。", trans: "（各位新员工，大家可能认为，为了在如今的竞争社会中生存下去，拥有一项不输给任何人的本领是很重要的。但是，在这个充满不确定的时代，什么时候什么经验会在什么场合派上用场，谁也不知道。因此，从一开始就把目标锁定在一件事上，会导致视野变窄，不能称之为上策。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '社长明确强调了积累多样经验的价值：【即使觉得自己并不专业，只要全力以赴去对待并不断积累经验，那日后就会成为那个人的财富（自分には専門外だと思ってもそれに全力で取り組みその経験を重ねていくことは後々その人の宝になります）】。这符合选项2的“希望积累各种各样的经验”。')\">自分には専門外だと思ってもそれに全力で取り組みその経験を重ねていくことは<span class=\"keyword\" onclick=\"showTooltip(event, '後々（のちのち）：将来，以后。')\">後々</span>その人の宝になります。何事にも挑戦する気持ちを忘れず、自分に向いていないと思ったことにも<span class=\"keyword\" onclick=\"showTooltip(event, '前向（まえむ）き：积极的，向前的。')\">前向き</span>に取り組んでいくことが<span class=\"keyword\" onclick=\"showTooltip(event, '肝要（かんよう）：至关重要，紧要。')\">肝要</span>だと思います。</span></span>", trans: "（即使觉得自己并不专业，只要全力以赴去对待并不断积累经验，那日后就会成为那个人的财富。我觉得，不要忘记挑战任何事情的心情，对那些认为不适合自己的事情也积极地去对待，这是至关重要的。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "得意分野を持ってほしい", translation: "（希望拥有擅长的领域）", correct: false },
-                            { text: "さまざまな経験をつんでほしい", translation: "（希望积累各种各样的经验）", correct: true },
-                            { text: "自分の専門をいかしてほしい", translation: "（希望发挥自己的专业）", correct: false },
-                            { text: "競争心を持ってほしい", translation: "（希望具有竞争心）", correct: false }
-                        ]
-                    }
-                ]
+  "2010-12": {
+    "label": "2010年12月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2010.12-1.mp3",
+        "script": {
+          "question": "ボランティアグループの会長が話しています。",
+          "questionTrans": "（志愿者团体的会长正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "私はこのボランティアグループの会長をしています。",
+              "trans": "（我是这个志愿者团体的会长。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '会长按照时间顺序，讲述了团体从【大约10年前（10年くらい前に）】开始，经历了【成立之初（発足当時は）】、【之后（その後）】，一直讲到【今天（今に至っている）】的发展过程。这说明她是在讲述该团体的发展历史，符合选项2。')\">私たちのグループは10年くらい前に５人の学生がボランティアサークルとして活動したのが始まりです。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '会长按照时间顺序，讲述了团体从【大约10年前（10年くらい前に）】开始，经历了【成立之初（発足当時は）】、【之后（その後）】，一直讲到【今天（今に至っている）】的发展过程。这说明她是在讲述该团体的发展历史，符合选项2。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '発足（ほっそく）：成立，出发。')\">発足</span>当時は<span class=\"keyword\" onclick=\"showTooltip(event, '近隣（きんりん）：附近，邻近。')\">近隣</span>の小学校や病院に行って活動していたのですが、その後地域の方と協力するようになり、<span class=\"keyword\" onclick=\"showTooltip(event, '実績（じっせき）：实绩，实际成绩。')\">実績</span>を<span class=\"keyword\" onclick=\"showTooltip(event, '積（つ）む：积累，积攒。')\">積んで</span>きました。</span></span>",
+              "trans": "（我们的团体大约在10年前，由5名学生作为志愿者社团开展活动而开始的。成立之初我们是去附近的公立小学和医院开展活动的，但之后开始与当地居民合作，积累了实绩。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"opt-tag tag-wrong\">③</span><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和3，会长并没有谈论团体成立的目的和具体的成员构成，可以排除。关于选项4，文中虽然提到了现在进行着规模更大的活动，但这只是作为历史发展的一环来叙述的，并不是全篇的中心主题，排除。')\">市から依頼を受けるようになったのを<span class=\"keyword\" onclick=\"showTooltip(event, '機（き）に：以……为契机。')\">機に</span>より規模の大きい活動をするようになり、今に<span class=\"keyword\" onclick=\"showTooltip(event, '至（いた）る：到达，一直到。')\">至っている</span>というわけです。</span></span>",
+              "trans": "（以开始接受市政府委托为契机，我们开始开展规模更大的活动，就这样一直发展到了今天。）"
+            },
+            {
+              "speaker": "問",
+              "text": "会長の話のテーマは何ですか。",
+              "trans": "（会长讲话的主题是什么？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "グループの目的",
+            "translation": "（团体的目的）",
+            "correct": false
+          },
+          {
+            "text": "グループの歴史",
+            "translation": "（团体的历史）",
+            "correct": true
+          },
+          {
+            "text": "グループのメンバー",
+            "translation": "（团体的成员）",
+            "correct": false
+          },
+          {
+            "text": "グループの現在の活動内容",
+            "translation": "（团体现在的活动内容）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2010.12-2.mp3",
+        "script": {
+          "question": "テレビで栄養学の専門家が話しています。",
+          "questionTrans": "（在电视上营养学专家正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "コーヒーは体に悪いというイメージを持つ人もいるようですが、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '专家在开头就提出【有报告称它也有预防疾病的效果（病気を予防する効果もあることが報告されています）】，接着列举了预防糖尿病、癌症和心脏病的数据和事例。通篇都在阐述咖啡对身体的积极作用，符合选项2。')\">病気を<span class=\"keyword\" onclick=\"showTooltip(event, '予防（よぼう）：预防。')\">予防</span>する効果もあることが<span class=\"keyword\" onclick=\"showTooltip(event, '報告（ほうこく）：报告。')\">報告</span>されています。</span></span>",
+              "trans": "（似乎也有人认为咖啡对身体不好，但有报告称它也有预防疾病的效果。）"
+            },
+            {
+              "speaker": "女",
+              "text": "ええ、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和4，文中只提到了【一天喝三杯以上咖啡的人（コーヒーを一日三杯以上飲む人は）】的患病概率比较，并没有探讨喝咖啡的人口比例或整体的消费量，可以排除。')\">ある調査ではコーヒーを一日三杯以上飲む人は、<span class=\"keyword\" onclick=\"showTooltip(event, '糖尿病（とうにょうびょう）：糖尿病。')\">糖尿病</span>が<span class=\"keyword\" onclick=\"showTooltip(event, '発症（はっしょう）：发病，发作。')\">発症</span>する可能性が、ほとんど飲まない人より４０パーセント少ないという結果が出ています。</span></span>",
+              "trans": "（嗯，有项调查结果显示，一天喝三杯以上咖啡的人，患糖尿病的可能性比几乎不喝的人要低40%。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，专家介绍了咖啡能预防癌症和心脏病，但并未具体说明是咖啡里的哪种成分在起作用，排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '癌（がん）：癌，癌症。')\">癌</span>や心臓病の予防にも効果があるという報告もあります。</span></span>",
+              "trans": "（也有报告称，它对预防癌症和心脏病也有效果。）"
+            },
+            {
+              "speaker": "女",
+              "text": "コーヒーを飲むと<span class=\"keyword\" onclick=\"showTooltip(event, '胃（い）が荒（あ）れる：伤胃，胃部不适。')\">胃が荒れる</span>という話があるかもしれませんが、それは<span class=\"keyword\" onclick=\"showTooltip(event, '過剰（かじょう）な：过剩的，过量的。')\">過剰な</span><span class=\"keyword\" onclick=\"showTooltip(event, '摂取（せっしゅ）：摄取，吸收。')\">摂取</span>によるものと思われます。まあ、コーヒーに限らずなんでも過剰な摂取はよくありません。",
+              "trans": "（可能有人会说喝咖啡会伤胃，但那被认为是由于过量摄取所导致的。嘛，不限于咖啡，任何东西过量摄取都是不好的。）"
+            },
+            {
+              "speaker": "問",
+              "text": "この専門家は何の話をしていますか。",
+              "trans": "（这位专家在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "コーヒーを飲む人の割合",
+            "translation": "（喝咖啡的人的比例）",
+            "correct": false
+          },
+          {
+            "text": "コーヒーの効果",
+            "translation": "（咖啡的效果）",
+            "correct": true
+          },
+          {
+            "text": "コーヒーの成分",
+            "translation": "（咖啡的成分）",
+            "correct": false
+          },
+          {
+            "text": "コーヒーの消費量",
+            "translation": "（咖啡的消费量）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2010.12-3.mp3",
+        "script": {
+          "question": "留守番電話のメッセージを聞いています。",
+          "questionTrans": "（正在听电话留言。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "お世話になっております。朝日商事の佐藤です。あの、先日ご注文いただいた商品の件なんですが、ご依頼の１００個は<span class=\"keyword\" onclick=\"showTooltip(event, '入手（にゅうしゅ）：取得，得到。')\">入手</span>できませんでしたが、８０個はなんとか確保いたしました。",
+              "trans": "（承蒙您的关照。我是朝日商事的佐藤。那个，关于您前几天订购的商品，您要求的100个我们没能弄到，但想办法确保了80个。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男士明确提出了他这通电话的核心诉求：【所以，这80个可不可以，请您告诉我（で、この80個でよろしいかどうか、お教えください）】，这符合选项1的“确认商品数量”。')\">で、この８０個でよろしいかどうか、お教えください。</span></span>",
+              "trans": "（所以，这80个可不可以，请您告诉我。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，男士说【商品价格看来能控制在您希望的范围内（商品の価格はご希望の範囲に抑えられそうですし）】，说明价格已经谈妥，不需要再交涉了，排除。')\">商品の価格はご希望の範囲に抑えられそうですし、</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，男士说【送达日期也和前几天告知您的一样，没有变更（お届けの日も先日お伝えしたとおりで変更はありません）】，明确否定了送货日期的变更，排除。')\">お届けの日も先日お伝えしたとおりで変更はありません。</span></span>",
+              "trans": "（商品价格看来能控制在您希望的范围内，送达日期也和前几天告知您的一样，没有变更。）"
+            },
+            {
+              "speaker": "男",
+              "text": "後ほどこちらからお電話いたしますので、ご指示お願いいたします。それでは失礼致します。",
+              "trans": "（稍后我会再给您打电话，请您指示。那么我先挂了。）"
+            },
+            {
+              "speaker": "問",
+              "text": "何についてのメッセージですか。",
+              "trans": "（这是关于什么的留言？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "商品の数の確認",
+            "translation": "（确认商品数量）",
+            "correct": true
+          },
+          {
+            "text": "価格の交渉",
+            "translation": "（价格交涉）",
+            "correct": false
+          },
+          {
+            "text": "配達日の変更",
+            "translation": "（变更送货日期）",
+            "correct": false
+          },
+          {
+            "text": "注文方法の変更",
+            "translation": "（变更订购方法）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2010.12-4.mp3",
+        "script": {
+          "question": "テレビで作家がインタビューに答えています。",
+          "questionTrans": "（在电视上，作家正在接受采访。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "先生は世界各地を回られて旅行の本をたくさん書かれていますが、海外旅行を計画している人たちに一言お願いします。",
+              "trans": "（老师您走遍了世界各地，写了很多关于旅行的书，请对正在计划海外旅行的人们说几句吧。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，作家表示【就算面对无人居住的遗迹，也只会有种在自己房间里看指南书的感觉（誰も住んでいない遺跡を目の前にしても自分の部屋でガイドブックを眺めているような感じを受けてしまうんです）】，可见他并不推荐去遗迹，排除。')\">そうですね、有名な遺跡などに行く人も多いと思うんですが、僕は誰も住んでいない遺跡を目の前にしても自分の部屋でガイドブックを<span class=\"keyword\" onclick=\"showTooltip(event, '眺（なが）める：眺望，注视，凝视。')\">眺めている</span>ような感じを受けてしまうんです。</span></span>",
+              "trans": "（嗯，我想去著名遗迹等地的人也很多，但我自己就算面对无人居住的遗迹，也只会有种在自己房间里看指南书的感觉。）"
+            },
+            {
+              "speaker": "男",
+              "text": "普通の人が暮らす町に行ったほうが<span class=\"keyword\" onclick=\"showTooltip(event, '異国（いこく）：异国。')\">異国</span>へ来たことを肌で感じることが出来ます。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '作家明确建议【去人们居住的地方散步看看怎么样？（人々が住んでいるところを散策してみてはどうでしょうか）】，并且认为生活中的声音、气味最能刺激五官。这符合选项3的“接触人们的生活”。')\">人々が住んでいるところを<span class=\"keyword\" onclick=\"showTooltip(event, '散策（さんさく）：散步，随便走走。')\">散策</span>してみてはどうでしょうか。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '作家明确建议【去人们居住的地方散步看看怎么样？（人々が住んでいるところを散策してみてはどうでしょうか）】，并且认为生活中的声音、气味最能刺激五官。这符合选项3的“接触人们的生活”。')\">生活から生まれる音や<span class=\"keyword\" onclick=\"showTooltip(event, 'ざわめき：嘈杂声，人声鼎沸。')\">ざわめき</span>、<span class=\"keyword\" onclick=\"showTooltip(event, '匂（にお）い：气味。')\">匂い</span>、そういうものほど<span class=\"keyword\" onclick=\"showTooltip(event, '五感（ごかん）：五官，五种感觉。')\">五感</span>を刺激するものはないと思うんです。</span></span>",
+              "trans": "（去普通人生活的城镇，更能切身体会到自己来到了异国。去人们居住的地方散步看看怎么样？我认为没有比生活中产生的声音、嘈杂声、气味更能刺激五官的东西了。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，作家说【光靠学习那个国家的历史是得不到这些的（その国の歴史を学ぶだけでは得られないものです）】，意思是只学历史不够，要亲身体验生活，所以排除。选项1的内容也没有被作家作为建议提出，排除。')\">これはその国の歴史を学ぶだけでは得られないものです。</span></span>",
+              "trans": "（这些是光靠学习那个国家的历史所无法获得的。）"
+            },
+            {
+              "speaker": "問",
+              "text": "作家が伝えたいことは何ですか。",
+              "trans": "（作家想传达的事情是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "旅行の本を読んでおいた方がいい",
+            "translation": "（最好事先读一读旅行书）",
+            "correct": false
+          },
+          {
+            "text": "遺跡を訪れた方がいい",
+            "translation": "（去访问遗迹比较好）",
+            "correct": false
+          },
+          {
+            "text": "人々の生活に触れた方がいい",
+            "translation": "（接触人们的生活比较好）",
+            "correct": true
+          },
+          {
+            "text": "その国の歴史を学ぶべきだ",
+            "translation": "（应该学习那个国家的历史）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2010.12-5.mp3",
+        "script": {
+          "question": "社長が新入社員に話しています。",
+          "questionTrans": "（社长正在对新员工讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "新入社員の皆さん、皆さんは<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，社长开篇提到了【为了在竞争社会中生存下去（競争社会を生き抜くためには）】，但这只是当前的时代背景，并不是他要求大家具有竞争心，可以排除。')\">昨今の競争社会を<span class=\"keyword\" onclick=\"showTooltip(event, '生（い）き抜（ぬ）く：活下去，生存到底。')\">生き抜く</span>ためには</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和3，社长提到大家可能认为拥有一项不输给任何人的本领很重要，但他随后否定了这种看法，说【从一开始就把目标锁定在一件事上，会导致视野变窄，不能称之为上策（始めから一つのことに的を絞るのは視野が狭くなり得策とは言えないでしょう）】，排除了只关注一个专长（专业）的做法。')\">誰にも負けない何かを一つ持っていることが大切だと思っているかもしれません。</span></span><span class=\"highlight-wrong\"><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和3，社长提到大家可能认为拥有一项不输给任何人的本领很重要，但他随后否定了这种看法，说【从一开始就把目标锁定在一件事上，会导致视野变窄，不能称之为上策（始めから一つのことに的を絞るのは視野が狭くなり得策とは言えないでしょう）】，排除了只关注一个专长（专业）的做法。')\"></span></span>ですが、この不確かな時代いつどんな経験がどんな場面で役立つかは誰にもわかりません。ですから始めから一つのことに<span class=\"keyword\" onclick=\"showTooltip(event, '的（まと）を絞（しぼ）る：集中目标，锁定目标。')\">的を絞る</span>のは視野が狭くなり<span class=\"keyword\" onclick=\"showTooltip(event, '得策（とくさく）：上策，好办法。')\">得策</span>とは言えないでしょう。",
+              "trans": "（各位新员工，大家可能认为，为了在如今的竞争社会中生存下去，拥有一项不输给任何人的本领是很重要的。但是，在这个充满不确定的时代，什么时候什么经验会在什么场合派上用场，谁也不知道。因此，从一开始就把目标锁定在一件事上，会导致视野变窄，不能称之为上策。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '社长明确强调了积累多样经验的价值：【即使觉得自己并不专业，只要全力以赴去对待并不断积累经验，那日后就会成为那个人的财富（自分には専門外だと思ってもそれに全力で取り組みその経験を重ねていくことは後々その人の宝になります）】。这符合选项2的“希望积累各种各样的经验”。')\">自分には専門外だと思ってもそれに全力で取り組みその経験を重ねていくことは<span class=\"keyword\" onclick=\"showTooltip(event, '後々（のちのち）：将来，以后。')\">後々</span>その人の宝になります。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '社长明确强调了积累多样经验的价值：【即使觉得自己并不专业，只要全力以赴去对待并不断积累经验，那日后就会成为那个人的财富（自分には専門外だと思ってもそれに全力で取り組みその経験を重ねていくことは後々その人の宝になります）】。这符合选项2的“希望积累各种各样的经验”。')\">何事にも挑戦する気持ちを忘れず、自分に向いていないと思ったことにも<span class=\"keyword\" onclick=\"showTooltip(event, '前向（まえむ）き：积极的，向前的。')\">前向き</span>に取り組んでいくことが<span class=\"keyword\" onclick=\"showTooltip(event, '肝要（かんよう）：至关重要，紧要。')\">肝要</span>だと思います。</span></span>",
+              "trans": "（即使觉得自己并不专业，只要全力以赴去对待并不断积累经验，那日后就会成为那个人的财富。我觉得，不要忘记挑战任何事情的心情，对那些认为不适合自己的事情也积极地去对待，这是至关重要的。）"
+            },
+            {
+              "speaker": "問",
+              "text": "社長が伝えたいことは何ですか。",
+              "trans": "（社长想传达的事情是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "得意分野を持ってほしい",
+            "translation": "（希望拥有擅长的领域）",
+            "correct": false
+          },
+          {
+            "text": "さまざまな経験をつんでほしい",
+            "translation": "（希望积累各种各样的经验）",
+            "correct": true
+          },
+          {
+            "text": "自分の専門をいかしてほしい",
+            "translation": "（希望发挥自己的专业）",
+            "correct": false
+          },
+          {
+            "text": "競争心を持ってほしい",
+            "translation": "（希望具有竞争心）",
+            "correct": false
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2010-12-概要理解"; 
+        let currentExamKey = "2010-12"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -249,10 +497,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -591,8 +839,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-<script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+<script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261015-summary-n1-2010-12-b8791a7e0e86"></script>
+<script src="../shared/follow-listening.js?v=20261015-summary-n1-2010-12-b8791a7e0e86"></script>
+<script src="../shared/follow-listening-entry.js?v=20261015-summary-n1-2010-12-b8791a7e0e86"></script>
 </body>
 </html>

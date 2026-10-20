@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261017-summary-n1-2016-12-92b389dc9d31">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,143 +192,362 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
 <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2016-12-概要理解": {
-                label: "2016年12月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2016.12-1.mp3",
-                        script: {
-                            question: "一番：衣服の専門学校の授業で先生が話しています。先生の話のテーマはなんですか。",
-                            questionTrans: "（第一题：在服装专门学校的课堂上，老师正在讲话。老师讲话的主题是什么？）",
-                            dialogue: [
-                                { "speaker": "女", "text": "皆さんは服装を決める時、天気や出かける場所だけではなく、気分で服装を選ぶこともあると思います。", "trans": "（大家在决定服装的时候，我想除了天气和要去的场所，有时也会根据心情来选择服装吧。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师在这里用“而且反过来（また、反対に）”引出了核心话题：【穿戴的服装或小物件能让人度过心情愉悦的一天（身につけた服装や小物により一日を気分よく過ごせることもあるでしょう）】。后续全篇都是在举例证明这一点，即服装（打扮）对心理状态带来的正面效果，符合选项2。')\">また、反対に身につけた服装や小物により一日を気分よく過ごせることもあるでしょう。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，老师在开头提到根据天气或心情选衣服只是为了引出后面的话题，并非主要探讨选衣服的“判断标准”，可以排除。')\"></span></span>", "trans": "（而且反过来，有时也会因为穿戴的服装或小物件而度过心情愉悦的一天吧。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，老年人的例子只是为了论证打扮对心理的积极影响，并不是专门探讨老年人对打扮的关心程度有多高，排除。')\">実際に高齢者が<span class=\"keyword\" onclick=\"showTooltip(event, '装（よそお）い：打扮，装束。')\">装い</span>に変化を付けファッションに<span class=\"keyword\" onclick=\"showTooltip(event, '気（き）を配（くば）る：留心，照顾，注意。')\">気を配る</span>ことで気持ちが<span class=\"keyword\" onclick=\"showTooltip(event, '前向（まえむ）き：积极向上，向前看。')\">前向き</span>になったという研究結果があります。</span></span>", "trans": "（实际上有研究结果表明，老年人通过给打扮增添变化、注重时尚，心情变得积极向上了。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，康复患者的例子也是为了说明华丽服装带来的“心理活力（心に張りが生まれ）”，而不是探讨哪种服装在物理上更“方便”进行康复训练，排除。')\">また、怪我が原因で入院し、リハビリ治療が必要な患者が治療の<span class=\"keyword\" onclick=\"showTooltip(event, '一環（いっかん）：一环，一部分。')\">一環</span>として普段とは異なる<span class=\"keyword\" onclick=\"showTooltip(event, '華（はな）やか：华丽，明亮。')\">華やか</span>な服装にしたところ心に<span class=\"keyword\" onclick=\"showTooltip(event, '張（は）り：干劲，活力（心に張りが生まれる：精神焕发）。')\">張り</span>が生まれ、リハビリ<span class=\"keyword\" onclick=\"showTooltip(event, '意欲（いよく）：意愿，积极性。')\">意欲</span>が増したという報告もあります。</span></span>", "trans": "（另外，也有报告称，因受伤住院、需要康复治疗的患者，作为治疗的一环，穿上了与平时不同的华丽服装后，内心产生了活力，康复的意愿增加了。）" },
-                                { "speaker": "女", "text": "このようなことがいま注目されています。", "trans": "（像这样的事情现在正受到关注。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "服装を選ぶ際の判断基準", "translation": "（选择服装时的判断标准）", "correct": false },
-                            { "text": "おしゃれをすることが心理状態にもたらす効果", "translation": "（打扮对心理状态带来的效果）", "correct": true },
-                            { "text": "高齢者のおしゃれに対する関心の高さ", "translation": "（老年人对打扮的高度关心）", "correct": false },
-                            { "text": "リハビリを行いやすい服装", "translation": "（方便进行康复训练的服装）", "correct": false }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        audio: "../assets/audio/2016.12-2.mp3",
-                        script: {
-                            question: "二番：テレビで女の人が話しています。女の人は何について話していますか。",
-                            questionTrans: "（第二题：在电视上女人正在讲话。女人在谈论什么？）",
-                            dialogue: [
-                                { "speaker": "女", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女人一开始提到养外来物种的人变多，但这只是引入话题的现象，并没有探讨“为什么”养的人会变多（理由），排除。')\">最近は珍しい外来種の動物や虫などを飼う人も多いようです。</span></span>外来種とはもともと生きていた地域から異なる地域へ、人の移動に<span class=\"keyword\" onclick=\"showTooltip(event, '伴（ともな）う：伴随，随着。')\">伴って</span>運ばれてきた生き物のことを言います。", "trans": "（最近养罕见的外来物种动物或昆虫等的人似乎也很多。所谓外来物种，是指随着人的移动，从原本生活的地区被运送到不同地区的生物。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人在这里点出了核心问题：【无法照顾这种外来物种宠物到最后，就轻易丢弃的人正在增加。其野生化并繁殖的结果……（このような外来種のペットを最後まで世話をしきれずに、安易に捨てる人が増えています。それらが野生化して繁殖した結果……）】。后续都在列举由此引发的具体问题（争夺资源、传播疾病、破坏生态），完全符合选项4“外来物种宠物野生化导致的问题”。')\">このような外来種のペットを最後まで世話をしきれずに、<span class=\"keyword\" onclick=\"showTooltip(event, '安易（あんい）：轻易，草率。')\">安易に</span>捨てる人が増えています。それらが野生化して<span class=\"keyword\" onclick=\"showTooltip(event, '繁殖（はんしょく）：繁殖。')\">繁殖</span>した結果、日本<span class=\"keyword\" onclick=\"showTooltip(event, '固有（こゆう）：固有，特有。')\">固有</span>の生き物とえさや住む場所を<span class=\"keyword\" onclick=\"showTooltip(event, '巡（めぐ）る：围绕（常用于“～を巡って”的形式）。')\">巡って</span>争ったり</span></span>、", "trans": "（无法照顾这种外来物种宠物到最后，就轻易丢弃的人正在增加。它们野生化并繁殖的结果，就是围绕食物和居住场所与日本固有的生物发生争夺，）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中提到“传播了以前没有的疾病”，这只是野生化导致的一个后果，并没有列举具体是哪些“种类”的疾病，更不能概括全段，排除。')\">それまでになかった病気が広がり</span></span>、生態系に<span class=\"keyword\" onclick=\"showTooltip(event, '深刻（しんこく）：深刻，严重。')\">深刻</span>な影響をもたらしたりしているんです。", "trans": "（传播了以前没有的疾病，给生态系统带来了严重的影响。）" },
-                                { "speaker": "女", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中虽然提到了外来物种野生化后会繁殖，但并没有探讨或比较哪些“地区”更容易繁殖，排除。')\">生き物は責任を持って飼い、日本固有の生き物や日本の生態系を守っていきたいものです。</span></span>", "trans": "（希望大家能负责任地饲养生物，保护日本固有的生物和日本的生态系统。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "外来種を飼う人が増えている理由", "translation": "（饲养外来物种的人增加的理由）", "correct": false },
-                            { "text": "外来種が繁殖しやすい地域", "translation": "（外来物种容易繁殖的地区）", "correct": false },
-                            { "text": "外来種がもたらした病気の種類", "translation": "（外来物种带来的疾病种类）", "correct": false },
-                            { "text": "外来種のペットが野生化したことによる問題", "translation": "（外来物种宠物野生化导致的问题）", "correct": true }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        audio: "../assets/audio/2016.12-3.mp3",
-                        script: {
-                            question: "三番：テレビで博物館の人が話しています。博物館の人は何について話していますか。",
-                            questionTrans: "（第三题：在电视上，博物馆的工作人员正在讲话。博物馆的人在谈论什么？）",
-                            dialogue: [
-                                { "speaker": "男", "text": "歴史博物館の館内改装に<span class=\"keyword\" onclick=\"showTooltip(event, '～に際（さい）し：在……之际，当……之时。')\">際し</span>、力を注いだのは当館のメインとなっている百年前の町並みを紹介するフロアです。", "trans": "（在历史博物馆进行馆内翻新之际，我们倾注了心血的是介绍作为本馆主打的百年前街景的楼层。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，工作人员提到精巧的模型在翻新前就已经在展示了，并没有探讨“制作模型的困难程度”，排除。')\">当時の町並みを<span class=\"keyword\" onclick=\"showTooltip(event, '精巧（せいこう）：精巧，精细。')\">精巧</span>に再現した模型は改装以前から展示しておりましたが</span></span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '说话人在这里点出了核心话题：【尝试了使用聚光灯照射这个模型，让街道、建筑物、人物等凸显出来的表现手法（この模型にスポットライトを用いて、通りや建物、人物などを際立たせるという演出を試みました）】。后续还提到了改变颜色、亮度、角度来描绘昼夜变化，全都是在谈论照明上的巧思，符合选项3。')\">この模型にスポットライトを用いて、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，提到街道、建筑物是为了说明聚光灯照射的对象，而不是去专门介绍百年前建筑物的“特征”，排除。')\">通りや建物</span></span>、人物などを<span class=\"keyword\" onclick=\"showTooltip(event, '際立（きわだ）たせる：使显眼，使突出。')\">際立たせる</span>という<span class=\"keyword\" onclick=\"showTooltip(event, '演出（えんしゅつ）：演出，展现手法。')\">演出</span>を試みました。</span></span>", "trans": "（虽说精巧再现了当时街景的模型在翻新前就已经在展示了，但我们尝试了在这个模型上使用聚光灯，让街道、建筑物、人物等凸显出来的表现手法。）" },
-                                { "speaker": "男", "text": "更に、本物らしさを追求して、色や明るさ、照らす角度に変化を持たせることにより、昼夜の変化を描いております。", "trans": "（此外，为了追求逼真感，我们通过让颜色、亮度、照射角度产生变化，以此来描绘昼夜的交替。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，让人们去想象当时的生活是改良照明后想达到的“效果/愿景”，而不是展示本身的“目的”或整段话探讨的主题，排除。')\">当時の人々の暮らしぶりに<span class=\"keyword\" onclick=\"showTooltip(event, '思（おも）いを馳（は）せる：驰骋想象，怀想。')\">思いを馳せて</span>いただけるようにできたかと思っています。</span></span>", "trans": "（我们觉得现在已经能让大家对当时人们的生活状态驰骋想象了。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "百年前の建物の特徴", "translation": "（百年前建筑物的特征）", "correct": false },
-                            { "text": "模型を精巧に作る難しさ", "translation": "（精巧制作模型的困难程度）", "correct": false },
-                            { "text": "展示物にあてる照明の工夫", "translation": "（照射在展品上的照明巧思）", "correct": true },
-                            { "text": "昔の人々の暮らしを展示する目的", "translation": "（展示过去人们生活的目的）", "correct": false }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        audio: "../assets/audio/2016.12-4.mp3",
-                        script: {
-                            question: "四番：テレビでレポーターが話しています。レポーターは何について伝えていますか。",
-                            questionTrans: "（第四题：在电视上记者正在讲话。记者在报道什么？）",
-                            dialogue: [
-                                { "speaker": "男", "text": "ここアサヒ町はぶどうの産地として知られています。おいしいぶどうと豊かな自然を求めて、観光客が数多く訪れています。また、この地は音楽家を多数<span class=\"keyword\" onclick=\"showTooltip(event, '輩出（はいしゅつ）：辈出，大量涌现。')\">輩出</span>したことでも知られています。", "trans": "（这里朝日町作为葡萄的产地而闻名。为了品尝美味的葡萄和享受丰富的自然，许多游客慕名而来。此外，这个地方也因涌现出众多音乐家而闻名。）" },
-                                { "speaker": "男", "text": "音楽に関係の深いこの町ですが、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '记者在介绍了城镇背景后，引出了报道的核心话题：【最近听说正在让葡萄树听在这片土地上创作的乐曲（最近はブドウの木にこの土地で作られた曲を聞かせているそうなんです）】。后续内容全都是在解释这个举措的起因和效果，这完全符合选项3“利用音乐进行葡萄栽培的尝试”。')\">最近はブドウの木にこの土地で作られた曲を聞かせているそうなんです。</span></span>そもそも農作業の<span class=\"keyword\" onclick=\"showTooltip(event, '合間（あいま）：间隙，空闲时间。')\">合間</span>に曲を聴いていた農家の人たちが、<span class=\"keyword\" onclick=\"showTooltip(event, 'ふと：突然，偶然。')\">ふと</span>成長が早まりはしないかと<span class=\"keyword\" onclick=\"showTooltip(event, '思（おも）いつく：想出，想到。')\">思いつき</span>、以後続けているそうです。", "trans": "（虽然这是个与音乐关系密切的小镇，但据说最近正在让葡萄树听在这片土地上创作的乐曲。原本是农户们在农活间隙听歌时，突然想到这会不会让葡萄长得更快呢，据说从那以后就一直持续着。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，文中提到了音乐震动可能促进生长，但这只是在探讨这种尝试可能带来的“效果”，并没有断言音乐是葡萄栽培“必要”的条件，排除。关于选项2，开头提到游客是为了美味的葡萄和自然而来，并没有说给葡萄听音乐是为了“增加游客”，排除。')\">この<span class=\"keyword\" onclick=\"showTooltip(event, '方策（ほうさく）：对策，方针。')\">方策</span>の効果については、適度な振動が枝の成長を促進する可能性があるとのことです。</span></span>", "trans": "（关于这个对策的效果，据说适度的震动有可能促进枝条的生长。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，结尾处记者感慨令人愉悦的音色似乎也能治愈农活的疲劳，这只是记者在介绍完主要尝试后的随口感慨/附和，并非整段报道的主题，排除。')\">心地よい音色は農作業の疲れも<span class=\"keyword\" onclick=\"showTooltip(event, '癒（いや）す：治愈，解除（痛苦、疲劳等）。')\">癒してくれそうですね。</span></span>", "trans": "（令人愉悦的音色似乎也能治愈农活的疲惫呢。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "ぶどうの栽培に必要な条件", "translation": "（葡萄栽培所需的条件）", "correct": false },
-                            { "text": "観光客を増やすための方策", "translation": "（为了增加游客的对策）", "correct": false },
-                            { "text": "音楽を用いたぶどうの栽培の試み", "translation": "（利用音乐进行葡萄栽培的尝试）", "correct": true },
-                            { "text": "作業の疲れを癒すのに適した音楽", "translation": "（适合治愈工作疲惫的音乐）", "correct": false }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        audio: "../assets/audio/2016.12-5.mp3",
-                        script: {
-                            question: "五番：ラジオで医者が話しています。医者は何について話していますか。",
-                            questionTrans: "（第五题：在广播里医生正在讲话。医生在谈论什么？）",
-                            dialogue: [
-                                { "speaker": "男", "text": "年を重ねるにつれて、体の様々な所に老化の症状が現れます。目も例外ではありません。", "trans": "（随着年龄的增长，身体各个部位都会出现老化的症状。眼睛也不例外。）" },
-                                { "speaker": "男", "text": "レンズの役割をしている部分の弾力性が低下すると、この部分の厚みを変えることが難しくなり、目のピントを調節する機能が徐々に<span class=\"keyword\" onclick=\"showTooltip(event, '衰（おとろ）える：衰退，衰弱。')\">衰え</span>ます。", "trans": "（当起着镜头作用的部分的弹性下降时，就很难改变这个部分的厚度，眼睛调节焦距的功能也会逐渐衰退。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中探讨的是眼睛老化导致调节功能衰退，从而“容易引起疲劳”，而不是去探讨疲劳发生后会有什么“症状”，可以排除。')\">近くの物が<span class=\"keyword\" onclick=\"showTooltip(event, 'ぼやける：模糊，不清楚。')\">ぼやけて</span>見えるようになり無理して見ようとすることで、目が疲れやすくなります。</span></span>", "trans": "（看近处的东西会变得模糊，如果勉强去看，眼睛就容易疲劳。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '医生在前半段详细解释了眼睛老化的机制（弹性下降、调节功能衰退），在这里通过“虽然没有办法停止衰退，但可以通过……”引出了锻炼肌肉、戴眼镜等具体的缓解/应对方法。这完全符合选项1“眼睛的老化现象及其应对方法”。')\">目の調節機能の衰えを止める方法はありませんが、目の筋肉を<span class=\"keyword\" onclick=\"showTooltip(event, '鍛（きた）える：锻炼。')\">鍛え</span>、血液の流れをよくすることで目の疲れの症状を<span class=\"keyword\" onclick=\"showTooltip(event, '緩和（かんわ）：缓解，缓和。')\">緩和</span>することができます。</span></span>", "trans": "（虽然没有办法停止眼睛调节功能的衰退，但可以通过锻炼眼部肌肉、促进血液流通，来缓解眼睛疲劳的症状。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，文中只是在最后作为减轻负担的建议之一提到了“根据需要戴眼镜”，并没有专门去探讨如何“挑选”合适的眼镜，因此排除。而选项3在文中完全没有提及，直接排除。')\">また、目に負担をかけないためにも、必要に<span class=\"keyword\" onclick=\"showTooltip(event, '応（おう）じて：根据，按照。')\">応じて</span>メガネを掛けるなどするとよいでしょう。</span></span>", "trans": "（另外，为了不给眼睛增加负担，根据需要戴上眼镜等也是比较好的。）" }
-                            ]
-                        },
-                        options: [
-                            { "text": "目の老化現象とその対処のしかた", "translation": "（眼睛的老化现象及其应对方法）", "correct": true },
-                            { "text": "目が疲れた時の症状", "translation": "（眼睛疲劳时的症状）", "correct": false },
-                            { "text": "目の健康状態をチェックする方法", "translation": "（检查眼睛健康状态的方法）", "correct": false },
-                            { "text": "症状にあったメガネの選び方", "translation": "（适合症状的眼镜的选择方法）", "correct": false }
-                        ]
-                    },
-                    {
-                        id: 6,
-                        audio: "../assets/audio/2016.12-6.mp3",
-                        script: {
-                            question: "六番：講演会で男の人が話しています。男の人は主に何について話していますか。",
-                            questionTrans: "（第六题：在演讲会上男人正在讲话。男人主要在谈论什么？）",
-                            dialogue: [
-                                { "speaker": "男", "text": "私は長年鮭の<span class=\"keyword\" onclick=\"showTooltip(event, '生態（せいたい）：生态。')\">生態</span>を調査研究してきました。鮭は川で生まれ、遠く離れた海で育ち、また生まれた川に帰って<span class=\"keyword\" onclick=\"showTooltip(event, '産卵（さんらん）：产卵。')\">産卵</span>し、その一生を終えます。", "trans": "（我长年从事鲑鱼生态的调查研究。鲑鱼在河里出生，在遥远的海洋中长大，然后再回到出生的河流中产卵，结束其一生。）" },
-                                { "speaker": "男", "text": "川にはその川ごとの<span class=\"keyword\" onclick=\"showTooltip(event, '特有（とくゆう）：特有，独有。')\">特有</span>の匂いがあります。これまでの調査から鮭は川に帰る際、一つは川の匂いを<span class=\"keyword\" onclick=\"showTooltip(event, '頼（たよ）り：依靠，依赖。')\">頼り</span>としていることがあきらかになっています。", "trans": "（河流有着每条河特有的气味。从迄今为止的调查中已经查明，鲑鱼在游回河流时，其中一个是依靠着河流的气味。）" },
-                                { "speaker": "男", "text": "しかし、鮭は何千キロも離れた海まで移動するため、川の匂いだけを頼りにしているとは考えにくいのです。まだ明らかにされていないこともありますが。", "trans": "（但是，由于鲑鱼会移动到几千公里外的海域，因此很难想象它们仅仅是依靠河流的气味。虽然还有尚未查明的事情。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在最后总结了他的研究观点：除了依靠气味，【被认为同时使用了好几种方法，比如根据太阳的位置来掌握当前的位置等（太陽の位置をもとに、現在の位置を把握するなど、いくつかのことを併用していると考えられています）】。这说明整段讲话都在探讨鲑鱼是如何找到路回到出生地的，完全符合选项2“回到出生地的方法”。')\">太陽の位置をもとに、現在の位置を<span class=\"keyword\" onclick=\"showTooltip(event, '把握（はおく）：掌握，把握。')\">把握</span>するなど、いくつかのことを<span class=\"keyword\" onclick=\"showTooltip(event, '併用（へいよう）：并用，同时使用。')\">併用</span>していると考えられています。</span></span>", "trans": "（被认为同时使用了好几种方法，比如根据太阳的位置来掌握当前的位置等。）" },
-                                { "speaker": "男", "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，文中探讨的是鲑鱼如何从海里回到出生的河里，而不是“为什么”从河里去海里，排除。关于选项3，文中提到气味只是作为鲑鱼认路的一种手段，并没有专门探讨它喜欢的“气味的特征”，排除。关于选项4，虽然提到了河流环境，但文中根本没有提及需要“保护环境”，排除。')\"></span></span>", "trans": "" }
-                            ]
-                        },
-                        options: [
-                            { "text": "鮭が川から海へ移動する理由", "translation": "（鲑鱼从河里移动到海里的理由）", "correct": false },
-                            { "text": "鮭が生まれた所に戻る方法", "translation": "（鲑鱼回到出生地的方法）", "correct": true },
-                            { "text": "鮭が好む川の匂いの特徴", "translation": "（鲑鱼喜欢的河流气味的特征）", "correct": false },
-                            { "text": "鮭が育つ川の環境を保護する必要性", "translation": "（保护鲑鱼生长的河流环境的必要性）", "correct": false }
-                        ]
-                    }
-                ]
+  "2016-12": {
+    "label": "2016年12月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2016.12-1.mp3",
+        "script": {
+          "question": "衣服の専門学校の授業で先生が話しています。",
+          "questionTrans": "（在服装专门学校的课堂上，老师正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "皆さんは服装を決める時、天気や出かける場所だけではなく、気分で服装を選ぶこともあると思います。",
+              "trans": "（大家在决定服装的时候，我想除了天气和要去的场所，有时也会根据心情来选择服装吧。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师在这里用“而且反过来（また、反対に）”引出了核心话题：【穿戴的服装或小物件能让人度过心情愉悦的一天（身につけた服装や小物により一日を気分よく過ごせることもあるでしょう）】。后续全篇都是在举例证明这一点，即服装（打扮）对心理状态带来的正面效果，符合选项2。')\">また、反対に身につけた服装や小物により一日を気分よく過ごせることもあるでしょう。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，老师在开头提到根据天气或心情选衣服只是为了引出后面的话题，并非主要探讨选衣服的“判断标准”，可以排除。')\"></span></span>",
+              "trans": "（而且反过来，有时也会因为穿戴的服装或小物件而度过心情愉悦的一天吧。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，老年人的例子只是为了论证打扮对心理的积极影响，并不是专门探讨老年人对打扮的关心程度有多高，排除。')\">実際に高齢者が<span class=\"keyword\" onclick=\"showTooltip(event, '装（よそお）い：打扮，装束。')\">装い</span>に変化を付けファッションに<span class=\"keyword\" onclick=\"showTooltip(event, '気（き）を配（くば）る：留心，照顾，注意。')\">気を配る</span>ことで気持ちが<span class=\"keyword\" onclick=\"showTooltip(event, '前向（まえむ）き：积极向上，向前看。')\">前向き</span>になったという研究結果があります。</span></span>",
+              "trans": "（实际上有研究结果表明，老年人通过给打扮增添变化、注重时尚，心情变得积极向上了。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，康复患者的例子也是为了说明华丽服装带来的“心理活力（心に張りが生まれ）”，而不是探讨哪种服装在物理上更“方便”进行康复训练，排除。')\">また、怪我が原因で入院し、リハビリ治療が必要な患者が治療の<span class=\"keyword\" onclick=\"showTooltip(event, '一環（いっかん）：一环，一部分。')\">一環</span>として普段とは異なる<span class=\"keyword\" onclick=\"showTooltip(event, '華（はな）やか：华丽，明亮。')\">華やか</span>な服装にしたところ心に<span class=\"keyword\" onclick=\"showTooltip(event, '張（は）り：干劲，活力（心に張りが生まれる：精神焕发）。')\">張り</span>が生まれ、リハビリ<span class=\"keyword\" onclick=\"showTooltip(event, '意欲（いよく）：意愿，积极性。')\">意欲</span>が増したという報告もあります。</span></span>",
+              "trans": "（另外，也有报告称，因受伤住院、需要康复治疗的患者，作为治疗的一环，穿上了与平时不同的华丽服装后，内心产生了活力，康复的意愿增加了。）"
+            },
+            {
+              "speaker": "女",
+              "text": "このようなことがいま注目されています。",
+              "trans": "（像这样的事情现在正受到关注。）"
+            },
+            {
+              "speaker": "問",
+              "text": "先生の話のテーマはなんですか。",
+              "trans": "（老师讲话的主题是什么？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "服装を選ぶ際の判断基準",
+            "translation": "（选择服装时的判断标准）",
+            "correct": false
+          },
+          {
+            "text": "おしゃれをすることが心理状態にもたらす効果",
+            "translation": "（打扮对心理状态带来的效果）",
+            "correct": true
+          },
+          {
+            "text": "高齢者のおしゃれに対する関心の高さ",
+            "translation": "（老年人对打扮的高度关心）",
+            "correct": false
+          },
+          {
+            "text": "リハビリを行いやすい服装",
+            "translation": "（方便进行康复训练的服装）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2016.12-2.mp3",
+        "script": {
+          "question": "テレビで女の人が話しています。",
+          "questionTrans": "（在电视上女人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女人一开始提到养外来物种的人变多，但这只是引入话题的现象，并没有探讨“为什么”养的人会变多（理由），排除。')\">最近は珍しい外来種の動物や虫などを飼う人も多いようです。</span></span><span class=\"highlight-wrong\"><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女人一开始提到养外来物种的人变多，但这只是引入话题的现象，并没有探讨“为什么”养的人会变多（理由），排除。')\"></span></span>外来種とはもともと生きていた地域から異なる地域へ、人の移動に<span class=\"keyword\" onclick=\"showTooltip(event, '伴（ともな）う：伴随，随着。')\">伴って</span>運ばれてきた生き物のことを言います。",
+              "trans": "（最近养罕见的外来物种动物或昆虫等的人似乎也很多。所谓外来物种，是指随着人的移动，从原本生活的地区被运送到不同地区的生物。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人在这里点出了核心问题：【无法照顾这种外来物种宠物到最后，就轻易丢弃的人正在增加。其野生化并繁殖的结果……（このような外来種のペットを最後まで世話をしきれずに、安易に捨てる人が増えています。それらが野生化して繁殖した結果……）】。后续都在列举由此引发的具体问题（争夺资源、传播疾病、破坏生态），完全符合选项4“外来物种宠物野生化导致的问题”。')\">このような外来種のペットを最後まで世話をしきれずに、<span class=\"keyword\" onclick=\"showTooltip(event, '安易（あんい）：轻易，草率。')\">安易に</span>捨てる人が増えています。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人在这里点出了核心问题：【无法照顾这种外来物种宠物到最后，就轻易丢弃的人正在增加。其野生化并繁殖的结果……（このような外来種のペットを最後まで世話をしきれずに、安易に捨てる人が増えています。それらが野生化して繁殖した結果……）】。后续都在列举由此引发的具体问题（争夺资源、传播疾病、破坏生态），完全符合选项4“外来物种宠物野生化导致的问题”。')\">それらが野生化して<span class=\"keyword\" onclick=\"showTooltip(event, '繁殖（はんしょく）：繁殖。')\">繁殖</span>した結果、日本<span class=\"keyword\" onclick=\"showTooltip(event, '固有（こゆう）：固有，特有。')\">固有</span>の生き物とえさや住む場所を<span class=\"keyword\" onclick=\"showTooltip(event, '巡（めぐ）る：围绕（常用于“～を巡って”的形式）。')\">巡って</span>争ったり</span></span>、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中提到“传播了以前没有的疾病”，这只是野生化导致的一个后果，并没有列举具体是哪些“种类”的疾病，更不能概括全段，排除。')\">それまでになかった病気が広がり</span></span>、生態系に<span class=\"keyword\" onclick=\"showTooltip(event, '深刻（しんこく）：深刻，严重。')\">深刻</span>な影響をもたらしたりしているんです。",
+              "trans": "（无法照顾这种外来物种宠物到最后，就轻易丢弃的人正在增加。它们野生化并繁殖的结果，就是围绕食物和居住场所与日本固有的生物发生争夺，传播了以前没有的疾病，给生态系统带来了严重的影响。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中虽然提到了外来物种野生化后会繁殖，但并没有探讨或比较哪些“地区”更容易繁殖，排除。')\">生き物は責任を持って飼い、日本固有の生き物や日本の生態系を守っていきたいものです。</span></span>",
+              "trans": "（希望大家能负责任地饲养生物，保护日本固有的生物和日本的生态系统。）"
+            },
+            {
+              "speaker": "問",
+              "text": "女の人は何について話していますか。",
+              "trans": "（女人在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "外来種を飼う人が増えている理由",
+            "translation": "（饲养外来物种的人增加的理由）",
+            "correct": false
+          },
+          {
+            "text": "外来種が繁殖しやすい地域",
+            "translation": "（外来物种容易繁殖的地区）",
+            "correct": false
+          },
+          {
+            "text": "外来種がもたらした病気の種類",
+            "translation": "（外来物种带来的疾病种类）",
+            "correct": false
+          },
+          {
+            "text": "外来種のペットが野生化したことによる問題",
+            "translation": "（外来物种宠物野生化导致的问题）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2016.12-3.mp3",
+        "script": {
+          "question": "テレビで博物館の人が話しています。",
+          "questionTrans": "（在电视上，博物馆的工作人员正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "歴史博物館の館内改装に<span class=\"keyword\" onclick=\"showTooltip(event, '～に際（さい）し：在……之际，当……之时。')\">際し</span>、力を注いだのは当館のメインとなっている百年前の町並みを紹介するフロアです。",
+              "trans": "（在历史博物馆进行馆内翻新之际，我们倾注了心血的是介绍作为本馆主打的百年前街景的楼层。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，工作人员提到精巧的模型在翻新前就已经在展示了，并没有探讨“制作模型的困难程度”，排除。')\">当時の町並みを<span class=\"keyword\" onclick=\"showTooltip(event, '精巧（せいこう）：精巧，精细。')\">精巧</span>に再現した模型は改装以前から展示しておりましたが</span></span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '说话人在这里点出了核心话题：【尝试了使用聚光灯照射这个模型，让街道、建筑物、人物等凸显出来的表现手法（この模型にスポットライトを用いて、通りや建物、人物などを際立たせるという演出を試みました）】。后续还提到了改变颜色、亮度、角度来描绘昼夜变化，全都是在谈论照明上的巧思，符合选项3。')\">この模型にスポットライトを用いて、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，提到街道、建筑物是为了说明聚光灯照射的对象，而不是去专门介绍百年前建筑物的“特征”，排除。')\">通りや建物</span></span>、人物などを<span class=\"keyword\" onclick=\"showTooltip(event, '際立（きわだ）たせる：使显眼，使突出。')\">際立たせる</span>という<span class=\"keyword\" onclick=\"showTooltip(event, '演出（えんしゅつ）：演出，展现手法。')\">演出</span>を試みました。</span></span>",
+              "trans": "（虽说精巧再现了当时街景的模型在翻新前就已经在展示了，但我们尝试了在这个模型上使用聚光灯，让街道、建筑物、人物等凸显出来的表现手法。）"
+            },
+            {
+              "speaker": "男",
+              "text": "更に、本物らしさを追求して、色や明るさ、照らす角度に変化を持たせることにより、昼夜の変化を描いております。",
+              "trans": "（此外，为了追求逼真感，我们通过让颜色、亮度、照射角度产生变化，以此来描绘昼夜的交替。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，让人们去想象当时的生活是改良照明后想达到的“效果/愿景”，而不是展示本身的“目的”或整段话探讨的主题，排除。')\">当時の人々の暮らしぶりに<span class=\"keyword\" onclick=\"showTooltip(event, '思（おも）いを馳（は）せる：驰骋想象，怀想。')\">思いを馳せて</span>いただけるようにできたかと思っています。</span></span>",
+              "trans": "（我们觉得现在已经能让大家对当时人们的生活状态驰骋想象了。）"
+            },
+            {
+              "speaker": "問",
+              "text": "博物館の人は何について話していますか。",
+              "trans": "（博物馆的人在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "百年前の建物の特徴",
+            "translation": "（百年前建筑物的特征）",
+            "correct": false
+          },
+          {
+            "text": "模型を精巧に作る難しさ",
+            "translation": "（精巧制作模型的困难程度）",
+            "correct": false
+          },
+          {
+            "text": "展示物にあてる照明の工夫",
+            "translation": "（照射在展品上的照明巧思）",
+            "correct": true
+          },
+          {
+            "text": "昔の人々の暮らしを展示する目的",
+            "translation": "（展示过去人们生活的目的）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2016.12-4.mp3",
+        "script": {
+          "question": "テレビでレポーターが話しています。",
+          "questionTrans": "（在电视上记者正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "ここアサヒ町はぶどうの産地として知られています。おいしいぶどうと豊かな自然を求めて、観光客が数多く訪れています。また、この地は音楽家を多数<span class=\"keyword\" onclick=\"showTooltip(event, '輩出（はいしゅつ）：辈出，大量涌现。')\">輩出</span>したことでも知られています。",
+              "trans": "（这里朝日町作为葡萄的产地而闻名。为了品尝美味的葡萄和享受丰富的自然，许多游客慕名而来。此外，这个地方也因涌现出众多音乐家而闻名。）"
+            },
+            {
+              "speaker": "男",
+              "text": "音楽に関係の深いこの町ですが、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '记者在介绍了城镇背景后，引出了报道的核心话题：【最近听说正在让葡萄树听在这片土地上创作的乐曲（最近はブドウの木にこの土地で作られた曲を聞かせているそうなんです）】。后续内容全都是在解释这个举措的起因和效果，这完全符合选项3“利用音乐进行葡萄栽培的尝试”。')\">最近はブドウの木にこの土地で作られた曲を聞かせているそうなんです。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '记者在介绍了城镇背景后，引出了报道的核心话题：【最近听说正在让葡萄树听在这片土地上创作的乐曲（最近はブドウの木にこの土地で作られた曲を聞かせているそうなんです）】。后续内容全都是在解释这个举措的起因和效果，这完全符合选项3“利用音乐进行葡萄栽培的尝试”。')\"></span></span>そもそも農作業の<span class=\"keyword\" onclick=\"showTooltip(event, '合間（あいま）：间隙，空闲时间。')\">合間</span>に曲を聴いていた農家の人たちが、<span class=\"keyword\" onclick=\"showTooltip(event, 'ふと：突然，偶然。')\">ふと</span>成長が早まりはしないかと<span class=\"keyword\" onclick=\"showTooltip(event, '思（おも）いつく：想出，想到。')\">思いつき</span>、以後続けているそうです。",
+              "trans": "（虽然这是个与音乐关系密切的小镇，但据说最近正在让葡萄树听在这片土地上创作的乐曲。原本是农户们在农活间隙听歌时，突然想到这会不会让葡萄长得更快呢，据说从那以后就一直持续着。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，文中提到了音乐震动可能促进生长，但这只是在探讨这种尝试可能带来的“效果”，并没有断言音乐是葡萄栽培“必要”的条件，排除。关于选项2，开头提到游客是为了美味的葡萄和自然而来，并没有说给葡萄听音乐是为了“增加游客”，排除。')\">この<span class=\"keyword\" onclick=\"showTooltip(event, '方策（ほうさく）：对策，方针。')\">方策</span>の効果については、適度な振動が枝の成長を促進する可能性があるとのことです。</span></span>",
+              "trans": "（关于这个对策的效果，据说适度的震动有可能促进枝条的生长。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，结尾处记者感慨令人愉悦的音色似乎也能治愈农活的疲劳，这只是记者在介绍完主要尝试后的随口感慨/附和，并非整段报道的主题，排除。')\">心地よい音色は農作業の疲れも<span class=\"keyword\" onclick=\"showTooltip(event, '癒（いや）す：治愈，解除（痛苦、疲劳等）。')\">癒してくれそうですね。</span></span></span>",
+              "trans": "（令人愉悦的音色似乎也能治愈农活的疲惫呢。）"
+            },
+            {
+              "speaker": "問",
+              "text": "レポーターは何について伝えていますか。",
+              "trans": "（记者在报道什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "ぶどうの栽培に必要な条件",
+            "translation": "（葡萄栽培所需的条件）",
+            "correct": false
+          },
+          {
+            "text": "観光客を増やすための方策",
+            "translation": "（为了增加游客的对策）",
+            "correct": false
+          },
+          {
+            "text": "音楽を用いたぶどうの栽培の試み",
+            "translation": "（利用音乐进行葡萄栽培的尝试）",
+            "correct": true
+          },
+          {
+            "text": "作業の疲れを癒すのに適した音楽",
+            "translation": "（适合治愈工作疲惫的音乐）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2016.12-5.mp3",
+        "script": {
+          "question": "ラジオで医者が話しています。",
+          "questionTrans": "（在广播里医生正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "年を重ねるにつれて、体の様々な所に老化の症状が現れます。目も例外ではありません。",
+              "trans": "（随着年龄的增长，身体各个部位都会出现老化的症状。眼睛也不例外。）"
+            },
+            {
+              "speaker": "男",
+              "text": "レンズの役割をしている部分の弾力性が低下すると、この部分の厚みを変えることが難しくなり、目のピントを調節する機能が徐々に<span class=\"keyword\" onclick=\"showTooltip(event, '衰（おとろ）える：衰退，衰弱。')\">衰え</span>ます。",
+              "trans": "（当起着镜头作用的部分的弹性下降时，就很难改变这个部分的厚度，眼睛调节焦距的功能也会逐渐衰退。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中探讨的是眼睛老化导致调节功能衰退，从而“容易引起疲劳”，而不是去探讨疲劳发生后会有什么“症状”，可以排除。')\">近くの物が<span class=\"keyword\" onclick=\"showTooltip(event, 'ぼやける：模糊，不清楚。')\">ぼやけて</span>見えるようになり無理して見ようとすることで、目が疲れやすくなります。</span></span>",
+              "trans": "（看近处的东西会变得模糊，如果勉强去看，眼睛就容易疲劳。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '医生在前半段详细解释了眼睛老化的机制（弹性下降、调节功能衰退），在这里通过“虽然没有办法停止衰退，但可以通过……”引出了锻炼肌肉、戴眼镜等具体的缓解/应对方法。这完全符合选项1“眼睛的老化现象及其应对方法”。')\">目の調節機能の衰えを止める方法はありませんが、目の筋肉を<span class=\"keyword\" onclick=\"showTooltip(event, '鍛（きた）える：锻炼。')\">鍛え</span>、血液の流れをよくすることで目の疲れの症状を<span class=\"keyword\" onclick=\"showTooltip(event, '緩和（かんわ）：缓解，缓和。')\">緩和</span>することができます。</span></span>",
+              "trans": "（虽然没有办法停止眼睛调节功能的衰退，但可以通过锻炼眼部肌肉、促进血液流通，来缓解眼睛疲劳的症状。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，文中只是在最后作为减轻负担的建议之一提到了“根据需要戴眼镜”，并没有专门去探讨如何“挑选”合适的眼镜，因此排除。而选项3在文中完全没有提及，直接排除。')\">また、目に負担をかけないためにも、必要に<span class=\"keyword\" onclick=\"showTooltip(event, '応（おう）じて：根据，按照。')\">応じて</span>メガネを掛けるなどするとよいでしょう。</span></span>",
+              "trans": "（另外，为了不给眼睛增加负担，根据需要戴上眼镜等也是比较好的。）"
+            },
+            {
+              "speaker": "問",
+              "text": "医者は何について話していますか。",
+              "trans": "（医生在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "目の老化現象とその対処のしかた",
+            "translation": "（眼睛的老化现象及其应对方法）",
+            "correct": true
+          },
+          {
+            "text": "目が疲れた時の症状",
+            "translation": "（眼睛疲劳时的症状）",
+            "correct": false
+          },
+          {
+            "text": "目の健康状態をチェックする方法",
+            "translation": "（检查眼睛健康状态的方法）",
+            "correct": false
+          },
+          {
+            "text": "症状にあったメガネの選び方",
+            "translation": "（适合症状的眼镜的选择方法）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "audio": "../assets/audio/2016.12-6.mp3",
+        "script": {
+          "question": "講演会で男の人が話しています。",
+          "questionTrans": "（在演讲会上男人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "私は長年鮭の<span class=\"keyword\" onclick=\"showTooltip(event, '生態（せいたい）：生态。')\">生態</span>を調査研究してきました。鮭は川で生まれ、遠く離れた海で育ち、また生まれた川に帰って<span class=\"keyword\" onclick=\"showTooltip(event, '産卵（さんらん）：产卵。')\">産卵</span>し、その一生を終えます。",
+              "trans": "（我长年从事鲑鱼生态的调查研究。鲑鱼在河里出生，在遥远的海洋中长大，然后再回到出生的河流中产卵，结束其一生。）"
+            },
+            {
+              "speaker": "男",
+              "text": "川にはその川ごとの<span class=\"keyword\" onclick=\"showTooltip(event, '特有（とくゆう）：特有，独有。')\">特有</span>の匂いがあります。これまでの調査から鮭は川に帰る際、一つは川の匂いを<span class=\"keyword\" onclick=\"showTooltip(event, '頼（たよ）り：依靠，依赖。')\">頼り</span>としていることがあきらかになっています。",
+              "trans": "（河流有着每条河特有的气味。从迄今为止的调查中已经查明，鲑鱼在游回河流时，其中一个是依靠着河流的气味。）"
+            },
+            {
+              "speaker": "男",
+              "text": "しかし、鮭は何千キロも離れた海まで移動するため、川の匂いだけを頼りにしているとは考えにくいのです。まだ明らかにされていないこともありますが。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在最后总结了他的研究观点：除了依靠气味，【被认为同时使用了好几种方法，比如根据太阳的位置来掌握当前的位置等（太陽の位置をもとに、現在の位置を把握するなど、いくつかのことを併用していると考えられています）】。这说明整段讲话都在探讨鲑鱼是如何找到路回到出生地的，完全符合选项2“回到出生地的方法”。')\">太陽の位置をもとに、現在の位置を<span class=\"keyword\" onclick=\"showTooltip(event, '把握（はおく）：掌握，把握。')\">把握</span>するなど、いくつかのことを<span class=\"keyword\" onclick=\"showTooltip(event, '併用（へいよう）：并用，同时使用。')\">併用</span>していると考えられています。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在最后总结了他的研究观点：除了依靠气味，【被认为同时使用了好几种方法，比如根据太阳的位置来掌握当前的位置等（太陽の位置をもとに、現在の位置を把握するなど、いくつかのことを併用していると考えられています）】。这说明整段讲话都在探讨鲑鱼是如何找到路回到出生地的，完全符合选项2“回到出生地的方法”。')\"></span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，文中探讨的是鲑鱼如何从海里回到出生的河里，而不是“为什么”从河里去海里，排除。关于选项3，文中提到气味只是作为鲑鱼认路的一种手段，并没有专门探讨它喜欢的“气味的特征”，排除。关于选项4，虽然提到了河流环境，但文中根本没有提及需要“保护环境”，排除。')\"></span></span>",
+              "trans": "（但是，由于鲑鱼会移动到几千公里外的海域，因此很难想象它们仅仅是依靠河流的气味。虽然还有尚未查明的事情。被认为同时使用了好几种方法，比如根据太阳的位置来掌握当前的位置等。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人は主に何について話していますか。",
+              "trans": "（男人主要在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "鮭が川から海へ移動する理由",
+            "translation": "（鲑鱼从河里移动到海里的理由）",
+            "correct": false
+          },
+          {
+            "text": "鮭が生まれた所に戻る方法",
+            "translation": "（鲑鱼回到出生地的方法）",
+            "correct": true
+          },
+          {
+            "text": "鮭が好む川の匂いの特徴",
+            "translation": "（鲑鱼喜欢的河流气味的特征）",
+            "correct": false
+          },
+          {
+            "text": "鮭が育つ川の環境を保護する必要性",
+            "translation": "（保护鲑鱼生长的河流环境的必要性）",
+            "correct": false
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2016-12-概要理解"; 
+        let currentExamKey = "2016-12"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -275,10 +569,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -617,8 +911,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-<script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+<script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261017-summary-n1-2016-12-92b389dc9d31"></script>
+<script src="../shared/follow-listening.js?v=20261017-summary-n1-2016-12-92b389dc9d31"></script>
+<script src="../shared/follow-listening-entry.js?v=20261017-summary-n1-2016-12-92b389dc9d31"></script>
 </body>
 </html>

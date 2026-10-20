@@ -61,12 +61,20 @@
         const identify = typeof getWordId === 'function' ? getWordId : getDefaultWordId;
         const lookup = new Map();
         (Array.isArray(allWords) ? allWords : []).forEach((word) => {
-            const ids = [identify(word), word && word.id, word && word.word].map(normalize).filter(Boolean);
+            if (!word || word.duplicateOf) return;
+            const ids = [identify(word), word.id, word.word, ...(word.legacyWordIds || []), ...(word.legacyWords || [])].map(normalize).filter(Boolean);
             ids.forEach((wordId) => {
                 if (!lookup.has(wordId)) lookup.set(wordId, word);
             });
         });
-        return saved.wordIds.map((wordId) => lookup.get(normalize(wordId))).filter(Boolean);
+        const seen = new Set();
+        return saved.wordIds.map((wordId) => lookup.get(normalize(wordId))).filter((word) => {
+            if (!word) return false;
+            const id = normalize(identify(word));
+            if (seen.has(id)) return false;
+            seen.add(id);
+            return true;
+        });
     }
 
     function open(options) {

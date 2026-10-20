@@ -1,0 +1,306 @@
+/* ---- 发牌柴犬：牌桌对面的柴犬洗牌、发牌、替你翻牌 ----
+   Loaded after lottery-tarot-flow-github-20261020.css. The dealer replaces the visible
+   heading in the card table and the tarot fan; the illustrated tarot reading
+   keeps its own two-column layout without it.
+
+   Layout: the shiba sits behind a wooden table edge at the bottom of
+   .tarot-dealer. A dark cloth spreads from that edge under the laid cards,
+   and the deck rests on the edge beside the shiba's right paw. */
+.tarot-choice-dialog {
+    --dealer-h: clamp(128px, calc(var(--lottery-vh, 1vh) * 22), 196px);
+    --rail-h: clamp(10px, calc(var(--dealer-h) * .075), 14px);
+    --deck-h: calc(var(--deck-w, 54px) * 1468 / 931);
+    /* The resting deck sits beside the shiba, clear of the cards below it. */
+    --deck-x: calc(var(--dealer-h) * .44);
+    --card-top: .5;
+    /* From the centre of a laid card up to the deck resting on the table edge. */
+    --deal-rise: calc(var(--reading-height) * var(--card-top) + 14px + var(--rail-h) * .5 + var(--deck-h) * .25);
+    --felt-w: min(calc(100vw - 24px), calc(var(--spread-distance) * 2 + var(--card-width) + 120px));
+    --felt-h: calc(var(--reading-height) + 40px);
+}
+/* The deck is sized to the shiba's paws; each card starts at the deck's size (deck width ÷ card width). */
+.tarot-choice-dialog[data-mode='normal'] { --deck-w: calc(var(--dealer-h) * .26); --deal-scale: .18; }
+.tarot-choice-dialog[data-layout='focus'] {
+    --dealer-h: clamp(92px, calc(var(--lottery-vh, 1vh) * 14.5), 128px);
+    --deal-scale: .11;
+    --felt-w: calc(100vw - 16px);
+    --felt-h: calc(var(--reading-height) + 30px);
+}
+
+.tarot-dealer { position: relative; z-index: 4; display: none; flex: none; width: min(100%, 760px); height: var(--dealer-h); pointer-events: none; }
+/* The card table's perspective makes it its own layer; lift it so dealt and
+   chosen cards pass over the deck instead of under it. */
+.tarot-choice-dialog.has-dealer .tarot-draw-ritual { z-index: 5; }
+.tarot-choice-dialog.has-dealer:is([data-mode='normal'], [data-mode='fan']) .tarot-dealer { display: block; }
+/* The dealer takes the heading's place; the heading stays for assistive technology. */
+.tarot-choice-dialog.has-dealer:is([data-mode='normal'], [data-mode='fan']) .tarot-choice-heading {
+    position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+/* Card sizes give the dealer the heading's former space plus room for a larger shiba. */
+.tarot-choice-dialog.has-dealer[data-layout='table'] {
+    --table-canvas-width: min(336px, calc((100vw - 120px) / 3), calc((calc(var(--lottery-vh, 1vh) * 100) - var(--kiki-header-height, 64px) - 147px - var(--dealer-h)) * 2 / 3));
+}
+.tarot-choice-dialog.has-dealer[data-layout='table'].has-extra-page {
+    --table-canvas-width: min(336px, calc((100vw - 120px) / 3), calc((calc(var(--lottery-vh, 1vh) * 100) - var(--kiki-header-height, 64px) - 187px - var(--dealer-h)) * 2 / 3));
+}
+.tarot-choice-dialog.has-dealer[data-mode='normal'][data-layout='focus'] {
+    --reading-height: min(558px, calc(calc(var(--lottery-vh, 1vh) * 100) - var(--kiki-header-height, 64px) - 150px - var(--dealer-h)), calc((100vw - 54px) * 1.5));
+}
+
+/* ---- 牌桌：木桌沿 + 桌布 ---- */
+.tarot-dealer-felt {
+    position: absolute; left: 50%; top: calc(100% - var(--rail-h) * .5); z-index: 0;
+    width: var(--felt-w); height: var(--felt-h); transform: translateX(-50%);
+    /* Deep wine velvet keeps the navy card backs readable on the cloth. */
+    background:
+        radial-gradient(ellipse 46% 38% at 50% 0, rgba(255, 214, 160, .18), transparent 72%),
+        radial-gradient(ellipse 70% 60% at 50% 45%, rgba(140, 52, 64, .28), transparent 80%),
+        repeating-linear-gradient(115deg, rgba(255, 255, 255, .016) 0 2px, transparent 2px 6px),
+        linear-gradient(180deg, #4d2731 0%, #3d1f28 50%, #2d171e 100%);
+    clip-path: polygon(5% 0, 95% 0, 100% 100%, 0 100%);
+    -webkit-mask-image: linear-gradient(#000 0, #000 74%, transparent 100%);
+    mask-image: linear-gradient(#000 0, #000 74%, transparent 100%);
+}
+/* The lamp over the table brightens while a rare card gathers light. */
+.tarot-dealer-felt::before {
+    content: ''; position: absolute; inset: 0 12% 30%; opacity: 0;
+    background: radial-gradient(ellipse 50% 60% at 50% 0, rgba(255, 214, 128, .42), transparent 70%);
+    transition: opacity 600ms ease;
+}
+.tarot-choice-dialog:has(.is-omen-glow) .tarot-dealer-felt::before { opacity: .55; }
+.tarot-choice-dialog:has(.is-ur-charging) .tarot-dealer-felt::before { opacity: 1; animation: dealer-lamp 900ms ease-in-out infinite alternate; }
+@keyframes dealer-lamp { from { filter: brightness(.85); } to { filter: brightness(1.25); } }
+.tarot-dealer-table {
+    position: absolute; left: 50%; bottom: calc(var(--rail-h) * -.5); z-index: 2;
+    width: calc(var(--felt-w) * .9 + 8px); height: var(--rail-h); transform: translateX(-50%);
+    border-radius: 3px;
+    background: linear-gradient(180deg, #b78a63 0%, #93633f 30%, #714629 70%, #50311d 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 234, 196, .5), inset 0 -1px 0 rgba(36, 18, 8, .6), 0 4px 9px rgba(6, 8, 10, .45);
+}
+/* A thin gold inlay runs along the edge, matching the card backs. */
+.tarot-dealer-table::before {
+    content: ''; position: absolute; left: 12px; right: 12px; top: 34%; height: 1px;
+    background: linear-gradient(90deg, transparent, #e8c48099 12%, #f3d79a 50%, #e8c48099 88%, transparent);
+}
+
+/* ---- 柴犬：外层负责倾身（看哪张、伸向哪张），内层负责各姿势的动作 ---- */
+.tarot-dealer-stage { position: absolute; left: 50%; bottom: 0; z-index: 1; height: 100%; width: calc(var(--dealer-h) * 4 / 3); aspect-ratio: 4 / 3; transform: translateX(-50%); }
+.tarot-dealer-body {
+    position: absolute; inset: 0; transform-origin: 50% 100%;
+    transition: transform 460ms cubic-bezier(.25, .8, .3, 1);
+}
+.tarot-dealer-shiba {
+    position: absolute; inset: 0; background-repeat: no-repeat; transform-origin: 50% 100%;
+    filter: drop-shadow(0 6px 10px rgba(8, 12, 10, .34));
+}
+.tarot-dealer[data-pose='hold'] .tarot-dealer-body { transform: translateX(calc(var(--look, 0) * 3%)) rotate(calc(var(--look, 0) * 4deg)); }
+.tarot-dealer:is([data-pose='flip'], [data-pose='surprised']) .tarot-dealer-body { transform: translateX(calc(var(--reach, 0) * 8%)) rotate(calc(var(--reach, 0) * 5deg)); }
+.tarot-dealer:is([data-pose='happy'], [data-pose='sheepish']) .tarot-dealer-body { transform: translateX(calc(var(--reach, 0) * 4%)) rotate(calc(var(--reach, 0) * 2deg)); }
+/* Dealing sweeps from the leftmost card to the rightmost, one push per card. */
+.tarot-dealer { --sweep: clamp(0, calc(var(--deal-count, 3) - 1), 1); }
+.tarot-dealer[data-pose='deal'] .tarot-dealer-body { animation: dealer-deal-sweep calc(var(--deal-count, 3) * var(--deal-gap, 280ms)) ease-in-out both; }
+@keyframes dealer-deal-sweep {
+    from { transform: translateX(calc(var(--sweep) * -6%)) rotate(calc(var(--sweep) * -4deg)); }
+    to { transform: translateX(calc(var(--sweep) * 6%)) rotate(calc(var(--sweep) * 4deg)); }
+}
+
+/* ---- 牌堆：平放在桌沿上（压扁的牌面 + 一层层奶油色牌边）；洗牌时立起来回到柴犬胸前 ---- */
+.tarot-dealer-deck {
+    position: absolute; left: calc(50% + var(--deck-x)); bottom: calc(var(--rail-h) * .5 - 3px); z-index: 3;
+    width: var(--deck-w, 54px); height: calc(var(--deck-h) * .46); transform: translateX(-50%);
+    transition: left 420ms cubic-bezier(.3, .8, .3, 1), height 420ms cubic-bezier(.3, .8, .3, 1), transform 420ms cubic-bezier(.3, .8, .3, 1), opacity 260ms ease;
+}
+.tarot-dealer-deck i {
+    position: absolute; inset: 0; overflow: hidden; border-radius: 6% / 8%;
+    box-shadow: 0 1px 0 #efe2c4, 0 2px 0 #b9a47c, 0 3px 5px #0b100c66; transform: translateY(calc(var(--n) * -1.6px));
+}
+.tarot-dealer-deck img {
+    position: absolute; top: calc(-300% / 1468); left: calc(-4700% / 931); display: block;
+    width: calc(102400% / 931); height: calc(153600% / 1468); max-width: none; pointer-events: none;
+}
+.tarot-dealer[data-deck='shuffle'] .tarot-dealer-deck { left: 50%; height: var(--deck-h); transform: translateX(-50%) translateY(calc(var(--deck-h) * -.12)); }
+.tarot-dealer[data-deck='shuffle'] .tarot-dealer-deck i:nth-child(odd) { animation: deck-riffle-left 640ms ease-in-out 2 both; animation-delay: calc(400ms + var(--n) * 24ms); }
+.tarot-dealer[data-deck='shuffle'] .tarot-dealer-deck i:nth-child(even) { animation: deck-riffle-right 640ms ease-in-out 2 both; animation-delay: calc(400ms + var(--n) * 24ms); }
+.tarot-dealer[data-deck='empty'] .tarot-dealer-deck { opacity: 0; }
+@keyframes deck-riffle-left {
+    0%, 100% { transform: translateY(calc(var(--n) * -1.4px)); }
+    35% { transform: translate(-78%, -10%) rotate(-12deg); }
+    62% { transform: translate(-28%, -4%) rotate(-4deg); }
+}
+@keyframes deck-riffle-right {
+    0%, 100% { transform: translateY(calc(var(--n) * -1.4px)); }
+    35% { transform: translate(78%, -10%) rotate(12deg); }
+    62% { transform: translate(28%, -4%) rotate(4deg); }
+}
+
+/* ---- 台词气泡与头顶表情 ---- */
+.tarot-dealer-bubble {
+    position: absolute; left: calc(50% + var(--dealer-h) * .32); top: 8%; z-index: 4;
+    padding: 6px 13px; border-radius: 14px; background: #fff8ea; color: #4b3a26;
+    font: 500 14px/1.5 var(--tarot-serif); letter-spacing: .04em; white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(8, 12, 10, .3); opacity: 0; transform-origin: 0 100%;
+}
+.tarot-dealer-bubble::after {
+    content: ''; position: absolute; left: -6px; bottom: 9px;
+    border: 6px solid transparent; border-right-color: #fff8ea; border-left: 0;
+}
+.tarot-dealer-bubble.is-speaking { animation: dealer-bubble 2800ms ease-out forwards; }
+@keyframes dealer-bubble {
+    0% { opacity: 0; transform: translateX(-6px) scale(.86); }
+    10%, 84% { opacity: 1; transform: none; }
+    100% { opacity: 0; transform: translateY(-4px); }
+}
+.tarot-dealer-emote {
+    position: absolute; left: 16%; top: 2%; z-index: 2;
+    color: #f6e3b8; font: 700 calc(var(--dealer-h) * .16)/1 var(--tarot-serif);
+    text-shadow: 0 2px 6px rgba(8, 10, 14, .55); opacity: 0; transform-origin: 50% 100%;
+}
+.tarot-dealer[data-emote='bang'] .tarot-dealer-emote { color: #ffd36e; }
+.tarot-dealer[data-emote='sparkle'] .tarot-dealer-emote { color: #fff2c9; text-shadow: 0 0 8px #f3d79a, 0 2px 6px rgba(8, 10, 14, .5); }
+.tarot-dealer[data-emote='heart'] .tarot-dealer-emote { color: #ff9db4; }
+.tarot-dealer-emote.is-showing { animation: dealer-emote 1900ms ease-out forwards; }
+@keyframes dealer-emote {
+    0% { opacity: 0; transform: translateY(8px) scale(.4); }
+    14% { opacity: 1; transform: translateY(-2px) scale(1.18); }
+    24% { transform: none; }
+    78% { opacity: 1; transform: none; }
+    100% { opacity: 0; transform: translateY(-8px); }
+}
+@media (max-width: 767px), (max-width: 1024px) and (pointer: coarse) {
+    /* Phones keep the close button clear: the bubble speaks from the shiba's left, the mark pops on its right. */
+    .tarot-dealer-bubble { left: auto; right: calc(50% + var(--dealer-h) * .32); padding: 4px 10px; font-size: 12px; transform-origin: 100% 100%; }
+    .tarot-dealer-bubble::after { left: auto; right: -6px; border-right-color: transparent; border-left: 6px solid #fff8ea; border-right: 0; }
+    .tarot-dealer-emote { left: auto; right: 16%; }
+}
+
+/* ---- 翻牌：柴犬伸爪的那一刻，牌顶上轻轻点出一圈光 ---- */
+.tarot-choice-dialog.has-dealer:has(.tarot-dealer.is-acting:is([data-pose='flip'], [data-pose='surprised'])) .tarot-ritual-card.is-current:not(.is-flipped)::after,
+.tarot-choice-dialog.has-dealer:has(.tarot-dealer[data-pose='flip']) .tarot-fan-card.is-chosen:not(.is-flipped)::after {
+    content: ''; position: absolute; left: 50%; top: 7%; z-index: 4; width: 24%; aspect-ratio: 1;
+    border: 2px solid rgba(255, 238, 200, .9); border-radius: 50%; pointer-events: none;
+    box-shadow: 0 0 10px rgba(255, 220, 150, .6); opacity: 0;
+    animation: dealer-tap 640ms ease-out 140ms both;
+}
+@keyframes dealer-tap {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(.3); }
+    30% { opacity: 1; }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+}
+
+/* ---- 占位立绘：首页祈福柴犬精灵图（0 合掌 · 1 闭眼发力 · 2 开心） ----
+   The sprite is drawn 128% tall so its lower body sits behind the table edge.
+   Replace this block with assets/lottery-dealer/dealer-<pose>.webp once the
+   commissioned poses (designs/lottery-shiba-dealer/) arrive. */
+.tarot-dealer-shiba {
+    background-image: url("../assets/home-redesign/fortune-shiba-prayer-sprite-v1.webp");
+    background-size: auto 128%; background-position: -1.75% 0;
+}
+.tarot-dealer:is([data-pose='shuffle'], [data-pose='flip']) .tarot-dealer-shiba { background-position: 50% 0; }
+.tarot-dealer:is([data-pose='surprised'], [data-pose='happy']) .tarot-dealer-shiba { background-position: 101.75% 0; }
+@keyframes dealer-happy-frame { 0%, 84% { background-position: 101.75% 0; } 85%, 100% { background-position: -1.75% 0; } }
+
+/* Motion shared by placeholder and final art. Reactions settle back by
+   themselves, so no timer is needed to return to the waiting pose. */
+.tarot-dealer[data-pose='hold'] .tarot-dealer-shiba { animation: dealer-breathe 3600ms ease-in-out infinite; }
+.tarot-dealer[data-pose='shuffle'] .tarot-dealer-shiba { animation: dealer-sway 320ms ease-in-out infinite alternate; }
+.tarot-dealer[data-pose='deal'] .tarot-dealer-shiba { animation: dealer-push var(--deal-gap, 280ms) ease-in-out var(--deal-count, 3) both; }
+/* The fan's seven quick cards read as two sweeping pushes rather than a shiver. */
+.tarot-choice-dialog[data-mode='fan'] .tarot-dealer[data-pose='deal'] .tarot-dealer-shiba { animation: dealer-push 390ms ease-in-out 2 both; }
+.tarot-dealer.is-acting[data-pose='flip'] .tarot-dealer-shiba { animation: dealer-reach 520ms ease-out both; }
+.tarot-dealer.is-acting[data-pose='surprised'] .tarot-dealer-shiba { animation: dealer-tremble 150ms linear infinite; }
+.tarot-dealer.is-acting[data-pose='happy'] .tarot-dealer-shiba {
+    animation: dealer-hop 700ms cubic-bezier(.3, .7, .35, 1) 2, dealer-happy-frame 2800ms steps(1, end) forwards;
+}
+.tarot-dealer.is-acting[data-pose='sheepish'] .tarot-dealer-shiba { animation: dealer-sheepish 2400ms ease-in-out forwards; }
+.tarot-dealer-shiba::after {
+    content: ''; position: absolute; top: 18%; left: 64%; width: 4.5%; aspect-ratio: 3 / 4;
+    border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: linear-gradient(#e9f6ff, #9fd0f2);
+    box-shadow: inset 0 0 0 1px #6aa8d2; opacity: 0; transform: rotate(-18deg);
+}
+.tarot-dealer.is-acting[data-pose='sheepish'] .tarot-dealer-shiba::after { animation: dealer-sweat 2400ms ease-in-out forwards; }
+@keyframes dealer-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.012, .992); } }
+@keyframes dealer-sway { from { transform: rotate(-1.6deg) translateY(1%); } to { transform: rotate(1.6deg) translateY(0); } }
+@keyframes dealer-push { 0%, 100% { transform: none; } 45% { transform: translateY(4%) scale(1.035, .975); } }
+@keyframes dealer-reach { 0% { transform: none; } 45% { transform: translateY(5%) scale(1.05); } 100% { transform: translateY(2%) scale(1.02); } }
+@keyframes dealer-tremble {
+    0%, 100% { transform: translateX(0) rotate(0); }
+    25% { transform: translateX(-1%) rotate(-1.2deg); }
+    75% { transform: translateX(1%) rotate(1.2deg); }
+}
+@keyframes dealer-hop {
+    0%, 100% { transform: translateY(0) scale(1); }
+    14% { transform: translateY(0) scale(1.05, .93); }
+    42% { transform: translateY(-9%) scale(.97, 1.04); }
+    72% { transform: translateY(0) scale(1.03, .96); }
+}
+@keyframes dealer-sheepish { 0% { transform: rotate(0); } 18%, 78% { transform: rotate(-7deg) translateX(-2%); } 100% { transform: rotate(0); } }
+@keyframes dealer-sweat {
+    0%, 12% { opacity: 0; transform: rotate(-18deg) translateY(-4px); }
+    24%, 76% { opacity: 1; transform: rotate(-18deg) translateY(0); }
+    100% { opacity: 0; transform: rotate(-18deg) translateY(6px); }
+}
+
+/* ---- 发牌：牌从桌沿上那叠牌里滑出，一张张落到你面前的桌布上 ----
+   Only the starting frame is declared, so each card glides into whatever
+   resting transform its layout (desktop row or phone fan) already gives it. */
+.tarot-choice-dialog.has-dealer.is-spreading .tarot-ritual-card { opacity: 0; animation: none; }
+.tarot-choice-dialog.has-dealer.is-spreading.is-dealing .tarot-ritual-card {
+    opacity: 1; animation: tarot-deal-from-dealer 560ms cubic-bezier(.22, .8, .26, 1) both;
+    animation-delay: calc(var(--deal-order, 0) * 280ms);
+}
+@keyframes tarot-deal-from-dealer {
+    from { transform: translate(-50%, -50%) translateX(var(--deck-x)) translateY(calc(-1 * var(--deal-rise))) rotateX(50deg) rotate(var(--deal-spin, -6deg)) scale(var(--deal-scale, .2)); }
+}
+
+/* ---- 每日塔罗：柴犬把牌摊成扇形，你挑一张，它替你翻开 ---- */
+.tarot-choice-dialog[data-mode='fan'] {
+    --dealer-h: clamp(128px, calc(var(--lottery-vh, 1vh) * 23), 206px);
+    --fan-w: clamp(66px, 10.5vw, 128px);
+    --fan-step: calc(var(--fan-w) * .64);
+    --fan-pick-scale: 1.6;
+    --reading-height: calc(var(--fan-w) * 1.577 * 1.9);
+    --deck-w: calc(var(--fan-w) * .36);
+    --deal-scale: .36;
+    --card-top: .46;
+    --felt-w: min(calc(100vw - 24px), calc(var(--fan-step) * 6 + var(--fan-w) * 1.6 + 140px));
+    --felt-h: calc(var(--reading-height) * .84 + 30px);
+}
+.tarot-choice-dialog[data-mode='fan'] .tarot-choice-hint { font-size: 13px; letter-spacing: .08em; }
+.tarot-fan-card {
+    position: absolute; top: 46%; left: 50%; width: var(--fan-w); height: calc(var(--fan-w) * 1468 / 931); aspect-ratio: 931 / 1468;
+    margin: 0; padding: 0; border: 0; border-radius: 4.3% / 2.7%; background: transparent;
+    cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; container-type: inline-size;
+    transform: translate(-50%, -50%) translateX(calc(var(--fan-k) * var(--fan-step))) translateY(calc(var(--fan-k) * var(--fan-k) * 5px)) rotate(calc(var(--fan-k) * 6deg));
+    transition: transform 380ms cubic-bezier(.2, .8, .25, 1), opacity 320ms ease, filter 200ms ease;
+}
+.tarot-fan-card:disabled { cursor: default; }
+.is-fan-shuffling .tarot-fan-card { opacity: 0; }
+.is-fanning .tarot-fan-card { animation: tarot-deal-from-dealer 520ms cubic-bezier(.22, .8, .26, 1) both; animation-delay: calc(var(--deal-order, 0) * 110ms); }
+.is-fan-ready .tarot-fan-card:is(:hover, :focus-visible) {
+    z-index: 3; filter: brightness(1.06);
+    transform: translate(-50%, -50%) translateX(calc(var(--fan-k) * var(--fan-step))) translateY(calc(var(--fan-k) * var(--fan-k) * 5px - 16px)) rotate(calc(var(--fan-k) * 6deg));
+}
+/* Unchosen cards slide back into the deck on the table edge. */
+.is-fan-reveal .tarot-fan-card:not(.is-chosen) {
+    opacity: 0; transform: translate(-50%, -50%) translateX(var(--deck-x)) translateY(calc(-1 * var(--deal-rise))) scale(var(--deal-scale));
+}
+.is-fan-reveal .tarot-fan-card.is-chosen { z-index: 5; transform: translate(-50%, -44%) scale(var(--fan-pick-scale)); }
+.tarot-fan-card .deck-face-front { background: #fefdfa; }
+@media (max-width: 767px), (max-width: 1024px) and (pointer: coarse) {
+    .tarot-choice-dialog[data-mode='fan'] {
+        --dealer-h: clamp(110px, calc(var(--lottery-vh, 1vh) * 18), 156px);
+        --fan-w: min(76px, calc((100vw - 48px) / 5));
+        --fan-step: calc(var(--fan-w) * .56);
+        --fan-pick-scale: 1.75;
+        --felt-w: calc(100vw - 16px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tarot-dealer-bubble, .tarot-dealer-emote { display: none; }
+    .tarot-dealer-body, .tarot-dealer-deck { transition: none; }
+    .tarot-dealer[data-pose] .tarot-dealer-body { animation: none; transform: none; }
+    .tarot-dealer-felt::before { animation: none !important; }
+    .tarot-choice-dialog.has-dealer .tarot-ritual-card::after, .tarot-fan-card::after { display: none; }
+}

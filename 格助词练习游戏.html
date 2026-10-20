@@ -1,8 +1,78 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-game-kind="particle">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<meta charset="utf-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
   <meta name="theme-color" content="#5f6747">
   <title>助詞茶寮｜格助詞練習</title>
   <style>
@@ -1018,7 +1088,379 @@
       *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
     }
   </style>
-  <script src="shiba-study-cottage/arcade-bridge.js"></script>
+<script src="shared/arcade-bridge-github-20261020.js?v=reward-receipt-1"></script>
+  <script src="shared/game-ranking.js?v=score-start-retry-20261009-2" data-game="joshi"></script>
+<script id="gameScoringRuntime">
+/* The single scoring formula used by the existing games and server. */
+(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.GameScoring=api;})(globalThis,function(){
+  'use strict';
+  const levels={n5:100,n4:150,n3:220,n2:320,n1:450};
+  const forms={masu:100,te:100,ta:100,nai:100,pot:115,vol:115,pas:115,cau:115,imp:115,cpas:130};
+  let catalog={};
+  function base(game,question){
+    if(game==='kanji'||game==='katsuyo'){
+      const level=String(question.level||question.verb?.level||'').toLowerCase();
+      if(!levels[level])throw Error('题目缺少有效词汇等级');
+      if(game==='kanji')return levels[level];
+      const factor=forms[question.formId];if(!factor)throw Error('未知活用形式');
+      return Math.floor((levels[level]*factor+50)/100);
+    }
+    const value=question.baseScore??catalog[question.id];
+    if(![100,150,220,320,450].includes(value))throw Error('题目缺少基础分：'+question.id);
+    return value;
+  }
+  function points(baseScore,priorStreak,assisted=false){
+    if(!Number.isSafeInteger(baseScore)||baseScore<100||baseScore>585||!Number.isSafeInteger(priorStreak)||priorStreak<0)throw Error('无效计分参数');
+    return assisted?0:Math.floor((baseScore*(100+2*Math.min(priorStreak,5))+50)/100);
+  }
+  return Object.freeze({levels:Object.freeze(levels),forms:Object.freeze(forms),base,points,configure(values){catalog=Object.freeze({...values});}});
+});
+
+GameScoring.configure({"q-1al2ske":100,"q-pv8wbj":100,"q-s0klnj":100,"q-976zm6":100,"q-1hg8si4":100,"q-1salatg":100,"q-18r6ept":100,"q-1u76jov":150,"q-1vv700t":150,"q-p770sy":100,"q-1rg3m4o":100,"q-3q63rn":100,"q-1xis6gs":150,"q-1pg1ls9":100,"q-1hzn1s8":100,"q-obel2a":100,"q-vmbys7":100,"q-4wjryx":100,"q-1jgb0wx":100,"q-5ywonc":100,"q-uzhthd":100,"q-4efews":100,"q-13id5u8":100,"q-8ozmgv":100,"q-2o55j1":100,"q-1bv53zu":100,"q-6g0mo2":150,"q-1plinf4":100,"q-t7he6h":100,"q-1upwaws":100,"q-1a9zbaa":100,"q-1ysdvcv":100,"q-a42n50":220,"q-hngl72":100,"q-fnj1qk":100,"q-19qq8he":100,"q-2sk2hi":100,"q-8nx63p":100,"q-nsudq1":100,"q-9x826v":100,"q-1rowvmr":100,"q-11vzuc6":100,"q-v11vms":100,"q-cv7bdz":100,"q-11v5wij":100,"q-tdipp8":100,"q-1rlvgg1":100,"q-wrql1v":100,"q-13qp5hm":100,"q-12lfxb6":100,"q-z4tskd":100,"q-gnakrp":100,"q-1y6z62w":100,"q-uoifx3":100,"q-1nv3xok":100,"q-z2fa7s":100,"q-dh22f1":100,"q-c754s4":150,"q-1ftd4ev":100,"q-1uglilt":100,"q-1jd834z":100,"q-1gsy0ez":100,"q-12zsbdc":100,"q-9azwn3":100,"q-n38ycx":100,"q-120ij9i":100,"q-1m4eaeb":100,"q-7dbej8":150,"q-1bl7kel":100,"q-pt3do2":100,"q-in2q66":100,"q-v9ijdz":100,"q-12091qq":100,"q-1cz3hoi":100,"q-1dfah25":100,"q-13yyy7e":100,"q-1j13akg":100,"q-1fzea6m":100,"q-1flifp3":100,"q-168953j":100,"q-ure76o":100,"q-1y8uls9":100,"q-1bn8ika":100,"q-15qj7v0":100,"q-otf1bl":100,"q-1lht2ax":100,"q-5rwops":100,"q-1ghnop7":100,"q-1luvxvr":100,"q-181uncq":100,"q-i87cz1":100,"q-twomj0":100,"q-9hzhty":100,"q-19ymdd1":150,"q-1vsd4qi":100,"q-1j75o21":150,"q-1fpitu9":100,"q-gdmjc2":220,"q-1gihod1":100,"q-vki3ng":100,"q-1vu6ivu":100,"q-1pybbhg":100,"q-5ue335":100,"q-1n6oyil":100,"q-r33650":100,"q-14zm29g":100,"q-1tk3ltv":100,"q-1wzblq1":100,"q-c7y4n3":100,"q-147d28c":100,"q-1oc52we":100,"q-nvylm":100,"q-nx1x5w":100,"q-puv3pp":150,"q-1o1302m":100,"q-j39x6o":150,"q-12vu40s":100,"q-1lgnegu":100,"q-ub00fd":100,"q-1x8e4j3":100,"q-1x0w1t2":100,"q-1ha972a":100,"q-1tfee1h":100,"q-kj8oea":100,"q-s112sr":100,"q-1vtimfn":100,"q-1j20vp9":100,"q-z6tim1":100,"q-7n9nn":100,"q-1isgyuf":100,"q-1ixbist":100,"q-151hxe6":100,"q-1ckrgmb":100,"q-1cfo0wr":100,"q-kumpa1":150,"q-c543xs":100,"q-19hfbe4":100,"q-xyyrkd":100,"q-owcrfr":100,"q-9musol":100,"q-1x881ct":100,"q-1a9xzfs":100,"q-18njcxj":100,"q-loh8np":100,"q-yz302v":100,"q-14vhqhi":100,"q-6j91ir":100,"q-1dfgezy":100,"q-16f3wiv":100,"q-1c12vq3":100,"q-dlec47":100,"q-3irjq6":100,"q-375aft":100,"q-1famjlu":100,"q-rxsted":100,"q-5plw6l":100,"q-1xn1iit":100,"q-1t3ht2v":100,"q-183f4z8":100,"q-1fxybry":100,"q-lokdhd":100,"q-1hyxcu3":100,"q-skbkgq":150,"q-1a23v8m":100,"q-qzemmx":100,"q-op2wkj":100,"q-3rtm9a":100,"q-1ek3smr":100,"q-13xdwgo":100,"q-7wfefp":100,"q-1f8zq3g":100,"q-vnzgcb":100,"q-d0ogxl":100,"q-18vq8fm":100,"q-107816u":220,"q-1birduz":100,"q-qvm4sm":220,"q-14jbao8":100,"q-15uocwi":100,"q-1qr1xux":100,"q-isrwfs":100,"q-t2fh4i":100,"q-hn76sw":100,"q-1if79gk":150,"q-3vvkvo":100,"q-16q5v0e":100,"q-j4lvqd":100,"q-ymi2hd":100,"q-12ay2f5":100,"q-1s2itvh":100,"q-1y2kc6x":100,"q-ovqu43":100,"q-c8bac2":100,"q-14fq948":100,"q-ofq1od":100,"q-1j6xr77":100,"q-n7xr47":100,"q-dikaca":100,"q-zrxuf":100,"q-jzjcuy":100,"q-1quovav":100,"q-1ri9us6":220,"q-befc1c":100,"q-1dli2to":100,"q-1a79fya":100,"q-a98hf5":100,"q-g9hgmg":100,"q-8hkkpz":100,"q-wisw4":100,"q-1rwnsss":100,"q-w7i4ct":150,"q-12goa2s":100,"q-yhduah":100,"q-ba2g9d":100,"q-i2o3iq":220,"q-qd5zne":100,"q-15kloau":100,"q-1y1002":100,"q-1a5u4w2":100,"q-1jhlzdi":100,"q-1fg697":100,"q-296wkd":100,"q-cgeh9k":220,"q-1shq945":100,"q-1ou6sf4":100,"q-iwv7ot":100,"q-1oxvshy":100,"q-1nr1paa":100,"q-kyjup4":320,"q-1vckyic":100,"q-mnjb0l":220,"q-jha41s":100,"q-4gb8wt":100,"q-1pwpp0":100,"q-1whvh7x":100,"q-2kyzqr":100,"q-366y5z":100,"q-iznr3n":100,"q-1v4iy8q":100,"q-18v9eii":320,"q-1rwxyq3":100,"q-13x8c6q":100,"q-1njmvyp":100,"q-1w6g2gc":100,"q-cl6rqr":100,"q-16a37qc":100,"q-wnkefr":100,"q-718dd2":100,"q-ep4fqo":100,"q-w7871z":100,"q-11ymzlv":100,"q-y8k8uz":100,"q-1rvapsq":100,"q-1axxk53":220,"q-dzvqkt":100,"q-1horv5":100,"q-1gsr72z":100,"q-1q7i7nx":100,"q-djzq0g":220,"q-1r038xk":100,"q-75arq9":100,"q-t8n3wl":100,"q-8f9adm":100,"q-37qel1":100,"q-ynln6k":100,"q-4gjkzf":100,"q-aforhf":100,"q-ke6ib7":100,"q-yq4r":100,"q-1nmdv2d":100,"q-dlxxel":100,"q-16eq5a3":100,"q-iv0did":100,"q-1ugs12b":220,"q-a7pclg":100,"q-560e2b":220,"q-104i86q":100,"q-1swy037":100,"q-1ja9ot1":100,"q-siv8pg":100,"q-mz0q7i":100,"q-16o46fb":100,"q-1v1me3j":150,"q-135vq04":100,"q-a9rlhf":100,"q-7c46b9":100,"q-eengp6":220,"q-w9yoku":100,"q-rc80rj":100,"q-1el5yn2":100,"q-78scar":100,"q-122lf9r":100,"q-1bupqnw":100,"q-calwzq":100,"q-jjy06q":220,"q-1h43ijm":220,"q-oua65d":100,"q-1nw8l8g":100,"q-1hm6hy1":100,"q-1dhi32":100,"q-1jjm20e":100,"q-3rkdzw":220,"q-1fm6s00":100,"q-1ahuehm":100,"q-1p0i8p1":100,"q-fbtaif":100,"q-jai1yz":100,"q-58ff1h":100,"q-1rb0hxp":100,"q-1feqn83":100,"q-sts98e":100,"q-5eapqw":100,"q-60jqk2":100,"q-17xbctw":100,"q-oadw10":100,"q-laz7yr":100,"q-eaz5df":100,"q-qm7bgm":100,"q-lx5pxd":100,"q-11zutwb":100,"q-1ys7t11":100,"q-1ef8krc":100,"q-1tdxyjm":100,"q-g8rs83":220,"q-1df3uvb":100,"q-nl26zu":100,"q-587iej":150,"q-11k6njb":100,"q-d178ou":100,"q-1j3uagb":100,"q-fmw2sf":100,"q-x4xf6j":220,"q-3sfzax":100,"q-eqwajb":100,"q-uyhwt8":100,"q-mue7h2":100,"q-ykd6zg":100,"q-q3mjc2":100,"q-1ock89b":100,"q-1hdi4am":150,"q-18kaxk5":100,"q-1c7zqwc":100,"q-1ots29w":100,"q-wqzuat":100,"q-11ux3vt":100,"q-zs6l7q":100,"q-1715hjx":220,"q-1lpqg87":220,"q-q8k8ay":100,"q-hkcg18":100,"q-13g53nb":100,"q-1u9389d":100,"q-f6t7do":100,"q-3kolh1":100,"q-r27xl3":100,"q-1p6xwo8":220,"q-13sg5ul":100,"q-13l92vs":100,"q-hy6617":100,"q-5od7pt":100,"q-715dc1":100,"q-75eowh":220,"q-acbn8q":100,"q-t5ij9k":220,"q-1h7k7jn":100,"q-38yaep":100,"q-1eteczb":100,"q-1hepk20":100,"q-17jq5n2":100,"q-4gxl00":100,"q-1wiu0i7":100,"q-1npsl70":100,"q-1inpugi":100,"q-1ru6o4d":100,"q-8wb956":100,"q-1ed2twd":100,"q-1sc4gsn":100,"q-xpkvl":220,"q-1rct53u":100,"q-6f8h0b":100,"q-1kc0lu8":100,"q-1uwpzc3":100,"q-r15el2":100,"q-pis9y8":220,"q-1jtsjo6":100,"q-s1teq0":100,"q-c8wsw":100,"q-z1vdt6":100,"q-1jagazy":100,"q-1em3riz":100,"q-499bwm":100,"q-adl102":100,"q-1mkpo4k":220,"q-1ah4dbk":100,"q-1jqn46u":100,"q-t72poz":100,"q-1xtkqch":100,"q-28jlhs":100,"q-1ph3yus":100,"q-lhcc9k":150,"q-1wwuxqp":100,"q-14xn6em":100,"q-1p6hupl":100,"q-1v97ym6":100,"q-v0zhg4":100,"q-ir3n8f":100,"q-41fe8t":100,"q-1yqriv0":100,"q-1w5v7ug":220,"q-1eicfm2":100,"q-6q13df":100,"q-d3tffu":100,"q-1da1qiz":100,"q-ecymvr":100,"q-1v1iynb":100,"q-1q3jjuj":100,"q-r1iju9":100,"q-1nzhsc6":100,"q-nq1ygq":100,"q-ej3xpa":100,"q-ga2754":100,"q-8ow529":100,"q-nspn6d":100,"q-muwp4f":150,"q-1ebfvnx":100,"q-bwh8bs":100,"q-pvrigo":100,"q-n3c99m":100,"q-lb161s":100,"q-17osbok":100,"q-1qc49xy":100,"q-1j1u870":100,"q-1y2yppc":100,"q-72u1f1":100,"q-6924s0":100,"q-xhd4b5":100,"q-16ftq7r":100,"q-fuw8rs":100,"q-104aolt":100,"q-12xytj2":100,"q-1j1ns5l":100,"q-1wbsz4e":100,"q-1i03l9z":100,"q-hx2obc":150,"q-yw1xhm":220,"q-1nt2cf3":220,"q-1g1lzee":100,"q-1m6u6jn":100,"q-go3h8s":100,"q-14bem6z":100,"q-1k5qbo0":100,"q-12h73sg":100,"q-5r3rq7":100,"q-rnfkhf":100,"q-12lvdbt":100,"q-mba7vx":100,"q-44wime":100,"q-16ndvgv":100,"q-1jpyjxn":100,"q-gyxk8m":100,"q-14dvjit":100,"q-1oaqvl8":100,"q-vww7d":220,"q-11y2oqv":100,"q-cmey0k":100,"q-bhw51a":100,"q-1awsh9a":100,"q-njkmv6":100,"q-cw2g44":100,"q-1ccd56u":100,"q-1pxgs0i":100,"q-11txtos":100,"q-kihxdn":100,"q-dawn7r":100,"q-du81gk":100,"q-f7ttmi":100,"q-154k4eq":100,"q-1pgrzo2":150,"q-5kxsta":100,"q-18778pi":100,"q-8q5ijk":100,"q-sxppmo":100,"q-3h880g":100,"q-q99aeh":100,"q-1e9orlx":320,"q-ogbm9r":100,"q-1304ksl":100,"q-2z4bxw":100,"q-76cgzn":100,"q-6o0n2v":100,"q-12gk5gp":100,"q-vnsd63":100,"q-1vfx4hz":100,"q-1akewtk":100,"q-1p5v6qr":100,"q-pjvxxi":100,"q-vo74y0":100,"q-1jfydxx":100,"q-10ev246":100,"q-y1o5ev":100,"q-kytic1":100,"q-1fjcpkj":100,"q-1otg69":100,"q-1qfo9qu":100,"q-rsklq0":220,"q-1hkl64o":100,"q-11f2hlt":100,"q-1uier1f":220,"q-1chfdf9":100,"q-kr7odl":100,"q-1m314tt":220,"q-1t5ya5u":100,"q-wp5g4j":100,"q-1c8ooqg":220,"q-n86qj1":100,"q-fhtxr7":100,"q-1qe4kvn":100,"q-64rto8":100,"q-gb47w0":100,"q-1ozt71i":100,"q-1syj1o7":100,"q-18qns5c":100,"q-1a66wz5":220,"q-9e7x93":100,"q-iamkvx":100,"q-1m2ehhg":100,"q-1xs0fiv":100,"q-o8qtaq":100,"q-1h78znx":220,"q-paaxy7":220,"q-1t667jh":220,"q-1yunecs":100,"q-jbdgim":100,"q-1rgy7vb":100,"q-rzwdth":100,"q-1e5n8nd":100,"q-10s8674":100,"q-1crr5hu":100,"q-1rep445":100,"q-yuanh6":100,"q-1x42nfy":100,"q-1dc71ea":100,"q-vapjj6":220,"q-sjgo7f":100,"q-16up4qe":100,"q-kql7oz":150,"q-1vdf366":100,"q-1bamoqy":100,"q-aa33wy":100,"q-nk7t07":100,"q-5p8zb4":100,"q-1fvbxmd":100,"q-1hn7oaq":220,"q-13zu8uq":100,"q-168gsxt":100,"q-1f4ons6":220,"q-uucnwy":100,"q-1ifdrf2":100,"q-1rph7ip":100,"q-1dw4e00":100,"q-ryujct":100,"q-x3khlk":100,"q-1i6hpkz":100,"q-crp372":220,"q-1judfgw":100,"q-lzz1ym":100,"q-1sp1slz":100,"q-j9xcxa":100,"q-76d4n9":100,"q-t3g3qh":100,"q-113xgt":100,"q-177kees":100,"q-18jo8tk":100,"q-17cjlmo":100,"q-x89p6c":100,"q-uto9m8":220,"q-1fs7xyx":100,"q-142xf4i":100,"q-6curhz":220,"q-1sasn0g":100,"q-sbxhvk":100,"q-11qyh3f":100,"q-7w52kj":100,"q-9x8pjh":100,"q-1x5xia6":100,"q-1rj1mq2":100,"q-c7qzj1":100,"q-11aege8":100,"q-bdlf1":100,"q-1a68uh6":100,"q-1bj1joh":150,"q-1nv5zuq":100,"q-5qvbfl":100,"q-12c33u5":100,"q-15agbln":100,"q-jwdenj":100,"q-ct0inc":100,"q-185bcjt":100,"q-w18hs3":150,"q-cvh10g":100,"q-6gzbpv":100,"q-1tvji6i":100,"q-stggcp":100,"q-1xcila6":220,"q-wo92m5":100,"q-1hje8hr":100,"q-16isf6x":100,"q-11vx2m":320,"q-oldece":100,"q-qt14ug":100,"q-11r9dlu":220,"q-14tvk5i":100,"q-1iwrfha":100,"q-1tfyibr":220,"q-10nz4s6":100,"q-xm2b2s":100,"q-c44ypg":100,"q-1ftvtrx":100,"q-122y1z2":100,"q-1991axc":100,"q-1hilyu":220,"q-wa1ws":100,"q-19vb2f4":100,"q-jofeak":100,"q-wun8m":220,"q-18hw8p1":100,"q-1o1qc5y":220,"q-1j8kvzx":100,"q-17tn2zz":100,"q-1eifg6u":100,"q-cr8ftr":100,"q-is5xqb":100,"q-o4qmze":100,"q-eb19uh":100,"q-drx65n":100,"q-1h0zs98":100,"q-3zseub":100,"q-12y4ctx":100,"q-18h9uqn":220,"q-ot2a9l":100,"q-15ivol8":220,"q-17nt989":100,"q-14eknq2":100,"q-23pkuz":100,"q-m5merb":100,"q-jzbr8u":100,"q-wk7sis":220,"q-1pey1x7":100,"q-1f01hfp":100,"q-1q7vrpa":100,"q-1wdfw6g":100,"q-2rp5yf":100,"q-w2dpou":100,"q-1wckkam":220,"q-ro7z1g":100,"q-1fkjxdq":100,"q-uxio8n":100,"q-dn9fe7":220,"q-16pu2pd":220,"q-hnpuhx":220,"q-12jubrj":100,"q-12u48hz":100,"q-4p4rje":100,"q-1b182fz":220,"q-6spilf":100,"q-l7w51l":100,"q-1c6z7dv":100,"q-g7uzu7":100,"q-1qdp3qw":100,"q-1mqhavb":100,"q-thjf69":100,"q-1oy7xhf":100,"q-geq8hh":100,"q-14w6uxl":100,"q-1oay20l":100,"q-1wbqmh0":100,"q-1m6uo4e":100,"q-1mnqg8":150,"q-14snoxf":100,"q-1hxpub5":100,"q-pwqd3v":220,"q-1bhtho3":220,"q-i1b53u":220,"q-1actrix":100,"q-bs7a7f":220,"q-2cwx13":100,"q-9iebmk":100,"q-10igjn1":100,"q-n5h52i":100,"q-nbdkn5":220,"q-1fpaerr":100,"q-1htx54m":220,"q-1d673q4":220,"q-m5d9hx":220,"q-4k283l":100,"q-9ceb13":100,"q-njietn":220,"q-chcv0w":220,"q-193b20y":100,"q-q2wn8z":100,"q-1780lgf":320,"q-1naaq3i":320,"q-1keur4w":100,"q-hcq53d":100,"q-1378fp4":100,"q-1mirjx9":100,"q-1e3je96":100,"q-16ty4mg":150,"q-1k8210n":100,"q-1r9409b":100,"q-vnjh4s":220,"q-1ntz19p":100,"q-1vj2h36":100,"q-1wlxzqb":100,"q-1bxfmu6":220,"q-105cx84":100,"q-shzdhz":220,"q-lmkm94":100,"q-ucdqg0":100,"q-ivdl8l":100,"q-rp8bdl":100,"q-bbzxn0":100,"q-agxpaq":220,"q-6r6st9":100,"q-1nv766i":220,"q-15cd8xg":100,"q-1y306db":100,"q-1kqyocw":100,"q-147gejz":100,"q-18v82ch":220,"q-jpwx7d":100,"q-6b3ffy":100,"q-1xp6rbc":100,"q-1nkc7u5":100,"q-3b1leh":100,"q-1i5lbbb":100,"q-1hqnjjy":100,"q-1yeooyj":100,"q-p63bwv":100,"q-1p0gy46":100,"q-14sph8t":100,"q-fbudxi":100,"q-v1kczt":150,"q-18je6i1":100,"q-18h19l8":100,"q-c14k9n":100,"q-1bo8fop":220,"q-3yzzw6":100,"q-uiixny":100,"q-1o4xgbe":100,"q-j60bpi":100,"q-12y8leb":100,"q-18ioz92":100,"q-9bfn3b":100,"q-1vgu17j":100,"q-1bnrb28":100,"q-8k3u3l":100,"q-1j36bxi":100,"q-1vhdrrw":100,"q-11huxvw":100,"q-tytx3y":150,"q-1uftqm8":100,"q-uius43":100,"q-eizmdu":100,"q-1z0b2ax":220,"q-sjw7ci":220,"q-e0br2c":100,"q-axgj3d":100,"q-rdmbln":100,"q-dxn833":100,"q-1blr1ux":220,"q-1asebhq":100,"q-y2jyvy":100,"q-5v14n6":100,"q-1r8d8te":100,"q-1iu1rzc":100,"q-12zenal":100,"q-sr0qe4":100,"q-fmji46":100,"q-vgflsf":100,"q-1ryon1z":100,"q-ww8wfu":100,"q-13br4ca":100,"q-1x5xjvj":100,"q-lhqhei":100,"q-1sirfq2":100,"q-9naq5y":320,"q-walx8n":320,"q-qz12f1":100,"q-ga6pqj":220,"q-16x8d6h":100,"q-1ur1qkt":220,"q-r21u5w":100,"q-1et14ep":100,"q-1dckh7c":100,"q-n0bmf2":100,"q-1c75gqm":100,"q-j78xz9":100,"q-uydpju":100,"q-16jkyzc":100,"q-1xjvs9c":100,"q-fi7dtg":220,"q-lh2yx1":100,"q-3nv7ga":100,"q-1erzmbl":100,"q-y6tgf":100,"q-o3ckkb":100,"q-11ousz6":100,"q-xjhti1":100,"q-1t9zfqq":220,"q-wg46xl":100,"q-1hrims4":100,"q-1htkjsv":100,"q-vnok4m":100,"q-cir8ws":100,"q-1ntiq7g":100,"q-mjsjq4":100,"q-qyixpj":100,"q-9ocx1e":220,"q-12nzpes":100,"q-1xkikc8":100,"q-1i5ups9":100,"q-1prw9ck":100,"q-111wco0":100,"q-wp7u5r":100,"q-trf6dr":100,"q-ajzinq":100,"q-18mkqlv":100,"q-5u50b5":100,"q-eu2uy6":100,"q-1ejyjie":100,"q-1kaf3s8":100,"q-1eqmi5f":100,"q-1sisx3o":100,"q-1g7a1zq":100,"q-1q5gd0w":100,"q-1c5to2w":100,"q-kcuwj4":100,"q-1sdpayq":100,"q-1qiv8k":220,"q-32t4jk":220,"q-i0aqct":100,"q-1jajwfz":100,"q-q3wo7y":100,"q-fkwyba":100,"q-dnh3uj":100,"q-1thlkk1":100,"q-ghbr0j":100,"q-1iayvln":100,"q-1vpwat7":100,"q-1esw3jm":100,"q-ceo1j6":100,"q-x4ulzq":100,"q-1l9wllq":100,"q-6h4lez":100,"q-dirjgr":100,"q-1ltsryc":100,"q-5xgq8s":220,"q-1pwn90h":100,"q-1npj00h":100,"q-ehh46s":100,"q-ezfgkl":100,"q-1yvmdco":100,"q-56tx69":100,"q-10k5kz0":100,"q-rknuun":100,"q-mk6vdc":150,"q-1rn4730":220,"q-7augv8":100,"q-lxanp4":220,"q-1jammmf":100,"q-1ekidjh":100,"q-7whvai":100,"q-xj3ui6":100,"q-19t557b":100,"q-r6slc6":100,"q-4vn21w":320,"q-1azezdp":150,"q-1bvltec":100,"q-3fnywz":100,"q-1723q2u":100,"q-uq6fa4":100,"q-suy912":100,"q-pka73c":100,"q-yvr95b":100,"q-2mz53f":100,"q-1vxz9r9":100,"q-ajp1al":220,"q-18p7raj":100,"q-461qeo":100,"q-22msi3":100,"q-oyongi":100,"q-102w24h":100,"q-1cvidbs":100,"q-gbm31q":100,"q-h7gktn":100,"q-1yu70ns":100,"q-9wd7ek":100,"q-13k23cc":100,"q-eys12m":100,"q-a8q86c":100,"q-ydla1a":100,"q-124rfrb":100,"q-1559qoz":100,"q-1sd6t7q":100,"q-p7yv3":100,"q-qmhkid":100,"q-jxmvf1":220,"q-zdxbow":220,"q-1ndw0fm":100,"q-5wnqg3":100,"q-18b1pic":100,"q-1ttyld7":220,"q-1ynqcgx":220,"q-1vpysg3":100,"q-121x1qq":100,"q-hdb3q5":100,"q-1uul910":220,"q-y7vpn":100,"q-390i8m":100,"q-uogqzj":100,"q-1k9q995":100,"q-1h2wpy4":100,"q-13cjkrx":100,"q-x16fez":100,"q-1xwunnv":100,"q-6u3t66":220,"q-1d60xww":100,"q-igb0bm":100,"q-o8rxm":100,"q-1011idn":100,"q-1adspy1":100,"q-1j41dkw":100,"q-1ylv7l":100,"q-w0s4xd":100});
+</script>
+<!-- shared-game-responsive:start -->
+<script id="gameResponsiveRuntime">
+/* Shared view classification only; answer handling stays in each game. */
+(function (root) {
+  'use strict';
+  const doc = root.document;
+  const media = query => root.matchMedia ? root.matchMedia(query).matches : false;
+  function usesTouchLayout() {
+    return root.innerWidth <= 1180 || Number(root.navigator.maxTouchPoints || 0) > 0 ||
+      media('(pointer: coarse)') || media('(any-pointer: coarse)') || !media('(pointer: fine)') ||
+      doc.documentElement.classList.contains('is-ipad');
+  }
+  function sync() {
+    const html = doc.documentElement;
+    const touch = usesTouchLayout();
+    html.setAttribute('data-game-ui', '2');
+    html.setAttribute('data-game-layout', root.innerWidth <= 767 ? 'phone' : touch ? 'tablet' : 'desktop');
+    html.setAttribute('data-game-touch', String(touch));
+    const keyboard = doc.getElementById('romajiKeyboard');
+    if (keyboard) keyboard.setAttribute('aria-hidden', String(!touch || Boolean(root.GameInputMode?.isSystem())));
+    root.GameInputMode?.sync();
+  }
+  function prepareQuestionLayout() {
+    const time = doc.getElementById('timeLeft') || doc.getElementById('timerText');
+    if (time?.parentElement) time.parentElement.setAttribute('aria-label', '残り時間（秒）');
+    const exit = doc.getElementById('exitButton') || doc.getElementById('exitBtn');
+    if (exit) {
+      exit.setAttribute('aria-label', '退場（退出本局）');
+      const label = exit.querySelector('span:last-child');
+      if (label) label.textContent = '退場';
+      const icon = exit.querySelector('.corner-icon, .circle, .tool-icon');
+      if (icon) { icon.textContent = '↩\uFE0E'; icon.setAttribute('aria-hidden', 'true'); }
+    }
+    const card = doc.querySelector('.practice-view .question-card, .practice-view .question-shell');
+    if (!card || card.querySelector('.game-question-content')) return;
+    const body = doc.createElement('div');
+    body.className = 'game-question-content';
+    const answer = doc.createElement('div');
+    answer.className = 'game-answer-content';
+    const status = doc.createElement('div');
+    status.className = 'game-answer-status';
+    const form = card.querySelector('.answer-form');
+    if (form) {
+      answer.appendChild(form);
+      for (const selector of ['.hint-text', '.feedback']) {
+        const node = card.querySelector(selector);
+        if (node) status.appendChild(node);
+      }
+    } else {
+      const area = doc.querySelector('.practice-view .answer-area');
+      if (area) for (const selector of ['.answer-line', '.feedback-line']) {
+        const node = area.querySelector(selector);
+        if (node) (selector === '.answer-line' ? answer : status).appendChild(node);
+      }
+    }
+    for (const node of Array.from(card.children)) {
+      if (!node.matches('.level-seal, .correct-fx')) body.appendChild(node);
+    }
+    card.appendChild(body);
+    if (answer.children.length) {
+      if (status.children.length) answer.appendChild(status);
+      card.appendChild(answer);
+    }
+    const choices = doc.querySelector('.practice-view .choice-grid');
+    if (choices && root.ResizeObserver) {
+      const observer = new root.ResizeObserver(entries => {
+        const height = entries[0] && entries[0].contentRect.height;
+        if (height > 0) doc.documentElement.style.setProperty('--game-choice-height', `${Math.ceil(height)}px`);
+      });
+      observer.observe(choices);
+    }
+    sync();
+  }
+  root.GameResponsive = Object.freeze({ usesTouchLayout, sync });
+  sync();
+  root.addEventListener('resize', sync, { passive: true });
+  root.addEventListener('orientationchange', sync, { passive: true });
+  doc.addEventListener('DOMContentLoaded', prepareQuestionLayout, { once: true });
+  for (const query of ['(pointer: coarse)', '(any-pointer: coarse)']) {
+    const listener = root.matchMedia && root.matchMedia(query);
+    if (listener && listener.addEventListener) listener.addEventListener('change', sync);
+  }
+})(window);
+</script>
+<style id="gameResponsiveStyles">
+/* Shared dojo CSS-pixel geometry, embedded in each game's build. */
+html[data-game-ui] {
+  --paper: #f6f3eb; --paper-light: #fcfaf5; --paper-deep: #eee8da;
+  --ink: #1c1d1a; --muted: #6d6c66; --red: #a34336; --red-dark: #7f3027;
+  --gold: #b48a32; --wood: #56392e; --wood-dark: #281b16; --tatami: #b7aa77;
+  --shoji: #efe8da; --green: #4d7255;
+  --cn: "Heiti SC", SimHei, "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --jp-ui: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+  --jp-display: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+  --sans: var(--jp-ui); --ui: var(--jp-ui); --serif: var(--jp-display);
+  --game-edge: 28px; --game-top: max(25px, env(safe-area-inset-top));
+  --game-header: 48px; --game-card-max: 900px; --game-input-height: 52px;
+  --game-key-height: 56px; --game-keyboard-height: 0px; --game-tools-height: 0px;
+  --game-answer-height: 94px; --game-bottom: max(24px, env(safe-area-inset-bottom));
+  --game-mascot-scale: 1.06;
+  min-width: 320px; color-scheme: light;
+}
+html[data-game-ui] body { min-width: 320px; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
+html[data-game-ui] .view { width: 100%; height: 100vh !important; height: 100dvh !important; min-height: 0 !important; max-height: none !important; overflow: hidden; }
+html[data-game-ui] [hidden] { display: none !important; }
+html[data-game-ui] :is(button, input) { font-family: var(--jp-ui); touch-action: manipulation; }
+html[data-game-ui] :is(button, input, summary, a):focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+html[data-game-ui] :is(.zh, [lang="zh-CN"], .home-lead, .home-description, .home-desc, .home-help p, .meaning, .sentence-meaning, .keigo-instruction, .keigo-feedback, .settings-note, .setting-note, .how-card p) { font-family: var(--cn) !important; }
+
+/* Shared entrance scroll: the original 活用道場 geometry. */
+html[data-game-ui] .home-view { display: grid; place-items: center; padding: 76px 5vw 60px !important; overflow-y: auto; overflow-x: hidden; }
+html[data-game-ui] .home-layout { display: grid !important; position: relative; width: min(1040px, 100%) !important; height: 508px !important; min-height: 508px; grid-template-columns: minmax(300px, .9fr) minmax(330px, .8fr) !important; gap: clamp(42px, 7vw, 92px) !important; align-items: center !important; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel) { display: flex !important; flex-direction: column; justify-content: center; position: relative; width: 100% !important; height: 508px !important; min-height: 508px !important; max-height: none !important; padding: 48px 34px !important; border: 0 !important; border-inline: 12px solid var(--wood) !important; background: var(--paper-light); box-shadow: 0 18px 48px #281b161f; text-align: center; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel)::before,
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel)::after { display: block !important; position: absolute; inset: auto -28px; width: auto; height: 20px; border-radius: 8px; background: linear-gradient(90deg, var(--wood-dark), var(--wood), var(--wood-dark)); content: ""; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel)::before { top: -10px; bottom: auto; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel)::after { top: auto; bottom: -10px; }
+html[data-game-ui][data-game-kind="reading"] { --game-mascot-scale: 1.14; }
+html[data-game-ui][data-game-kind="particle"] { --game-mascot-scale: 1.08; }
+html[data-game-ui] :is(.home-mascot, .home-shiba) { display: flex; width: min(650px, 100%) !important; height: 100% !important; margin: 0; align-self: end; align-items: flex-end; justify-content: center; transform: translate(-2%, 54px) scale(var(--game-mascot-scale)) !important; transform-origin: center bottom; }
+html[data-game-ui] :is(.home-mascot, .home-shiba) img { display: block; width: 100%; height: auto; max-height: 100%; object-fit: contain; object-position: center bottom; }
+html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel) > * { flex-shrink: 0; }
+html[data-game-ui] :is(.home-kicker, .home-copy > .eyebrow, .home-card > .eyebrow) { margin: 0 0 10px; font: 800 10px/1.3 var(--jp-ui); letter-spacing: .3em; }
+html[data-game-ui] .home-title { margin: 0; font: 900 clamp(54px, 6.4vw, 72px)/.96 var(--jp-display) !important; letter-spacing: -.04em; }
+html[data-game-ui] :is(.home-subtitle, .home-title small) { display: block; margin: 10px 0 0; font: 800 12px/1.4 var(--jp-ui); letter-spacing: .3em; }
+html[data-game-ui] :is(.home-lead, .home-description, .home-desc) { max-width: 410px; margin: 16px auto 0 !important; font-size: 14px; line-height: 1.7; color: var(--muted); }
+html[data-game-ui] .home-actions { width: min(340px, 100%); margin: 16px auto 0; }
+html[data-game-ui] .home-view :is(.primary-button, .primary-btn) { display: flex; align-items: center; justify-content: center; gap: 20px; width: min(340px, 100%); min-height: 60px; height: 60px; flex-shrink: 0; margin: 16px auto 0; padding: 0 20px; font: 800 15px/1.3 var(--jp-ui); }
+html[data-game-ui] .home-actions :is(.primary-button, .primary-btn) { margin-top: 0; }
+html[data-game-ui] .home-view :is(.primary-button, .primary-btn) .arrow { margin: 0; font-size: 20px; }
+html[data-game-ui] .home-view :is(.best-plaque, .best-score-panel) { position: static; width: min(340px, 100%); min-height: 46px; height: 46px; margin: 10px auto 0; padding: 6px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+html[data-game-ui] .home-view :is(.best-plaque, .best-score-panel) strong { font-size: 25px; }
+html[data-game-ui] :is(.home-help, .help-link, .home-view .text-button) { margin-top: 8px; font-size: 12px; }
+html[data-game-ui] :is(.home-help summary, .help-link, .home-view .text-button) { display: flex; align-items: center; justify-content: center; min-height: 44px; padding-block: 0; }
+html[data-game-ui] .home-layout:has(.home-help[open]),
+html[data-game-ui] .home-copy:has(.home-help[open]) { height: auto !important; }
+html[data-game-ui] :is(.settings-button, .gear) { position: fixed; top: max(22px, env(safe-area-inset-top)); right: max(24px, env(safe-area-inset-right)); width: 48px; height: 48px; min-height: 48px; z-index: 25; }
+html[data-game-ui] :is(.settings-button, .gear) svg { width: 23px; height: 23px; }
+html[data-game-ui] :is(.settings-close, .close-button, .close-btn, .settings-choice-content, .chip span) { min-height: 44px; }
+html[data-game-ui] :is(.settings-close, .close-button, .close-btn) { min-width: 44px; }
+
+/* Header, central card and input dock never scale the page or its touch targets. */
+html[data-game-ui] .practice-view { border: 0 !important; }
+html[data-game-ui] .practice-view .practice-shell { display: block !important; position: static !important; height: 100% !important; padding: 0 !important; }
+html[data-game-ui] .practice-view .practice-app-header { display: contents !important; }
+html[data-game-ui] .practice-view .hud { position: absolute !important; top: var(--game-top) !important; left: 50% !important; right: auto !important; bottom: auto !important; transform: translateX(-50%) !important; width: min(920px, calc(100% - 56px)) !important; height: var(--game-header) !important; min-height: var(--game-header) !important; margin: 0 !important; padding: 0 14px !important; display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 0 !important; border: 1px solid #56392e1f; border-radius: 14px; background: #fcfaf5e8; z-index: 10; }
+html[data-game-ui] .practice-view :is(.hud-item, .score, .timer, .streak, .hud-score, .hud-best, .timer-wrap) { display: flex !important; flex-wrap: wrap; align-items: baseline; justify-content: center !important; align-content: center; min-width: 0; width: auto !important; height: auto !important; margin: 0 !important; padding: 0 5px !important; gap: 5px; font: 700 12px/1.2 var(--jp-ui) !important; text-align: center; color: var(--muted); letter-spacing: 0; }
+html[data-game-ui] .practice-view :is(.hud-item, .score, .streak, .hud-score, .hud-best) strong { display: inline !important; font: 800 18px/1.1 var(--jp-ui) !important; color: var(--ink); letter-spacing: 0; }
+html[data-game-ui] .practice-view :is(.timer strong, .hud-time strong, .timer-text) { font: 800 23px/1.1 var(--jp-ui) !important; color: var(--ink); letter-spacing: 0; }
+html[data-game-ui] .practice-view :is(.timer small, .hud-time small, .timer-text::after) { font-size: 10px !important; }
+html[data-game-ui] .practice-view .timer-text::before { content: "残り "; font: 700 10px/1.2 var(--jp-ui); color: var(--muted); }
+html[data-game-ui] .practice-view .timer-text::after { content: " 秒"; font-family: var(--jp-ui); color: var(--muted); }
+html[data-game-ui] .practice-view .timer-bar { display: none !important; }
+html[data-game-ui] .practice-view .hud { font-variant-numeric: tabular-nums; }
+html[data-game-ui] .practice-view .question-zone { position: absolute !important; inset: calc(var(--game-top) + var(--game-header) + 16px) var(--game-edge) calc(var(--game-bottom) + var(--game-answer-height)) !important; display: flex !important; align-items: stretch !important; justify-content: center; min-height: 0 !important; padding: 0 !important; }
+html[data-game-ui] .practice-view :is(.question-card, .question-shell) { display: grid !important; grid-template-rows: minmax(0, 1fr) auto; align-items: stretch; width: min(var(--game-card-max), 100%) !important; height: 100% !important; min-width: 0; min-height: 0 !important; max-height: none !important; padding: 48px 32px 24px !important; border-radius: 22px; overflow: hidden !important; transform: none !important; justify-content: normal !important; }
+html[data-game-ui] .practice-view .game-question-content { display: flex; flex-direction: column; align-items: center; justify-content: safe center; min-width: 0; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; padding: 2px 0 8px; }
+html[data-game-ui] .practice-view .game-question-content > * { flex-shrink: 0; }
+html[data-game-ui] .practice-view .game-answer-content { min-width: 0; padding-top: 6px; background: var(--paper-light); }
+html[data-game-ui] .practice-view .game-answer-status { min-width: 0; min-height: 0; max-height: 4.5em; overflow-y: auto; }
+html[data-game-ui] .practice-view .game-answer-content :is(.answer-line, .answer-form) { width: 100%; }
+html[data-game-ui] .practice-view .game-answer-content :is(.feedback-line, .feedback, .hint-text) { max-height: 4.5em; overflow-y: auto; }
+html[data-game-ui] .practice-view .game-answer-content :is(.feedback-line, .feedback, .hint-text):empty { display: none; }
+html[data-game-ui][data-game-kind="reading"] { --game-answer-height: 0px; }
+html[data-game-ui] .practice-view .question-shell { position: absolute !important; top: calc(var(--game-top) + var(--game-header) + 16px) !important; bottom: calc(var(--game-bottom) + var(--game-tools-height)) !important; left: 50% !important; right: auto !important; transform: translateX(-50%) !important; width: min(var(--game-card-max), calc(100% - var(--game-edge) * 2)) !important; height: auto !important; display: flex; flex-direction: column; gap: 8px; }
+html[data-game-ui] .practice-view :is(.kanji-word, .verb-word) { flex-shrink: 0; min-height: 0 !important; max-width: 100%; width: auto; margin: 4px 0 0 !important; font: 900 clamp(64px, 6.8vw, 104px)/1.25 var(--jp-display) !important; letter-spacing: .035em; white-space: normal !important; overflow-wrap: anywhere; word-break: normal; }
+html[data-game-ui] .practice-view :is(.kanji-word, .verb-word).is-long { font-size: clamp(48px, 5.6vw, 80px) !important; }
+html[data-game-ui] .practice-view :is(.kanji-word, .verb-word).is-very-long { font-size: clamp(36px, 4.2vw, 60px) !important; }
+html[data-game-ui] .practice-view :is(.sentence, .keigo-expression, .keigo-expression.is-context) { max-width: 100%; margin: 0; font: 800 clamp(26px, 2.7vw, 36px)/1.65 var(--jp-display) !important; white-space: normal !important; overflow-wrap: anywhere; word-break: normal; }
+/* Phrase wrappers flow inline; only individual ruby words and the blank stay intact. */
+html[data-game-ui] .practice-view .sentence { display: block !important; width: 100%; min-width: 0; overflow: visible; text-align: center; }
+html[data-game-ui] .practice-view :is(.sentence-chunk, .sentence-tail) { display: inline !important; flex: initial; min-width: 0; white-space: normal !important; overflow-wrap: anywhere; word-break: normal; }
+html[data-game-ui] .practice-view .sentence .blank { display: inline-block; white-space: nowrap; }
+html[data-game-ui] .practice-view ruby { ruby-position: over; white-space: nowrap; }
+html[data-game-ui] .practice-view rt { font-size: .4em; line-height: 1; }
+html[data-game-ui] .practice-view :is(.meaning, .sentence-meaning, .keigo-instruction, .question-copy) { height: auto; min-height: 0; max-width: 100%; margin: 12px 0 0 !important; font-size: 14px !important; line-height: 1.6; overflow-wrap: anywhere; }
+html[data-game-ui] .practice-view .question-meta { position: static !important; min-height: 23px; margin: 0; font-size: 11px; }
+html[data-game-ui] .practice-view :is(.level-seal, .question-type) { font-size: 11px; }
+html[data-game-ui] .practice-view .level-seal { top: 12px; left: 14px; width: 30px; height: 30px; }
+html[data-game-ui] .practice-view .answer-area { position: absolute !important; inset: auto 0 var(--game-bottom) !important; display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+html[data-game-ui] .practice-view :is(.answer-line, .answer-form) { display: grid; grid-template-columns: minmax(0, 1fr) 90px; gap: 8px; width: min(var(--game-card-max), calc(100% - var(--game-edge) * 2)); margin: 0 auto 6px !important; padding: 0; flex-shrink: 0; }
+html[data-game-ui] .practice-view .answer-form { width: 100%; margin-top: 8px !important; }
+html[data-game-ui] .practice-view :is(.answer-field, .answer-display, .answer-input) { min-width: 0; }
+html[data-game-ui] .practice-view :is(.answer-display, .answer-input, .answer-submit, .judge-button) { height: var(--game-input-height) !important; min-height: var(--game-input-height) !important; border-radius: 12px; font-family: var(--jp-ui); }
+html[data-game-ui] .practice-view :is(.answer-display, .answer-input) { font-size: 22px; overflow-x: auto; white-space: nowrap; }
+html[data-game-ui] .practice-view :is(.feedback-line, .feedback, .hint-text, .reading-guide, .keigo-feedback) { height: auto !important; min-height: 20px; max-width: 100%; margin: 5px 0 0; font-size: 13px !important; line-height: 1.5; overflow-wrap: anywhere; }
+html[data-game-ui] .practice-view .romaji-keyboard { display: none !important; }
+html[data-game-ui] .practice-view :is(.practice-tools, .mobile-actions, .utility-stack) { position: static !important; display: contents !important; }
+html[data-game-ui] .practice-view :is(.corner-action, .utility-btn, .exit-btn) { min-width: 44px; min-height: 44px; font-family: var(--jp-ui); }
+html[data-game-ui] .practice-view :is(.exit-button, .exit-btn) { position: fixed !important; left: clamp(24px, 5vw, 72px) !important; right: auto !important; top: auto !important; bottom: var(--game-bottom) !important; width: 64px; }
+html[data-game-ui] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) { position: fixed !important; left: auto !important; right: clamp(24px, 5vw, 72px) !important; top: auto !important; bottom: var(--game-bottom) !important; width: 64px; }
+html[data-game-ui] .practice-view :is(.skip-button, #skipBtn) { bottom: calc(var(--game-bottom) + 84px) !important; }
+html[data-game-ui] .practice-view .practice-bottom { display: contents !important; }
+html[data-game-ui][data-game-kind="particle"] { --game-answer-height: 152px; }
+html[data-game-ui] .practice-view .particle-keyboard { position: absolute !important; left: 50%; bottom: var(--game-bottom); transform: translateX(-50%); width: min(650px, calc(100% - 220px)) !important; margin: 0 !important; padding: 10px 6px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 4px; }
+html[data-game-ui] .practice-view .particle-key { min-width: 0; height: 56px; min-height: 56px; font: 700 22px/1 var(--jp-ui); }
+html[data-game-ui][data-game-kind="choice"] { --game-answer-height: calc(var(--game-choice-height, 148px) + 16px); }
+html[data-game-ui] .practice-view .keigo-answer-area { position: absolute !important; inset: auto var(--game-edge) var(--game-bottom) !important; padding: 0 !important; }
+html[data-game-ui] .practice-view .choice-grid { width: min(780px, 100%); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+html[data-game-ui] .practice-view .choice-button { min-height: 68px; min-width: 0; padding: 12px 16px 12px 42px; font-size: 18px; line-height: 1.4; overflow-wrap: anywhere; }
+
+/* Nonblocking, right aligned score stamps. */
+html[data-game-ui] .practice-view :is(.brush-feedback, .correct-fx) { position: fixed !important; top: calc(var(--game-top) + var(--game-header) + 4px) !important; right: max(28px, calc((100vw - 920px) / 2)) !important; left: auto !important; bottom: auto !important; width: 150px !important; height: 58px !important; pointer-events: none !important; z-index: 15; }
+html[data-game-ui] .practice-view :is(.brush-feedback .stamp, .correct-copy) { position: absolute; inset: 4px; display: grid; place-items: center; padding: 4px 8px; border: 2px solid var(--red); border-radius: 7px; background: #fcfaf5e8; font-size: 20px; text-align: center; }
+html[data-game-ui] .practice-view .correct-copy strong { font-size: 20px; }
+html[data-game-ui] .practice-view .tea-ring { display: none; }
+
+/* Results retain scroll artwork; the record plaque has its own column. */
+html[data-game-ui] .result-view { display: grid; grid-template-columns: minmax(0, 430px) 154px; align-content: safe center; justify-content: center; align-items: center; gap: 24px; padding: 40px 28px; overflow-y: auto !important; overflow-x: hidden !important; }
+html[data-game-ui] .result-scroll { position: relative; width: 100% !important; height: auto !important; min-height: min(540px, calc(100dvh - 80px)) !important; margin: 0; padding: 0 !important; flex-shrink: 0; }
+html[data-game-ui] .scroll-sheet { width: calc(100% - 30px); min-height: inherit; margin: 0 auto; padding: 62px 34px 56px !important; }
+html[data-game-ui] .scroll-content { min-width: 0; }
+html[data-game-ui] .result-view :is(.result-title, #resultTitle) { font-size: clamp(36px, 5vw, 56px); }
+html[data-game-ui] .result-score { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 5px; margin: 18px 0; font-size: clamp(58px, 8vw, 84px) !important; overflow-wrap: anywhere; }
+html[data-game-ui] .result-score strong { max-width: 100%; font-size: inherit !important; overflow-wrap: anywhere; }
+html[data-game-ui] .result-score small { font-size: 16px; }
+html[data-game-ui] .result-best-plaque { position: relative !important; inset: auto !important; transform: none; width: 154px !important; min-height: 170px; margin: 0 !important; }
+html[data-game-ui] .result-actions :is(button, a) { width: 100%; height: auto !important; min-height: 48px !important; padding: 12px; font-size: 14px; line-height: 1.5; }
+html[data-game-ui] .result-view :is(.game-ranking-result, .game-ranking-retry, .game-ranking-login) { box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%; margin: 8px 0 0; font: 500 12px/1.5 var(--cn) !important; text-align: center; overflow-wrap: anywhere; }
+html[data-game-ui] .result-view .game-ranking-result { color: var(--muted); }
+html[data-game-ui] .result-view .game-ranking-result:empty { display: none; }
+html[data-game-ui] .result-view :is(.game-ranking-retry, .game-ranking-login) { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 12px; border: 1px solid #56392e33; border-radius: 8px; background: var(--paper-light); color: var(--red-dark); cursor: pointer; text-decoration: none; }
+
+/* Phone and tablet dock. Touch capability keeps this layout on wide iPads. */
+html[data-game-ui][data-game-touch="true"] {
+  --game-edge: 18px; --game-top: calc(env(safe-area-inset-top) + 8px);
+  --game-header: 44px; --game-card-max: 780px; --game-input-height: 48px;
+  --game-keyboard-height: calc(var(--game-key-height) * 3 + 36px + env(safe-area-inset-bottom));
+  --game-tools-height: 60px; --game-bottom: 0px;
+  --game-answer-height: calc(var(--game-keyboard-height) + var(--game-tools-height) + var(--game-input-height) + 32px);
+}
+html[data-game-ui][data-game-kind="reading"][data-game-touch="true"] { --game-answer-height: calc(var(--game-keyboard-height) + var(--game-tools-height)); }
+html[data-game-ui][data-game-touch="true"] .practice-view .hud { left: calc(var(--game-edge) + 56px) !important; right: var(--game-edge) !important; transform: none !important; width: auto !important; max-width: none; padding: 0 6px !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.hud-item, .score, .timer, .streak, .hud-score, .hud-best, .timer-wrap) { font-size: 10px !important; gap: 4px; padding: 0 2px !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.timer strong, .hud-time strong, .timer-text) { font-size: 22px !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.timer, .hud-time, .timer-wrap, .timer-text) { flex-wrap: nowrap !important; white-space: nowrap; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.exit-button, .exit-btn) { display: grid !important; place-items: center; position: fixed !important; top: var(--game-top) !important; left: var(--game-edge) !important; right: auto !important; bottom: auto !important; width: 44px !important; height: 44px !important; min-height: 44px !important; padding: 0 !important; border: 1px solid #56392e26; border-radius: 14px; background: var(--paper-light); z-index: 20; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.exit-button, .exit-btn) > span:last-child { display: none; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.exit-button .circle, .exit-button .corner-icon, .exit-btn .tool-icon) { width: 28px !important; height: 28px !important; margin: 0 !important; border-radius: 0; background: none; color: var(--ink); font: 700 24px/1 var(--jp-ui); }
+html[data-game-ui][data-game-touch="true"] .practice-view .question-zone { top: calc(var(--game-top) + var(--game-header) + 10px) !important; bottom: calc(var(--game-answer-height) + 8px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-card, .question-shell) { padding: 42px 24px 16px !important; border-radius: 18px; }
+html[data-game-ui][data-game-touch="true"] .practice-view .question-shell { top: calc(var(--game-top) + var(--game-header) + 10px) !important; bottom: calc(var(--game-keyboard-height) + var(--game-tools-height) + 8px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word) { font-size: clamp(48px, 7vw, 72px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-long { font-size: clamp(38px, 5.5vw, 56px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-very-long { font-size: clamp(28px, 4.5vw, 44px) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.answer-line, .answer-form) { grid-template-columns: minmax(0, 1fr) 96px; }
+html[data-game-ui][data-game-touch="true"] .practice-view .answer-area { bottom: calc(var(--game-keyboard-height) + var(--game-tools-height)) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.answer-display, .answer-input) { font-size: 20px; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) { display: flex !important; flex-direction: row !important; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 9px; top: auto !important; bottom: calc(var(--game-keyboard-height) + 8px) !important; width: calc((100% - var(--game-edge) * 2 - 8px) / 2) !important; height: 44px !important; min-height: 44px !important; padding: 0 12px !important; border: 1px solid #56392e26; border-radius: 12px; background: var(--paper-light); font-size: 12px !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn) { left: var(--game-edge) !important; right: auto !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.hint-button, #hintBtn) { left: auto !important; right: var(--game-edge) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.corner-icon-wrap, .tool-icon-wrap) { position: relative; flex: 0 0 28px; width: 28px; height: 28px; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) :is(.circle, .corner-icon, .tool-icon) { position: relative; display: grid; place-items: center; flex: 0 0 28px; width: 28px !important; height: 28px !important; min-width: 28px; min-height: 28px; max-width: 28px; max-height: 28px; margin: 0 !important; padding: 0; border-radius: 50%; font: 900 15px/1 var(--jp-ui) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) > span:last-child { flex: 0 0 auto; white-space: nowrap; font: 800 12px/1.25 var(--jp-ui); }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.count, .corner-count, .tool-count) { position: absolute; top: -6px; right: -8px; width: 20px; height: 20px; min-width: 20px; border: 2px solid var(--paper); border-radius: 50%; background: var(--paper); color: var(--ink); display: grid; place-items: center; font: 800 10px/1 var(--jp-ui); }
+html[data-game-ui][data-game-touch="true"] .practice-view .romaji-keyboard { position: fixed !important; inset: auto 0 0 !important; display: flex !important; flex-direction: column; gap: 8px !important; width: 100% !important; max-width: none !important; height: var(--game-keyboard-height) !important; margin: 0 !important; padding: 10px 6px calc(10px + env(safe-area-inset-bottom)) !important; border: 0 !important; border-radius: 18px 18px 0 0; background: #ded9cc; box-shadow: 0 -1px 0 #56392e21; transform: none !important; z-index: 12; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.key-row, .romaji-keyboard-row) { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px !important; width: min(1024px, 100%); height: var(--game-key-height); margin: 0 auto; padding: 0; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.key-row, .romaji-keyboard-row):nth-child(3) { grid-template-columns: 1.28fr repeat(7, minmax(0, 1fr)) 1.28fr; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.key, .romaji-key) { width: 100%; min-width: 0; height: var(--game-key-height) !important; min-height: var(--game-key-height) !important; margin: 0; padding: 0; border: 0; border-radius: 9px; background: #fffdf8; box-shadow: 0 2px 0 #281b1633; color: var(--ink); font: 700 22px/1 var(--jp-ui) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.key.function, .romaji-key.is-function) { background: #c7c5c0; }
+html[data-game-ui][data-game-kind="particle"][data-game-touch="true"] { --game-keyboard-height: calc(var(--game-key-height) * 2 + 28px + env(safe-area-inset-bottom)); --game-answer-height: calc(var(--game-keyboard-height) + var(--game-tools-height)); }
+html[data-game-ui][data-game-touch="true"] .practice-view .particle-keyboard { position: fixed !important; inset: auto 0 0 !important; width: 100% !important; height: var(--game-keyboard-height); transform: none; padding: 10px max(6px, calc((100vw - 1024px) / 2)) calc(10px + env(safe-area-inset-bottom)); border: 0; border-radius: 18px 18px 0 0; background: #ded9cc; }
+html[data-game-ui][data-game-touch="true"] .practice-view .particle-key { height: var(--game-key-height); min-height: var(--game-key-height); }
+html[data-game-ui][data-game-kind="choice"][data-game-touch="true"] { --game-keyboard-height: 0px; --game-answer-height: calc(var(--game-choice-height, 148px) + 76px + env(safe-area-inset-bottom)); }
+html[data-game-ui][data-game-kind="choice"][data-game-touch="true"] .practice-view .keigo-answer-area { bottom: calc(60px + env(safe-area-inset-bottom)) !important; }
+html[data-game-ui][data-game-kind="choice"][data-game-touch="true"] .practice-view :is(.skip-button, .hint-button) { bottom: calc(8px + env(safe-area-inset-bottom)) !important; }
+html[data-game-ui][data-game-touch="true"] .practice-view :is(.brush-feedback, .correct-fx) { right: var(--game-edge) !important; width: 124px !important; height: 55px !important; }
+
+@media (max-width: 1023px) {
+  html[data-game-ui] .home-view { padding: calc(76px + env(safe-area-inset-top)) 30px calc(34px + env(safe-area-inset-bottom)) !important; }
+  html[data-game-ui] .home-layout { width: min(430px, 100%) !important; height: auto !important; min-height: 0; grid-template-columns: minmax(0, 1fr) !important; gap: 0 !important; }
+  html[data-game-ui] :is(.home-mascot, .home-shiba) { display: none !important; }
+  html[data-game-ui] :is(.home-copy, .home-card, .scroll-panel) { height: auto !important; min-height: 508px !important; padding: 40px 24px !important; }
+  html[data-game-ui] .home-title { font-size: clamp(44px, 11vw, 64px) !important; }
+  html[data-game-ui] .home-view :is(.primary-button, .primary-btn) { min-height: 62px; height: auto; }
+  html[data-game-ui] .home-view :is(.best-plaque, .best-score-panel) { min-height: 58px; height: auto; }
+}
+@media (max-width: 767px) {
+  html[data-game-ui] { --game-edge: 12px; --game-key-height: 52px; --game-input-height: 46px; }
+  html[data-game-ui][data-game-touch="true"] { --game-edge: 12px; --game-key-height: 52px; --game-input-height: 46px; }
+  html[data-game-ui] .home-title { font-size: clamp(44px, 13vw, 58px) !important; }
+  html[data-game-ui] :is(.settings-button, .gear) { top: calc(12px + env(safe-area-inset-top)); right: 12px; width: 44px; height: 44px; min-height: 44px; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-card, .question-shell) { padding: 38px 15px 12px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word) { font-size: clamp(36px, 11vw, 56px) !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-long { font-size: clamp(29px, 9vw, 44px) !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-very-long { font-size: clamp(24px, 7.2vw, 36px) !important; }
+  html[data-game-ui] .practice-view :is(.sentence, .keigo-expression, .keigo-expression.is-context) { font-size: clamp(18px, 5.4vw, 22px) !important; line-height: 1.65; }
+  html[data-game-ui] .practice-view :is(.meaning, .sentence-meaning, .keigo-instruction, .question-copy) { margin-top: 8px !important; font-size: 12px !important; line-height: 1.5; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.answer-display, .answer-input) { font-size: 18px; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.answer-line, .answer-form) { grid-template-columns: minmax(0, 1fr) 76px; }
+  html[data-game-ui] .practice-view :is(.feedback-line, .feedback, .hint-text, .reading-guide, .keigo-feedback) { font-size: 12px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.key, .romaji-key) { font-size: 20px !important; }
+  html[data-game-ui] .practice-view .choice-grid { gap: 8px; }
+  html[data-game-ui] .practice-view .choice-button { min-height: 60px; padding: 10px 8px 10px 32px; border-radius: 10px; font-size: 14px; }
+  html[data-game-ui] .practice-view .choice-index { left: 7px; width: 20px; height: 20px; }
+  html[data-game-ui] .result-view { grid-template-columns: minmax(0, 400px); align-content: start; gap: 24px; padding: calc(28px + env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom)); }
+  html[data-game-ui] .result-scroll { min-height: 480px !important; }
+  html[data-game-ui] .scroll-sheet { width: calc(100% - 24px); padding: 55px 24px 49px !important; }
+  html[data-game-ui] .result-best-plaque { justify-self: center; width: min(260px, 100%) !important; min-height: 110px; }
+  html[data-game-ui] .result-score { font-size: clamp(50px, 14vw, 72px) !important; }
+  html[data-game-ui] :is(.modal, .settings-dialog) { max-width: 100%; }
+  html[data-game-ui] .modal { padding: 12px; }
+  html[data-game-ui] :is(.modal-card, .settings-form, .settings-body) { padding: 20px 16px; }
+}
+/* Keep a five-character time (120.0) on the same baseline as shorter times.
+   "秒" still identifies the timer; the redundant prefix remains accessible. */
+@media (max-width: 430px) {
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.timer, .hud-time) > span:first-child { position: absolute; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  html[data-game-ui][data-game-touch="true"] .practice-view .timer-text::before { content: none; }
+}
+@media (max-width: 359px) {
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.timer strong, .hud-time strong, .timer-text) { font-size: 20px !important; }
+}
+@media (max-height: 700px) {
+  html[data-game-ui][data-game-touch="true"] { --game-key-height: 48px; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-card, .question-shell) { padding-top: 32px !important; }
+  html[data-game-ui] .home-view { place-items: start center; }
+  html[data-game-ui] .result-view { align-content: start; }
+}
+/* Short landscape: the same question and answer nodes sit side by side. */
+@media (max-height: 480px) and (min-width: 600px) {
+  html[data-game-ui][data-game-touch="true"] { --game-key-height: 44px; --game-input-height: 44px; --game-tools-height: 52px; --game-edge: 12px; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-card, .question-shell) { grid-template-columns: minmax(0, 1fr) minmax(240px, .9fr); grid-template-rows: minmax(0, 1fr); gap: 12px; padding: 8px !important; }
+  html[data-game-ui][data-game-kind="particle"] .practice-view .question-card,
+  html[data-game-ui][data-game-kind="choice"] .practice-view .question-card { grid-template-columns: minmax(0, 1fr); }
+  html[data-game-ui][data-game-touch="true"] .practice-view .game-answer-content { display: grid; grid-template-rows: 44px minmax(0, 1fr); min-height: 0; height: 100%; padding: 0; overflow: hidden; }
+  html[data-game-ui][data-game-touch="true"] .practice-view .game-answer-content :is(.answer-line, .answer-form) { height: 44px; margin: 0 !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view .game-answer-status { max-height: none; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.question-meta, .level-seal, .question-copy, .question-type) { display: none; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word) { font-size: clamp(28px, 4vw, 44px) !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-long { font-size: 30px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.kanji-word, .verb-word).is-very-long { font-size: 24px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.meaning, .sentence-meaning, .keigo-instruction) { margin-top: 4px !important; font-size: 12px !important; }
+  html[data-game-ui][data-game-touch="true"] .practice-view :is(.skip-button, #skipBtn, .hint-button, #hintBtn) { bottom: calc(var(--game-keyboard-height) + 4px) !important; }
+  html[data-game-ui][data-game-kind="choice"][data-game-touch="true"] .practice-view :is(.skip-button, .hint-button) { bottom: calc(4px + env(safe-area-inset-bottom)) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-game-ui] *, html[data-game-ui] *::before, html[data-game-ui] *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition: none !important; scroll-behavior: auto !important; }
+  html[data-game-ui] :is(.result-scroll, .scroll-sheet, .scroll-content, .result-best-plaque) { opacity: 1 !important; clip-path: none !important; transform: none !important; }
+  html[data-game-ui] :is(.new-record-effect, .record-particles) { display: none !important; }
+}
+</style>
+<!-- shared-game-responsive:end -->
 </head>
 <body>
 <div class="app">
@@ -1148,7 +1590,7 @@
   <section class="help-card">
     <h2>遊び方</h2>
     <p>观察名词与动词的短搭配，点击专用键盘上的助词完成填空。答对后自动进入下一题。</p>
-    <p>每题基础 100 点；10 秒内作答可获得时间奖励，连续答对另有连击加分。</p>
+    <p>按题目考点难度计算基础分；连击最高加成 10%，没有时间奖励，使用提示后本题不计分。</p>
     <p>提示与跳过各有 3 次。答错不会扣分，但会打断连续记录。</p>
     <button id="helpClose" class="save-btn" style="width:100%;margin-top:10px">わかりました</button>
   </section>
@@ -30367,7 +30809,7 @@
     try{ return Object.assign({},fallback,JSON.parse(localStorage.getItem(key)||'null')||{}); }
     catch(e){ return fallback; }
   }
-  function showView(id){if(id==='homeView')window.CottageArcade?.cancel(); views.forEach(v => el(v).hidden = v !== id); }
+  function showView(id){if(id==='homeView'){window.GameRanking?.cancel();window.CottageArcade?.cancel();} views.forEach(v => el(v).hidden = v !== id); }
   function updateBestDisplays(){
     el('homeBest').textContent = best;
     el('resultBest').textContent = best;
@@ -30442,16 +30884,16 @@
     void node.offsetWidth;
     node.classList.add('is-pop');
   }
-  function beginGame(){
+  async function beginGame(){
+    window.GameRanking?.begin({levels:settings.levels,particles:settings.particles});
     window.CottageArcade?.start();
     showView('practiceView');
     updateHud();
+    game.endsAt=performance.now()+120000;window.GameRanking?.clock();
     nextQuestion();
-    let previous=performance.now();
     timerId=setInterval(()=>{
       const now=performance.now();
-      game.remaining=Math.max(0,game.remaining-(now-previous)/1000);
-      previous=now;
+      game.remaining=Math.max(0,(game.endsAt-now)/1000);
       updateHud();
       if(game.remaining<=0) finishGame();
     },100);
@@ -30494,9 +30936,9 @@
     return candidates[candidates.length-1].q;
   }
   function nextQuestion(){
-    if(!game || game.remaining<=0) return;
+    if(!game || game.finished || performance.now()>=game.endsAt) return;
     game.locked=false;
-    game.current=pickQuestion();
+    game.current=pickQuestion();game.hintUsed=false;window.GameRanking?.question(game.current.id);
     game.lastId=game.current.id;
     game.lastVerbKey=game.current.vk;
     game.lastParticle=game.current.p;
@@ -30518,17 +30960,16 @@
     el('sentenceMeaning').textContent=question.z;
   }
   function accepted(q){ return q.a || [q.p]; }
-  function chooseAnswer(value){
-    if(!game || game.locked || el('practiceView').hidden) return;
+  async function chooseAnswer(value){
+    if(!game || game.finished || game.locked || el('practiceView').hidden) return;
+    if(performance.now()>=game.endsAt){finishGame();return;}
     game.locked=true;
     game.total++;
     const elapsed=(performance.now()-game.questionStarted)/1000;
+    window.GameRanking?.answer(value);
     if(accepted(game.current).includes(value)){
-      const base=100;
-      const timeBonus=elapsed<10?Math.round((10-elapsed)*10):0;
-      const streakBonus=Math.min(200,game.streak*20);
-      const gained=base+timeBonus+streakBonus;
-      window.CottageArcade?.correct();game.score+=gained;game.streak++;game.correct++;game.maxStreak=Math.max(game.maxStreak,game.streak);
+      const gained=GameScoring.points(GameScoring.base('joshi',game.current),game.streak,game.hintUsed);
+      window.CottageArcade?.correct();game.score+=gained;game.streak=game.hintUsed?0:game.streak+1;game.correct++;game.maxStreak=Math.max(game.maxStreak,game.streak);
       markHistory('correct');
       updateHud();
       showCorrect(gained);
@@ -30557,14 +30998,14 @@
   }
   function historyKey(question){return question.vk+'|'+question.sid+'|'+question.p;}
   function useHint(){
-    if(!game || game.locked || game.hints<=0)return;
-    game.hints--;markHistory('hint');
+    if(!game || game.finished || game.locked || game.hints<=0 || game.hintUsed || performance.now()>=game.endsAt)return;
+    window.GameRanking?.hint();game.hints--;game.hintUsed=true;game.streak=0;markHistory('hint');
     el('feedbackLine').textContent=game.current.h;
     updateHud();
   }
   function skipQuestion(){
-    if(!game || game.locked || game.skips<=0)return;
-    game.skips--;game.streak=0;markHistory('skip');
+    if(!game || game.finished || game.locked || game.skips<=0 || performance.now()>=game.endsAt)return;
+    window.GameRanking?.skip();game.skips--;game.streak=0;markHistory('skip');
     el('feedbackLine').textContent='正答：'+accepted(game.current).join('／');
     game.locked=true;updateHud();
     questionTimer=setTimeout(nextQuestion,700);
@@ -30577,7 +31018,7 @@
     el('timerFill').style.transform='scaleX('+(game.remaining/120)+')';
     el('timerFill').style.background=game.remaining<20?'var(--vermilion)':'var(--matcha)';
     el('skipCount').textContent=game.skips;el('hintCount').textContent=game.hints;
-    el('skipBtn').disabled=game.skips<=0;el('hintBtn').disabled=game.hints<=0;
+    el('skipBtn').disabled=game.skips<=0;el('hintBtn').disabled=game.hints<=0||game.hintUsed;
   }
   function prepareRecordEffect(isNew){
     el('resultBestLabel').textContent=isNew?'新記録':'自己最高';
@@ -30598,9 +31039,9 @@
     }
     particles.appendChild(fragment);
   }
-  function finishGame(){
+  async function finishGame(){
     if(!game || game.finished)return;
-    window.CottageArcade?.finish();
+    window.GameRanking?.finish();window.CottageArcade?.finish();
     game.finished=true;clearInterval(timerId);clearInterval(countdownTimer);clearTimeout(countdownTimer);clearTimeout(questionTimer);el('correctFx').hidden=true;
     const oldBest=best;
     if(game.score>best){best=game.score;localStorage.setItem(BEST_KEY,String(best));}
@@ -30644,6 +31085,6 @@
   });
 })();
 </script>
-<script src="shared/game-navigation-bridge.js"></script>
+<script defer src="shared/game-navigation-bridge-github-20261020.js?v=arcade-nav-20261011-1"></script>
 </body>
 </html>

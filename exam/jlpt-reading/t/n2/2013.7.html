@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情報検索 - 练习与解析</title>
+    <link rel="stylesheet" href="../../../../shared/domestic-fonts.css">
+    <link rel="stylesheet" href="../../shared/reading-content-redesign.css?v=20260907-first-paint">
+    <link rel="stylesheet" href="../../shared/reading-tools.css?v=20260809-14">
+    <link rel="stylesheet" href="../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+</head>
+<body id="top" class="kiki-unified-header-enabled reading-article-tools-page reading-tools-no-furigana reading-content-page reading-cloze-v2">
+    <header class="kiki-unified-header kiki-unified-header--practice" data-kiki-unified-header="practice" data-kiki-unified-header-host="reading-practice">
+        <div class="kiki-unified-header-left">
+            <a class="kiki-unified-brand" href="../../../../index.html" aria-label="返回 kiji 首页"><img src="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline" alt="kiji"></a>
+            <span class="kiki-unified-divider" aria-hidden="true"></span>
+            <a id="back-to-reading-index" class="kiki-unified-back" href="../../index.html?level=N2&type=search&browse=year" aria-label="返回上一页" data-kiki-dynamic-back>
+                <svg class="kiki-unified-back-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18 9 12l6-6"></path></svg>
+                <span class="kiki-unified-back-label">返回上一页</span>
+                <span class="kiki-unified-back-label-mobile" aria-hidden="true">返回</span>
+            </a>
+        </div>
+        <h1 class="kiki-unified-header-title">N2 · 情報検索</h1>
+        <div class="kiki-unified-header-right"><div class="top-actions top-bar-controls reading-editorial-actions"></div></div>
+    </header>
+
+    <nav class="quick-nav sketch-box">
+        <a href="#top" class="nav-link">Top</a>
+        <div class="nav-divider"></div>
+        <a href="#poster-content" class="nav-link">案内</a>
+        <div class="nav-divider"></div>
+        <a href="#q1-card" class="nav-link">問1</a>
+        <a href="#q2-card" class="nav-link">問2</a>
+    </nav>
+
+    <div class="layout-container">
+        <main class="article-section sketch-box" id="mainArticleContent">
+            <div class="article-meta">
+                <div class="meta-left">
+                    <span class="tag">N2 読解</span>
+                    <span class="article-title-info">2013年7月 · 情報検索</span>
+                </div>
+                <button class="translate-toggle-btn" onclick="toggleTranslation(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+                    参考訳
+                </button>
+            </div>
+
+            <div class="poster-box" id="poster-content">
+                <div class="poster-main-title" style="text-align: center;">日本歴史研究会編著『日本歴史事典』</div>
+                <div class="poster-main-title" style="text-align: center; margin-top: 8px; font-size: 1em; font-weight: 500;">2014年1月15日まで、特別価格で予約受付中！</div>
+                <div class="poster-intro">最新の研究に基づいた日本史総合事典が、歴史教育社から発行されます。政治、外交、経済、社会、文化について、約18,000項目が収められた事典です。全ページカラー印刷、写真や図表も多く掲載しています。</div>
+                <div class="note-text" style="margin-top: 8px;">この機会に是非ご購入くださいますようご案内申し上げます。</div>
+
+                <div class="article-translation">
+                    【《日本历史事典》预约通知】历史教育社将出版一套依据最新研究编写的日本史综合事典，内容涵盖政治、外交、经济、社会和文化，约收录18,000个条目。全书彩色印刷，并配有大量照片和图表。
+                </div>
+
+                <div class="note-text" style="margin-top: 22px;"><strong>書名</strong>　日本歴史事典（全2巻）</div>
+                <div class="note-text" style="margin-top: 8px;"><strong>編著者名</strong>　日本歴史研究会</div>
+                <div class="note-text" style="margin-top: 8px;"><strong>ページ数</strong>　上巻1,500ページ、下巻1,500ページ（予定）</div>
+                <div class="note-text" style="margin-top: 8px;"><strong>定価</strong>　30,000円（上下巻セット価格・税込）</div>
+                <div class="note-text" style="margin-top: 8px;"><strong>発行元</strong>　歴史教育社</div>
+                <div class="note-text" style="margin-top: 8px;"><strong>発売日</strong>　2014年2月1日</div>
+
+                <div class="article-translation">
+                    【书目信息】全两卷，各约1,500页，含税定价30,000日元；由历史教育社发行，发售日为2014年2月1日。
+                </div>
+
+                <div class="note-text" style="margin-top: 24px; font-weight: 700;">予約特別価格</div>
+                <div class="note-text" style="margin-top: 10px;"><strong>予約受付</strong>　2014年1月15日まで</div>
+                <div class="note-text ks-target target-q2" style="margin-top: 10px;"><strong>お届け</strong>　発売日1週間前にご希望の送付先（国内に限る）へお届けします。送料は無料です。</div>
+                <div class="note-text ks-target target-q1" style="margin-top: 10px;"><strong>お申し込み</strong>　歴史教育社ホームページで承ります。</div>
+                <div class="note-text ks-target target-q1" style="margin-top: 6px; padding-left: 7em;">（書店での申し込みは受け付けられませんのでご注意ください。）</div>
+
+                <div class="article-translation">
+                    【预约与送货】预约受理至2014年1月15日。商品将在发售日前一周寄往指定的日本国内地址，免运费。预约只能通过历史教育社网站办理，书店不接受预约。
+                </div>
+
+                <div class="note-text ks-target target-q1" style="margin-top: 24px;"><strong>一括払い価格27,000円</strong>（上下巻セット価格・税込み）</div>
+                <div class="note-text ks-target target-q1" style="margin-top: 8px;">お申し込み時にクレジットカードでお支払いいただくか、1月20日までに指定口座にお振り込みください。</div>
+
+                <div class="note-text ks-target target-q1" style="margin-top: 20px;"><strong>分割払い価格28,900円</strong>（上下巻セット価格・税込み）</div>
+                <div class="note-text ks-target target-q1 target-q2" style="margin-top: 8px; padding-left: 1em;">お支払いは指定の口座へのお振り込みのみになります。</div>
+                <div class="note-text ks-target target-q1 target-q2" style="margin-top: 6px; padding-left: 1em;">支払い回数：3回（初回9,900円、第2回〜第3回 月々9,500円）</div>
+                <div class="note-text ks-target target-q1" style="margin-top: 6px; padding-left: 1em;">初回は1月20日までにお振り込みください。</div>
+                <div class="note-text ks-target target-q2" style="margin-top: 16px;">＊お振り込みの場合、手数料はお客様負担でお願いいたします。また、お振り込み等の詳細については、歴史教育社ホームページをご覧ください。</div>
+
+                <div class="article-translation">
+                    【价格与付款】一次付清为27,000日元，可在申请时用信用卡支付，或在1月20日前转账。分期付款为28,900日元，只能转账，共固定三次；首次9,900日元，后两次各9,500日元。转账手续费由顾客承担。
+                </div>
+
+                <div class="note-text" style="margin-top: 20px;">予約期間終了後は、全国書店でも購入のお申し込みを受け付けます。</div>
+                <div class="contact-info" style="text-align: left;">
+                    歴史教育社<br>
+                    http://www.rekishi.com
+                </div>
+            </div>
+        </main>
+
+        <aside class="question-section" id="quizForm">
+            <div class="question-card sketch-box" data-question="q1" id="q1-card">
+                <div class="q-header"><div class="q-number" style="background: var(--marker-blue);">1</div><div class="q-text-wrapper">
+                    <div class="q-text">岩田さんはこの事典をなるべく安く手に入れたい。予約方法と代金の支払いはどうすればよいか。
+                        <div class="source-jump-btn ks-theme-q1" onclick="jumpToTarget('q1')"><div class="ks-icon-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>クリックして予約・支払い条件の出処へ移動</span></div></div>
+                    </div><div class="q-text-trans">（岩田想尽可能便宜地买到这套事典，应如何预约和付款？）</div>
+                </div></div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1"><input type="radio" name="q1" value="1" class="option-input"><div class="custom-radio">1</div><div class="option-content-wrapper"><div class="option-content">1月15日までに書店で予約し、1月20日までに全額を振り込む。</div><div class="option-trans">1月15日前在书店预约，并在1月20日前转入全款。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="2"><input type="radio" name="q1" value="2" class="option-input"><div class="custom-radio">2</div><div class="option-content-wrapper"><div class="option-content">1月15日までに書店で予約し、2月1日に書店で全額を支払う。</div><div class="option-trans">1月15日前在书店预约，并于2月1日在书店支付全款。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="3"><input type="radio" name="q1" value="3" class="option-input"><div class="custom-radio">3</div><div class="option-content-wrapper"><div class="option-content">1月15日までにホームページで予約し、同時にクレジットカードで全額を支払う。</div><div class="option-trans">1月15日前在网站预约，并同时用信用卡支付全款。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="4"><input type="radio" name="q1" value="4" class="option-input"><div class="custom-radio">4</div><div class="option-content-wrapper"><div class="option-content">1月15日までにホームページで予約し、1月20日までに分割払いの初回分を振り込む。</div><div class="option-trans">1月15日前在网站预约，并在1月20日前转入分期付款的第一期。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                </div>
+            </div>
+
+            <div class="question-card sketch-box" data-question="q2" id="q2-card">
+                <div class="q-header"><div class="q-number" style="background: var(--marker-peach);">2</div><div class="q-text-wrapper">
+                    <div class="q-text">この事典を予約販売で購入した場合、安さ以外の利点はどれか。<br>
+                        <div class="source-jump-btn ks-theme-q2" onclick="jumpToTarget('q2')"><div class="ks-icon-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>クリックして予約販売の利点の出処へ移動</span></div></div>
+                    </div><div class="q-text-trans">（通过预约销售购买这套事典，除了价格便宜以外还有什么好处？）</div>
+                </div></div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1"><input type="radio" name="q2" value="1" class="option-input"><div class="custom-radio">1</div><div class="option-content-wrapper"><div class="option-content">発売日より前に、事典を受け取ることができる。</div><div class="option-trans">可以在发售日前收到事典。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="2"><input type="radio" name="q2" value="2" class="option-input"><div class="custom-radio">2</div><div class="option-content-wrapper"><div class="option-content">分割払いの支払い回数を自由に決めることができる。</div><div class="option-trans">可以自由决定分期付款的次数。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="3"><input type="radio" name="q2" value="3" class="option-input"><div class="custom-radio">3</div><div class="option-content-wrapper"><div class="option-content">発行元に、振り込み手数料を負担してもらえる。</div><div class="option-trans">可以让发行方承担转账手续费。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="4"><input type="radio" name="q2" value="4" class="option-input"><div class="custom-radio">4</div><div class="option-content-wrapper"><div class="option-content">海外にも送料無料で事典を送付してもらえる。</div><div class="option-trans">也可以免费寄送到海外。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                </div>
+            </div>
+            <div class="action-bar"><button type="button" class="submit-btn" id="submitBtn" onclick="submitAnswers()">答え合わせ</button></div>
+        </aside>
+    </div>
+
+    <div id="vocabTooltip" class="vocab-tooltip"></div>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (event) {
+                event.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#top') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        function toggleTranslation(btn) {
+            if (!document.getElementById('mainArticleContent').classList.contains('reviewed')) {
+                alert("请先完成所有题目（点击「答え合わせ」提交），然后再查看译文哦！");
+                return;
+            }
+            btn.classList.toggle('active');
+            document.querySelectorAll('.article-translation').forEach(el => el.classList.toggle('show'));
+        }
+
+        const answerData = {
+            q1: { correct: "3", optAnalysis: {
+                "1": "【✖ 排除】预约只在历史教育社网站受理，书店不接受预约，因此预约地点不正确。",
+                "2": "【✖ 排除】书店不接受预约，而且发售日到书店付款不属于公告中的预约特价付款方式。",
+                "3": "【✔ 正解】应在1月15日前通过网站预约。一次付清价27,000日元低于分期价28,900日元，预约时可直接用信用卡付清。",
+                "4": "【✖ 排除】网站预约和1月20日前支付首期都符合规则，但分期总价为28,900日元，不是最便宜的方式。"
+            }},
+            q2: { correct: "1", optAnalysis: {
+                "1": "【✔ 正解】发售日是2月1日，而预约商品会在发售日前一周寄送，因此可以提前收到。",
+                "2": "【✖ 排除】分期次数固定为3次，顾客不能自由决定。",
+                "3": "【✖ 排除】公告明确写着转账手续费由顾客承担，不是发行方承担。",
+                "4": "【✖ 排除】免费寄送只限日本国内地址，并不包括海外。"
+            }}
+        };
+
+        document.querySelectorAll('.option-input').forEach(input => {
+            input.addEventListener('change', function () {
+                if (document.getElementById('submitBtn').disabled) return;
+                document.querySelectorAll(`input[name="${this.name}"]`).forEach(radio => radio.closest('.option-label').classList.remove('selected'));
+                if (this.checked) this.closest('.option-label').classList.add('selected');
+            });
+        });
+
+        document.querySelectorAll('.option-label').forEach(label => {
+            label.addEventListener('click', function () {
+                const group = this.closest('.options-group');
+                if (!group.classList.contains('reviewed')) return;
+                const detailBox = this.querySelector('.option-detail-analysis');
+                if (detailBox.classList.contains('show')) {
+                    detailBox.classList.remove('show');
+                    return;
+                }
+                group.querySelectorAll('.option-detail-analysis').forEach(box => box.classList.remove('show'));
+                detailBox.classList.add('show');
+            });
+        });
+
+        window.jumpToTarget = function (qName) {
+            const targets = document.querySelectorAll(`.target-${qName}`);
+            if (!targets.length) return;
+            targets[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targets.forEach(target => {
+                target.classList.add(`revealed-${qName}`);
+                target.classList.remove('flash-focus');
+                void target.offsetWidth;
+                target.classList.add('flash-focus');
+            });
+        };
+
+        function submitAnswers() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            if (!q1 || !q2) {
+                alert("すべての問いに答えてください。（请回答所有問題）");
+                return;
+            }
+            const userAnswers = { q1: q1.value, q2: q2.value };
+            let score = 0;
+            document.querySelectorAll('.option-input').forEach(input => {
+                input.disabled = true;
+                input.closest('.option-label').classList.add('disabled');
+            });
+            document.querySelectorAll('.options-group').forEach(group => group.classList.add('reviewed'));
+            document.getElementById('mainArticleContent').classList.add('reviewed');
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+
+            Object.keys(answerData).forEach(qName => {
+                const qCard = document.querySelector(`.question-card[data-question="${qName}"]`);
+                const data = answerData[qName];
+                const userValue = userAnswers[qName];
+                qCard.classList.add('reviewed');
+                qCard.querySelectorAll('.option-label').forEach(label => {
+                    const optionValue = label.querySelector('.option-input').value;
+                    if (optionValue === data.correct) {
+                        label.classList.add('is-correct');
+                        label.querySelector('.custom-radio').innerHTML = '✔';
+                    }
+                    if (optionValue === userValue && userValue !== data.correct) {
+                        label.classList.add('is-wrong');
+                        label.querySelector('.custom-radio').innerHTML = '✖';
+                    }
+                    label.querySelector('.option-detail-analysis').innerText = data.optAnalysis[optionValue];
+                });
+                if (userValue === data.correct) score++;
+            });
+
+            if (score === 2) {
+                btn.innerText = "全問正解！素晴らしい！";
+                btn.style.background = "var(--marker-mint)";
+                btn.style.color = "var(--green-pencil)";
+            } else {
+                btn.innerText = `完了 (${score}/2 正解)`;
+                btn.style.background = "var(--marker-peach)";
+                btn.style.color = "var(--red-pencil)";
+            }
+        }
+    </script>
+
+    <script src="../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="../../shared/reading-year-system.js?v=20260809-reading-mistakes"></script>
+    <script src="../../shared/reading-analysis-n2-search.js?v=20260904-n2-search-15"></script>
+    <script src="../../shared/reading-practice-redesign.js?v=20261011-scoped-lookup-3"></script>
+    <script src="../../shared/reading-tools.js?v=20261011-scoped-lookup-3"></script>
+    <script src="../../shared/reading-dt-year-session.js?v=20260809-reading-mistakes"></script>
+    <script src="../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../shared/selection-dictionary.js?v=20261012-lookup-spelling-2" data-lookup-scope="reading"></script>
+</body>
+</html>

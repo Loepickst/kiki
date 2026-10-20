@@ -7,7 +7,7 @@
             .map((word, index) => ({ index, word }))
             .filter((entry) => {
                 const surface = String(entry.word && entry.word.word ? entry.word.word : '').trim();
-                return surface && surface !== '（準備中）' && surface !== '---';
+                return surface && surface !== '（準備中）' && surface !== '---' && !entry.word.duplicateOf;
             })
         : [];
 

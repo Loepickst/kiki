@@ -1,19 +1,93 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>聴解ランダム練習</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../shared/domestic-fonts.css">
     <link rel="stylesheet" href="../../../shared/site-fonts.css">
     <link rel="stylesheet" href="./listening-practice-redesign.css?v=20260829-underline-highlights">
     <link rel="stylesheet" href="./listening-derived-practice.css?v=20260814-derived-adapter-r2">
+    <link rel="stylesheet" href="../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
 </head>
-<body class="listening-practice-redesign listening-derived-page listening-random-page">
-    <header>
-        <a class="back-btn" id="backBtn" href="../index.html">
+<body class="kiki-unified-header-enabled listening-practice-redesign listening-derived-page listening-random-page">
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
+        <a class="back-btn" id="backBtn" href="../../../index.html#exam/exam-listening">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-            練習メニューへ戻る
+            返回听力目录
         </a>
         <h1 class="page-title">聴解特訓</h1>
         <span aria-hidden="true"></span>
@@ -22,11 +96,11 @@
     <main class="derived-shell">
         <section class="listening-page-intro" aria-labelledby="metaTitle">
             <div>
-                <p class="listening-page-eyebrow">日本語能力試験 ・ <span id="randomLevel">N1</span> ・ ランダム練習</p>
+                <p class="listening-page-eyebrow"><span id="randomLevel">聴解</span> · 随机练习</p>
                 <h2 class="listening-page-title" id="metaTitle">聴解ランダム練習</h2>
             </div>
             <div class="listening-progress" aria-label="問題の進捗">
-                <div class="listening-progress-meta"><span>問題</span><strong id="progressCurrent">1</strong><span>/</span><span id="progressTotal">1</span></div>
+                <div class="listening-progress-meta"><strong id="progressCurrent">1</strong><span>/</span><span id="progressTotal">1</span></div>
                 <div class="listening-progress-track"><span class="listening-progress-value" id="progressValue"></span></div>
             </div>
         </section>
@@ -36,7 +110,7 @@
                 <div class="header-left"><strong class="question-select" id="questionCounter">1番</strong><span class="derived-question-source" id="questionSource">出典</span></div>
                 <aside class="listening-mentor-note" aria-label="一二三のアドバイス">
                     <span class="listening-mentor-avatar"><img src="../../../assets/listening/music-duo-cover-longhair-headphones-v3.png" alt="一二三"></span>
-                    <span id="randomMentorText">最後まで聞いてから、いちばん自然な答えを選ぼう。</span>
+                    <span id="randomMentorText"></span>
                 </aside>
             </div>
 
@@ -50,26 +124,26 @@
                     <ol class="options-list" id="optionsList"></ol>
                 </div>
                 <div class="listening-card-footer">
-                    <span class="status-banner is-ready" id="statusBanner">音声を聞いてから答えてください。</span>
-                    <div class="button-row"><button class="listening-skip-button confirm-button" id="confirmBtn" type="button" disabled>答えを確認</button></div>
+                    <span class="status-banner is-ready" id="statusBanner"></span>
+                    <div class="button-row"><button class="listening-skip-button confirm-button" id="confirmBtn" type="button" disabled>确认答案</button></div>
                 </div>
             </div>
         </section>
 
         <section class="summary-card paper-panel hidden" id="summaryView">
             <h2 class="summary-title">今回の練習結果</h2>
-            <p class="summary-copy" id="summaryCopy">結果をまとめました。</p>
+            <p class="summary-copy" id="summaryCopy"></p>
             <div class="summary-grid">
-                <div class="summary-stat"><span class="summary-stat-label">正解</span><span class="summary-stat-value" id="summaryCorrect">0</span></div>
-                <div class="summary-stat"><span class="summary-stat-label">不正解</span><span class="summary-stat-value" id="summaryWrong">0</span></div>
-                <div class="summary-stat"><span class="summary-stat-label">未回答</span><span class="summary-stat-value" id="summaryEmpty">0</span></div>
-                <div class="summary-stat"><span class="summary-stat-label">正答率</span><span class="summary-stat-value" id="summaryAccuracy">0%</span></div>
+                <div class="summary-stat"><span class="summary-stat-label">答对</span><span class="summary-stat-value" id="summaryCorrect">0</span></div>
+                <div class="summary-stat"><span class="summary-stat-label">答错</span><span class="summary-stat-value" id="summaryWrong">0</span></div>
+                <div class="summary-stat"><span class="summary-stat-label">未答</span><span class="summary-stat-value" id="summaryEmpty">0</span></div>
+                <div class="summary-stat"><span class="summary-stat-label">正确率</span><span class="summary-stat-value" id="summaryAccuracy">0%</span></div>
             </div>
             <div id="drawArea"></div>
             <div class="summary-actions">
-                <button class="action-btn" id="viewAnalysisBtn" type="button">解説を見る</button>
-                <button class="action-btn" id="retryBtn" type="button">もう一度</button>
-                <a class="action-btn" id="summaryBackBtn" href="../index.html">練習メニューへ戻る</a>
+                <button class="action-btn" id="viewAnalysisBtn" type="button">查看解析</button>
+                <button class="action-btn" id="retryBtn" type="button">再练一次</button>
+                <a class="action-btn" id="summaryBackBtn" href="../../../index.html#exam/exam-listening">返回听力目录</a>
             </div>
         </section>
 
@@ -83,9 +157,9 @@
             <div class="analysis-transcript" id="analysisTranscript"></div>
             <div class="analysis-options" id="analysisOptions"></div>
             <div class="analysis-actions">
-                <button class="action-btn" id="analysisPrevBtn" type="button">前の問題</button>
-                <button class="action-btn" id="analysisNextBtn" type="button">次の問題</button>
-                <button class="action-btn" id="analysisBackBtn" type="button">結果へ戻る</button>
+                <button class="action-btn" id="analysisPrevBtn" type="button">上一题</button>
+                <button class="action-btn" id="analysisNextBtn" type="button">下一题</button>
+                <button class="action-btn" id="analysisBackBtn" type="button">返回结果</button>
             </div>
         </section>
 
@@ -97,7 +171,7 @@
                 </div>
                 <aside class="listening-mentor-note" aria-label="一二三のアドバイス">
                     <span class="listening-mentor-avatar"><img src="../../../assets/listening/music-duo-cover-longhair-headphones-v3.png" alt="一二三"></span>
-                    <span id="immediateAnalysisMentor">原文と答えのつながりを確認しよう。</span>
+                    <span id="immediateAnalysisMentor">对照原文看看答案。</span>
                 </aside>
             </div>
             <div class="content-wrapper">
@@ -109,11 +183,11 @@
                     <ol class="options-list" id="immediateAnalysisOptions"></ol>
                 </div>
                 <div class="listening-card-footer">
-                    <div class="status-box" id="immediateAnalysisStatus">解答を確認しています。</div>
+                    <div class="status-box" id="immediateAnalysisStatus"></div>
                     <div class="button-row">
-                        <button class="listening-skip-button" id="immediateAnalysisPrevBtn" type="button">前の問題</button>
-                        <button class="listening-skip-button" id="immediateAnalysisNextBtn" type="button">次の問題</button>
-                        <button class="listening-skip-button" id="immediateAnalysisBackBtn" type="button">結果へ戻る</button>
+                        <button class="listening-skip-button" id="immediateAnalysisPrevBtn" type="button">上一题</button>
+                        <button class="listening-skip-button" id="immediateAnalysisNextBtn" type="button">下一题</button>
+                        <button class="listening-skip-button" id="immediateAnalysisBackBtn" type="button">返回结果</button>
                     </div>
                 </div>
             </div>
@@ -121,8 +195,8 @@
 
         <section class="error-card paper-panel hidden" id="errorView">
             <h2 class="error-title">ランダム練習を開始できません</h2>
-            <p class="error-copy" id="errorCopy">条件に合う問題がありません。</p>
-            <div class="summary-actions"><a class="action-btn" id="errorBackBtn" href="../index.html">練習メニューへ戻る</a></div>
+            <p class="error-copy" id="errorCopy">没有符合条件的题目。</p>
+            <div class="summary-actions"><a class="action-btn" id="errorBackBtn" href="../../../index.html#exam/exam-listening">返回听力目录</a></div>
         </section>
     </main>
 
@@ -167,8 +241,8 @@
     <div class="tooltip" id="keywordTooltip"></div>
     <script src="./listening-derived-player.js?v=20260814-exact-player-r2"></script>
 
-    <script src="../../../shared/study-quest-test-runtime.js"></script>
-    <script src="../../../shared/study-quest-test-boot.js"></script>
+    <script src="../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../shared/study-quest-test-boot-github-20261020.js"></script>
     <script src="./listening-question-pools.js?v=20260824-n2-2016-07-q2-sentences"></script>
     <script>
         window.__LISTENING_RANDOM_EXAM__ = true;
@@ -500,14 +574,14 @@
                     }
                     ui.options.querySelectorAll('.option-item').forEach((node) => node.classList.remove('selected'));
                     item.classList.add('selected');
-                    ui.mentorText.textContent = 'その答えでいいか、最後の一音まで確かめてみよう。';
+                    ui.mentorText.textContent = '听到最后一个音再确认。';
                     if (isImmediateResponseExam()) {
                         updateStatus(
-                            state.audioEnded ? '已选择，可在切题前重新选择。' : '已选择答案，可在音频结束前反复修改。',
+                            state.audioEnded ? '切题前可改选' : '音频结束前可改选',
                             'is-ready'
                         );
                     } else {
-                        updateStatus('已选择答案。点击“确认答案”后，本题会被锁定。', 'is-ready');
+                        updateStatus('确认后本题锁定', 'is-ready');
                     }
                 });
             });
@@ -550,7 +624,7 @@
             ui.progressTotal.textContent = String(state.questions.length);
             ui.progressValue.style.width = `${((state.index + 1) / state.questions.length) * 100}%`;
             ui.randomTrackTitle.textContent = `問題 ${state.index + 1}`;
-            ui.mentorText.textContent = '最後まで聞いてから、いちばん自然な答えを選ぼう。';
+            ui.mentorText.textContent = type === 'task_comprehension' ? '听清最后要先做哪件事。' : '听完一句，选最自然的回应。';
             ui.title.innerHTML = prompt.title;
             ui.copy.textContent = prompt.copy;
             ui.audio.src = question.audio || '';
@@ -562,12 +636,7 @@
             bindOptionEvents();
             ui.confirm.classList.toggle('hidden', isImmediateResponseExam());
             ui.confirm.disabled = state.selectedIndex < 0 || answer.submitted;
-            updateStatus(
-                isImmediateResponseExam()
-                    ? '播放音频后，从 1 / 2 / 3 中选择答案。'
-                    : '播放音频后作答。',
-                'is-ready'
-            );
+            updateStatus('', 'is-ready');
             tryAutoplayCurrentAudio();
         }
 
@@ -681,7 +750,7 @@
             ui.summaryWrong.textContent = String(stats.wrong);
             ui.summaryEmpty.textContent = String(stats.empty);
             ui.summaryAccuracy.textContent = `${stats.accuracy}%`;
-            ui.summaryCopy.textContent = '成绩已生成。';
+            ui.summaryCopy.textContent = '';
 
             if (!state.rewardResult && state.runMeta && window.StudyQuestTestServer && typeof window.StudyQuestTestServer.completeRun === 'function') {
                 state.rewardResult = window.StudyQuestTestServer.completeRun({
@@ -715,7 +784,7 @@
             return `
                 <div class="analysis-block">
                     <h3>对话原文</h3>
-                    <div class="analysis-line">${question.dialogueHtml || '（本题暂未整理原文）'}</div>
+                    <div class="analysis-line analysis-dialogue">${question.dialogueHtml || '（本题暂未整理原文）'}</div>
                     ${question.translation ? `<div class="analysis-translation">${htmlEscape(question.translation)}</div>` : ''}
                 </div>
             `;
@@ -736,7 +805,7 @@
                     <h3>题目原文</h3>
                     ${promptHtml}
                     ${promptTrans}
-                    ${dialogue}
+                    <div class="analysis-dialogue">${dialogue}</div>
                 </div>
             `;
         }
@@ -771,17 +840,17 @@
             `;
             ui.immediateAnalysisOptions.innerHTML = renderOptions(question.options, 'analysis');
 
-            let statusText = '本题未作答，正确答案已经标出。';
+            let statusText = '本题未作答';
             let statusTone = 'is-ready';
-            let mentorText = '原文と答えのつながりを確認しよう。';
+            let mentorText = '对照原文看看答案。';
             if (answer.submitted && answer.isCorrect) {
-                statusText = '回答正确。';
+                statusText = '回答正确';
                 statusTone = 'is-correct';
-                mentorText = 'いいね。その音の手がかり、ちゃんと拾えてるよ。';
+                mentorText = '答对了，继续下一题。';
             } else if (answer.submitted && !answer.unanswered) {
-                statusText = '回答不正确，正确选项已经用薄荷色标出。';
+                statusText = '回答错误';
                 statusTone = 'is-wrong';
-                mentorText = '惜しい。原文で聞き落とした条件を一緒に確認しよう。';
+                mentorText = '再听一遍关键处。';
             }
             ui.immediateAnalysisStatus.textContent = statusText;
             ui.immediateAnalysisStatus.className = `status-box ${statusTone}`;
@@ -810,14 +879,14 @@
             ui.analysisImage.classList.add('hidden');
 
             if (!answer.submitted || answer.unanswered) {
-                ui.analysisResultNote.textContent = '本题未作答';
-                ui.analysisResultNote.className = 'analysis-note is-empty';
+                ui.analysisNote.textContent = '本题未作答';
+                ui.analysisNote.className = 'analysis-note is-empty';
             } else if (answer.isCorrect) {
-                ui.analysisResultNote.textContent = '本题答对了';
-                ui.analysisResultNote.className = 'analysis-note is-correct';
+                ui.analysisNote.textContent = '本题答对了';
+                ui.analysisNote.className = 'analysis-note is-correct';
             } else {
-                ui.analysisResultNote.textContent = '本题答错了';
-                ui.analysisResultNote.className = 'analysis-note is-wrong';
+                ui.analysisNote.textContent = '本题答错了';
+                ui.analysisNote.className = 'analysis-note is-wrong';
             }
 
             ui.analysisTranscript.innerHTML = type === 'task_comprehension'
@@ -851,8 +920,8 @@
             ui.backBtn.href = indexHref;
             ui.summaryBackBtn.href = indexHref;
             ui.errorBackBtn.href = indexHref;
-            ui.metaTitle.textContent = `[${level}] ${normalizeTypeLabel(type)}ランダム練習`;
-            ui.randomLevel.textContent = level;
+            ui.metaTitle.textContent = fromYear && toYear ? `${fromYear === toYear ? fromYear : `${fromYear}–${toYear}`} 年` : '随机练习';
+            ui.randomLevel.textContent = type === 'task_comprehension' ? '課題理解' : '即時応答';
         }
 
         function initializeQuestions() {
@@ -928,7 +997,8 @@
             renderPracticeQuestion();
         }
     </script>
-    <script src="../../../shared/word-bank.js"></script>
-    <script src="../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+    <script src="../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
 </body>
 </html>

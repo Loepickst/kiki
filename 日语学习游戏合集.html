@@ -1,8 +1,78 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta charset="utf-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
   <meta name="theme-color" content="#f1eadf">
   <title>日本語遊戯場｜稽古選択</title>
 <style>
@@ -77,7 +147,7 @@
 </head>
 <body>
   <main class="selection-view" id="selectionView">
-    <a class="collection-back-button" href="index.html#daily" aria-label="返回日常学习"><span class="collection-back-arrow" aria-hidden="true">←</span><span>返回</span></a>
+    <a class="collection-back-button" href="index.html" aria-label="返回主页"><span class="collection-back-arrow" aria-hidden="true">←</span><span>返回主页</span></a>
     <div class="selection-shell">
       <header class="collection-header">
         <div class="collection-mark" aria-hidden="true"><span>遊</span></div>
@@ -86,37 +156,7 @@
         <p class="subtitle">稽古を選ぶ</p>
       </header>
 
-      <section class="game-list" aria-label="ゲーム選択">
-        <button class="game-entry is-selected" type="button" data-index="0" aria-pressed="true" style="--accent:#a84135">
-          <span class="entry-number">壱</span>
-          <span class="entry-copy"><span class="entry-meta">動詞変形</span><strong class="entry-title">活用道場</strong><span class="entry-description">指定された形へ、動詞をすばやく変える</span></span>
-          <span class="entry-record">自己最高<strong data-score="0">0<small>点</small><span class="entry-arrow">→</span></strong></span>
-        </button>
-
-        <button class="game-entry" type="button" data-index="1" aria-pressed="false" style="--accent:#58785e">
-          <span class="entry-number">弐</span>
-          <span class="entry-copy"><span class="entry-meta">格助詞</span><strong class="entry-title">助詞茶寮</strong><span class="entry-description">短い語句に合う、格助詞を見切る</span></span>
-          <span class="entry-record">自己最高<strong data-score="1">0<small>点</small><span class="entry-arrow">→</span></strong></span>
-        </button>
-
-        <button class="game-entry" type="button" data-index="2" aria-pressed="false" style="--accent:#b27e36">
-          <span class="entry-number">参</span>
-          <span class="entry-copy"><span class="entry-meta">漢字読み</span><strong class="entry-title">漢字道場</strong><span class="entry-description">漢字の読みを、ローマ字ですばやく入力</span></span>
-          <span class="entry-record">自己最高<strong data-score="2">0<small>点</small><span class="entry-arrow">→</span></strong></span>
-        </button>
-
-        <button class="game-entry" type="button" data-index="3" aria-pressed="false" style="--accent:#6d6688">
-          <span class="entry-number">肆</span>
-          <span class="entry-copy"><span class="entry-meta">数詞読み</span><strong class="entry-title">数詞道場</strong><span class="entry-description">数字と助数詞の読みを、反射で答える</span></span>
-          <span class="entry-record">自己最高<strong data-score="3">0<small>点</small><span class="entry-arrow">→</span></strong></span>
-        </button>
-
-        <button class="game-entry" type="button" data-index="4" aria-pressed="false" style="--accent:#49707a">
-          <span class="entry-number">伍</span>
-          <span class="entry-copy"><span class="entry-meta">敬語総合</span><strong class="entry-title">敬語道場</strong><span class="entry-description">変換・人物関係・構式から、敬語をすばやく見抜く</span></span>
-          <span class="entry-record">自己最高<strong data-score="4">0<small>点</small><span class="entry-arrow">→</span></strong></span>
-        </button>
-      </section>
+      <section class="game-list" aria-label="ゲーム選択"></section>
       <p class="key-guide">↑ ↓ 選ぶ　・　Enter 決定</p>
     </div>
   </main>
@@ -127,16 +167,19 @@
     <div class="stage-loader" id="stageLoader">読込中</div>
   </section>
 
+  <script src="shared/game-catalog-github-20261020.js?v=katakana-20261017"></script>
   <script>
     (()=>{
       'use strict';
-      const games=[
-        {id:'katsuyo',path:'动词变形游戏.html',title:'活用道場',scoreKey:'katsuyo-personal-best-v1'},
-        {id:'joshi',path:'格助词练习游戏.html',title:'助詞茶寮',scoreKey:'joshi-charyo-best-v1'},
-        {id:'kanji',path:'汉字读音游戏.html',title:'漢字道場',scoreKey:'kanji-reading-best-v1'},
-        {id:'number',path:'数字读法游戏.html',title:'数詞道場',scoreKey:'number-reading-best-v1'},
-        {id:'keigo',path:'敬语练习游戏.html',title:'敬語道場',scoreKey:'keigo-dojo-best-v1'}
-      ];
+      const games=globalThis.KikiGameCatalog.games;
+      const list=document.querySelector('.game-list');
+      function element(tag,className,text){const node=document.createElement(tag);node.className=className;if(text!==undefined)node.textContent=text;return node;}
+      for(const [index,game] of games.entries()){
+        const entry=element('button','game-entry');entry.type='button';entry.dataset.index=String(index);entry.dataset.game=game.id;entry.style.setProperty('--accent',game.accent);entry.setAttribute('aria-pressed','false');
+        const copy=element('span','entry-copy');copy.append(element('span','entry-meta',game.practice),element('strong','entry-title',game.title),element('span','entry-description',game.description));
+        const record=element('span','entry-record','自己最高'),score=element('strong','','0');score.dataset.score=String(index);score.append(element('small','','点'),element('span','entry-arrow','→'));record.append(score);
+        entry.append(element('span','entry-number',game.number),copy,record);list.append(entry);
+      }
       const entries=[...document.querySelectorAll('.game-entry')];
       const selection=document.getElementById('selectionView'),stage=document.getElementById('gameStage'),frame=document.getElementById('gameFrame'),loader=document.getElementById('stageLoader'),returnButton=document.getElementById('returnButton');
       let selected=0,viewObserver=null;

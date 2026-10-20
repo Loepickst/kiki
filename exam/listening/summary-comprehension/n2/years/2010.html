@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20260909-summary-r1">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,11 +192,13 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../../shared/study-quest-test-runtime.js"></script>
-    <script src="../../../../shared/study-quest-test-boot.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
+    <script src="../shared/follow-listening-timelines.js?v=20260909-summary-2010-07-r1"></script>
+    <script src="../../../task-comprehension/n2/shared/follow-listening.js?v=20260909-summary-map-r1"></script>
     <script>
         // --- 容错与模拟外部依赖 (防报错) ---
         if (!window.ListeningProgress) {
@@ -136,20 +213,45 @@
 
         // --- Data Structure ---
         const examData = {
-            "N2-2010-07-Overview": {
+            "2010-07": {
                 label: "2010年7月 (N2)",
                 questions: [
                     {
                         id: 1,
                         audio: "../assets/audio/2010.7-1.mp3",
                         script: {
-                            question: "一番：大学の先生が授業で話しています。講演のテーマは何でしたか。",
-                            questionTrans: "（一位大学老师正在上课。他这次演讲的主题是什么？）",
+                            question: "一番：大学の先生が授業で話しています。",
+                            questionTrans: "（第一题：一位大学老师正在上课。）",
                             dialogue: [
                                 { 
                                     speaker: "先生", 
-                                    text: "先日、リンゴ農家の方に頼まれて、講演会で話してきました。今、リンゴ農家では、鼠による被害が問題になっています。鼠がリンゴの木をかじって、ひどいときには、木が死んでしまうこともあるんですね。いいリンゴを作るためには、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span>鼠の行動を知らないと、対策が立てられません。</span><span class=\"keyword\" onclick=\"showTooltip(event, '【そこで】（因此/所以）这类接续词通常用于引出说话人的结论或核心行动原因，是抓取段落主旨的重要线索。老师因为这句话，点明了他去演讲的核心目的，即帮助果农了解老鼠的活动规律。')\">そこで</span>、鼠の研究をしている私が講演をしたというわけです。", 
-                                    trans: "（前几天，应果农们的邀请，我去一场演讲会上发了言。眼下，果农们正为老鼠的祸害头疼不已。老鼠会啃食苹果树，严重的话甚至会把树咬死。要想种出好苹果，如果不摸清老鼠的活动规律，就拿不出对策。所以，作为研究老鼠的专家，我就去给大家做了这次演讲。）" 
+                                    text: "先日、リンゴ農家の方に頼まれて、講演会で話してきました。", 
+                                    trans: "（前几天，应果农们的邀请，我去一场演讲会上发了言。）" 
+                                },
+                                { 
+                                    speaker: "先生", 
+                                    text: "今、リンゴ農家では、鼠による被害が問題になっています。", 
+                                    trans: "（眼下，果农们正为老鼠造成的危害而头疼。）" 
+                                },
+                                { 
+                                    speaker: "先生", 
+                                    text: "鼠がリンゴの木をかじって、ひどいときには、木が死んでしまうこともあるんですね。", 
+                                    trans: "（老鼠会啃食苹果树，严重的时候甚至会使树木枯死。）" 
+                                },
+                                { 
+                                    speaker: "先生", 
+                                    text: "いいリンゴを作るためには、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span>鼠の行動を知らないと、対策が立てられません。</span>", 
+                                    trans: "（为了种出优质苹果，如果不了解老鼠的活动规律，就无法制定对策。）" 
+                                },
+                                { 
+                                    speaker: "先生", 
+                                    text: "<span class=\"keyword\" onclick=\"showTooltip(event, '【そこで】（因此/所以）这类接续词通常用于引出说话人的结论或核心行动原因，是抓取段落主旨的重要线索。老师因为这句话，点明了他去演讲的核心目的，即帮助果农了解老鼠的活动规律。')\">そこで</span>、鼠の研究をしている私が講演をしたというわけです。", 
+                                    trans: "（所以，作为研究老鼠的专家，我就去做了这场演讲。）" 
+                                },
+                                {
+                                    speaker: "問題",
+                                    text: "講演のテーマは何でしたか。",
+                                    trans: "（演讲的主题是什么？）"
                                 }
                             ]
                         },
@@ -184,13 +286,48 @@
                         id: 2,
                         audio: "../assets/audio/2010.7-2.mp3",
                         script: {
-                            question: "二番：留守番電話のメッセージを聞いています。何についてのメッセージですか。",
-                            questionTrans: "（在听电话语音留言。这是一条关于什么的留言？）",
+                            question: "二番：留守番電話のメッセージを聞いています。",
+                            questionTrans: "（第二题：正在听电话留言。）",
                             dialogue: [
                                 { 
                                     speaker: "男", 
-                                    text: "ヒガシ旅行の田中です。あの、お問い合わせいただきました、<span class=\"keyword\" onclick=\"showTooltip(event, '【～件でご連絡いたします】（就……事宜与您联系）：商务留言中常用于开门见山地点明主题。这里直接引出了整通电话是为了处理去韩国的航班问题。')\">韓国行きの件でご連絡いたします。</span><span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span>ご希望の飛行機はあいにく席がいっぱいでして、キャンセル待ちか次の便への変更が必要となります。</span>次の便でも午後4時には到着しますので、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"keyword\" onclick=\"showTooltip(event, '提到研讨会只是为了说明下一班飞机也不会耽误客户的行程，这并不是留言的主题，因此排除。')\">セミナーには間に合う</span></span>かと思います。こちらは、まだ空席がございます。えー、私は<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"keyword\" onclick=\"showTooltip(event, '提到晚上8点前在店里，是为了告诉客户回拨电话的时间范围，而非特意发留言告知营业时间，弱此排除。')\">午後8時ごろまでは店におります</span></span>ので、ご連絡いただけますでしょうか。また、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"keyword\" onclick=\"showTooltip(event, '顺带提了一句还可以帮忙预订酒店（ホテルのご予約），但这只是推销附加服务，不是这通电话的主要目的，更不是关于“取消（キャンセル）”，因此排除。')\">ホテルのご予約</span></span>なども承っておりますので、よろしくお願いします。", 
-                                    trans: "（我是东亚旅行社的田中。关于您之前咨询的去韩国的事情，特此联系您。您希望乘坐的航班很不巧已经满座了，需要您选择候补或者改签下一班。下一班也会在下午4点到达，我想应该赶得上您的研讨会。这班飞机还有空座。那个，我晚上8点前都会在店里，能不能请您给我回个电话呢？另外，我们也承接酒店预订等业务，希望能为您服务。）" 
+                                    text: "ヒガシ旅行の田中です。", 
+                                    trans: "（我是东亚旅行社的田中。）" 
+                                },
+                                { 
+                                    speaker: "男", 
+                                    text: "あの、お問い合わせいただきました、<span class=\"keyword\" onclick=\"showTooltip(event, '【～件でご連絡いたします】（就……事宜与您联系）：商务留言中常用于开门见山地点明主题。这里直接引出了整通电话是为了处理去韩国的航班问题。')\">韓国行きの件でご連絡いたします。</span>", 
+                                    trans: "（那个，关于您之前咨询的去韩国一事，特此联系您。）" 
+                                },
+                                { 
+                                    speaker: "男", 
+                                    text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span>ご希望の飛行機はあいにく席がいっぱいでして、キャンセル待ちか次の便への変更が必要となります。</span>", 
+                                    trans: "（您希望乘坐的航班很不巧已经满座了，需要候补或改签下一班。）" 
+                                },
+                                { 
+                                    speaker: "男", 
+                                    text: "次の便でも午後4時には到着しますので、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"keyword\" onclick=\"showTooltip(event, '提到研讨会只是为了说明下一班飞机也不会耽误客户的行程，这并不是留言的主题，因此排除。')\">セミナーには間に合う</span></span>かと思います。", 
+                                    trans: "（即使乘坐下一班，也会在下午4点到达，我想应该赶得上研讨会。）" 
+                                },
+                                { 
+                                    speaker: "男", 
+                                    text: "こちらは、まだ空席がございます。", 
+                                    trans: "（这一班目前还有空座。）" 
+                                },
+                                { 
+                                    speaker: "男", 
+                                    text: "えー、私は<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"keyword\" onclick=\"showTooltip(event, '提到晚上8点前在店里，是为了告诉客户回拨电话的时间范围，而非特意发留言告知营业时间，因此排除。')\">午後8時ごろまでは店におります</span></span>ので、ご連絡いただけますでしょうか。", 
+                                    trans: "（嗯，我晚上8点左右之前都会在店里，能请您联系我吗？）" 
+                                },
+                                { 
+                                    speaker: "男", 
+                                    text: "また、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"keyword\" onclick=\"showTooltip(event, '顺带提了一句还可以帮忙预订酒店（ホテルのご予約），但这只是推销附加服务，不是这通电话的主要目的，更不是关于“取消（キャンセル）”，因此排除。')\">ホテルのご予約</span></span>なども承っておりますので、よろしくお願いします。", 
+                                    trans: "（另外，我们也承接酒店预订等业务，请多关照。）" 
+                                },
+                                {
+                                    speaker: "問題",
+                                    text: "何についてのメッセージですか。",
+                                    trans: "（这是一条关于什么的留言？）"
                                 }
                             ]
                         },
@@ -225,13 +362,38 @@
                         id: 3,
                         audio: "../assets/audio/2010.7-3.mp3",
                         script: {
-                            question: "三番：テレビでアナウンサーが話しています。この番組のテーマは何ですか。",
-                            questionTrans: "（电视里播音员正在讲话。这个节目的主题是什么？）",
+                            question: "三番：テレビでアナウンサーが話しています。",
+                            questionTrans: "（第三题：电视里一位播音员正在讲话。）",
                             dialogue: [
                                 { 
                                     speaker: "男", 
-                                    text: "今日は山田美智子さんをゲストにお迎えいたしました。山田さんは、お子さんが生まれたのをきっかけに、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"keyword\" onclick=\"showTooltip(event, '山田女士是成为“专业主妇”，而不是“继续工作”，因此排除。')\">専業主婦となられました。</span></span>そのため、家庭の収入が減り、自然と節約するようになったそうです。いまでは、いろいろと工夫するのが楽しく、すっかり節約が趣味になっているとのことです。<span class=\"keyword\" onclick=\"showTooltip(event, '【今日は、その中から～】（今天将从中挑选……）：播音员用这句话直接点明了今天的节目内容。“その（那）”指代前文提到的“节约的各种窍门”。')\">今日は、その中から</span>毎日の生活の中で、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span>すぐ実践できることを紹介していただきます</span>ので、どうぞ、メモを用意してご覧ください。", 
-                                    trans: "（今天我们请到了山田美智子女士作为嘉宾。山田女士以生孩子为契机，当起了全职太太。因此家庭收入有所减少，自然而然地就开始了节约生活。据说现在她很享受各种省钱的小妙招，节约已经完全成了她的爱好。今天，她将从中挑选一些在日常生活中马上就能用得上的好办法介绍给大家，请大家准备好纸笔收看。）" 
+                                    text: "今日は山田美智子さんをゲストにお迎えいたしました。", 
+                                    trans: "（今天我们请到了山田美智子女士作为嘉宾。）" 
+                                },
+                                { 
+                                    speaker: "男", 
+                                    text: "山田さんは、お子さんが生まれたのをきっかけに、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"keyword\" onclick=\"showTooltip(event, '山田女士是成为“专业主妇”，而不是“继续工作”，因此排除。')\">専業主婦となられました。</span></span>", 
+                                    trans: "（山田女士以孩子出生为契机，成为了全职主妇。）" 
+                                },
+                                { 
+                                    speaker: "男", 
+                                    text: "そのため、家庭の収入が減り、自然と節約するようになったそうです。", 
+                                    trans: "（因此家庭收入减少了，据说她也自然而然地开始节约。）" 
+                                },
+                                { 
+                                    speaker: "男", 
+                                    text: "いまでは、いろいろと工夫するのが楽しく、すっかり節約が趣味になっているとのことです。", 
+                                    trans: "（现在，她觉得想各种办法节约很有趣，节约已经完全成了她的爱好。）" 
+                                },
+                                { 
+                                    speaker: "男", 
+                                    text: "<span class=\"keyword\" onclick=\"showTooltip(event, '【今日は、その中から～】（今天将从中挑选……）：播音员用这句话直接点明了今天的节目内容。“その（那）”指代前文提到的“节约的各种窍门”。')\">今日は、その中から</span>毎日の生活の中で、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span>すぐ実践できることを紹介していただきます</span>ので、どうぞ、メモを用意してご覧ください。", 
+                                    trans: "（今天，她将从中介绍一些日常生活中马上就能实践的方法，请大家准备好纸笔收看。）" 
+                                },
+                                {
+                                    speaker: "問題",
+                                    text: "この番組のテーマは何ですか。",
+                                    trans: "（这个节目的主题是什么？）"
                                 }
                             ]
                         },
@@ -266,13 +428,48 @@
                         id: 4,
                         audio: "../assets/audio/2010.7-4.mp3",
                         script: {
-                            question: "四番：大学のサークルのリーダーが話しています。リーダーの話の主な内容は何ですか。",
-                            questionTrans: "（一位大学社团的负责人在讲话。负责人讲话的主要内容是什么？）",
+                            question: "四番：大学のサークルのリーダーが話しています。",
+                            questionTrans: "（第四题：一位大学社团的负责人正在讲话。）",
                             dialogue: [
                                 { 
                                     speaker: "女", 
-                                    text: "土曜日は、小学生との交流会、お疲れ様でした。子供たちはみんな、とても楽しんでくれていましたよね。先生方や保護者の方も、高く評価してくださったようで、よかったです。<span class=\"keyword\" onclick=\"showTooltip(event, '【ただ】（但是/只不过）：转折接续词，常常用来引出讲话者的核心诉求或真正想强调的问题点。后面跟出的往往是对前面事情的反思或不足。')\">ただ</span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span>場所に問題があったようにおもいます。</span>最初は、広くて、動きやすくて、いいな、とおもっていたんですが、逆に広すぎて、子供たちと距離がありました。次回、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"opt-tag tag-wrong\">④</span><span class=\"keyword\" onclick=\"showTooltip(event, '提到圣诞派对是为了说明“要把这次反省的经验用到下次”，而不是目前在反思圣诞派触，毕竟派对还没有举办。')\">来月のクリスマスパーティでは</span>、内容だけじゃなく、このような点についても、気をつけたいとおもいます。</span>えー、みなさんは、何か気づいた点は<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span>ありませんか？</span>", 
-                                    trans: "（周六和小学生们的交流会，大家辛苦了。孩子们玩得都很开心呢。老师和家长们好像也给予了很高的评价，太好了。不过，我觉得场地好像有点问题。一开始觉得宽敞、好活动，挺不错的，但反而因为太宽敞了，和孩子们产生了距离感。下次，也就是下个月的圣诞派对上，不仅是内容，针对这些方面我也想多加注意。那个，大家有没有注意到什么其他的问题？）" 
+                                    text: "土曜日は、小学生との交流会、お疲れ様でした。", 
+                                    trans: "（周六与小学生的交流会，大家辛苦了。）" 
+                                },
+                                { 
+                                    speaker: "女", 
+                                    text: "子供たちはみんな、とても楽しんでくれていましたよね。", 
+                                    trans: "（孩子们都玩得很开心呢。）" 
+                                },
+                                { 
+                                    speaker: "女", 
+                                    text: "先生方や保護者の方も、高く評価してくださったようで、よかったです。", 
+                                    trans: "（老师和家长们似乎也给予了很高的评价，真是太好了。）" 
+                                },
+                                { 
+                                    speaker: "女", 
+                                    text: "<span class=\"keyword\" onclick=\"showTooltip(event, '【ただ】（但是/只不过）：转折接续词，常常用来引出讲话者的核心诉求或真正想强调的问题点。后面跟出的往往是对前面事情的反思或不足。')\">ただ</span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span>場所に問題があったようにおもいます。</span>", 
+                                    trans: "（不过，我觉得场地好像有些问题。）" 
+                                },
+                                { 
+                                    speaker: "女", 
+                                    text: "最初は、広くて、動きやすくて、いいな、とおもっていたんですが、逆に広すぎて、子供たちと距離がありました。", 
+                                    trans: "（起初觉得场地宽敞、便于活动，很不错，但反而因为太宽敞，和孩子们产生了距离感。）" 
+                                },
+                                { 
+                                    speaker: "女", 
+                                    text: "次回、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"opt-tag tag-wrong\">④</span><span class=\"keyword\" onclick=\"showTooltip(event, '提到圣诞派对是为了说明“要把这次反省的经验用到下次”，而不是目前在反思圣诞派对，毕竟派对还没有举办。')\">来月のクリスマスパーティでは</span>、内容だけじゃなく、このような点についても、気をつけたいとおもいます。</span>", 
+                                    trans: "（下次，也就是下个月的圣诞派对，不仅是内容，对这些方面我也想多加注意。）" 
+                                },
+                                { 
+                                    speaker: "女", 
+                                    text: "えー、みなさんは、何か気づいた点は<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span>ありませんか？</span>", 
+                                    trans: "（嗯，大家还有没有注意到什么问题？）" 
+                                },
+                                {
+                                    speaker: "問題",
+                                    text: "リーダーの話の主な内容は何ですか。",
+                                    trans: "（负责人的讲话主要讲了什么？）"
                                 }
                             ]
                         },
@@ -307,8 +504,8 @@
                         id: 5,
                         audio: "../assets/audio/2010.7-5.mp3",
                         script: {
-                            question: "五番：男の人と女の人が話しています。女の人は、新しい仕事について、どうおもっていますか。",
-                            questionTrans: "（男人和女人在交谈。女人对新工作有什么看法？）",
+                            question: "五番：男の人と女の人が話しています。",
+                            questionTrans: "（第五题：男人和女人正在交谈。）",
                             dialogue: [
                                 { 
                                     speaker: "男", 
@@ -329,6 +526,11 @@
                                     speaker: "女", 
                                     text: "うん。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span>前の会社はあまりいそがしくなかったから、その点はよかったけど、<span class=\"keyword\" onclick=\"showTooltip(event, '虽然提到了“单调”，但这说的是“以前的公司”，而不是现在的新工作，属于张冠李戴的干扰项。')\">単調だし</span>、誰でもできる仕事だったからねえ。</span>今は<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span>責任ある仕事をさせてもらえるから、それが、一番の魅力かな。<span class=\"keyword\" onclick=\"showTooltip(event, '【～だけど、～よ】（虽然...但是...）：逆接表达，重点往往在后半句。通过这句话直接点出了她对新工作的评价：虽然每天都很辛苦（对应选项的忙碌），但是很开心（对应选项的有趣）。')\">毎日大変だけど、楽しいよ。</span></span>", 
                                     trans: "（嗯。以前的公司不太忙，这点倒挺好，但是工作很单调，而且都是些谁都能干的活儿。现在能让我承担一些有责任的工作，这大概就是最大的魅力吧。虽然每天都很辛苦，但做得很开心哦。）" 
+                                },
+                                {
+                                    speaker: "問題",
+                                    text: "女の人は、新しい仕事について、どうおもっていますか。",
+                                    trans: "（女人对新工作有什么看法？）"
                                 }
                             ]
                         },
@@ -361,7 +563,7 @@
                     }
                 ]
             },
-            "N2-2010-12-Overview": {
+            "2010-12": {
                 label: "2010年12月 (N2)",
                 questions: [
                     {
@@ -578,10 +780,10 @@
             }
         };
 
-        let currentExamKey = "N2-2010-07-Overview"; 
+        let currentExamKey = "2010-07"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
-        const LISTENING_TYPE = 'overview-comprehension'; 
+        const LISTENING_TYPE = 'summary-comprehension'; 
         const LISTENING_LEVEL = 'n2';
 
         const listeningRewardHooks = window.StudyQuestListeningRewards && window.StudyQuestListeningRewards.create({
@@ -601,10 +803,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N2-${yearParam}-Overview` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -939,7 +1141,8 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
 </body>
 </html>

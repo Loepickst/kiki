@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261015-summary-n1-2011-07-9567f6844a80">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,142 +192,367 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
 <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2011-07-概要理解": {
-                label: "2011年7月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2011.07-1.mp3", 
-                        script: {
-                            question: "一番：テレビでレポーターが話しています。レポーターは主に何について伝えていますか。",
-                            questionTrans: "（第一题：在电视上记者正在讲话。记者主要在传达什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "はい。こちら、レポーターの山本です。今、私が来ているこの地域には、桜歌舞伎という伝統芸能があります。", trans: "（是的。这里是记者山本。现在，我所在的这个地区，有一种叫做“樱歌舞伎”的传统艺能（艺术表演）。）" },
-                                { speaker: "女", text: "３００年以上の歴史があり、長く人々に親しまれてきたのですが、実は、この伝統芸能、<span class=\"keyword\" onclick=\"showTooltip(event, '後継者（こうけいしゃ）：接班人，继承人。')\">後継者</span>不足で、一度<span class=\"keyword\" onclick=\"showTooltip(event, '存続（そんぞく）：存续，继续存在。')\">存続</span>が<span class=\"keyword\" onclick=\"showTooltip(event, '危（あや）ぶむ：担心，担忧。')\">危ぶまれた</span>ことがあるんです。", trans: "（它拥有300年以上的历史，长久以来深受人们喜爱，但实际上，这项传统艺能曾因为后继无人，一度面临存续危机。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '记者在此引出了整段报道的核心对象：【那时挺身而出的，竟然是在这个城镇上高中的高中生们（そのとき立ち上がったのが、なんと、この町の高校に通う高校生たちだったのです）】，并说明了他们【为了继承传统艺能……每天放学后都在反复练习（伝統芸能を継承し、歴史を受け継いでいこうと、放課後、練習を重ねています）】。这符合选项2的“传统艺能的继承”。')\">そのとき<span class=\"keyword\" onclick=\"showTooltip(event, '立（た）ち上（あ）がる：站起来，挺身而出。')\">立ち上がった</span>のが、なんと、この町の高校に通う高校生たちだったのです。伝統芸能を<span class=\"keyword\" onclick=\"showTooltip(event, '継承（けいしょう）：继承。')\">継承</span>し、歴史を<span class=\"keyword\" onclick=\"showTooltip(event, '受（う）け継（つ）ぐ：继承，接替。')\">受け継い</span>でいこうと、放課後、練習を重ねています。</span></span>", trans: "（那时挺身而出的，竟然是在这个城镇的高中上学的高中生们。为了继承传统艺能，将历史传承下去，他们每天放学后都在反复练习。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，记者在最后提到【镇上的人们好像也开始思考，这能不能促成城镇的活性化呢（町でも、これが町の活性化に繋がらないか考え始めたようです）】，但这只是高中生继承传统艺能可能带来的附加效果，并非这段报道的主要内容，可以排除。同时，文中并未着重探讨传统艺能本身的魅力或地区的历史，排除选项1和3。')\">伝統芸能の衰退が珍しくない中で、この高校生の<span class=\"keyword\" onclick=\"showTooltip(event, '奮闘（ふんとう）ぶり：奋斗的样子，努力的样子。')\">奮闘ぶりに</span>、町でも、これが町の活性化に繋がらないか考え始めたようです。</span></span>", trans: "（在传统艺能的衰退并不罕见的当下，看到这些高中生努力奋斗的样子，镇上的人们好像也开始思考，这能不能促成城镇的活性化呢。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "伝統芸能の魅力", translation: "（传统艺能的魅力）", correct: false },
-                            { text: "伝統芸能の継承", translation: "（传统艺能的继承）", correct: true },
-                            { text: "地域の歴史", translation: "（地区的历史）", correct: false },
-                            { text: "地域の活性化", translation: "（地区的活性化）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        audio: "../assets/audio/2011.07-2.mp3",
-                        script: {
-                            question: "二番：大学で先生がある国について話しています。先生はこの国の何について話していますか。",
-                            questionTrans: "（第二题：在大学里老师正在谈论某个国家。老师在谈论这个国家的什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "この国は、今、経済の<span class=\"keyword\" onclick=\"showTooltip(event, '転換期（てんかんき）：转折期，过渡期。')\">転換期</span>を迎えています。", trans: "（这个国家现在正迎来经济的转折期。）" },
-                                { speaker: "男", text: "この国の経済発展を支えているのは、地下に<span class=\"keyword\" onclick=\"showTooltip(event, '埋蔵（まいぞう）：埋藏，蕴藏。')\">埋蔵</span>されている豊富な天然資源です。", trans: "（支撑这个国家经济发展的是埋藏在地下丰富的天然资源。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，老师提到地下埋藏着丰富的资源，但也指出【埋藏着的资源是有限的（埋蔵されている資源には限りがあります）】，这只是为了引出后面的话题，并不是整段话探讨的核心，可以排除。')\">しかし、埋蔵されている資源には限りがあります。</span></span>", trans: "（但是，埋藏着的资源是有限的。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2和4，老师提到【如果就这样仅仅依赖资源输出，经济形势就会受到资源价格变动的极大左右（このまま資源の輸出だけに依存していると、資源価格の変動によって、経済情勢が大きく左右されてしまいます）】，这说明了现状的问题和隐患，并非倡导促进资源输出或单纯探讨价格变动，可以排除。')\">また、このまま資源の輸出だけに<span class=\"keyword\" onclick=\"showTooltip(event, '依存（いぞん）：依存，依赖。')\">依存</span>していると、資源価格の<span class=\"keyword\" onclick=\"showTooltip(event, '変動（へんどう）：变动，波动。')\">変動</span>によって、経済<span class=\"keyword\" onclick=\"showTooltip(event, '情勢（じょうせい）：形势，局势。')\">情勢</span>が大きく<span class=\"keyword\" onclick=\"showTooltip(event, '左右（さゆう）される：被左右，受影响。')\">左右されて</span>しまいます。</span></span>", trans: "（而且，如果就这样仅仅依赖资源的输出，经济形势就会受到资源价格变动的极大左右。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师在最后给出了应对现状的方案：【因此政府计划以通过资源输出获得的丰富外汇为基础，培育新的产业（そこで政府は……新しい産業を育成する計画を立てています）】。这段话从现状的问题引申出政府正在制定的新计划，整体上是在探讨该国今后的经济政策，符合选项1。')\">そこで政府は、資源の輸出で得られた豊富な<span class=\"keyword\" onclick=\"showTooltip(event, '外貨（がいか）：外汇，外币。')\">外貨</span>をもとに、新しい産業を<span class=\"keyword\" onclick=\"showTooltip(event, '育成（いくせい）：培育，扶植。')\">育成</span>する計画を立てています。</span></span>", trans: "（因此政府计划以通过资源输出获得的丰富外汇为基础，培育新的产业。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "今後の経済政策", translation: "（今后的经济政策）", correct: true },
-                            { text: "資源価格の変動", translation: "（资源价格的变动）", correct: false },
-                            { text: "地下資源の埋蔵量", translation: "（地下资源的蕴藏量）", correct: false },
-                            { text: "資源の輸出促進", translation: "（促进资源的输出）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        audio: "../assets/audio/2011.07-3.mp3",
-                        script: {
-                            question: "三番：テレビで男の人が話しています。男の人はどのようなテーマで話していますか。",
-                            questionTrans: "（第三题：在电视上男士正在讲话。男士在谈论什么样的主题？）",
-                            dialogue: [
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和2，男士通篇讨论的是店内的“音乐（音楽）”及其作用，并未探讨“噪音（騒音）”，可以排除。')\">私たちの周りには、毎日、いろんな音が<span class=\"keyword\" onclick=\"showTooltip(event, '溢（あふ）れる：充满，溢出。')\">溢れて</span>いますが、</span></span>スーパーや飲食店に行ったとき、店の中に流れている音楽を意識したことがありますか？ほとんどの人は特に気にしていないと思います。", trans: "（我们的周围每天都充满着各种各样的声音，但是去超市或餐饮店的时候，您有注意过店里播放的音乐吗？我想大部分人并没有特别在意。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男士明确指出了调查结果：【播放缓慢的音乐和播放节奏快的音乐，客人的行动会产生差异（ゆっくりした音楽を流した場合と、テンポの速い音楽を流した場合とでは、客の行動に差があることがわかりました）】，随后分别举了超市和餐饮店的例子来印证这一点。这符合选项3的“音乐和客人行动的关系”。')\">ある調査によると、ゆっくりした音楽を流した場合と、<span class=\"keyword\" onclick=\"showTooltip(event, 'テンポ（tempo）：节奏，拍子。')\">テンポ</span>の速い音楽を流した場合とでは、客の行動に差があることがわかりました。</span></span>", trans: "（根据一项调查，播放缓慢的音乐和播放节奏快的音乐，客人的行动会产生差异。）" },
-                                { speaker: "男", text: "スーパーなどでは、ゆっくりした音楽を流したときのほうが、客が店の中にいる時間が長くなり、売上が伸びるんだそうです。", trans: "（据说在超市等地方，播放缓慢音乐的时候，客人在店里停留的时间会变长，销售额也会增长。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，男士虽然提到了店里的音乐，但他关注的焦点是音乐导致客人停留时间长短或周转快慢的变化，即“客人的行动（客の行動）”，而不仅仅是营造“气氛（雰囲気）”，排除。')\">反対に、行列ができるような混んでいる飲食店では、テンポの速い音楽を流すことで、客の回転を速くすることができるんだそうです。</span></span>", trans: "（相反，在会排起长队的拥挤的餐饮店里，据说通过播放节奏快的音乐，可以加快客人的周转率。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "生活の中の騒音", translation: "（生活中的噪音）", correct: false },
-                            { text: "騒音と音楽の違い", translation: "（噪音和音乐的区别）", correct: false },
-                            { text: "音楽と客の行動の関係", translation: "（音乐和客人行动的关系）", correct: true },
-                            { text: "店の雰囲気と音楽", translation: "（店里的气氛和音乐）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        audio: "../assets/audio/2011.07-4.mp3",
-                        script: {
-                            question: "四番：テレビで農業の専門家がキノコについて話しています。専門家の話のテーマはなんですか。",
-                            questionTrans: "（第四题：在电视上，农业专家正在谈论蘑菇。专家谈话的主题是什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "キノコにはたくさんの種類がありますが、今日はその代表格であるシイタケについてお話ししたいと思います。", trans: "（蘑菇有很多种类，今天我想谈谈其中的代表——香菇。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，专家在开头提到香菇被用于炒菜和火锅等各种料理，但这只是为了引出后面的话题，并非整段话的中心主题，可以排除。')\">シイタケは炒め物や鍋物など、様々な料理に使われていますが</span></span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '专家明确抛出了今天的主题：【怎样栽培（香菇），可能不太为人所知（どのように栽培するかは、あまり知られていないかもしれません）】。这预示着接下来的内容都是关于香菇的培育，符合选项2。')\">どのように栽培するかは、あまり知られていないかもしれません。</span></span>", trans: "（香菇被用于炒菜、火锅等各种料理中，但怎样栽培它，可能就不太为人所知了。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，专家说的是【为了收获优质的香菇，使用木头的方法比较好（質の良いシイタケを収穫するには木を使う方法が良いでしょう）】，也就是培育优质香菇的方法，而不是如何挑选（選び方），排除。')\">質の良いシイタケを収穫するには木を使う方法が良いでしょう。</span></span>", trans: "（为了收获优质的香菇，使用木头的方法比较好吧。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着专家详细介绍了具体的培育步骤和条件，包括【把香菇菌植入木头里，避免干燥，保持充足的湿度（シイタケ菌を木に植えつけ、乾燥を避け、十分な湿度を保つ）】以及【生长需要保持在10度到30度之间（生育には10度から30度の間を保つことが必要）】等。通篇都在讲解如何种植香菇，符合选项2“香菇的培育方法”。（文中并未提及如何保存，也可排除选项4）')\">えー、シイタケはシイタケ菌を木に<span class=\"keyword\" onclick=\"showTooltip(event, '植（う）えつける：种植，培植。')\">植えつけ</span>、乾燥を避け、十分な湿度を保つと生えてきます。生育には10度から30度の間を保つことが必要とされるので、春か秋が適した季節と言えます。</span></span>生えてから2週間程度で収穫できる大きさになるでしょう。", trans: "（嗯，把香菇菌植入木头里，避免干燥，保持充足的湿度，香菇就会长出来。因为它的生长需要保持在10度到30度之间，所以可以说春季或秋季是适合的季节。长出来之后大约2周左右，就能长到可以收获的大小了。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "質のいいシイタケの選び方", translation: "（挑选优质香菇的方法）", correct: false },
-                            { text: "シイタケの育て方", translation: "（香菇的培育方法）", correct: true },
-                            { text: "シイタケの調理方法", translation: "（香菇的烹饪方法）", correct: false },
-                            { text: "シイタケの保存方法", translation: "（香菇的保存方法）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        audio: "../assets/audio/2011.07-5.mp3",
-                        script: {
-                            question: "五番：大学の授業で先生が話しています。今学期の授業のテーマはどのようなことですか。",
-                            questionTrans: "（第五题：在大学课堂上老师正在讲话。本学期课程的主题是什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "ええ、今日は初回なので、今学期の授業内容について簡単に説明します。", trans: "（嗯，今天因为是第一节课，所以我简单说明一下本学期的授课内容。）" },
-                                { speaker: "男", text: "この授業では<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，老师指出虽然关注最新科学技术，但【并不是把科学技术当做很难的东西来理解（科学技術を難しくとらえるのではなく）】，而是看它如何有用于生活，因此排除“科学的最新理论”。')\">最新の科学技術に注目します。といっても、科学技術を難しくとらえるのではなく</span></span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师在开篇和结尾两次点明主题：【我们将看看（最新科学技术）在生活中是如何发挥作用的（生活の中でどのように役立っているか見ていきます）】，以及【最新的科学技术，是和我们的生活深深联系在一起的（最新の科学技術は、私たちの生活に深く結びついているのです）】，这完全符合选项2的“对生活有用的科学技术”。')\">生活の中でどのように<span class=\"keyword\" onclick=\"showTooltip(event, '役立（やくだ）つ：起作用，有用。')\">役立っている</span>か見ていきます。</span></span>", trans: "（这门课我们将关注最新的科学技术。虽说如此，并不是把科学技术当做很难的东西来理解，而是我们将看看它在生活中是如何发挥作用的。）" },
-                                { speaker: "男", text: "例えば、最近ニュースなどで<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，【老龄化社会的问题（高齢化社会の問題）】只是老师为了说明科学技术有用而举的一个“例子（例えば）”，并非整个学期的课程主题，排除。')\">高齢化社会の問題が<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り上（あ）げる：采纳，报道，提及。')\">取り上げられています</span>ね。</span></span>日本の場合、2055年には65歳以上の高齢者が人口の40パーセントを超えると<span class=\"keyword\" onclick=\"showTooltip(event, '予測（よそく）：预测。')\">予測</span>されていますが、その時に、介護や福祉を<span class=\"keyword\" onclick=\"showTooltip(event, '担（にな）う：承担，担负。')\">担う</span>労働力をどう確保するかが問題です。", trans: "（比如，最近新闻等经常报道老龄化社会的问题。就日本而言，预测到2055年，65岁以上的老年人将超过人口的40%，到那时，如何确保承担护理和福利的劳动力是个问题。）" },
-                                { speaker: "男", text: "ええー、そこで、高齢者の暮らしを支えると期待されているのが現在開発中の<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，【开发中的护理机器人（開発中の介護ロボット）】是用来应对老龄化问题而举出的具体科技实例，【关于被用于这类机器人中的技术，今天我们来看看（今日は、このようなロボットに使われている技術について……）】说明这只是“今天”这堂课的切入点，而不是“本学期”的总主题，排除。')\">介護ロボットです。</span></span>", trans: "（嗯，因此，被期待能支撑老年人生活的就是目前正在开发中的护理机器人。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '（见上方关于选项2的解析）')\">最新の科学技術は、私たちの生活に深く<span class=\"keyword\" onclick=\"showTooltip(event, '結（むす）びつく：结合，联系。')\">結びついている</span>のです。</span></span>ええー、では今日は、このようなロボットに使われている技術について見てみたいと思います。", trans: "（最新的科学技术，是和我们的生活深深联系在一起的。嗯，那么今天，我们就来看看被用于这类机器人中的技术。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "科学の最新理論", translation: "（科学的最新理论）", correct: false },
-                            { text: "生活に役立つ科学技術", translation: "（对生活有用的科学技术）", correct: true },
-                            { text: "高齢化社会の問題", translation: "（老龄化社会的问题）", correct: false },
-                            { text: "介護ロボットの開発の課題", translation: "（护理机器人的开发课题）", correct: false }
-                        ]
-                    },
-
-                    {
-                        id: 6,
-                        audio: "../assets/audio/2011.07-6.mp3",
-                        script: {
-                            question: "六番：会議で女の人が男の人に意見を聞いています。男の人はどう考えていますか。",
-                            questionTrans: "（第六题：在会议上，女人正在询问男人的意见。男人是怎么考虑的？）",
-                            dialogue: [
-                                { speaker: "女", text: "では、新しい<span class=\"keyword\" onclick=\"showTooltip(event, '店舗（てんぽ）：店铺，商店。')\">店舗</span>の<span class=\"keyword\" onclick=\"showTooltip(event, '設置（せっち）：设置，设立。')\">設置</span>とメニュー価格の<span class=\"keyword\" onclick=\"showTooltip(event, '値上（ねあ）げ：涨价，提价。')\">値上げ</span>についてご意見をお願いします。", trans: "（那么，关于开设新店铺和菜单涨价的事情，请大家发表一下意见。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在前半段明确表示【关于开设新店铺，我认为应该积极推进（新店舗の設置についてですが、私は積極的に行くべきだと考えます）】，这说明他赞成开设新店。可以排除选项2和4。')\">まず、新店舗の設置についてですが、私は<span class=\"keyword\" onclick=\"showTooltip(event, '積極的（せっきょくてき）：积极的。')\">積極的に</span>行くべきだと考えます。</span></span>この地区には<span class=\"keyword\" onclick=\"showTooltip(event, '競合（きょうごう）：竞争。')\">競合</span>するレストランがいくつもあるので、<span class=\"keyword\" onclick=\"showTooltip(event, '避（さ）ける：避开，回避。')\">避けた</span>ほうがいいという考え方もできると思いますが、駅前の<span class=\"keyword\" onclick=\"showTooltip(event, '開発事業（かいはつじぎょう）：开发事业，开发项目。')\">開発事業</span>なども進んでいますので、メニューやサービスで<span class=\"keyword\" onclick=\"showTooltip(event, '差別化（さべつか）：差异化，区别化。')\">差別化</span>を<span class=\"keyword\" onclick=\"showTooltip(event, '図（はか）る：谋求，企图。')\">図れば</span>、お客の<span class=\"keyword\" onclick=\"showTooltip(event, '獲得（かくとく）：获得，获取。')\">獲得</span>は<span class=\"keyword\" onclick=\"showTooltip(event, '見込（みこ）める：有希望，能预料。')\">見込める</span>地域だと考えます。", trans: "（首先，关于开设新店铺，我认为应该积极推进。虽然这个地区有好几家竞争的餐厅，也可以认为避开比较好，但站前的开发项目等也在推进，因此我认为只要在菜单和服务上谋求差异化，这个地区是有望获得客源的。）" },
-                                { speaker: "男", text: "で、もう一つの<span class=\"keyword\" onclick=\"showTooltip(event, '議題（ぎだい）：议题，会议主题。')\">議題</span>の、コストの<span class=\"keyword\" onclick=\"showTooltip(event, '上昇（じょうしょう）：上升，上涨。')\">上昇</span>によるメニュー価格の値上げについては、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '在后半段，关于菜单涨价的问题，他表示考虑到近来的经济动向，【反而应该控制价格，谋求与其他公司店铺的差异化（むしろ価格を抑えて、ほかの会社の店舗との差別化を図るべきだ）】，这说明他反对涨价。综合前半段，这符合选项3。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '昨今（さっこん）：近来，最近。')\">昨今</span>の<span class=\"keyword\" onclick=\"showTooltip(event, '景気（けいき）：景气，经济状况。')\">景気</span>の<span class=\"keyword\" onclick=\"showTooltip(event, '動向（どうこう）：动向，动静。')\">動向</span>を<span class=\"keyword\" onclick=\"showTooltip(event, '考慮（こうりょ）：考虑。')\">考慮</span>すれば、<span class=\"keyword\" onclick=\"showTooltip(event, 'むしろ：反而，不如。')\">むしろ</span>価格を<span class=\"keyword\" onclick=\"showTooltip(event, '抑（おさ）える：控制，抑制，压制。')\">抑えて</span>、ほかの会社の店舗との差別化を図るべきだと思います。</span></span>", trans: "（然后，关于另一个议题，也就是由于成本上升导致的菜单涨价，考虑到近来的经济动向，我认为反而应该控制价格，谋求与其他公司店铺的差异化。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "店舗の新設には賛成、値上げにも賛成", translation: "（赞成开设新店，也赞成涨价）", correct: false },
-                            { text: "店舗の新設にも値上げにも反対", translation: "（既反对开设新店，也反对涨价）", correct: false },
-                            { text: "店舗の新設は賛成、値上げは反対", translation: "（赞成开设新店，反对涨价）", correct: true },
-                            { text: "店舗の新設は反対、値上げは賛成", translation: "（反对开设新店，赞成涨价）", correct: false }
-                        ]
-                    }
-                ]
+  "2011-07": {
+    "label": "2011年7月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2011.07-1.mp3",
+        "script": {
+          "question": "テレビでレポーターが話しています。",
+          "questionTrans": "（在电视上记者正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "はい。こちら、レポーターの山本です。今、私が来ているこの地域には、桜歌舞伎という伝統芸能があります。",
+              "trans": "（是的。这里是记者山本。现在，我所在的这个地区，有一种叫做“樱歌舞伎”的传统艺能（艺术表演）。）"
+            },
+            {
+              "speaker": "女",
+              "text": "３００年以上の歴史があり、長く人々に親しまれてきたのですが、実は、この伝統芸能、<span class=\"keyword\" onclick=\"showTooltip(event, '後継者（こうけいしゃ）：接班人，继承人。')\">後継者</span>不足で、一度<span class=\"keyword\" onclick=\"showTooltip(event, '存続（そんぞく）：存续，继续存在。')\">存続</span>が<span class=\"keyword\" onclick=\"showTooltip(event, '危（あや）ぶむ：担心，担忧。')\">危ぶまれた</span>ことがあるんです。",
+              "trans": "（它拥有300年以上的历史，长久以来深受人们喜爱，但实际上，这项传统艺能曾因为后继无人，一度面临存续危机。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '记者在此引出了整段报道的核心对象：【那时挺身而出的，竟然是在这个城镇上高中的高中生们（そのとき立ち上がったのが、なんと、この町の高校に通う高校生たちだったのです）】，并说明了他们【为了继承传统艺能……每天放学后都在反复练习（伝統芸能を継承し、歴史を受け継いでいこうと、放課後、練習を重ねています）】。这符合选项2的“传统艺能的继承”。')\">そのとき<span class=\"keyword\" onclick=\"showTooltip(event, '立（た）ち上（あ）がる：站起来，挺身而出。')\">立ち上がった</span>のが、なんと、この町の高校に通う高校生たちだったのです。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '记者在此引出了整段报道的核心对象：【那时挺身而出的，竟然是在这个城镇上高中的高中生们（そのとき立ち上がったのが、なんと、この町の高校に通う高校生たちだったのです）】，并说明了他们【为了继承传统艺能……每天放学后都在反复练习（伝統芸能を継承し、歴史を受け継いでいこうと、放課後、練習を重ねています）】。这符合选项2的“传统艺能的继承”。')\">伝統芸能を<span class=\"keyword\" onclick=\"showTooltip(event, '継承（けいしょう）：继承。')\">継承</span>し、歴史を<span class=\"keyword\" onclick=\"showTooltip(event, '受（う）け継（つ）ぐ：继承，接替。')\">受け継い</span>でいこうと、放課後、練習を重ねています。</span></span>",
+              "trans": "（那时挺身而出的，竟然是在这个城镇的高中上学的高中生们。为了继承传统艺能，将历史传承下去，他们每天放学后都在反复练习。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，记者在最后提到【镇上的人们好像也开始思考，这能不能促成城镇的活性化呢（町でも、これが町の活性化に繋がらないか考え始めたようです）】，但这只是高中生继承传统艺能可能带来的附加效果，并非这段报道的主要内容，可以排除。同时，文中并未着重探讨传统艺能本身的魅力或地区的历史，排除选项1和3。')\">伝統芸能の衰退が珍しくない中で、この高校生の<span class=\"keyword\" onclick=\"showTooltip(event, '奮闘（ふんとう）ぶり：奋斗的样子，努力的样子。')\">奮闘ぶりに</span>、町でも、これが町の活性化に繋がらないか考え始めたようです。</span></span>",
+              "trans": "（在传统艺能的衰退并不罕见的当下，看到这些高中生努力奋斗的样子，镇上的人们好像也开始思考，这能不能促成城镇的活性化呢。）"
+            },
+            {
+              "speaker": "問",
+              "text": "レポーターは主に何について伝えていますか。",
+              "trans": "（记者主要在传达什么？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "伝統芸能の魅力",
+            "translation": "（传统艺能的魅力）",
+            "correct": false
+          },
+          {
+            "text": "伝統芸能の継承",
+            "translation": "（传统艺能的继承）",
+            "correct": true
+          },
+          {
+            "text": "地域の歴史",
+            "translation": "（地区的历史）",
+            "correct": false
+          },
+          {
+            "text": "地域の活性化",
+            "translation": "（地区的活性化）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2011.07-2.mp3",
+        "script": {
+          "question": "大学で先生がある国について話しています。",
+          "questionTrans": "（在大学里老师正在谈论某个国家。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "この国は、今、経済の<span class=\"keyword\" onclick=\"showTooltip(event, '転換期（てんかんき）：转折期，过渡期。')\">転換期</span>を迎えています。",
+              "trans": "（这个国家现在正迎来经济的转折期。）"
+            },
+            {
+              "speaker": "男",
+              "text": "この国の経済発展を支えているのは、地下に<span class=\"keyword\" onclick=\"showTooltip(event, '埋蔵（まいぞう）：埋藏，蕴藏。')\">埋蔵</span>されている豊富な天然資源です。",
+              "trans": "（支撑这个国家经济发展的是埋藏在地下丰富的天然资源。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，老师提到地下埋藏着丰富的资源，但也指出【埋藏着的资源是有限的（埋蔵されている資源には限りがあります）】，这只是为了引出后面的话题，并不是整段话探讨的核心，可以排除。')\">しかし、埋蔵されている資源には限りがあります。</span></span>",
+              "trans": "（但是，埋藏着的资源是有限的。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2和4，老师提到【如果就这样仅仅依赖资源输出，经济形势就会受到资源价格变动的极大左右（このまま資源の輸出だけに依存していると、資源価格の変動によって、経済情勢が大きく左右されてしまいます）】，这说明了现状的问题和隐患，并非倡导促进资源输出或单纯探讨价格变动，可以排除。')\">また、このまま資源の輸出だけに<span class=\"keyword\" onclick=\"showTooltip(event, '依存（いぞん）：依存，依赖。')\">依存</span>していると、資源価格の<span class=\"keyword\" onclick=\"showTooltip(event, '変動（へんどう）：变动，波动。')\">変動</span>によって、経済<span class=\"keyword\" onclick=\"showTooltip(event, '情勢（じょうせい）：形势，局势。')\">情勢</span>が大きく<span class=\"keyword\" onclick=\"showTooltip(event, '左右（さゆう）される：被左右，受影响。')\">左右されて</span>しまいます。</span></span>",
+              "trans": "（而且，如果就这样仅仅依赖资源的输出，经济形势就会受到资源价格变动的极大左右。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师在最后给出了应对现状的方案：【因此政府计划以通过资源输出获得的丰富外汇为基础，培育新的产业（そこで政府は……新しい産業を育成する計画を立てています）】。这段话从现状的问题引申出政府正在制定的新计划，整体上是在探讨该国今后的经济政策，符合选项1。')\">そこで政府は、資源の輸出で得られた豊富な<span class=\"keyword\" onclick=\"showTooltip(event, '外貨（がいか）：外汇，外币。')\">外貨</span>をもとに、新しい産業を<span class=\"keyword\" onclick=\"showTooltip(event, '育成（いくせい）：培育，扶植。')\">育成</span>する計画を立てています。</span></span>",
+              "trans": "（因此政府计划以通过资源输出获得的丰富外汇为基础，培育新的产业。）"
+            },
+            {
+              "speaker": "問",
+              "text": "先生はこの国の何について話していますか。",
+              "trans": "（老师在谈论这个国家的什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "今後の経済政策",
+            "translation": "（今后的经济政策）",
+            "correct": true
+          },
+          {
+            "text": "資源価格の変動",
+            "translation": "（资源价格的变动）",
+            "correct": false
+          },
+          {
+            "text": "地下資源の埋蔵量",
+            "translation": "（地下资源的蕴藏量）",
+            "correct": false
+          },
+          {
+            "text": "資源の輸出促進",
+            "translation": "（促进资源的输出）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2011.07-3.mp3",
+        "script": {
+          "question": "テレビで男の人が話しています。",
+          "questionTrans": "（在电视上男士正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和2，男士通篇讨论的是店内的“音乐（音楽）”及其作用，并未探讨“噪音（騒音）”，可以排除。')\">私たちの周りには、毎日、いろんな音が<span class=\"keyword\" onclick=\"showTooltip(event, '溢（あふ）れる：充满，溢出。')\">溢れて</span>いますが、</span></span>スーパーや飲食店に行ったとき、店の中に流れている音楽を意識したことがありますか？ほとんどの人は特に気にしていないと思います。",
+              "trans": "（我们的周围每天都充满着各种各样的声音，但是去超市或餐饮店的时候，您有注意过店里播放的音乐吗？我想大部分人并没有特别在意。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男士明确指出了调查结果：【播放缓慢的音乐和播放节奏快的音乐，客人的行动会产生差异（ゆっくりした音楽を流した場合と、テンポの速い音楽を流した場合とでは、客の行動に差があることがわかりました）】，随后分别举了超市和餐饮店的例子来印证这一点。这符合选项3的“音乐和客人行动的关系”。')\">ある調査によると、ゆっくりした音楽を流した場合と、<span class=\"keyword\" onclick=\"showTooltip(event, 'テンポ（tempo）：节奏，拍子。')\">テンポ</span>の速い音楽を流した場合とでは、客の行動に差があることがわかりました。</span></span>",
+              "trans": "（根据一项调查，播放缓慢的音乐和播放节奏快的音乐，客人的行动会产生差异。）"
+            },
+            {
+              "speaker": "男",
+              "text": "スーパーなどでは、ゆっくりした音楽を流したときのほうが、客が店の中にいる時間が長くなり、売上が伸びるんだそうです。",
+              "trans": "（据说在超市等地方，播放缓慢音乐的时候，客人在店里停留的时间会变长，销售额也会增长。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，男士虽然提到了店里的音乐，但他关注的焦点是音乐导致客人停留时间长短或周转快慢的变化，即“客人的行动（客の行動）”，而不仅仅是营造“气氛（雰囲気）”，排除。')\">反対に、行列ができるような混んでいる飲食店では、テンポの速い音楽を流すことで、客の回転を速くすることができるんだそうです。</span></span>",
+              "trans": "（相反，在会排起长队的拥挤的餐饮店里，据说通过播放节奏快的音乐，可以加快客人的周转率。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人はどのようなテーマで話していますか。",
+              "trans": "（男士在谈论什么样的主题？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "生活の中の騒音",
+            "translation": "（生活中的噪音）",
+            "correct": false
+          },
+          {
+            "text": "騒音と音楽の違い",
+            "translation": "（噪音和音乐的区别）",
+            "correct": false
+          },
+          {
+            "text": "音楽と客の行動の関係",
+            "translation": "（音乐和客人行动的关系）",
+            "correct": true
+          },
+          {
+            "text": "店の雰囲気と音楽",
+            "translation": "（店里的气氛和音乐）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2011.07-4.mp3",
+        "script": {
+          "question": "テレビで農業の専門家がキノコについて話しています。",
+          "questionTrans": "（在电视上，农业专家正在谈论蘑菇。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "キノコにはたくさんの種類がありますが、今日はその代表格であるシイタケについてお話ししたいと思います。",
+              "trans": "（蘑菇有很多种类，今天我想谈谈其中的代表——香菇。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，专家在开头提到香菇被用于炒菜和火锅等各种料理，但这只是为了引出后面的话题，并非整段话的中心主题，可以排除。')\">シイタケは炒め物や鍋物など、様々な料理に使われていますが</span></span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '专家明确抛出了今天的主题：【怎样栽培（香菇），可能不太为人所知（どのように栽培するかは、あまり知られていないかもしれません）】。这预示着接下来的内容都是关于香菇的培育，符合选项2。')\">どのように栽培するかは、あまり知られていないかもしれません。</span></span>",
+              "trans": "（香菇被用于炒菜、火锅等各种料理中，但怎样栽培它，可能就不太为人所知了。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，专家说的是【为了收获优质的香菇，使用木头的方法比较好（質の良いシイタケを収穫するには木を使う方法が良いでしょう）】，也就是培育优质香菇的方法，而不是如何挑选（選び方），排除。')\">質の良いシイタケを収穫するには木を使う方法が良いでしょう。</span></span>",
+              "trans": "（为了收获优质的香菇，使用木头的方法比较好吧。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着专家详细介绍了具体的培育步骤和条件，包括【把香菇菌植入木头里，避免干燥，保持充足的湿度（シイタケ菌を木に植えつけ、乾燥を避け、十分な湿度を保つ）】以及【生长需要保持在10度到30度之间（生育には10度から30度の間を保つことが必要）】等。通篇都在讲解如何种植香菇，符合选项2“香菇的培育方法”。（文中并未提及如何保存，也可排除选项4）')\">えー、シイタケはシイタケ菌を木に<span class=\"keyword\" onclick=\"showTooltip(event, '植（う）えつける：种植，培植。')\">植えつけ</span>、乾燥を避け、十分な湿度を保つと生えてきます。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着专家详细介绍了具体的培育步骤和条件，包括【把香菇菌植入木头里，避免干燥，保持充足的湿度（シイタケ菌を木に植えつけ、乾燥を避け、十分な湿度を保つ）】以及【生长需要保持在10度到30度之间（生育には10度から30度の間を保つことが必要）】等。通篇都在讲解如何种植香菇，符合选项2“香菇的培育方法”。（文中并未提及如何保存，也可排除选项4）')\">生育には10度から30度の間を保つことが必要とされるので、春か秋が適した季節と言えます。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '接着专家详细介绍了具体的培育步骤和条件，包括【把香菇菌植入木头里，避免干燥，保持充足的湿度（シイタケ菌を木に植えつけ、乾燥を避け、十分な湿度を保つ）】以及【生长需要保持在10度到30度之间（生育には10度から30度の間を保つことが必要）】等。通篇都在讲解如何种植香菇，符合选项2“香菇的培育方法”。（文中并未提及如何保存，也可排除选项4）')\"></span></span>生えてから2週間程度で収穫できる大きさになるでしょう。",
+              "trans": "（嗯，把香菇菌植入木头里，避免干燥，保持充足的湿度，香菇就会长出来。因为它的生长需要保持在10度到30度之间，所以可以说春季或秋季是适合的季节。长出来之后大约2周左右，就能长到可以收获的大小了。）"
+            },
+            {
+              "speaker": "問",
+              "text": "専門家の話のテーマはなんですか。",
+              "trans": "（专家谈话的主题是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "質のいいシイタケの選び方",
+            "translation": "（挑选优质香菇的方法）",
+            "correct": false
+          },
+          {
+            "text": "シイタケの育て方",
+            "translation": "（香菇的培育方法）",
+            "correct": true
+          },
+          {
+            "text": "シイタケの調理方法",
+            "translation": "（香菇的烹饪方法）",
+            "correct": false
+          },
+          {
+            "text": "シイタケの保存方法",
+            "translation": "（香菇的保存方法）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2011.07-5.mp3",
+        "script": {
+          "question": "大学の授業で先生が話しています。",
+          "questionTrans": "（在大学课堂上老师正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "ええ、今日は初回なので、今学期の授業内容について簡単に説明します。",
+              "trans": "（嗯，今天因为是第一节课，所以我简单说明一下本学期的授课内容。）"
+            },
+            {
+              "speaker": "男",
+              "text": "この授業では<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，老师指出虽然关注最新科学技术，但【并不是把科学技术当做很难的东西来理解（科学技術を難しくとらえるのではなく）】，而是看它如何有用于生活，因此排除“科学的最新理论”。')\">最新の科学技術に注目します。</span></span><span class=\"highlight-wrong\"><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，老师指出虽然关注最新科学技术，但【并不是把科学技术当做很难的东西来理解（科学技術を難しくとらえるのではなく）】，而是看它如何有用于生活，因此排除“科学的最新理论”。')\">といっても、科学技術を難しくとらえるのではなく</span></span>、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师在开篇和结尾两次点明主题：【我们将看看（最新科学技术）在生活中是如何发挥作用的（生活の中でどのように役立っているか見ていきます）】，以及【最新的科学技术，是和我们的生活深深联系在一起的（最新の科学技術は、私たちの生活に深く結びついているのです）】，这完全符合选项2的“对生活有用的科学技术”。')\">生活の中でどのように<span class=\"keyword\" onclick=\"showTooltip(event, '役立（やくだ）つ：起作用，有用。')\">役立っている</span>か見ていきます。</span></span>",
+              "trans": "（这门课我们将关注最新的科学技术。虽说如此，并不是把科学技术当做很难的东西来理解，而是我们将看看它在生活中是如何发挥作用的。）"
+            },
+            {
+              "speaker": "男",
+              "text": "例えば、最近ニュースなどで<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，【老龄化社会的问题（高齢化社会の問題）】只是老师为了说明科学技术有用而举的一个“例子（例えば）”，并非整个学期的课程主题，排除。')\">高齢化社会の問題が<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り上（あ）げる：采纳，报道，提及。')\">取り上げられています</span>ね。</span></span><span class=\"highlight-wrong\"><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，【老龄化社会的问题（高齢化社会の問題）】只是老师为了说明科学技术有用而举的一个“例子（例えば）”，并非整个学期的课程主题，排除。')\"></span></span>日本の場合、2055年には65歳以上の高齢者が人口の40パーセントを超えると<span class=\"keyword\" onclick=\"showTooltip(event, '予測（よそく）：预测。')\">予測</span>されていますが、その時に、介護や福祉を<span class=\"keyword\" onclick=\"showTooltip(event, '担（にな）う：承担，担负。')\">担う</span>労働力をどう確保するかが問題です。",
+              "trans": "（比如，最近新闻等经常报道老龄化社会的问题。就日本而言，预测到2055年，65岁以上的老年人将超过人口的40%，到那时，如何确保承担护理和福利的劳动力是个问题。）"
+            },
+            {
+              "speaker": "男",
+              "text": "ええー、そこで、高齢者の暮らしを支えると期待されているのが現在開発中の<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，【开发中的护理机器人（開発中の介護ロボット）】是用来应对老龄化问题而举出的具体科技实例，【关于被用于这类机器人中的技术，今天我们来看看（今日は、このようなロボットに使われている技術について……）】说明这只是“今天”这堂课的切入点，而不是“本学期”的总主题，排除。')\">介護ロボットです。</span></span>",
+              "trans": "（嗯，因此，被期待能支撑老年人生活的就是目前正在开发中的护理机器人。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '（见上方关于选项2的解析）')\">最新の科学技術は、私たちの生活に深く<span class=\"keyword\" onclick=\"showTooltip(event, '結（むす）びつく：结合，联系。')\">結びついている</span>のです。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '（见上方关于选项2的解析）')\"></span></span>ええー、では今日は、このようなロボットに使われている技術について見てみたいと思います。",
+              "trans": "（最新的科学技术，是和我们的生活深深联系在一起的。嗯，那么今天，我们就来看看被用于这类机器人中的技术。）"
+            },
+            {
+              "speaker": "問",
+              "text": "今学期の授業のテーマはどのようなことですか。",
+              "trans": "（本学期课程的主题是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "科学の最新理論",
+            "translation": "（科学的最新理论）",
+            "correct": false
+          },
+          {
+            "text": "生活に役立つ科学技術",
+            "translation": "（对生活有用的科学技术）",
+            "correct": true
+          },
+          {
+            "text": "高齢化社会の問題",
+            "translation": "（老龄化社会的问题）",
+            "correct": false
+          },
+          {
+            "text": "介護ロボットの開発の課題",
+            "translation": "（护理机器人的开发课题）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "audio": "../assets/audio/2011.07-6.mp3",
+        "script": {
+          "question": "会議で女の人が男の人に意見を聞いています。",
+          "questionTrans": "（在会议上，女人正在询问男人的意见。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "では、新しい<span class=\"keyword\" onclick=\"showTooltip(event, '店舗（てんぽ）：店铺，商店。')\">店舗</span>の<span class=\"keyword\" onclick=\"showTooltip(event, '設置（せっち）：设置，设立。')\">設置</span>とメニュー価格の<span class=\"keyword\" onclick=\"showTooltip(event, '値上（ねあ）げ：涨价，提价。')\">値上げ</span>についてご意見をお願いします。",
+              "trans": "（那么，关于开设新店铺和菜单涨价的事情，请大家发表一下意见。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在前半段明确表示【关于开设新店铺，我认为应该积极推进（新店舗の設置についてですが、私は積極的に行くべきだと考えます）】，这说明他赞成开设新店。可以排除选项2和4。')\">まず、新店舗の設置についてですが、私は<span class=\"keyword\" onclick=\"showTooltip(event, '積極的（せっきょくてき）：积极的。')\">積極的に</span>行くべきだと考えます。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人在前半段明确表示【关于开设新店铺，我认为应该积极推进（新店舗の設置についてですが、私は積極的に行くべきだと考えます）】，这说明他赞成开设新店。可以排除选项2和4。')\"></span></span>この地区には<span class=\"keyword\" onclick=\"showTooltip(event, '競合（きょうごう）：竞争。')\">競合</span>するレストランがいくつもあるので、<span class=\"keyword\" onclick=\"showTooltip(event, '避（さ）ける：避开，回避。')\">避けた</span>ほうがいいという考え方もできると思いますが、駅前の<span class=\"keyword\" onclick=\"showTooltip(event, '開発事業（かいはつじぎょう）：开发事业，开发项目。')\">開発事業</span>なども進んでいますので、メニューやサービスで<span class=\"keyword\" onclick=\"showTooltip(event, '差別化（さべつか）：差异化，区别化。')\">差別化</span>を<span class=\"keyword\" onclick=\"showTooltip(event, '図（はか）る：谋求，企图。')\">図れば</span>、お客の<span class=\"keyword\" onclick=\"showTooltip(event, '獲得（かくとく）：获得，获取。')\">獲得</span>は<span class=\"keyword\" onclick=\"showTooltip(event, '見込（みこ）める：有希望，能预料。')\">見込める</span>地域だと考えます。",
+              "trans": "（首先，关于开设新店铺，我认为应该积极推进。虽然这个地区有好几家竞争的餐厅，也可以认为避开比较好，但站前的开发项目等也在推进，因此我认为只要在菜单和服务上谋求差异化，这个地区是有望获得客源的。）"
+            },
+            {
+              "speaker": "男",
+              "text": "で、もう一つの<span class=\"keyword\" onclick=\"showTooltip(event, '議題（ぎだい）：议题，会议主题。')\">議題</span>の、コストの<span class=\"keyword\" onclick=\"showTooltip(event, '上昇（じょうしょう）：上升，上涨。')\">上昇</span>によるメニュー価格の値上げについては、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '在后半段，关于菜单涨价的问题，他表示考虑到近来的经济动向，【反而应该控制价格，谋求与其他公司店铺的差异化（むしろ価格を抑えて、ほかの会社の店舗との差別化を図るべきだ）】，这说明他反对涨价。综合前半段，这符合选项3。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '昨今（さっこん）：近来，最近。')\">昨今</span>の<span class=\"keyword\" onclick=\"showTooltip(event, '景気（けいき）：景气，经济状况。')\">景気</span>の<span class=\"keyword\" onclick=\"showTooltip(event, '動向（どうこう）：动向，动静。')\">動向</span>を<span class=\"keyword\" onclick=\"showTooltip(event, '考慮（こうりょ）：考虑。')\">考慮</span>すれば、<span class=\"keyword\" onclick=\"showTooltip(event, 'むしろ：反而，不如。')\">むしろ</span>価格を<span class=\"keyword\" onclick=\"showTooltip(event, '抑（おさ）える：控制，抑制，压制。')\">抑えて</span>、ほかの会社の店舗との差別化を図るべきだと思います。</span></span>",
+              "trans": "（然后，关于另一个议题，也就是由于成本上升导致的菜单涨价，考虑到近来的经济动向，我认为反而应该控制价格，谋求与其他公司店铺的差异化。）"
+            },
+            {
+              "speaker": "問",
+              "text": "男の人はどう考えていますか。",
+              "trans": "（男人是怎么考虑的？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "店舗の新設には賛成、値上げにも賛成",
+            "translation": "（赞成开设新店，也赞成涨价）",
+            "correct": false
+          },
+          {
+            "text": "店舗の新設にも値上げにも反対",
+            "translation": "（既反对开设新店，也反对涨价）",
+            "correct": false
+          },
+          {
+            "text": "店舗の新設は賛成、値上げは反対",
+            "translation": "（赞成开设新店，反对涨价）",
+            "correct": true
+          },
+          {
+            "text": "店舗の新設は反対、値上げは賛成",
+            "translation": "（反对开设新店，赞成涨价）",
+            "correct": false
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2011-07-概要理解"; 
+        let currentExamKey = "2011-07"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -274,10 +574,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -616,8 +916,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-<script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+<script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261015-summary-n1-2011-07-9567f6844a80"></script>
+<script src="../shared/follow-listening.js?v=20261015-summary-n1-2011-07-9567f6844a80"></script>
+<script src="../shared/follow-listening-entry.js?v=20261015-summary-n1-2011-07-9567f6844a80"></script>
 </body>
 </html>

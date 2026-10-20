@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情報検索 - 练习与解析</title>
+    <link rel="stylesheet" href="../../../../shared/domestic-fonts.css">
+    <link rel="stylesheet" href="../../shared/reading-content-redesign.css?v=20260907-first-paint">
+    <link rel="stylesheet" href="../../shared/reading-tools.css?v=20260809-14">
+    <link rel="stylesheet" href="../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+</head>
+<body id="top" class="kiki-unified-header-enabled reading-article-tools-page reading-tools-no-furigana reading-content-page reading-cloze-v2">
+    <header class="kiki-unified-header kiki-unified-header--practice" data-kiki-unified-header="practice" data-kiki-unified-header-host="reading-practice">
+        <div class="kiki-unified-header-left">
+            <a class="kiki-unified-brand" href="../../../../index.html" aria-label="返回 kiji 首页"><img src="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline" alt="kiji"></a>
+            <span class="kiki-unified-divider" aria-hidden="true"></span>
+            <a id="back-to-reading-index" class="kiki-unified-back" href="../../index.html?level=N2&type=search&browse=year" aria-label="返回上一页" data-kiki-dynamic-back>
+                <svg class="kiki-unified-back-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18 9 12l6-6"></path></svg>
+                <span class="kiki-unified-back-label">返回上一页</span>
+                <span class="kiki-unified-back-label-mobile" aria-hidden="true">返回</span>
+            </a>
+        </div>
+        <h1 class="kiki-unified-header-title">N2 · 情報検索</h1>
+        <div class="kiki-unified-header-right"><div class="top-actions top-bar-controls reading-editorial-actions"></div></div>
+    </header>
+
+    <nav class="quick-nav sketch-box">
+        <a href="#top" class="nav-link">Top</a>
+        <div class="nav-divider"></div>
+        <a href="#poster-content" class="nav-link">案内</a>
+        <div class="nav-divider"></div>
+        <a href="#q1-card" class="nav-link">問1</a>
+        <a href="#q2-card" class="nav-link">問2</a>
+    </nav>
+
+    <div class="layout-container">
+        <main class="article-section sketch-box" id="mainArticleContent">
+            <div class="article-meta">
+                <div class="meta-left">
+                    <span class="tag">N2 読解</span>
+                    <span class="article-title-info">2016年12月 · 情報検索</span>
+                </div>
+                <button class="translate-toggle-btn" onclick="toggleTranslation(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+                    参考訳
+                </button>
+            </div>
+
+            <div class="poster-box" id="poster-content">
+                <div class="poster-main-title" style="text-align: right; font-size: 0.92em;">ミハマホテル</div>
+                <div class="poster-main-title" style="text-align: center; margin-top: 8px;">ビュッフェのご案内</div>
+                <div class="poster-intro">
+                    レストラン「ベルン」および「みよし」では、以下のビュッフェをご用意しております。<br>
+                    お好みの料理を食べ放題でお楽しみください。
+                </div>
+
+                <div class="article-translation">
+                    【三滨酒店自助餐指南】“贝伦”和“三好”两家餐厅提供以下自助餐。您可以尽情享用自己喜欢的菜肴。
+                </div>
+
+                <div class="note-text" style="margin-top: 28px; font-weight: 700;">ベルン（洋食）</div>
+                <div class="table-responsive" style="margin-top: 14px;">
+                    <table class="availability-table" style="min-width: 760px;">
+                        <thead>
+                            <tr><th>ビュッフェ</th><th>時間</th><th>曜日</th><th>おとな</th><th>シニア</th><th>こども</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="ks-target target-q1">
+                                <td rowspan="2"><strong>ランチ</strong><br>（制限時間90分）</td>
+                                <td rowspan="2">11:30〜14:00</td>
+                                <td>平日</td><td>3,300円</td><td>3,000円</td><td>1,700円</td>
+                            </tr>
+                            <tr class="ks-target target-q1"><td>土日・祝日</td><td>4,000円</td><td>3,700円</td><td>2,000円</td></tr>
+                            <tr class="ks-target target-q1">
+                                <td rowspan="2"><strong>デザート</strong><br>（制限時間60分）</td>
+                                <td rowspan="2">15:00〜17:00</td>
+                                <td>平日</td><td>2,500円</td><td>2,200円</td><td>1,500円</td>
+                            </tr>
+                            <tr class="ks-target target-q1"><td>土日・祝日</td><td>3,000円</td><td>2,700円</td><td>1,800円</td></tr>
+                            <tr>
+                                <td rowspan="2"><strong>夕食</strong><br>（制限時間2時間）</td>
+                                <td rowspan="2">18:00〜21:00</td>
+                                <td>平日</td><td>5,500円</td><td>5,000円</td><td>2,000円</td>
+                            </tr>
+                            <tr class="ks-target target-q2"><td>土日・祝日</td><td>6,000円</td><td>5,500円</td><td>2,500円</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="note-text" style="margin-top: 24px; font-weight: 700;">“窓際特別テーブル”のご案内</div>
+                <div class="note-text ks-target target-q2" style="margin-top: 10px;">
+                    レストラン「ベルン」では、海が見渡せる窓際の特別席をご用意しております。最高の眺めとともにビュッフェをお楽しみください。ビュッフェ料金に、1テーブル（2〜4名様）1,000円の追加料金でご利用いただけます。
+                </div>
+
+                <div class="article-translation">
+                    【贝伦（西餐）】午餐为11:30—14:00，限时90分钟；甜点为15:00—17:00，限时60分钟；晚餐为18:00—21:00，限时2小时。周末和节假日晚餐成人6,000日元、老年顾客5,500日元。海景窗边特别桌适合2—4人，每桌另收1,000日元。
+                </div>
+
+                <div class="note-text" style="margin-top: 30px; font-weight: 700;">みよし（和食）</div>
+                <div class="table-responsive" style="margin-top: 14px;">
+                    <table class="availability-table ks-target target-q1" style="min-width: 720px;">
+                        <thead>
+                            <tr><th>ビュッフェ</th><th>時間</th><th>曜日</th><th>おとな</th><th>シニア</th><th>こども</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>ランチ</strong><br>（制限時間2時間）</td>
+                                <td>11:00〜16:00</td>
+                                <td>土日・祝日のみ</td>
+                                <td>4,500円</td><td>4,200円</td><td>2,200円</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="article-translation">
+                    【三好（日餐）】午餐仅在周末及节假日供应，营业时间为11:00—16:00，限时2小时。成人4,500日元、老年顾客4,200日元、儿童2,200日元。
+                </div>
+
+                <div class="note-text" style="margin-top: 28px; font-weight: 700;">＊ビュッフェ料金の区分について（ベルン・みよし共通）</div>
+                <ul class="note-list">
+                    <li class="ks-target target-q2"><strong>おとな</strong>…中学生から64歳までのお客様</li>
+                    <li class="ks-target target-q2"><strong>シニア</strong>…65歳以上のお客様</li>
+                    <li><strong>こども</strong>…4歳から小学生までのお子様（3歳以下のお子様は無料です。）</li>
+                </ul>
+
+                <div class="article-translation">
+                    【收费年龄划分】成人为初中生至64岁；老年顾客为65岁及以上；儿童为4岁至小学生，3岁及以下免费。此划分适用于两家餐厅。
+                </div>
+
+                <div class="contact-info">
+                    <strong>ご予約・お問い合わせ</strong><br>
+                    ベルン　031-277-1116（直通）／みよし　031-277-1119（直通）
+                </div>
+            </div>
+        </main>
+
+        <aside class="question-section" id="quizForm">
+            <div class="question-card sketch-box" data-question="q1" id="q1-card">
+                <div class="q-header"><div class="q-number" style="background: var(--marker-blue);">1</div><div class="q-text-wrapper">
+                    <div class="q-text">ユンさんは、来週ミハマホテルのビュッフェに行きたいと考えている。金曜か土曜の12時から17時の間で、2時間いられるものがいい。ユンさんの希望に合うビュッフェはどれか。<br>
+                        <div class="source-jump-btn ks-theme-q1" onclick="jumpToTarget('q1')"><div class="ks-icon-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>クリックして営業時間・制限時間の出処へ移動</span></div></div>
+                    </div><div class="q-text-trans">（尹打算下周去三滨酒店吃自助餐。她希望在周五或周六的12点至17点之间，选择能够停留两小时的自助餐。哪一项符合她的要求？）</div>
+                </div></div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1"><input type="radio" name="q1" value="1" class="option-input"><div class="custom-radio">1</div><div class="option-content-wrapper"><div class="option-content">「ベルン」のランチビュッフェ</div><div class="option-trans">“贝伦”餐厅的午餐自助餐。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="2"><input type="radio" name="q1" value="2" class="option-input"><div class="custom-radio">2</div><div class="option-content-wrapper"><div class="option-content">「ベルン」のデザートビュッフェ</div><div class="option-trans">“贝伦”餐厅的甜点自助餐。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="3"><input type="radio" name="q1" value="3" class="option-input"><div class="custom-radio">3</div><div class="option-content-wrapper"><div class="option-content">「ベルン」の夕食ビュッフェ</div><div class="option-trans">“贝伦”餐厅的晚餐自助餐。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="4"><input type="radio" name="q1" value="4" class="option-input"><div class="custom-radio">4</div><div class="option-content-wrapper"><div class="option-content">「みよし」のランチビュッフェ</div><div class="option-trans">“三好”餐厅的午餐自助餐。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                </div>
+            </div>
+
+            <div class="question-card sketch-box" data-question="q2" id="q2-card">
+                <div class="q-header"><div class="q-number" style="background: var(--marker-peach);">2</div><div class="q-text-wrapper">
+                    <div class="q-text">エンリケさんは、今度の土曜日に妻と一緒にレストラン「ベルン」の夕食ビュッフェに行き、「窓際特別テーブル」を利用したい。エンリケさんは63歳、妻は66歳である。エンリケさんたちの料金はどのようになるか。<br>
+                        <div class="source-jump-btn ks-theme-q2" onclick="jumpToTarget('q2')"><div class="ks-icon-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>クリックして料金区分・追加料金の出処へ移動</span></div></div>
+                    </div><div class="q-text-trans">（恩里克准备本周六和妻子去“贝伦”餐厅吃晚餐自助餐，并使用窗边特别桌。恩里克63岁，妻子66岁。他们需要支付哪些费用？）</div>
+                </div></div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1"><input type="radio" name="q2" value="1" class="option-input"><div class="custom-radio">1</div><div class="option-content-wrapper"><div class="option-content">エンリケさん6,000円、妻6,000円のみ</div><div class="option-trans">恩里克6,000日元、妻子6,000日元，仅此两项。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="2"><input type="radio" name="q2" value="2" class="option-input"><div class="custom-radio">2</div><div class="option-content-wrapper"><div class="option-content">エンリケさん6,000円、妻6,000円、テーブル料金1,000円</div><div class="option-trans">恩里克6,000日元、妻子6,000日元，另加桌位费1,000日元。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="3"><input type="radio" name="q2" value="3" class="option-input"><div class="custom-radio">3</div><div class="option-content-wrapper"><div class="option-content">エンリケさん6,000円、妻5,500円、テーブル料金1,000円</div><div class="option-trans">恩里克6,000日元、妻子5,500日元，另加桌位费1,000日元。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                    <label class="option-label" data-opt="4"><input type="radio" name="q2" value="4" class="option-input"><div class="custom-radio">4</div><div class="option-content-wrapper"><div class="option-content">エンリケさん5,500円、妻5,000円、テーブル料金1,000円</div><div class="option-trans">恩里克5,500日元、妻子5,000日元，另加桌位费1,000日元。</div></div><span class="click-hint">詳細解説</span><div class="option-detail-analysis"></div></label>
+                </div>
+            </div>
+            <div class="action-bar"><button type="button" class="submit-btn" id="submitBtn" onclick="submitAnswers()">答え合わせ</button></div>
+        </aside>
+    </div>
+
+    <div id="vocabTooltip" class="vocab-tooltip"></div>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (event) {
+                event.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#top') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        function toggleTranslation(btn) {
+            if (!document.getElementById('mainArticleContent').classList.contains('reviewed')) {
+                alert("请先完成所有题目（点击「答え合わせ」提交），然后再查看译文哦！");
+                return;
+            }
+            btn.classList.toggle('active');
+            document.querySelectorAll('.article-translation').forEach(el => el.classList.toggle('show'));
+        }
+
+        const answerData = {
+            q1: { correct: "4", optAnalysis: {
+                "1": "【✖ 排除】供应时间与要求部分重合，但用餐时限只有90分钟，不能停留2小时。",
+                "2": "【✖ 排除】15:00至17:00在要求范围内，但甜点自助餐的用餐时限只有60分钟。",
+                "3": "【✖ 排除】晚餐可停留2小时，但18:00才开始，不在12:00至17:00的范围内。",
+                "4": "【✔ 正解】周六可以参加，11:00至16:00营业且限时2小时，能够在题目要求的时段内完整停留2小时。"
+            }},
+            q2: { correct: "3", optAnalysis: {
+                "1": "【✖ 排除】妻子66岁应按老年价计算，而且使用窗边特别桌还需另付1,000日元。",
+                "2": "【✖ 排除】桌位费正确，但妻子已满65岁，不能按成人价6,000日元计算。",
+                "3": "【✔ 正解】周六成人晚餐6,000日元；妻子66岁按老年价5,500日元；窗边特别桌每桌另收1,000日元。",
+                "4": "【✖ 排除】这里使用的是平日晚餐价格；题目指定周六，应按周末及节假日价格计算。"
+            }}
+        };
+
+        document.querySelectorAll('.option-input').forEach(input => {
+            input.addEventListener('change', function () {
+                if (document.getElementById('submitBtn').disabled) return;
+                document.querySelectorAll(`input[name="${this.name}"]`).forEach(radio => radio.closest('.option-label').classList.remove('selected'));
+                if (this.checked) this.closest('.option-label').classList.add('selected');
+            });
+        });
+
+        document.querySelectorAll('.option-label').forEach(label => {
+            label.addEventListener('click', function () {
+                const group = this.closest('.options-group');
+                if (!group.classList.contains('reviewed')) return;
+                const detailBox = this.querySelector('.option-detail-analysis');
+                if (detailBox.classList.contains('show')) {
+                    detailBox.classList.remove('show');
+                    return;
+                }
+                group.querySelectorAll('.option-detail-analysis').forEach(box => box.classList.remove('show'));
+                detailBox.classList.add('show');
+            });
+        });
+
+        window.jumpToTarget = function (qName) {
+            const targets = document.querySelectorAll(`.target-${qName}`);
+            if (!targets.length) return;
+            targets[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targets.forEach(target => {
+                target.classList.add(`revealed-${qName}`);
+                target.classList.remove('flash-focus');
+                void target.offsetWidth;
+                target.classList.add('flash-focus');
+            });
+        };
+
+        function submitAnswers() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            if (!q1 || !q2) {
+                alert("すべての問いに答えてください。（请回答所有問題）");
+                return;
+            }
+            const userAnswers = { q1: q1.value, q2: q2.value };
+            let score = 0;
+            document.querySelectorAll('.option-input').forEach(input => {
+                input.disabled = true;
+                input.closest('.option-label').classList.add('disabled');
+            });
+            document.querySelectorAll('.options-group').forEach(group => group.classList.add('reviewed'));
+            document.getElementById('mainArticleContent').classList.add('reviewed');
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+
+            Object.keys(answerData).forEach(qName => {
+                const qCard = document.querySelector(`.question-card[data-question="${qName}"]`);
+                const data = answerData[qName];
+                const userValue = userAnswers[qName];
+                qCard.classList.add('reviewed');
+                qCard.querySelectorAll('.option-label').forEach(label => {
+                    const optionValue = label.querySelector('.option-input').value;
+                    if (optionValue === data.correct) {
+                        label.classList.add('is-correct');
+                        label.querySelector('.custom-radio').innerHTML = '✔';
+                    }
+                    if (optionValue === userValue && userValue !== data.correct) {
+                        label.classList.add('is-wrong');
+                        label.querySelector('.custom-radio').innerHTML = '✖';
+                    }
+                    label.querySelector('.option-detail-analysis').innerText = data.optAnalysis[optionValue];
+                });
+                if (userValue === data.correct) score++;
+            });
+
+            if (score === 2) {
+                btn.innerText = "全問正解！素晴らしい！";
+                btn.style.background = "var(--marker-mint)";
+                btn.style.color = "var(--green-pencil)";
+            } else {
+                btn.innerText = `完了 (${score}/2 正解)`;
+                btn.style.background = "var(--marker-peach)";
+                btn.style.color = "var(--red-pencil)";
+            }
+        }
+    </script>
+
+    <script src="../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="../../shared/reading-year-system.js?v=20260809-reading-mistakes"></script>
+    <script src="../../shared/reading-analysis-n2-search.js?v=20260904-n2-search-8"></script>
+    <script src="../../shared/reading-practice-redesign.js?v=20261011-scoped-lookup-3"></script>
+    <script src="../../shared/reading-tools.js?v=20261011-scoped-lookup-3"></script>
+    <script src="../../shared/reading-dt-year-session.js?v=20260809-reading-mistakes"></script>
+    <script src="../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../shared/selection-dictionary.js?v=20261012-lookup-spelling-2" data-lookup-scope="reading"></script>
+</body>
+</html>

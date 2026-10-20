@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261016-summary-n1-2015-12-66da55b28b83">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,158 +192,372 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
 <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2015-12-概要理解": {
-                label: "2015年12月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2015.12-1.mp3",
-                        script: {
-                            question: "一番：ラジオで女の人が話しています。女の人は何について話していますか。",
-                            questionTrans: "（第一题：在广播里女人正在讲话。女人在谈论什么？）",
-                            dialogue: [
-                                {
-                                    speaker: "女",
-                                    text: "最近、家やオフィスに<span class=\"keyword\" onclick=\"showTooltip(event, '防災（ぼうさい）：防灾。')\">防災</span>用ヘルメットを置くところが増えていますが、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女人一开始提到“大家是不是很苦恼放在哪里”，这只是为了引出折叠头盔这个商品，并没有去探讨“合适的保管场所”在哪里，排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '保管（ほかん）：保管，存放。')\">保管</span>場所に困っている人も多いのではないでしょうか。</span></span>",
-                                    trans: "（最近，在家里或办公室放置防灾头盔的地方变多了，但是不是也有很多人在苦恼该存放在哪呢？）"
-                                },
-                                {
-                                    speaker: "女",
-                                    text: "そんな中、人気を集めている商品があります。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人明确点出核心话题：某防灾用品厂家开发的【折叠式头盔（折りたたみ式のヘルメットです）】。后续内容全都是在介绍它的特点（材质、强度、轻便、易组装等），符合选项4。')\">ある防災用品メーカーが開発した<span class=\"keyword\" onclick=\"showTooltip(event, '折（お）りたたむ：折叠。')\">折りたたみ</span>式のヘルメットです。</span></span>",
-                                    trans: "（在这种情况下，有一款商品正聚集着人气。是某防灾用品厂家开发的折叠式头盔。）"
-                                },
-                                {
-                                    speaker: "女",
-                                    text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中虽然提到了【使用了独自开发的树脂材料（独自に開発した樹脂素材が使われていて）】，但并未提及开发过程中的“艰辛或劳苦”，排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '独自（どくじ）：独自，独特。')\">独自</span>に開発した<span class=\"keyword\" onclick=\"showTooltip(event, '樹脂（じゅし）：树脂。')\">樹脂</span><span class=\"keyword\" onclick=\"showTooltip(event, '素材（そざい）：材料，素材。')\">素材</span>が使われていて</span></span>、<span class=\"keyword\" onclick=\"showTooltip(event, '強度（きょうど）：强度。')\">強度</span>はそのままで、折り畳みが可能となっています。軽くて組み立ても簡単です。",
-                                    trans: "（它使用了独自开发的树脂材料，强度保持不变，却能够折叠。既轻便，组装也很简单。）"
-                                },
-                                {
-                                    speaker: "女",
-                                    text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中最后提到去年卖了1万多个，是为了证明其高人气，并没有探讨“销售方法”，排除。')\">昨年は1万個以上も売れたそうです。</span></span>",
-                                    trans: "（听说去年卖出了1万多个呢。）"
-                                }
-                            ]
-                        },
-                        options: [
-                            { text: "防災用品の適切な保管場所", translation: "（防灾用品合适的保管场所）", correct: false },
-                            { text: "新しい防災用品の開発の苦労", translation: "（开发新防灾用品的艰辛）", correct: false },
-                            { text: "新しいヘルメットの販売方法", translation: "（新头盔的销售方法）", correct: false },
-                            { text: "ある防災用ヘルメットの特徴", translation: "（某防灾用头盔的特点）", correct: true }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        audio: "../assets/audio/2015.12-2.mp3",
-                        script: {
-                            question: "二番：テレビでアナウンサーが話しています。アナウンサーは何について話していますか。",
-                            questionTrans: "（第二题：在电视上播音员正在讲话。播音员在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男播音员在开头提出【去海外留学的日本学生正在减少（海外に留学する日本人学生が減少しています）】的现象后，后续全文都在列举学费涨价、可能对求职不利、企业不重视海外经验等具体的影响因素。这说明整段报道都在探讨留学生减少的真正原因，符合选项1。')\">この十年、海外に留学する日本人学生が減少しています。</span></span>若者が海外との交流に<span class=\"keyword\" onclick=\"showTooltip(event, '消極的（しょうきょくてき）：消极的。')\">消極的</span>になっているからだという声も聞かれます。", trans: "（这十年间，去海外留学的日本学生正在减少。也有人说这是因为年轻人对与海外交流变得消极了。）" },
-                                { speaker: "男", text: "しかし、これには、学費の<span class=\"keyword\" onclick=\"showTooltip(event, '値上（ねあ）げ：涨价，提高价格。')\">値上げ</span>をする留学先が増えたことや、就職活動を開始する時期に<span class=\"keyword\" onclick=\"showTooltip(event, '間（ま）に合（あ）わない：来不及，赶不上。')\">間に合わず</span>、留学が就職活動において<span class=\"keyword\" onclick=\"showTooltip(event, '不利（ふり）：不利。')\">不利</span>になる場合もあることも影響しています。", trans: "（但是，这也受到了学费涨价的留学地增加，以及赶不上开始求职活动的时期、留学在求职活动中可能处于不利地位等因素的影响。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，报道中提到的“求职活动”和“录用”是指在日本国内找工作时留学经历是否有利，并非探讨“在海外就业”的困难与否，可以排除。')\">また、<span class=\"keyword\" onclick=\"showTooltip(event, '採用（さいよう）：录用，采用。')\">採用</span>の際、海外経験の<span class=\"keyword\" onclick=\"showTooltip(event, '有無（うむ）：有无。')\">有無</span>を<span class=\"keyword\" onclick=\"showTooltip(event, '重視（じゅうし）：重视。')\">重視</span>しない企業が少なくないことなどもあるようです。</span></span>", trans: "（此外，在录用时，不重视有无海外经验的企业也不在少数，似乎也有这方面的原因。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，播音员探讨的是日本学生去“海外留学”，而不是“来日本的留学生”，可以直接排除。关于选项3，报道中只分析了年轻人不去留学的现实原因（实情），并未探讨“如何让”年轻人产生兴趣的具体方法，因此排除。')\">となれば、<span class=\"keyword\" onclick=\"showTooltip(event, '一概（いちがい）に：一概，无例外地（常接否定）。')\">一概に</span>若者が消極的になったせいだとも言えません。こうした<span class=\"keyword\" onclick=\"showTooltip(event, '実情（じつじょう）：实情，实际情况。')\">実情</span>もあるのです。</span></span>", trans: "（这么说来，也不能一概而论说是年轻人变得消极导致的。也是有这些实际情况的。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "留学する日本人学生が減っている原因", translation: "（去海外留学的日本学生减少的原因）", correct: true },
-                            { text: "日本への留学生を増やす計画", translation: "（增加来日本的留学生的计划）", correct: false },
-                            { text: "若者に留学に興味を持たせる方法", translation: "（让年轻人对留学产生兴趣的方法）", correct: false },
-                            { text: "海外で就職することの難しさ", translation: "（在海外就业的困难程度）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        audio: "../assets/audio/2015.12-3.mp3",
-                        script: {
-                            question: "三番：ラジオでアナウンサーが話しています。アナウンサーは何について話していますか。",
-                            questionTrans: "（第三题：在广播里播音员正在讲话。播音员在谈论什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "夏は海や山といった<span class=\"keyword\" onclick=\"showTooltip(event, '行楽地（こうらくち）：游览胜地。')\">行楽地</span>にお出かけになる機会も多いと思いますが、雷に注意することが必要な季節です。", trans: "（夏天去海边或山里等游览胜地游玩的机会变多了，但这也是一个需要注意雷电的季节。）" },
-                                { speaker: "男", text: "ごろごろといった音が聞こえたら、<span class=\"keyword\" onclick=\"showTooltip(event, 'いかに：无论多么。')\">いかに</span>小さい音であれ、まだ大丈夫だと<span class=\"keyword\" onclick=\"showTooltip(event, '過信（かしん）：过分相信，盲目自信。')\">過信</span>せず、すぐに<span class=\"keyword\" onclick=\"showTooltip(event, '避難（ひなん）：避难，躲避。')\">避難</span>する必要があります。", trans: "（一旦听到轰隆轰隆的声音，不管声音多小，都不要盲目自信觉得“还不要紧”，必须马上避难。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '播音员接下来的整段内容都在具体说明听到雷声后应该怎么做，即应对方法。符合选项4“发生雷电时的应对方法”。')\">雷は高いビルや木などに落ちる性質があるので、木などへは<span class=\"keyword\" onclick=\"showTooltip(event, '近寄（ちかよ）る：靠近，挨近。')\">近寄らず</span>、すぐに屋内に入るようにします。</span></span>", trans: "（因为雷有容易劈中高楼或树木等的性质，所以不要靠近树木等，要马上进入室内。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于前三个选项，文中提到海边和山里只是作为游玩地的举例，并没有探讨哪些地区更容易发生雷电（排除1）；也没有提及雷电造成的具体人员或财产伤亡（排除2）；更没有从科学角度解释雷电是如何形成的（排除3）。')\">もし、海や山などにいて、適切な避難場所がない場合には、高い木などのそばから離れて低い<span class=\"keyword\" onclick=\"showTooltip(event, '姿勢（しせい）：姿势。')\">姿勢</span>を取ることが大切です。</span></span>", trans: "（如果身在海边或山里等，没有合适的避难场所时，离开高大的树木等旁边、采取低姿势是非常重要的。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "雷が発生しやすい地域", translation: "（容易发生雷电的地区）", correct: false },
-                            { text: "雷による被害", translation: "（雷电造成的灾害）", correct: false },
-                            { text: "雷が発生する仕組み", translation: "（雷电发生的机制）", correct: false },
-                            { text: "雷が発生した場合の対処法", translation: "（发生雷电时的应对方法）", correct: true }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        audio: "../assets/audio/2015.12-4.mp3",
-                        script: {
-                            question: "四番：大学の授業で先生が話しています。先生が伝えたいことは何ですか。",
-                            questionTrans: "（第四题：在大学课堂上老师正在讲话。老师想传达的是什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "皆さんは、人と会話をしているときに、<span class=\"keyword\" onclick=\"showTooltip(event, '思（おも）わず：不由得，不假思索。')\">思わず</span>相手と同時に話し始めてしまった経験はありませんか。", trans: "（各位，在和人说话的时候，有没有过不假思索地和对方同时开始说话的经历呢？）" },
-                                { speaker: "女", text: "そんなとき、皆さんはすぐに話を止めて、「どうぞ」と<span class=\"keyword\" onclick=\"showTooltip(event, '譲（ゆず）り合（あ）う：互相谦让。')\">譲り合う</span>のではないでしょうか。しかし、どの社会でもいえることでしょうか。", trans: "（那种时候，大家是不是会马上停下说话，互相谦让说“您先请”呢？但是，在任何社会都能这么说（适用）吗？）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师先抛出大家习以为常的谦让行为，接着用【在任何社会都能这么说吗？】进行转折，引出了关于不同社会规则的探讨。后续列举少数民族的例子正是为了论证【对话的方式因社会而异（会話の仕方は社会によって異なるものだ）】，符合选项3。')\">とある少数民族はこのようなとき、話を止めず、お互いに<span class=\"keyword\" onclick=\"showTooltip(event, '延々（えんえん）：没完没了，绵延不绝。')\">延々と</span>しゃべり続けるといいます。</span></span>", trans: "（据说某个少数民族在遇到这种情况时，不会停下来，而是互相没完没了地继续说下去。）" },
-                                { speaker: "女", text: "それでは、会話は<span class=\"keyword\" onclick=\"showTooltip(event, '成（な）り立（た）つ：成立，构成。')\">成り立って</span>いないと考える人も多くいるでしょう。", trans: "（那样的话，可能很多人会认为对话就不成立了吧。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '最后老师总结道，在这种少数民族社会里同时说话是理所当然的日常。老师只是客观陈述了不同社会的现象，并没有主观评价这种方式“很棒”，排除选项2。而选项1和选项4虽然是日本社会的常识，但并非老师想讲述的核心（文化差异），也可排除。')\">しかし、その少数民族の社会においては、互いに同時に話し続けることが<span class=\"keyword\" onclick=\"showTooltip(event, '当（あ）たり前（まえ）：理所当然。')\">当たり前</span>の日常なのです。</span></span>", trans: "（但是，在那个少数民族的社会里，互相同时一直说下去是理所当然的日常。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "会話のトラブルは避けたほうがいい", translation: "（最好避开对话中的麻烦/纠纷）", correct: false },
-                            { text: "ある少数民族の会話の仕方はすばらしい", translation: "（某个少数民族的对话方式很棒）", correct: false },
-                            { text: "会話の仕方は社会によって異なるものだ", translation: "（对话的方式因社会而异）", correct: true },
-                            { text: "会話では相手の話を聞くべきだ", translation: "（在对话中应该听对方说话）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        audio: "../assets/audio/2015.12-5.mp3",
-                        script: {
-                            question: "五番：テレビのニュース番組でアナウンサーが話しています。何についてのニュースですか。",
-                            questionTrans: "（第五题：在电视的新闻节目中，播音员正在讲话。这是关于什么的新闻？）",
-                            dialogue: [
-                                { speaker: "男", text: "桜町といえば、山の<span class=\"keyword\" onclick=\"showTooltip(event, '斜面（しゃめん）：斜坡，斜面。')\">斜面</span>に畑が広がる<span class=\"keyword\" onclick=\"showTooltip(event, 'のどか：悠闲，宁静，恬静。')\">のどか</span>な風景が有名です。しかし農家は後継者不足で高齢化が進み、この<span class=\"keyword\" onclick=\"showTooltip(event, '傾斜地（けいしゃち）：倾斜地，坡地。')\">傾斜地</span>での作業は<span class=\"keyword\" onclick=\"showTooltip(event, '負担（ふたん）：负担。')\">負担</span>が大きいため、雑草が伸びたまま、<span class=\"keyword\" onclick=\"showTooltip(event, '手入（てい）れ：修理，照料，保养。')\">手入れ</span>されない畑も多く見られました。", trans: "（说起樱町，那片在山坡上蔓延开来的田地所构成的宁静风景非常有名。但是，由于农户缺乏接班人，老龄化加剧，而且在这种坡地上作业负担很大，所以经常能看到杂草丛生、无人照料的田地。）" },
-                                { speaker: "男", text: "そこで桜町では、近くの無人島のヤギを連れてきて畑に<span class=\"keyword\" onclick=\"showTooltip(event, '放牧（ほうぼく）：放牧。')\">放牧</span>し、雑草を<span class=\"keyword\" onclick=\"showTooltip(event, '除去（じょきょ）：除去，消除。')\">除去</span>することにしました。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '播音员在这里点出了新闻的核心内容：【带附近无人岛的山羊过来放在田里放牧，用来除草（近くの無人島のヤギを連れてきて畑に放牧し、雑草を除去することにしました）】。这正好符合选项2所说的“在农活中活用山羊的例子”。')\"></span></span>", trans: "（因此，樱町决定把附近无人岛上的山羊带过来，在田里放牧，以此来清除杂草。）" },
-                                { speaker: "男", text: "このヤギは、島に人がいなくなった後、野生化して、島の貴重な植物を食べ、生態系を破壊する<span class=\"keyword\" onclick=\"showTooltip(event, '恐（おそ）れ：担心，恐惧，危险。')\">恐れ</span>があったため、いい機会だったというわけです。", trans: "（这些山羊在岛上没人了之后野生化了，有人担心它们会吃掉岛上珍贵的植物，破坏生态系统，所以这也算是个好机会。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，文中提到缺乏接班人只是背景，并没有提出解决这个问题的方法。关于选项3，文中提到的是野生野猪破坏农作物，而不是“家畜”。关于选项4，文中提到害怕山羊（不是野猪）破坏无人岛的生态系统，而且野猪只是因为没有草丛藏身而不来了，排除了这三个选项。')\">桜町では、野生のいのししによる農作物の被害も増えていましたが、<span class=\"keyword\" onclick=\"showTooltip(event, '草（くさ）むら：草丛。')\">草むら</span>がなくなったことで、警戒心の強いいのししは身を隠す場所を失って、<span class=\"keyword\" onclick=\"showTooltip(event, '寄（よ）り付（つ）く：靠近，挨近。')\">寄り付かなく</span>なったそうです。</span></span>", trans: "（在樱町，虽然野生野猪对农作物的破坏也在增加，但据说因为草丛没了，警惕性很强的野猪失去了藏身之处，也就不再靠近了。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "農家の後継者不足を解消する方法", translation: "（消除农户缺乏接班人的方法）", correct: false },
-                            { text: "農家の作業にヤギを活用している例", translation: "（在农活中活用山羊的例子）", correct: true },
-                            { text: "家畜による農作物被害の増加", translation: "（家畜对农作物破坏的增加）", correct: false },
-                            { text: "いのししによる生態系の破壊", translation: "（野猪对生态系统的破坏）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 6,
-                        audio: "../assets/audio/2015.12-6.mp3",
-                        script: {
-                            question: "六番：ラジオで女の人が話しています。女の人は何について話していますか。",
-                            questionTrans: "（第六题：在广播里女人正在讲话。女人在谈论什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "日本では、雪が多いいくつかの地域で、春先のよく晴れた日に、長く<span class=\"keyword\" onclick=\"showTooltip(event, '愛用（あいよう）：爱用，喜欢用。')\">愛用</span>した着物の<span class=\"keyword\" onclick=\"showTooltip(event, '生地（きじ）：布料，质地。')\">生地</span>を雪の上に<span class=\"keyword\" onclick=\"showTooltip(event, 'さらす（曝す）：暴露，风吹日晒。')\">さらす</span>ということが百年ほど前まで行われていました。", trans: "（在日本降雪较多的一些地区，直到一百年前左右，还保留着在初春晴朗的日子里，将长期爱穿的和服布料铺放在雪地上的做法。）" },
-                                { speaker: "女", text: "太陽の熱で溶け出した雪が<span class=\"keyword\" onclick=\"showTooltip(event, '水蒸気（すいじょうき）：水蒸气。')\">水蒸気</span>になり、それが太陽の日差しに当ることにより化学反応が起こって、汗の染みなどが消え、染められた布の色が<span class=\"keyword\" onclick=\"showTooltip(event, '蘇（よみがえ）る：复苏，复活，恢复。')\">蘇る</span>んだそうです。", trans: "（据说，因太阳热量而融化的雪会变成水蒸气，水蒸气在阳光的照射下发生化学反应，从而消除汗渍等，让染过色的布料颜色焕然一新。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人在这里点出了这种做法的本质：【在过去还没有洗涤剂的时候，人们绞尽脑汁寻找把和服弄干净的方法，最终利用自然环境创造出了这一做法（昔、洗剤などがまだない頃、着物を綺麗にするすべがないかと工夫を重ねた人々が、自然環境を活かして生み出したものです）】。整段话介绍的正是一种去除和服污渍的传统方法，符合选项1。')\">昔、洗剤などがまだない頃、着物を綺麗にする<span class=\"keyword\" onclick=\"showTooltip(event, 'すべ（術）：方法，手段。')\">すべ</span>がないかと<span class=\"keyword\" onclick=\"showTooltip(event, '工夫（くふう）：想办法，动脑筋。')\">工夫</span>を重ねた人々が、自然環境を活かして生み出したものです。</span></span>", trans: "（在过去还没有洗涤剂的时候，人们绞尽脑汁寻找把和服弄干净的方法，最终利用自然环境创造出了这一做法。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于前三个错误选项：文中讲的是把和服放在雪上洗，而不是“防止下雪天弄脏和服（排除2）”；提到颜色焕然一新，但并没有探讨“图案之美（排除3）”；讲的是清洗方法，而不是“保存的困难（排除4）”。')\">着物を着ることが少なくなった現在でも、一部の人によって行われているそうです。</span></span>", trans: "（即使在很少穿和服的现在，据说也有一部分人还在这么做。）" },
-                                { speaker: "女", text: "着物を着るという習慣の中で<span class=\"keyword\" onclick=\"showTooltip(event, '培（つちか）う：培养，培育。')\">培われて</span>きた知恵を感じることができます。", trans: "（从中可以感受到在穿和服的习惯中所培养出来的智慧。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "着物の染みを取る伝統的な方法", translation: "（去除和服污渍的传统方法）", correct: true },
-                            { text: "雪の日に着物が汚れないための工夫", translation: "（为了下雪天不弄脏和服的办法）", correct: false },
-                            { text: "伝統的な着物の柄の美しさ", translation: "（传统的和服图案之美）", correct: false },
-                            { text: "着物を綺麗に保存することの難しさ", translation: "（把和服漂亮地保存起来的困难程度）", correct: false }
-                        ]
-                    }
-                ]
+  "2015-12": {
+    "label": "2015年12月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2015.12-1.mp3",
+        "script": {
+          "question": "ラジオで女の人が話しています。",
+          "questionTrans": "（在广播里女人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "最近、家やオフィスに<span class=\"keyword\" onclick=\"showTooltip(event, '防災（ぼうさい）：防灾。')\">防災</span>用ヘルメットを置くところが増えていますが、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女人一开始提到“大家是不是很苦恼放在哪里”，这只是为了引出折叠头盔这个商品，并没有去探讨“合适的保管场所”在哪里，排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '保管（ほかん）：保管，存放。')\">保管</span>場所に困っている人も多いのではないでしょうか。</span></span>",
+              "trans": "（最近，在家里或办公室放置防灾头盔的地方变多了，但是不是也有很多人在苦恼该存放在哪呢？）"
+            },
+            {
+              "speaker": "女",
+              "text": "そんな中、人気を集めている商品があります。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人明确点出核心话题：某防灾用品厂家开发的【折叠式头盔（折りたたみ式のヘルメットです）】。后续内容全都是在介绍它的特点（材质、强度、轻便、易组装等），符合选项4。')\">ある防災用品メーカーが開発した<span class=\"keyword\" onclick=\"showTooltip(event, '折（お）りたたむ：折叠。')\">折りたたみ</span>式のヘルメットです。</span></span>",
+              "trans": "（在这种情况下，有一款商品正聚集着人气。是某防灾用品厂家开发的折叠式头盔。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，文中虽然提到了【使用了独自开发的树脂材料（独自に開発した樹脂素材が使われていて）】，但并未提及开发过程中的“艰辛或劳苦”，排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '独自（どくじ）：独自，独特。')\">独自</span>に開発した<span class=\"keyword\" onclick=\"showTooltip(event, '樹脂（じゅし）：树脂。')\">樹脂</span><span class=\"keyword\" onclick=\"showTooltip(event, '素材（そざい）：材料，素材。')\">素材</span>が使われていて</span></span>、<span class=\"keyword\" onclick=\"showTooltip(event, '強度（きょうど）：强度。')\">強度</span>はそのままで、折り畳みが可能となっています。軽くて組み立ても簡単です。",
+              "trans": "（它使用了独自开发的树脂材料，强度保持不变，却能够折叠。既轻便，组装也很简单。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，文中最后提到去年卖了1万多个，是为了证明其高人气，并没有探讨“销售方法”，排除。')\">昨年は1万個以上も売れたそうです。</span></span>",
+              "trans": "（听说去年卖出了1万多个呢。）"
+            },
+            {
+              "speaker": "問",
+              "text": "女の人は何について話していますか。",
+              "trans": "（女人在谈论什么？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "防災用品の適切な保管場所",
+            "translation": "（防灾用品合适的保管场所）",
+            "correct": false
+          },
+          {
+            "text": "新しい防災用品の開発の苦労",
+            "translation": "（开发新防灾用品的艰辛）",
+            "correct": false
+          },
+          {
+            "text": "新しいヘルメットの販売方法",
+            "translation": "（新头盔的销售方法）",
+            "correct": false
+          },
+          {
+            "text": "ある防災用ヘルメットの特徴",
+            "translation": "（某防灾用头盔的特点）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2015.12-2.mp3",
+        "script": {
+          "question": "テレビでアナウンサーが話しています。",
+          "questionTrans": "（在电视上播音员正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男播音员在开头提出【去海外留学的日本学生正在减少（海外に留学する日本人学生が減少しています）】的现象后，后续全文都在列举学费涨价、可能对求职不利、企业不重视海外经验等具体的影响因素。这说明整段报道都在探讨留学生减少的真正原因，符合选项1。')\">この十年、海外に留学する日本人学生が減少しています。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '男播音员在开头提出【去海外留学的日本学生正在减少（海外に留学する日本人学生が減少しています）】的现象后，后续全文都在列举学费涨价、可能对求职不利、企业不重视海外经验等具体的影响因素。这说明整段报道都在探讨留学生减少的真正原因，符合选项1。')\"></span></span>若者が海外との交流に<span class=\"keyword\" onclick=\"showTooltip(event, '消極的（しょうきょくてき）：消极的。')\">消極的</span>になっているからだという声も聞かれます。",
+              "trans": "（这十年间，去海外留学的日本学生正在减少。也有人说这是因为年轻人对与海外交流变得消极了。）"
+            },
+            {
+              "speaker": "男",
+              "text": "しかし、これには、学費の<span class=\"keyword\" onclick=\"showTooltip(event, '値上（ねあ）げ：涨价，提高价格。')\">値上げ</span>をする留学先が増えたことや、就職活動を開始する時期に<span class=\"keyword\" onclick=\"showTooltip(event, '間（ま）に合（あ）わない：来不及，赶不上。')\">間に合わず</span>、留学が就職活動において<span class=\"keyword\" onclick=\"showTooltip(event, '不利（ふり）：不利。')\">不利</span>になる場合もあることも影響しています。",
+              "trans": "（但是，这也受到了学费涨价的留学地增加，以及赶不上开始求职活动的时期、留学在求职活动中可能处于不利地位等因素的影响。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，报道中提到的“求职活动”和“录用”是指在日本国内找工作时留学经历是否有利，并非探讨“在海外就业”的困难与否，可以排除。')\">また、<span class=\"keyword\" onclick=\"showTooltip(event, '採用（さいよう）：录用，采用。')\">採用</span>の際、海外経験の<span class=\"keyword\" onclick=\"showTooltip(event, '有無（うむ）：有无。')\">有無</span>を<span class=\"keyword\" onclick=\"showTooltip(event, '重視（じゅうし）：重视。')\">重視</span>しない企業が少なくないことなどもあるようです。</span></span>",
+              "trans": "（此外，在录用时，不重视有无海外经验的企业也不在少数，似乎也有这方面的原因。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，播音员探讨的是日本学生去“海外留学”，而不是“来日本的留学生”，可以直接排除。关于选项3，报道中只分析了年轻人不去留学的现实原因（实情），并未探讨“如何让”年轻人产生兴趣的具体方法，因此排除。')\">となれば、<span class=\"keyword\" onclick=\"showTooltip(event, '一概（いちがい）に：一概，无例外地（常接否定）。')\">一概に</span>若者が消極的になったせいだとも言えません。</span></span><span class=\"highlight-wrong\"><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，播音员探讨的是日本学生去“海外留学”，而不是“来日本的留学生”，可以直接排除。关于选项3，报道中只分析了年轻人不去留学的现实原因（实情），并未探讨“如何让”年轻人产生兴趣的具体方法，因此排除。')\">こうした<span class=\"keyword\" onclick=\"showTooltip(event, '実情（じつじょう）：实情，实际情况。')\">実情</span>もあるのです。</span></span>",
+              "trans": "（这么说来，也不能一概而论说是年轻人变得消极导致的。也是有这些实际情况的。）"
+            },
+            {
+              "speaker": "問",
+              "text": "アナウンサーは何について話していますか。",
+              "trans": "（播音员在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "留学する日本人学生が減っている原因",
+            "translation": "（去海外留学的日本学生减少的原因）",
+            "correct": true
+          },
+          {
+            "text": "日本への留学生を増やす計画",
+            "translation": "（增加来日本的留学生的计划）",
+            "correct": false
+          },
+          {
+            "text": "若者に留学に興味を持たせる方法",
+            "translation": "（让年轻人对留学产生兴趣的方法）",
+            "correct": false
+          },
+          {
+            "text": "海外で就職することの難しさ",
+            "translation": "（在海外就业的困难程度）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2015.12-3.mp3",
+        "script": {
+          "question": "ラジオでアナウンサーが話しています。",
+          "questionTrans": "（在广播里播音员正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "夏は海や山といった<span class=\"keyword\" onclick=\"showTooltip(event, '行楽地（こうらくち）：游览胜地。')\">行楽地</span>にお出かけになる機会も多いと思いますが、雷に注意することが必要な季節です。",
+              "trans": "（夏天去海边或山里等游览胜地游玩的机会变多了，但这也是一个需要注意雷电的季节。）"
+            },
+            {
+              "speaker": "男",
+              "text": "ごろごろといった音が聞こえたら、<span class=\"keyword\" onclick=\"showTooltip(event, 'いかに：无论多么。')\">いかに</span>小さい音であれ、まだ大丈夫だと<span class=\"keyword\" onclick=\"showTooltip(event, '過信（かしん）：过分相信，盲目自信。')\">過信</span>せず、すぐに<span class=\"keyword\" onclick=\"showTooltip(event, '避難（ひなん）：避难，躲避。')\">避難</span>する必要があります。",
+              "trans": "（一旦听到轰隆轰隆的声音，不管声音多小，都不要盲目自信觉得“还不要紧”，必须马上避难。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '播音员接下来的整段内容都在具体说明听到雷声后应该怎么做，即应对方法。符合选项4“发生雷电时的应对方法”。')\">雷は高いビルや木などに落ちる性質があるので、木などへは<span class=\"keyword\" onclick=\"showTooltip(event, '近寄（ちかよ）る：靠近，挨近。')\">近寄らず</span>、すぐに屋内に入るようにします。</span></span>",
+              "trans": "（因为雷有容易劈中高楼或树木等的性质，所以不要靠近树木等，要马上进入室内。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于前三个选项，文中提到海边和山里只是作为游玩地的举例，并没有探讨哪些地区更容易发生雷电（排除1）；也没有提及雷电造成的具体人员或财产伤亡（排除2）；更没有从科学角度解释雷电是如何形成的（排除3）。')\">もし、海や山などにいて、適切な避難場所がない場合には、高い木などのそばから離れて低い<span class=\"keyword\" onclick=\"showTooltip(event, '姿勢（しせい）：姿势。')\">姿勢</span>を取ることが大切です。</span></span>",
+              "trans": "（如果身在海边或山里等，没有合适的避难场所时，离开高大的树木等旁边、采取低姿势是非常重要的。）"
+            },
+            {
+              "speaker": "問",
+              "text": "アナウンサーは何について話していますか。",
+              "trans": "（播音员在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "雷が発生しやすい地域",
+            "translation": "（容易发生雷电的地区）",
+            "correct": false
+          },
+          {
+            "text": "雷による被害",
+            "translation": "（雷电造成的灾害）",
+            "correct": false
+          },
+          {
+            "text": "雷が発生する仕組み",
+            "translation": "（雷电发生的机制）",
+            "correct": false
+          },
+          {
+            "text": "雷が発生した場合の対処法",
+            "translation": "（发生雷电时的应对方法）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2015.12-4.mp3",
+        "script": {
+          "question": "大学の授業で先生が話しています。",
+          "questionTrans": "（在大学课堂上老师正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "皆さんは、人と会話をしているときに、<span class=\"keyword\" onclick=\"showTooltip(event, '思（おも）わず：不由得，不假思索。')\">思わず</span>相手と同時に話し始めてしまった経験はありませんか。",
+              "trans": "（各位，在和人说话的时候，有没有过不假思索地和对方同时开始说话的经历呢？）"
+            },
+            {
+              "speaker": "女",
+              "text": "そんなとき、皆さんはすぐに話を止めて、「どうぞ」と<span class=\"keyword\" onclick=\"showTooltip(event, '譲（ゆず）り合（あ）う：互相谦让。')\">譲り合う</span>のではないでしょうか。しかし、どの社会でもいえることでしょうか。",
+              "trans": "（那种时候，大家是不是会马上停下说话，互相谦让说“您先请”呢？但是，在任何社会都能这么说（适用）吗？）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师先抛出大家习以为常的谦让行为，接着用【在任何社会都能这么说吗？】进行转折，引出了关于不同社会规则的探讨。后续列举少数民族的例子正是为了论证【对话的方式因社会而异（会話の仕方は社会によって異なるものだ）】，符合选项3。')\">とある少数民族はこのようなとき、話を止めず、お互いに<span class=\"keyword\" onclick=\"showTooltip(event, '延々（えんえん）：没完没了，绵延不绝。')\">延々と</span>しゃべり続けるといいます。</span></span>",
+              "trans": "（据说某个少数民族在遇到这种情况时，不会停下来，而是互相没完没了地继续说下去。）"
+            },
+            {
+              "speaker": "女",
+              "text": "それでは、会話は<span class=\"keyword\" onclick=\"showTooltip(event, '成（な）り立（た）つ：成立，构成。')\">成り立って</span>いないと考える人も多くいるでしょう。",
+              "trans": "（那样的话，可能很多人会认为对话就不成立了吧。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①②④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '最后老师总结道，在这种少数民族社会里同时说话是理所当然的日常。老师只是客观陈述了不同社会的现象，并没有主观评价这种方式“很棒”，排除选项2。而选项1和选项4虽然是日本社会的常识，但并非老师想讲述的核心（文化差异），也可排除。')\">しかし、その少数民族の社会においては、互いに同時に話し続けることが<span class=\"keyword\" onclick=\"showTooltip(event, '当（あ）たり前（まえ）：理所当然。')\">当たり前</span>の日常なのです。</span></span>",
+              "trans": "（但是，在那个少数民族的社会里，互相同时一直说下去是理所当然的日常。）"
+            },
+            {
+              "speaker": "問",
+              "text": "先生が伝えたいことは何ですか。",
+              "trans": "（老师想传达的是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "会話のトラブルは避けたほうがいい",
+            "translation": "（最好避开对话中的麻烦/纠纷）",
+            "correct": false
+          },
+          {
+            "text": "ある少数民族の会話の仕方はすばらしい",
+            "translation": "（某个少数民族的对话方式很棒）",
+            "correct": false
+          },
+          {
+            "text": "会話の仕方は社会によって異なるものだ",
+            "translation": "（对话的方式因社会而异）",
+            "correct": true
+          },
+          {
+            "text": "会話では相手の話を聞くべきだ",
+            "translation": "（在对话中应该听对方说话）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2015.12-5.mp3",
+        "script": {
+          "question": "テレビのニュース番組でアナウンサーが話しています。",
+          "questionTrans": "（在电视的新闻节目中，播音员正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "桜町といえば、山の<span class=\"keyword\" onclick=\"showTooltip(event, '斜面（しゃめん）：斜坡，斜面。')\">斜面</span>に畑が広がる<span class=\"keyword\" onclick=\"showTooltip(event, 'のどか：悠闲，宁静，恬静。')\">のどか</span>な風景が有名です。しかし農家は後継者不足で高齢化が進み、この<span class=\"keyword\" onclick=\"showTooltip(event, '傾斜地（けいしゃち）：倾斜地，坡地。')\">傾斜地</span>での作業は<span class=\"keyword\" onclick=\"showTooltip(event, '負担（ふたん）：负担。')\">負担</span>が大きいため、雑草が伸びたまま、<span class=\"keyword\" onclick=\"showTooltip(event, '手入（てい）れ：修理，照料，保养。')\">手入れ</span>されない畑も多く見られました。",
+              "trans": "（说起樱町，那片在山坡上蔓延开来的田地所构成的宁静风景非常有名。但是，由于农户缺乏接班人，老龄化加剧，而且在这种坡地上作业负担很大，所以经常能看到杂草丛生、无人照料的田地。）"
+            },
+            {
+              "speaker": "男",
+              "text": "そこで桜町では、近くの無人島のヤギを連れてきて畑に<span class=\"keyword\" onclick=\"showTooltip(event, '放牧（ほうぼく）：放牧。')\">放牧</span>し、雑草を<span class=\"keyword\" onclick=\"showTooltip(event, '除去（じょきょ）：除去，消除。')\">除去</span>することにしました。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '播音员在这里点出了新闻的核心内容：【带附近无人岛的山羊过来放在田里放牧，用来除草（近くの無人島のヤギを連れてきて畑に放牧し、雑草を除去することにしました）】。这正好符合选项2所说的“在农活中活用山羊的例子”。')\"></span></span>",
+              "trans": "（因此，樱町决定把附近无人岛上的山羊带过来，在田里放牧，以此来清除杂草。）"
+            },
+            {
+              "speaker": "男",
+              "text": "このヤギは、島に人がいなくなった後、野生化して、島の貴重な植物を食べ、生態系を破壊する<span class=\"keyword\" onclick=\"showTooltip(event, '恐（おそ）れ：担心，恐惧，危险。')\">恐れ</span>があったため、いい機会だったというわけです。",
+              "trans": "（这些山羊在岛上没人了之后野生化了，有人担心它们会吃掉岛上珍贵的植物，破坏生态系统，所以这也算是个好机会。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，文中提到缺乏接班人只是背景，并没有提出解决这个问题的方法。关于选项3，文中提到的是野生野猪破坏农作物，而不是“家畜”。关于选项4，文中提到害怕山羊（不是野猪）破坏无人岛的生态系统，而且野猪只是因为没有草丛藏身而不来了，排除了这三个选项。')\">桜町では、野生のいのししによる農作物の被害も増えていましたが、<span class=\"keyword\" onclick=\"showTooltip(event, '草（くさ）むら：草丛。')\">草むら</span>がなくなったことで、警戒心の強いいのししは身を隠す場所を失って、<span class=\"keyword\" onclick=\"showTooltip(event, '寄（よ）り付（つ）く：靠近，挨近。')\">寄り付かなく</span>なったそうです。</span></span>",
+              "trans": "（在樱町，虽然野生野猪对农作物的破坏也在增加，但据说因为草丛没了，警惕性很强的野猪失去了藏身之处，也就不再靠近了。）"
+            },
+            {
+              "speaker": "問",
+              "text": "何についてのニュースですか。",
+              "trans": "（这是关于什么的新闻？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "農家の後継者不足を解消する方法",
+            "translation": "（消除农户缺乏接班人的方法）",
+            "correct": false
+          },
+          {
+            "text": "農家の作業にヤギを活用している例",
+            "translation": "（在农活中活用山羊的例子）",
+            "correct": true
+          },
+          {
+            "text": "家畜による農作物被害の増加",
+            "translation": "（家畜对农作物破坏的增加）",
+            "correct": false
+          },
+          {
+            "text": "いのししによる生態系の破壊",
+            "translation": "（野猪对生态系统的破坏）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "audio": "../assets/audio/2015.12-6.mp3",
+        "script": {
+          "question": "ラジオで女の人が話しています。",
+          "questionTrans": "（在广播里女人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "日本では、雪が多いいくつかの地域で、春先のよく晴れた日に、長く<span class=\"keyword\" onclick=\"showTooltip(event, '愛用（あいよう）：爱用，喜欢用。')\">愛用</span>した着物の<span class=\"keyword\" onclick=\"showTooltip(event, '生地（きじ）：布料，质地。')\">生地</span>を雪の上に<span class=\"keyword\" onclick=\"showTooltip(event, 'さらす（曝す）：暴露，风吹日晒。')\">さらす</span>ということが百年ほど前まで行われていました。",
+              "trans": "（在日本降雪较多的一些地区，直到一百年前左右，还保留着在初春晴朗的日子里，将长期爱穿的和服布料铺放在雪地上的做法。）"
+            },
+            {
+              "speaker": "女",
+              "text": "太陽の熱で溶け出した雪が<span class=\"keyword\" onclick=\"showTooltip(event, '水蒸気（すいじょうき）：水蒸气。')\">水蒸気</span>になり、それが太陽の日差しに当ることにより化学反応が起こって、汗の染みなどが消え、染められた布の色が<span class=\"keyword\" onclick=\"showTooltip(event, '蘇（よみがえ）る：复苏，复活，恢复。')\">蘇る</span>んだそうです。",
+              "trans": "（据说，因太阳热量而融化的雪会变成水蒸气，水蒸气在阳光的照射下发生化学反应，从而消除汗渍等，让染过色的布料颜色焕然一新。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人在这里点出了这种做法的本质：【在过去还没有洗涤剂的时候，人们绞尽脑汁寻找把和服弄干净的方法，最终利用自然环境创造出了这一做法（昔、洗剤などがまだない頃、着物を綺麗にするすべがないかと工夫を重ねた人々が、自然環境を活かして生み出したものです）】。整段话介绍的正是一种去除和服污渍的传统方法，符合选项1。')\">昔、洗剤などがまだない頃、着物を綺麗にする<span class=\"keyword\" onclick=\"showTooltip(event, 'すべ（術）：方法，手段。')\">すべ</span>がないかと<span class=\"keyword\" onclick=\"showTooltip(event, '工夫（くふう）：想办法，动脑筋。')\">工夫</span>を重ねた人々が、自然環境を活かして生み出したものです。</span></span>",
+              "trans": "（在过去还没有洗涤剂的时候，人们绞尽脑汁寻找把和服弄干净的方法，最终利用自然环境创造出了这一做法。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②③④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于前三个错误选项：文中讲的是把和服放在雪上洗，而不是“防止下雪天弄脏和服（排除2）”；提到颜色焕然一新，但并没有探讨“图案之美（排除3）”；讲的是清洗方法，而不是“保存的困难（排除4）”。')\">着物を着ることが少なくなった現在でも、一部の人によって行われているそうです。</span></span>",
+              "trans": "（即使在很少穿和服的现在，据说也有一部分人还在这么做。）"
+            },
+            {
+              "speaker": "女",
+              "text": "着物を着るという習慣の中で<span class=\"keyword\" onclick=\"showTooltip(event, '培（つちか）う：培养，培育。')\">培われて</span>きた知恵を感じることができます。",
+              "trans": "（从中可以感受到在穿和服的习惯中所培养出来的智慧。）"
+            },
+            {
+              "speaker": "問",
+              "text": "女の人は何について話していますか。",
+              "trans": "（女人在谈论什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "着物の染みを取る伝統的な方法",
+            "translation": "（去除和服污渍的传统方法）",
+            "correct": true
+          },
+          {
+            "text": "雪の日に着物が汚れないための工夫",
+            "translation": "（为了下雪天不弄脏和服的办法）",
+            "correct": false
+          },
+          {
+            "text": "伝統的な着物の柄の美しさ",
+            "translation": "（传统的和服图案之美）",
+            "correct": false
+          },
+          {
+            "text": "着物を綺麗に保存することの難しさ",
+            "translation": "（把和服漂亮地保存起来的困难程度）",
+            "correct": false
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2015-12-概要理解"; 
+        let currentExamKey = "2015-12"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -290,10 +579,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -632,8 +921,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-<script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+<script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261016-summary-n1-2015-12-66da55b28b83"></script>
+<script src="../shared/follow-listening.js?v=20261016-summary-n1-2015-12-66da55b28b83"></script>
+<script src="../shared/follow-listening-entry.js?v=20261016-summary-n1-2015-12-66da55b28b83"></script>
 </body>
 </html>

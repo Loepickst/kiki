@@ -35,6 +35,7 @@
     ];
 
     let nextDayId = 1;
+    const retiredWordIds = new Set([101, 102, 103, 104, 106]);
     const days = groupPlans.flatMap((plan) => {
         let cursor = 0;
         return plan.daySizes.map((size, index) => {
@@ -47,7 +48,7 @@
                 groupSummary: plan.group.summary,
                 dayNumber: index + 1,
                 title: `${index + 1}日目`,
-                wordIds
+                wordIds: wordIds.filter((id) => !retiredWordIds.has(id))
             };
         });
     });

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情報検索 - 练习与解析</title>
+    <link rel="stylesheet" href="../../../../shared/domestic-fonts.css">
+
+    <link rel="stylesheet" href="../../shared/reading-content-redesign.css?v=20260907-first-paint">
+    <link rel="stylesheet" href="../../shared/reading-tools.css?v=20260809-14">
+    <link rel="stylesheet" href="../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+</head>
+<body id="top" class="kiki-unified-header-enabled reading-article-tools-page reading-tools-no-furigana reading-content-page reading-cloze-v2">
+
+    <header class="kiki-unified-header kiki-unified-header--practice" data-kiki-unified-header="practice" data-kiki-unified-header-host="reading-practice">
+    <div class="kiki-unified-header-left">
+        <a class="kiki-unified-brand" href="../../../../index.html" aria-label="返回 kiji 首页"><img src="../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline" alt="kiji"></a>
+        <span class="kiki-unified-divider" aria-hidden="true"></span>
+        <a id="back-to-reading-index" class="kiki-unified-back" href="../../index.html?level=N2&type=search&browse=year" aria-label="返回上一页" data-kiki-dynamic-back>
+            <svg class="kiki-unified-back-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18 9 12l6-6"></path></svg>
+            <span class="kiki-unified-back-label">返回上一页</span>
+            <span class="kiki-unified-back-label-mobile" aria-hidden="true">返回</span>
+        </a>
+    </div>
+    <h1 class="kiki-unified-header-title">N2 · 情報検索</h1>
+    <div class="kiki-unified-header-right"><div class="top-actions top-bar-controls reading-editorial-actions"></div></div>
+</header>
+
+    <nav class="quick-nav sketch-box">
+        <a href="#top" class="nav-link">Top</a>
+        <div class="nav-divider"></div>
+        <a href="#poster-content" class="nav-link">案内</a>
+        <div class="nav-divider"></div>
+        <a href="#q1-card" class="nav-link">問1</a>
+        <a href="#q2-card" class="nav-link">問2</a>
+    </nav>
+
+    <div class="layout-container">
+        
+        <!-- 上部：海报区域 -->
+        <main class="article-section sketch-box" id="mainArticleContent">
+            <div class="article-meta">
+                <div class="meta-left">
+                    <span class="tag">N2 読解</span>
+                    <span class="article-title-info">2020年12月 · 情報検索</span>
+                </div>
+                <button class="translate-toggle-btn" onclick="toggleTranslation(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+                    参考訳
+                </button>
+            </div>
+            
+            <div class="poster-box" id="poster-content">
+                <div class="note-text" style="margin-top: 0; font-size: 0.92em;">トップ&gt;サービスを調べる&gt;平山空港配送サービス</div>
+
+                <div class="poster-main-title">
+                    平山空港へ送る
+                    <div class="poster-intro">
+                        ご出発の三日前までにお荷物をお預けください（営業所への持ち込み、またはご自宅への<span class="vocab-word" data-reading="しゅっちょうあずかり" data-meaning="上门取件">出張預かり</span>）。お荷物は、ご出発当日に空港内カウンターでお受け取りください。
+                    </div>
+                </div>
+
+                <div class="article-translation">
+                    寄往平山机场<br>
+                    请在出发前三天将行李交给配送公司（送到营业所，或由工作人员上门收取）。行李请在出发当天到机场内的柜台领取。
+                </div>
+
+                <div class="poster-main-title" style="margin-top: 28px;">
+                    平山空港から送る。
+                    <div class="poster-intro ks-target target-q1">
+                        通常配送に加え、当日中にお届けする「当日便」や、壊れやすいものを安全にお運びする「安全便」、食品などを冷やしたまま運送する「クール便」がご利用になれます。<span class="ks-target target-q1">ビンなどのガラス製品を送る場合は、必ず「安全便」をご利用ください。</span>
+                    </div>
+                </div>
+
+                <div class="article-translation">
+                    从平山机场寄出<br>
+                    除普通配送外，还可使用当天送达的“当日件”、安全运送易碎品的“安全件”，以及冷藏运送食品等的“冷藏件”。寄送瓶子等玻璃制品时，必须使用“安全件”。
+                </div>
+
+                <div class="note-text" style="margin-top: 26px; font-weight: 700;">空港内カウンターのご案内</div>
+                <div class="table-responsive">
+                    <table class="availability-table" style="min-width: 720px;">
+                        <thead>
+                            <tr>
+                                <th rowspan="2"></th>
+                                <th rowspan="2">カウンター名</th>
+                                <th rowspan="2">営業時間</th>
+                                <th rowspan="2">受取</th>
+                                <th colspan="4">配送サービスの種類</th>
+                            </tr>
+                            <tr>
+                                <th>通常便</th>
+                                <th>当日便</th>
+                                <th>安全便</th>
+                                <th>クール便</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="ks-target target-q1">
+                                <td>①</td>
+                                <td>ターミナル<br>2階</td>
+                                <td>6時〜22時</td>
+                                <td>○</td>
+                                <td>○</td>
+                                <td>×</td>
+                                <td>○</td>
+                                <td>○</td>
+                            </tr>
+                            <tr>
+                                <td>②</td>
+                                <td>ターミナル<br>1階北</td>
+                                <td>10時〜22時</td>
+                                <td>○</td>
+                                <td>○</td>
+                                <td>○</td>
+                                <td>○</td>
+                                <td>×</td>
+                            </tr>
+                            <tr class="ks-target target-q1">
+                                <td>③</td>
+                                <td>ターミナル<br>1階南</td>
+                                <td>6時〜20時</td>
+                                <td>○</td>
+                                <td>○</td>
+                                <td>○</td>
+                                <td>○</td>
+                                <td>○</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="article-translation">
+                    【机场内柜台】①航站楼2层：6—22时；②航站楼1层北：10—22时；③航站楼1层南：6—20时。表中的○表示可以办理，×表示不能办理。
+                </div>
+
+                <ul class="note-list">
+                    <li>空港でお荷物をお受け取りになる際、身分証明書が必要となります</li>
+                    <li>当日便は、14時までにお荷物を預ける場合に限りご利用になれます</li>
+                    <li class="ks-target target-q1">安全便とクール便は、専用ボックスの購入が必要です</li>
+                </ul>
+
+                <div class="article-translation">
+                    ・在机场领取行李时需要出示身份证明。<br>
+                    ・当日件只限在14点前交寄行李时使用。<br>
+                    ・使用安全件和冷藏件时，需要购买专用箱。
+                </div>
+
+                <div class="note-text" style="margin-top: 26px; font-weight: 700;">料金・割引について</div>
+                <ul class="note-list">
+                    <li>配送料は「料金検索」のページでお調べください</li>
+                    <li class="ks-target target-q2">空港への配送時、お近くの営業所へ直接お持ちになると100円の割引になります</li>
+                    <li class="ks-target target-q2">往復でご利用の場合、配送料の合計から200円の割引になります</li>
+                </ul>
+
+                <div class="article-translation">
+                    运费请在“费用查询”页面确认。寄往机场时，如果直接拿到附近的营业所，可优惠100日元；往返使用时，可从运费合计中优惠200日元。
+                </div>
+
+                <div class="note-text" style="margin-top: 28px; font-weight: 700;">料金検索結果【通常配送】（四国地方から平山空港へ）</div>
+                <div class="table-responsive">
+                    <table class="availability-table" style="min-width: 600px;">
+                        <thead>
+                            <tr>
+                                <th>サイズ</th>
+                                <th>大きさ<br><span style="font-weight: 400;">（縦・横・高さの合計）</span></th>
+                                <th>重さ</th>
+                                <th>配送料</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>80サイズ</td>
+                                <td>80cm以内</td>
+                                <td>5kgまで</td>
+                                <td>1,700円</td>
+                            </tr>
+                            <tr>
+                                <td>100サイズ</td>
+                                <td>100cm以内</td>
+                                <td>10kgまで</td>
+                                <td>2,000円</td>
+                            </tr>
+                            <tr class="ks-target target-q2">
+                                <td>150サイズ</td>
+                                <td>150cm以内</td>
+                                <td>18kgまで</td>
+                                <td>2,400円</td>
+                            </tr>
+                            <tr>
+                                <td>200サイズ</td>
+                                <td>200cm以内</td>
+                                <td>30kgまで</td>
+                                <td>2,800円</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="note-text ks-target target-q2" style="margin-top: 14px;">＊大きさと重さが同じサイズに当てはまらない場合、大きい方のサイズとして扱います。</div>
+                <div class="article-translation">
+                    【普通配送费用查询结果（四国地区至平山机场）】80规格：1700日元；100规格：2000日元；150规格：2400日元；200规格：2800日元。尺寸和重量不属于同一规格时，按较大的规格计算。
+                </div>
+            </div>
+            
+        </main>
+
+        <!-- 下部：题目区域 -->
+        <aside class="question-section" id="quizForm">
+            
+            <!-- 问题 1 -->
+            <div class="question-card sketch-box" data-question="q1" id="q1-card">
+                <div class="q-header">
+                    <div class="q-number" style="background: var(--marker-blue);">1</div>
+                    <div class="q-text-wrapper">
+                        <div class="q-text">
+                            海外旅行から帰国した大原さんは、今、平山空港にいる。平山空港から友人の家に、ビン入りのジュースを送ることにした。今は朝の6時で、すぐにカウンターへ行って送りたいと思っている。どうすればいいか。<br>
+                            <div class="source-jump-btn ks-theme-q1" onclick="jumpToTarget('q1')">
+                                <div class="ks-icon-text">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                                    <span>クリックして案内内の出処へ移動</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="q-text-trans">（从海外旅行归来的大原现在在平山机场。他要从机场给朋友家寄一瓶果汁。现在是早上6点，他想马上到柜台寄出，应该怎么做？）</div>
+                    </div>
+                </div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1">
+                        <input type="radio" name="q1" value="1" class="option-input">
+                        <div class="custom-radio">1</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">①へ行き、身分証明書を見せ、安全便で送る。</div>
+                            <div class="option-trans">去①号柜台，出示身份证明，用安全件寄送。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                    <label class="option-label" data-opt="2">
+                        <input type="radio" name="q1" value="2" class="option-input">
+                        <div class="custom-radio">2</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">①へ行き、専用ボックスを購入し、クール便で送る。</div>
+                            <div class="option-trans">去①号柜台，购买专用箱，用冷藏件寄送。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                    <label class="option-label" data-opt="3">
+                        <input type="radio" name="q1" value="3" class="option-input">
+                        <div class="custom-radio">3</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">①か②へ行き、専用ボックスを購入し、安全便で送る。</div>
+                            <div class="option-trans">去①号或②号柜台，购买专用箱，用安全件寄送。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                    <label class="option-label" data-opt="4">
+                        <input type="radio" name="q1" value="4" class="option-input">
+                        <div class="custom-radio">4</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">①か③へ行き、専用ボックスを購入し、安全便で送る。</div>
+                            <div class="option-trans">去①号或③号柜台，购买专用箱，用安全件寄送。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 问题 2 -->
+            <div class="question-card sketch-box" data-question="q2" id="q2-card">
+                <div class="q-header">
+                    <div class="q-number" style="background: var(--marker-peach);">2</div>
+                    <div class="q-text-wrapper">
+                        <div class="q-text">
+                            加山さんは、旅行に行くため四国地方の自宅から平山空港に荷物を送ろうと思っている。縦、横、高さの合計が90cmで重さが13kgのスーツケースを、配送会社の営業所に持っていって通常配送で送るつもりである。片道だけの利用の場合、料金はいくらになるか。<br>
+                            <div class="source-jump-btn ks-theme-q2" onclick="jumpToTarget('q2')">
+                                <div class="ks-icon-text">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                                    <span>クリックして案内・表内の出処へ移動</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="q-text-trans">（加山为了去旅行，准备从四国地区的家里把行李寄往平山机场。他要把长、宽、高合计90厘米、重13公斤的行李箱拿到配送公司的营业所，以普通配送寄出。只使用单程服务时，费用是多少？）</div>
+                    </div>
+                </div>
+                <div class="options-group">
+                    <label class="option-label" data-opt="1">
+                        <input type="radio" name="q2" value="1" class="option-input">
+                        <div class="custom-radio">1</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">2,000円から100円割引された金額</div>
+                            <div class="option-trans">从2,000日元中优惠100日元后的金额。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                    <label class="option-label" data-opt="2">
+                        <input type="radio" name="q2" value="2" class="option-input">
+                        <div class="custom-radio">2</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">2,000円から200円割引された金額</div>
+                            <div class="option-trans">从2,000日元中优惠200日元后的金额。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                    <label class="option-label" data-opt="3">
+                        <input type="radio" name="q2" value="3" class="option-input">
+                        <div class="custom-radio">3</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">2,400円から100円割引された金額</div>
+                            <div class="option-trans">从2,400日元中优惠100日元后的金额。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                    <label class="option-label" data-opt="4">
+                        <input type="radio" name="q2" value="4" class="option-input">
+                        <div class="custom-radio">4</div>
+                        <div class="option-content-wrapper">
+                            <div class="option-content">2,400円から200円割引された金額</div>
+                            <div class="option-trans">从2,400日元中优惠200日元后的金额。</div>
+                        </div>
+                        <span class="click-hint">詳細解説</span>
+                        <div class="option-detail-analysis"></div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 提交按钮 -->
+            <div class="action-bar">
+                <button type="button" class="submit-btn" id="submitBtn" onclick="submitAnswers()">答え合わせ</button>
+            </div>
+
+        </aside>
+
+    </div>
+
+    <!-- 词汇解释气泡 -->
+    <div id="vocabTooltip" class="vocab-tooltip"></div>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if(targetId === '#top') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+        });
+
+        function toggleTranslation(btn) {
+            if (!document.getElementById('mainArticleContent').classList.contains('reviewed')) {
+                alert("请先完成所有题目（点击「答え合わせ」提交），然后再查看译文哦！");
+                return;
+            }
+            
+            btn.classList.toggle('active');
+            const translations = document.querySelectorAll('.article-translation');
+            translations.forEach(el => {
+                el.classList.toggle('show');
+            });
+        }
+
+        const answerData = {
+            q1: {
+                correct: "4",
+                optAnalysis: {
+                    "1": "【✖ 排除】早上6点可以去①号柜台，玻璃瓶也必须使用安全件；但安全件需要购买专用箱。该选项漏掉了购买专用箱这一条件，而且寄件时并不要求出示身份证明。",
+                    "2": "【✖ 排除】专用箱的条件正确，但瓶子属于玻璃制品，原文明确要求必须使用安全件，而不是冷藏件。",
+                    "3": "【✖ 排除】安全件和专用箱都正确，但②号柜台的营业时间是10点到22点，早上6点尚未营业。",
+                    "4": "【✔ 正解】早上6点营业的柜台是①（6点到22点）和③（6点到20点）。瓶装果汁属于玻璃制品，必须用安全件；安全件还需要购买专用箱。三个条件全部吻合。"
+                }
+            },
+            q2: {
+                correct: "3",
+                optAnalysis: {
+                    "1": "【✖ 排除】尺寸合计90厘米属于100规格，但重量13公斤超过100规格的10公斤上限。尺寸与重量不属于同一规格时，要按较大的150规格计算，不能按2,000日元计费。",
+                    "2": "【✖ 排除】基础运费不是2,000日元；而且200日元优惠只适用于往返使用，本题只使用单程。",
+                    "3": "【✔ 正解】尺寸90厘米属于100规格，重量13公斤属于150规格。按说明取较大的150规格，基础运费为2,400日元。加山把行李直接拿到营业所，可享100日元优惠；又因只用单程，不适用往返200日元优惠。",
+                    "4": "【✖ 排除】2,400日元的基础运费正确，但本题是单程使用，不能享受往返配送的200日元优惠；营业所直送只能优惠100日元。"
+                }
+            }
+        };
+
+        document.querySelectorAll('.option-input').forEach(input => {
+            input.addEventListener('change', function() {
+                if (document.getElementById('submitBtn').disabled) return;
+
+                const name = this.name;
+                document.querySelectorAll(`input[name="${name}"]`).forEach(radio => {
+                    radio.closest('.option-label').classList.remove('selected');
+                });
+                
+                if(this.checked) {
+                    this.closest('.option-label').classList.add('selected');
+                }
+            });
+        });
+
+        // 选项点击展示独立解析的逻辑
+        document.querySelectorAll('.option-label').forEach(label => {
+            label.addEventListener('click', function(e) {
+                const group = this.closest('.options-group');
+                if(group.classList.contains('reviewed')) {
+                    const detailBox = this.querySelector('.option-detail-analysis');
+                    if(detailBox.classList.contains('show')) {
+                        detailBox.classList.remove('show');
+                    } else {
+                        group.querySelectorAll('.option-detail-analysis').forEach(box => box.classList.remove('show'));
+                        detailBox.classList.add('show');
+                    }
+                }
+            });
+        });
+
+        const vocabTooltip = document.getElementById('vocabTooltip');
+        document.querySelectorAll('.vocab-word').forEach(word => {
+            word.addEventListener('click', function(e) {
+                if (!document.getElementById('mainArticleContent').classList.contains('reviewed')) return;
+                
+                e.stopPropagation();
+                const reading = this.getAttribute('data-reading');
+                const meaning = this.getAttribute('data-meaning');
+                
+                vocabTooltip.innerHTML = `<span class="reading">${reading}</span><span class="meaning">${meaning}</span>`;
+                
+                const rect = this.getBoundingClientRect();
+                const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+                const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+                
+                vocabTooltip.style.left = `${rect.left + scrollX - 10}px`;
+                vocabTooltip.style.top = `${rect.top + scrollY - vocabTooltip.offsetHeight - 10}px`;
+                
+                vocabTooltip.classList.add('show');
+                setTimeout(() => {
+                    vocabTooltip.style.top = `${rect.top + scrollY - vocabTooltip.offsetHeight - 10}px`;
+                }, 10);
+            });
+        });
+
+        document.addEventListener('click', function() {
+            vocabTooltip.classList.remove('show');
+        });
+        
+        // 跳转逻辑函数
+        window.jumpToTarget = function(qName) {
+            const targetArticleSpans = document.querySelectorAll(`.target-${qName}`);
+            if (targetArticleSpans.length > 0) {
+                targetArticleSpans[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                targetArticleSpans.forEach(span => {
+                    span.classList.add(`revealed-${qName}`);
+                    span.classList.remove('flash-focus');
+                    void span.offsetWidth; 
+                    span.classList.add('flash-focus');
+                });
+            }
+        };
+
+        function submitAnswers() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+
+            if (!q1 || !q2) {
+                alert("すべての問いに答えてください。（请回答所有問題）");
+                return;
+            }
+
+            const userAnswers = { q1: q1.value, q2: q2.value };
+            let score = 0;
+
+            document.querySelectorAll('.option-input').forEach(input => {
+                input.disabled = true;
+                input.closest('.option-label').classList.add('disabled'); 
+            });
+            
+            document.querySelectorAll('.options-group').forEach(group => {
+                group.classList.add('reviewed');
+            });
+
+            document.getElementById('mainArticleContent').classList.add('reviewed');
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+
+            Object.keys(answerData).forEach(qName => {
+                const qCard = document.querySelector(`.question-card[data-question="${qName}"]`);
+                qCard.classList.add('reviewed');
+
+                const data = answerData[qName];
+                const correctVal = data.correct;
+                const userVal = userAnswers[qName];
+
+                qCard.querySelectorAll('.option-label').forEach(label => {
+                    const input = label.querySelector('.option-input');
+                    const optVal = input.value;
+                    
+                    if (optVal === correctVal) {
+                        label.classList.add('is-correct');
+                        label.querySelector('.custom-radio').innerHTML = '✔';
+                    }
+                    if (optVal === userVal && userVal !== correctVal) {
+                        label.classList.add('is-wrong');
+                        label.querySelector('.custom-radio').innerHTML = '✖';
+                    }
+                    
+                    const detailBox = label.querySelector('.option-detail-analysis');
+                    if (detailBox) {
+                        detailBox.innerText = data.optAnalysis[optVal];
+                    }
+                });
+
+                if (userVal === correctVal) {
+                    score++;
+                }
+
+                // 答题后不再直接高亮，由用户点击按钮触发
+            });
+
+            if (score === 2) {
+                btn.innerText = "全問正解！素晴らしい！";
+                btn.style.background = "var(--marker-mint)";
+                btn.style.color = "var(--green-pencil)";
+            } else {
+                btn.innerText = `完了 (${score}/2 正解)`;
+                btn.style.background = "var(--marker-peach)";
+                btn.style.color = "var(--red-pencil)";
+            }
+        }
+    </script>
+
+    <script src="../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="../../shared/reading-year-system.js?v=20260809-reading-mistakes"></script>
+    
+
+<script src="../../shared/reading-analysis-n2-search.js?v=20260902-n2-search-1"></script>
+<script src="../../shared/reading-practice-redesign.js?v=20261011-scoped-lookup-3"></script>
+<script src="../../shared/reading-tools.js?v=20261011-scoped-lookup-3"></script>
+<script src="../../shared/reading-dt-year-session.js?v=20260809-reading-mistakes"></script>
+    <script src="../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../shared/selection-dictionary.js?v=20261012-lookup-spelling-2" data-lookup-scope="reading"></script>
+</body>
+</html>

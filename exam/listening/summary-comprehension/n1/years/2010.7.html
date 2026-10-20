@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>概要理解 - 聴解練習 (N1 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
+<link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20261015-summary-n1-2010-07-70b4b56362f6">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,137 +192,342 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
 <script>
         // --- Data Structure (针对概要理解 Summary Comprehension 的特制数据) ---
         const examData = {
-            "N1-2010-07-概要理解": {
-                label: "2010年7月 (N1)",
-                questions: [
-                    {
-                        id: 1,
-                        audio: "../assets/audio/2010.07-1.mp3", 
-                        script: {
-                            question: "一番：留守番電話のメッセージを聞いています。留守番電話の内容はどのようなことですか。",
-                            questionTrans: "（第一题：正在听电话留言。留言的内容是什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "田中です、明日のことでお電話したんですけど。", trans: "（我是田中，为了明天的事情给您打了电话。）" },
-                                { speaker: "女", text: "あのう、大変申し訳ないんですが、父がちょっと具合が悪くなりまして、あっ、父は今大阪にいるんですけど、姉が大阪に行くことになったんです。", trans: "（那个，非常抱歉，我父亲身体有点不舒服，啊，父亲现在在大阪，我姐姐决定去大阪了。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女士说的是【由我来照顾姐姐的孩子们（姉の子供たちの面倒を私が見ることになりまして）】，而不是拜托对方照顾孩子，可以排除。')\">それで、姉の子供たちの面倒を私が見ることになりまして、</span></span>", trans: "（因此，变成了由我来照顾姐姐的孩子们，）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女士在说明了家庭突发状况后，明确提出了她的核心诉求：【如果能把明天的约定改到别的日子就好了（明日のお約束別の日にしていただければと思いまして）】，这完全符合选项2的“想要更改约定”。')\">大変申し訳ないんですが、明日のお約束別の日にしていただければと思いまして、</span></span>またこちらからお電話いたします。失礼します。", trans: "（非常抱歉，希望能把明天的约定改到其他日子，我会再给您打电话的。打扰了。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "子供の世話をしてほしい", translation: "（希望对方帮忙照顾孩子）", correct: false },
-                            { text: "約束を変更したい", translation: "（想要更改约定）", correct: true },
-                            { text: "一緒に大阪に行きたい", translation: "（想一起去大阪）", correct: false },
-                            { text: "会う場所を決めたい", translation: "（想要决定见面的地点）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        audio: "../assets/audio/2010.07-2.mp3",
-                        script: {
-                            question: "二番：テレビで女の人が話しています。女の人の話のテーマは何ですか。",
-                            questionTrans: "（第二题：在电视上女人正在讲话。女人讲话的主题是什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女人开头确实提到了小时候学乐器，但这只是引出后面“没想过当女演员”的铺垫，并非整段话的主题，可以排除。')\">母がピアノの先生だったので、子どものころから、楽器や歌を習ったりしていました。</span></span>でも、父は普通の会社員でしたし、女優になるなんて、<span class=\"keyword\" onclick=\"showTooltip(event, '夢（ゆめ）にも思（おも）わない：做梦也没想到。')\">夢にも思っていませんでした</span>。", trans: "（因为母亲是钢琴老师，所以我从小就学习乐器和唱歌。但是，父亲是个普通的上班族，成为女演员这种事，我做梦都没想过。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，提到大学朋友对戏剧着迷只是为了说明自己去剧团帮忙的原因，并不是讲话的核心主题，可以排除。')\">大学のときの友達に演劇に<span class=\"keyword\" onclick=\"showTooltip(event, '夢中（むちゅう）：热衷，着迷。')\">夢中</span>の子がいて、一緒によく<span class=\"keyword\" onclick=\"showTooltip(event, '劇（げき）：戏剧，话剧。')\">劇</span>を見に行っていたんですが</span></span>、あるとき、彼女の<span class=\"keyword\" onclick=\"showTooltip(event, '所属（しょぞく）：所属，附属。')\">所属</span>する劇団で、頼まれて、ちょっとした役をやったんです。", trans: "（大学时的朋友中有一个对戏剧很着迷的女孩，我们经常一起去看剧，有一次，在她所属的剧团里，受人拜托，我演了一个小角色。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人说明了自己原本没想过当女演员，因为帮朋友的剧团演了一个小角色，【偶然被一位电影导演看到，并向我搭了话（それをある映画監督がたまたま見ていて、声をかけてくださったんです）】。最后总结说【因此，我进入了这条道路（それで、この道に入りました）】。这符合选项3“成为女演员的契机”。同时由于她是被导演发掘，并未成为导演，可以排除选项4。')\">それをある映画監督が<span class=\"keyword\" onclick=\"showTooltip(event, 'たまたま：偶然，碰巧。')\">たまたま</span>見ていて、声をかけてくださったんです。それで、この道に入りました。</span></span>", trans: "（那个恰好被一位电影导演看到了，就过来和我搭话了。因此，我进入了这条道路（成为了女演员）。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "子どもの頃の思い出", translation: "（小时候的回忆）", correct: false },
-                            { text: "大学時代の友人との思い出", translation: "（大学时代和朋友的回忆）", correct: false },
-                            { text: "女優になったきっかけ", translation: "（成为女演员的契机）", correct: true },
-                            { text: "映画監督になったきっかけ", translation: "（成为电影导演的契机）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        audio: "../assets/audio/2010.07-3.mp3",
-                        script: {
-                            question: "三番：食品会社の社長がラジオで話しています。社長は自分の会社の商品についてどう考えていますか。",
-                            questionTrans: "（第三题：食品公司的社长正在广播里讲话。社长对自家公司的商品是怎么考虑的？）",
-                            dialogue: [
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3和4，社长提到【气味很重的、太酸的、太辣的东西，为了让孩子和年轻人也容易吃，似乎都被改变了味道再出售（においが強いものや、酸っぱすぎたり、辛すぎたりする物は子どもや若い人でも食べやすいように変えて売られているようです）】，这是目前社会的普遍趋势，并非他自家公司的做法，可以排除。')\">最近は食べ物にいろいろな<span class=\"keyword\" onclick=\"showTooltip(event, '工夫（くふう）：下功夫，想办法。')\">工夫</span>がされていて、においが強いものや、酸っぱすぎたり、辛すぎたりする物は子どもや若い人でも食べやすいように変えて売られているようです。</span></span>", trans: "（最近食物上做了各种各样的改进，气味很重的、太酸的、太辣的东西，为了让孩子和年轻人也容易吃，似乎都被改变了味道再出售。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，社长的目标是让人想起小时候的味道，并非开发【前所未有的味道（いままでにない味）】，排除。')\">一方、昔からの味が懐かしいという方からの意見も多く、</span></span><span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '社长明确表达了自家公司的理念：【我们公司认为，传承味道就是传承文化，因此致力于制作让人能回想起小时候吃过的味道的商品（わが社では、味を伝えることは文化を伝えること、と考え、子どものころに食べた味を思い出すような商品を作るようにしています）】。这符合选项2的“想珍惜/重视传统的味道”。')\">わが社では、味を伝えることは文化を伝えること、と考え、子どものころに食べた味を思い出すような商品を作るようにしています。</span></span>", trans: "（另一方面，也有很多意见说怀念从前传统的味道，在我们公司，我们认为传承味道就是传承文化，因此致力于制作让人能回想起小时候吃过的味道的商品。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "いままでにない味を開発したい", translation: "（想开发前所未有的味道）", correct: false },
-                            { text: "昔からの味を大切にしたい", translation: "（想珍惜/重视传统的味道）", correct: true },
-                            { text: "若い人向けの商品を作りたい", translation: "（想制作面向年轻人的商品）", correct: false },
-                            { text: "刺激の少ない商品を作りたい", translation: "（想制作刺激少的商品）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        audio: "../assets/audio/2010.07-4.mp3",
-                        script: {
-                            question: "四番：大学の授業で先生が話しています。先生はどのようなテーマで話していますか。",
-                            questionTrans: "（第四题：在大学的课堂上老师正在讲话。老师在谈论什么样的主题？）",
-                            dialogue: [
-                                { speaker: "女", text: "最近日本でよく使われているものに、リネンという布があります。", trans: "（最近在日本经常被使用的物品中，有一种叫做亚麻的布料。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中确实提到了【结实且对皮肤温和（丈夫で肌にもやさしい）】，但这只是说明它被广泛使用的原因，并不是全篇的中心主题，可以排除。')\">リネンは<span class=\"keyword\" onclick=\"showTooltip(event, '丈夫（じょうぶ）：结实，牢固。')\">丈夫</span>で<span class=\"keyword\" onclick=\"showTooltip(event, '肌（はだ）にやさしい：对皮肤温和，不伤皮肤。')\">肌にもやさしい</span>性質のため、昔からいろいろなものに利用されてきました。</span></span>", trans: "（亚麻因为结实且对皮肤温和的性质，从以前开始就被利用于各种各样的东西上。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师列举了各种用途，比如【床单和枕套等寝具，毛巾，用餐时的餐巾（シーツや枕カバーと言った寝具、タオル、食事用のナプキン）】等，紧扣亚麻的用途（使われ方），符合选项3。')\">代表的なものに、<span class=\"keyword\" onclick=\"showTooltip(event, 'シーツ（sheets）：床单。')\">シーツ</span>や<span class=\"keyword\" onclick=\"showTooltip(event, '枕（まくら）カバー：枕套。')\">枕カバー</span>と言った<span class=\"keyword\" onclick=\"showTooltip(event, '寝具（しんぐ）：寝具，床上用品。')\">寝具</span>、タオル、食事用の<span class=\"keyword\" onclick=\"showTooltip(event, 'ナプキン（napkin）：餐巾。')\">ナプキン</span>などがあります。</span></span>", trans: "（具有代表性的有，床单和枕套等寝具，毛巾，用餐时的餐巾等。）" },
-                                { speaker: "女", text: "また、西洋では古くからリネン素材で下着を作ってきました。", trans: "（此外，在西方，从很久以前开始就用亚麻材质制作内衣。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '虽然提到了【最近，在日本亚麻材质也开始被用于女装了（最近、日本でもリネン素材が婦人服にも使われるようになっています）】，但文章重点讲的是从古至今亚麻在各个领域的用途，并非单纯讨论它是否流行，排除。')\">最近、日本でもリネン素材が婦人服にも使われるようになっています。</span></span>", trans: "（最近，在日本亚麻材质也开始被用于女装了。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '最后总结【亚麻变换成各种各样产品的形态，在人们的生活中发挥着作用（リネンはさまざまな製品に形を変え、人々の暮らしに役立っているのです）】。整段话都在围绕亚麻被用在哪些地方展开，这也符合选项3。此外，文中完全没有提到制作方法，可排除选项1。')\">リネンはさまざまな製品に形を変え、人々の暮らしに<span class=\"keyword\" onclick=\"showTooltip(event, '役立（やくだ）つ：起作用，有用。')\">役立っている</span>のです。</span></span>", trans: "（亚麻变换成各种各样产品的形态，在人们的生活中发挥着作用。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "リネンの作り方", translation: "（亚麻的制作方法）", correct: false },
-                            { text: "リネンの性質", translation: "（亚麻的性质）", correct: false },
-                            { text: "リネンの使われ方", translation: "（亚麻的使用方法 / 用途）", correct: true },
-                            { text: "リネンの流行", translation: "（亚麻的流行）", correct: false }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        audio: "../assets/audio/2010.07-5.mp3",
-                        script: {
-                            question: "五番：大学の卒業式で学長が話しています。学長が言いたいのはどのようなことですか。",
-                            questionTrans: "（第五题：在大学的毕业典礼上校长正在讲话。校长想表达的是什么？）",
-                            dialogue: [
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和2，校长提到【应该已经从各位前辈那里收到了诸如“要有作为社会人的自觉和责任”、“遵守时间是社会人的规则”等各种各样的建议（諸先輩方から社会人としての自覚と責任をもとう、時間を守るのが、社会人のルールだ、などいろいろな助言を受けている）】，这是前辈们的建议，而不是校长自己最想表达的核心内容，可以排除。')\">これから社会に出て行くみなさんは、<span class=\"keyword\" onclick=\"showTooltip(event, '諸先輩（しょせんぱい）：各位前辈。')\">諸先輩</span>方から社会人としての自覚と責任をもとう、時間を守るのが、社会人のルールだ、などいろいろな助言を受けていることと思います。</span></span>", trans: "（这之后即将步入社会的各位，我想应该已经从各位前辈那里收到了诸如“要有作为社会人的自觉和责任”、“遵守时间是社会人的规则”等各种各样的建议。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，校长确实说【希望大家成为拥有强大内心的人（強い心を持った人になってほしい）】，但他紧接着解释他所指的坚强是“能对他人温柔相待”，而不是选项3所说的“不改变意志”，因此排除。')\">私は皆さんにはぜひ強い心を持った人になってほしいと思います。本当に強い人というのは他人にやさしくできるものです。</span></span>", trans: "（我希望大家能成为拥有强大内心的人。真正坚强的人是能够对他人温柔相待的。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '校长在最后明确总结了自己的期望：【不去与人争抢，期望大家能成为能够体恤他人、理解他人痛苦的人（人と争うのではなく、人をいたわることのできる、人の痛みのわかる人間になってほしいと願っています）】。这符合选项4“希望拥有体贴关怀之心”的描述。')\">困難の多いこんな時代だからこそ、人と争うのではなく、人を<span class=\"keyword\" onclick=\"showTooltip(event, 'いたわる（労る）：体恤，慰劳，关心。')\">いたわる</span>ことのできる、人の痛みのわかる人間になってほしいと願っています。</span></span>", trans: "（正因为是充满困难的这样的时代，所以不去与人争抢，我期望大家能成为能够体恤他人、理解他人痛苦的人。）" }
-                            ]
-                        },
-                        options: [
-                            { text: "社会人としての責任感を持ってほしい", translation: "（希望具有作为社会人的责任感）", correct: false },
-                            { text: "社会のルールを守る人になってほしい", translation: "（希望成为遵守社会规则的人）", correct: false },
-                            { text: "意志を曲げない強い人になってほしい", translation: "（希望成为意志坚定的坚强之人）", correct: false },
-                            { text: "思いやりの心を持ってほしい", translation: "（希望拥有体贴关怀之心）", correct: true }
-                        ]
-                    },
-                    {
-                        id: 6,
-                        audio: "../assets/audio/2010.07-6.mp3",
-                        script: {
-                            question: "六番：テレビで女の人が話しています。女の人の話のテーマは何ですか。",
-                            questionTrans: "（第六题：在电视上女人正在讲话。女人讲话的主题是什么？）",
-                            dialogue: [
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，女人在开场提到【最近青少年犯罪的新闻在激增（最近、青少年の犯罪のニュースが急増しています）】，但这只是引出后续讨论的背景，并不是她要探讨的核心主题，可以排除。')\">最近、青少年の犯罪のニュースが<span class=\"keyword\" onclick=\"showTooltip(event, '急増（きゅうぞう）：猛增，激增。')\">急増</span>しています。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女人提到【也可以认为围绕孩子们的环境变化是原因之一（子どもを取り巻く環境の変化も一因として考えられるでしょう）】，但这只是作为犯罪增加的背景原因之一提及，同样不是中心主题，排除。')\">子どもを<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り巻（ま）く：围绕，包围。')\">取り巻く</span>環境の変化も<span class=\"keyword\" onclick=\"showTooltip(event, '一因（いちいん）：一个原因，原因之一。')\">一因</span>として考えられるでしょう。</span></span>", trans: "（最近，关于青少年犯罪的新闻在激增。也可以认为，围绕孩子们的环境变化是原因之一。）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人抛出核心疑问【今后，应该采取怎样的对策才好呢（今後、どのように対策を講じたらよいのでしょうか）】，并随后给出了自己对于对策的见解，这说明整段话都在探讨应对青少年犯罪的对策，符合选项4。同时文中完全没有提及父母应该采取的态度，可排除选项2。')\">では、今後、どのように対策を<span class=\"keyword\" onclick=\"showTooltip(event, '講（こう）じる：采取（对策、措施等）。')\">講じたら</span>よいのでしょうか。</span></span>日本には犯罪を<span class=\"keyword\" onclick=\"showTooltip(event, '犯（おか）す：犯（罪）。')\">犯した</span>未成年者を保護する法律がありますが、たとえ未成年者といえども、犯した罪の重さは同じだという考え方もあります。", trans: "（那么，今后应该采取怎样的对策才好呢？日本有保护犯下罪行的未成年人的法律，但也有观点认为，即使是未成年人，所犯罪行的严重程度也是一样的。）" },
-                                { speaker: "女", text: "私は個人的には犯した罪の責任を取らせるようにしないかぎりは、このような犯罪は減らないんじゃないかと思っています。こういうことをしたらこういう<span class=\"keyword\" onclick=\"showTooltip(event, '罰（ばつ）：惩罚，处罚。')\">罰</span>があるということを<span class=\"keyword\" onclick=\"showTooltip(event, '毅然（きぜん）とした：坚决的，毅然的。')\">毅然とした</span>態度で示す必要があるのではないでしょうか。", trans: "（我个人认为，除非让他们承担所犯罪行的责任，否则这类犯罪是不会减少的。难道不需要以坚决的态度来表明“做了这种事就会有这种惩罚”吗？）" }
-                            ]
-                        },
-                        options: [
-                            { text: "子どもを取り巻く環境の変化", translation: "（围绕孩子们的环境变化）", correct: false },
-                            { text: "子供に対して親がとるべき態度", translation: "（父母对孩子应该采取的态度）", correct: false },
-                            { text: "青少年による犯罪の増加", translation: "（青少年犯罪的增加）", correct: false },
-                            { text: "青少年の犯罪への対応策", translation: "（应对青少年犯罪的对策）", correct: true }
-                        ]
-                    }
-                ]
+  "2010-07": {
+    "label": "2010年7月 (N1)",
+    "questions": [
+      {
+        "id": 1,
+        "audio": "../assets/audio/2010.07-1.mp3",
+        "script": {
+          "question": "留守番電話のメッセージを聞いています。",
+          "questionTrans": "（正在听电话留言。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "田中です、明日のことでお電話したんですけど。",
+              "trans": "（我是田中，为了明天的事情给您打了电话。）"
+            },
+            {
+              "speaker": "女",
+              "text": "あのう、大変申し訳ないんですが、父がちょっと具合が悪くなりまして、あっ、父は今大阪にいるんですけど、姉が大阪に行くことになったんです。",
+              "trans": "（那个，非常抱歉，我父亲身体有点不舒服，啊，父亲现在在大阪，我姐姐决定去大阪了。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女士说的是【由我来照顾姐姐的孩子们（姉の子供たちの面倒を私が見ることになりまして）】，而不是拜托对方照顾孩子，可以排除。')\">それで、姉の子供たちの面倒を私が見ることになりまして、</span></span><span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女士在说明了家庭突发状况后，明确提出了她的核心诉求：【如果能把明天的约定改到别的日子就好了（明日のお約束別の日にしていただければと思いまして）】，这完全符合选项2的“想要更改约定”。')\">大変申し訳ないんですが、明日のお約束別の日にしていただければと思いまして、</span></span>またこちらからお電話いたします。失礼します。",
+              "trans": "（因此，变成了由我来照顾姐姐的孩子们，非常抱歉，希望能把明天的约定改到其他日子，我会再给您打电话的。打扰了。）"
+            },
+            {
+              "speaker": "問",
+              "text": "留守番電話の内容はどのようなことですか。",
+              "trans": "（留言的内容是什么？）"
             }
-        };
+          ]
+        },
+        "options": [
+          {
+            "text": "子供の世話をしてほしい",
+            "translation": "（希望对方帮忙照顾孩子）",
+            "correct": false
+          },
+          {
+            "text": "約束を変更したい",
+            "translation": "（想要更改约定）",
+            "correct": true
+          },
+          {
+            "text": "一緒に大阪に行きたい",
+            "translation": "（想一起去大阪）",
+            "correct": false
+          },
+          {
+            "text": "会う場所を決めたい",
+            "translation": "（想要决定见面的地点）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "audio": "../assets/audio/2010.07-2.mp3",
+        "script": {
+          "question": "テレビで女の人が話しています。",
+          "questionTrans": "（在电视上女人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女人开头确实提到了小时候学乐器，但这只是引出后面“没想过当女演员”的铺垫，并非整段话的主题，可以排除。')\">母がピアノの先生だったので、子どものころから、楽器や歌を習ったりしていました。</span></span><span class=\"highlight-wrong\"><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女人开头确实提到了小时候学乐器，但这只是引出后面“没想过当女演员”的铺垫，并非整段话的主题，可以排除。')\"></span></span>でも、父は普通の会社員でしたし、女優になるなんて、<span class=\"keyword\" onclick=\"showTooltip(event, '夢（ゆめ）にも思（おも）わない：做梦也没想到。')\">夢にも思っていませんでした</span>。",
+              "trans": "（因为母亲是钢琴老师，所以我从小就学习乐器和唱歌。但是，父亲是个普通的上班族，成为女演员这种事，我做梦都没想过。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，提到大学朋友对戏剧着迷只是为了说明自己去剧团帮忙的原因，并不是讲话的核心主题，可以排除。')\">大学のときの友達に演劇に<span class=\"keyword\" onclick=\"showTooltip(event, '夢中（むちゅう）：热衷，着迷。')\">夢中</span>の子がいて、一緒によく<span class=\"keyword\" onclick=\"showTooltip(event, '劇（げき）：戏剧，话剧。')\">劇</span>を見に行っていたんですが</span></span>、あるとき、彼女の<span class=\"keyword\" onclick=\"showTooltip(event, '所属（しょぞく）：所属，附属。')\">所属</span>する劇団で、頼まれて、ちょっとした役をやったんです。",
+              "trans": "（大学时的朋友中有一个对戏剧很着迷的女孩，我们经常一起去看剧，有一次，在她所属的剧团里，受人拜托，我演了一个小角色。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人说明了自己原本没想过当女演员，因为帮朋友的剧团演了一个小角色，【偶然被一位电影导演看到，并向我搭了话（それをある映画監督がたまたま見ていて、声をかけてくださったんです）】。最后总结说【因此，我进入了这条道路（それで、この道に入りました）】。这符合选项3“成为女演员的契机”。同时由于她是被导演发掘，并未成为导演，可以排除选项4。')\">それをある映画監督が<span class=\"keyword\" onclick=\"showTooltip(event, 'たまたま：偶然，碰巧。')\">たまたま</span>見ていて、声をかけてくださったんです。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人说明了自己原本没想过当女演员，因为帮朋友的剧团演了一个小角色，【偶然被一位电影导演看到，并向我搭了话（それをある映画監督がたまたま見ていて、声をかけてくださったんです）】。最后总结说【因此，我进入了这条道路（それで、この道に入りました）】。这符合选项3“成为女演员的契机”。同时由于她是被导演发掘，并未成为导演，可以排除选项4。')\">それで、この道に入りました。</span></span>",
+              "trans": "（那个恰好被一位电影导演看到了，就过来和我搭话了。因此，我进入了这条道路（成为了女演员）。）"
+            },
+            {
+              "speaker": "問",
+              "text": "女の人の話のテーマは何ですか。",
+              "trans": "（女人讲话的主题是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "子どもの頃の思い出",
+            "translation": "（小时候的回忆）",
+            "correct": false
+          },
+          {
+            "text": "大学時代の友人との思い出",
+            "translation": "（大学时代和朋友的回忆）",
+            "correct": false
+          },
+          {
+            "text": "女優になったきっかけ",
+            "translation": "（成为女演员的契机）",
+            "correct": true
+          },
+          {
+            "text": "映画監督になったきっかけ",
+            "translation": "（成为电影导演的契机）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "audio": "../assets/audio/2010.07-3.mp3",
+        "script": {
+          "question": "食品会社の社長がラジオで話しています。",
+          "questionTrans": "（食品公司的社长正在广播里讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3和4，社长提到【气味很重的、太酸的、太辣的东西，为了让孩子和年轻人也容易吃，似乎都被改变了味道再出售（においが強いものや、酸っぱすぎたり、辛すぎたりする物は子どもや若い人でも食べやすいように変えて売られているようです）】，这是目前社会的普遍趋势，并非他自家公司的做法，可以排除。')\">最近は食べ物にいろいろな<span class=\"keyword\" onclick=\"showTooltip(event, '工夫（くふう）：下功夫，想办法。')\">工夫</span>がされていて、においが強いものや、酸っぱすぎたり、辛すぎたりする物は子どもや若い人でも食べやすいように変えて売られているようです。</span></span>",
+              "trans": "（最近食物上做了各种各样的改进，气味很重的、太酸的、太辣的东西，为了让孩子和年轻人也容易吃，似乎都被改变了味道再出售。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，社长的目标是让人想起小时候的味道，并非开发【前所未有的味道（いままでにない味）】，排除。')\">一方、昔からの味が懐かしいという方からの意見も多く、</span></span><span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '社长明确表达了自家公司的理念：【我们公司认为，传承味道就是传承文化，因此致力于制作让人能回想起小时候吃过的味道的商品（わが社では、味を伝えることは文化を伝えること、と考え、子どものころに食べた味を思い出すような商品を作るようにしています）】。这符合选项2的“想珍惜/重视传统的味道”。')\">わが社では、味を伝えることは文化を伝えること、と考え、子どものころに食べた味を思い出すような商品を作るようにしています。</span></span>",
+              "trans": "（另一方面，也有很多意见说怀念从前传统的味道，在我们公司，我们认为传承味道就是传承文化，因此致力于制作让人能回想起小时候吃过的味道的商品。）"
+            },
+            {
+              "speaker": "問",
+              "text": "社長は自分の会社の商品についてどう考えていますか。",
+              "trans": "（社长对自家公司的商品是怎么考虑的？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "いままでにない味を開発したい",
+            "translation": "（想开发前所未有的味道）",
+            "correct": false
+          },
+          {
+            "text": "昔からの味を大切にしたい",
+            "translation": "（想珍惜/重视传统的味道）",
+            "correct": true
+          },
+          {
+            "text": "若い人向けの商品を作りたい",
+            "translation": "（想制作面向年轻人的商品）",
+            "correct": false
+          },
+          {
+            "text": "刺激の少ない商品を作りたい",
+            "translation": "（想制作刺激少的商品）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "audio": "../assets/audio/2010.07-4.mp3",
+        "script": {
+          "question": "大学の授業で先生が話しています。",
+          "questionTrans": "（在大学的课堂上老师正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "最近日本でよく使われているものに、リネンという布があります。",
+              "trans": "（最近在日本经常被使用的物品中，有一种叫做亚麻的布料。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '文中确实提到了【结实且对皮肤温和（丈夫で肌にもやさしい）】，但这只是说明它被广泛使用的原因，并不是全篇的中心主题，可以排除。')\">リネンは<span class=\"keyword\" onclick=\"showTooltip(event, '丈夫（じょうぶ）：结实，牢固。')\">丈夫</span>で<span class=\"keyword\" onclick=\"showTooltip(event, '肌（はだ）にやさしい：对皮肤温和，不伤皮肤。')\">肌にもやさしい</span>性質のため、昔からいろいろなものに利用されてきました。</span></span>",
+              "trans": "（亚麻因为结实且对皮肤温和的性质，从以前开始就被利用于各种各样的东西上。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '老师列举了各种用途，比如【床单和枕套等寝具，毛巾，用餐时的餐巾（シーツや枕カバーと言った寝具、タオル、食事用のナプキン）】等，紧扣亚麻的用途（使われ方），符合选项3。')\">代表的なものに、<span class=\"keyword\" onclick=\"showTooltip(event, 'シーツ（sheets）：床单。')\">シーツ</span>や<span class=\"keyword\" onclick=\"showTooltip(event, '枕（まくら）カバー：枕套。')\">枕カバー</span>と言った<span class=\"keyword\" onclick=\"showTooltip(event, '寝具（しんぐ）：寝具，床上用品。')\">寝具</span>、タオル、食事用の<span class=\"keyword\" onclick=\"showTooltip(event, 'ナプキン（napkin）：餐巾。')\">ナプキン</span>などがあります。</span></span>",
+              "trans": "（具有代表性的有，床单和枕套等寝具，毛巾，用餐时的餐巾等。）"
+            },
+            {
+              "speaker": "女",
+              "text": "また、西洋では古くからリネン素材で下着を作ってきました。",
+              "trans": "（此外，在西方，从很久以前开始就用亚麻材质制作内衣。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '虽然提到了【最近，在日本亚麻材质也开始被用于女装了（最近、日本でもリネン素材が婦人服にも使われるようになっています）】，但文章重点讲的是从古至今亚麻在各个领域的用途，并非单纯讨论它是否流行，排除。')\">最近、日本でもリネン素材が婦人服にも使われるようになっています。</span></span>",
+              "trans": "（最近，在日本亚麻材质也开始被用于女装了。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '最后总结【亚麻变换成各种各样产品的形态，在人们的生活中发挥着作用（リネンはさまざまな製品に形を変え、人々の暮らしに役立っているのです）】。整段话都在围绕亚麻被用在哪些地方展开，这也符合选项3。此外，文中完全没有提到制作方法，可排除选项1。')\">リネンはさまざまな製品に形を変え、人々の暮らしに<span class=\"keyword\" onclick=\"showTooltip(event, '役立（やくだ）つ：起作用，有用。')\">役立っている</span>のです。</span></span>",
+              "trans": "（亚麻变换成各种各样产品的形态，在人们的生活中发挥着作用。）"
+            },
+            {
+              "speaker": "問",
+              "text": "先生はどのようなテーマで話していますか。",
+              "trans": "（老师在谈论什么样的主题？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "リネンの作り方",
+            "translation": "（亚麻的制作方法）",
+            "correct": false
+          },
+          {
+            "text": "リネンの性質",
+            "translation": "（亚麻的性质）",
+            "correct": false
+          },
+          {
+            "text": "リネンの使われ方",
+            "translation": "（亚麻的使用方法 / 用途）",
+            "correct": true
+          },
+          {
+            "text": "リネンの流行",
+            "translation": "（亚麻的流行）",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "audio": "../assets/audio/2010.07-5.mp3",
+        "script": {
+          "question": "大学の卒業式で学長が話しています。",
+          "questionTrans": "（在大学的毕业典礼上校长正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和2，校长提到【应该已经从各位前辈那里收到了诸如“要有作为社会人的自觉和责任”、“遵守时间是社会人的规则”等各种各样的建议（諸先輩方から社会人としての自覚と責任をもとう、時間を守るのが、社会人のルールだ、などいろいろな助言を受けている）】，这是前辈们的建议，而不是校长自己最想表达的核心内容，可以排除。')\">これから社会に出て行くみなさんは、<span class=\"keyword\" onclick=\"showTooltip(event, '諸先輩（しょせんぱい）：各位前辈。')\">諸先輩</span>方から社会人としての自覚と責任をもとう、時間を守るのが、社会人のルールだ、などいろいろな助言を受けていることと思います。</span></span>",
+              "trans": "（这之后即将步入社会的各位，我想应该已经从各位前辈那里收到了诸如“要有作为社会人的自觉和责任”、“遵守时间是社会人的规则”等各种各样的建议。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，校长确实说【希望大家成为拥有强大内心的人（強い心を持った人になってほしい）】，但他紧接着解释他所指的坚强是“能对他人温柔相待”，而不是选项3所说的“不改变意志”，因此排除。')\">私は皆さんにはぜひ強い心を持った人になってほしいと思います。</span></span><span class=\"highlight-wrong\"><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，校长确实说【希望大家成为拥有强大内心的人（強い心を持った人になってほしい）】，但他紧接着解释他所指的坚强是“能对他人温柔相待”，而不是选项3所说的“不改变意志”，因此排除。')\">本当に強い人というのは他人にやさしくできるものです。</span></span>",
+              "trans": "（我希望大家能成为拥有强大内心的人。真正坚强的人是能够对他人温柔相待的。）"
+            },
+            {
+              "speaker": "男",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '校长在最后明确总结了自己的期望：【不去与人争抢，期望大家能成为能够体恤他人、理解他人痛苦的人（人と争うのではなく、人をいたわることのできる、人の痛みのわかる人間になってほしいと願っています）】。这符合选项4“希望拥有体贴关怀之心”的描述。')\">困難の多いこんな時代だからこそ、人と争うのではなく、人を<span class=\"keyword\" onclick=\"showTooltip(event, 'いたわる（労る）：体恤，慰劳，关心。')\">いたわる</span>ことのできる、人の痛みのわかる人間になってほしいと願っています。</span></span>",
+              "trans": "（正因为是充满困难的这样的时代，所以不去与人争抢，我期望大家能成为能够体恤他人、理解他人痛苦的人。）"
+            },
+            {
+              "speaker": "問",
+              "text": "学長が言いたいのはどのようなことですか。",
+              "trans": "（校长想表达的是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "社会人としての責任感を持ってほしい",
+            "translation": "（希望具有作为社会人的责任感）",
+            "correct": false
+          },
+          {
+            "text": "社会のルールを守る人になってほしい",
+            "translation": "（希望成为遵守社会规则的人）",
+            "correct": false
+          },
+          {
+            "text": "意志を曲げない強い人になってほしい",
+            "translation": "（希望成为意志坚定的坚强之人）",
+            "correct": false
+          },
+          {
+            "text": "思いやりの心を持ってほしい",
+            "translation": "（希望拥有体贴关怀之心）",
+            "correct": true
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "audio": "../assets/audio/2010.07-6.mp3",
+        "script": {
+          "question": "テレビで女の人が話しています。",
+          "questionTrans": "（在电视上女人正在讲话。）",
+          "dialogue": [
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，女人在开场提到【最近青少年犯罪的新闻在激增（最近、青少年の犯罪のニュースが急増しています）】，但这只是引出后续讨论的背景，并不是她要探讨的核心主题，可以排除。')\">最近、青少年の犯罪のニュースが<span class=\"keyword\" onclick=\"showTooltip(event, '急増（きゅうぞう）：猛增，激增。')\">急増</span>しています。</span></span><span class=\"highlight-wrong\"><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，女人在开场提到【最近青少年犯罪的新闻在激增（最近、青少年の犯罪のニュースが急増しています）】，但这只是引出后续讨论的背景，并不是她要探讨的核心主题，可以排除。')\"></span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女人提到【也可以认为围绕孩子们的环境变化是原因之一（子どもを取り巻く環境の変化も一因として考えられるでしょう）】，但这只是作为犯罪增加的背景原因之一提及，同样不是中心主题，排除。')\">子どもを<span class=\"keyword\" onclick=\"showTooltip(event, '取（と）り巻（ま）く：围绕，包围。')\">取り巻く</span>環境の変化も<span class=\"keyword\" onclick=\"showTooltip(event, '一因（いちいん）：一个原因，原因之一。')\">一因</span>として考えられるでしょう。</span></span>",
+              "trans": "（最近，关于青少年犯罪的新闻在激增。也可以认为，围绕孩子们的环境变化是原因之一。）"
+            },
+            {
+              "speaker": "女",
+              "text": "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人抛出核心疑问【今后，应该采取怎样的对策才好呢（今後、どのように対策を講じたらよいのでしょうか）】，并随后给出了自己对于对策的见解，这说明整段话都在探讨应对青少年犯罪的对策，符合选项4。同时文中完全没有提及父母应该采取的态度，可排除选项2。')\">では、今後、どのように対策を<span class=\"keyword\" onclick=\"showTooltip(event, '講（こう）じる：采取（对策、措施等）。')\">講じたら</span>よいのでしょうか。</span></span><span class=\"highlight-correct\"><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人抛出核心疑问【今后，应该采取怎样的对策才好呢（今後、どのように対策を講じたらよいのでしょうか）】，并随后给出了自己对于对策的见解，这说明整段话都在探讨应对青少年犯罪的对策，符合选项4。同时文中完全没有提及父母应该采取的态度，可排除选项2。')\"></span></span>日本には犯罪を<span class=\"keyword\" onclick=\"showTooltip(event, '犯（おか）す：犯（罪）。')\">犯した</span>未成年者を保護する法律がありますが、たとえ未成年者といえども、犯した罪の重さは同じだという考え方もあります。",
+              "trans": "（那么，今后应该采取怎样的对策才好呢？日本有保护犯下罪行的未成年人的法律，但也有观点认为，即使是未成年人，所犯罪行的严重程度也是一样的。）"
+            },
+            {
+              "speaker": "女",
+              "text": "私は個人的には犯した罪の責任を取らせるようにしないかぎりは、このような犯罪は減らないんじゃないかと思っています。こういうことをしたらこういう<span class=\"keyword\" onclick=\"showTooltip(event, '罰（ばつ）：惩罚，处罚。')\">罰</span>があるということを<span class=\"keyword\" onclick=\"showTooltip(event, '毅然（きぜん）とした：坚决的，毅然的。')\">毅然とした</span>態度で示す必要があるのではないでしょうか。",
+              "trans": "（我个人认为，除非让他们承担所犯罪行的责任，否则这类犯罪是不会减少的。难道不需要以坚决的态度来表明“做了这种事就会有这种惩罚”吗？）"
+            },
+            {
+              "speaker": "問",
+              "text": "女の人の話のテーマは何ですか。",
+              "trans": "（女人讲话的主题是什么？）"
+            }
+          ]
+        },
+        "options": [
+          {
+            "text": "子どもを取り巻く環境の変化",
+            "translation": "（围绕孩子们的环境变化）",
+            "correct": false
+          },
+          {
+            "text": "子供に対して親がとるべき態度",
+            "translation": "（父母对孩子应该采取的态度）",
+            "correct": false
+          },
+          {
+            "text": "青少年による犯罪の増加",
+            "translation": "（青少年犯罪的增加）",
+            "correct": false
+          },
+          {
+            "text": "青少年の犯罪への対応策",
+            "translation": "（应对青少年犯罪的对策）",
+            "correct": true
+          }
+        ]
+      }
+    ]
+  }
+};
 
-        let currentExamKey = "N1-2010-07-概要理解"; 
+        let currentExamKey = "2010-07"; 
         let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'summary-comprehension';
@@ -269,10 +549,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N1-${yearParam}-概要理解` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -611,8 +891,11 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-<script src="../../../shared/listening-tooltip-bridge.js"></script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+<script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
+<script src="../shared/follow-listening-timelines.js?v=20261015-summary-n1-2010-07-70b4b56362f6"></script>
+<script src="../shared/follow-listening.js?v=20261015-summary-n1-2010-07-70b4b56362f6"></script>
+<script src="../shared/follow-listening-entry.js?v=20261015-n1-summary-entry-1"></script>
 </body>
 </html>

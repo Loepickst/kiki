@@ -15,7 +15,7 @@
     const categoryByLevelAndId = new Map();
     let lastStoreReadValid = false;
 
-    ['N1', 'N2', 'N3'].forEach((level) => {
+    ['N1', 'N2'].forEach((level) => {
         (Array.isArray(catalog[level]) ? catalog[level] : []).forEach((category, index) => {
             const normalized = {
                 id: String(category.id || '').trim(),

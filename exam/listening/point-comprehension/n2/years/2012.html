@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ポイント理解 - 聴解練習 (N2 STAGE)</title>
     <!-- 使用与练习页一致的书面/印刷感字体组合 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../shared/domestic-fonts.css">
 <link rel="stylesheet" href="../../../../../shared/site-fonts.css">
-    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260811-tooltip-all">
+    <link rel="stylesheet" href="../../../shared/listening-practice-redesign.css?v=20260829-underline-highlights">
+    <link rel="stylesheet" href="../../../task-comprehension/n2/shared/follow-listening.css?v=20260830-sentence-console-r2">
+    <link rel="stylesheet" href="../../../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
 </head>
-<body>
+<body class="kiki-unified-header-enabled">
 
-    <header>
+    <header data-kiki-unified-header-host="page" data-kiki-header-pending="listening">
         <a href="../index.html" class="back-btn" id="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             戻る
@@ -117,16 +192,18 @@
 
     <div id="wordTooltip" class="custom-tooltip"></div>
 
-    <script src="../../../shared/audio-player-theme.js?v=20260811-integrated-options"></script>
-    <script src="../../../shared/listening-progress.js"></script>
-    <script src="../../../../shared/study-quest-test-runtime.js"></script>
-    <script src="../../../../shared/study-quest-test-boot.js"></script>
-    <script src="../../../shared/listening-reward-hooks.js"></script>
+    <script src="../../../shared/audio-player-theme.js?v=20261019-exam-key1"></script>
+    <script src="../../../shared/listening-progress.js?v=20261019-exam-key1"></script>
+    <script src="../../../../../shared/study-quest-test-runtime-github-20261020.js"></script>
+    <script src="../../../../../shared/study-quest-test-boot-github-20261020.js"></script>
+    <script src="../../../shared/listening-reward-hooks.js?v=20261019-exam-key1"></script>
+    <script src="../shared/follow-listening-timelines.js?v=20260823-n2-point-manual-2012-12-r1"></script>
+    <script src="../../../task-comprehension/n2/shared/follow-listening.js?v=20260830-sentence-console-r2"></script>
     <script>
         // --- Data Structure (针对要点理解 Point Comprehension 的特制数据) ---
         // 解析中包含了您要求规范使用的语法表达，移除了绝对化的表达（如：必然，一定，必須等），词汇提示框未作任何词法解析。
         const examData = {
-            "N2-2012-07": {
+            "2012-07": {
                 label: "2012年7月 (N2)",
                 questions: [
                     {
@@ -136,7 +213,7 @@
                             question: "一番：会社で女の人と男の人が話しています。男の人は今日どうして自転車で来なかったのですか。",
                             questionTrans: "（第一题：在公司里，女人和男人在交谈。男人今天为什么没有骑自行车来？）",
                             dialogue: [
-                                { speaker: "女", text: "あれ、今日は電車で来たの？<span class=\"keyword\" onclick=\"showTooltip(event, '痩（や）せる：变瘦，减肥。')\">痩せる</span>ために、自転車通勤始めたじゃなかったっけ？", trans: "（咦，今天坐电车来的？你不是为了减肥，开始骑自行车通勤了吗？）" },
+                                { speaker: "女", text: "あれ、今日は電車で来たの？<span class=\"keyword\" onclick=\"showTooltip(event, '痩（や）せる：变瘦，减肥。')\">痩せる</span>ために、自転車通勤始めたんじゃなかったっけ？", trans: "（咦，今天坐电车来的？你不是为了减肥，开始骑自行车通勤了吗？）" },
                                 { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，男人刚开始开玩笑说已经瘦了3公斤所以不用骑车了，但紧接着就说【开玩笑的啦，骗你的（なんてね、うそうそ）】，排除了这个原因。')\">もう3キロも痩せたから、いいんだよ。なんてね、うそうそ。</span></span>", trans: "（我已经瘦了3公斤了，所以不用骑啦。开玩笑的啦，骗你的。）" },
                                 { speaker: "女", text: "なんだ。あっ、そうか。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，女人猜测是不是因为下午要下雨，男人的回答是【诶，是吗？我都不知道（え、そうなの？知らなかったよ）】，说明这不是他不骑车的原因，排除。')\">今日は午後から雨みたいだから、それで？</span></span>", trans: "（什么嘛。啊，对了。今天下午好像要下雨，是因为这个？）" },
                                 { speaker: "男", text: "え、そうなの？知らなかったよ。それより、今日のパーティー、珍しい外国のお酒が出るらしいよ。", trans: "（诶，是吗？我都不知道呢。比起那个，今天的派对，听说有罕见的外国酒哦。）" },
@@ -180,9 +257,9 @@
                             question: "三番：大学で女の学生と男の学生が話しています。男の学生はどうしてクラブの部長になることにしましたか。",
                             questionTrans: "（第三题：在大学里，女学生和男学生在交谈。男学生为什么决定当俱乐部的部长？）",
                             dialogue: [
-                                { speaker: "女", text: "ねね、山田さん、聞いたよ。今度部長になるんだって。すごいね。", trans: "（呐，山田，我听说了哦。听说你下次要当部长了。真厉害啊。）" },
-                                { speaker: "男", text: "ふふん、引き受けることになっちゃって、部員も多いし、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男生自己说【当什么把许多人组织起来的领导，我可是很不擅长的（たくさんの人をまとめるリーダーなんて苦手なんだけどね）】，说明他并不喜欢，排除。')\">たくさんの人を<span class=\"keyword\" onclick=\"showTooltip(event, 'まとめる：使集中，使团结，组织。')\">まとめる</span>リーダーなんて<span class=\"keyword\" onclick=\"showTooltip(event, '苦手（にがて）：不擅长，不善于。')\">苦手</span>なんだけどね。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，男生说【现在还要找工作（今、就職活動もあるし）】，将其作为一种负担提出来，并没有说对找工作有帮助，排除。')\">今、<span class=\"keyword\" onclick=\"showTooltip(event, '就職（しゅうしょく）：就职，找工作。')\">就職</span>活動もあるし。</span></span>", trans: "（嗯，变成要接下这个差事了，部员也很多，当什么把许多人组织起来的领导，我可是很不擅长的呢。现在还要找工作。）" },
-                                { speaker: "女", text: "そんなことないよ。山田さんは部長に<span class=\"keyword\" onclick=\"showTooltip(event, '向（む）く：适合，对路。')\">向いている</span>と思うよ。", trans: "（没那回事啦。我觉得山田你很适合当部长哦。）" },
+                                { speaker: "女", text: "ねえねえ、山田さん、聞いたよ。今度部長になるんだって。すごいね。", trans: "（呐，山田，我听说了哦。听说你下次要当部长了。真厉害啊。）" },
+                                { speaker: "男", text: "うん、引き受けることになっちゃって、部員も多いし、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男生自己说【当什么把许多人组织起来的领导，我可是很不擅长的（たくさんの人をまとめるリーダーなんて苦手なんだけどね）】，说明他并不喜欢，排除。')\">たくさんの人を<span class=\"keyword\" onclick=\"showTooltip(event, 'まとめる：使集中，使团结，组织。')\">まとめる</span>リーダーなんて<span class=\"keyword\" onclick=\"showTooltip(event, '苦手（にがて）：不擅长，不善于。')\">苦手</span>なんだけどね。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，男生说【现在还要找工作（今、就職活動もあるし）】，将其作为一种负担提出来，并没有说对找工作有帮助，排除。')\">今、<span class=\"keyword\" onclick=\"showTooltip(event, '就職（しゅうしょく）：就职，找工作。')\">就職</span>活動もあるし。</span></span>", trans: "（嗯，变成要接下这个差事了，部员也很多，当什么把许多人组织起来的领导，我可是很不擅长的呢。现在还要找工作。）" },
+                                { speaker: "女", text: "そんなことないよ。山田さんは部長に<span class=\"keyword\" onclick=\"showTooltip(event, '向（む）く：适合，对路。')\">向いてる</span>と思うよ。", trans: "（没那回事啦。我觉得山田你很适合当部长哦。）" },
                                 { speaker: "男", text: "そうかな。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男生明确说出了决定当部长的理由：【大家都一定要我来做，既然那样，我想就只能做了（みんなにぜひやってくれって言われて、それなら、やるしかないと思ったんだ）】，这与选项3（被大家推荐了）的意思相符。')\">みんなにぜひやってくれって言われて、それなら、やるしかないと思ったんだ。</span></span>", trans: "（是吗。大家都一定要我来做，既然那样，我想就只能做了。）" },
                                 { speaker: "女", text: "そう、たいへんかもしれないけど、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，觉得【一定会成为很好的经验吧（きっといい経験になるんじゃない？）】的是女生，这是女生对他的鼓励，而不是男生自己当部长的动机。注意不要弄错主语，排除。')\">きっといい経験になるんじゃない？</span></span>", trans: "（这样啊，虽然可能会很辛苦，但一定会成为很好的经验吧？）" },
                                 { speaker: "男", text: "とにかく、やれるだけやってみるよ。", trans: "（总之，我就尽力试试看吧。）" }
@@ -229,7 +306,7 @@
                                 { speaker: "女", text: "佐藤さんはどうして彫刻家になろうと思われたんですか。", trans: "（佐藤先生，您为什么会想成为一名雕刻家呢？）" },
                                 { speaker: "男", text: "そうですね。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，男人说【父亲虽然是画家，但我小时候对画画和雕刻并没有兴趣（父が画家でしたが、小さい時は絵や彫刻に興味がなくて）】，排除了父亲的影响。')\">私は父が<span class=\"keyword\" onclick=\"showTooltip(event, '画家（がか）：画家。')\">画家</span>でしたが、小さい時は絵や<span class=\"keyword\" onclick=\"showTooltip(event, '彫刻（ちょうこく）：雕刻，雕塑。')\">彫刻</span>に興味がなくて、</span></span>あれはいつだったかなあ。", trans: "（嗯，这个嘛。我父亲虽然是画家，但我小时候对画画和雕刻并没有兴趣，那是多久以前的事了呢。）" },
                                 { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人明确说出了契机：【第一次一个人去欧洲旅行时，在某家美术馆看到了一件雕刻，那一瞬间深受感动。所以最终就选择了这条路（初めて一人でヨーロッパを旅行した時、ある美術館で一つの彫刻を見て、その瞬間強く感動して。で、結局この道を選んでしまいました）】，这与选项2完全一致。')\">初めて一人でヨーロッパを旅行した時、ある美術館で一つの彫刻を見て、その<span class=\"keyword\" onclick=\"showTooltip(event, '瞬間（しゅんかん）：瞬间，一刹那。')\">瞬間</span>強く感動して。で、結局この道を選んでしまいました。</span></span>", trans: "（第一次一个人去欧洲旅行时，在某家美术馆看到了一件雕刻作品，那一瞬间深受感动。所以，最终就选择了这条路。）" },
-                                { speaker: "男", text: "は、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，男人提到母亲一开始【是不赞成我成为雕刻家的（賛成してませんでした）】，并没有强烈推荐，注意排除。')\">母は私が彫刻家になることに<span class=\"keyword\" onclick=\"showTooltip(event, '賛成（さんせい）：赞成，同意。')\">賛成</span>してませんでした。</span></span>経済的にも決して楽な仕事とは言えませんから。", trans: "（呃，我母亲（一开始）是不赞成我成为雕刻家的。毕竟在经济上也绝对称不上一份轻松的工作。）" },
+                                { speaker: "男", text: "あ、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，男人提到母亲一开始【是不赞成我成为雕刻家的（賛成してませんでした）】，并没有强烈推荐，注意排除。')\">母は私が彫刻家になることに<span class=\"keyword\" onclick=\"showTooltip(event, '賛成（さんせい）：赞成，同意。')\">賛成</span>してませんでした。</span></span>経済的にも決して楽な仕事とは言えませんから。", trans: "（呃，我母亲（一开始）是不赞成我成为雕刻家的。毕竟在经济上也绝对称不上一份轻松的工作。）" },
                                 { speaker: "男", text: "ただ、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，【亲手创造事物的喜悦（自分の手で物を作り出す喜び）】是他从事这份工作后的感受，而不是一开始【开始做雕刻的契机（始めたきっかけ）】，注意时态和因果的区分，排除。')\">自分の手で物を<span class=\"keyword\" onclick=\"showTooltip(event, '作（つく）り出（だ）す：创造出，制作出。')\">作り出す</span>喜びは何者にも変えられませんね。</span></span>10年前に大きな賞をいただいたんですが、その時母もとても喜んでくれて、うれしかったですね。", trans: "（只是，亲手创造事物的喜悦是任何东西都无法替代的呢。10年前我获得了一个大奖，当时母亲也非常为我高兴，这让我很开心。）" }
                             ]
                         },
@@ -248,7 +325,7 @@
                             questionTrans: "（第六题：在公司里，女人和部长在交谈。女人明天早上要做什么？）",
                             dialogue: [
                                 { speaker: "女", text: "部長、今林電気の社長から電話がありました。何かちょっとトラブルがあったようで、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人向部长提出请求，因为林电气出了麻烦，且自己是负责人，希望明天一早去他们公司（明日の朝一番であちらの会社に来てほしいと。担当は私なので、行かせてください）。并在最后得到了部长的同意，这与选项1相符。')\">明日の朝一番であちらの会社に来てほしいと。担当は私なので、行かせてください。</span></span>", trans: "（部长，刚才林电气的社长来电话了。好像出了点麻烦，希望我明天一早去他们公司一趟。因为我是负责人，请让我去吧。）" },
-                                { speaker: "男", text: "え？でも、君は明日の会議で新企画についてプレゼンをする予定だよね。今になって、日程変更するのは無理だよ。", trans: "（诶？但是，你原定在明天的会议上就新企划做展示对吧。事到如今，要更改日程是不可能的哦。）" },
+                                { speaker: "男", text: "え？でも、君は明日朝の会議で新企画についてプレゼンをする予定だよね。今になって、日程変更するのは無理だよ。", trans: "（诶？但是，你原定在明天早上的会议上就新企划做展示对吧。事到如今，要更改日程是不可能的哦。）" },
                                 { speaker: "女", text: "ええ、それで、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，女人提议【展示我想拜托山田代替我去做（プレゼンは山田さんにかわりにやってもらおうかと思ってる）】，所以明天做展示的是山田，而不是女人自己，注意动作主体的偷换，排除。')\">プレゼンは山田さんにかわりにやってもらおうかと思ってる</span></span>んですが、よろしいでしょうか。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，女人提到【展示的资料也已经做好了（プレゼンの資料ももうできていますし）】，所以明天早上不需要再去准备资料了，可以排除。')\">プレゼンの資料ももうできていますし</span></span>、ずっと手伝ってもらっていますから。", trans: "（是的，所以展示我想拜托山田代替我去做，可以吗？展示的资料也已经做好了，而且她也一直在帮我的忙。）" },
                                 { speaker: "男", text: "ん〜、でも新人の山田さんにはまだちょっとなあ〜、彼女に行ってもらうわけにはいかないのかな。", trans: "（嗯~，但是对于新人的山田来说还是有点勉强吧~，难道不能让她去（林电气）吗？）" },
                                 { speaker: "女", text: "ええ、でも、この件は私がずっと担当していますので、それこそ山田さんには<span class=\"keyword\" onclick=\"showTooltip(event, '対処（たいしょ）：应付，处理。')\">対処</span>しきれないかと思いまして。もちろん、プレゼンのほうも成功させたいので、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，女人确实说为了展示的成功【会和山田好好商量一下的（山田さんとしっかり打ち合わせしておきます）】，但这指的是在明天会议前（也就是今天内）提前商量好，而不是明早去做的，注意时间点的要求，排除。')\">山田さんとしっかり<span class=\"keyword\" onclick=\"showTooltip(event, '打（う）ち合（あ）わせ：商量，碰头。')\">打ち合わせ</span>しておきます。</span></span>", trans: "（嗯，但是这件事一直是我在负责的，所以我觉得山田恐怕处理不来。当然，我也希望能让展示取得成功，所以会和山田好好商量一下的。）" },
@@ -264,69 +341,75 @@
                     }
                 ]
             },
-            "N2-2012-12": {
+            "2012-12": {
                 label: "2012年12月 (N2)",
                 questions: [
                     {
                         id: 1,
                         audio: "../assets/audio/2012.12-1.mp3",
                         script: {
-                            question: "一番：会社で女の社員と課長が話しています。課長は何に驚いていますか。",
-                            questionTrans: "（第一题：在公司里，女员工和科长在交谈。科长对什么感到惊讶？）",
+                            question: "一番：不動産屋で、男の人と女の店員が話しています。男の人がアパートの部屋を探す時、一番重視していることは何ですか。",
+                            questionTrans: "（第一题：在房产中介，男人和女店员正在交谈。男人找公寓房间时最重视什么？）",
                             dialogue: [
-                                { speaker: "女", text: "課長、今営業部の田中君から<span class=\"keyword\" onclick=\"showTooltip(event, '差（さ）し入（い）れ：慰劳品，送的食物/饮料。')\">差し入れ</span>のお菓子をいただきました。", trans: "（科长，刚刚收到了营业部田中给的慰劳点心哦。）" },
-                                { speaker: "男", text: "おっ、いいね。ちょうど<span class=\"keyword\" onclick=\"showTooltip(event, '一段落（いちだんらく）：告一段落。')\">一段落</span>したところだから、ちょっと休憩しようか。", trans: "（噢，不错啊。正好工作告一段落了，稍微休息一下吧。）" },
-                                { speaker: "女", text: "はい。", trans: "（好的。）" },
-                                { speaker: "男", text: "田中君この前は、あの人気の<span class=\"keyword\" onclick=\"showTooltip(event, '行列（ぎょうれつ）：排队，队列。')\">行列</span>のできる店のお菓子を買ってきてくれたよなあ。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，科长以为这次也是名店的点心，问【这也是哪家名店的点心吗？（これもどっかの有名な店のお菓子？）】，但其实并不是，所以可以排除。')\">これもどっかの有名な店のお菓子？</span></span>", trans: "（田中之前可是买过那家人气排队名店的点心给我们呢。这个也是哪家名店的点心吗？）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，田中拿点心来慰劳大家这件事一开始就说了，科长只是觉得“不错啊”，并没有对此感到惊讶，排除。')\">田中君の<span class=\"keyword\" onclick=\"showTooltip(event, '手（て）づくり：手工制作。')\">手づくり</span>だそうですよ。</span></span>", trans: "（听说是田中亲手做的哦。）" },
-                                { speaker: "男", text: "ええ、これはうまい。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '科长听到点心是田中亲手做的后，吃了一口并感叹【不管是外观还是味道，都不像是外行做的（見た目も味もとても素人が作ったと思えないよ）】，这正是他感到惊讶的地方，与选项3相符。')\">見た目も味もとても<span class=\"keyword\" onclick=\"showTooltip(event, '素人（しろうと）：外行，业余的人。')\">素人</span>が作ったと思えないよ。田中君やるもんだな。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，科长说【过阵子该不会说要开点心店而辞职吧（そのうち、お菓子の店を始めるので、会社をやめますなんて言い出したりするんじゃないか）】，这只是他开玩笑的调侃，并非已经发生的事实，排除。')\">そのうち、お菓子の店を始めるので、会社をやめますなんて言い出したりするんじゃないか。</span></span>", trans: "（诶，这个真好吃。不管是外观还是味道，都完全不像是外行做的呀。田中还真有一手。过阵子该不会说要开点心店而辞掉公司的工作吧。）" }
+                                { speaker: "男", text: "あの、部屋を探しているんですけど、あ、<span class=\"keyword\" onclick=\"showTooltip(event, '単身者（たんしんしゃ）：单身居住的人。')\">単身者</span>向けの……。", trans: "（那个，我正在找房间，嗯，是面向单身人士的……。）" },
+                                { speaker: "女", text: "どのようなご条件でお探しですか。", trans: "（您想按什么条件来找呢？）" },
+                                { speaker: "男", text: "そうですね。日当たりのいい角部屋で、あまり古くなくて、それに駅から近くて、といろいろあるんですけど、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人先列举了采光、房龄和距离等多个条件，随后用【その中で譲れないのは】明确限定“其中不能让步的”，答案锁定为“离车站近”。')\">その中で<span class=\"keyword\" onclick=\"showTooltip(event, '譲（ゆず）れない：不能让步，无法妥协。')\">譲れない</span>のは駅からの距離ですね。</span></span>", trans: "（嗯，我有很多条件，比如采光好的边角房、房龄不要太老，还有离车站近。不过其中不能让步的是离车站的距离。）" },
+                                { speaker: "女", text: "それならいい部屋がありますよ。こちらがその写真です。駅から10分ぐらいなんですが、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '“去年刚建成”是店员介绍这套房子的特点，并不是男人表示最重视的条件，排除选项2。')\">去年新築したばかりのアパートでおすすめです。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">① ④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '朝南、宽敞都属于房源优点；男人真正用“不能让步”强调的是到车站的距离，因此不能把一般优点误当成最重视的条件。')\">南向きで広いですし。</span></span>", trans: "（那我这里有一间不错的房子。这是照片。离车站大约10分钟，是去年刚建成的公寓，很推荐。并且朝南又宽敞。）" },
+                                { speaker: "男", text: "明るいし、広々としてていいなあ。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人虽然认可房间明亮宽敞，却说如果步行只要两三分钟就无可挑剔，进一步说明他最在意的是离车站的距离。')\">これで歩いて2、3分なら文句なしなんだけどな。</span></span>", trans: "（既明亮又宽敞，真不错啊。不过要是步行只需两三分钟，那就无可挑剔了。）" },
+                                { speaker: "女", text: "はあ……。", trans: "（呃……。）" }
                             ]
                         },
                         options: [
-                            { text: "田中君が差し入れにお菓子を持ってきたこと", translation: "（田中拿了慰劳点心过来）", correct: false },
-                            { text: "田中君がくれたのが有名なお菓子だったこと", translation: "（田中给的是有名的点心）", correct: false },
-                            { text: "田中君が上手にお菓子を作ること", translation: "（田中很擅长做点心）", correct: true },
-                            { text: "田中君が会社をやめてお菓子の店を始めること", translation: "（田中要辞职去开点心店）", correct: false }
+                            { text: "日当たりがいいこと", translation: "（采光好）", correct: false },
+                            { text: "建物が新しいこと", translation: "（建筑物新）", correct: false },
+                            { text: "駅から近いこと", translation: "（离车站近）", correct: true },
+                            { text: "部屋が広いこと", translation: "（房间宽敞）", correct: false }
                         ]
                     },
                     {
                         id: 2,
                         audio: "../assets/audio/2012.12-2.mp3",
                         script: {
-                            question: "二番：大学の就職セミナーで男の人が話しています。男の人はどうして今の仕事を選んだと言っていますか。",
-                            questionTrans: "（第二题：在大学的就业研讨会上，一名男子正在讲话。男子说他为什么选择了现在的工作？）",
+                            question: "二番：会社で、女の人と男の人が話しています。男の人はどうして今昼ごはんを食べに行かないのですか。",
+                            questionTrans: "（第二题：在公司里，女人和男人正在交谈。男人为什么现在不去吃午饭？）",
                             dialogue: [
-                                { speaker: "男", text: "私はこの大学の卒業生で、社会人2年目です。ええ、実は私の大学時代の<span class=\"keyword\" onclick=\"showTooltip(event, '専門（せんもん）：专业。')\">専門</span>はコンピューターでした。ですから、今福祉の仕事をしているというと、当時の友人はみな驚きます。", trans: "（我是这所大学的毕业生，今年是步入社会的第2年。嗯，其实我大学时代的专业是计算机。所以，当我说我现在在做福利方面的工作时，当时的朋友们都很惊讶。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">① ②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1和2，男人明确表示现在的工作【跟专业并没有直接关系（専門と直接関係があるわけじゃない）】，且资格证是【必须重新学习去考取（新たに学んで資格を取らなくてはなりませんでした）】的，而不是利用原本就有的资格证，排除这两项。')\">確かに、専門と直接関係があるわけじゃないし、新たに学んで<span class=\"keyword\" onclick=\"showTooltip(event, '資格（しかく）：资格，资格证。')\">資格</span>を取らなくてはなりませんでしたからね。</span></span>", trans: "（确实，跟专业并没有直接关系，而且我还必须重新学习去考取资格证呢。）" },
-                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人明确说出了选择这份工作的真正原因：【从小就想做一份能对别人有帮助的工作（子どもの時から、人のためになる仕事がしたいという思いがあった）】，这与选项3（想对别人有帮助）完全一致。')\">でも、子どもの時から、人のためになる仕事がしたいという思いがあったんです。</span></span>", trans: "（但是，我从小就有一种想法，就是想做一份能对别人有帮助的工作。）" },
-                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，男人提到这份工作【需求量很高（需要が高く）】，但这只是让他【能马上就职（すぐに仕事に就くことができました）】的客观幸运条件（幸い），并非他【主动选择（選んだ）】的最初动机，注意因果关系的区分，排除。')\"><span class=\"keyword\" onclick=\"showTooltip(event, '幸（さいわ）い：幸运地，幸好。')\">幸い</span>この仕事は<span class=\"keyword\" onclick=\"showTooltip(event, '需要（じゅよう）：需求，需要。')\">需要</span>が高く、<span class=\"keyword\" onclick=\"showTooltip(event, '未経験（みけいけん）：未经验，没有经验。')\">未経験</span>の私でもすぐに仕事に<span class=\"keyword\" onclick=\"showTooltip(event, '就（つ）く：就职，从事。')\">就く</span>ことができました。</span></span>", trans: "（幸运的是，这份工作需求量很高，即便是没有经验的我也能马上就职。）" }
+                                { speaker: "女", text: "今日は会議が1時からだから、早めに昼ごはんを済ませましょう。会社の近くで一緒にどう？", trans: "（今天的会议一点开始，我们早点把午饭吃完吧。一起去公司附近吃怎么样？）" },
+                                { speaker: "男", text: "ああ、部長、どうぞいらっしゃってください。私はちょっと……。", trans: "（啊，部长，您请去吧。我就不去了……。）" },
+                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '女人猜测男人是不是还要准备会议；下一句男人明确说会场和资料都已确认，因此“现在要准备会议”被排除。')\">準備に何か問題でもあるの？</span></span>", trans: "（准备工作有什么问题吗？）" },
+                                { speaker: "男", text: "いいえ、それは大丈夫です。会場も資料も確認しました。", trans: "（没有，那方面没问题。会场和资料都确认过了。）" },
+                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '现在是十一点半，会议一点才开始，女人明确说时间充足，所以不是因为会议马上就要开始。')\">今、11時半だから、時間は十分よ。</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '女人又猜测他是否因紧张而没有食欲；男人回答“そういうわけでは”，明确否定了这个原因。')\">それとも緊張して食欲ないの？</span></span>", trans: "（现在才十一点半，时间很充足啊。还是说你紧张得没有食欲？）" },
+                                { speaker: "男", text: "もちろん、<span class=\"keyword\" onclick=\"showTooltip(event, '重役（じゅうやく）：公司高层，重要干部。')\">重役</span>の前でのプレゼンですから、緊張はしてますが、そういうわけでは。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人用“実は”说出真正原因：因为饿得忍不住，刚刚已经稍微吃过了。对应选项4“少し前に食べたばかり”。')\">実はおなかがすいて<span class=\"keyword\" onclick=\"showTooltip(event, '我慢（がまん）しきれない：忍耐不住，无法忍受到底。')\">我慢しきれなかった</span>もんですから、さっき軽く……。</span></span>", trans: "（当然，在公司高层面前做展示，我是会紧张，但不是因为那个。其实我饿得实在忍不住，所以刚才稍微吃了点……。）" },
+                                { speaker: "女", text: "え？じゃあ、もういいのね。", trans: "（诶？那你已经不用吃了啊。）" },
+                                { speaker: "男", text: "はい。", trans: "（是的。）" }
                             ]
                         },
                         options: [
-                            { text: "専門に関係があることをしたいから", translation: "（因为想做和专业相关的事）", correct: false },
-                            { text: "持っていた資格を生かしたいから", translation: "（因为想发挥已有的资格证的作用）", correct: false },
-                            { text: "人の役に立ちたいから", translation: "（因为想对别人有帮助）", correct: true },
-                            { text: "需要が高い仕事だから", translation: "（因为是需求量高的工作）", correct: false }
+                            { text: "今から会議のじゅんびをするから", translation: "（因为现在要准备会议）", correct: false },
+                            { text: "これからすぐに会議が始まるから", translation: "（因为会议马上就要开始）", correct: false },
+                            { text: "きんちょうして食べる気がしないから", translation: "（因为紧张得不想吃东西）", correct: false },
+                            { text: "少し前に食べたばかりだから", translation: "（因为刚刚才吃过东西）", correct: true }
                         ]
                     },
                     {
                         id: 3,
                         audio: "../assets/audio/2012.12-3.mp3",
                         script: {
-                            question: "三番：テレビでアナウンサーが話しています。この動物園で夜、動物を見せる一番の目的は何ですか。",
-                            questionTrans: "（第三题：电视上播音员正在讲话。这家动物园在夜晚展示动物最大的目的是什么？）",
+                            question: "三番：会社で、女の人と男の人が話しています。男の人が運動を始めた理由は何ですか。",
+                            questionTrans: "（第三题：在公司里，女人和男人正在交谈。男人开始运动的原因是什么？）",
                             dialogue: [
-                                { speaker: "女", text: "最近夜も開いている動物園が増えていますが、こちらの動物園でも夏の間の2週間、夜10時まで動物園を開放し、話題を呼んでいます。", trans: "（最近晚上也营业的动物园增加了，这家动物园也在夏季的两周内开放到晚上10点，引起了话题。）" },
-                                { speaker: "女", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项1，入园者增加只是夜间开放带来的附带好处（入園者も増えるといういい面もある），并非“最大的目的（一番の目的）”，排除。')\">夜も開けることで入園者も増えるといういい面もあるそうですが、</span></span>", trans: "（据说晚上也开放的话，有能增加入园人数这样的好处，）" },
-                                { speaker: "女", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">④</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '播音员明确指出了最大的目的：【是为了让大家能观察到只能在夜间看到的动物活动（夜間にしか見られない動物の活動を観察してもらうことが一番の目的）】。这与选项4相符。')\">夜間にしか見られない動物の活動を<span class=\"keyword\" onclick=\"showTooltip(event, '観察（かんさつ）：观察。')\">観察</span>してもらうことが一番の目的なんだそうです。</span></span>", trans: "（但最大的目的是为了让大家能观察到只能在夜间看到的动物活动。）" },
-                                { speaker: "女", text: "昼間は寝ている動物が起き出して動く姿は、大人にも人気です。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">② ③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2和3，文中只是说夜间开放【有避开炎热的白天，让人凉爽地参观的好处（暑い昼間を避け、涼しく見学できるよさもある）】，这只是好处之一，并不是目的。而且原文也没有提到让动物凉快，排除这两项。')\">また、暑い昼間を避け、涼しく見学できるよさもあるとのことです。</span></span>", trans: "（白天睡觉的动物醒来活动的姿态，在大人中也很受欢迎。另外，还有能避开炎热的白天，让人凉爽地参观的好处。）" }
+                                { speaker: "女", text: "課長、今日はもうお帰りですか。", trans: "（科长，今天已经要回去了吗？）" },
+                                { speaker: "男", text: "ああ、今日はこれからスポーツジムに行くんだ。", trans: "（嗯，今天接下来要去健身房。）" },
+                                { speaker: "女", text: "いいですね。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">①</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '“被家人说运动不足”的人是女人，不是男人。选项1偷换了动作主体，因此排除。')\">私なんかいつも運動不足だって家族に言われるんですよ。</span></span>それは自分でも分かってるんですけど。", trans: "（真不错。我总被家人说运动不足。其实我自己也明白。）" },
+                                { speaker: "男", text: "<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">②</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '男人承接女人的“运动不足”，说自己也切身感受到这一点，所以终于下定决心开始运动。对应选项2。')\">僕もそう<span class=\"keyword\" onclick=\"showTooltip(event, '実感（じっかん）する：切身感受到。')\">実感する</span>ことがあって、で、ついに<span class=\"keyword\" onclick=\"showTooltip(event, '思（おも）い立（た）つ：下定决心去做。')\">思い立った</span>ってわけ。</span></span>", trans: "（我也切身感受到运动不足，所以终于下定决心开始运动了。）" },
+                                { speaker: "女", text: "そうですか。私もジムに行こうかなあ。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '被同事邀请去健身房的也是女人，不是男人；不能把女人的经历当成男人开始运动的理由。')\">実は前から同僚に誘われてるんですよ。</span></span>体を動かすとすっきりするでしょうね。", trans: "（是吗。我也去健身房好了。其实同事很早以前就一直邀请我。活动身体会很舒畅吧。）" },
+                                { speaker: "男", text: "うん、いいよ。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '压力减少、能转换心情，是男人开始运动以后得到的效果，不是开始运动之前的动机，时间先后不能倒置。')\">運動をはじめてからストレスが減ってね、ほんといい気分転換になるよ。</span></span>", trans: "（嗯，很不错。开始运动以后压力减少了，真的是很好的心情转换。）" }
                             ]
                         },
                         options: [
-                            { text: "入園者の数を増やすこと", translation: "（增加入园者的人数）", correct: false },
-                            { text: "動物が涼しくすごせるようにすること", translation: "（让动物凉爽地度过）", correct: false },
-                            { text: "客が涼しく見学できるようにすること", translation: "（让客人能凉爽地参观）", correct: false },
-                            { text: "動物が夜動くようすを見せること", translation: "（展示动物夜晚活动的样子）", correct: true }
+                            { text: "家族にすすめられたから", translation: "（因为家人推荐）", correct: false },
+                            { text: "運動不足だと感じたから", translation: "（因为觉得自己运动不足）", correct: true },
+                            { text: "会社の人にさそわれたから", translation: "（因为受到公司同事邀请）", correct: false },
+                            { text: "気分転換したかったから", translation: "（因为想转换心情）", correct: false }
                         ]
                     },
                     {
@@ -378,30 +461,28 @@
                         id: 6,
                         audio: "../assets/audio/2012.12-6.mp3",
                         script: {
-                            question: "六番：会社で、女の人が部長と話しています。女の人は明日の朝何をしますか。",
-                            questionTrans: "（第六题：在公司里，女人和部长在交谈。女人明天早上要做什么？）",
+                            question: "六番：テレビで社長が自分の会社について話しています。社長は何を新しく計画していると言っていますか。",
+                            questionTrans: "（第六题：电视上，社长正在介绍自己的公司。社长说正在制订什么新计划？）",
                             dialogue: [
-                                { speaker: "女", text: "部長、今林電気の社長から電話がありました。何かちょっとトラブルがあったようで、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '女人向部长提出请求，因为林电气出了麻烦，且自己是负责人，希望明天一早去他们公司（明日の朝一番であちらの会社に来てほしいと。担当は私なので、行かせてください）。并在最后得到了部长的同意，这与选项1相符。')\">明日の朝一番であちらの会社に来てほしいと。担当は私なので、行かせてください。</span></span>", trans: "（部长，刚才林电气的社长来电话了。好像出了点麻烦，希望我明天一早去他们公司一趟。因为我是负责人，请让我去吧。）" },
-                                { speaker: "男", text: "え？でも、君は明日の会議で新企画についてプレゼンをする予定だよね。今になって、日程変更するのは無理だよ。", trans: "（诶？但是，你原定在明天的会议上就新企划做展示对吧。事到如今，要更改日程是不可能的哦。）" },
-                                { speaker: "女", text: "ええ、それで、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项2，女人提议【展示我想拜托山田代替我去做（プレゼンは山田さんにかわりにやってもらおうかと思ってる）】，所以明天做展示的是山田，而不是女人自己，注意动作主体的偷换，排除。')\">プレゼンは山田さんにかわりにやってもらおうかと思ってる</span></span>んですが、よろしいでしょうか。<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">③</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项3，女人提到【展示的资料也已经做好了（プレゼンの資料ももうできていますし）】，所以明天早上不需要再去准备资料了，可以排除。')\">プレゼンの資料ももうできていますし</span></span>、ずっと手伝ってもらっていますから。", trans: "（是的，所以展示我想拜托山田代替我去做，可以吗？展示的资料也已经做好了，而且她也一直在帮我的忙。）" },
-                                { speaker: "男", text: "ん〜、でも新人の山田さんにはまだちょっとなあ〜、彼女に行ってもらうわけにはいかないのかな。", trans: "（嗯~，但是对于新人的山田来说还是有点勉强吧~，难道不能让她去（林电气）吗？）" },
-                                { speaker: "女", text: "ええ、でも、この件は私がずっと担当していますので、それこそ山田さんには<span class=\"keyword\" onclick=\"showTooltip(event, '対処（たいしょ）：应付，处理。')\">対処</span>しきれないかと思いまして。もちろん、プレゼンのほうも成功させたいので、<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '关于选项4，女人确实说为了展示的成功【会和山田好好商量一下的（山田さんとしっかり打ち合わせしておきます）】，但这指的是在明天会议前（也就是今天内）提前商量好，而不是明早去做的，注意时间点的要求，排除。')\">山田さんとしっかり<span class=\"keyword\" onclick=\"showTooltip(event, '打（う）ち合（あ）わせ：商量，碰头。')\">打ち合わせ</span>しておきます。</span></span>", trans: "（嗯，但是这件事一直是我在负责的，所以我觉得山田恐怕处理不来。当然，我也希望能让展示取得成功，所以会和山田好好商量一下的。）" },
-                                { speaker: "男", text: "そうか。わかった。<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">①</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '部长最后同意了女人的请求：【那样的话，就交给你了（それじゃ、君に任せることにしよう）】，所以女人明天早上的行程是去处理林电气的问题。')\">それじゃ、君に任せることにしよう。</span></span>よろしく頼むよ。", trans: "（这样啊。知道了。那么，就交给你了。拜托了哦。）" }
+                                { speaker: "男", text: "ええ、我が社は国内では50年以上前から、電気製品のメーカーとして知られておりますが、", trans: "（嗯，本公司在国内五十多年前就以电器制造商而闻名，）" },
+                                { speaker: "男", text: "<span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">① ②</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '“在海外以电脑制造商而知名”是在介绍公司目前的状况，并不是来年度的新计划；原文也没有说要新建电脑生产或销售计划。')\">最近は海外でもパソコンメーカーとして名前が知られるようになってきました。</span></span>", trans: "（最近在海外也逐渐以电脑制造商而为人所知。）" },
+                                { speaker: "男", text: "来年度の新たな計画としましては、<span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '新计划的产品是手机；【国内に5か所工場を新設】表示在国内生产，【海外での販売を展開】表示在海外销售，完全对应选项3。')\">携帯電話の製造に向けて</span></span><span class=\"highlight-wrong\"><span class=\"opt-tag tag-wrong\">④</span><span class=\"explain-wrong\" onclick=\"showTooltip(event, '生产地是“国内”，不是海外；选项4把生产地和销售地颠倒了。')\">国内に5か所工場を<span class=\"keyword\" onclick=\"showTooltip(event, '新設（しんせつ）する：新建，新设。')\">新設</span>し、</span></span><span class=\"highlight-correct\"><span class=\"opt-tag tag-correct\">③</span><span class=\"explain-correct\" onclick=\"showTooltip(event, '销售地明确是海外。结合前面的“在国内设厂”，可得“国内生产手机、销往海外”。')\">海外での販売を<span class=\"keyword\" onclick=\"showTooltip(event, '展開（てんかい）する：开展，展开。')\">展開</span>していく予定です。</span></span>", trans: "（作为下一年度的新计划，我们将为生产手机在国内新建五座工厂，并计划拓展海外销售。）" },
+                                { speaker: "男", text: "来年度は我が社にとって成長の一年となりそうです。", trans: "（下一年度将会是本公司成长的一年。）" }
                             ]
                         },
                         options: [
-                            { text: "林電気の社長に会いに行く", translation: "（去见林电气的社长）", correct: true },
-                            { text: "会議でプレゼンテーションをする", translation: "（在会议上做展示）", correct: false },
-                            { text: "しりょうのじゅんびを手伝う", translation: "（帮忙准备资料）", correct: false },
-                            { text: "どうりょうと打ち合わせをする", translation: "（和同事进行商讨）", correct: false }
+                            { text: "パソコンを国内で生産して海外で売ること", translation: "（在国内生产电脑并销往海外）", correct: false },
+                            { text: "パソコンを海外で生産して国内で売ること", translation: "（在海外生产电脑并在国内销售）", correct: false },
+                            { text: "けいたい電話を国内で生産して海外で売ること", translation: "（在国内生产手机并销往海外）", correct: true },
+                            { text: "けいたい電話を海外で生産して国内で売ること", translation: "（在海外生产手机并在国内销售）", correct: false }
                         ]
                     }
                 ]
             }
         };
 
-        let currentExamKey = "N2-2012-07"; 
-        let currentQuestionIndex = 5; // Set to the 6th question (index 5)
+        let currentExamKey = "2012-07"; 
+        let currentQuestionIndex = 0;
         let preferredMode = 'practice'; 
         const LISTENING_TYPE = 'point-comprehension';
         const LISTENING_LEVEL = 'n2';
@@ -423,10 +504,10 @@
         // --- Initialization ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const yearParam = urlParams.get('year');
+            const yearParam = window.ListeningProgress.normalizeExamKey(urlParams.get('year'));
             const modeParam = urlParams.get('mode');
             
-            const targetKey = yearParam ? `N2-${yearParam}` : currentExamKey;
+            const targetKey = yearParam || currentExamKey;
 
             if (examData[targetKey]) {
                 currentExamKey = targetKey;
@@ -452,8 +533,8 @@
                             currentQuestionIndex = 0;
                         }
                     }
-                } else if (!urlParams.has('q')) {
-                    currentQuestionIndex = Math.min(currentQuestionIndex, examData[currentExamKey].questions.length - 1);
+                } else {
+                    currentQuestionIndex = 0;
                 }
             } else if (!examData[currentExamKey]) {
                 currentExamKey = Object.keys(examData)[0];
@@ -771,7 +852,8 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
-    <script src="../../../../../shared/word-bank.js"></script>
-    <script src="../../../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
+    <script src="../../../../../shared/selection-dictionary.js?v=20261012-selection-stability-2" data-lookup-scope="listening"></script>
 </body>
 </html>

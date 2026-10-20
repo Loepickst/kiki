@@ -1,16 +1,90 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- kiji-page-presentation:start -->
+<style data-kiji-page-presentation>html[data-kiji-paint="pending"],html[data-kiji-paint="blocked"],html[data-kiji-paint="pending"] body,html[data-kiji-paint="blocked"] body{background:#faf9f6!important}
+html[data-kiji-paint="pending"] body :not(#kiji-page-loading):not(#kiji-page-loading *):not([data-kiji-loading-screen]):not([data-kiji-loading-screen] *),html[data-kiji-paint="blocked"] body :not(#kiji-page-loading):not(#kiji-page-loading *){visibility:hidden!important}
+html[data-kiji-paint="pending"] body::before,html[data-kiji-paint="pending"] body::after,html[data-kiji-paint="blocked"] body::before,html[data-kiji-paint="blocked"] body::after{visibility:hidden!important}
+#kiji-page-loading{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:18px!important;margin:0!important;padding:24px!important;box-sizing:border-box!important;background:#faf9f6!important;color:#766d64!important;font:15px/1.7 system-ui,sans-serif!important;letter-spacing:.04em!important;visibility:visible!important}
+#kiji-page-loading button{appearance:none;cursor:pointer;border:1px solid #d9d1c8;border-radius:8px;background:#fff;color:#665649;padding:9px 20px;font:inherit}
+html.kiji-icons-pending :is(.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands)::before{visibility:hidden!important}
+html.kiji-page-revealing body{animation:kiji-page-reveal 140ms ease-out!important}
+@keyframes kiji-page-reveal{from{opacity:.94}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){html.kiji-page-revealing body{animation:none!important}}</style>
+<script>(function bootstrap() {
+    const root = document.documentElement;
+    (window.KijiPagePresentation?.dispose || window.KijiPagePresentation?.cancel)?.();
+    root.dataset.kijiPaint = 'pending';
+    const state = window.KijiPagePresentation = { root, startedAt: performance.now(), failedStyles: new WeakSet() };
+    let delay, watchdog;
+    state.status = function (failed) {
+        if (document.documentElement !== root || root.dataset.kijiPaint === 'ready') return;
+        // A page showing its own loading screen keeps it; only failure covers it.
+        if (!failed && state.screen && root.dataset.kijiPaint !== 'blocked') return;
+        let box = document.getElementById('kiji-page-loading');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'kiji-page-loading';
+            box.setAttribute('role', 'status');
+            // A blocking head script may prevent body from existing at all.
+            // Keep the retry layer outside it so even that case stays recoverable.
+            root.appendChild(box);
+        }
+        if (failed) {
+            if (root.dataset.kijiPaint === 'blocked' && box.querySelector('button')) return;
+            root.dataset.kijiPaint = 'blocked';
+            box.textContent = '页面暂时未能完整载入';
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = '重新加载';
+            button.onclick = function () { location.reload(); };
+            box.appendChild(button);
+        } else if (root.dataset.kijiPaint !== 'blocked') box.textContent = '正在打开…';
+    };
+    // A page may present its own loading screen (the pet cottage's pixel room):
+    // it marks the element data-kiji-loading-screen, which stays visible while
+    // the page is hidden, and hands it over here as soon as it is parsed. The
+    // page keeps the transition up with a hold (which may wait for the reader,
+    // e.g. an "enter" button), shows its own slow and retry states, and removes
+    // its screen itself, so the watchdog stands down; resource failures and a
+    // rejected hold still bring the reload screen.
+    state.useScreen = function (screen) {
+        state.screen = screen;
+        clearTimeout(watchdog);
+        if (root.dataset.kijiPaint !== 'blocked') document.getElementById('kiji-page-loading')?.remove();
+    };
+    function resourceError(event) {
+        const target = event.target;
+        if (target?.matches?.('link[rel~="stylesheet"]') && !target.disabled && (!target.media || matchMedia(target.media).matches) ||
+            target?.tagName === 'SCRIPT' && /\/page-presentation\.js(?:\?|$)/.test(target.src)) {
+            if (target.tagName === 'LINK') state.failedStyles.add(target);
+            state.failed = true;
+            state.status(true);
+        }
+    }
+    function resourceLoaded(event) { if (event.target?.tagName === 'LINK') state.failedStyles.delete(event.target); }
+    document.addEventListener('error', resourceError, true);
+    document.addEventListener('load', resourceLoaded, true);
+    state.cancel = function () { clearTimeout(delay); clearTimeout(watchdog); document.removeEventListener('error', resourceError, true); document.removeEventListener('load', resourceLoaded, true); };
+    delay = setTimeout(function () { state.status(state.failed); }, 600);
+    // Lives inline: even a missing controller or a stalled parser has a way out.
+    watchdog = setTimeout(function () { state.status(true); }, 12000);
+})();</script>
+<script defer src="../../../shared/page-presentation.js?v=20261010-holds-1"></script>
+<!-- kiji-page-presentation:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JLPT 完形填空练习</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;600;700;900&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../shared/domestic-fonts.css">
     <link rel="stylesheet" href="../grammar/grammar-redesign.css">
     <link rel="stylesheet" href="./shared/cloze-redesign.css">
+    <link rel="stylesheet" href="../../../shared/unified-header-github-20261020.css?v=20260907-first-paint" data-kiki-unified-header-style>
+    <link rel="preload" as="script" href="../../../shared/unified-header-github-20261020.js?v=20260907-first-paint">
+    <script src="../../../shared/navigation-routes-github-20261020.js?v=20261009-no-exam-mode-1" defer></script>
+    <link rel="preload" as="image" href="../../../assets/home-redesign/kiji-logo-maple-header-v3.webp?v=20260810-no-tagline">
 </head>
-<body class="grammar-app cloze-app">
-    <header class="sort-page-header">
-        <a href="../index.html" id="page-back-btn" class="grammar-back-link" data-kiki-unified-back data-kiki-dynamic-back aria-label="返回语法专项" onclick="event.preventDefault(); app.handleHeaderBack(); return false;">
+<body class="kiki-unified-header-enabled grammar-app cloze-app">
+    <header class="sort-page-header" data-kiki-unified-header-host="page" data-kiki-header-pending>
+        <a href="../../../index.html#exam/exam-grammar" id="page-back-btn" class="grammar-back-link" data-kiki-unified-back data-kiki-dynamic-back aria-label="返回语法专项" onclick="event.preventDefault(); app.handleHeaderBack(); return false;">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             <span id="page-back-label">返回语法专项</span>
         </a>
@@ -45,7 +119,7 @@
                     <div class="grammar-level-tabs grammar-main-level-tabs" aria-label="切换练习等级">
                         <button type="button" data-cloze-level="N1" onclick="app.selectLevel('N1')">N1</button>
                         <button type="button" data-cloze-level="N2" onclick="app.selectLevel('N2')">N2</button>
-                        <button type="button" data-cloze-level="N3" disabled>N3</button>
+                        
                     </div>
                 </div>
 
@@ -85,7 +159,7 @@
                     <div class="grammar-level-tabs" aria-label="切换年度完形真题级别">
                         <button type="button" data-cloze-year-level="N1" onclick="app.selectYearLevel('N1')">N1</button>
                         <button type="button" data-cloze-year-level="N2" onclick="app.selectYearLevel('N2')">N2</button>
-                        <button type="button" data-cloze-year-level="N3" disabled>N3</button>
+                        
                     </div>
                 </footer>
             </div>
@@ -100,7 +174,7 @@
                     <div class="grammar-level-tabs grammar-main-level-tabs" aria-label="切换错题级别">
                         <button type="button" data-cloze-mistake-level="N1" onclick="app.selectMistakeLevel('N1')">N1</button>
                         <button type="button" data-cloze-mistake-level="N2" onclick="app.selectMistakeLevel('N2')">N2</button>
-                        <button type="button" data-cloze-mistake-level="N3" disabled>N3</button>
+                        
                     </div>
                 </div>
                 <section class="mistake-overview-line" aria-label="完形填空错题概览">
@@ -166,6 +240,15 @@
             { level:'N1', session:'2011年7月', title:'広告主の品位', href:'./n1/2011.7.html' },
             { level:'N1', session:'2010年12月', title:'過剰に求められるコミュニケーション能力', href:'./n1/2010.12.html' },
             { level:'N1', session:'2010年7月', title:'父性の復権', href:'./n1/2010.7.html' },
+            { level:'N2', session:'2025年7月', title:'高齢者の外出支援', href:'./n2/2025.7.html' },
+            { level:'N2', session:'2024年12月', title:'農業ボランティア', href:'./n2/2024.12.html' },
+            { level:'N2', session:'2024年7月', title:'紅葉の異変', href:'./n2/2024.7.html' },
+            { level:'N2', session:'2023年12月', title:'温泉の正しい入り方', href:'./n2/2023.12.html' },
+            { level:'N2', session:'2023年7月', title:'香道', href:'./n2/2023.7.html' },
+            { level:'N2', session:'2022年12月', title:'座りすぎと腰痛対策', href:'./n2/2022.12.html' },
+            { level:'N2', session:'2022年7月', title:'地下駐輪場', href:'./n2/2022.7.html' },
+            { level:'N2', session:'2021年12月', title:'「落語」体験', href:'./n2/2021.12.html' },
+            { level:'N2', session:'2021年7月', title:'気象情報と食品ロス', href:'./n2/2021.7.html' },
             { level:'N2', session:'2020年12月', title:'ロボット・セラピー', href:'./n2/2020.12.html' },
             { level:'N2', session:'2019年12月', title:'文章文法真题', href:'./n2/2019.12.html' },
             { level:'N2', session:'2019年7月', title:'伝統から最新技術へ', href:'./n2/2019.7.html' },
@@ -238,12 +321,12 @@
                 const unifiedBack = document.querySelector('.kiki-unified-back');
                 if (unifiedBack) {
                     unifiedBack.href = this.activeView === 'view-level-select'
-                        ? new URL('../index.html', location.href).href
+                        ? new URL('../../../index.html#exam/exam-grammar', location.href).href
                         : new URL(`index.html?level=${this.currentLevel}`, location.href).href;
                 }
             },
             handleHeaderBack() {
-                if (this.activeView === 'view-level-select') { location.href = '../index.html'; return; }
+                if (this.activeView === 'view-level-select') { location.href = '../../../index.html#exam/exam-grammar'; return; }
                 this.backToDirectory();
             },
             backToDirectory() { this.replaceUrl({level:this.currentLevel}); this.switchView('view-level-select'); },
@@ -344,7 +427,7 @@
         addEventListener('kiki-unified-header:ready',()=>{app.updateHeader();app.updateDirectoryUI();});
         app.init();
     </script>
-    <script src="../../../shared/word-bank.js"></script>
-    <script src="../../../shared/unified-header.js" data-kiki-unified-header-loader></script>
+    <script src="../../../shared/word-bank-github-20261020.js?v=20261012-lookup-collections-1"></script>
+    <script src="../../../shared/unified-header-github-20261020.js?v=20260907-first-paint" data-kiki-unified-header-loader></script>
 </body>
 </html>
